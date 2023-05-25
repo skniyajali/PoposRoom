@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Popos</string>
+    <string name="app_description">Restaurant POS Application.</string>
+    <string name="mail_subject">Popos Crash Report.</string>
+    <string name="mail_body">Your application has-been crashed, check out below attached file for more details.</string>
+    <string name="toast_text">Application has been crashed</string>
 </resources>

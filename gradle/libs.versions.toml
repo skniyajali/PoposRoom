@@ -55,6 +55,7 @@ espresso-core = '3.5.1'
 
 # Compose
 compose-version = '1.4.0-beta01'
+material-version = '1.2.0-alpha02'
 compose-bom = "2023.05.01"
 activity-compose = "1.7.1"
 lifecycle-version = "2.6.1"
@@ -91,8 +92,9 @@ ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref="ui-test-junit" }
 
 # Androidx Compose Material
-material3 = { group = "androidx.compose.material3", name = "material3" }
 material-icons = { group = "androidx.compose.material", name = "material-icons-extended" }
+material3 = { group = "androidx.compose.material3", name = "material3", version.ref="material-version"}
+material3-window-size = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref="material-version"}
 
 # Androidx Activity Compose
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }

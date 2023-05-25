@@ -5,8 +5,8 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.appsweep)
     alias(libs.plugins.ksp)
-    id(libs.plugins.kotlin.kapt.get().pluginId)
     alias(libs.plugins.androidx.baselineprofile)
+    id(libs.plugins.kotlin.kapt.get().pluginId)
 }
 
 android {
@@ -27,8 +27,13 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+            isDebuggable = true
+        }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -44,6 +49,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.4"
@@ -56,17 +62,34 @@ android {
             excludes += "DebugProbesKt.bin"
         }
     }
+
+    sourceSets {
+        getByName("main") {
+            java.srcDir("src/main/kotlin")
+        }
+        getByName("test") {
+            java.srcDir("src/test/kotlin")
+        }
+        getByName("androidTest") {
+            java.srcDir("src/androidTest/kotlin")
+        }
+    }
+
+    hilt {
+        enableAggregatingTask = true
+    }
 }
 
 dependencies {
     implementation(libs.core.ktx)
 
-    implementation(platform(libs.compose.bom))
+//    implementation(platform(libs.compose.bom))
     implementation(libs.ui)
     implementation(libs.ui.graphics)
     implementation(libs.material3)
     implementation(libs.material.icons)
     implementation(libs.ui.tooling.preview)
+    implementation(libs.material3.window.size)
 
     implementation(libs.activity.compose)
 
@@ -219,4 +242,8 @@ dependencies {
 
     //Baseline Profile
 //    "baselineProfile"(project(mapOf("path" to ":benchmark")))
+}
+
+kapt {
+    correctErrorTypes = true
 }

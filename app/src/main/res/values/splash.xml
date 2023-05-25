@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.MySplash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/popos</item>
+        <item name="postSplashScreenTheme">@style/Theme.PoposRoom</item>
+        <item name="windowSplashScreenAnimationDuration">10</item>
+    </style>
+</resources>

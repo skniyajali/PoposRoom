@@ -11,4 +11,9 @@ plugins {
     alias(libs.plugins.androidx.baselineprofile) apply false
     alias(libs.plugins.androidx.benchmark) apply false
 }
+
+tasks.register("clean", Delete::class) {
+    delete(rootProject.buildDir)
+}
+
 true // Needed to make the Suppress annotation work for the plugins block
