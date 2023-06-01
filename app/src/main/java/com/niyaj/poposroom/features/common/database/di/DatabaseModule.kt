@@ -21,5 +21,5 @@ object DatabaseModule {
         context,
         PoposDatabase::class.java,
         "popos-database",
-    ).build()
+    ).fallbackToDestructiveMigration().build()
 }

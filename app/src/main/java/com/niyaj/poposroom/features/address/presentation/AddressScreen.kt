@@ -1,4 +1,4 @@
-package com.niyaj.poposroom.features.addon_item.presentation
+package com.niyaj.poposroom.features.address.presentation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
@@ -24,7 +24,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CardDefaults
@@ -49,13 +48,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.niyaj.poposroom.features.addon_item.domain.model.AddOnItem
-import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADDON_ITEM_TAG
-import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADDON_NOT_AVAIlABLE
-import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADDON_SCREEN_TITLE
-import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.CREATE_NEW_ADD_ON
-import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.DELETE_ADD_ON_ITEM_MESSAGE
-import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.DELETE_ADD_ON_ITEM_TITLE
+import com.niyaj.poposroom.features.address.domain.model.Address
+import com.niyaj.poposroom.features.address.domain.utils.AddressTestTags.ADDRESS_ITEM_TAG
+import com.niyaj.poposroom.features.address.domain.utils.AddressTestTags.ADDRESS_NOT_AVAIlABLE
+import com.niyaj.poposroom.features.address.domain.utils.AddressTestTags.ADDRESS_SCREEN_TITLE
+import com.niyaj.poposroom.features.address.domain.utils.AddressTestTags.CREATE_NEW_ADDRESS
+import com.niyaj.poposroom.features.address.domain.utils.AddressTestTags.DELETE_ADDRESS_ITEM_MESSAGE
+import com.niyaj.poposroom.features.address.domain.utils.AddressTestTags.DELETE_ADDRESS_ITEM_TITLE
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
 import com.niyaj.poposroom.features.common.components.StandardScaffold
@@ -65,21 +64,18 @@ import com.niyaj.poposroom.features.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
 import com.niyaj.poposroom.features.common.utils.SheetScreen
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.isScrolled
-import com.niyaj.poposroom.features.common.utils.toRupee
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
-@RootNavGraph(start = true)
 @Destination
 @Composable
-fun AddOnItemScreen(
+fun AddressScreen(
     bottomSheetScaffoldState: BottomSheetScaffoldState,
     navController: NavController,
     onCloseSheet: () -> Unit = {},
     onOpenSheet: (SheetScreen) -> Unit = {},
-    viewModel: AddOnViewModel = hiltViewModel(),
+    viewModel: AddressViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -127,26 +123,26 @@ fun AddOnItemScreen(
             viewModel.closeSearchBar()
         }
         if (bottomSheetScaffoldState.bottomSheetState.hasExpandedState) {
-                onCloseSheet()
-            }
+            onCloseSheet()
+        }
     }
 
     StandardScaffold(
         navController = navController,
         snackbarHostState = snackbarState,
-        title = if (selectedItems.isEmpty()) ADDON_SCREEN_TITLE else "${selectedItems.size} Selected",
+        title = if (selectedItems.isEmpty()) ADDRESS_SCREEN_TITLE else "${selectedItems.size} Selected",
         showFab = showFab,
-        fabText = CREATE_NEW_ADD_ON,
+        fabText = CREATE_NEW_ADDRESS,
         fabExtended = !lazyGridState.isScrolled,
         showSearchBar = showSearchBar,
         selectionCount = selectedItems.size,
         searchText = searchText,
         showBackButton = showSearchBar,
         onFabClick = {
-            onOpenSheet(SheetScreen.CreateNewAddOnItem)
+            onOpenSheet(SheetScreen.CreateNewAddress)
         },
         onEditClick = {
-            onOpenSheet(SheetScreen.UpdateAddOnItem(selectedItems.first()))
+            onOpenSheet(SheetScreen.UpdateAddress(selectedItems.first()))
         },
         onDeleteClick = {
             openDialog.value = true
@@ -162,10 +158,10 @@ fun AddOnItemScreen(
             is UiState.Loading -> LoadingIndicator()
             is UiState.Empty -> {
                 ItemNotAvailable(
-                    text = if (searchText.isEmpty()) ADDON_NOT_AVAIlABLE else SEARCH_ITEM_NOT_FOUND,
-                    buttonText = CREATE_NEW_ADD_ON,
+                    text = if (searchText.isEmpty()) ADDRESS_NOT_AVAIlABLE else SEARCH_ITEM_NOT_FOUND,
+                    buttonText = CREATE_NEW_ADDRESS,
                     onClick = {
-                        onOpenSheet(SheetScreen.CreateNewAddOnItem)
+                        onOpenSheet(SheetScreen.CreateNewAddress)
                     }
                 )
             }
@@ -180,10 +176,13 @@ fun AddOnItemScreen(
                 ) {
                     items(
                         items = state.data,
-                        key = { it.itemId}
-                    ) { item: AddOnItem ->
-                        AddOnItemData(
-                            item = item,
+                        key = {
+                            it.addressName.plus(it.addressId)
+                        }
+                    ) { address ->
+                        AddressData(
+                            modifier = Modifier.testTag(ADDRESS_ITEM_TAG.plus(address.addressId)),
+                            item = address,
                             doesSelected = {
                                 selectedItems.contains(it)
                             },
@@ -200,6 +199,7 @@ fun AddOnItemScreen(
         }
     }
 
+
     if (openDialog.value) {
         AlertDialog(
             onDismissRequest = {
@@ -207,12 +207,11 @@ fun AddOnItemScreen(
                 viewModel.deselectItems()
             },
             title = {
-                Text(text = DELETE_ADD_ON_ITEM_TITLE)
+                Text(text = DELETE_ADDRESS_ITEM_TITLE)
             },
             text = {
                 Text(
-                    text = DELETE_ADD_ON_ITEM_MESSAGE
-                )
+                    text = DELETE_ADDRESS_ITEM_MESSAGE)
             },
             confirmButton = {
                 TextButton(
@@ -242,20 +241,18 @@ fun AddOnItemScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AddOnItemData(
+fun AddressData(
     modifier: Modifier = Modifier,
-    item: AddOnItem,
+    item: Address,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
 ) {
-    val borderStroke = if (doesSelected(item.itemId)) border else null
-    val availBorder = if (!item.isApplicable) BorderStroke(1.dp, MaterialTheme.colorScheme.inversePrimary) else null
+    val borderStroke = if (doesSelected(item.addressId)) border else null
 
     ElevatedCard(
         modifier = modifier
-            .testTag(ADDON_ITEM_TAG.plus(item.itemId))
             .padding(SpaceSmall)
             .then(borderStroke?.let {
                 Modifier.border(it, CardDefaults.elevatedShape)
@@ -263,10 +260,10 @@ fun AddOnItemData(
             .clip(CardDefaults.elevatedShape)
             .combinedClickable(
                 onClick = {
-                    onClick(item.itemId)
+                    onClick(item.addressId)
                 },
                 onLongClick = {
-                    onLongClick(item.itemId)
+                    onLongClick(item.addressId)
                 },
             ),
     ) {
@@ -281,30 +278,31 @@ fun AddOnItemData(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = item.itemName)
+                Text(text = item.addressName)
                 Spacer(modifier = Modifier.height(SpaceSmall))
-                Text(text = item.itemPrice.toRupee)
+                Text(text = item.shortName)
             }
 
             Box(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.background)
-                    .then(
-                        availBorder?.let {
-                            Modifier.border(it, CircleShape)
-                        } ?: Modifier
-                    ),
+                    .background(MaterialTheme.colorScheme.background),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(
-                    imageVector = if (doesSelected(item.itemId)) Icons.Default.Check
-                    else Icons.Default.Link,
-                    contentDescription = item.itemName,
-                    tint = if (doesSelected(item.itemId)) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.surfaceTint,
-                )
+                if (doesSelected(item.addressId)) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = item.addressName,
+                        tint = if (doesSelected(item.addressId)) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.surfaceTint,
+                    )
+                }else {
+                    Text(
+                        text = item.shortName,
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
             }
         }
     }

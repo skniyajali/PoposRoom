@@ -39,3 +39,28 @@ val Int.toRupee
         .getCurrencyInstance(Locale("en", "IN"))
         .format(this.toLong())
         .substringBefore(".")
+
+
+val String.isContainsArithmeticCharacter: Boolean
+    get() = this.any { str ->
+        (str == '%' || str == '/' || str == '*' || str == '+' || str == '-')
+    }
+
+val String.capitalizeWords
+    get() = this.lowercase(Locale.ROOT).split(" ").joinToString(" ") { char ->
+        char.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
+        }
+    }
+
+fun getAllCapitalizedLetters(string: String): String {
+    var capitalizeLetters = ""
+
+    string.capitalizeWords.forEach {
+        if (it.isUpperCase()) {
+            capitalizeLetters += it.toString()
+        }
+    }
+
+    return capitalizeLetters
+}

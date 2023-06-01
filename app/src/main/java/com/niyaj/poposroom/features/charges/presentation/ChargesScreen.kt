@@ -1,4 +1,4 @@
-package com.niyaj.poposroom.features.addon_item.presentation
+package com.niyaj.poposroom.features.charges.presentation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
@@ -23,8 +23,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CardDefaults
@@ -49,13 +49,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.niyaj.poposroom.features.addon_item.domain.model.AddOnItem
-import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADDON_ITEM_TAG
-import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADDON_NOT_AVAIlABLE
-import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADDON_SCREEN_TITLE
-import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.CREATE_NEW_ADD_ON
-import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.DELETE_ADD_ON_ITEM_MESSAGE
-import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.DELETE_ADD_ON_ITEM_TITLE
+import com.niyaj.poposroom.features.charges.domain.model.Charges
+import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.CHARGES_NOT_AVAIlABLE
+import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.CHARGES_SCREEN_TITLE
+import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.CHARGES_TAG
+import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.CREATE_NEW_CHARGES
+import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.DELETE_CHARGES_MESSAGE
+import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.DELETE_CHARGES_TITLE
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
 import com.niyaj.poposroom.features.common.components.StandardScaffold
@@ -67,23 +67,21 @@ import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.isScrolled
 import com.niyaj.poposroom.features.common.utils.toRupee
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
-@RootNavGraph(start = true)
 @Destination
 @Composable
-fun AddOnItemScreen(
+fun ChargesScreen(
     bottomSheetScaffoldState: BottomSheetScaffoldState,
     navController: NavController,
     onCloseSheet: () -> Unit = {},
     onOpenSheet: (SheetScreen) -> Unit = {},
-    viewModel: AddOnViewModel = hiltViewModel(),
+    viewModel: ChargesViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
-    val state = viewModel.addOnItems.collectAsStateWithLifecycle().value
+    val state = viewModel.charges.collectAsStateWithLifecycle().value
 
     val selectedItems = viewModel.selectedAddOnItems.toList()
 
@@ -120,33 +118,31 @@ fun AddOnItemScreen(
 
     BackHandler {
         if (selectedItems.isNotEmpty()) {
-//            viewModel.onEvent(ItemEvents.DeselectAllItems)
             viewModel.deselectItems()
         } else if (showSearchBar) {
-//            viewModel.onEvent(ItemEvents.OnSearchBarCloseClick)
             viewModel.closeSearchBar()
         }
         if (bottomSheetScaffoldState.bottomSheetState.hasExpandedState) {
-                onCloseSheet()
-            }
+            onCloseSheet()
+        }
     }
 
     StandardScaffold(
         navController = navController,
         snackbarHostState = snackbarState,
-        title = if (selectedItems.isEmpty()) ADDON_SCREEN_TITLE else "${selectedItems.size} Selected",
+        title = if (selectedItems.isEmpty()) CHARGES_SCREEN_TITLE else "${selectedItems.size} Selected",
         showFab = showFab,
-        fabText = CREATE_NEW_ADD_ON,
+        fabText = CREATE_NEW_CHARGES,
         fabExtended = !lazyGridState.isScrolled,
         showSearchBar = showSearchBar,
         selectionCount = selectedItems.size,
         searchText = searchText,
         showBackButton = showSearchBar,
         onFabClick = {
-            onOpenSheet(SheetScreen.CreateNewAddOnItem)
+            onOpenSheet(SheetScreen.CreateNewCharges)
         },
         onEditClick = {
-            onOpenSheet(SheetScreen.UpdateAddOnItem(selectedItems.first()))
+            onOpenSheet(SheetScreen.UpdateCharges(selectedItems.first()))
         },
         onDeleteClick = {
             openDialog.value = true
@@ -162,10 +158,10 @@ fun AddOnItemScreen(
             is UiState.Loading -> LoadingIndicator()
             is UiState.Empty -> {
                 ItemNotAvailable(
-                    text = if (searchText.isEmpty()) ADDON_NOT_AVAIlABLE else SEARCH_ITEM_NOT_FOUND,
-                    buttonText = CREATE_NEW_ADD_ON,
+                    text = if (searchText.isEmpty()) CHARGES_NOT_AVAIlABLE else SEARCH_ITEM_NOT_FOUND,
+                    buttonText = CREATE_NEW_CHARGES,
                     onClick = {
-                        onOpenSheet(SheetScreen.CreateNewAddOnItem)
+                        onOpenSheet(SheetScreen.CreateNewCharges)
                     }
                 )
             }
@@ -180,9 +176,9 @@ fun AddOnItemScreen(
                 ) {
                     items(
                         items = state.data,
-                        key = { it.itemId}
-                    ) { item: AddOnItem ->
-                        AddOnItemData(
+                        key = { it.chargesId}
+                    ) { item: Charges ->
+                        ChargesData(
                             item = item,
                             doesSelected = {
                                 selectedItems.contains(it)
@@ -207,11 +203,11 @@ fun AddOnItemScreen(
                 viewModel.deselectItems()
             },
             title = {
-                Text(text = DELETE_ADD_ON_ITEM_TITLE)
+                Text(text = DELETE_CHARGES_TITLE)
             },
             text = {
                 Text(
-                    text = DELETE_ADD_ON_ITEM_MESSAGE
+                    text = DELETE_CHARGES_MESSAGE
                 )
             },
             confirmButton = {
@@ -242,20 +238,20 @@ fun AddOnItemScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AddOnItemData(
+fun ChargesData(
     modifier: Modifier = Modifier,
-    item: AddOnItem,
+    item: Charges,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
 ) {
-    val borderStroke = if (doesSelected(item.itemId)) border else null
+    val borderStroke = if (doesSelected(item.chargesId)) border else null
     val availBorder = if (!item.isApplicable) BorderStroke(1.dp, MaterialTheme.colorScheme.inversePrimary) else null
 
     ElevatedCard(
         modifier = modifier
-            .testTag(ADDON_ITEM_TAG.plus(item.itemId))
+            .testTag(CHARGES_TAG.plus(item.chargesId))
             .padding(SpaceSmall)
             .then(borderStroke?.let {
                 Modifier.border(it, CardDefaults.elevatedShape)
@@ -263,10 +259,10 @@ fun AddOnItemData(
             .clip(CardDefaults.elevatedShape)
             .combinedClickable(
                 onClick = {
-                    onClick(item.itemId)
+                    onClick(item.chargesId)
                 },
                 onLongClick = {
-                    onLongClick(item.itemId)
+                    onLongClick(item.chargesId)
                 },
             ),
     ) {
@@ -281,9 +277,9 @@ fun AddOnItemData(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = item.itemName)
+                Text(text = item.chargesName)
                 Spacer(modifier = Modifier.height(SpaceSmall))
-                Text(text = item.itemPrice.toRupee)
+                Text(text = item.chargesPrice.toRupee)
             }
 
             Box(
@@ -299,10 +295,10 @@ fun AddOnItemData(
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    imageVector = if (doesSelected(item.itemId)) Icons.Default.Check
-                    else Icons.Default.Link,
-                    contentDescription = item.itemName,
-                    tint = if (doesSelected(item.itemId)) MaterialTheme.colorScheme.primary
+                    imageVector = if (doesSelected(item.chargesId)) Icons.Default.Check
+                    else Icons.Default.Bolt,
+                    contentDescription = item.chargesName,
+                    tint = if (doesSelected(item.chargesId)) MaterialTheme.colorScheme.primary
                     else MaterialTheme.colorScheme.surfaceTint,
                 )
             }

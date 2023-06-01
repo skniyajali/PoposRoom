@@ -23,7 +23,6 @@ object AddOnConstants {
 
     const val ADDON_APPLIED_SWITCH = "AddOn Applied Switch"
 
-
     const val ADDON_NAME_EMPTY_ERROR = "AddOn item name must not be empty."
     const val ADDON_NAME_DIGIT_ERROR = "AddOn item name must not contains any digit."
     const val ADDON_NAME_LENGTH_ERROR = "AddOn item name must be at least 5 characters long."
@@ -35,6 +34,6 @@ object AddOnConstants {
     const val DELETE_ADD_ON_ITEM_TITLE = "Delete AddOn Item?"
     const val DELETE_ADD_ON_ITEM_MESSAGE = "Are you sure to delete these addon items?"
 
-    const val ADDON_ITEM_TAG = "Tag-"
+    const val ADDON_ITEM_TAG = "AddOn-"
 
 }

@@ -22,13 +22,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
@@ -77,6 +79,10 @@ import com.niyaj.poposroom.features.common.utils.Constants.SEARCH_ICON
 import com.niyaj.poposroom.features.common.utils.Constants.SELECTALL_ICON
 import com.niyaj.poposroom.features.common.utils.Constants.SETTINGS_ICON
 import com.niyaj.poposroom.features.common.utils.Constants.STANDARD_BACK_BUTTON
+import com.niyaj.poposroom.features.destinations.AddOnItemScreenDestination
+import com.niyaj.poposroom.features.destinations.AddressScreenDestination
+import com.niyaj.poposroom.features.destinations.ChargesScreenDestination
+import com.ramcosta.composedestinations.navigation.navigate
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -112,7 +118,7 @@ fun StandardScaffold(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     // icons to mimic drawer destinations
-    val items = listOf(Icons.Default.Favorite, Icons.Default.Face, Icons.Default.Email)
+    val items = listOf("Address", Icons.Default.Face, Icons.Default.Email)
     val selectedItem = remember { mutableStateOf(items[0]) }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     // Remember a SystemUiController
@@ -136,23 +142,46 @@ fun StandardScaffold(
         )
     }
 
+    val currentRoute = navController.currentBackStackEntry?.destination?.route
+
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
                 Spacer(Modifier.height(12.dp))
-                items.forEach { item ->
-                    NavigationDrawerItem(
-                        icon = { Icon(item, contentDescription = null) },
-                        label = { Text(item.name) },
-                        selected = item == selectedItem.value,
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            selectedItem.value = item
-                        },
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                    )
-                }
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Link, contentDescription = null) },
+                    label = { Text("AddOnItem") },
+                    selected = currentRoute == AddOnItemScreenDestination.route,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate(AddOnItemScreenDestination())
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Business, contentDescription = null) },
+                    label = { Text("Address") },
+                    selected = currentRoute == AddressScreenDestination.route,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate(AddressScreenDestination())
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Bolt, contentDescription = null) },
+                    label = { Text("Charges") },
+                    selected = currentRoute == ChargesScreenDestination.route,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate(ChargesScreenDestination())
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
             }
         },
         gesturesEnabled = true
