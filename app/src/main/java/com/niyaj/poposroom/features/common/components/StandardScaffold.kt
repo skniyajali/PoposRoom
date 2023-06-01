@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -31,6 +32,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
@@ -81,7 +83,9 @@ import com.niyaj.poposroom.features.common.utils.Constants.SETTINGS_ICON
 import com.niyaj.poposroom.features.common.utils.Constants.STANDARD_BACK_BUTTON
 import com.niyaj.poposroom.features.destinations.AddOnItemScreenDestination
 import com.niyaj.poposroom.features.destinations.AddressScreenDestination
+import com.niyaj.poposroom.features.destinations.CategoryScreenDestination
 import com.niyaj.poposroom.features.destinations.ChargesScreenDestination
+import com.niyaj.poposroom.features.destinations.CustomerScreenDestination
 import com.ramcosta.composedestinations.navigation.navigate
 import kotlinx.coroutines.launch
 
@@ -179,6 +183,28 @@ fun StandardScaffold(
                     onClick = {
                         scope.launch { drawerState.close() }
                         navController.navigate(ChargesScreenDestination())
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Category, contentDescription = null) },
+                    label = { Text("Category") },
+                    selected = currentRoute == CategoryScreenDestination.route,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate(CategoryScreenDestination())
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.People, contentDescription = null) },
+                    label = { Text("Customer") },
+                    selected = currentRoute == CustomerScreenDestination.route,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate(CustomerScreenDestination())
                     },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
