@@ -7,10 +7,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.niyaj.poposroom.features.NavGraphs
 import com.niyaj.poposroom.features.addon_item.presentation.AddOnItemScreen
-import com.niyaj.poposroom.features.addon_item.presentation.NavGraphs
-import com.niyaj.poposroom.features.addon_item.presentation.destinations.AddOnItemScreenDestination
+import com.niyaj.poposroom.features.address.presentation.AddressScreen
 import com.niyaj.poposroom.features.common.utils.SheetScreen
+import com.niyaj.poposroom.features.destinations.AddOnItemScreenDestination
+import com.niyaj.poposroom.features.destinations.AddressScreenDestination
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
 import com.ramcosta.composedestinations.navigation.dependency
@@ -54,6 +56,15 @@ fun PoposNavigation(
     ) {
         composable(AddOnItemScreenDestination) {
             AddOnItemScreen(
+                bottomSheetScaffoldState = bottomSheetScaffoldState,
+                navController = navController,
+                onCloseSheet = closeSheet,
+                onOpenSheet = onOpenSheet,
+            )
+        }
+
+        composable(AddressScreenDestination) {
+            AddressScreen(
                 bottomSheetScaffoldState = bottomSheetScaffoldState,
                 navController = navController,
                 onCloseSheet = closeSheet,

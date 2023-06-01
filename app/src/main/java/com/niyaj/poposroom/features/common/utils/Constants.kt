@@ -4,6 +4,8 @@ object Constants {
     const val TEXT_FIELD_LEADING_ICON = "TextFieldLeadingIcon"
     const val TEXT_FIELD_TRAILING_ICON = "TextFieldLeadingIcon"
 
+    const val SEARCH_ITEM_NOT_FOUND = "Searched Item Not Found."
+
     const val STANDARD_BACK_BUTTON = "StandardBackButton"
     const val SEARCH_BAR_CLEAR_BUTTON = "SearchBarClearButton"
     const val STANDARD_SEARCH_BAR = "StandardSearchBar"
