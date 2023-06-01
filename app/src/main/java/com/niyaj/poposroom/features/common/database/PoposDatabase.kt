@@ -23,7 +23,7 @@ import com.niyaj.poposroom.features.customer.domain.model.Customer
         Category::class,
         Customer::class,
     ],
-    version = 1,
+    version = 3,
     autoMigrations = [],
     exportSchema = true,
 )

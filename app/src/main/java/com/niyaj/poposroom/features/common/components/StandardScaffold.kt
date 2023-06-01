@@ -197,7 +197,6 @@ fun StandardScaffold(
                     },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
-
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.People, contentDescription = null) },
                     label = { Text("Customer") },

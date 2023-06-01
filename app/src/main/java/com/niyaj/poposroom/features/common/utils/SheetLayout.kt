@@ -57,7 +57,6 @@ fun SheetLayout(
                     closeSheet = onCloseBottomSheet
                 )
             }
-
             is SheetScreen.CreateNewCustomer -> {
                 AddEditCustomerScreen(closeSheet = onCloseBottomSheet)
             }

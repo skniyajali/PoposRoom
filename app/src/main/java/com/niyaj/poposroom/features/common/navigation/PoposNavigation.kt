@@ -95,7 +95,6 @@ fun PoposNavigation(
                 onOpenSheet = onOpenSheet,
             )
         }
-
         composable(CustomerScreenDestination) {
             CustomerScreen(
                 bottomSheetScaffoldState = bottomSheetScaffoldState,
