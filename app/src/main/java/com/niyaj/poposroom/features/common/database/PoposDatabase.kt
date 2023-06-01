@@ -12,6 +12,8 @@ import com.niyaj.poposroom.features.category.domain.model.Category
 import com.niyaj.poposroom.features.charges.dao.ChargesDao
 import com.niyaj.poposroom.features.charges.domain.model.Charges
 import com.niyaj.poposroom.features.common.utils.TimestampConverters
+import com.niyaj.poposroom.features.customer.dao.CustomerDao
+import com.niyaj.poposroom.features.customer.domain.model.Customer
 
 @Database(
     entities = [
@@ -19,8 +21,9 @@ import com.niyaj.poposroom.features.common.utils.TimestampConverters
         Address::class,
         Charges::class,
         Category::class,
+        Customer::class,
     ],
-    version = 2,
+    version = 3,
     autoMigrations = [],
     exportSchema = true,
 )
@@ -30,4 +33,5 @@ abstract class PoposDatabase : RoomDatabase() {
     abstract fun addressDao(): AddressDao
     abstract fun chargesDao(): ChargesDao
     abstract fun categoryDao(): CategoryDao
+    abstract fun customerDao(): CustomerDao
 }

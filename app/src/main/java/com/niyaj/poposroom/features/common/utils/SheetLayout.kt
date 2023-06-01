@@ -5,6 +5,7 @@ import com.niyaj.poposroom.features.addon_item.presentation.add_edit.AddEditItem
 import com.niyaj.poposroom.features.address.presentation.add_edit.AddEditAddressScreen
 import com.niyaj.poposroom.features.category.presentation.add_edit.AddEditCategoryScreen
 import com.niyaj.poposroom.features.charges.presentation.add_edit.AddEditChargesScreen
+import com.niyaj.poposroom.features.customer.presentaion.add_edit.AddEditCustomerScreen
 
 @Composable
 fun SheetLayout(
@@ -53,6 +54,16 @@ fun SheetLayout(
             is SheetScreen.UpdateCategory -> {
                 AddEditCategoryScreen(
                     categoryId = current.categoryId,
+                    closeSheet = onCloseBottomSheet
+                )
+            }
+            is SheetScreen.CreateNewCustomer -> {
+                AddEditCustomerScreen(closeSheet = onCloseBottomSheet)
+            }
+
+            is SheetScreen.UpdateCustomer -> {
+                AddEditCustomerScreen(
+                    customerId = current.customerId,
                     closeSheet = onCloseBottomSheet
                 )
             }

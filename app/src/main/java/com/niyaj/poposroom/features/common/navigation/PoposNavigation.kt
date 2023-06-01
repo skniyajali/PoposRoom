@@ -13,10 +13,12 @@ import com.niyaj.poposroom.features.address.presentation.AddressScreen
 import com.niyaj.poposroom.features.category.presentation.CategoryScreen
 import com.niyaj.poposroom.features.charges.presentation.ChargesScreen
 import com.niyaj.poposroom.features.common.utils.SheetScreen
+import com.niyaj.poposroom.features.customer.presentaion.CustomerScreen
 import com.niyaj.poposroom.features.destinations.AddOnItemScreenDestination
 import com.niyaj.poposroom.features.destinations.AddressScreenDestination
 import com.niyaj.poposroom.features.destinations.CategoryScreenDestination
 import com.niyaj.poposroom.features.destinations.ChargesScreenDestination
+import com.niyaj.poposroom.features.destinations.CustomerScreenDestination
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
 import com.ramcosta.composedestinations.navigation.dependency
@@ -87,6 +89,14 @@ fun PoposNavigation(
 
         composable(CategoryScreenDestination) {
             CategoryScreen(
+                bottomSheetScaffoldState = bottomSheetScaffoldState,
+                navController = navController,
+                onCloseSheet = closeSheet,
+                onOpenSheet = onOpenSheet,
+            )
+        }
+        composable(CustomerScreenDestination) {
+            CustomerScreen(
                 bottomSheetScaffoldState = bottomSheetScaffoldState,
                 navController = navController,
                 onCloseSheet = closeSheet,
