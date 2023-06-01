@@ -20,10 +20,12 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Link
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -31,6 +33,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,14 +44,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.poposroom.features.addon_item.domain.model.AddOnItem
+import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADDON_ITEM_TAG
 import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADDON_NOT_AVAIlABLE
 import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADDON_SCREEN_TITLE
 import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.CREATE_NEW_ADD_ON
+import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.DELETE_ADD_ON_ITEM_MESSAGE
+import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.DELETE_ADD_ON_ITEM_TITLE
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
 import com.niyaj.poposroom.features.common.components.StandardScaffold
@@ -89,6 +96,8 @@ fun AddOnItemScreen(
 
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
+
+    val openDialog = remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -135,37 +144,18 @@ fun AddOnItemScreen(
         onFabClick = {
             onOpenSheet(SheetScreen.CreateNewAddOnItem)
         },
-        onDeselect = {
-//            viewModel.onEvent(ItemEvents.DeselectAllItems)
-            viewModel.deselectItems()
-        },
         onEditClick = {
             onOpenSheet(SheetScreen.UpdateAddOnItem(selectedItems.first()))
         },
         onDeleteClick = {
-//            viewModel.onEvent(ItemEvents.DeleteItems)
-            viewModel.deleteItems()
+            openDialog.value = true
         },
-        onSelectAllClick = {
-//            viewModel.onEvent(ItemEvents.SelectAllItems)
-            viewModel.selectAllItems()
-        },
-        onSearchTextChanged = {
-//            viewModel.onEvent(ItemEvents.OnSearchTextChanged(it))
-            viewModel.searchTextChanged(it)
-        },
-        onSearchClick = {
-//            viewModel.onEvent(ItemEvents.OnSearchClick)
-            viewModel.openSearchBar()
-        },
-        onBackClick = {
-//            viewModel.onEvent(ItemEvents.OnSearchBarCloseClick)
-            viewModel.closeSearchBar()
-        },
-        onClearClick = {
-//            viewModel.onEvent(ItemEvents.OnSearchTextClearClick)
-            viewModel.clearSearchText()
-        }
+        onDeselect = viewModel::deselectItems,
+        onSelectAllClick = viewModel::selectAllItems,
+        onSearchTextChanged = viewModel::searchTextChanged,
+        onSearchClick = viewModel::openSearchBar,
+        onBackClick = viewModel::closeSearchBar,
+        onClearClick = viewModel::clearSearchText
     ) { _ ->
         when (state) {
             is UiState.Loading -> LoadingIndicator()
@@ -198,19 +188,53 @@ fun AddOnItemScreen(
                             },
                             onClick = {
                                 if (selectedItems.isNotEmpty()) {
-//                                    viewModel.onEvent(ItemEvents.SelectItem(it))
                                     viewModel.selectItem(it)
                                 }
                             },
-                            onLongClick = {
-//                                viewModel.onEvent(ItemEvents.SelectItem(it))
-                                viewModel.selectItem(it)
-                            }
+                            onLongClick = viewModel::selectItem
                         )
                     }
                 }
             }
         }
+    }
+
+    if (openDialog.value) {
+        AlertDialog(
+            onDismissRequest = {
+                openDialog.value = false
+                viewModel.deselectItems()
+            },
+            title = {
+                Text(text = DELETE_ADD_ON_ITEM_TITLE)
+            },
+            text = {
+                Text(
+                    text = DELETE_ADD_ON_ITEM_MESSAGE
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        openDialog.value = false
+                        viewModel.deleteItems()
+                    },
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        openDialog.value = false
+                        viewModel.deselectItems()
+                    },
+                ) {
+                    Text("Cancel")
+                }
+            },
+            shape = RoundedCornerShape(28.dp)
+        )
     }
 }
 
@@ -226,9 +250,11 @@ fun AddOnItemData(
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
 ) {
     val borderStroke = if (doesSelected(item.itemId)) border else null
+    val availBorder = if (!item.isApplicable) BorderStroke(1.dp, MaterialTheme.colorScheme.inversePrimary) else null
 
     ElevatedCard(
         modifier = modifier
+            .testTag(ADDON_ITEM_TAG.plus(item.itemId))
             .padding(SpaceSmall)
             .then(borderStroke?.let {
                 Modifier.border(it, CardDefaults.elevatedShape)
@@ -263,7 +289,12 @@ fun AddOnItemData(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.background),
+                    .background(MaterialTheme.colorScheme.background)
+                    .then(
+                        availBorder?.let {
+                            Modifier.border(it, CircleShape)
+                        } ?: Modifier
+                    ),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
