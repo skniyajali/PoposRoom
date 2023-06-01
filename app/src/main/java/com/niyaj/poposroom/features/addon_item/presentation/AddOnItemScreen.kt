@@ -1,0 +1,279 @@
+package com.niyaj.poposroom.features.addon_item.presentation
+
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Link
+import androidx.compose.material3.BottomSheetScaffoldState
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import com.niyaj.poposroom.features.addon_item.domain.model.AddOnItem
+import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADDON_NOT_AVAIlABLE
+import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADDON_SCREEN_TITLE
+import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.CREATE_NEW_ADD_ON
+import com.niyaj.poposroom.features.common.components.ItemNotAvailable
+import com.niyaj.poposroom.features.common.components.LoadingIndicator
+import com.niyaj.poposroom.features.common.components.StandardScaffold
+import com.niyaj.poposroom.features.common.event.UiState
+import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
+import com.niyaj.poposroom.features.common.utils.SheetScreen
+import com.niyaj.poposroom.features.common.utils.UiEvent
+import com.niyaj.poposroom.features.common.utils.isScrolled
+import com.niyaj.poposroom.features.common.utils.toRupee
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalMaterial3Api::class)
+@RootNavGraph(start = true)
+@Destination
+@Composable
+fun AddOnItemScreen(
+    bottomSheetScaffoldState: BottomSheetScaffoldState,
+    navController: NavController,
+    onCloseSheet: () -> Unit = {},
+    onOpenSheet: (SheetScreen) -> Unit = {},
+    viewModel: AddOnViewModel = hiltViewModel(),
+) {
+    val scope = rememberCoroutineScope()
+    val snackbarState = remember { SnackbarHostState() }
+    val state = viewModel.addOnItems.collectAsStateWithLifecycle().value
+
+    val selectedItems = viewModel.selectedAddOnItems.toList()
+
+    val lazyGridState = rememberLazyGridState()
+
+    var showFab by remember {
+        mutableStateOf(false)
+    }
+
+    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
+
+    val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
+    val searchText = viewModel.searchText.value
+
+    LaunchedEffect(key1 = event) {
+        event?.let { data ->
+            when(data) {
+                is UiEvent.IsLoading -> {}
+                is UiEvent.OnError -> {
+                    scope.launch {
+                        snackbarState.showSnackbar(data.errorMessage)
+                    }
+                }
+                is UiEvent.OnSuccess -> {
+                    scope.launch {
+                        snackbarState.showSnackbar(data.successMessage)
+                    }
+                }
+            }
+        }
+    }
+
+    BackHandler {
+        if (selectedItems.isNotEmpty()) {
+//            viewModel.onEvent(ItemEvents.DeselectAllItems)
+            viewModel.deselectItems()
+        } else if (showSearchBar) {
+//            viewModel.onEvent(ItemEvents.OnSearchBarCloseClick)
+            viewModel.closeSearchBar()
+        }
+        if (bottomSheetScaffoldState.bottomSheetState.hasExpandedState) {
+                onCloseSheet()
+            }
+    }
+
+    StandardScaffold(
+        navController = navController,
+        snackbarHostState = snackbarState,
+        title = if (selectedItems.isEmpty()) ADDON_SCREEN_TITLE else "${selectedItems.size} Selected",
+        showFab = showFab,
+        fabText = CREATE_NEW_ADD_ON,
+        fabExtended = !lazyGridState.isScrolled,
+        showSearchBar = showSearchBar,
+        selectionCount = selectedItems.size,
+        searchText = searchText,
+        showBackButton = showSearchBar,
+        onFabClick = {
+            onOpenSheet(SheetScreen.CreateNewAddOnItem)
+        },
+        onDeselect = {
+//            viewModel.onEvent(ItemEvents.DeselectAllItems)
+            viewModel.deselectItems()
+        },
+        onEditClick = {
+            onOpenSheet(SheetScreen.UpdateAddOnItem(selectedItems.first()))
+        },
+        onDeleteClick = {
+//            viewModel.onEvent(ItemEvents.DeleteItems)
+            viewModel.deleteItems()
+        },
+        onSelectAllClick = {
+//            viewModel.onEvent(ItemEvents.SelectAllItems)
+            viewModel.selectAllItems()
+        },
+        onSearchTextChanged = {
+//            viewModel.onEvent(ItemEvents.OnSearchTextChanged(it))
+            viewModel.searchTextChanged(it)
+        },
+        onSearchClick = {
+//            viewModel.onEvent(ItemEvents.OnSearchClick)
+            viewModel.openSearchBar()
+        },
+        onBackClick = {
+//            viewModel.onEvent(ItemEvents.OnSearchBarCloseClick)
+            viewModel.closeSearchBar()
+        },
+        onClearClick = {
+//            viewModel.onEvent(ItemEvents.OnSearchTextClearClick)
+            viewModel.clearSearchText()
+        }
+    ) { _ ->
+        when (state) {
+            is UiState.Loading -> LoadingIndicator()
+            is UiState.Empty -> {
+                ItemNotAvailable(
+                    text = ADDON_NOT_AVAIlABLE,
+                    buttonText = CREATE_NEW_ADD_ON,
+                    onClick = {
+                        onOpenSheet(SheetScreen.CreateNewAddOnItem)
+                    }
+                )
+            }
+            is UiState.Success -> {
+                showFab = true
+
+                LazyVerticalGrid(
+                    modifier = Modifier
+                        .padding(SpaceSmall),
+                    columns = GridCells.Fixed(2),
+                    state = lazyGridState,
+                ) {
+                    items(
+                        items = state.data,
+                        key = { it.itemId}
+                    ) { item: AddOnItem ->
+                        AddOnItemData(
+                            item = item,
+                            doesSelected = {
+                                selectedItems.contains(it)
+                            },
+                            onClick = {
+                                if (selectedItems.isNotEmpty()) {
+//                                    viewModel.onEvent(ItemEvents.SelectItem(it))
+                                    viewModel.selectItem(it)
+                                }
+                            },
+                            onLongClick = {
+//                                viewModel.onEvent(ItemEvents.SelectItem(it))
+                                viewModel.selectItem(it)
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun AddOnItemData(
+    modifier: Modifier = Modifier,
+    item: AddOnItem,
+    doesSelected: (Int) -> Boolean,
+    onClick: (Int) -> Unit,
+    onLongClick: (Int) -> Unit,
+    border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
+) {
+    val borderStroke = if (doesSelected(item.itemId)) border else null
+
+    ElevatedCard(
+        modifier = modifier
+            .padding(SpaceSmall)
+            .then(borderStroke?.let {
+                Modifier.border(it, CardDefaults.elevatedShape)
+            } ?: Modifier)
+            .clip(CardDefaults.elevatedShape)
+            .combinedClickable(
+                onClick = {
+                    onClick(item.itemId)
+                },
+                onLongClick = {
+                    onLongClick(item.itemId)
+                },
+            ),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(SpaceSmall),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = item.itemName)
+                Spacer(modifier = Modifier.height(SpaceSmall))
+                Text(text = item.itemPrice.toRupee)
+            }
+
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.background),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = if (doesSelected(item.itemId)) Icons.Default.Check
+                    else Icons.Default.Link,
+                    contentDescription = item.itemName,
+                    tint = if (doesSelected(item.itemId)) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.surfaceTint,
+                )
+            }
+        }
+    }
+}

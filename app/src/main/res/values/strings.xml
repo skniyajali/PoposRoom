@@ -4,4 +4,8 @@
     <string name="mail_subject">Popos Crash Report.</string>
     <string name="mail_body">Your application has-been crashed, check out below attached file for more details.</string>
     <string name="toast_text">Application has been crashed</string>
+    <string name="add_icon">Create New</string>
+    <string name="fab_text">Create</string>
+    <string name="password_visible_content_description">Show Password</string>
+    <string name="password_hidden_content_description">Hide Password</string>
 </resources>

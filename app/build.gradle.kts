@@ -4,8 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt)
     alias(libs.plugins.appsweep)
-    alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.baselineprofile)
+    alias(libs.plugins.ksp)
     id(libs.plugins.kotlin.kapt.get().pluginId)
 }
 
@@ -24,13 +24,15 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
     }
 
+
+
     buildTypes {
-        debug {
-            applicationIdSuffix = ".debug"
-            isDebuggable = true
-        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -86,11 +88,11 @@ dependencies {
 //    implementation(platform(libs.compose.bom))
     implementation(libs.ui)
     implementation(libs.ui.graphics)
+//    implementation(libs.material)
     implementation(libs.material3)
     implementation(libs.material.icons)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3.window.size)
-
     implementation(libs.activity.compose)
 
     //Startup & Splash screen
@@ -116,7 +118,6 @@ dependencies {
     implementation(libs.work.runtime.ktx)
     androidTestImplementation(libs.work.testing)
 
-
     //Accompanist
     implementation(libs.flowlayout)
     implementation(libs.systemuicontroller)
@@ -140,7 +141,6 @@ dependencies {
 
     implementation(libs.hilt.navigation.compose)
     kapt(libs.hilt.android)
-
 
     // Dagger & Hilt
     implementation(libs.hilt.android)
@@ -189,17 +189,9 @@ dependencies {
     // debugImplementation because LeakCanary should only run in debug builds.
     debugImplementation(libs.leakcanary)
 
-    //Compose Material Dialogs
-    implementation(libs.dialog.core)
-    implementation(libs.dialog.datetime)
-
     //RaamCosta Library
-    implementation(libs.raamcosta.animation.core)
+    implementation(libs.raamcosta.core)
     ksp(libs.raamcosta.ksp)
-
-    //Moshi
-    ksp(libs.moshi.kotlin.codegen)
-    implementation(libs.moshi)
 
     //ProfileInstaller
     implementation(libs.profileinstaller)
@@ -232,9 +224,6 @@ dependencies {
     //ACRA Logger
     implementation(libs.acra.mail)
     implementation(libs.acra.toast)
-    implementation(libs.acra.notification)
-    implementation(libs.acra.limiter)
-    implementation(libs.acra.advanced.scheduler)
 
     //Sentry
     implementation(libs.sentry.android)
