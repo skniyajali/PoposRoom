@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Close
@@ -80,6 +81,7 @@ import com.niyaj.poposroom.features.common.utils.Constants.SETTINGS_ICON
 import com.niyaj.poposroom.features.common.utils.Constants.STANDARD_BACK_BUTTON
 import com.niyaj.poposroom.features.destinations.AddOnItemScreenDestination
 import com.niyaj.poposroom.features.destinations.AddressScreenDestination
+import com.niyaj.poposroom.features.destinations.ChargesScreenDestination
 import com.ramcosta.composedestinations.navigation.navigate
 import kotlinx.coroutines.launch
 
@@ -166,6 +168,17 @@ fun StandardScaffold(
                     onClick = {
                         scope.launch { drawerState.close() }
                         navController.navigate(AddressScreenDestination())
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Bolt, contentDescription = null) },
+                    label = { Text("Charges") },
+                    selected = currentRoute == ChargesScreenDestination.route,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate(ChargesScreenDestination())
                     },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )

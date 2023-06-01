@@ -7,4 +7,7 @@ sealed class SheetScreen(val type: String) {
     object CreateNewAddress : SheetScreen("Create New Address")
     data class UpdateAddress(val addressId: Int) : SheetScreen("Update Address")
 
+    object CreateNewCharges : SheetScreen("Create New Charges")
+    data class UpdateCharges(val chargesId: Int) : SheetScreen("Update Charges")
+
 }
