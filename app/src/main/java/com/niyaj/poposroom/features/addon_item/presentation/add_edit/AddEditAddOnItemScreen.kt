@@ -2,19 +2,26 @@ package com.niyaj.poposroom.features.addon_item.presentation.add_edit
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.CurrencyRupee
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADDON_APPLIED_SWITCH
 import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADDON_NAME_ERROR_TAG
 import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADDON_NAME_FIELD
 import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADDON_PRICE_ERROR_TAG
@@ -95,6 +102,29 @@ fun AddEditItemScreen(
                 viewModel.onEvent(AddEditAddOnItemEvent.ItemPriceChanged(it))
             }
         )
+
+        Spacer(modifier = Modifier.height(SpaceSmall))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Checkbox(
+                modifier = Modifier.testTag(ADDON_APPLIED_SWITCH),
+                checked = viewModel.addEditState.isApplicable,
+                onCheckedChange = {
+                    viewModel.onEvent(AddEditAddOnItemEvent.ItemApplicableChanged)
+                }
+            )
+            Spacer(modifier = Modifier.width(SpaceSmall))
+            Text(
+                text = if(viewModel.addEditState.isApplicable)
+                    "Marked as applied"
+                else
+                    "Marked as not applied",
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
 
         Spacer(modifier = Modifier.height(SpaceSmall))
 
