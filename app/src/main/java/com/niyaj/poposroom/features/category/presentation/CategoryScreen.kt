@@ -3,25 +3,19 @@ package com.niyaj.poposroom.features.category.presentation
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CardDefaults
@@ -54,6 +48,7 @@ import com.niyaj.poposroom.features.category.domain.utils.CategoryConstants.CATE
 import com.niyaj.poposroom.features.category.domain.utils.CategoryConstants.CREATE_NEW_CATEGORY
 import com.niyaj.poposroom.features.category.domain.utils.CategoryConstants.DELETE_CATEGORY_ITEM_MESSAGE
 import com.niyaj.poposroom.features.category.domain.utils.CategoryConstants.DELETE_CATEGORY_ITEM_TITLE
+import com.niyaj.poposroom.features.common.components.CircularBox
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
 import com.niyaj.poposroom.features.common.components.StandardScaffold
@@ -273,26 +268,11 @@ fun CategoryData(
         ) {
             Text(text = item.categoryName)
 
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.background)
-                    .then(
-                        availBorder?.let {
-                            Modifier.border(it, CircleShape)
-                        } ?: Modifier
-                    ),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = if (doesSelected(item.categoryId)) Icons.Default.Check
-                    else Icons.Default.Link,
-                    contentDescription = item.categoryName,
-                    tint = if (doesSelected(item.categoryId)) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.surfaceTint,
-                )
-            }
+            CircularBox(
+                icon = Icons.Default.Category,
+                doesSelected = doesSelected(item.categoryId),
+                showBorder = !item.isAvailable
+            )
         }
     }
 }
