@@ -45,7 +45,7 @@ class AddEditChargesViewModel @Inject constructor(
 
     init {
         savedStateHandle.get<Int>("addOnItemId")?.let { addOnItemId ->
-            getAllAddOnItemById(addOnItemId)
+            getChargesById(addOnItemId)
         }
     }
 
@@ -83,20 +83,20 @@ class AddEditChargesViewModel @Inject constructor(
             }
 
             is AddEditChargesEvent.CreateOrUpdateCharges -> {
-                createOrUpdateAddOnItem(event.chargesId)
+                createOrUpdateCharges(event.chargesId)
             }
         }
     }
 
-    fun getAllAddOnItemById(itemId: Int) {
+    fun getChargesById(itemId: Int) {
         viewModelScope.launch(ioDispatcher) {
-            chargesDao.getChargesById(itemId)?.let { addOnItem ->
-                chargesId = addOnItem.chargesId
+            chargesDao.getChargesById(itemId)?.let { charges ->
+                chargesId = charges.chargesId
 
                 addEditState = addEditState.copy(
-                    chargesName = addOnItem.chargesName,
-                    chargesPrice = addOnItem.chargesPrice,
-                    chargesApplicable = addOnItem.isApplicable
+                    chargesName = charges.chargesName,
+                    chargesPrice = charges.chargesPrice,
+                    chargesApplicable = charges.isApplicable
                 )
             }
         }
@@ -106,16 +106,16 @@ class AddEditChargesViewModel @Inject constructor(
         addEditState = AddEditChargesState()
     }
 
-    private fun createOrUpdateAddOnItem(addOnItemId: Int = 0) {
+    private fun createOrUpdateCharges(chargesId: Int = 0) {
         viewModelScope.launch(ioDispatcher) {
             if (nameError.value == null && priceError.value == null) {
                 val addOnItem = Charges(
-                    chargesId = addOnItemId,
+                    chargesId = chargesId,
                     chargesName = addEditState.chargesName,
                     chargesPrice = addEditState.chargesPrice,
                     isApplicable = addEditState.chargesApplicable,
                     createdAt = Date(),
-                    updatedAt = if (addOnItemId != 0) Date() else null
+                    updatedAt = if (chargesId != 0) Date() else null
                 )
 
                 val result = chargesDao.upsertCharges(addOnItem)

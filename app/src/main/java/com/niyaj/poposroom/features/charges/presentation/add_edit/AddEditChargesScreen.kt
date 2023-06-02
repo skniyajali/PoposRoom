@@ -68,7 +68,7 @@ fun AddEditChargesScreen(
     }
 
     LaunchedEffect(key1 = chargesId) {
-        viewModel.getAllAddOnItemById(chargesId)
+        viewModel.getChargesById(chargesId)
     }
 
     Column(
