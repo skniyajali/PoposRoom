@@ -3,27 +3,22 @@ package com.niyaj.poposroom.features.address.presentation
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Business
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CardDefaults
@@ -55,6 +50,7 @@ import com.niyaj.poposroom.features.address.domain.utils.AddressTestTags.ADDRESS
 import com.niyaj.poposroom.features.address.domain.utils.AddressTestTags.CREATE_NEW_ADDRESS
 import com.niyaj.poposroom.features.address.domain.utils.AddressTestTags.DELETE_ADDRESS_ITEM_MESSAGE
 import com.niyaj.poposroom.features.address.domain.utils.AddressTestTags.DELETE_ADDRESS_ITEM_TITLE
+import com.niyaj.poposroom.features.common.components.CircularBox
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
 import com.niyaj.poposroom.features.common.components.StandardScaffold
@@ -283,27 +279,11 @@ fun AddressData(
                 Text(text = item.shortName)
             }
 
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.background),
-                contentAlignment = Alignment.Center,
-            ) {
-                if (doesSelected(item.addressId)) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = item.addressName,
-                        tint = if (doesSelected(item.addressId)) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.surfaceTint,
-                    )
-                }else {
-                    Text(
-                        text = item.shortName,
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                }
-            }
+            CircularBox(
+                icon = Icons.Default.Business,
+                doesSelected = doesSelected(item.addressId),
+                text = item.shortName,
+            )
         }
     }
 }

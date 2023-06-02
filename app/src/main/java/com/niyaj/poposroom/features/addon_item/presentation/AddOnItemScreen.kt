@@ -3,27 +3,21 @@ package com.niyaj.poposroom.features.addon_item.presentation
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffoldState
@@ -56,6 +50,7 @@ import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADDON
 import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.CREATE_NEW_ADD_ON
 import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.DELETE_ADD_ON_ITEM_MESSAGE
 import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.DELETE_ADD_ON_ITEM_TITLE
+import com.niyaj.poposroom.features.common.components.CircularBox
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
 import com.niyaj.poposroom.features.common.components.StandardScaffold
@@ -286,26 +281,11 @@ fun AddOnItemData(
                 Text(text = item.itemPrice.toRupee)
             }
 
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.background)
-                    .then(
-                        availBorder?.let {
-                            Modifier.border(it, CircleShape)
-                        } ?: Modifier
-                    ),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = if (doesSelected(item.itemId)) Icons.Default.Check
-                    else Icons.Default.Link,
-                    contentDescription = item.itemName,
-                    tint = if (doesSelected(item.itemId)) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.surfaceTint,
-                )
-            }
+            CircularBox(
+                icon = Icons.Default.Link,
+                doesSelected = doesSelected(item.itemId),
+                showBorder = !item.isApplicable
+            )
         }
     }
 }
