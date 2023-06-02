@@ -29,8 +29,6 @@ import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Search
@@ -57,7 +55,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -121,10 +118,8 @@ fun StandardScaffold(
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    // icons to mimic drawer destinations
-    val items = listOf("Address", Icons.Default.Face, Icons.Default.Email)
-    val selectedItem = remember { mutableStateOf(items[0]) }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     // Remember a SystemUiController
     val systemUiController = rememberSystemUiController()
 
@@ -147,7 +142,6 @@ fun StandardScaffold(
     }
 
     val currentRoute = navController.currentBackStackEntry?.destination?.route
-
 
     ModalNavigationDrawer(
         drawerState = drawerState,
