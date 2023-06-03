@@ -129,9 +129,9 @@ class AddEditCustomerViewModel @Inject constructor(
                 val result = customerDao.upsertCustomer(addOnItem)
 
                 if (result != 0L) {
-                    _eventFlow.emit(UiEvent.OnSuccess("AddOn Item Created Successfully."))
+                    _eventFlow.emit(UiEvent.OnSuccess("Customer Created Successfully."))
                 }else {
-                    _eventFlow.emit(UiEvent.OnError("Unable To Create AddOn Item."))
+                    _eventFlow.emit(UiEvent.OnError("Unable To Create Customer."))
 
                 }
 

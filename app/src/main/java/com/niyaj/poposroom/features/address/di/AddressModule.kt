@@ -31,7 +31,7 @@ object AddressModule {
     }
 
     @Provides
-    fun getAllAddresses(addOnItemDao: AddressDao): GetAllAddresses {
-        return GetAllAddresses(addOnItemDao)
+    fun getAllAddresses(addressDao: AddressDao): GetAllAddresses {
+        return GetAllAddresses(addressDao)
     }
 }

@@ -59,8 +59,8 @@ interface CustomerDao {
     @Query(value = """
         SELECT * FROM customer WHERE
             CASE WHEN :customerId IS NULL OR :customerId = 0
-            THEN customerName = :customerPhone
-            ELSE customerId != :customerId AND customerName = :customerPhone
+            THEN customerPhone = :customerPhone
+            ELSE customerId != :customerId AND customerPhone = :customerPhone
             END LIMIT 1
     """
     )

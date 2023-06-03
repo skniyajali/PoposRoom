@@ -29,6 +29,7 @@ fun StandardTextField(
     modifier: Modifier = Modifier,
     value: String,
     label: String,
+    onValueChange: (String) -> Unit,
     isError: Boolean = false,
     errorText: String? = null,
     singleLine: Boolean = true,
@@ -40,9 +41,9 @@ fun StandardTextField(
     enabled: Boolean = true,
     isPasswordToggleDisplayed: Boolean = keyboardType == KeyboardType.Password,
     isPasswordVisible: Boolean = false,
-    errorTextTag: String,
+    errorTextTag: String = label.plus("Error"),
     onPasswordToggleClick: (Boolean) -> Unit = {},
-    onValueChange: (String) -> Unit,
+    onTrailingIconClick: () -> Unit = {}
 ) {
     TextField(
         value = value,
@@ -84,7 +85,11 @@ fun StandardTextField(
                 }
             }else {
                 trailingIcon?.let {
-                    Icon(imageVector = it, contentDescription = TEXT_FIELD_TRAILING_ICON)
+                    IconButton(
+                        onClick = onTrailingIconClick,
+                    ) {
+                        Icon(imageVector = it, contentDescription = TEXT_FIELD_TRAILING_ICON)
+                    }
                 }
             }
         },

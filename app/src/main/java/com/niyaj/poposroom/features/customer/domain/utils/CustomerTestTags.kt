@@ -10,6 +10,8 @@ object CustomerTestTags {
     const val CREATE_NEW_CUSTOMER = "Create New Customer"
     const val EDIT_CUSTOMER_ITEM = "Update Customer"
 
+    const val ADD_EDIT_CUSTOMER_SCREEN = "AddEdit Customer Screen"
+
     const val CUSTOMER_NAME_FIELD = "Customer Name"
     const val CUSTOMER_NAME_ERROR = "Customer Name Error"
 

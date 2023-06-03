@@ -4,6 +4,10 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.derivedStateOf
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
 import java.util.Locale
 
 fun safeInt(price: String): Int{
@@ -64,3 +68,28 @@ fun getAllCapitalizedLetters(string: String): String {
 
     return capitalizeLetters
 }
+
+
+val zoneId: ZoneId = ZoneId.of("Asia/Kolkata")
+
+val LocalDate.toMilliSecond: String
+    get() = this.atStartOfDay(zoneId)
+        .toLocalDateTime()
+        .atZone(zoneId)
+        .toInstant().toEpochMilli()
+        .toString()
+
+val LocalDate.toCurrentMilliSecond: String
+    get() = this.atTime(LocalTime.now().hour, LocalTime.now().minute)
+        .atZone(zoneId)
+        .toInstant()
+        .toEpochMilli()
+        .toString()
+
+val String.toJoinedDate
+    get() = SimpleDateFormat(
+        "dd-MM-yyyy",
+        Locale.getDefault()
+    ).format(this.toLong()).toString()
+
+val currentTime = System.currentTimeMillis().toString()

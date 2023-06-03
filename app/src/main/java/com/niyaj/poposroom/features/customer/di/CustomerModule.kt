@@ -31,7 +31,7 @@ object CustomerModule {
     }
 
     @Provides
-    fun getAllCustomer(addOnItemDao: CustomerDao): GetAllCustomers {
-        return GetAllCustomers(addOnItemDao)
+    fun getAllCustomer(customerDao: CustomerDao): GetAllCustomers {
+        return GetAllCustomers(customerDao)
     }
 }

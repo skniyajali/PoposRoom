@@ -7,7 +7,8 @@ object CategoryConstants {
     const val CATEGORY_SEARCH_PLACEHOLDER = "Search for Categories..."
 
     const val CREATE_NEW_CATEGORY = "Create New Category"
-    const val EDIT_CATEGORY_ITEM = "Update Category"
+    const val UPDATE_CATEGORY = "Update Category"
+    const val ADD_EDIT_CATEGORY_SCREEN = "AddUpdate Category Screen"
 
     const val CATEGORY_NAME_FIELD = "Category Name"
     const val CATEGORY_NAME_ERROR_TAG = "Category Name Error"

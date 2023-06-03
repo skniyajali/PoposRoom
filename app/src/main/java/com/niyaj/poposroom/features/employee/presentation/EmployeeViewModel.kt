@@ -1,4 +1,4 @@
-package com.niyaj.poposroom.features.customer.presentaion
+package com.niyaj.poposroom.features.employee.presentation
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
@@ -7,8 +7,8 @@ import com.niyaj.poposroom.features.common.event.UiState
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
 import com.niyaj.poposroom.features.common.utils.UiEvent
-import com.niyaj.poposroom.features.customer.dao.CustomerDao
-import com.niyaj.poposroom.features.customer.domain.use_cases.GetAllCustomers
+import com.niyaj.poposroom.features.employee.dao.EmployeeDao
+import com.niyaj.poposroom.features.employee.domain.use_cases.GetAllEmployee
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,9 +21,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CustomerViewModel @Inject constructor(
-    private val customerDao: CustomerDao,
-    private val getAllCustomers: GetAllCustomers,
+class EmployeeViewModel @Inject constructor(
+    private val employeeDao: EmployeeDao,
+    private val getAllEmployee: GetAllEmployee,
     @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ): ItemEventsViewModel() {
 
@@ -32,10 +32,10 @@ class CustomerViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val charges = snapshotFlow { searchText.value }
         .flatMapLatest { it ->
-            getAllCustomers(it)
+            getAllEmployee(it)
                 .onStart { UiState.Loading }
                 .map { items ->
-                    totalItems = items.map { it.customerId }
+                    totalItems = items.map { it.employeeId }
                     if (items.isEmpty()) {
                         UiState.Empty
                     } else UiState.Success(items)
@@ -50,13 +50,13 @@ class CustomerViewModel @Inject constructor(
         super.deleteItems()
 
         viewModelScope.launch(ioDispatcher) {
-            val result = customerDao.deleteCustomer(selectedAddOnItems.toList())
+            val result = employeeDao.deleteEmployee(selectedAddOnItems.toList())
             mSelectedAddOnItems.clear()
 
             if (result != 0) {
-                mEventFlow.emit(UiEvent.OnSuccess("$result customer has been deleted"))
+                mEventFlow.emit(UiEvent.OnSuccess("$result employee has been deleted"))
             } else {
-                mEventFlow.emit(UiEvent.OnError("Unable to delete customer"))
+                mEventFlow.emit(UiEvent.OnError("Unable to delete employee"))
             }
         }
     }
