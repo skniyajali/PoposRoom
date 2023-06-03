@@ -105,9 +105,9 @@ class AddEditCategoryViewModel @Inject constructor(
                 val result = categoryDao.upsertCategory(addOnItem)
 
                 if (result != 0L) {
-                    _eventFlow.emit(UiEvent.OnSuccess("AddOn Item Created Successfully."))
+                    _eventFlow.emit(UiEvent.OnSuccess("Category Created Successfully."))
                 }else {
-                    _eventFlow.emit(UiEvent.OnError("Unable To Create AddOn Item."))
+                    _eventFlow.emit(UiEvent.OnError("Unable To Create Category."))
 
                 }
 

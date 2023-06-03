@@ -121,9 +121,9 @@ class AddEditChargesViewModel @Inject constructor(
                 val result = chargesDao.upsertCharges(addOnItem)
 
                 if (result != 0L) {
-                    _eventFlow.emit(UiEvent.OnSuccess("AddOn Item Created Successfully."))
+                    _eventFlow.emit(UiEvent.OnSuccess("Charges Created Successfully."))
                 }else {
-                    _eventFlow.emit(UiEvent.OnError("Unable To Create AddOn Item."))
+                    _eventFlow.emit(UiEvent.OnError("Unable To Create Charges."))
 
                 }
 

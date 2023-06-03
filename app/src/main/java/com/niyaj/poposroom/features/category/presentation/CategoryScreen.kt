@@ -240,7 +240,6 @@ fun CategoryData(
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
 ) {
     val borderStroke = if (doesSelected(item.categoryId)) border else null
-    val availBorder = if (!item.isAvailable) BorderStroke(1.dp, MaterialTheme.colorScheme.inversePrimary) else null
 
     ElevatedCard(
         modifier = modifier

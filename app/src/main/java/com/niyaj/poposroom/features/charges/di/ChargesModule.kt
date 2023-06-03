@@ -31,7 +31,7 @@ object ChargesModule {
     }
 
     @Provides
-    fun getAllCharges(addOnItemDao: ChargesDao): GetAllCharges {
-        return GetAllCharges(addOnItemDao)
+    fun getAllCharges(chargesDao: ChargesDao): GetAllCharges {
+        return GetAllCharges(chargesDao)
     }
 }

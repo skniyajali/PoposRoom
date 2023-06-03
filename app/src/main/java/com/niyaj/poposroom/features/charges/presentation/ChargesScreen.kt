@@ -242,7 +242,6 @@ fun ChargesData(
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
 ) {
     val borderStroke = if (doesSelected(item.chargesId)) border else null
-    val availBorder = if (!item.isApplicable) BorderStroke(1.dp, MaterialTheme.colorScheme.inversePrimary) else null
 
     ElevatedCard(
         modifier = modifier

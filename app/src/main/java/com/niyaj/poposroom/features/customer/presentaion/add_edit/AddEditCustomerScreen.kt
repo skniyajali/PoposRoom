@@ -16,12 +16,12 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADD_EDIT_ADDON_SCREEN
 import com.niyaj.poposroom.features.common.components.StandardButton
 import com.niyaj.poposroom.features.common.components.StandardTextField
 import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.customer.domain.utils.CustomerTestTags.ADD_EDIT_CUSTOMER_BUTTON
+import com.niyaj.poposroom.features.customer.domain.utils.CustomerTestTags.ADD_EDIT_CUSTOMER_SCREEN
 import com.niyaj.poposroom.features.customer.domain.utils.CustomerTestTags.CREATE_NEW_CUSTOMER
 import com.niyaj.poposroom.features.customer.domain.utils.CustomerTestTags.CUSTOMER_EMAIL_ERROR
 import com.niyaj.poposroom.features.customer.domain.utils.CustomerTestTags.CUSTOMER_EMAIL_FIELD
@@ -69,7 +69,7 @@ fun AddEditCustomerScreen(
 
     Column(
         modifier = Modifier
-            .testTag(ADD_EDIT_ADDON_SCREEN)
+            .testTag(ADD_EDIT_CUSTOMER_SCREEN)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
     ) {

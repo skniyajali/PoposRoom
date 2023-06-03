@@ -1,4 +1,4 @@
-package com.niyaj.poposroom.features.common.utils
+package com.niyaj.poposroom.features.common.database.utils
 
 import androidx.room.TypeConverter
 import java.util.Date

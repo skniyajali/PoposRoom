@@ -21,8 +21,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADD_EDIT_ADDON_SCREEN
 import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.ADD_EDIT_CHARGES_BUTTON
+import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.ADD_EDIT_CHARGES_SCREEN
 import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.CHARGES_AMOUNT_ERROR
 import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.CHARGES_AMOUNT_FIELD
 import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.CHARGES_APPLIED_SWITCH
@@ -73,7 +73,7 @@ fun AddEditChargesScreen(
 
     Column(
         modifier = Modifier
-            .testTag(ADD_EDIT_ADDON_SCREEN)
+            .testTag(ADD_EDIT_CHARGES_SCREEN)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
     ) {

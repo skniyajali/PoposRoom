@@ -19,12 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.niyaj.poposroom.features.addon_item.domain.utils.AddOnConstants.ADD_EDIT_ADDON_SCREEN
+import com.niyaj.poposroom.features.category.domain.utils.CategoryConstants.ADD_EDIT_CATEGORY_SCREEN
 import com.niyaj.poposroom.features.category.domain.utils.CategoryConstants.CATEGORY_AVAILABLE_SWITCH
 import com.niyaj.poposroom.features.category.domain.utils.CategoryConstants.CATEGORY_NAME_ERROR_TAG
 import com.niyaj.poposroom.features.category.domain.utils.CategoryConstants.CATEGORY_NAME_FIELD
 import com.niyaj.poposroom.features.category.domain.utils.CategoryConstants.CREATE_NEW_CATEGORY
-import com.niyaj.poposroom.features.category.domain.utils.CategoryConstants.EDIT_CATEGORY_ITEM
+import com.niyaj.poposroom.features.category.domain.utils.CategoryConstants.UPDATE_CATEGORY
 import com.niyaj.poposroom.features.common.components.StandardButton
 import com.niyaj.poposroom.features.common.components.StandardTextField
 import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
@@ -66,7 +66,7 @@ fun AddEditCategoryScreen(
 
     Column(
         modifier = Modifier
-            .testTag(ADD_EDIT_ADDON_SCREEN)
+            .testTag(ADD_EDIT_CATEGORY_SCREEN)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
     ) {
@@ -108,7 +108,7 @@ fun AddEditCategoryScreen(
         Spacer(modifier = Modifier.height(SpaceSmall))
 
         StandardButton(
-            text = if (categoryId == 0) CREATE_NEW_CATEGORY else EDIT_CATEGORY_ITEM,
+            text = if (categoryId == 0) CREATE_NEW_CATEGORY else UPDATE_CATEGORY,
             enabled = enableBtn,
             onClick = {
                 viewModel.onEvent(AddEditCategoryEvent.CreateUpdateAddEditCategory(categoryId))

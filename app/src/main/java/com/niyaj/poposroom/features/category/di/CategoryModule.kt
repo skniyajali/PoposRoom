@@ -31,7 +31,7 @@ object CategoryModule {
     }
 
     @Provides
-    fun getAllCategories(addOnItemDao: CategoryDao): GetAllCategories {
-        return GetAllCategories(addOnItemDao)
+    fun getAllCategories(categoryDao: CategoryDao): GetAllCategories {
+        return GetAllCategories(categoryDao)
     }
 }
