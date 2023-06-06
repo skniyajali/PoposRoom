@@ -2,7 +2,7 @@
 androidGradlePlugin = '8.0.1'
 kotlin = '1.8.10'
 kotlinx-coroutines-version = '1.6.4'
-
+kotlinx-datetime = "0.4.0"
 #DI support
 dagger-hilt-version = "2.45"
 hilt-version = '1.0.0'
@@ -236,6 +236,9 @@ room-paging = { group = "androidx.room", name = "room-paging", version.ref = "ro
 #Paging 3
 paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "androidx-paging-version"}
 paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "androidx-paging-compose"}
+
+#KotlinX DateTime
+kotlinx-date = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

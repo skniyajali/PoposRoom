@@ -9,32 +9,30 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.Divider
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonPin
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Radar
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -42,23 +40,29 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.poposroom.features.common.components.StandardButton
-import com.niyaj.poposroom.features.common.components.StandardTextField
+import com.niyaj.poposroom.features.common.components.StandardOutlinedTextField
+import com.niyaj.poposroom.features.common.components.StandardScaffoldWithOutDrawer
 import com.niyaj.poposroom.features.common.components.TextWithIcon
 import com.niyaj.poposroom.features.common.ui.theme.SpaceMini
 import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
-import com.niyaj.poposroom.features.common.utils.Constants
+import com.niyaj.poposroom.features.common.ui.theme.SpaceSmallMax
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.toJoinedDate
+import com.niyaj.poposroom.features.common.utils.toMilliSecond
 import com.niyaj.poposroom.features.employee.domain.utils.EmployeeSalaryType
 import com.niyaj.poposroom.features.employee.domain.utils.EmployeeTestTags.ADD_EDIT_EMPLOYEE_BUTTON
 import com.niyaj.poposroom.features.employee.domain.utils.EmployeeTestTags.CREATE_NEW_EMPLOYEE
@@ -78,6 +82,10 @@ import com.niyaj.poposroom.features.employee.domain.utils.EmployeeTestTags.EMPLO
 import com.niyaj.poposroom.features.employee.domain.utils.EmployeeType
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
+import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.datetime.date.datepicker
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -98,8 +106,6 @@ fun AddEditEmployeeScreen(
     }
 
     val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
-
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -125,51 +131,39 @@ fun AddEditEmployeeScreen(
         }
     }
 
-    val openDialog = remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = viewModel.state.employeeJoinedDate.toLong())
-    val confirmEnabled = remember(datePickerState) {
-        derivedStateOf { datePickerState.selectedDateMillis != null }
-    }
+    val dialogState = rememberMaterialDialogState()
 
-    val focusRequester = remember { FocusRequester() }
+    var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
-    Scaffold(
-        modifier = Modifier
-            .testTag(title)
-            .fillMaxWidth(),
-        topBar = {
-            LargeTopAppBar(
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController.navigateUp()
-                        },
-                        modifier = Modifier.testTag(Constants.STANDARD_BACK_BUTTON)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.scrim
-                        )
-                    }
-                },
-                title = {
-                    Text(text = title)
-                },
-                scrollBehavior = scrollBehavior,
+    StandardScaffoldWithOutDrawer(
+        title = title,
+        onBackClick = {
+            navController.navigateUp()
+        },
+        showBottomBar = enableBtn,
+        bottomBar = {
+            StandardButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(ADD_EDIT_EMPLOYEE_BUTTON)
+                    .padding(horizontal = SpaceSmallMax),
+                text = if (employeeId == 0) CREATE_NEW_EMPLOYEE else EDIT_EMPLOYEE,
+                icon = if (employeeId == 0) Icons.Default.Add else Icons.Default.Edit,
+                enabled = enableBtn,
+                onClick = {
+                    viewModel.onEvent(AddEditEmployeeEvent.CreateOrUpdateEmployee(employeeId))
+                }
             )
         }
-    ) { paddingValues ->
+    ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(paddingValues)
-                .padding(SpaceSmall)
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
+                .padding(SpaceSmall),
             verticalArrangement = Arrangement.Center,
         ) {
             item(EMPLOYEE_NAME_FIELD) {
-                StandardTextField(
+                StandardOutlinedTextField(
                     value = viewModel.state.employeeName,
                     label = EMPLOYEE_NAME_FIELD,
                     leadingIcon = Icons.Default.Person,
@@ -184,7 +178,7 @@ fun AddEditEmployeeScreen(
             }
 
             item(EMPLOYEE_PHONE_FIELD) {
-                StandardTextField(
+                StandardOutlinedTextField(
                     value = viewModel.state.employeePhone,
                     label = EMPLOYEE_PHONE_FIELD,
                     leadingIcon = Icons.Default.PhoneAndroid,
@@ -201,10 +195,11 @@ fun AddEditEmployeeScreen(
             }
 
             item(EMPLOYEE_SALARY_FIELD) {
-                StandardTextField(
+                StandardOutlinedTextField(
                     value = viewModel.state.employeeSalary,
                     label = EMPLOYEE_SALARY_FIELD,
                     leadingIcon = Icons.Default.Money,
+                    keyboardType = KeyboardType.Number,
                     isError = salaryError != null,
                     errorText = salaryError,
                     errorTextTag = EMPLOYEE_SALARY_ERROR,
@@ -222,9 +217,13 @@ fun AddEditEmployeeScreen(
                     expanded = expanded,
                     onExpandedChange = { expanded = !expanded },
                 ) {
-                    StandardTextField(
+                    StandardOutlinedTextField(
                         modifier = Modifier
-                            .focusRequester(focusRequester)
+                            .fillMaxWidth()
+                            .onGloballyPositioned { coordinates ->
+                                //This is used to assign to the DropDown the same width
+                                textFieldSize = coordinates.size.toSize()
+                            }
                             .menuAnchor(),
                         value = viewModel.state.employeePosition,
                         label = EMPLOYEE_POSITION_FIELD,
@@ -232,22 +231,27 @@ fun AddEditEmployeeScreen(
                         isError = positionError != null,
                         errorText = positionError,
                         errorTextTag = EMPLOYEE_POSITION_ERROR,
-                        onValueChange = {
-                            viewModel.onEvent(AddEditEmployeeEvent.EmployeePositionChanged(it))
-                            expanded = true
-                        }
+                        readOnly = true,
+                        onValueChange = {},
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(
+                                expanded = expanded
+                            )
+                        },
                     )
 
                     if(positions.isNotEmpty()) {
-                        ExposedDropdownMenu(
+                        DropdownMenu(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .exposedDropdownSize(true),
+                                .width(with(LocalDensity.current){textFieldSize.width.toDp()}),
                             expanded = expanded,
                             onDismissRequest = { expanded = false },
                         ) {
-                            positions.forEach { position ->
+                            positions.forEachIndexed { index, position ->
                                 DropdownMenuItem(
+                                    modifier = Modifier
+                                        .testTag(position)
+                                        .fillMaxWidth(),
                                     text = { Text(position) },
                                     onClick = {
                                         expanded = false
@@ -257,6 +261,10 @@ fun AddEditEmployeeScreen(
                                     },
                                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                                 )
+
+                                if(index != positions.size - 1) {
+                                    Divider(modifier = Modifier.fillMaxWidth(), color = Color.Gray, thickness = 0.8.dp)
+                                }
                             }
                         }
                     }
@@ -266,7 +274,7 @@ fun AddEditEmployeeScreen(
             }
 
             item(EMPLOYEE_EMAIL_FIELD) {
-                StandardTextField(
+                StandardOutlinedTextField(
                     value = viewModel.state.employeeEmail ?: "",
                     label = EMPLOYEE_EMAIL_FIELD,
                     leadingIcon = Icons.Default.Email,
@@ -279,15 +287,27 @@ fun AddEditEmployeeScreen(
             }
 
             item(EMPLOYEE_JOINED_DATE_FIELD) {
-                StandardTextField(
+                StandardOutlinedTextField(
                     value = viewModel.state.employeeJoinedDate.toJoinedDate,
                     label = EMPLOYEE_JOINED_DATE_FIELD,
                     leadingIcon = Icons.Default.CalendarToday,
-                    trailingIcon = Icons.Default.CalendarMonth,
+                    trailingIcon = {
+                        IconButton(
+                            onClick = { dialogState.show() }
+                        ) {
+                            Icon(imageVector = Icons.Default.CalendarMonth, contentDescription = "Choose a date")
+                        }
+                    },
                     readOnly = true,
                     onValueChange = {},
-                    onTrailingIconClick = {
-                        openDialog.value = true
+                    suffix = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(text = "Click Here")
+                            Spacer(modifier = Modifier.width(SpaceMini))
+                            Icon(imageVector = Icons.Default.ArrowForward, null)
+                        }
                     }
                 )
 
@@ -309,7 +329,7 @@ fun AddEditEmployeeScreen(
 
                     Row {
                         EmployeeType.values().forEach { type ->
-                            FilterChip(
+                            ElevatedFilterChip(
                                 modifier = Modifier.testTag(EMPLOYEE_TYPE_FIELD.plus(type.name)),
                                 selected = viewModel.state.employeeType == type,
                                 onClick = {
@@ -343,7 +363,7 @@ fun AddEditEmployeeScreen(
 
                     Row {
                         EmployeeSalaryType.values().forEach { type ->
-                            FilterChip(
+                            ElevatedFilterChip(
                                 modifier = Modifier.testTag(EMPLOYEE_SALARY_TYPE_FIELD.plus(type.name)),
                                 selected = viewModel.state.employeeSalaryType == type,
                                 onClick = {
@@ -355,7 +375,11 @@ fun AddEditEmployeeScreen(
                                 },
                                 label = {
                                     Text(text = type.name)
-                                }
+                                },
+                                colors = FilterChipDefaults.elevatedFilterChipColors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                    selectedLabelColor = MaterialTheme.colorScheme.onTertiaryContainer
+                                )
                             )
 
                             Spacer(modifier = Modifier.width(SpaceMini))
@@ -365,54 +389,22 @@ fun AddEditEmployeeScreen(
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
             }
-
-            item(ADD_EDIT_EMPLOYEE_BUTTON) {
-                Spacer(modifier = Modifier.height(SpaceSmall))
-
-                StandardButton(
-                    modifier = Modifier.testTag(ADD_EDIT_EMPLOYEE_BUTTON),
-                    text = if (employeeId == 0) CREATE_NEW_EMPLOYEE else EDIT_EMPLOYEE,
-                    enabled = enableBtn,
-                    onClick = {
-                        viewModel.onEvent(AddEditEmployeeEvent.CreateOrUpdateEmployee(employeeId))
-                    }
-                )
-            }
         }
     }
 
-
-    if (openDialog.value) {
-        DatePickerDialog(
-            onDismissRequest = {
-                openDialog.value = false
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.onEvent(
-                            AddEditEmployeeEvent.EmployeeJoinedDateChanged(
-                                datePickerState.selectedDateMillis.toString()
-                            )
-                        )
-                    },
-                    enabled = confirmEnabled.value
-                ) {
-                    Text("OK")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                    }
-                ) {
-                    Text("Cancel")
-                }
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            positiveButton("Ok")
+            negativeButton("Cancel")
+        }
+    ) {
+        datepicker(
+            allowedDateValidator = { date ->
+                date <= LocalDate.now()
             }
-        ) {
-            DatePicker(state = datePickerState)
+        ) {date ->
+            viewModel.onEvent(AddEditEmployeeEvent.EmployeeJoinedDateChanged(date.toMilliSecond))
         }
     }
 }

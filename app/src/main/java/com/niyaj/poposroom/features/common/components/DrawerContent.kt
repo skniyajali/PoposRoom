@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Person4
 import androidx.compose.material3.Icon
@@ -25,6 +26,7 @@ import com.niyaj.poposroom.features.destinations.CategoryScreenDestination
 import com.niyaj.poposroom.features.destinations.ChargesScreenDestination
 import com.niyaj.poposroom.features.destinations.CustomerScreenDestination
 import com.niyaj.poposroom.features.destinations.EmployeeScreenDestination
+import com.niyaj.poposroom.features.destinations.PaymentScreenDestination
 import com.ramcosta.composedestinations.navigation.navigate
 
 @Composable
@@ -98,6 +100,16 @@ fun DrawerContent(
             selected = currentRoute == EmployeeScreenDestination.route,
             onClick = {
                 navController.navigate(EmployeeScreenDestination())
+            },
+            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+        )
+
+        NavigationDrawerItem(
+            icon = { Icon(Icons.Default.Payments, contentDescription = null) },
+            label = { Text("Payments") },
+            selected = currentRoute == PaymentScreenDestination.route,
+            onClick = {
+                navController.navigate(PaymentScreenDestination())
             },
             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
         )

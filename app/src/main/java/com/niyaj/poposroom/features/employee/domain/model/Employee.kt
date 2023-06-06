@@ -10,7 +10,8 @@ import java.util.Date
 @Entity(tableName = "employee")
 data class Employee(
     @PrimaryKey(autoGenerate = true)
-    val employeeId: Int,
+    @ColumnInfo(index = true)
+    val employeeId: Int = 0,
 
     val employeeName: String = "",
 
@@ -29,7 +30,7 @@ data class Employee(
     val employeeType: EmployeeType = EmployeeType.FullTime,
 
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
-    val createdAt: Date,
+    val createdAt: Date = Date(),
 
     @ColumnInfo(defaultValue = "NULL")
     val updatedAt: Date? = null,
@@ -46,4 +47,18 @@ fun List<Employee>.searchEmployee(searchText: String): List<Employee> {
             it.employeeJoinedDate.contains(searchText, true)
         }
     }else this
+}
+
+/**
+ * Filter employee by search text
+ * @param searchText String
+ * @return Boolean
+ */
+fun Employee.filterEmployee(searchText: String) : Boolean {
+    return this.employeeName.contains(searchText, true) ||
+            this.employeePosition.contains(searchText, true) ||
+            this.employeePhone.contains(searchText, true) ||
+            this.employeeSalaryType.name.contains(searchText, true) ||
+            this.employeeSalary.contains(searchText, true) ||
+            this.employeeJoinedDate.contains(searchText, true)
 }

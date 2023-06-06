@@ -24,10 +24,10 @@ object EmployeeModule {
 
     @Provides
     fun provideEmployeeValidationRepository(
-        addOnItemDao: EmployeeDao,
+        employeeDao: EmployeeDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): EmployeeValidationRepository {
-        return EmployeeValidationRepositoryImpl(addOnItemDao, ioDispatcher)
+        return EmployeeValidationRepositoryImpl(employeeDao, ioDispatcher)
     }
 
     @Provides

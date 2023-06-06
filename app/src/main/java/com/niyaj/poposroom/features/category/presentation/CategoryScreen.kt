@@ -21,6 +21,7 @@ import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -51,6 +52,7 @@ import com.niyaj.poposroom.features.category.domain.utils.CategoryConstants.DELE
 import com.niyaj.poposroom.features.common.components.CircularBox
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
+import com.niyaj.poposroom.features.common.components.StandardFAB
 import com.niyaj.poposroom.features.common.components.StandardScaffold
 import com.niyaj.poposroom.features.common.event.UiState
 import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
@@ -123,17 +125,27 @@ fun CategoryScreen(
         navController = navController,
         snackbarHostState = snackbarState,
         title = if (selectedItems.isEmpty()) CATEGORY_SCREEN_TITLE else "${selectedItems.size} Selected",
-        showFab = showFab,
-        fabText = CREATE_NEW_CATEGORY,
         placeholderText = CATEGORY_SEARCH_PLACEHOLDER,
-        fabExtended = !lazyGridState.isScrolled,
         showSearchBar = showSearchBar,
         selectionCount = selectedItems.size,
         searchText = searchText,
         showBackButton = showSearchBar,
-        onFabClick = {
-            onOpenSheet(SheetScreen.CreateNewCategory)
+        floatingActionButton = {
+            StandardFAB(
+                showScrollToTop = lazyGridState.isScrolled,
+                fabText = CREATE_NEW_CATEGORY,
+                fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
+                onFabClick = {
+                    onOpenSheet(SheetScreen.CreateNewCategory)
+                },
+                onClickScroll = {
+                    scope.launch {
+                        lazyGridState.animateScrollToItem(0)
+                    }
+                }
+            )
         },
+        fabPosition = if (lazyGridState.isScrolled) FabPosition.End else FabPosition.Center,
         onEditClick = {
             onOpenSheet(SheetScreen.UpdateCategory(selectedItems.first()))
         },

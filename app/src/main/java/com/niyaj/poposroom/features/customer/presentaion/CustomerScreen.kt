@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -40,6 +41,7 @@ import androidx.navigation.NavController
 import com.niyaj.poposroom.features.common.components.CircularBox
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
+import com.niyaj.poposroom.features.common.components.StandardFAB
 import com.niyaj.poposroom.features.common.components.StandardScaffold
 import com.niyaj.poposroom.features.common.event.UiState
 import com.niyaj.poposroom.features.common.ui.theme.SpaceMini
@@ -121,17 +123,27 @@ fun CustomerScreen(
         navController = navController,
         snackbarHostState = snackbarState,
         title = if (selectedItems.isEmpty()) CUSTOMER_SCREEN_TITLE else "${selectedItems.size} Selected",
-        showFab = showFab,
-        fabText = CREATE_NEW_CUSTOMER,
         placeholderText = CUSTOMER_SEARCH_PLACEHOLDER,
-        fabExtended = !lazyListState.isScrolled,
         showSearchBar = showSearchBar,
         selectionCount = selectedItems.size,
         searchText = searchText,
         showBackButton = showSearchBar,
-        onFabClick = {
-            onOpenSheet(SheetScreen.CreateNewCustomer)
+        floatingActionButton = {
+            StandardFAB(
+                showScrollToTop = lazyListState.isScrolled,
+                fabText = CREATE_NEW_CUSTOMER,
+                fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
+                onFabClick = {
+                    onOpenSheet(SheetScreen.CreateNewCustomer)
+                },
+                onClickScroll = {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(0)
+                    }
+                }
+            )
         },
+        fabPosition = if (lazyListState.isScrolled) FabPosition.End else FabPosition.Center,
         onEditClick = {
             onOpenSheet(SheetScreen.UpdateCustomer(selectedItems.first()))
         },

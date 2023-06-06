@@ -1,4 +1,4 @@
-package com.niyaj.poposroom.features.employee.presentation
+package com.niyaj.poposroom.features.employee_payment.presentation
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
@@ -7,8 +7,7 @@ import com.niyaj.poposroom.features.common.event.UiState
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
 import com.niyaj.poposroom.features.common.utils.UiEvent
-import com.niyaj.poposroom.features.employee.dao.EmployeeDao
-import com.niyaj.poposroom.features.employee.domain.use_cases.GetAllEmployee
+import com.niyaj.poposroom.features.employee_payment.domain.repository.PaymentRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,21 +20,20 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class EmployeeViewModel @Inject constructor(
-    private val employeeDao: EmployeeDao,
-    private val getAllEmployee: GetAllEmployee,
+class PaymentViewModel @Inject constructor(
+    private val paymentRepository: PaymentRepository,
     @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ): ItemEventsViewModel() {
 
     override var totalItems: List<Int> = emptyList()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val employees = snapshotFlow { searchText.value }
+    val payments = snapshotFlow { searchText.value }
         .flatMapLatest { it ->
-            getAllEmployee(it)
+            paymentRepository.getAllEmployeePayments(it)
                 .onStart { UiState.Loading }
                 .map { items ->
-                    totalItems = items.map { it.employeeId }
+                    totalItems = items.flatMap { payment -> payment.payments.map { it.paymentId } }
                     if (items.isEmpty()) {
                         UiState.Empty
                     } else UiState.Success(items)
@@ -50,18 +48,16 @@ class EmployeeViewModel @Inject constructor(
         super.deleteItems()
 
         viewModelScope.launch(ioDispatcher) {
-            val result = employeeDao.deleteEmployee(selectedAddOnItems.toList())
-            mSelectedAddOnItems.clear()
+            val result = paymentRepository.deletePayments(selectedAddOnItems.toList())
 
-            if (result != 0) {
-                mEventFlow.emit(UiEvent.OnSuccess("$result employee has been deleted"))
+            if (result) {
+                mEventFlow.emit(UiEvent.OnSuccess("${selectedAddOnItems.size} payments has been deleted"))
             } else {
-                mEventFlow.emit(UiEvent.OnError("Unable to delete employee"))
+                mEventFlow.emit(UiEvent.OnError("Unable to delete payments"))
             }
+
+            mSelectedAddOnItems.clear()
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-    }
 }

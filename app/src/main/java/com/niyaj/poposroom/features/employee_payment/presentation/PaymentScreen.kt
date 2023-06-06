@@ -1,23 +1,34 @@
-package com.niyaj.poposroom.features.employee.presentation
+package com.niyaj.poposroom.features.employee_payment.presentation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.filled.MergeType
+import androidx.compose.material.icons.filled.Money
+import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.ElevatedAssistChip
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -29,8 +40,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,41 +54,47 @@ import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
 import com.niyaj.poposroom.features.common.components.StandardFAB
 import com.niyaj.poposroom.features.common.components.StandardScaffold
+import com.niyaj.poposroom.features.common.components.TextWithIcon
 import com.niyaj.poposroom.features.common.event.UiState
+import com.niyaj.poposroom.features.common.ui.theme.IconSizeSmall
 import com.niyaj.poposroom.features.common.ui.theme.SpaceMini
 import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.isScrolled
-import com.niyaj.poposroom.features.destinations.AddEditEmployeeScreenDestination
-import com.niyaj.poposroom.features.employee.domain.model.Employee
-import com.niyaj.poposroom.features.employee.domain.utils.EmployeeTestTags.CREATE_NEW_EMPLOYEE
-import com.niyaj.poposroom.features.employee.domain.utils.EmployeeTestTags.DELETE_EMPLOYEE_MESSAGE
-import com.niyaj.poposroom.features.employee.domain.utils.EmployeeTestTags.DELETE_EMPLOYEE_TITLE
-import com.niyaj.poposroom.features.employee.domain.utils.EmployeeTestTags.EMPLOYEE_NOT_AVAIlABLE
-import com.niyaj.poposroom.features.employee.domain.utils.EmployeeTestTags.EMPLOYEE_SCREEN_TITLE
-import com.niyaj.poposroom.features.employee.domain.utils.EmployeeTestTags.EMPLOYEE_SEARCH_PLACEHOLDER
-import com.niyaj.poposroom.features.employee.domain.utils.EmployeeTestTags.EMPLOYEE_TAG
-import com.niyaj.poposroom.features.employee.domain.utils.EmployeeTestTags.NO_ITEMS_IN_EMPLOYEE
+import com.niyaj.poposroom.features.common.utils.toPrettyDate
+import com.niyaj.poposroom.features.common.utils.toRupee
+import com.niyaj.poposroom.features.destinations.AddEditPaymentScreenDestination
+import com.niyaj.poposroom.features.employee_payment.domain.model.Payment
+import com.niyaj.poposroom.features.employee_payment.domain.utils.PaymentScreenTags.CREATE_NEW_PAYMENT
+import com.niyaj.poposroom.features.employee_payment.domain.utils.PaymentScreenTags.DELETE_PAYMENT_MESSAGE
+import com.niyaj.poposroom.features.employee_payment.domain.utils.PaymentScreenTags.DELETE_PAYMENT_TITLE
+import com.niyaj.poposroom.features.employee_payment.domain.utils.PaymentScreenTags.NO_ITEMS_IN_PAYMENT
+import com.niyaj.poposroom.features.employee_payment.domain.utils.PaymentScreenTags.PAYMENT_NOT_AVAIlABLE
+import com.niyaj.poposroom.features.employee_payment.domain.utils.PaymentScreenTags.PAYMENT_SCREEN_TITLE
+import com.niyaj.poposroom.features.employee_payment.domain.utils.PaymentScreenTags.PAYMENT_SEARCH_PLACEHOLDER
+import com.niyaj.poposroom.features.employee_payment.domain.utils.PaymentScreenTags.PAYMENT_TAG
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Destination
 @Composable
-fun EmployeeScreen(
+fun PaymentScreen(
     navController: NavController,
-    viewModel: EmployeeViewModel = hiltViewModel(),
-    resultRecipient: ResultRecipient<AddEditEmployeeScreenDestination, String>
+    viewModel: PaymentViewModel = hiltViewModel(),
+    resultRecipient: ResultRecipient<AddEditPaymentScreenDestination, String>
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
-    val state = viewModel.employees.collectAsStateWithLifecycle().value
+    val state = viewModel.payments.collectAsStateWithLifecycle().value
 
     val selectedItems = viewModel.selectedAddOnItems.toList()
 
     val lazyListState = rememberLazyListState()
+    val showScrollToTop = lazyListState.isScrolled
 
     var showFab by remember {
         mutableStateOf(false)
@@ -130,8 +149,8 @@ fun EmployeeScreen(
     StandardScaffold(
         navController = navController,
         snackbarHostState = snackbarState,
-        title = if (selectedItems.isEmpty()) EMPLOYEE_SCREEN_TITLE else "${selectedItems.size} Selected",
-        placeholderText = EMPLOYEE_SEARCH_PLACEHOLDER,
+        title = if (selectedItems.isEmpty()) PAYMENT_SCREEN_TITLE else "${selectedItems.size} Selected",
+        placeholderText = PAYMENT_SEARCH_PLACEHOLDER,
         showSearchBar = showSearchBar,
         selectionCount = selectedItems.size,
         searchText = searchText,
@@ -139,10 +158,11 @@ fun EmployeeScreen(
         floatingActionButton = {
             StandardFAB(
                 showScrollToTop = lazyListState.isScrolled,
-                fabText = CREATE_NEW_EMPLOYEE,
+                fabText = CREATE_NEW_PAYMENT,
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
+                containerColor = MaterialTheme.colorScheme.surface,
                 onFabClick = {
-                    navController.navigate(AddEditEmployeeScreenDestination())
+                    navController.navigate(AddEditPaymentScreenDestination())
                 },
                 onClickScroll = {
                     scope.launch {
@@ -153,7 +173,7 @@ fun EmployeeScreen(
         },
         fabPosition = if (lazyListState.isScrolled) FabPosition.End else FabPosition.Center,
         onEditClick = {
-            navController.navigate(AddEditEmployeeScreenDestination(selectedItems.first()))
+            navController.navigate(AddEditPaymentScreenDestination(selectedItems.first()))
         },
         onDeleteClick = {
             openDialog.value = true
@@ -163,43 +183,60 @@ fun EmployeeScreen(
         onSearchTextChanged = viewModel::searchTextChanged,
         onSearchClick = viewModel::openSearchBar,
         onBackClick = viewModel::closeSearchBar,
-        onClearClick = viewModel::clearSearchText
+        onClearClick = viewModel::clearSearchText,
     ) { _ ->
         when (state) {
             is UiState.Loading -> LoadingIndicator()
             is UiState.Empty -> {
                 ItemNotAvailable(
-                    text = if (searchText.isEmpty()) EMPLOYEE_NOT_AVAIlABLE else NO_ITEMS_IN_EMPLOYEE,
-                    buttonText = CREATE_NEW_EMPLOYEE,
+                    text = if (searchText.isEmpty()) PAYMENT_NOT_AVAIlABLE else NO_ITEMS_IN_PAYMENT,
+                    buttonText = CREATE_NEW_PAYMENT,
                     onClick = {
-                        navController.navigate(AddEditEmployeeScreenDestination())
+                        navController.navigate(AddEditPaymentScreenDestination())
                     }
                 )
             }
             is UiState.Success -> {
                 showFab = true
-
                 LazyColumn(
                     modifier = Modifier
                         .padding(SpaceSmall),
                     state = lazyListState
                 ) {
-                    items(
-                        items = state.data,
-                        key = { it.employeeId}
-                    ) { item: Employee ->
-                        EmployeeData(
-                            item = item,
-                            doesSelected = {
-                                selectedItems.contains(it)
-                            },
-                            onClick = {
-                                if (selectedItems.isNotEmpty()) {
-                                    viewModel.selectItem(it)
-                                }
-                            },
-                            onLongClick = viewModel::selectItem
-                        )
+                    state.data.forEachIndexed { _, payments ->
+                        stickyHeader {
+                            TextWithIcon(
+                                modifier = Modifier
+                                    .background(
+                                        if (showScrollToTop) MaterialTheme.colorScheme.surface else Color.Transparent
+                                    )
+                                    .clip(
+                                        RoundedCornerShape(if (showScrollToTop) 4.dp else 0.dp)
+                                    ),
+                                isTitle = true,
+                                text = payments.employee.employeeName,
+                                icon = Icons.Default.Person
+                            )
+                        }
+
+                        items(
+                            items = payments.payments,
+                            key = { it.paymentId }
+                        ) { item ->
+                            PaymentData(
+                                employeeName = payments.employee.employeeName,
+                                item = item,
+                                doesSelected = {
+                                    selectedItems.contains(it)
+                                },
+                                onClick = {
+                                    if (selectedItems.isNotEmpty()) {
+                                        viewModel.selectItem(it)
+                                    }
+                                },
+                                onLongClick = viewModel::selectItem
+                            )
+                        }
                     }
                 }
             }
@@ -213,11 +250,11 @@ fun EmployeeScreen(
                 viewModel.deselectItems()
             },
             title = {
-                Text(text = DELETE_EMPLOYEE_TITLE)
+                Text(text = DELETE_PAYMENT_TITLE)
             },
             text = {
                 Text(
-                    text = DELETE_EMPLOYEE_MESSAGE
+                    text = DELETE_PAYMENT_MESSAGE
                 )
             },
             confirmButton = {
@@ -248,19 +285,23 @@ fun EmployeeScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EmployeeData(
+fun PaymentData(
     modifier: Modifier = Modifier,
-    item: Employee,
+    employeeName: String,
+    item: Payment,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
 ) {
-    val borderStroke = if (doesSelected(item.employeeId)) border else null
+    val borderStroke = if (doesSelected(item.paymentId)) border else null
 
     ListItem(
+        colors = ListItemDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+        ),
         modifier = modifier
-            .testTag(EMPLOYEE_TAG.plus(item.employeeId))
+            .testTag(PAYMENT_TAG.plus(item.paymentId))
             .fillMaxWidth()
             .padding(SpaceSmall)
             .then(borderStroke?.let {
@@ -269,33 +310,67 @@ fun EmployeeData(
             .clip(RoundedCornerShape(SpaceMini))
             .combinedClickable(
                 onClick = {
-                    onClick(item.employeeId)
+                    onClick(item.paymentId)
                 },
                 onLongClick = {
-                    onLongClick(item.employeeId)
+                    onLongClick(item.paymentId)
                 },
             ),
+        leadingContent = {
+            CircularBox(
+                icon = Icons.Default.Money,
+                doesSelected = doesSelected(item.paymentId),
+                text = employeeName
+            )
+        },
         headlineContent = {
             Text(
-                text = item.employeeName,
+                text = item.paymentAmount.toRupee,
                 style = MaterialTheme.typography.labelLarge
             )
         },
-        supportingContent = {
-            Text(text = item.employeePhone)
-        },
-        leadingContent = {
-            CircularBox(
-                icon = Icons.Default.Person,
-                doesSelected = doesSelected(item.employeeId),
-                text = item.employeeName
-            )
+        overlineContent = {
+            Text(text = item.paymentDate.toPrettyDate())
         },
         trailingContent = {
-            Icon(
-                Icons.Filled.ArrowRight,
-                contentDescription = "Localized description",
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                AssistChip(
+                    onClick = { },
+                    label = {
+                        Text(
+                            text = item.paymentType.name,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.MergeType,
+                            contentDescription = null,
+                            modifier = Modifier.size(IconSizeSmall)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.width(SpaceSmall))
+                ElevatedAssistChip(
+                    onClick = { },
+                    label = {
+                        Text(
+                            text = item.paymentMode.name,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Payments,
+                            contentDescription = null,
+                            modifier = Modifier.size(IconSizeSmall)
+                        )
+                    },
+                    colors = AssistChipDefaults.elevatedAssistChipColors()
+                )
+            }
         }
     )
 }

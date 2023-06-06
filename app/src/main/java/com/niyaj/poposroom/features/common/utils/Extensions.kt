@@ -2,12 +2,19 @@ package com.niyaj.poposroom.features.common.utils
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
+import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 fun safeInt(price: String): Int{
@@ -28,6 +35,42 @@ val Int.safeString: String
 
 val LazyListState.isScrolled: Boolean
     get() = derivedStateOf { firstVisibleItemIndex > 0 || firstVisibleItemScrollOffset > 0 }.value
+
+@Composable
+fun LazyListState.isScrollingUp(): Boolean {
+    var previousIndex by remember(this) { mutableIntStateOf(firstVisibleItemIndex) }
+    var previousScrollOffset by remember(this) { mutableIntStateOf(firstVisibleItemScrollOffset) }
+    return remember(this) {
+        derivedStateOf {
+            if (previousIndex != firstVisibleItemIndex) {
+                previousIndex > firstVisibleItemIndex
+            } else {
+                previousScrollOffset >= firstVisibleItemScrollOffset
+            }.also {
+                previousIndex = firstVisibleItemIndex
+                previousScrollOffset = firstVisibleItemScrollOffset
+            }
+        }
+    }.value
+}
+
+@Composable
+fun LazyGridState.isScrollingUp(): Boolean {
+    var previousIndex by remember(this) { mutableIntStateOf(firstVisibleItemIndex) }
+    var previousScrollOffset by remember(this) { mutableIntStateOf(firstVisibleItemScrollOffset) }
+    return remember(this) {
+        derivedStateOf {
+            if (previousIndex != firstVisibleItemIndex) {
+                previousIndex > firstVisibleItemIndex
+            } else {
+                previousScrollOffset >= firstVisibleItemScrollOffset
+            }.also {
+                previousIndex = firstVisibleItemIndex
+                previousScrollOffset = firstVisibleItemScrollOffset
+            }
+        }
+    }.value
+}
 
 val LazyGridState.isScrolled: Boolean
     get() = derivedStateOf { firstVisibleItemIndex > 0 || firstVisibleItemScrollOffset > 0 }.value
@@ -92,4 +135,37 @@ val String.toJoinedDate
         Locale.getDefault()
     ).format(this.toLong()).toString()
 
-val currentTime = System.currentTimeMillis().toString()
+fun String.toPrettyDate(): String {
+    val nowTime = Calendar.getInstance()
+    val neededTime = Calendar.getInstance()
+    neededTime.timeInMillis = this.toLong()
+
+    return if (neededTime[Calendar.YEAR] == nowTime[Calendar.YEAR]) {
+        if (neededTime[Calendar.MONTH] == nowTime[Calendar.MONTH]) {
+            when {
+                neededTime[Calendar.DATE] - nowTime[Calendar.DATE] == 1 -> {
+                    //here return like "Tomorrow at 12:00"
+                    "Tomorrow"
+                }
+                nowTime[Calendar.DATE] == neededTime[Calendar.DATE] -> {
+                    //here return like "Today at 12:00"
+                    "Today"
+                }
+                nowTime[Calendar.DATE] - neededTime[Calendar.DATE] == 1 -> {
+                    //here return like "Yesterday at 12:00"
+                    "Yesterday"
+                }
+                else -> {
+                    //here return like "May 31, 12:00"
+                    SimpleDateFormat("MMMM dd", Locale.getDefault()).format(Date(this.toLong()))
+                }
+            }
+        } else {
+            //here return like "May 31, 12:00"
+            SimpleDateFormat("MMMM dd", Locale.getDefault()).format(Date(this.toLong()))
+        }
+    } else {
+        //here return like "May 31 2022, 12:00" - it's a different year we need to show it
+        SimpleDateFormat("MMMM dd yyyy", Locale.getDefault()).format(Date(this.toLong()))
+    }
+}
