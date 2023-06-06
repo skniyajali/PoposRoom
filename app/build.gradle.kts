@@ -229,6 +229,9 @@ dependencies {
     implementation(libs.sentry.android)
     implementation(libs.sentry.compose.android)
 
+    // Vanpara DatePicker
+    implementation(libs.dialog.datetime)
+
     //Baseline Profile
 //    "baselineProfile"(project(mapOf("path" to ":benchmark")))
 }

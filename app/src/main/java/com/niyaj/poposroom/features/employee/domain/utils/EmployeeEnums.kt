@@ -12,12 +12,12 @@ enum class EmployeeType{
     FullTime
 }
 
-enum class SalaryType {
+enum class PaymentType {
     Salary,
     Advanced
 }
 
-enum class PaymentType {
+enum class PaymentMode {
     Cash,
     Online,
     Both

@@ -10,9 +10,13 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.IconButton
@@ -48,6 +52,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.lerp
@@ -57,8 +62,10 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
 import com.niyaj.poposroom.features.common.utils.Constants
 import com.niyaj.poposroom.features.common.utils.Constants.DELETE_ICON
 import com.niyaj.poposroom.features.common.utils.Constants.EDIT_ICON
@@ -75,12 +82,10 @@ fun StandardScaffold(
     modifier: Modifier = Modifier,
     navController: NavController,
     title: String,
+    floatingActionButton: @Composable () -> Unit = {},
+    fabPosition: FabPosition = FabPosition.Center,
     searchText : String = "",
     placeholderText: String = "Search for items",
-    showFab: Boolean = true,
-    fabText: String = FAB_TEXT,
-    fabIcon: ImageVector = Icons.Filled.Add,
-    fabExtended: Boolean = false,
     showSettings: Boolean = true,
     selectionCount: Int = 0,
     showBottomBarActions: Boolean = false,
@@ -88,7 +93,6 @@ fun StandardScaffold(
     showBackButton: Boolean = false,
     onClearClick: () -> Unit = {},
     onDeselect: () -> Unit = {},
-    onFabClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
     onEditClick: () -> Unit = {},
@@ -319,33 +323,18 @@ fun StandardScaffold(
                     }
                 }
             },
-            floatingActionButton = {
-                AnimatedVisibility(
-                    visible = (showFab && selectionCount == 0 && !showSearchBar),
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                    label = "FloatingActionButton"
-                ) {
-                    ExtendedFloatingActionButton(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        onClick = onFabClick,
-                        expanded = fabExtended,
-                        icon = { Icon(fabIcon, fabText) },
-                        text = { Text(text = fabText.uppercase()) },
-                    )
-                }
-            },
-            floatingActionButtonPosition = FabPosition.Center,
+            floatingActionButton = floatingActionButton,
+            floatingActionButtonPosition = fabPosition,
             snackbarHost = { SnackbarHost(snackbarHostState) },
             modifier = modifier
                 .testTag(title)
-                .fillMaxSize()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
+                .fillMaxSize(),
         ) { padding ->
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding),
+                    .padding(padding)
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
                 shape = shape.value,
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = MaterialTheme.colorScheme.onPrimary
@@ -353,6 +342,147 @@ fun StandardScaffold(
             ) {
                 content(padding)
             }
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun StandardScaffoldWithOutDrawer(
+    title: String,
+    onBackClick: () -> Unit,
+    showBottomBar: Boolean = false,
+    bottomBar: @Composable () -> Unit = {},
+    content: @Composable () -> Unit
+) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    // Remember a SystemUiController
+    val systemUiController = rememberSystemUiController()
+
+    val colorTransitionFraction = scrollBehavior.state.collapsedFraction
+
+    val color = rememberUpdatedState(newValue = containerColor(colorTransitionFraction))
+    val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
+
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = color.value,
+            darkIcons = true,
+        )
+
+        systemUiController.setNavigationBarColor(
+            color = color.value
+        )
+    }
+
+    Scaffold(
+        modifier = Modifier
+            .testTag(title)
+            .fillMaxWidth()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            LargeTopAppBar(
+                navigationIcon = {
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier.testTag(STANDARD_BACK_BUTTON)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.scrim
+                        )
+                    }
+                },
+                title = {
+                    Text(text = title)
+                },
+                scrollBehavior = scrollBehavior,
+            )
+        },
+        bottomBar = {
+            AnimatedVisibility(
+                visible = showBottomBar,
+                enter = fadeIn() + slideInVertically(
+                    initialOffsetY = {
+                            fullHeight -> fullHeight / 4
+                    }
+                ),
+                exit = fadeOut() + slideOutVertically(
+                    targetOffsetY = {
+                            fullHeight -> fullHeight / 4
+                    }
+                )
+            ) {
+                BottomAppBar {
+                    bottomBar()
+                }
+            }
+        }
+    ) { padding ->
+        ElevatedCard(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            shape = shape.value,
+            colors = CardDefaults.elevatedCardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+            elevation = CardDefaults.elevatedCardElevation(
+                defaultElevation = colorTransitionFraction.dp
+            )
+        ) {
+            content()
+        }
+    }
+}
+
+
+@Composable
+fun StandardFAB(
+    fabVisible: Boolean,
+    showScrollToTop: Boolean = false,
+    fabText: String = FAB_TEXT,
+    fabIcon: ImageVector = Icons.Filled.Add,
+    containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
+    onFabClick: () -> Unit,
+    onClickScroll: () -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        AnimatedVisibility(
+            visible = showScrollToTop,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            ScrollToTop(onClick = onClickScroll, containerColor = containerColor)
+        }
+
+        Spacer(modifier = Modifier.height(SpaceSmall))
+
+        AnimatedVisibility(
+            visible = fabVisible,
+            enter = fadeIn() + slideInVertically(
+                initialOffsetY = {
+                    fullHeight -> fullHeight / 4
+                }
+            ),
+            exit = fadeOut() + slideOutVertically(
+                targetOffsetY = {
+                    fullHeight -> fullHeight / 4
+                }
+            ),
+            label = "FloatingActionButton"
+        ) {
+            ExtendedFloatingActionButton(
+                containerColor = MaterialTheme.colorScheme.primary,
+                onClick = onFabClick,
+                expanded = !showScrollToTop,
+                icon = { Icon(fabIcon, fabText) },
+                text = { Text(text = fabText.uppercase()) },
+            )
         }
     }
 }

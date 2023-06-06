@@ -133,13 +133,16 @@ fun StandardOutlinedTextField(
     singleLine: Boolean = true,
     maxLines: Int = 1,
     leadingIcon: ImageVector,
-    trailingIcon: ImageVector? = null,
+    trailingIcon: @Composable() (() -> Unit)? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     readOnly: Boolean = false,
     enabled: Boolean = true,
+    errorTextTag: String = label.plus("Error"),
     isPasswordToggleDisplayed: Boolean = keyboardType == KeyboardType.Password,
     isPasswordVisible: Boolean = false,
     onPasswordToggleClick: (Boolean) -> Unit = {},
+    prefix: @Composable() (() -> Unit)? = null,
+    suffix: @Composable() (() -> Unit)? = null,
     onValueChange: (String) -> Unit,
 ) {
     OutlinedTextField(
@@ -159,40 +162,37 @@ fun StandardOutlinedTextField(
         leadingIcon = {
             Icon(imageVector = leadingIcon, contentDescription = TEXT_FIELD_LEADING_ICON)
         },
-        trailingIcon = {
-            if(isPasswordToggleDisplayed) {
+        trailingIcon = if(isPasswordToggleDisplayed) {
+            val icon: @Composable () -> Unit = {
                 IconButton(
                     onClick = {
                         onPasswordToggleClick(!isPasswordVisible)
                     },
                     modifier = Modifier
                 ) {
-                    Icon(
+                    androidx.compose.material.Icon(
                         imageVector = if (isPasswordVisible) {
                             Icons.Filled.VisibilityOff
                         } else {
                             Icons.Filled.Visibility
                         },
+                        tint = androidx.compose.material.MaterialTheme.colors.secondaryVariant,
                         contentDescription = if (isPasswordVisible) {
-                            stringResource(id = R.string.password_hidden_content_description)
-                        } else {
                             stringResource(id = R.string.password_visible_content_description)
+                        } else {
+                            stringResource(id = R.string.password_hidden_content_description)
                         }
                     )
                 }
-            }else {
-                trailingIcon?.let {
-                    Icon(imageVector = it, contentDescription = TEXT_FIELD_TRAILING_ICON)
-                }
             }
-        },
-        prefix = {
-
-        },
-        suffix = {},
+            icon
+        } else trailingIcon,
+        prefix = prefix,
+        suffix = suffix,
         supportingText = {
             errorText?.let {
                 Text(
+                    modifier = Modifier.testTag(errorTextTag),
                     text = it,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.error
