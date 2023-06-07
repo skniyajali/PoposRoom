@@ -39,7 +39,6 @@ fun BottomSheetWithCloseDialog(
             .fillMaxWidth()
             .padding(bottom = SpaceLarge)
             .padding(SpaceSmall)
-            .padding(horizontal = SpaceSmall)
     ) {
         ElevatedCard(
             modifier = Modifier

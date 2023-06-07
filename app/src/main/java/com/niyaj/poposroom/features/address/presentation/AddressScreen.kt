@@ -294,7 +294,7 @@ fun AddressData(
             CircularBox(
                 icon = Icons.Default.Business,
                 doesSelected = doesSelected(item.addressId),
-                text = item.shortName,
+                text = item.addressName,
             )
         }
     }

@@ -1,10 +1,10 @@
-package com.niyaj.poposroom.features.address.domain.validation
+package com.niyaj.poposroom.features.address.domain.repository
 
 import com.niyaj.poposroom.features.common.utils.ValidationResult
 
 interface AddressValidationRepository {
 
-    suspend fun validateAddressName(addressId: Int? = null, addressName: String): ValidationResult
+    suspend fun validateAddressName(addressName: String, addressId: Int? = null): ValidationResult
 
     fun validateAddressShortName(addressShortName: String): ValidationResult
 }

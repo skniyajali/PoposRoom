@@ -82,7 +82,7 @@ class AddOnItemRepositoryImpl(
 
     override suspend fun upsertAddOnItem(newAddOnItem: AddOnItem): Resource<Boolean> {
         return try {
-            val validateName = validateItemName("") // newAddOnItem.itemName, newAddOnItem.itemId
+            val validateName = validateItemName(newAddOnItem.itemName, newAddOnItem.itemId)
             val validatePrice = validateItemPrice(newAddOnItem.itemPrice)
 
             val hasError = listOf(validateName, validatePrice).any { !it.successful }

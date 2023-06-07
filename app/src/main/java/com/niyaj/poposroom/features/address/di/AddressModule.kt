@@ -1,9 +1,9 @@
 package com.niyaj.poposroom.features.address.di
 
-import com.niyaj.poposroom.features.address.dao.AddressDao
-import com.niyaj.poposroom.features.address.domain.use_cases.GetAllAddresses
-import com.niyaj.poposroom.features.address.domain.validation.AddressValidationRepository
-import com.niyaj.poposroom.features.address.domain.validation.AddressValidationRepositoryImpl
+import com.niyaj.poposroom.features.address.data.dao.AddressDao
+import com.niyaj.poposroom.features.address.data.repository.AddressRepositoryImpl
+import com.niyaj.poposroom.features.address.domain.repository.AddressRepository
+import com.niyaj.poposroom.features.address.domain.repository.AddressValidationRepository
 import com.niyaj.poposroom.features.common.database.PoposDatabase
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
@@ -24,14 +24,18 @@ object AddressModule {
 
     @Provides
     fun provideAddressValidationRepository(
-        addOnItemDao: AddressDao,
+        addressDao: AddressDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): AddressValidationRepository {
-        return AddressValidationRepositoryImpl(addOnItemDao, ioDispatcher)
+        return AddressRepositoryImpl(addressDao, ioDispatcher)
     }
 
     @Provides
-    fun getAllAddresses(addressDao: AddressDao): GetAllAddresses {
-        return GetAllAddresses(addressDao)
+    fun provideAddressRepository(
+        addressDao: AddressDao,
+        @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
+    ): AddressRepository {
+        return AddressRepositoryImpl(addressDao, ioDispatcher)
     }
+
 }

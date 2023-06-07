@@ -1,4 +1,4 @@
-package com.niyaj.poposroom.features.address.dao
+package com.niyaj.poposroom.features.address.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -63,5 +63,5 @@ interface AddressDao {
             ELSE addressId != :addressId AND addressName = :addressName
             END LIMIT 1
     """)
-    fun findAddressByName(addressId: Int?, addressName: String): Address?
+    fun findAddressByName(addressName: String, addressId: Int?): Address?
 }

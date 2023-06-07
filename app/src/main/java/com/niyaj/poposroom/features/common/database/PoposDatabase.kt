@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.niyaj.poposroom.features.addon_item.data.dao.AddOnItemDao
 import com.niyaj.poposroom.features.addon_item.domain.model.AddOnItem
-import com.niyaj.poposroom.features.address.dao.AddressDao
+import com.niyaj.poposroom.features.address.data.dao.AddressDao
 import com.niyaj.poposroom.features.address.domain.model.Address
 import com.niyaj.poposroom.features.category.dao.CategoryDao
 import com.niyaj.poposroom.features.category.domain.model.Category

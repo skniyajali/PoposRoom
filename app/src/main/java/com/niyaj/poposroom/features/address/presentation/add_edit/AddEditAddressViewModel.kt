@@ -7,11 +7,12 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.niyaj.poposroom.features.address.dao.AddressDao
 import com.niyaj.poposroom.features.address.domain.model.Address
-import com.niyaj.poposroom.features.address.domain.validation.AddressValidationRepository
+import com.niyaj.poposroom.features.address.domain.repository.AddressRepository
+import com.niyaj.poposroom.features.address.domain.repository.AddressValidationRepository
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
+import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.getAllCapitalizedLetters
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,14 +31,13 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class AddEditAddressViewModel @Inject constructor(
-    private val addressDao: AddressDao,
+    private val addressRepository: AddressRepository,
     private val validationRepository: AddressValidationRepository,
     @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
     private var addressId = savedStateHandle.get<Int>("addressId")
-
 
     var state by mutableStateOf(AddEditAddressState())
 
@@ -53,7 +53,7 @@ class AddEditAddressViewModel @Inject constructor(
 
     val nameError: StateFlow<String?> = snapshotFlow { state.addressName }
         .mapLatest {
-            validationRepository.validateAddressName(addressId, it).errorMessage
+            validationRepository.validateAddressName(it, addressId).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -100,13 +100,15 @@ class AddEditAddressViewModel @Inject constructor(
                     updatedAt = if (addressId != 0) Date() else null
                 )
 
-                val result = addressDao.upsertAddress(address)
-
-                if (result != 0L) {
-                    _eventFlow.emit(UiEvent.OnSuccess("Address Created Successfully."))
-                }else {
-                    _eventFlow.emit(UiEvent.OnError("Unable To Create Address."))
-
+                when(val result = addressRepository.upsertAddress(address)) {
+                    is Resource.Error -> {
+                        _eventFlow.emit(UiEvent.OnError(result.message!!))
+                    }
+                    is Resource.Success -> {
+                        _eventFlow.emit(
+                            UiEvent.OnSuccess("Address Created Successfully.")
+                        )
+                    }
                 }
 
                 state = AddEditAddressState()
@@ -116,13 +118,20 @@ class AddEditAddressViewModel @Inject constructor(
 
     fun getAddressById(itemId: Int){
         viewModelScope.launch(ioDispatcher) {
-            addressDao.getAddressById(itemId)?.let { address ->
-                addressId = address.addressId
+            when(val result = addressRepository.getAddressById(itemId)) {
+                is Resource.Error -> {
+                    _eventFlow.emit(UiEvent.OnError("Unable to find address"))
+                }
+                is Resource.Success -> {
+                    result.data?.let { address ->
+                        addressId = address.addressId
 
-                state = state.copy(
-                    shortName = address.shortName,
-                    addressName = address.addressName,
-                )
+                        state = state.copy(
+                            shortName = address.shortName,
+                            addressName = address.addressName,
+                        )
+                    }
+                }
             }
         }
     }
