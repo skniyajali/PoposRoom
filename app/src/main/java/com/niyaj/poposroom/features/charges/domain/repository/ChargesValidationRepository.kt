@@ -1,4 +1,4 @@
-package com.niyaj.poposroom.features.charges.domain.validation
+package com.niyaj.poposroom.features.charges.domain.repository
 
 import com.niyaj.poposroom.features.common.utils.ValidationResult
 

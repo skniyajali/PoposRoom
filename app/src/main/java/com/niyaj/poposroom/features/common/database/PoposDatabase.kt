@@ -9,7 +9,7 @@ import com.niyaj.poposroom.features.address.data.dao.AddressDao
 import com.niyaj.poposroom.features.address.domain.model.Address
 import com.niyaj.poposroom.features.category.data.dao.CategoryDao
 import com.niyaj.poposroom.features.category.domain.model.Category
-import com.niyaj.poposroom.features.charges.dao.ChargesDao
+import com.niyaj.poposroom.features.charges.data.dao.ChargesDao
 import com.niyaj.poposroom.features.charges.domain.model.Charges
 import com.niyaj.poposroom.features.common.database.utils.TimestampConverters
 import com.niyaj.poposroom.features.customer.dao.CustomerDao

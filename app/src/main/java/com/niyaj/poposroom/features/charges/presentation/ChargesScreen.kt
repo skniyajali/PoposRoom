@@ -31,11 +31,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,10 +45,12 @@ import androidx.navigation.NavController
 import com.niyaj.poposroom.features.charges.domain.model.Charges
 import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.CHARGES_NOT_AVAIlABLE
 import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.CHARGES_SCREEN_TITLE
+import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.CHARGES_SEARCH_PLACEHOLDER
 import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.CHARGES_TAG
 import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.CREATE_NEW_CHARGES
 import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.DELETE_CHARGES_MESSAGE
 import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.DELETE_CHARGES_TITLE
+import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.NO_ITEMS_IN_CHARGES
 import com.niyaj.poposroom.features.common.components.CircularBox
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
@@ -58,7 +58,6 @@ import com.niyaj.poposroom.features.common.components.StandardFAB
 import com.niyaj.poposroom.features.common.components.StandardScaffold
 import com.niyaj.poposroom.features.common.event.UiState
 import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
-import com.niyaj.poposroom.features.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
 import com.niyaj.poposroom.features.common.utils.SheetScreen
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.isScrolled
@@ -84,9 +83,7 @@ fun ChargesScreen(
 
     val lazyGridState = rememberLazyGridState()
 
-    var showFab by remember {
-        mutableStateOf(false)
-    }
+    val showFab = viewModel.totalItems.isNotEmpty()
 
     val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
@@ -128,7 +125,9 @@ fun ChargesScreen(
         navController = navController,
         snackbarHostState = snackbarState,
         title = if (selectedItems.isEmpty()) CHARGES_SCREEN_TITLE else "${selectedItems.size} Selected",
+        placeholderText = CHARGES_SEARCH_PLACEHOLDER,
         showSearchBar = showSearchBar,
+        showSettings = false,
         selectionCount = selectedItems.size,
         searchText = searchText,
         showBackButton = showSearchBar,
@@ -165,7 +164,7 @@ fun ChargesScreen(
             is UiState.Loading -> LoadingIndicator()
             is UiState.Empty -> {
                 ItemNotAvailable(
-                    text = if (searchText.isEmpty()) CHARGES_NOT_AVAIlABLE else SEARCH_ITEM_NOT_FOUND,
+                    text = if (searchText.isEmpty()) CHARGES_NOT_AVAIlABLE else NO_ITEMS_IN_CHARGES,
                     buttonText = CREATE_NEW_CHARGES,
                     onClick = {
                         onOpenSheet(SheetScreen.CreateNewCharges)
@@ -173,8 +172,6 @@ fun ChargesScreen(
                 )
             }
             is UiState.Success -> {
-                showFab = true
-
                 LazyVerticalGrid(
                     modifier = Modifier
                         .padding(SpaceSmall),

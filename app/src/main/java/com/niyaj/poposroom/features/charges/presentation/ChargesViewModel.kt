@@ -2,12 +2,12 @@ package com.niyaj.poposroom.features.charges.presentation
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
-import com.niyaj.poposroom.features.charges.dao.ChargesDao
-import com.niyaj.poposroom.features.charges.domain.use_cases.GetAllCharges
+import com.niyaj.poposroom.features.charges.domain.repository.ChargesRepository
 import com.niyaj.poposroom.features.common.event.ItemEventsViewModel
 import com.niyaj.poposroom.features.common.event.UiState
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
+import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -22,8 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChargesViewModel @Inject constructor(
-    private val chargesDao: ChargesDao,
-    private val getAllCharges: GetAllCharges,
+    private val chargesRepository: ChargesRepository,
     @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ): ItemEventsViewModel() {
 
@@ -32,7 +31,7 @@ class ChargesViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val charges = snapshotFlow { searchText.value }
         .flatMapLatest { it ->
-            getAllCharges(it)
+            chargesRepository.getAllCharges(it)
                 .onStart { UiState.Loading }
                 .map { items ->
                     totalItems = items.map { it.chargesId }
@@ -50,18 +49,17 @@ class ChargesViewModel @Inject constructor(
         super.deleteItems()
 
         viewModelScope.launch(ioDispatcher) {
-            val result = chargesDao.deleteCharges(selectedItems.toList())
-            mSelectedItems.clear()
-
-            if (result != 0) {
-                mEventFlow.emit(UiEvent.OnSuccess("$result charges has been deleted"))
-            } else {
-                mEventFlow.emit(UiEvent.OnError("Unable to delete charges"))
+            when(chargesRepository.deleteCharges(selectedItems.toList())) {
+                is Resource.Error -> {
+                    mEventFlow.emit(UiEvent.OnError("Unable to delete charges"))
+                }
+                is Resource.Success -> {
+                    mEventFlow.emit(UiEvent.OnSuccess("${selectedItems.size} charges has been deleted"))
+                }
             }
+
+            mSelectedItems.clear()
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-    }
 }

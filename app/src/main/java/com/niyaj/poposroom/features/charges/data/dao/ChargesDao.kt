@@ -1,4 +1,4 @@
-package com.niyaj.poposroom.features.charges.dao
+package com.niyaj.poposroom.features.charges.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert

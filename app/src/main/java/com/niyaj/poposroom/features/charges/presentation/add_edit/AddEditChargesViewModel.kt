@@ -7,11 +7,12 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.niyaj.poposroom.features.charges.dao.ChargesDao
 import com.niyaj.poposroom.features.charges.domain.model.Charges
-import com.niyaj.poposroom.features.charges.domain.validation.ChargesValidationRepository
+import com.niyaj.poposroom.features.charges.domain.repository.ChargesRepository
+import com.niyaj.poposroom.features.charges.domain.repository.ChargesValidationRepository
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
+import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.safeInt
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,7 +31,7 @@ import javax.inject.Inject
 @HiltViewModel
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddEditChargesViewModel @Inject constructor(
-    private val chargesDao: ChargesDao,
+    private val chargesRepository: ChargesRepository,
     private val validationRepository: ChargesValidationRepository,
     @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle
@@ -90,14 +91,21 @@ class AddEditChargesViewModel @Inject constructor(
 
     fun getChargesById(itemId: Int) {
         viewModelScope.launch(ioDispatcher) {
-            chargesDao.getChargesById(itemId)?.let { charges ->
-                chargesId = charges.chargesId
+            when(val result = chargesRepository.getChargesById(itemId)) {
+                is Resource.Error -> {
+                    _eventFlow.emit(UiEvent.OnError("Unable to find charges"))
+                }
+                is Resource.Success -> {
+                    result.data?.let { charges ->
+                        chargesId = charges.chargesId
 
-                addEditState = addEditState.copy(
-                    chargesName = charges.chargesName,
-                    chargesPrice = charges.chargesPrice,
-                    chargesApplicable = charges.isApplicable
-                )
+                        addEditState = addEditState.copy(
+                            chargesName = charges.chargesName,
+                            chargesPrice = charges.chargesPrice,
+                            chargesApplicable = charges.isApplicable
+                        )
+                    }
+                }
             }
         }
     }
@@ -118,13 +126,15 @@ class AddEditChargesViewModel @Inject constructor(
                     updatedAt = if (chargesId != 0) Date() else null
                 )
 
-                val result = chargesDao.upsertCharges(addOnItem)
+                when(chargesRepository.upsertCharges(addOnItem)) {
+                    is Resource.Error -> {
+                        _eventFlow.emit(UiEvent.OnError("Unable To Create Charges."))
 
-                if (result != 0L) {
-                    _eventFlow.emit(UiEvent.OnSuccess("Charges Created Successfully."))
-                }else {
-                    _eventFlow.emit(UiEvent.OnError("Unable To Create Charges."))
+                    }
+                    is Resource.Success -> {
+                        _eventFlow.emit(UiEvent.OnSuccess("Charges Created Successfully."))
 
+                    }
                 }
 
                 addEditState = AddEditChargesState()
