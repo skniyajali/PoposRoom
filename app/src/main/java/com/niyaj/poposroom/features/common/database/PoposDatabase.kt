@@ -14,7 +14,7 @@ import com.niyaj.poposroom.features.charges.domain.model.Charges
 import com.niyaj.poposroom.features.common.database.utils.TimestampConverters
 import com.niyaj.poposroom.features.customer.data.dao.CustomerDao
 import com.niyaj.poposroom.features.customer.domain.model.Customer
-import com.niyaj.poposroom.features.employee.dao.EmployeeDao
+import com.niyaj.poposroom.features.employee.data.dao.EmployeeDao
 import com.niyaj.poposroom.features.employee.domain.model.Employee
 import com.niyaj.poposroom.features.employee_payment.data.dao.PaymentDao
 import com.niyaj.poposroom.features.employee_payment.domain.model.EmployeeWithPaymentCrossRef

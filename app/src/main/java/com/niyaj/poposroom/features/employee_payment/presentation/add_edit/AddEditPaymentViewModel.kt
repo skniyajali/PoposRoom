@@ -11,7 +11,6 @@ import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.employee.domain.model.Employee
-import com.niyaj.poposroom.features.employee.domain.use_cases.GetAllEmployee
 import com.niyaj.poposroom.features.employee.domain.utils.PaymentMode
 import com.niyaj.poposroom.features.employee_payment.domain.model.Payment
 import com.niyaj.poposroom.features.employee_payment.domain.repository.PaymentRepository
@@ -36,24 +35,22 @@ import javax.inject.Inject
 class AddEditPaymentViewModel @Inject constructor(
     private val paymentRepository: PaymentRepository,
     private val validationRepository: PaymentValidationRepository,
-    private val getAllEmployee: GetAllEmployee,
     @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle
-): ViewModel() {
+) : ViewModel() {
 
     var state by mutableStateOf(AddEditPaymentState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    val employees = getAllEmployee("")
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList()
-        )
+    val employees = paymentRepository.getAllEmployee().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList()
+    )
 
-    private val _selectedEmployee= MutableStateFlow(Employee())
+    private val _selectedEmployee = MutableStateFlow(Employee())
     val selectedEmployee = _selectedEmployee.asStateFlow()
 
     init {
@@ -200,7 +197,7 @@ class AddEditPaymentViewModel @Inject constructor(
 
                 if (result) {
                     _eventFlow.emit(UiEvent.OnSuccess("Payment Added Successfully."))
-                }else {
+                } else {
                     _eventFlow.emit(UiEvent.OnError("Unable To Add New Payment."))
                 }
 

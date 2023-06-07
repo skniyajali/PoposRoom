@@ -3,6 +3,7 @@ package com.niyaj.poposroom.features.employee_payment.data.repository
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
 import com.niyaj.poposroom.features.common.utils.ValidationResult
+import com.niyaj.poposroom.features.employee.domain.model.Employee
 import com.niyaj.poposroom.features.employee.domain.utils.PaymentMode
 import com.niyaj.poposroom.features.employee.domain.utils.PaymentType
 import com.niyaj.poposroom.features.employee_payment.data.dao.PaymentDao
@@ -30,6 +31,8 @@ class PaymentRepositoryImpl(
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher
 ) : PaymentRepository, PaymentValidationRepository {
+
+    override fun getAllEmployee(): Flow<List<Employee>> = paymentDao.getAllEmployee()
 
     override suspend fun getAllEmployeePayments(searchText: String): Flow<List<EmployeeWithPayment>> {
         return withContext(ioDispatcher) {

@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import androidx.room.Upsert
+import com.niyaj.poposroom.features.employee.domain.model.Employee
 import com.niyaj.poposroom.features.employee_payment.domain.model.EmployeeWithPayment
 import com.niyaj.poposroom.features.employee_payment.domain.model.EmployeeWithPaymentCrossRef
 import com.niyaj.poposroom.features.employee_payment.domain.model.Payment
@@ -20,6 +21,12 @@ interface PaymentDao {
         SELECT * FROM employee
     """)
     fun getAllEmployeePayment(): Flow<List<EmployeeWithPayment>>
+
+
+    @Query(value = """
+        SELECT * FROM employee
+    """)
+    fun getAllEmployee(): Flow<List<Employee>>
 
     @Query(value = """
         SELECT * FROM payment ORDER BY createdAt DESC
