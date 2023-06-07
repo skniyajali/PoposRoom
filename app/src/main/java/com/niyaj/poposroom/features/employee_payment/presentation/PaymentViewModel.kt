@@ -34,7 +34,8 @@ class PaymentViewModel @Inject constructor(
                 .onStart { UiState.Loading }
                 .map { items ->
                     totalItems = items.flatMap { payment -> payment.payments.map { it.paymentId } }
-                    if (items.isEmpty()) {
+
+                    if (items.all { it.payments.isEmpty() }) {
                         UiState.Empty
                     } else UiState.Success(items)
                 }

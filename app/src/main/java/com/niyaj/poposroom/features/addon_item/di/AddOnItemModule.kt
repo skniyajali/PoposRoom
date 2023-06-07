@@ -1,9 +1,9 @@
 package com.niyaj.poposroom.features.addon_item.di
 
-import com.niyaj.poposroom.features.addon_item.dao.AddOnItemDao
-import com.niyaj.poposroom.features.addon_item.domain.use_cases.GetAllAddOnItems
-import com.niyaj.poposroom.features.addon_item.domain.validation.AddOnItemValidationRepository
-import com.niyaj.poposroom.features.addon_item.domain.validation.AddOnItemValidationRepositoryImpl
+import com.niyaj.poposroom.features.addon_item.data.dao.AddOnItemDao
+import com.niyaj.poposroom.features.addon_item.data.repository.AddOnItemRepositoryImpl
+import com.niyaj.poposroom.features.addon_item.domain.repository.AddOnItemRepository
+import com.niyaj.poposroom.features.addon_item.domain.repository.AddOnItemValidationRepository
 import com.niyaj.poposroom.features.common.database.PoposDatabase
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
@@ -22,21 +22,19 @@ object AddOnItemModule {
         return database.addOnItemDao()
     }
 
-//    @Binds
-//    fun bindsAddOnValidationRepository(
-//        validationRepositoryImpl: AddOnItemValidationRepositoryImpl
-//    ): AddOnItemValidationRepository
-
     @Provides
     fun provideAddOnItemValidationRepository(
         addOnItemDao: AddOnItemDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): AddOnItemValidationRepository {
-        return AddOnItemValidationRepositoryImpl(addOnItemDao, ioDispatcher)
+        return AddOnItemRepositoryImpl(addOnItemDao, ioDispatcher)
     }
 
     @Provides
-    fun getAllAddOnItems(addOnItemDao: AddOnItemDao): GetAllAddOnItems {
-        return GetAllAddOnItems(addOnItemDao)
+    fun provideAddOnItemRepository(
+        addOnItemDao: AddOnItemDao,
+        @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
+    ): AddOnItemRepository {
+        return AddOnItemRepositoryImpl(addOnItemDao, ioDispatcher)
     }
 }

@@ -2,12 +2,12 @@ package com.niyaj.poposroom.features.addon_item.presentation
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
-import com.niyaj.poposroom.features.addon_item.dao.AddOnItemDao
-import com.niyaj.poposroom.features.addon_item.domain.use_cases.GetAllAddOnItems
+import com.niyaj.poposroom.features.addon_item.domain.repository.AddOnItemRepository
 import com.niyaj.poposroom.features.common.event.ItemEventsViewModel
 import com.niyaj.poposroom.features.common.event.UiState
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
+import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -22,8 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddOnViewModel @Inject constructor(
-    private val addOnItemDao: AddOnItemDao,
-    private val getAllAddOnItems: GetAllAddOnItems,
+    private val itemRepository: AddOnItemRepository,
     @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ): ItemEventsViewModel() {
 
@@ -32,7 +31,7 @@ class AddOnViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val addOnItems = snapshotFlow { searchText.value }
         .flatMapLatest { it ->
-            getAllAddOnItems(it)
+            itemRepository.getAllAddOnItem(it)
                 .onStart { UiState.Loading }
                 .map { items ->
                     totalItems = items.map { it.itemId }
@@ -50,18 +49,24 @@ class AddOnViewModel @Inject constructor(
         super.deleteItems()
 
         viewModelScope.launch(ioDispatcher) {
-            val result = addOnItemDao.deleteAddOnItems(selectedAddOnItems.toList())
+            val result = itemRepository.deleteAddOnItems(selectedAddOnItems.toList())
             mSelectedAddOnItems.clear()
 
-            if (result != 0) {
-                mEventFlow.emit(UiEvent.OnSuccess("$result items deleted"))
-            } else {
-                mEventFlow.emit(UiEvent.OnError("Unable to delete items"))
+            when(result) {
+                is Resource.Success -> {
+                    mEventFlow.emit(
+                        UiEvent.OnSuccess(
+                            "${selectedAddOnItems.size} item deleted successfully"
+                        )
+                    )
+                }
+                is Resource.Error -> {
+                    mEventFlow.emit(
+                        UiEvent.OnError(result.message ?: "Unable to delete items")
+                    )
+                }
             }
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-    }
 }

@@ -1,4 +1,4 @@
-package com.niyaj.poposroom.features.addon_item.dao
+package com.niyaj.poposroom.features.addon_item.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -63,5 +63,5 @@ interface AddOnItemDao {
             ELSE itemId != :itemId AND itemName = :itemName
             END LIMIT 1
     """)
-    fun findAddOnItemByName(itemId: Int?, itemName: String): AddOnItem?
+    fun findAddOnItemByName(itemName: String, itemId: Int?): AddOnItem?
 }
