@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.CurrencyRupee
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -132,6 +134,7 @@ fun AddEditChargesScreen(
         StandardButton(
             modifier = Modifier.testTag(ADD_EDIT_CHARGES_BUTTON),
             text = if (chargesId == 0) CREATE_NEW_CHARGES else EDIT_CHARGES_ITEM,
+            icon = if (chargesId == 0) Icons.Default.Add else Icons.Default.Edit,
             enabled = enableBtn,
             onClick = {
                 viewModel.onEvent(AddEditChargesEvent.CreateOrUpdateCharges(chargesId))

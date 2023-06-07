@@ -1,9 +1,9 @@
 package com.niyaj.poposroom.features.charges.di
 
-import com.niyaj.poposroom.features.charges.dao.ChargesDao
-import com.niyaj.poposroom.features.charges.domain.use_cases.GetAllCharges
-import com.niyaj.poposroom.features.charges.domain.validation.ChargesValidationRepository
-import com.niyaj.poposroom.features.charges.domain.validation.ChargesValidationRepositoryImpl
+import com.niyaj.poposroom.features.charges.data.dao.ChargesDao
+import com.niyaj.poposroom.features.charges.data.repository.ChargesRepositoryImpl
+import com.niyaj.poposroom.features.charges.domain.repository.ChargesRepository
+import com.niyaj.poposroom.features.charges.domain.repository.ChargesValidationRepository
 import com.niyaj.poposroom.features.common.database.PoposDatabase
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
@@ -24,14 +24,17 @@ object ChargesModule {
 
     @Provides
     fun provideChargesValidationRepository(
-        addOnItemDao: ChargesDao,
+        chargesDao: ChargesDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): ChargesValidationRepository {
-        return ChargesValidationRepositoryImpl(addOnItemDao, ioDispatcher)
+        return ChargesRepositoryImpl(chargesDao, ioDispatcher)
     }
 
     @Provides
-    fun getAllCharges(chargesDao: ChargesDao): GetAllCharges {
-        return GetAllCharges(chargesDao)
+    fun provideChargesRepository(
+        chargesDao: ChargesDao,
+        @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
+    ): ChargesRepository {
+        return ChargesRepositoryImpl(chargesDao, ioDispatcher)
     }
 }
