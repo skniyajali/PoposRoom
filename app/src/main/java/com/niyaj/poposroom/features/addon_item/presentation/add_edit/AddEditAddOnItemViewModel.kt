@@ -7,11 +7,12 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.niyaj.poposroom.features.addon_item.dao.AddOnItemDao
 import com.niyaj.poposroom.features.addon_item.domain.model.AddOnItem
-import com.niyaj.poposroom.features.addon_item.domain.validation.AddOnItemValidationRepository
+import com.niyaj.poposroom.features.addon_item.domain.repository.AddOnItemRepository
+import com.niyaj.poposroom.features.addon_item.domain.repository.AddOnItemValidationRepository
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
+import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.safeInt
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,7 +31,7 @@ import javax.inject.Inject
 @HiltViewModel
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddEditAddOnItemViewModel @Inject constructor(
-    private val addOnItemDao: AddOnItemDao,
+    private val repository: AddOnItemRepository,
     private val validationRepository: AddOnItemValidationRepository,
     @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle
@@ -90,14 +91,23 @@ class AddEditAddOnItemViewModel @Inject constructor(
 
     fun getAllAddOnItemById(itemId: Int) {
         viewModelScope.launch(ioDispatcher) {
-            addOnItemDao.getAddOnItemById(itemId)?.let { addOnItem ->
-                addOnItemId = addOnItem.itemId
+            when (val result = repository.getAddOnItemById(itemId)) {
+                is Resource.Success -> {
+                    result.data?.let { addOnItem ->
+                        addOnItemId = addOnItem.itemId
 
-                addEditState = addEditState.copy(
-                    itemName = addOnItem.itemName,
-                    itemPrice = addOnItem.itemPrice,
-                    isApplicable = addOnItem.isApplicable
-                )
+                        addEditState = addEditState.copy(
+                            itemName = addOnItem.itemName,
+                            itemPrice = addOnItem.itemPrice,
+                            isApplicable = addOnItem.isApplicable
+                        )
+                    }
+                }
+                is Resource.Error -> {
+                    _eventFlow.emit(
+                        UiEvent.OnError(result.message ?: "Unable to get addon item")
+                    )
+                }
             }
         }
     }
@@ -107,7 +117,7 @@ class AddEditAddOnItemViewModel @Inject constructor(
     }
 
     private fun createOrUpdateAddOnItem(addOnItemId: Int = 0) {
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             if (nameError.value == null && priceError.value == null) {
                 val addOnItem = AddOnItem(
                     itemId = addOnItemId,
@@ -118,13 +128,18 @@ class AddEditAddOnItemViewModel @Inject constructor(
                     updatedAt = if (addOnItemId != 0) Date() else null
                 )
 
-                val result = addOnItemDao.upsertAddOnItem(addOnItem)
+                when (val result = repository.upsertAddOnItem(addOnItem)) {
+                    is Resource.Error -> {
+                        _eventFlow.emit(
+                            UiEvent.OnError(
+                                result.message ?: "Unable To Create AddOn Item."
+                            )
+                        )
+                    }
 
-                if (result != 0L) {
-                    _eventFlow.emit(UiEvent.OnSuccess("AddOn Item Created Successfully."))
-                }else {
-                    _eventFlow.emit(UiEvent.OnError("Unable To Create AddOn Item."))
-
+                    is Resource.Success -> {
+                        _eventFlow.emit(UiEvent.OnSuccess("AddOn Item Created Successfully."))
+                    }
                 }
 
                 addEditState = AddEditAddOnItemState()

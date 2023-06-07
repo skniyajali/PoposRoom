@@ -23,8 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.niyaj.poposroom.features.common.ui.theme.SpaceLarge
-import com.niyaj.poposroom.features.common.ui.theme.SpaceMini
 import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
+import com.niyaj.poposroom.features.common.ui.theme.SpaceSmallMax
 
 @Composable
 fun BottomSheetWithCloseDialog(
@@ -39,6 +39,7 @@ fun BottomSheetWithCloseDialog(
             .fillMaxWidth()
             .padding(bottom = SpaceLarge)
             .padding(SpaceSmall)
+            .padding(horizontal = SpaceSmall)
     ) {
         ElevatedCard(
             modifier = Modifier
@@ -51,7 +52,7 @@ fun BottomSheetWithCloseDialog(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(SpaceMini + SpaceSmall),
+                    .padding(SpaceSmallMax),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {

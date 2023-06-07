@@ -34,6 +34,7 @@ import com.niyaj.poposroom.features.common.components.StandardTextField
 import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.safeString
+import timber.log.Timber
 
 @Composable
 fun AddEditItemScreen(
@@ -57,7 +58,8 @@ fun AddEditItemScreen(
             when(data) {
                 is UiEvent.IsLoading -> {}
                 is UiEvent.OnError -> {
-                    closeSheet()
+//                    closeSheet()
+                    Timber.d("Error loading ${data.errorMessage}")
                 }
                 is UiEvent.OnSuccess -> {
                     closeSheet()
