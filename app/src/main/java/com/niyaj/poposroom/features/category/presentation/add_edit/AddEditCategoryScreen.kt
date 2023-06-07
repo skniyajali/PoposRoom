@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -98,9 +100,9 @@ fun AddEditCategoryScreen(
             Spacer(modifier = Modifier.width(SpaceSmall))
             Text(
                 text = if(viewModel.addEditState.isAvailable)
-                    "Marked as applied"
+                    "Marked as available"
                 else
-                    "Marked as not applied",
+                    "Marked as not available",
                 style = MaterialTheme.typography.labelMedium
             )
         }
@@ -109,6 +111,7 @@ fun AddEditCategoryScreen(
 
         StandardButton(
             text = if (categoryId == 0) CREATE_NEW_CATEGORY else UPDATE_CATEGORY,
+            icon = if (categoryId == 0) Icons.Default.Add else Icons.Default.Edit,
             enabled = enableBtn,
             onClick = {
                 viewModel.onEvent(AddEditCategoryEvent.CreateUpdateAddEditCategory(categoryId))

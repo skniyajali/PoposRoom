@@ -7,11 +7,12 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.niyaj.poposroom.features.category.dao.CategoryDao
 import com.niyaj.poposroom.features.category.domain.model.Category
-import com.niyaj.poposroom.features.category.domain.validation.CategoryValidationRepository
+import com.niyaj.poposroom.features.category.domain.repository.CategoryRepository
+import com.niyaj.poposroom.features.category.domain.repository.CategoryValidationRepository
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
+import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -29,7 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddEditCategoryViewModel @Inject constructor(
-    private val categoryDao: CategoryDao,
+    private val categoryRepository: CategoryRepository,
     private val validationRepository: CategoryValidationRepository,
     @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle
@@ -50,7 +51,7 @@ class AddEditCategoryViewModel @Inject constructor(
 
     val nameError: StateFlow<String?> = snapshotFlow { addEditState.categoryName }
         .mapLatest {
-            validationRepository.validateCategoryName(categoryId, it).errorMessage
+            validationRepository.validateCategoryName(it, categoryId).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -76,13 +77,20 @@ class AddEditCategoryViewModel @Inject constructor(
 
     fun getCategoryById(itemId: Int) {
         viewModelScope.launch(ioDispatcher) {
-            categoryDao.getCategoryById(itemId)?.let { category ->
-                categoryId = category.categoryId
+            when(val result = categoryRepository.getCategoryById(itemId)){
+                is Resource.Error -> {
+                    _eventFlow.emit(UiEvent.OnError(result.message ?: "unable"))
+                }
+                is Resource.Success -> {
+                    result.data?.let { category ->
+                        categoryId = category.categoryId
 
-                addEditState = addEditState.copy(
-                    categoryName = category.categoryName,
-                    isAvailable = category.isAvailable
-                )
+                        addEditState = addEditState.copy(
+                            categoryName = category.categoryName,
+                            isAvailable = category.isAvailable
+                        )
+                    }
+                }
             }
         }
     }
@@ -102,15 +110,14 @@ class AddEditCategoryViewModel @Inject constructor(
                     updatedAt = if (categoryId != 0) Date() else null
                 )
 
-                val result = categoryDao.upsertCategory(addOnItem)
-
-                if (result != 0L) {
-                    _eventFlow.emit(UiEvent.OnSuccess("Category Created Successfully."))
-                }else {
-                    _eventFlow.emit(UiEvent.OnError("Unable To Create Category."))
-
+                when(categoryRepository.upsertCategory(addOnItem)) {
+                    is Resource.Error -> {
+                        _eventFlow.emit(UiEvent.OnError("Unable To Create Category."))
+                    }
+                    is Resource.Success -> {
+                        _eventFlow.emit(UiEvent.OnSuccess("Category Created Successfully."))
+                    }
                 }
-
                 addEditState = AddEditCategoryState()
             }
         }

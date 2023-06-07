@@ -50,8 +50,8 @@ class CustomerViewModel @Inject constructor(
         super.deleteItems()
 
         viewModelScope.launch(ioDispatcher) {
-            val result = customerDao.deleteCustomer(selectedAddOnItems.toList())
-            mSelectedAddOnItems.clear()
+            val result = customerDao.deleteCustomer(selectedItems.toList())
+            mSelectedItems.clear()
 
             if (result != 0) {
                 mEventFlow.emit(UiEvent.OnSuccess("$result customer has been deleted"))

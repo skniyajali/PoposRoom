@@ -1,4 +1,4 @@
-package com.niyaj.poposroom.features.category.dao
+package com.niyaj.poposroom.features.category.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -62,5 +62,5 @@ interface CategoryDao {
             ELSE categoryId != :categoryId AND categoryName = :categoryName
             END LIMIT 1
     """)
-    fun findCategoryByName(categoryId: Int?, categoryName: String): Category?
+    fun findCategoryByName(categoryName: String, categoryId: Int?): Category?
 }

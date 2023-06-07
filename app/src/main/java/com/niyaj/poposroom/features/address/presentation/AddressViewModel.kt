@@ -48,20 +48,20 @@ class AddressViewModel @Inject constructor(
         super.deleteItems()
 
         viewModelScope.launch(ioDispatcher) {
-            when(val result = addressRepository.deleteAddresses(selectedAddOnItems.toList())) {
+            when(val result = addressRepository.deleteAddresses(selectedItems.toList())) {
                 is Resource.Error -> {
                     mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
                 }
                 is Resource.Success -> {
                     mEventFlow.emit(
                         UiEvent.OnSuccess(
-                            "${selectedAddOnItems.size} address has been deleted"
+                            "${selectedItems.size} address has been deleted"
                         )
                     )
                 }
             }
 
-            mSelectedAddOnItems.clear()
+            mSelectedItems.clear()
         }
     }
 

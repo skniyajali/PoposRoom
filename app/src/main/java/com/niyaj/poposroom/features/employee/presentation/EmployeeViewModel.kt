@@ -50,8 +50,8 @@ class EmployeeViewModel @Inject constructor(
         super.deleteItems()
 
         viewModelScope.launch(ioDispatcher) {
-            val result = employeeDao.deleteEmployee(selectedAddOnItems.toList())
-            mSelectedAddOnItems.clear()
+            val result = employeeDao.deleteEmployee(selectedItems.toList())
+            mSelectedItems.clear()
 
             if (result != 0) {
                 mEventFlow.emit(UiEvent.OnSuccess("$result employee has been deleted"))

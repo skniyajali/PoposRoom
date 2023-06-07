@@ -24,8 +24,8 @@ open class ItemEventsViewModel @Inject constructor(): ViewModel() {
     private val _searchText = mutableStateOf("")
     val searchText: State<String> = _searchText
 
-    val mSelectedAddOnItems  =  mutableStateListOf<Int>()
-    val selectedAddOnItems: SnapshotStateList<Int> = mSelectedAddOnItems
+    val mSelectedItems  =  mutableStateListOf<Int>()
+    val selectedItems: SnapshotStateList<Int> = mSelectedItems
 
     open var totalItems: List<Int> = emptyList()
 
@@ -36,10 +36,10 @@ open class ItemEventsViewModel @Inject constructor(): ViewModel() {
 
     open fun selectItem(itemId: Int) {
         viewModelScope.launch {
-            if(mSelectedAddOnItems.contains(itemId)){
-                mSelectedAddOnItems.remove(itemId)
+            if(mSelectedItems.contains(itemId)){
+                mSelectedItems.remove(itemId)
             }else{
-                mSelectedAddOnItems.add(itemId)
+                mSelectedItems.add(itemId)
             }
         }
     }
@@ -49,18 +49,18 @@ open class ItemEventsViewModel @Inject constructor(): ViewModel() {
             count += 1
 
             if (totalItems.isNotEmpty()){
-                if (totalItems.size == mSelectedAddOnItems.size){
-                    mSelectedAddOnItems.clear()
+                if (totalItems.size == mSelectedItems.size){
+                    mSelectedItems.clear()
                 }else{
                     totalItems.forEach { itemId ->
                         if (count % 2 != 0){
-                            val selectedProduct = mSelectedAddOnItems.find { it == itemId }
+                            val selectedProduct = mSelectedItems.find { it == itemId }
 
                             if (selectedProduct == null){
-                                mSelectedAddOnItems.add(itemId)
+                                mSelectedItems.add(itemId)
                             }
                         }else {
-                            mSelectedAddOnItems.remove(itemId)
+                            mSelectedItems.remove(itemId)
                         }
                     }
                 }
@@ -69,7 +69,7 @@ open class ItemEventsViewModel @Inject constructor(): ViewModel() {
     }
 
     open fun deselectItems() {
-        mSelectedAddOnItems.clear()
+        mSelectedItems.clear()
     }
 
     open fun deleteItems() {

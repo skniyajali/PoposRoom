@@ -31,11 +31,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -82,13 +80,11 @@ fun AddOnItemScreen(
     val snackbarState = remember { SnackbarHostState() }
     val state = viewModel.addOnItems.collectAsStateWithLifecycle().value
 
-    val selectedItems = viewModel.selectedAddOnItems.toList()
+    val selectedItems = viewModel.selectedItems.toList()
 
     val lazyGridState = rememberLazyGridState()
 
-    var showFab by remember {
-        mutableStateOf(false)
-    }
+    val showFab = viewModel.totalItems.isNotEmpty()
 
     val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
@@ -175,8 +171,6 @@ fun AddOnItemScreen(
                 )
             }
             is UiState.Success -> {
-                showFab = true
-
                 LazyVerticalGrid(
                     modifier = Modifier
                         .padding(SpaceSmall),

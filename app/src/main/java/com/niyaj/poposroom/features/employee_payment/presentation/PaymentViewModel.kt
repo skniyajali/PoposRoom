@@ -49,15 +49,15 @@ class PaymentViewModel @Inject constructor(
         super.deleteItems()
 
         viewModelScope.launch(ioDispatcher) {
-            val result = paymentRepository.deletePayments(selectedAddOnItems.toList())
+            val result = paymentRepository.deletePayments(selectedItems.toList())
 
             if (result) {
-                mEventFlow.emit(UiEvent.OnSuccess("${selectedAddOnItems.size} payments has been deleted"))
+                mEventFlow.emit(UiEvent.OnSuccess("${selectedItems.size} payments has been deleted"))
             } else {
                 mEventFlow.emit(UiEvent.OnError("Unable to delete payments"))
             }
 
-            mSelectedAddOnItems.clear()
+            mSelectedItems.clear()
         }
     }
 
