@@ -6,9 +6,9 @@ import com.niyaj.poposroom.features.common.event.ItemEventsViewModel
 import com.niyaj.poposroom.features.common.event.UiState
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
+import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
-import com.niyaj.poposroom.features.customer.dao.CustomerDao
-import com.niyaj.poposroom.features.customer.domain.use_cases.GetAllCustomers
+import com.niyaj.poposroom.features.customer.domain.repository.CustomerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,8 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CustomerViewModel @Inject constructor(
-    private val customerDao: CustomerDao,
-    private val getAllCustomers: GetAllCustomers,
+    private val customerRepository: CustomerRepository,
     @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ): ItemEventsViewModel() {
 
@@ -32,7 +31,7 @@ class CustomerViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val charges = snapshotFlow { searchText.value }
         .flatMapLatest { it ->
-            getAllCustomers(it)
+            customerRepository.getAllCustomer(it)
                 .onStart { UiState.Loading }
                 .map { items ->
                     totalItems = items.map { it.customerId }
@@ -50,18 +49,20 @@ class CustomerViewModel @Inject constructor(
         super.deleteItems()
 
         viewModelScope.launch(ioDispatcher) {
-            val result = customerDao.deleteCustomer(selectedItems.toList())
-            mSelectedItems.clear()
-
-            if (result != 0) {
-                mEventFlow.emit(UiEvent.OnSuccess("$result customer has been deleted"))
-            } else {
-                mEventFlow.emit(UiEvent.OnError("Unable to delete customer"))
+            when(customerRepository.deleteCustomers(selectedItems.toList())){
+                is Resource.Error -> {
+                    mEventFlow.emit(UiEvent.OnError("Unable to delete customer"))
+                }
+                is Resource.Success -> {
+                    mEventFlow.emit(
+                        UiEvent.OnSuccess(
+                            "${selectedItems.size} customer has been deleted"
+                        )
+                    )
+                }
             }
-        }
-    }
 
-    override fun onCleared() {
-        super.onCleared()
+            mSelectedItems.clear()
+        }
     }
 }

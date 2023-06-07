@@ -3,10 +3,10 @@ package com.niyaj.poposroom.features.customer.di
 import com.niyaj.poposroom.features.common.database.PoposDatabase
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
-import com.niyaj.poposroom.features.customer.dao.CustomerDao
-import com.niyaj.poposroom.features.customer.domain.use_cases.GetAllCustomers
-import com.niyaj.poposroom.features.customer.domain.validation.CustomerValidationRepository
-import com.niyaj.poposroom.features.customer.domain.validation.CustomerValidationRepositoryImpl
+import com.niyaj.poposroom.features.customer.data.dao.CustomerDao
+import com.niyaj.poposroom.features.customer.data.repository.CustomerRepositoryImpl
+import com.niyaj.poposroom.features.customer.domain.repository.CustomerRepository
+import com.niyaj.poposroom.features.customer.domain.repository.CustomerValidationRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,14 +24,18 @@ object CustomerModule {
 
     @Provides
     fun provideCustomerValidationRepository(
-        addOnItemDao: CustomerDao,
+        customerDao: CustomerDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): CustomerValidationRepository {
-        return CustomerValidationRepositoryImpl(addOnItemDao, ioDispatcher)
+        return CustomerRepositoryImpl(customerDao, ioDispatcher)
     }
 
     @Provides
-    fun getAllCustomer(customerDao: CustomerDao): GetAllCustomers {
-        return GetAllCustomers(customerDao)
+    fun provideCustomerRepository(
+        customerDao: CustomerDao,
+        @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
+    ): CustomerRepository {
+        return CustomerRepositoryImpl(customerDao, ioDispatcher)
     }
+
 }

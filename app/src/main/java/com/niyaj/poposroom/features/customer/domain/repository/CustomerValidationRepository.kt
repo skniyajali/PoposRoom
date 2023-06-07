@@ -1,4 +1,4 @@
-package com.niyaj.poposroom.features.customer.domain.validation
+package com.niyaj.poposroom.features.customer.domain.repository
 
 import com.niyaj.poposroom.features.common.utils.ValidationResult
 
@@ -30,5 +30,5 @@ interface CustomerValidationRepository {
      * @return [ValidationResult] object.
      * @see ValidationResult
      */
-    suspend fun validateCustomerPhone(customerId: Int? = null, customerPhone: String): ValidationResult
+    suspend fun validateCustomerPhone(customerPhone: String, customerId: Int? = null): ValidationResult
 }
