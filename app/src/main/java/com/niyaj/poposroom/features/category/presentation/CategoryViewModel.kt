@@ -2,12 +2,12 @@ package com.niyaj.poposroom.features.category.presentation
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
-import com.niyaj.poposroom.features.category.dao.CategoryDao
-import com.niyaj.poposroom.features.category.domain.use_cases.GetAllCategories
+import com.niyaj.poposroom.features.category.domain.repository.CategoryRepository
 import com.niyaj.poposroom.features.common.event.ItemEventsViewModel
 import com.niyaj.poposroom.features.common.event.UiState
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
+import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -22,8 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
-    private val categoryDao: CategoryDao,
-    private val getAllCategories: GetAllCategories,
+    private val categoryRepository: CategoryRepository,
     @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ): ItemEventsViewModel() {
 
@@ -32,7 +31,7 @@ class CategoryViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val addOnItems = snapshotFlow { searchText.value }
         .flatMapLatest { it ->
-            getAllCategories(it)
+            categoryRepository.getAllCategory(it)
                 .onStart { UiState.Loading }
                 .map { items ->
                     totalItems = items.map { it.categoryId }
@@ -50,18 +49,19 @@ class CategoryViewModel @Inject constructor(
         super.deleteItems()
 
         viewModelScope.launch(ioDispatcher) {
-            val result = categoryDao.deleteCategories(selectedAddOnItems.toList())
-            mSelectedAddOnItems.clear()
-
-            if (result != 0) {
-                mEventFlow.emit(UiEvent.OnSuccess("$result category has been deleted"))
-            } else {
-                mEventFlow.emit(UiEvent.OnError("Unable to delete category"))
+            when(val result = categoryRepository.deleteCategories(selectedItems.toList())) {
+                is Resource.Error -> {
+                    mEventFlow.emit(UiEvent.OnError(result.message!!))
+                }
+                is Resource.Success -> {
+                    mEventFlow.emit(
+                        UiEvent.OnSuccess(
+                            "${selectedItems.size} category has been deleted"
+                        )
+                    )
+                }
             }
+            mSelectedItems.clear()
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
     }
 }

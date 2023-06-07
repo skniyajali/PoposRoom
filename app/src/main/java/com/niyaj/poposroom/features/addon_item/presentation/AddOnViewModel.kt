@@ -49,14 +49,14 @@ class AddOnViewModel @Inject constructor(
         super.deleteItems()
 
         viewModelScope.launch(ioDispatcher) {
-            val result = itemRepository.deleteAddOnItems(selectedAddOnItems.toList())
-            mSelectedAddOnItems.clear()
+            val result = itemRepository.deleteAddOnItems(selectedItems.toList())
+            mSelectedItems.clear()
 
             when(result) {
                 is Resource.Success -> {
                     mEventFlow.emit(
                         UiEvent.OnSuccess(
-                            "${selectedAddOnItems.size} item deleted successfully"
+                            "${selectedItems.size} item deleted successfully"
                         )
                     )
                 }

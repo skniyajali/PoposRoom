@@ -20,4 +20,4 @@ val IconSizeMedium = 25.dp
 val IconSizeLarge = 35.dp
 val IconSizeExtraLarge = 56.dp
 
-val ButtonSize = 48.dp
+val ButtonSize = 50.dp

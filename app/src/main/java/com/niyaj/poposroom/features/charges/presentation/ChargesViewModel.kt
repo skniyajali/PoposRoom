@@ -50,8 +50,8 @@ class ChargesViewModel @Inject constructor(
         super.deleteItems()
 
         viewModelScope.launch(ioDispatcher) {
-            val result = chargesDao.deleteCharges(selectedAddOnItems.toList())
-            mSelectedAddOnItems.clear()
+            val result = chargesDao.deleteCharges(selectedItems.toList())
+            mSelectedItems.clear()
 
             if (result != 0) {
                 mEventFlow.emit(UiEvent.OnSuccess("$result charges has been deleted"))

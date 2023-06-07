@@ -1,9 +1,9 @@
 package com.niyaj.poposroom.features.category.di
 
-import com.niyaj.poposroom.features.category.dao.CategoryDao
-import com.niyaj.poposroom.features.category.domain.use_cases.GetAllCategories
-import com.niyaj.poposroom.features.category.domain.validation.CategoryValidationRepository
-import com.niyaj.poposroom.features.category.domain.validation.CategoryValidationRepositoryImpl
+import com.niyaj.poposroom.features.category.data.dao.CategoryDao
+import com.niyaj.poposroom.features.category.data.repository.CategoryRepositoryImpl
+import com.niyaj.poposroom.features.category.domain.repository.CategoryRepository
+import com.niyaj.poposroom.features.category.domain.repository.CategoryValidationRepository
 import com.niyaj.poposroom.features.common.database.PoposDatabase
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
@@ -24,14 +24,17 @@ object CategoryModule {
 
     @Provides
     fun provideCategoryValidationRepository(
-        addOnItemDao: CategoryDao,
+        categoryDao: CategoryDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): CategoryValidationRepository {
-        return CategoryValidationRepositoryImpl(addOnItemDao, ioDispatcher)
+        return CategoryRepositoryImpl(categoryDao, ioDispatcher)
     }
 
     @Provides
-    fun getAllCategories(categoryDao: CategoryDao): GetAllCategories {
-        return GetAllCategories(categoryDao)
+    fun provideCategoryRepository(
+        categoryDao: CategoryDao,
+        @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
+    ): CategoryRepository {
+        return CategoryRepositoryImpl(categoryDao, ioDispatcher)
     }
 }

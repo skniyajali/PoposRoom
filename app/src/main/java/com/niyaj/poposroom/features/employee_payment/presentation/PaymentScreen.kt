@@ -91,7 +91,7 @@ fun PaymentScreen(
     val snackbarState = remember { SnackbarHostState() }
     val state = viewModel.payments.collectAsStateWithLifecycle().value
 
-    val selectedItems = viewModel.selectedAddOnItems.toList()
+    val selectedItems = viewModel.selectedItems.toList()
 
     val lazyListState = rememberLazyListState()
     val showScrollToTop = lazyListState.isScrolled

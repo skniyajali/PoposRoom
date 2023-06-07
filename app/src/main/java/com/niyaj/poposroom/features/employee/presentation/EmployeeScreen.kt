@@ -73,7 +73,7 @@ fun EmployeeScreen(
     val snackbarState = remember { SnackbarHostState() }
     val state = viewModel.employees.collectAsStateWithLifecycle().value
 
-    val selectedItems = viewModel.selectedAddOnItems.toList()
+    val selectedItems = viewModel.selectedItems.toList()
 
     val lazyListState = rememberLazyListState()
 
