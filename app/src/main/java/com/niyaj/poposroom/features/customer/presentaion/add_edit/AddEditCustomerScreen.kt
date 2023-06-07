@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PhoneAndroid
@@ -119,6 +121,7 @@ fun AddEditCustomerScreen(
         StandardButton(
             modifier = Modifier.testTag(ADD_EDIT_CUSTOMER_BUTTON),
             text = if (customerId == 0) CREATE_NEW_CUSTOMER else EDIT_CUSTOMER_ITEM,
+            icon = if (customerId == 0) Icons.Default.Add else Icons.Default.Edit,
             enabled = enableBtn,
             onClick = {
                 viewModel.onEvent(AddEditCustomerEvent.CreateOrUpdateCustomer(customerId))

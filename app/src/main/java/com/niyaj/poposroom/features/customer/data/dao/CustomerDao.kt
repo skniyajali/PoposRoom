@@ -1,4 +1,4 @@
-package com.niyaj.poposroom.features.customer.dao
+package com.niyaj.poposroom.features.customer.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -64,5 +64,5 @@ interface CustomerDao {
             END LIMIT 1
     """
     )
-    fun findCustomerByPhone(customerId: Int?, customerPhone: String): Customer?
+    fun findCustomerByPhone(customerPhone: String, customerId: Int?): Customer?
 }

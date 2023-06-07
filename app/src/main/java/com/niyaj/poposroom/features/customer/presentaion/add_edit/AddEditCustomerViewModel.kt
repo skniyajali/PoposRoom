@@ -9,10 +9,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
+import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
-import com.niyaj.poposroom.features.customer.dao.CustomerDao
 import com.niyaj.poposroom.features.customer.domain.model.Customer
-import com.niyaj.poposroom.features.customer.domain.validation.CustomerValidationRepository
+import com.niyaj.poposroom.features.customer.domain.repository.CustomerRepository
+import com.niyaj.poposroom.features.customer.domain.repository.CustomerValidationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,7 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddEditCustomerViewModel @Inject constructor(
-    private val customerDao: CustomerDao,
+    private val customerRepository: CustomerRepository,
     private val validationRepository: CustomerValidationRepository,
     @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle
@@ -50,7 +51,7 @@ class AddEditCustomerViewModel @Inject constructor(
 
     val phoneError: StateFlow<String?> = snapshotFlow { addEditState.customerPhone }
         .mapLatest {
-            validationRepository.validateCustomerPhone(customerId, it).errorMessage
+            validationRepository.validateCustomerPhone(it, customerId).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -98,14 +99,21 @@ class AddEditCustomerViewModel @Inject constructor(
 
     fun getCustomerById(itemId: Int) {
         viewModelScope.launch(ioDispatcher) {
-            customerDao.getCustomerById(itemId)?.let { customer ->
-                customerId = customer.customerId
+            when (val result = customerRepository.getCustomerById(itemId)) {
+                is Resource.Error -> {
+                    _eventFlow.emit(UiEvent.OnError("Unable to retrieve customer"))
+                }
+                is Resource.Success -> {
+                    result.data?.let { customer ->
+                        customerId = customer.customerId
 
-                addEditState = addEditState.copy(
-                    customerPhone = customer.customerPhone,
-                    customerName = customer.customerName,
-                    customerEmail = customer.customerEmail
-                )
+                        addEditState = addEditState.copy(
+                            customerPhone = customer.customerPhone,
+                            customerName = customer.customerName,
+                            customerEmail = customer.customerEmail
+                        )
+                    }
+                }
             }
         }
     }
@@ -126,15 +134,14 @@ class AddEditCustomerViewModel @Inject constructor(
                     updatedAt = if (customerId != 0) Date() else null
                 )
 
-                val result = customerDao.upsertCustomer(addOnItem)
-
-                if (result != 0L) {
-                    _eventFlow.emit(UiEvent.OnSuccess("Customer Created Successfully."))
-                }else {
-                    _eventFlow.emit(UiEvent.OnError("Unable To Create Customer."))
-
+                when(customerRepository.upsertCustomer(addOnItem)) {
+                    is Resource.Error -> {
+                        _eventFlow.emit(UiEvent.OnError("Unable To Create Customer."))
+                    }
+                    is Resource.Success -> {
+                        _eventFlow.emit(UiEvent.OnSuccess("Customer Created Successfully."))
+                    }
                 }
-
                 addEditState = AddEditCustomerState()
             }
         }
