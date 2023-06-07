@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.CurrencyRupee
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -34,7 +36,6 @@ import com.niyaj.poposroom.features.common.components.StandardTextField
 import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.safeString
-import timber.log.Timber
 
 @Composable
 fun AddEditItemScreen(
@@ -58,8 +59,7 @@ fun AddEditItemScreen(
             when(data) {
                 is UiEvent.IsLoading -> {}
                 is UiEvent.OnError -> {
-//                    closeSheet()
-                    Timber.d("Error loading ${data.errorMessage}")
+                    closeSheet()
                 }
                 is UiEvent.OnSuccess -> {
                     closeSheet()
@@ -133,6 +133,7 @@ fun AddEditItemScreen(
         StandardButton(
             text = if (addOnItemId == 0) CREATE_NEW_ADD_ON else EDIT_ADD_ON_ITEM,
             enabled = enableBtn,
+            icon = if (addOnItemId == 0) Icons.Default.Add else Icons.Default.Edit,
             onClick = {
                 viewModel.onEvent(AddEditAddOnItemEvent.CreateUpdateAddOnItem(addOnItemId))
             }

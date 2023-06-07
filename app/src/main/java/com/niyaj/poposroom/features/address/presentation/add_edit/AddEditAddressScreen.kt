@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.CurrencyRupee
+import androidx.compose.material.icons.filled.EditLocationAlt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -102,6 +104,7 @@ fun AddEditAddressScreen(
         StandardButton(
             text = if (addressId == 0) CREATE_NEW_ADDRESS else EDIT_ADDRESS,
             enabled = enableBtn,
+            icon = if (addressId == 0) Icons.Default.Add else Icons.Default.EditLocationAlt,
             onClick = {
                 viewModel.onEvent(AddEditAddressEvent.CreateOrUpdateAddress(addressId))
             }

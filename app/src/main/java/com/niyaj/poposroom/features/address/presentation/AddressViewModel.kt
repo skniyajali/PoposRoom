@@ -2,12 +2,12 @@ package com.niyaj.poposroom.features.address.presentation
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
-import com.niyaj.poposroom.features.address.dao.AddressDao
-import com.niyaj.poposroom.features.address.domain.use_cases.GetAllAddresses
+import com.niyaj.poposroom.features.address.domain.repository.AddressRepository
 import com.niyaj.poposroom.features.common.event.ItemEventsViewModel
 import com.niyaj.poposroom.features.common.event.UiState
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
+import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -22,8 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddressViewModel @Inject constructor(
-    private val addressDao: AddressDao,
-    private val getAllAddresses: GetAllAddresses,
+    private val addressRepository: AddressRepository,
     @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ): ItemEventsViewModel() {
     override var totalItems: List<Int> = emptyList()
@@ -31,7 +30,7 @@ class AddressViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val addOnItems = snapshotFlow { searchText.value }
         .flatMapLatest { it ->
-            getAllAddresses(it)
+            addressRepository.getAllAddress(it)
                 .onStart { UiState.Loading }
                 .map { items ->
                     totalItems = items.map { it.addressId }
@@ -49,19 +48,21 @@ class AddressViewModel @Inject constructor(
         super.deleteItems()
 
         viewModelScope.launch(ioDispatcher) {
-            val result = addressDao.deleteAddresses(selectedAddOnItems.toList())
-            mSelectedAddOnItems.clear()
-
-            if (result != 0) {
-                mEventFlow.emit(UiEvent.OnSuccess("$result items deleted"))
-            } else {
-                mEventFlow.emit(UiEvent.OnError("Unable to delete items"))
+            when(val result = addressRepository.deleteAddresses(selectedAddOnItems.toList())) {
+                is Resource.Error -> {
+                    mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
+                }
+                is Resource.Success -> {
+                    mEventFlow.emit(
+                        UiEvent.OnSuccess(
+                            "${selectedAddOnItems.size} address has been deleted"
+                        )
+                    )
+                }
             }
+
+            mSelectedAddOnItems.clear()
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-    }
-    
 }
