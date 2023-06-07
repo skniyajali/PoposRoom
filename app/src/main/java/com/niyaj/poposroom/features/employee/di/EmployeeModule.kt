@@ -3,10 +3,10 @@ package com.niyaj.poposroom.features.employee.di
 import com.niyaj.poposroom.features.common.database.PoposDatabase
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
-import com.niyaj.poposroom.features.employee.dao.EmployeeDao
-import com.niyaj.poposroom.features.employee.domain.use_cases.GetAllEmployee
-import com.niyaj.poposroom.features.employee.domain.validation.EmployeeValidationRepository
-import com.niyaj.poposroom.features.employee.domain.validation.EmployeeValidationRepositoryImpl
+import com.niyaj.poposroom.features.employee.data.dao.EmployeeDao
+import com.niyaj.poposroom.features.employee.data.repository.EmployeeRepositoryImpl
+import com.niyaj.poposroom.features.employee.domain.repository.EmployeeRepository
+import com.niyaj.poposroom.features.employee.domain.repository.EmployeeValidationRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,11 +27,14 @@ object EmployeeModule {
         employeeDao: EmployeeDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): EmployeeValidationRepository {
-        return EmployeeValidationRepositoryImpl(employeeDao, ioDispatcher)
+        return EmployeeRepositoryImpl(employeeDao, ioDispatcher)
     }
 
     @Provides
-    fun getAllEmployee(employeeDao: EmployeeDao): GetAllEmployee {
-        return GetAllEmployee(employeeDao)
+    fun provideEmployeeRepository(
+        employeeDao: EmployeeDao,
+        @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
+    ): EmployeeRepository {
+        return EmployeeRepositoryImpl(employeeDao, ioDispatcher)
     }
 }

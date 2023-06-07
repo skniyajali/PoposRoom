@@ -1,4 +1,4 @@
-package com.niyaj.poposroom.features.employee.dao
+package com.niyaj.poposroom.features.employee.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert

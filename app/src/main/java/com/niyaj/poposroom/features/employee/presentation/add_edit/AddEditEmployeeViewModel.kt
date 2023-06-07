@@ -9,10 +9,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
+import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
-import com.niyaj.poposroom.features.employee.dao.EmployeeDao
 import com.niyaj.poposroom.features.employee.domain.model.Employee
-import com.niyaj.poposroom.features.employee.domain.validation.EmployeeValidationRepository
+import com.niyaj.poposroom.features.employee.domain.repository.EmployeeRepository
+import com.niyaj.poposroom.features.employee.domain.repository.EmployeeValidationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,14 +24,13 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddEditEmployeeViewModel @Inject constructor(
-    private val employeeDao: EmployeeDao,
+    private val employeeRepository: EmployeeRepository,
     private val validationRepository: EmployeeValidationRepository,
     @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle
@@ -128,22 +128,25 @@ class AddEditEmployeeViewModel @Inject constructor(
     }
 
     private fun getCustomerById(itemId: Int) {
-        viewModelScope.launch {
-            val getEmployee = withContext(ioDispatcher) {
-                employeeDao.getEmployeeById(itemId)
-            }
-
-            getEmployee?.let { employee ->
-                state = state.copy(
-                    employeePhone = employee.employeePhone,
-                    employeeName = employee.employeeName,
-                    employeeEmail = employee.employeeEmail,
-                    employeeSalary = employee.employeeSalary,
-                    employeePosition = employee.employeePosition,
-                    employeeSalaryType = employee.employeeSalaryType,
-                    employeeType = employee.employeeType,
-                    employeeJoinedDate = employee.employeeJoinedDate
-                )
+        viewModelScope.launch(ioDispatcher) {
+            when (val result = employeeRepository.getEmployeeById(itemId)) {
+                is Resource.Error -> {
+                    _eventFlow.emit(UiEvent.OnError("Unable to find employee"))
+                }
+                is Resource.Success -> {
+                    result.data?.let { employee ->
+                        state = state.copy(
+                            employeePhone = employee.employeePhone,
+                            employeeName = employee.employeeName,
+                            employeeEmail = employee.employeeEmail,
+                            employeeSalary = employee.employeeSalary,
+                            employeePosition = employee.employeePosition,
+                            employeeSalaryType = employee.employeeSalaryType,
+                            employeeType = employee.employeeType,
+                            employeeJoinedDate = employee.employeeJoinedDate
+                        )
+                    }
+                }
             }
         }
     }
@@ -169,15 +172,15 @@ class AddEditEmployeeViewModel @Inject constructor(
                     updatedAt = if (employeeId != 0) Date() else null
                 )
 
-                val result = employeeDao.upsertEmployee(addOnItem)
-
-                if (result != 0L) {
-                    _eventFlow.emit(UiEvent.OnSuccess("Employee Created Successfully."))
-                }else {
-                    _eventFlow.emit(UiEvent.OnError("Unable To Create Employee."))
-
+                val result = employeeRepository.upsertEmployee(addOnItem)
+                when(result) {
+                    is Resource.Error -> {
+                        _eventFlow.emit(UiEvent.OnError("Unable To Create Employee."))
+                    }
+                    is Resource.Success -> {
+                        _eventFlow.emit(UiEvent.OnSuccess("Employee Created Successfully."))
+                    }
                 }
-
                 state = AddEditEmployeeState()
             }
         }

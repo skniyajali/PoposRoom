@@ -1,5 +1,6 @@
 package com.niyaj.poposroom.features.employee_payment.domain.repository
 
+import com.niyaj.poposroom.features.employee.domain.model.Employee
 import com.niyaj.poposroom.features.employee_payment.domain.model.CalculatedSalary
 import com.niyaj.poposroom.features.employee_payment.domain.model.EmployeeWithPayment
 import com.niyaj.poposroom.features.employee_payment.domain.model.Payment
@@ -8,6 +9,8 @@ import com.niyaj.poposroom.features.employee_payment.domain.model.SalaryCalculat
 import kotlinx.coroutines.flow.Flow
 
 interface PaymentRepository {
+
+    fun getAllEmployee(): Flow<List<Employee>>
 
     suspend fun getAllEmployeePayments(searchText: String): Flow<List<EmployeeWithPayment>>
 
