@@ -6,6 +6,7 @@ import com.niyaj.poposroom.features.common.event.ItemEventsViewModel
 import com.niyaj.poposroom.features.common.event.UiState
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
+import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.employee_payment.domain.repository.PaymentRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,12 +50,13 @@ class PaymentViewModel @Inject constructor(
         super.deleteItems()
 
         viewModelScope.launch(ioDispatcher) {
-            val result = paymentRepository.deletePayments(selectedItems.toList())
-
-            if (result) {
-                mEventFlow.emit(UiEvent.OnSuccess("${selectedItems.size} payments has been deleted"))
-            } else {
-                mEventFlow.emit(UiEvent.OnError("Unable to delete payments"))
+            when (val result = paymentRepository.deletePayments(selectedItems.toList())) {
+                is Resource.Error -> {
+                    mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
+                }
+                is Resource.Success -> {
+                    mEventFlow.emit(UiEvent.OnSuccess("${selectedItems.size} payments has been deleted"))
+                }
             }
 
             mSelectedItems.clear()

@@ -1,10 +1,6 @@
 package com.niyaj.poposroom.features.charges.presentation
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.border
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,11 +17,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffoldState
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,8 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -54,6 +45,7 @@ import com.niyaj.poposroom.features.charges.domain.utils.ChargesTestTags.NO_ITEM
 import com.niyaj.poposroom.features.common.components.CircularBox
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
+import com.niyaj.poposroom.features.common.components.StandardElevatedCard
 import com.niyaj.poposroom.features.common.components.StandardFAB
 import com.niyaj.poposroom.features.common.components.StandardScaffold
 import com.niyaj.poposroom.features.common.event.UiState
@@ -240,7 +232,6 @@ fun ChargesScreen(
 }
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ChargesData(
     modifier: Modifier = Modifier,
@@ -248,26 +239,17 @@ fun ChargesData(
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
-    border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
 ) {
-    val borderStroke = if (doesSelected(item.chargesId)) border else null
-
-    ElevatedCard(
-        modifier = modifier
-            .testTag(CHARGES_TAG.plus(item.chargesId))
-            .padding(SpaceSmall)
-            .then(borderStroke?.let {
-                Modifier.border(it, CardDefaults.elevatedShape)
-            } ?: Modifier)
-            .clip(CardDefaults.elevatedShape)
-            .combinedClickable(
-                onClick = {
-                    onClick(item.chargesId)
-                },
-                onLongClick = {
-                    onLongClick(item.chargesId)
-                },
-            ),
+    StandardElevatedCard(
+        modifier = modifier,
+        testTag = CHARGES_TAG.plus(item.chargesId),
+        doesSelected = doesSelected(item.chargesId),
+        onClick = {
+            onClick(item.chargesId)
+        },
+        onLongClick = {
+            onLongClick(item.chargesId)
+        }
     ) {
         Row(
             modifier = Modifier
