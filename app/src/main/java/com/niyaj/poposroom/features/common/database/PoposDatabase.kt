@@ -16,6 +16,9 @@ import com.niyaj.poposroom.features.customer.data.dao.CustomerDao
 import com.niyaj.poposroom.features.customer.domain.model.Customer
 import com.niyaj.poposroom.features.employee.data.dao.EmployeeDao
 import com.niyaj.poposroom.features.employee.domain.model.Employee
+import com.niyaj.poposroom.features.employee_absent.data.dao.AbsentDao
+import com.niyaj.poposroom.features.employee_absent.domain.model.Absent
+import com.niyaj.poposroom.features.employee_absent.domain.model.EmployeeWithAbsentCrossRef
 import com.niyaj.poposroom.features.employee_payment.data.dao.PaymentDao
 import com.niyaj.poposroom.features.employee_payment.domain.model.EmployeeWithPaymentCrossRef
 import com.niyaj.poposroom.features.employee_payment.domain.model.Payment
@@ -30,8 +33,10 @@ import com.niyaj.poposroom.features.employee_payment.domain.model.Payment
         Employee::class,
         Payment::class,
         EmployeeWithPaymentCrossRef::class,
+        Absent::class,
+        EmployeeWithAbsentCrossRef::class,
     ],
-    version = 3,
+    version = 2,
     autoMigrations = [],
     exportSchema = true,
 )
@@ -44,4 +49,6 @@ abstract class PoposDatabase : RoomDatabase() {
     abstract fun customerDao(): CustomerDao
     abstract fun employeeDao(): EmployeeDao
     abstract fun paymentDao(): PaymentDao
+    abstract fun absentDao(): AbsentDao
+
 }

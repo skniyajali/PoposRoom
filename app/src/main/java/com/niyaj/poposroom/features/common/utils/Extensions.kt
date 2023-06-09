@@ -12,6 +12,7 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.Year
 import java.time.ZoneId
 import java.util.Calendar
 import java.util.Date
@@ -134,6 +135,24 @@ val String.toJoinedDate
         "dd-MM-yyyy",
         Locale.getDefault()
     ).format(this.toLong()).toString()
+
+fun toMonthAndYear(date: String): String {
+    val currentYear = Year.now().value.toString()
+    val format = SimpleDateFormat("yyyy", Locale.getDefault()).format(date.toLong()).toString()
+
+    return if (currentYear == format) {
+        SimpleDateFormat("MMMM", Locale.getDefault()).format(date.toLong()).toString()
+    }else {
+        SimpleDateFormat("MMMM yy", Locale.getDefault()).format(date.toLong()).toString()
+    }
+}
+
+val String.toDate
+    get() = SimpleDateFormat("dd", Locale.getDefault()).format(this.toLong()).toString()
+
+val String.toTime
+    get() = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(this.toLong()).toString()
+
 
 fun String.toPrettyDate(): String {
     val nowTime = Calendar.getInstance()

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Payments
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.niyaj.poposroom.features.destinations.AbsentScreenDestination
 import com.niyaj.poposroom.features.destinations.AddOnItemScreenDestination
 import com.niyaj.poposroom.features.destinations.AddressScreenDestination
 import com.niyaj.poposroom.features.destinations.CategoryScreenDestination
@@ -110,6 +112,16 @@ fun DrawerContent(
             selected = currentRoute == PaymentScreenDestination.route,
             onClick = {
                 navController.navigate(PaymentScreenDestination())
+            },
+            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+        )
+
+        NavigationDrawerItem(
+            icon = { Icon(Icons.Default.CalendarMonth, contentDescription = null) },
+            label = { Text("Absents") },
+            selected = currentRoute == AbsentScreenDestination.route,
+            onClick = {
+                navController.navigate(AbsentScreenDestination())
             },
             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
         )
