@@ -1,5 +1,6 @@
 package com.niyaj.poposroom.features.employee_payment.domain.repository
 
+import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.employee.domain.model.Employee
 import com.niyaj.poposroom.features.employee_payment.domain.model.CalculatedSalary
 import com.niyaj.poposroom.features.employee_payment.domain.model.EmployeeWithPayment
@@ -12,21 +13,23 @@ interface PaymentRepository {
 
     fun getAllEmployee(): Flow<List<Employee>>
 
+    suspend fun getEmployeeById(employeeId: Int) : Employee?
+
     suspend fun getAllEmployeePayments(searchText: String): Flow<List<EmployeeWithPayment>>
 
     suspend fun getAllPayment(searchText: String): Flow<List<Payment>>
 
-    suspend fun getPaymentById(paymentId: Int): Payment?
+    suspend fun getPaymentById(paymentId: Int): Resource<Payment?>
 
-    suspend fun addOrIgnorePayment(newPayment: Payment): Boolean
+    suspend fun addOrIgnorePayment(newPayment: Payment): Resource<Boolean>
 
-    suspend fun updatePayment(newPayment: Payment): Boolean
+    suspend fun updatePayment(newPayment: Payment): Resource<Boolean>
 
-    suspend fun upsertPayment(newPayment: Payment): Boolean
+    suspend fun upsertPayment(newPayment: Payment): Resource<Boolean>
 
-    suspend fun deletePayment(paymentId: Int): Boolean
+    suspend fun deletePayment(paymentId: Int): Resource<Boolean>
 
-    suspend fun deletePayments(paymentId: List<Int>): Boolean
+    suspend fun deletePayments(paymentIds: List<Int>): Resource<Boolean>
 
     suspend fun getPaymentByEmployeeId(employeeId: Int, selectedDate: Pair<String, String>): CalculatedSalary?
 

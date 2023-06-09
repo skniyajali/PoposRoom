@@ -88,6 +88,7 @@ import java.time.LocalDate
 @Composable
 fun AddEditPaymentScreen(
     paymentId: Int = 0,
+    employeeId: Int = 0,
     navController: NavController,
     viewModel: AddEditPaymentViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>

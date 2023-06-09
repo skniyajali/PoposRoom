@@ -22,11 +22,17 @@ interface PaymentDao {
     """)
     fun getAllEmployeePayment(): Flow<List<EmployeeWithPayment>>
 
-
     @Query(value = """
         SELECT * FROM employee
     """)
     fun getAllEmployee(): Flow<List<Employee>>
+
+    @Query(value = """
+        SELECT * FROM employee WHERE employeeId = :employeeId
+    """
+    )
+    suspend fun getEmployeeById(employeeId: Int): Employee?
+
 
     @Query(value = """
         SELECT * FROM payment ORDER BY createdAt DESC

@@ -2,6 +2,7 @@ package com.niyaj.poposroom.features.employee_payment.data.repository
 
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
+import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.ValidationResult
 import com.niyaj.poposroom.features.employee.domain.model.Employee
 import com.niyaj.poposroom.features.employee.domain.utils.PaymentMode
@@ -34,6 +35,12 @@ class PaymentRepositoryImpl(
 
     override fun getAllEmployee(): Flow<List<Employee>> = paymentDao.getAllEmployee()
 
+    override suspend fun getEmployeeById(employeeId: Int): Employee? {
+        return withContext(ioDispatcher) {
+            paymentDao.getEmployeeById(employeeId)
+        }
+    }
+
     override suspend fun getAllEmployeePayments(searchText: String): Flow<List<EmployeeWithPayment>> {
         return withContext(ioDispatcher) {
             paymentDao.getAllEmployeePayment().mapLatest {
@@ -48,56 +55,161 @@ class PaymentRepositoryImpl(
         }
     }
 
-    override suspend fun getPaymentById(paymentId: Int): Payment?  {
-        return withContext(ioDispatcher) {
-            paymentDao.getPaymentById(paymentId)
+    override suspend fun getPaymentById(paymentId: Int): Resource<Payment?>  {
+        return try {
+            withContext(ioDispatcher) {
+                Resource.Success(paymentDao.getPaymentById(paymentId))
+            }
+        }catch (e: Exception) {
+            Resource.Error(e.message)
         }
     }
 
-    override suspend fun addOrIgnorePayment(newPayment: Payment): Boolean {
-        val result = withContext(ioDispatcher) {
-            paymentDao.insertOrIgnorePayment(newPayment)
-        }
-
-        return result > 0
-    }
-
-    override suspend fun updatePayment(newPayment: Payment): Boolean {
-        val result = withContext(ioDispatcher) {
-            paymentDao.updatePayment(newPayment)
-        }
-
-        return result > 0
-    }
-
-    override suspend fun upsertPayment(newPayment: Payment): Boolean {
-        val result = withContext(ioDispatcher) {
-            paymentDao.upsertPayment(newPayment)
-        }
-
-        if (result > 0) {
-            paymentDao.upsertEmployeeWithPaymentCrossReference(
-                EmployeeWithPaymentCrossRef(newPayment.employeeId, result.toInt())
+    override suspend fun addOrIgnorePayment(newPayment: Payment): Resource<Boolean> {
+        return try {
+            val validateEmployee = validateEmployee(newPayment.employeeId)
+            val validateGivenDate = validateGivenDate(newPayment.paymentDate)
+            val validatePaymentType = validatePaymentType(newPayment.paymentType)
+            val validateSalary = validateGivenAmount(newPayment.paymentAmount)
+            val validateSalaryNote = validatePaymentNote(
+                paymentNote = newPayment.paymentNote,
+                isRequired = newPayment.paymentMode == PaymentMode.Both
             )
-        }
+            val validatePaymentMode = validatePaymentMode(newPayment.paymentMode)
 
-        return result > 0
+            val hasError = listOf(
+                validateEmployee,
+                validateSalary,
+                validateSalaryNote,
+                validatePaymentMode,
+                validatePaymentType,
+                validateGivenDate
+            ).any { !it.successful }
+
+            if (!hasError) {
+                withContext(ioDispatcher) {
+                    val result = withContext(ioDispatcher) {
+                        paymentDao.insertOrIgnorePayment(newPayment)
+                    }
+
+                    if (result > 0) {
+                        paymentDao.upsertEmployeeWithPaymentCrossReference(
+                            EmployeeWithPaymentCrossRef(newPayment.employeeId, result.toInt())
+                        )
+                    }
+
+                    Resource.Success(result > 0)
+                }
+            }else {
+                Resource.Error("Unable to validate employee payment")
+            }
+        }catch (e: Exception){
+            Resource.Error("Unable to add employee payment")
+        }
     }
 
-    override suspend fun deletePayment(paymentId: Int): Boolean {
-        val result = withContext(ioDispatcher) {
-            paymentDao.deletePayment(paymentId)
-        }
+    override suspend fun updatePayment(newPayment: Payment): Resource<Boolean> {
+        return try {
+            val validateEmployee = validateEmployee(newPayment.employeeId)
+            val validateGivenDate = validateGivenDate(newPayment.paymentDate)
+            val validatePaymentType = validatePaymentType(newPayment.paymentType)
+            val validateSalary = validateGivenAmount(newPayment.paymentAmount)
+            val validateSalaryNote = validatePaymentNote(
+                paymentNote = newPayment.paymentNote,
+                isRequired = newPayment.paymentMode == PaymentMode.Both
+            )
+            val validatePaymentMode = validatePaymentMode(newPayment.paymentMode)
 
-        return result > 0
+            val hasError = listOf(
+                validateEmployee,
+                validateSalary,
+                validateSalaryNote,
+                validatePaymentMode,
+                validatePaymentType,
+                validateGivenDate
+            ).any { !it.successful }
+
+            if (!hasError) {
+                withContext(ioDispatcher) {
+                    val result = withContext(ioDispatcher) {
+                        paymentDao.updatePayment(newPayment)
+                    }
+
+                    Resource.Success(result > 0)
+                }
+            }else {
+                Resource.Error("Unable to validate employee payment")
+            }
+        }catch (e: Exception){
+            Resource.Error("Unable to update employee payment")
+        }
     }
 
-    override suspend fun deletePayments(paymentId: List<Int>): Boolean {
-        val result = withContext(ioDispatcher) {
-            paymentDao.deletePayments(paymentId)
-        }
+    override suspend fun upsertPayment(newPayment: Payment): Resource<Boolean> {
+        return try {
+            val validateEmployee = validateEmployee(newPayment.employeeId)
+            val validateGivenDate = validateGivenDate(newPayment.paymentDate)
+            val validatePaymentType = validatePaymentType(newPayment.paymentType)
+            val validateSalary = validateGivenAmount(newPayment.paymentAmount)
+            val validateSalaryNote = validatePaymentNote(
+                paymentNote = newPayment.paymentNote,
+                isRequired = newPayment.paymentMode == PaymentMode.Both
+            )
+            val validatePaymentMode = validatePaymentMode(newPayment.paymentMode)
 
-        return result > 0
+            val hasError = listOf(
+                validateEmployee,
+                validateSalary,
+                validateSalaryNote,
+                validatePaymentMode,
+                validatePaymentType,
+                validateGivenDate
+            ).any { !it.successful }
+
+            if (!hasError) {
+                withContext(ioDispatcher) {
+                    val result = withContext(ioDispatcher) {
+                        paymentDao.upsertPayment(newPayment)
+                    }
+
+                    if (result > 0) {
+                        paymentDao.upsertEmployeeWithPaymentCrossReference(
+                            EmployeeWithPaymentCrossRef(newPayment.employeeId, result.toInt())
+                        )
+                    }
+
+                    Resource.Success(result > 0)
+                }
+            }else {
+                Resource.Error("Unable to validate employee payment")
+            }
+        }catch (e: Exception){
+            Resource.Error("Unable to add or update employee payment")
+        }
+    }
+
+    override suspend fun deletePayment(paymentId: Int): Resource<Boolean> {
+        return try {
+            val result = withContext(ioDispatcher) {
+                paymentDao.deletePayment(paymentId)
+            }
+
+            Resource.Success(result > 0)
+        }catch (e: Exception) {
+            Resource.Error("Unable to delete employee payment")
+        }
+    }
+
+    override suspend fun deletePayments(paymentIds: List<Int>): Resource<Boolean> {
+        return try {
+            val result = withContext(ioDispatcher) {
+                paymentDao.deletePayments(paymentIds)
+            }
+
+            Resource.Success(result > 0)
+        }catch (e: Exception) {
+            Resource.Error("Unable to delete employee payments")
+        }
     }
 
     override suspend fun getPaymentByEmployeeId(

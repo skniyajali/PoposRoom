@@ -204,38 +204,40 @@ fun PaymentScreen(
                     state = lazyListState
                 ) {
                     state.data.forEachIndexed { _, payments ->
-                        stickyHeader {
-                            TextWithIcon(
-                                modifier = Modifier
-                                    .background(
-                                        if (showScrollToTop) MaterialTheme.colorScheme.surface else Color.Transparent
-                                    )
-                                    .clip(
-                                        RoundedCornerShape(if (showScrollToTop) 4.dp else 0.dp)
-                                    ),
-                                isTitle = true,
-                                text = payments.employee.employeeName,
-                                icon = Icons.Default.Person
-                            )
-                        }
+                        if (payments.payments.isNotEmpty()) {
+                            stickyHeader {
+                                TextWithIcon(
+                                    modifier = Modifier
+                                        .background(
+                                            if (showScrollToTop) MaterialTheme.colorScheme.surface else Color.Transparent
+                                        )
+                                        .clip(
+                                            RoundedCornerShape(if (showScrollToTop) 4.dp else 0.dp)
+                                        ),
+                                    isTitle = true,
+                                    text = payments.employee.employeeName,
+                                    icon = Icons.Default.Person
+                                )
+                            }
 
-                        items(
-                            items = payments.payments,
-                            key = { it.paymentId }
-                        ) { item ->
-                            PaymentData(
-                                employeeName = payments.employee.employeeName,
-                                item = item,
-                                doesSelected = {
-                                    selectedItems.contains(it)
-                                },
-                                onClick = {
-                                    if (selectedItems.isNotEmpty()) {
-                                        viewModel.selectItem(it)
-                                    }
-                                },
-                                onLongClick = viewModel::selectItem
-                            )
+                            items(
+                                items = payments.payments,
+                                key = { it.paymentId }
+                            ) { item ->
+                                PaymentData(
+                                    employeeName = payments.employee.employeeName,
+                                    item = item,
+                                    doesSelected = {
+                                        selectedItems.contains(it)
+                                    },
+                                    onClick = {
+                                        if (selectedItems.isNotEmpty()) {
+                                            viewModel.selectItem(it)
+                                        }
+                                    },
+                                    onLongClick = viewModel::selectItem
+                                )
+                            }
                         }
                     }
                 }

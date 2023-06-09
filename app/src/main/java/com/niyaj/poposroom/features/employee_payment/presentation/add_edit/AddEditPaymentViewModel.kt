@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
+import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.employee.domain.model.Employee
 import com.niyaj.poposroom.features.employee.domain.utils.PaymentMode
@@ -56,6 +57,10 @@ class AddEditPaymentViewModel @Inject constructor(
     init {
         savedStateHandle.get<Int>("paymentId")?.let { paymentId ->
             getPaymentById(paymentId)
+        }
+
+        savedStateHandle.get<Int>("employeeId")?.let { employeeId ->
+            getEmployeeById(employeeId)
         }
     }
 
@@ -156,15 +161,32 @@ class AddEditPaymentViewModel @Inject constructor(
 
     private fun getPaymentById(itemId: Int) {
         viewModelScope.launch(ioDispatcher) {
-            paymentRepository.getPaymentById(itemId)?.let { payment ->
-                state = state.copy(
-                    employeeId = payment.employeeId,
-                    paymentAmount = payment.paymentAmount,
-                    paymentDate = payment.paymentDate,
-                    paymentMode = payment.paymentMode,
-                    paymentType = payment.paymentType,
-                    paymentNote = payment.paymentNote,
-                )
+            when(val result = paymentRepository.getPaymentById(itemId)) {
+                is Resource.Error -> {
+                    _eventFlow.emit(UiEvent.OnError("Unable to find payment"))
+                }
+                is Resource.Success -> {
+                    result.data?.let { payment ->
+                        state = state.copy(
+                            employeeId = payment.employeeId,
+                            paymentAmount = payment.paymentAmount,
+                            paymentDate = payment.paymentDate,
+                            paymentMode = payment.paymentMode,
+                            paymentType = payment.paymentType,
+                            paymentNote = payment.paymentNote,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getEmployeeById(employeeId: Int) {
+        viewModelScope.launch {
+            paymentRepository.getEmployeeById(employeeId)?.let { employee ->
+                _selectedEmployee.emit(employee)
+
+                state = state.copy(employeeId = employee.employeeId)
             }
         }
     }
@@ -193,12 +215,13 @@ class AddEditPaymentViewModel @Inject constructor(
                     updatedAt = if (paymentId != 0) Date() else null
                 )
 
-                val result = paymentRepository.upsertPayment(newPayment)
-
-                if (result) {
-                    _eventFlow.emit(UiEvent.OnSuccess("Payment Added Successfully."))
-                } else {
-                    _eventFlow.emit(UiEvent.OnError("Unable To Add New Payment."))
+                when(paymentRepository.upsertPayment(newPayment)) {
+                    is Resource.Error -> {
+                        _eventFlow.emit(UiEvent.OnError("Unable To Add New Payment."))
+                    }
+                    is Resource.Success -> {
+                        _eventFlow.emit(UiEvent.OnSuccess("Payment Added Successfully."))
+                    }
                 }
 
                 state = AddEditPaymentState()
