@@ -3,7 +3,7 @@ package com.niyaj.poposroom.features.addon_item.presentation
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.poposroom.features.addon_item.domain.repository.AddOnItemRepository
-import com.niyaj.poposroom.features.common.event.ItemEventsViewModel
+import com.niyaj.poposroom.features.common.event.BaseViewModel
 import com.niyaj.poposroom.features.common.event.UiState
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
@@ -24,7 +24,7 @@ import javax.inject.Inject
 class AddOnViewModel @Inject constructor(
     private val itemRepository: AddOnItemRepository,
     @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
-): ItemEventsViewModel() {
+): BaseViewModel() {
 
     override var totalItems: List<Int> = emptyList()
 
