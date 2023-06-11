@@ -3,7 +3,7 @@ package com.niyaj.poposroom.features.charges.presentation
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.poposroom.features.charges.domain.repository.ChargesRepository
-import com.niyaj.poposroom.features.common.event.ItemEventsViewModel
+import com.niyaj.poposroom.features.common.event.BaseViewModel
 import com.niyaj.poposroom.features.common.event.UiState
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
@@ -23,8 +23,9 @@ import javax.inject.Inject
 @HiltViewModel
 class ChargesViewModel @Inject constructor(
     private val chargesRepository: ChargesRepository,
-    @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
-): ItemEventsViewModel() {
+    @Dispatcher(PoposDispatchers.IO)
+    private val ioDispatcher: CoroutineDispatcher
+): BaseViewModel() {
 
     override var totalItems: List<Int> = emptyList()
 

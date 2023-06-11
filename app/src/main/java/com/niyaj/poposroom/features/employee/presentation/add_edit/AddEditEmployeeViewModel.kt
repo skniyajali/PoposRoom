@@ -154,10 +154,10 @@ class AddEditEmployeeViewModel @Inject constructor(
     private fun createOrUpdateCustomer(employeeId: Int = 0) {
         viewModelScope.launch(ioDispatcher) {
             val hasError = listOf(phoneError, nameError, salaryError, positionError).all {
-                it.value == null
+                it.value != null
             }
 
-            if (hasError) {
+            if (!hasError) {
                 val addOnItem = Employee(
                     employeeId = employeeId,
                     employeePhone = state.employeePhone,
@@ -172,8 +172,7 @@ class AddEditEmployeeViewModel @Inject constructor(
                     updatedAt = if (employeeId != 0) Date() else null
                 )
 
-                val result = employeeRepository.upsertEmployee(addOnItem)
-                when(result) {
+                when(employeeRepository.upsertEmployee(addOnItem)) {
                     is Resource.Error -> {
                         _eventFlow.emit(UiEvent.OnError("Unable To Create Employee."))
                     }

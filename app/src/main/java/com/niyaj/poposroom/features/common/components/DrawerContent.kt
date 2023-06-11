@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Person4
+import androidx.compose.material.icons.filled.StickyNote2
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
@@ -28,6 +29,7 @@ import com.niyaj.poposroom.features.destinations.CategoryScreenDestination
 import com.niyaj.poposroom.features.destinations.ChargesScreenDestination
 import com.niyaj.poposroom.features.destinations.CustomerScreenDestination
 import com.niyaj.poposroom.features.destinations.EmployeeScreenDestination
+import com.niyaj.poposroom.features.destinations.ExpensesScreenDestination
 import com.niyaj.poposroom.features.destinations.PaymentScreenDestination
 import com.ramcosta.composedestinations.navigation.navigate
 
@@ -122,6 +124,16 @@ fun DrawerContent(
             selected = currentRoute == AbsentScreenDestination.route,
             onClick = {
                 navController.navigate(AbsentScreenDestination())
+            },
+            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+        )
+
+        NavigationDrawerItem(
+            icon = { Icon(Icons.Default.StickyNote2, contentDescription = null) },
+            label = { Text("Expenses") },
+            selected = currentRoute == ExpensesScreenDestination.route,
+            onClick = {
+                navController.navigate(ExpensesScreenDestination())
             },
             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
         )
