@@ -188,3 +188,58 @@ fun String.toPrettyDate(): String {
         SimpleDateFormat("MMMM dd yyyy", Locale.getDefault()).format(Date(this.toLong()))
     }
 }
+
+fun calculateStartOfDayTime(date: String = "", days: String = ""): String {
+    val calendar = Calendar.getInstance()
+    val s = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    try {
+        if (date.isNotEmpty()) {
+            calendar.time = s.parse(date) as Date
+        }
+    } catch (e: Exception) {
+        calendar.timeInMillis = date.toLong()
+    }
+
+    val day = try {
+        if (days.isNotEmpty()) days.toInt() else 0
+    } catch (e: Exception) {
+        0
+    }
+    calendar.add(Calendar.DAY_OF_YEAR, day)
+    calendar[Calendar.HOUR_OF_DAY] = 0
+    calendar[Calendar.MINUTE] = 0
+    calendar[Calendar.SECOND] = 0
+    calendar[Calendar.MILLISECOND] = 0
+
+    return calendar.timeInMillis.toString()
+}
+
+fun calculateEndOfDayTime(date: String = "", days: String = ""): String {
+    val calendar = Calendar.getInstance()
+    val s = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    try {
+        if (date.isNotEmpty()) {
+            calendar.time = s.parse(date) as Date
+        }
+    } catch (e: Exception) {
+        calendar.timeInMillis = date.toLong()
+    }
+
+    val day = try {
+        if (days.isNotEmpty()) days.toInt() else 0
+    } catch (e: Exception) {
+        0
+    }
+
+    calendar.add(Calendar.DAY_OF_YEAR, day)
+    calendar[Calendar.HOUR_OF_DAY] = 23
+    calendar[Calendar.MINUTE] = 59
+    calendar[Calendar.SECOND] = 59
+    calendar[Calendar.MILLISECOND] = 0
+
+    return calendar.timeInMillis.toString()
+}
+
+
+val startOfDayTime = LocalDate.now().toMilliSecond
+val endOfDayTime = calculateEndOfDayTime(startOfDayTime)

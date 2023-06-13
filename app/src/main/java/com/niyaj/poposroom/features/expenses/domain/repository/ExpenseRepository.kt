@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ExpenseRepository {
 
-    suspend fun getAllExpense(searchText: String): Flow<List<Expense>>
+    suspend fun getAllExpense(searchText: String, givenDate: String): Flow<List<Expense>>
 
     suspend fun getAllPagingExpenses(searchText: String, limit: Int = 0, offset: Int = 0): List<Expense>
 
