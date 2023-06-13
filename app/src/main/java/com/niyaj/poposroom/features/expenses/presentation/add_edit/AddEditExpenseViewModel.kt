@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
+import com.niyaj.poposroom.features.common.utils.capitalizeWords
 import com.niyaj.poposroom.features.expenses.domain.model.Expense
 import com.niyaj.poposroom.features.expenses.domain.repository.ExpenseRepository
 import com.niyaj.poposroom.features.expenses.domain.repository.ExpenseValidationRepository
@@ -108,7 +109,7 @@ class AddEditExpenseViewModel @Inject constructor(
             }
 
             is AddEditExpenseEvent.ExpensesNoteChanged -> {
-                state = state.copy(expenseNote = event.expenseNote)
+                state = state.copy(expenseNote = event.expenseNote.capitalizeWords)
             }
 
             is AddEditExpenseEvent.AddOrUpdateExpense -> {
