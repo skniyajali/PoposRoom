@@ -178,7 +178,7 @@ fun NoteText(
     iconModifier: Modifier = Modifier.size(SpaceMedium),
     text: String = "",
     icon: ImageVector = Icons.Default.Note,
-    color : Color = MaterialTheme.colorScheme.surfaceTint,
+    color : Color = MaterialTheme.colorScheme.secondary,
     fontWeight: FontWeight = FontWeight.Normal,
 ) {
     Row(

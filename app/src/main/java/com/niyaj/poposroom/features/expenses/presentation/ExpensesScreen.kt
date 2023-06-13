@@ -5,20 +5,25 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -30,24 +35,29 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.poposroom.features.common.components.CircularBox
+import com.niyaj.poposroom.features.common.components.ItemNotAvailable
+import com.niyaj.poposroom.features.common.components.LoadingIndicator
+import com.niyaj.poposroom.features.common.components.NoteText
 import com.niyaj.poposroom.features.common.components.StandardFAB
 import com.niyaj.poposroom.features.common.components.StandardOutlinedAssistChip
 import com.niyaj.poposroom.features.common.components.StandardScaffold
 import com.niyaj.poposroom.features.common.event.UiState
 import com.niyaj.poposroom.features.common.ui.theme.SpaceLarge
+import com.niyaj.poposroom.features.common.ui.theme.SpaceMedium
 import com.niyaj.poposroom.features.common.ui.theme.SpaceMini
 import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.isScrolled
+import com.niyaj.poposroom.features.common.utils.toMilliSecond
 import com.niyaj.poposroom.features.common.utils.toPrettyDate
 import com.niyaj.poposroom.features.common.utils.toRupee
 import com.niyaj.poposroom.features.destinations.AddEditExpenseScreenDestination
@@ -59,9 +69,14 @@ import com.niyaj.poposroom.features.expenses.domain.utils.ExpenseTestTags.EXPENS
 import com.niyaj.poposroom.features.expenses.domain.utils.ExpenseTestTags.EXPENSE_SCREEN_TITLE
 import com.niyaj.poposroom.features.expenses.domain.utils.ExpenseTestTags.EXPENSE_SEARCH_PLACEHOLDER
 import com.niyaj.poposroom.features.expenses.domain.utils.ExpenseTestTags.EXPENSE_TAG
+import com.niyaj.poposroom.features.expenses.domain.utils.ExpenseTestTags.NO_ITEMS_IN_EXPENSE
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
+import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.datetime.date.datepicker
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 @Destination
 @Composable
@@ -85,8 +100,11 @@ fun ExpensesScreen(
     val searchText = viewModel.searchText.value
 
     val openDialog = remember { mutableStateOf(false) }
+    val dialogState = rememberMaterialDialogState()
 
-//    val data = viewModel.data.collectAsLazyPagingItems()
+    val selectedDate = viewModel.selectedDate.collectAsStateWithLifecycle().value.toPrettyDate()
+    val totalAmount = viewModel.totalAmount.collectAsStateWithLifecycle().value.toRupee
+    val totalItem = viewModel.totalItems.size.toString()
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -154,115 +172,136 @@ fun ExpensesScreen(
         onBackClick = viewModel::closeSearchBar,
         onClearClick = viewModel::clearSearchText
     ) { _ ->
-
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .padding(SpaceSmall),
-            state = lazyListState
         ) {
-//            item {
-//                ElevatedCard(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(250.dp)
-//                        .padding(SpaceSmall)
-//                ) {
-//                    Column(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(SpaceSmall),
-//                        horizontalAlignment = Alignment.Start
-//                    ) {
-//                        Row(
-//                            modifier = Modifier
-//                                .fillMaxWidth(),
-//                            horizontalArrangement = Arrangement.SpaceBetween,
-//                            verticalAlignment = Alignment.CenterVertically
-//                        ) {
-//                            CircularBox(
-//                                icon = Icons.Default.TrendingUp,
-//                                doesSelected = false,
-//                            )
-//
-//                            Text(
-//                                text = "Total Expenses",
-//                                style = MaterialTheme.typography.titleMedium
-//                            )
-//                        }
-//                    }
-//                }
-//            }
-
-            when(state) {
-                is UiState.Empty -> Error(EXPENSE_NOT_AVAIlABLE)
-                is UiState.Loading -> Loading()
-                is UiState.Success -> {
-                    itemsIndexed(
-                        items = state.data,
-                        key = { index, item ->
-                            item.expenseName.plus(index + item.expenseId)
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(SpaceSmall)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(SpaceSmall),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CircularBox(
+                                icon = Icons.Default.TrendingUp,
+                                doesSelected = false,
+                            )
+                            Spacer(modifier = Modifier.width(SpaceSmall))
+                            Text(
+                                text = "Total Expenses",
+                                style = MaterialTheme.typography.titleLarge
+                            )
                         }
-                    ) { index,  expense ->
-                        ExpensesData(
-                            item = expense,
-                            doesSelected = {
-                                selectedItems.contains(it)
-                            },
+
+                        StandardOutlinedAssistChip(
+                            text = selectedDate,
+                            icon = Icons.Default.CalendarMonth,
                             onClick = {
-                                if (selectedItems.isNotEmpty()) {
-                                    viewModel.selectItem(it)
-                                }
-                            },
-                            onLongClick = viewModel::selectItem
+                                dialogState.show()
+                            }
                         )
 
-                        if (index == state.data.size - 1) {
-                            Spacer(modifier = Modifier.height(SpaceLarge))
-                            Spacer(modifier = Modifier.height(SpaceLarge))
+                    }
+                    Spacer(modifier = Modifier.height(SpaceMini))
+
+                    Divider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(SpaceMedium)
+                    )
+                    Spacer(modifier = Modifier.height(SpaceMini))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = totalAmount,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        NoteText(
+                            text = "Total $totalItem Expenses",
+                            icon = Icons.Default.TrendingUp
+                        )
+                    }
+
+                }
+            }
+
+            when(state) {
+                is UiState.Empty -> {
+                    ItemNotAvailable(
+                        text = if (searchText.isEmpty()) EXPENSE_NOT_AVAIlABLE else NO_ITEMS_IN_EXPENSE,
+                        buttonText = CREATE_NEW_EXPENSE,
+                        onClick = {
+                            navController.navigate(AddEditExpenseScreenDestination())
+                        }
+                    )
+                }
+                is UiState.Loading -> LoadingIndicator()
+                is UiState.Success -> {
+                    LazyColumn(
+                        state = lazyListState
+                    ) {
+                        itemsIndexed(
+                            items = state.data,
+                            key = { index, item ->
+                                item.expenseName.plus(index + item.expenseId)
+                            }
+                        ) { index,  expense ->
+                            ExpensesData(
+                                item = expense,
+                                doesSelected = {
+                                    selectedItems.contains(it)
+                                },
+                                onClick = {
+                                    if (selectedItems.isNotEmpty()) {
+                                        viewModel.selectItem(it)
+                                    }
+                                },
+                                onLongClick = viewModel::selectItem
+                            )
+
+                            if (index == state.data.size - 1) {
+                                Spacer(modifier = Modifier.height(SpaceLarge))
+                                Spacer(modifier = Modifier.height(SpaceLarge))
+                            }
                         }
                     }
                 }
             }
+        }
+    }
 
-//            when (val prepend = data.loadState.prepend) {
-//                is LoadState.Loading -> Loading()
-//                is LoadState.Error -> Error(prepend.error.message)
-//                else -> {}
-//            }
-//
-//            items(
-//                count = data.itemCount,
-//                key = data.itemKey(),
-//                contentType = data.itemContentType()
-//            ) { index ->
-//                val item = data[index]
-//                item?.let { expense ->
-//                    ExpensesData(
-//                        item = expense,
-//                        doesSelected = {
-//                            selectedItems.contains(it)
-//                        },
-//                        onClick = {
-//                            if (selectedItems.isNotEmpty()) {
-//                                viewModel.selectItem(it)
-//                            }
-//                        },
-//                        onLongClick = viewModel::selectItem
-//                    )
-//                }
-//            }
-//
-//            when (val refresh = data.loadState.refresh) {
-//                is LoadState.Loading -> Loading()
-//                is LoadState.Error -> Error(refresh.error.message)
-//                else -> {}
-//            }
-//
-//            when (val append = data.loadState.append) {
-//                is LoadState.Loading -> Loading()
-//                is LoadState.Error -> Error(append.error.message)
-//                else -> {}
-//            }
+
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            positiveButton("Ok")
+            negativeButton("Cancel")
+        }
+    ) {
+        datepicker(
+            allowedDateValidator = { date ->
+                date <= LocalDate.now()
+            }
+        ) {date ->
+            viewModel.selectDate(date.toMilliSecond)
         }
     }
 
@@ -358,29 +397,4 @@ fun ExpensesData(
             )
         }
     )
-}
-
-private fun LazyListScope.Loading() {
-    item {
-        CircularProgressIndicator(modifier = Modifier.padding(16.dp))
-    }
-}
-
-
-private fun LazyListScope.Error(
-    message: String? = null,
-) {
-    message?.let {
-        item {
-            Text(
-                text = it,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.error,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(SpaceSmall)
-            )
-        }
-    }
 }

@@ -14,9 +14,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ExpenseDao {
     @Query(value = """
-        SELECT * FROM expense ORDER BY expenseDate DESC
+        SELECT * FROM expense WHERE expenseDate = :givenDate ORDER BY expenseDate DESC
     """)
-    fun getAllExpense(): Flow<List<Expense>>
+    fun getAllExpense(givenDate: String): Flow<List<Expense>>
 
     @RawQuery(observedEntities = [Expense::class])
     fun getAllPagingExpenses(query: SupportSQLiteQuery): List<Expense>

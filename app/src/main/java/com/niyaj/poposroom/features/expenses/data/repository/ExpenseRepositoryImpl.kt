@@ -28,9 +28,9 @@ class ExpenseRepositoryImpl(
 ) : ExpenseRepository, ExpenseValidationRepository {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun getAllExpense(searchText: String): Flow<List<Expense>> {
+    override suspend fun getAllExpense(searchText: String, givenDate: String): Flow<List<Expense>> {
         return withContext(ioDispatcher) {
-            expenseDao.getAllExpense().mapLatest { it.searchExpense(searchText) }
+            expenseDao.getAllExpense(givenDate).mapLatest { it.searchExpense(searchText) }
         }
     }
 

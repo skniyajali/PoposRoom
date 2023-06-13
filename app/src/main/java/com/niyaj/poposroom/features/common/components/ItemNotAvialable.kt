@@ -11,7 +11,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -64,10 +65,14 @@ fun ItemNotAvailable(
 
         if(buttonText.isNotEmpty()){
             Spacer(modifier = Modifier.height(SpaceMedium))
-            Button(
+            ElevatedButton(
                 onClick = { onClick() },
                 shape= CutCornerShape(4.dp),
-                modifier = btnModifier.heightIn(ButtonSize)
+                modifier = btnModifier.heightIn(ButtonSize),
+                colors = ButtonDefaults.elevatedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary
+                )
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(id = R.string.add_icon) )
                 Spacer(modifier = Modifier.width(SpaceSmall))

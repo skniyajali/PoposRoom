@@ -49,7 +49,7 @@ fun StandardOutlinedAssistChip(
     modifier: Modifier = Modifier,
     text: String,
     icon: ImageVector,
-    borderColor: Color = MaterialTheme.colorScheme.primary,
+    borderColor: Color = MaterialTheme.colorScheme.secondary,
     onClick: () -> Unit = {},
 ) {
     AssistChip(
