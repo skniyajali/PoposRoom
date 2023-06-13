@@ -12,16 +12,23 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.StickyNote2
 import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material.icons.filled.TurnedInNot
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
@@ -43,6 +50,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
+import com.google.accompanist.flowlayout.FlowMainAxisAlignment
+import com.google.accompanist.flowlayout.FlowRow
 import com.niyaj.poposroom.features.common.components.CircularBox
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
@@ -51,10 +61,10 @@ import com.niyaj.poposroom.features.common.components.StandardFAB
 import com.niyaj.poposroom.features.common.components.StandardOutlinedAssistChip
 import com.niyaj.poposroom.features.common.components.StandardScaffold
 import com.niyaj.poposroom.features.common.event.UiState
-import com.niyaj.poposroom.features.common.ui.theme.SpaceLarge
-import com.niyaj.poposroom.features.common.ui.theme.SpaceMedium
+import com.niyaj.poposroom.features.common.ui.theme.IconSizeSmall
 import com.niyaj.poposroom.features.common.ui.theme.SpaceMini
 import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
+import com.niyaj.poposroom.features.common.ui.theme.SpaceSmallMax
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.isScrolled
 import com.niyaj.poposroom.features.common.utils.toMilliSecond
@@ -72,6 +82,8 @@ import com.niyaj.poposroom.features.expenses.domain.utils.ExpenseTestTags.EXPENS
 import com.niyaj.poposroom.features.expenses.domain.utils.ExpenseTestTags.NO_ITEMS_IN_EXPENSE
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.result.NavResult
+import com.ramcosta.composedestinations.result.ResultRecipient
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
@@ -83,6 +95,7 @@ import java.time.LocalDate
 fun ExpensesScreen(
     navController: NavController,
     viewModel: ExpensesViewModel = hiltViewModel(),
+    resultRecipient: ResultRecipient<AddEditExpenseScreenDestination, String>
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -120,6 +133,20 @@ fun ExpensesScreen(
                     scope.launch {
                         snackbarState.showSnackbar(data.successMessage)
                     }
+                }
+            }
+        }
+    }
+
+    resultRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {
+                viewModel.deselectItems()
+            }
+            is NavResult.Value -> {
+                scope.launch {
+                    viewModel.deselectItems()
+                    snackbarState.showSnackbar(result.value)
                 }
             }
         }
@@ -216,17 +243,15 @@ fun ExpensesScreen(
                         )
 
                     }
-                    Spacer(modifier = Modifier.height(SpaceMini))
 
-                    Divider(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(SpaceMedium)
-                    )
-                    Spacer(modifier = Modifier.height(SpaceMini))
+                    Spacer(modifier = Modifier.height(SpaceSmallMax))
+                    Divider(modifier = Modifier.fillMaxWidth())
+                    Spacer(modifier = Modifier.height(SpaceSmallMax))
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(SpaceSmall),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -258,28 +283,39 @@ fun ExpensesScreen(
                     LazyColumn(
                         state = lazyListState
                     ) {
-                        itemsIndexed(
-                            items = state.data,
-                            key = { index, item ->
-                                item.expenseName.plus(index + item.expenseId)
-                            }
-                        ) { index,  expense ->
-                            ExpensesData(
-                                item = expense,
-                                doesSelected = {
-                                    selectedItems.contains(it)
-                                },
-                                onClick = {
-                                    if (selectedItems.isNotEmpty()) {
-                                        viewModel.selectItem(it)
-                                    }
-                                },
-                                onLongClick = viewModel::selectItem
-                            )
+                        val grouped = state.data.groupBy { it.expenseName }
 
-                            if (index == state.data.size - 1) {
-                                Spacer(modifier = Modifier.height(SpaceLarge))
-                                Spacer(modifier = Modifier.height(SpaceLarge))
+                        grouped.forEach { (_, expenses) ->
+                            if (expenses.size > 1) {
+                                item {
+                                    GroupedExpensesData(
+                                        items = expenses,
+                                        doesSelected = {
+                                            selectedItems.contains(it)
+                                        },
+                                        onClick = {
+                                            if (selectedItems.isNotEmpty()) {
+                                                viewModel.selectItem(it)
+                                            }
+                                        },
+                                        onLongClick = viewModel::selectItem
+                                    )
+                                }
+                            }else {
+                                item {
+                                    ExpensesData(
+                                        item = expenses.first(),
+                                        doesSelected = {
+                                            selectedItems.contains(it)
+                                        },
+                                        onClick = {
+                                            if (selectedItems.isNotEmpty()) {
+                                                viewModel.selectItem(it)
+                                            }
+                                        },
+                                        onLongClick = viewModel::selectItem
+                                    )
+                                }
                             }
                         }
                     }
@@ -357,9 +393,8 @@ fun ExpensesData(
 ) {
     val borderStroke = if (doesSelected(item.expenseId)) border else null
 
-    ListItem(
+    Card(
         modifier = modifier
-            .testTag(EXPENSE_TAG.plus(item.expenseId))
             .fillMaxWidth()
             .padding(SpaceSmall)
             .then(borderStroke?.let {
@@ -374,27 +409,185 @@ fun ExpensesData(
                     onLongClick(item.expenseId)
                 },
             ),
-        headlineContent = {
-            Text(
-                text = item.expenseName,
-                style = MaterialTheme.typography.labelLarge
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.secondary
+        )
+    ) {
+        Column(
+            modifier = modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            ListItem(
+                modifier = modifier
+                    .testTag(EXPENSE_TAG.plus(item.expenseId))
+                    .fillMaxWidth(),
+                headlineContent = {
+                    Text(
+                        text = item.expenseName,
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                },
+                supportingContent = {
+                    Text(text = item.expenseAmount.toRupee)
+                },
+                leadingContent = {
+                    CircularBox(
+                        icon = Icons.Default.Person,
+                        doesSelected = doesSelected(item.expenseId),
+                        text = item.expenseName
+                    )
+                },
+                trailingContent = {
+                    NoteText(
+                        text = item.expenseDate.toPrettyDate(),
+                        icon = Icons.Default.CalendarMonth
+                    )
+                }
             )
-        },
-        supportingContent = {
-            Text(text = item.expenseAmount.toRupee)
-        },
-        leadingContent = {
-            CircularBox(
-                icon = Icons.Default.Person,
-                doesSelected = doesSelected(item.expenseId),
-                text = item.expenseName
-            )
-        },
-        trailingContent = {
-            StandardOutlinedAssistChip(
-                text = item.expenseDate.toPrettyDate(),
-                icon = Icons.Default.CalendarMonth
-            )
+
+            if (item.expenseNote.isNotEmpty()) {
+                NoteText(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(SpaceSmall),
+                    text = item.expenseNote,
+                    icon = Icons.Default.TurnedInNot,
+                    color = MaterialTheme.colorScheme.onSecondary
+                )
+            }
         }
-    )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun GroupedExpensesData(
+    modifier: Modifier = Modifier,
+    items: List<Expense>,
+    doesSelected: (Int) -> Boolean,
+    onClick: (Int) -> Unit,
+    onLongClick: (Int) -> Unit,
+    border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
+) {
+    val item = items.first()
+    val totalAmount = items.sumOf { it.expenseAmount.toInt() }.toString()
+    val notes = items.map { it.expenseNote }
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(SpaceSmall),
+    ) {
+        Column(
+            modifier = modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            ListItem(
+                modifier = modifier
+                    .fillMaxWidth(),
+                headlineContent = {
+                    Text(
+                        text = item.expenseName,
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                },
+                supportingContent = {
+                    Text(text = totalAmount.toRupee)
+                },
+                leadingContent = {
+                    CircularBox(
+                        icon = Icons.Default.Person,
+                        doesSelected = false,
+                        text = item.expenseName
+                    )
+                },
+                trailingContent = {
+                    NoteText(
+                        text = item.expenseDate.toPrettyDate(),
+                        icon = Icons.Default.CalendarMonth
+                    )
+                }
+            )
+
+            Spacer(modifier = Modifier.height(SpaceMini))
+
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(SpaceSmall),
+                crossAxisSpacing = SpaceMini,
+                mainAxisAlignment = FlowMainAxisAlignment.Center,
+                crossAxisAlignment = FlowCrossAxisAlignment.Center
+            ) {
+                items.forEach { expense ->
+                    val borderStroke = if (doesSelected(expense.expenseId)) border else null
+
+                    ElevatedCard(
+                        modifier = modifier
+                            .testTag(EXPENSE_TAG.plus(expense.expenseId))
+                            .then(borderStroke?.let {
+                                Modifier.border(it, RoundedCornerShape(SpaceMini))
+                            } ?: Modifier)
+                            .clip(RoundedCornerShape(SpaceMini))
+                            .combinedClickable(
+                                onClick = {
+                                    onClick(expense.expenseId)
+                                },
+                                onLongClick = {
+                                    onLongClick(expense.expenseId)
+                                },
+                            ),
+                        elevation = CardDefaults.elevatedCardElevation(
+                            defaultElevation = 2.dp
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(SpaceSmall),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Icon(
+                                imageVector = if (doesSelected(expense.expenseId))
+                                    Icons.Default.Check else Icons.Default.CurrencyRupee,
+                                contentDescription = null,
+                                modifier = Modifier.size(IconSizeSmall)
+                            )
+
+                            Spacer(modifier = Modifier.width(SpaceMini))
+
+                            Text(
+                                text = expense.expenseAmount,
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(SpaceSmall))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(SpaceMini))
+
+            if (notes.isNotEmpty()) {
+                Divider(modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(SpaceMini))
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(SpaceSmall),
+                ) {
+                    notes.forEach { note ->
+                        NoteText(
+                            text = note,
+                            icon = Icons.Default.StickyNote2,
+                            color = MaterialTheme.colorScheme.error
+                        ) 
+                        Spacer(modifier = Modifier.height(SpaceMini))
+                    }
+                }
+            }
+        }
+    }
 }
