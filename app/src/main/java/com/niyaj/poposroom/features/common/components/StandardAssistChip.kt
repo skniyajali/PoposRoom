@@ -49,6 +49,7 @@ fun StandardOutlinedAssistChip(
     modifier: Modifier = Modifier,
     text: String,
     icon: ImageVector,
+    trailingIcon: ImageVector? = null,
     borderColor: Color = MaterialTheme.colorScheme.secondary,
     onClick: () -> Unit = {},
 ) {
@@ -67,6 +68,11 @@ fun StandardOutlinedAssistChip(
                 contentDescription = null,
                 modifier = Modifier.size(IconSizeSmall)
             )
+        },
+        trailingIcon = {
+            trailingIcon?.let {
+                Icon(imageVector = it, contentDescription = null)
+            }
         },
         border = AssistChipDefaults.assistChipBorder(
             borderColor = borderColor

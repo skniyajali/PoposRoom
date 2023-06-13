@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CurrencyRupee
@@ -203,70 +204,14 @@ fun ExpensesScreen(
             modifier = Modifier
                 .padding(SpaceSmall),
         ) {
-            ElevatedCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(SpaceSmall)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(SpaceSmall),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            CircularBox(
-                                icon = Icons.Default.TrendingUp,
-                                doesSelected = false,
-                            )
-                            Spacer(modifier = Modifier.width(SpaceSmall))
-                            Text(
-                                text = "Total Expenses",
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                        }
-
-                        StandardOutlinedAssistChip(
-                            text = selectedDate,
-                            icon = Icons.Default.CalendarMonth,
-                            onClick = {
-                                dialogState.show()
-                            }
-                        )
-
-                    }
-
-                    Spacer(modifier = Modifier.height(SpaceSmallMax))
-                    Divider(modifier = Modifier.fillMaxWidth())
-                    Spacer(modifier = Modifier.height(SpaceSmallMax))
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(SpaceSmall),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = totalAmount,
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                        NoteText(
-                            text = "Total $totalItem Expenses",
-                            icon = Icons.Default.TrendingUp
-                        )
-                    }
-
+            TotalExpenses(
+                totalAmount = totalAmount,
+                totalItem = totalItem,
+                selectedDate = selectedDate,
+                onDateClick = {
+                    dialogState.show()
                 }
-            }
+            )
 
             when(state) {
                 is UiState.Empty -> {
@@ -380,6 +325,76 @@ fun ExpensesScreen(
     }
 }
 
+@Composable
+fun TotalExpenses(
+    totalAmount: String,
+    totalItem: String,
+    selectedDate: String,
+    onDateClick: () -> Unit,
+) {
+    ElevatedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(SpaceSmall)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SpaceSmall),
+            horizontalAlignment = Alignment.Start
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CircularBox(
+                        icon = Icons.Default.TrendingUp,
+                        doesSelected = false,
+                    )
+                    Spacer(modifier = Modifier.width(SpaceSmall))
+                    Text(
+                        text = "Total Expenses",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+
+                StandardOutlinedAssistChip(
+                    text = selectedDate,
+                    icon = Icons.Default.CalendarMonth,
+                    onClick = onDateClick,
+                    trailingIcon = Icons.Default.ArrowDropDown
+                )
+
+            }
+
+            Spacer(modifier = Modifier.height(SpaceSmallMax))
+            Divider(modifier = Modifier.fillMaxWidth())
+            Spacer(modifier = Modifier.height(SpaceSmallMax))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(SpaceSmall),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = totalAmount,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                NoteText(
+                    text = "Total $totalItem Expenses",
+                    icon = Icons.Default.TrendingUp
+                )
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
