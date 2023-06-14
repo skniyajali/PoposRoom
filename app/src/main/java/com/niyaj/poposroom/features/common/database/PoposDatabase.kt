@@ -24,6 +24,9 @@ import com.niyaj.poposroom.features.employee_payment.domain.model.EmployeeWithPa
 import com.niyaj.poposroom.features.employee_payment.domain.model.Payment
 import com.niyaj.poposroom.features.expenses.data.dao.ExpenseDao
 import com.niyaj.poposroom.features.expenses.domain.model.Expense
+import com.niyaj.poposroom.features.product.data.dao.ProductDao
+import com.niyaj.poposroom.features.product.domain.model.CategoryWithProductCrossRef
+import com.niyaj.poposroom.features.product.domain.model.Product
 
 @Database(
     entities = [
@@ -38,8 +41,10 @@ import com.niyaj.poposroom.features.expenses.domain.model.Expense
         Absent::class,
         EmployeeWithAbsentCrossRef::class,
         Expense::class,
+        Product::class,
+        CategoryWithProductCrossRef::class,
     ],
-    version = 1,
+    version = 2,
     autoMigrations = [],
     exportSchema = true,
 )
@@ -54,4 +59,5 @@ abstract class PoposDatabase : RoomDatabase() {
     abstract fun paymentDao(): PaymentDao
     abstract fun absentDao(): AbsentDao
     abstract fun expenseDao(): ExpenseDao
+    abstract fun productDao(): ProductDao
 }
