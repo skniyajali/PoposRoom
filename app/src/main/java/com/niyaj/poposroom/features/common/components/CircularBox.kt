@@ -35,6 +35,8 @@ fun CircularBox(
 ) {
     val availBorder = if (showBorder) BorderStroke(1.dp, MaterialTheme.colorScheme.inversePrimary) else null
 
+    val textStyle = if (size < 40.dp) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelLarge
+
     Box(
         modifier = Modifier
             .size(size)
@@ -61,7 +63,7 @@ fun CircularBox(
             }else {
                 Text(
                     text = getAllCapitalizedLetters(text).take(2),
-                    style = MaterialTheme.typography.labelLarge
+                    style = textStyle
                 )
             }
         }
