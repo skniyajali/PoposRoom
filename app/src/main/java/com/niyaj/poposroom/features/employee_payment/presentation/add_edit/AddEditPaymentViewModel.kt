@@ -200,9 +200,9 @@ class AddEditPaymentViewModel @Inject constructor(
                 paymentModeError,
                 paymentNoteError,
                 paymentTypeError
-            ).all { it.value == null }
+            ).all { it.value != null }
 
-            if (hasError) {
+            if (!hasError) {
                 val newPayment = Payment(
                     paymentId = paymentId,
                     employeeId = state.employeeId,

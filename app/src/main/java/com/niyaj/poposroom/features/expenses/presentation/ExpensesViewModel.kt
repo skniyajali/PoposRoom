@@ -70,7 +70,7 @@ class ExpensesViewModel @Inject constructor(
         viewModelScope.launch(ioDispatcher) {
             when (val result = expenseRepository.deleteExpenses(selectedItems.toList())) {
                 is Resource.Error -> {
-                    mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable to delete charges"))
+                    mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable to delete expenses"))
                 }
 
                 is Resource.Success -> {
