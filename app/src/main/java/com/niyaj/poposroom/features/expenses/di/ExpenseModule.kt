@@ -24,17 +24,17 @@ object ExpenseModule {
 
     @Provides
     fun provideExpenseValidationRepository(
-        chargesDao: ExpenseDao,
+        expenseDao: ExpenseDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): ExpenseValidationRepository {
-        return ExpenseRepositoryImpl(chargesDao, ioDispatcher)
+        return ExpenseRepositoryImpl(expenseDao, ioDispatcher)
     }
 
     @Provides
     fun provideExpenseRepository(
-        chargesDao: ExpenseDao,
+        expenseDao: ExpenseDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): ExpenseRepository {
-        return ExpenseRepositoryImpl(chargesDao, ioDispatcher)
+        return ExpenseRepositoryImpl(expenseDao, ioDispatcher)
     }
 }

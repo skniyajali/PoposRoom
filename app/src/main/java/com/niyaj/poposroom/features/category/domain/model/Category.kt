@@ -29,3 +29,9 @@ fun List<Category>.searchCategory(searchText: String): List<Category> {
         }
     }else this
 }
+
+fun Category.filterCategory(searchText: String): Boolean {
+    return if (searchText.isNotEmpty()) {
+        this.categoryName.contains(searchText, true)
+    }else true
+}
