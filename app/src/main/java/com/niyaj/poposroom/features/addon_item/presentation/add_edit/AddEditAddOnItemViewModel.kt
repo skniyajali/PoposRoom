@@ -75,8 +75,7 @@ class AddEditAddOnItemViewModel @Inject constructor(
             }
 
             is AddEditAddOnItemEvent.ItemPriceChanged -> {
-                addEditState = addEditState.copy(itemPrice = safeInt(event.itemPrice))
-
+                addEditState = addEditState.copy(itemPrice = event.itemPrice.safeInt())
             }
 
             is AddEditAddOnItemEvent.ItemApplicableChanged -> {

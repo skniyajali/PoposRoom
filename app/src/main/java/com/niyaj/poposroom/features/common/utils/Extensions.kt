@@ -18,18 +18,6 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-fun safeInt(price: String): Int{
-    return if(price.isEmpty()){
-        0
-    } else{
-        try {
-            price.toInt()
-        }catch (e: NumberFormatException) {
-            0
-        }
-    }
-}
-
 val Int.safeString: String
     get() = if (this == 0) "" else this.toString()
 
@@ -142,7 +130,7 @@ fun toMonthAndYear(date: String): String {
 
     return if (currentYear == format) {
         SimpleDateFormat("MMMM", Locale.getDefault()).format(date.toLong()).toString()
-    }else {
+    } else {
         SimpleDateFormat("MMMM yy", Locale.getDefault()).format(date.toLong()).toString()
     }
 }
@@ -166,14 +154,17 @@ fun String.toPrettyDate(): String {
                     //here return like "Tomorrow at 12:00"
                     "Tomorrow"
                 }
+
                 nowTime[Calendar.DATE] == neededTime[Calendar.DATE] -> {
                     //here return like "Today at 12:00"
                     "Today"
                 }
+
                 nowTime[Calendar.DATE] - neededTime[Calendar.DATE] == 1 -> {
                     //here return like "Yesterday at 12:00"
                     "Yesterday"
                 }
+
                 else -> {
                     //here return like "May 31, 12:00"
                     SimpleDateFormat("MMMM dd", Locale.getDefault()).format(Date(this.toLong()))
@@ -186,6 +177,44 @@ fun String.toPrettyDate(): String {
     } else {
         //here return like "May 31 2022, 12:00" - it's a different year we need to show it
         SimpleDateFormat("MMMM dd yyyy", Locale.getDefault()).format(Date(this.toLong()))
+    }
+}
+
+fun Date.toPrettyDate(): String {
+    val nowTime = Calendar.getInstance()
+    val neededTime = Calendar.getInstance()
+    neededTime.timeInMillis = this.time
+
+    return if (neededTime[Calendar.YEAR] == nowTime[Calendar.YEAR]) {
+        if (neededTime[Calendar.MONTH] == nowTime[Calendar.MONTH]) {
+            when {
+                neededTime[Calendar.DATE] - nowTime[Calendar.DATE] == 1 -> {
+                    //here return like "Tomorrow at 12:00"
+                    "Tomorrow"
+                }
+
+                nowTime[Calendar.DATE] == neededTime[Calendar.DATE] -> {
+                    //here return like "Today at 12:00"
+                    "Today"
+                }
+
+                nowTime[Calendar.DATE] - neededTime[Calendar.DATE] == 1 -> {
+                    //here return like "Yesterday at 12:00"
+                    "Yesterday"
+                }
+
+                else -> {
+                    //here return like "May 31, 12:00"
+                    SimpleDateFormat("MMMM dd", Locale.getDefault()).format(this)
+                }
+            }
+        } else {
+            //here return like "May 31, 12:00"
+            SimpleDateFormat("MMMM dd", Locale.getDefault()).format(this)
+        }
+    } else {
+        //here return like "May 31 2022, 12:00" - it's a different year we need to show it
+        SimpleDateFormat("MMMM dd yyyy", Locale.getDefault()).format(this)
     }
 }
 
@@ -240,6 +269,30 @@ fun calculateEndOfDayTime(date: String = "", days: String = ""): String {
     return calendar.timeInMillis.toString()
 }
 
+
+fun safeString(price: String): Int {
+    return if (price.isEmpty()) {
+        0
+    } else {
+        try {
+            price.toInt()
+        } catch (e: NumberFormatException) {
+            0
+        }
+    }
+}
+
+fun String.safeInt(): Int {
+    return if (this.isEmpty()) {
+        0
+    } else {
+        try {
+            this.toInt()
+        } catch (e: NumberFormatException) {
+            0
+        }
+    }
+}
 
 val startOfDayTime = LocalDate.now().toMilliSecond
 val endOfDayTime = calculateEndOfDayTime(startOfDayTime)
