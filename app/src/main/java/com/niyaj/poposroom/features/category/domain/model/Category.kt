@@ -8,14 +8,14 @@ import java.util.Date
 @Entity(tableName = "category")
 data class Category(
     @PrimaryKey(autoGenerate = true)
-    val categoryId: Int,
+    val categoryId: Int = 0,
 
-    val categoryName: String,
+    val categoryName: String = "",
 
-    val isAvailable: Boolean,
+    val isAvailable: Boolean = true,
 
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
-    val createdAt: Date,
+    val createdAt: Date = Date(),
 
     @ColumnInfo(defaultValue = "NULL")
     val updatedAt: Date? = null,
