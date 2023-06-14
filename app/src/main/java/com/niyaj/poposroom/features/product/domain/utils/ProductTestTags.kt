@@ -35,11 +35,7 @@ object ProductTestTags {
     const val PRODUCT_CATEGORY_EMPTY_ERROR = "Product category must not be empty."
 
     const val DELETE_PRODUCT_TITLE = "Delete Product?"
-    const val DELETE_PRODUCT_MESSAGE = "Are you sure to delete these employee?"
+    const val DELETE_PRODUCT_MESSAGE = "Are you sure to delete these products?"
 
-    const val PRODUCT_TAG = "Customer-"
-
-    //Details screen tags
-    const val PRODUCT_DETAILS_SCREEN = "Product DetailsScreen"
-    const val REMAINING_AMOUNT_TEXT = "remainingAmount"
+    const val PRODUCT_TAG = "Product-"
 }
