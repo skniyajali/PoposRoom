@@ -8,6 +8,7 @@ import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.ValidationResult
 import com.niyaj.poposroom.features.product.data.dao.ProductDao
 import com.niyaj.poposroom.features.product.domain.model.CategoryWithProduct
+import com.niyaj.poposroom.features.product.domain.model.CategoryWithProductCrossRef
 import com.niyaj.poposroom.features.product.domain.model.Product
 import com.niyaj.poposroom.features.product.domain.model.filterProducts
 import com.niyaj.poposroom.features.product.domain.repository.ProductRepository
@@ -168,6 +169,14 @@ class ProductRepositoryImpl(
                     if (category != null) {
                         val result = withContext(ioDispatcher) {
                             productDao.upsertProduct(newProduct)
+                        }
+
+                        if (result > 0) {
+                            withContext(ioDispatcher) {
+                                productDao.upsertCategoryWithProductCrossReference(
+                                    CategoryWithProductCrossRef(newProduct.categoryId, result.toInt())
+                                )
+                            }
                         }
 
                         Resource.Success(result > 0)
