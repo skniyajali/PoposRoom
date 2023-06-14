@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AllInbox
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -31,6 +32,7 @@ import com.niyaj.poposroom.features.destinations.CustomerScreenDestination
 import com.niyaj.poposroom.features.destinations.EmployeeScreenDestination
 import com.niyaj.poposroom.features.destinations.ExpensesScreenDestination
 import com.niyaj.poposroom.features.destinations.PaymentScreenDestination
+import com.niyaj.poposroom.features.destinations.ProductScreenDestination
 import com.ramcosta.composedestinations.navigation.navigate
 
 @Composable
@@ -134,6 +136,16 @@ fun DrawerContent(
             selected = currentRoute == ExpensesScreenDestination.route,
             onClick = {
                 navController.navigate(ExpensesScreenDestination())
+            },
+            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+        )
+
+        NavigationDrawerItem(
+            icon = { Icon(Icons.Default.AllInbox, contentDescription = null) },
+            label = { Text("Products") },
+            selected = currentRoute == ProductScreenDestination.route,
+            onClick = {
+                navController.navigate(ProductScreenDestination())
             },
             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
         )
