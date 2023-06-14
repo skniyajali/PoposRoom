@@ -1,5 +1,6 @@
 package com.niyaj.poposroom.features.product.data.dao
 
+import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -12,6 +13,7 @@ import com.niyaj.poposroom.features.product.domain.model.CategoryWithProductCros
 import com.niyaj.poposroom.features.product.domain.model.Product
 import kotlinx.coroutines.flow.Flow
 
+@Dao
 interface ProductDao {
 
     @Transaction
