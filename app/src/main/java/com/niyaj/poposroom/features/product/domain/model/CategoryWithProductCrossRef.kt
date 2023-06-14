@@ -10,7 +10,7 @@ import com.niyaj.poposroom.features.category.domain.model.Category
 
 
 @Entity(
-    primaryKeys = ["productId", "absentId"],
+    primaryKeys = ["productId", "categoryId"],
     foreignKeys = [
         ForeignKey(
             entity = Product::class,
@@ -30,10 +30,10 @@ import com.niyaj.poposroom.features.category.domain.model.Category
 )
 data class CategoryWithProductCrossRef(
     @ColumnInfo(index = true)
-    val productId: Int,
+    val categoryId: Int,
 
     @ColumnInfo(index = true)
-    val categoryId: Int
+    val productId: Int
 )
 
 
