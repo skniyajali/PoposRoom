@@ -35,7 +35,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -124,12 +123,6 @@ fun AddEditEmployeeScreen(
     val title = if (employeeId == 0) CREATE_NEW_EMPLOYEE else EDIT_EMPLOYEE
 
     var expanded by remember { mutableStateOf(false) }
-
-    val positions by remember(viewModel.state.employeePosition) {
-        derivedStateOf {
-            positions.filter { it.contains(viewModel.state.employeePosition) }
-        }
-    }
 
     val dialogState = rememberMaterialDialogState()
 
