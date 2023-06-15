@@ -5,8 +5,6 @@ import com.niyaj.poposroom.features.employee.domain.model.Employee
 
 sealed interface AddEditAbsentEvent {
 
-    data class EmployeeChanged(val employeeId: Int) : AddEditAbsentEvent
-
     data class OnSelectEmployee(val employee: Employee) : AddEditAbsentEvent
 
     data class AbsentDateChanged(val absentDate: String) : AddEditAbsentEvent
