@@ -6,7 +6,6 @@ import com.niyaj.poposroom.features.employee.domain.utils.PaymentType
 import java.time.LocalDate
 
 data class AddEditPaymentState(
-    val employeeId: Int = 0,
     val paymentAmount: String = "",
     val paymentNote: String = "",
     val paymentDate: String = LocalDate.now().toMilliSecond,
