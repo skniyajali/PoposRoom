@@ -7,15 +7,12 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.niyaj.poposroom.features.common.utils.Dispatcher
-import com.niyaj.poposroom.features.common.utils.PoposDispatchers
 import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.employee.domain.model.Employee
 import com.niyaj.poposroom.features.employee.domain.repository.EmployeeRepository
 import com.niyaj.poposroom.features.employee.domain.repository.EmployeeValidationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -32,7 +29,6 @@ import javax.inject.Inject
 class AddEditEmployeeViewModel @Inject constructor(
     private val employeeRepository: EmployeeRepository,
     private val validationRepository: EmployeeValidationRepository,
-    @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
@@ -128,7 +124,7 @@ class AddEditEmployeeViewModel @Inject constructor(
     }
 
     private fun getCustomerById(itemId: Int) {
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             when (val result = employeeRepository.getEmployeeById(itemId)) {
                 is Resource.Error -> {
                     _eventFlow.emit(UiEvent.OnError("Unable to find employee"))
@@ -152,7 +148,7 @@ class AddEditEmployeeViewModel @Inject constructor(
     }
 
     private fun createOrUpdateCustomer(employeeId: Int = 0) {
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             val hasError = listOf(phoneError, nameError, salaryError, positionError).all {
                 it.value != null
             }
