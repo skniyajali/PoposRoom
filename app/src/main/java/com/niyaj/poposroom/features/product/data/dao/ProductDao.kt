@@ -34,7 +34,7 @@ interface ProductDao {
     suspend fun getCategoryById(categoryId: Int): Category?
 
     @Query(value = """
-        SELECT * FROM product ORDER BY createdAt DESC
+        SELECT * FROM product ORDER BY categoryId ASC, productPrice ASC
     """)
     fun getAllProduct(): Flow<List<Product>>
 

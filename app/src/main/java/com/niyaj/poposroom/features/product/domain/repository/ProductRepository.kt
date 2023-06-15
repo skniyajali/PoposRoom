@@ -14,7 +14,7 @@ interface ProductRepository {
 
     suspend fun getAllCategoryProducts(searchText: String): Flow<List<CategoryWithProduct>>
 
-    suspend fun getAllProduct(searchText: String): Flow<List<Product>>
+    suspend fun getAllProduct(searchText: String, selectedCategory: Int = 0): Flow<List<Product>>
 
     suspend fun getProductById(productId: Int): Resource<Product?>
 

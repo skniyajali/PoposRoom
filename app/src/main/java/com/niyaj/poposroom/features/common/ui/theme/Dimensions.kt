@@ -15,9 +15,9 @@ val ProfilePictureSizeSmall = 50.dp
 val ProfilePictureSizeExtraSmall = 30.dp
 
 val IconSizeMini = 12.dp
-val IconSizeSmall = 15.dp
-val IconSizeMedium = 25.dp
-val IconSizeLarge = 35.dp
+val IconSizeSmall = 18.dp
+val IconSizeMedium = 24.dp
+val IconSizeLarge = 48.dp
 val IconSizeExtraLarge = 56.dp
 
 val ButtonSize = 50.dp

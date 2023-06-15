@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.niyaj.poposroom.features.common.ui.theme.IconSizeMini
 import com.niyaj.poposroom.features.common.ui.theme.IconSizeSmall
 
 @Composable
@@ -34,7 +35,7 @@ fun StandardAssistChip(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                modifier = Modifier.size(IconSizeSmall)
+                modifier = Modifier.size(IconSizeMini)
             )
         },
         colors = AssistChipDefaults.elevatedAssistChipColors(
@@ -66,7 +67,7 @@ fun StandardOutlinedAssistChip(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                modifier = Modifier.size(IconSizeSmall)
+                modifier = Modifier.size(IconSizeMini)
             )
         },
         trailingIcon = {

@@ -53,10 +53,14 @@ class ProductRepositoryImpl(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun getAllProduct(searchText: String): Flow<List<Product>> {
+    override suspend fun getAllProduct(searchText: String, selectedCategory: Int): Flow<List<Product>> {
         return withContext(ioDispatcher) {
             productDao.getAllProduct().mapLatest { list ->
-                list.filterProducts(searchText)
+                if (selectedCategory != 0) {
+                    list.filter { it.categoryId == selectedCategory }
+                } else list
+            }.mapLatest {
+                it.filterProducts(searchText)
             }
         }
     }
