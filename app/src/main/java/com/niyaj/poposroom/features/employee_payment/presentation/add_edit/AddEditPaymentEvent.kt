@@ -7,8 +7,6 @@ import com.niyaj.poposroom.features.employee.domain.utils.PaymentType
 
 sealed interface AddEditPaymentEvent {
 
-    data class EmployeeChanged(val employeeId: Int) : AddEditPaymentEvent
-
     data class OnSelectEmployee(val employee: Employee) : AddEditPaymentEvent
 
     data class PaymentAmountChanged(val paymentAmount: String) : AddEditPaymentEvent

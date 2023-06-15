@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.ArrowRightAlt
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Description
@@ -45,6 +46,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,6 +62,7 @@ import com.niyaj.poposroom.features.common.ui.theme.SpaceSmallMax
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.toMilliSecond
 import com.niyaj.poposroom.features.common.utils.toPrettyDate
+import com.niyaj.poposroom.features.destinations.AddEditEmployeeScreenDestination
 import com.niyaj.poposroom.features.employee.domain.utils.PaymentMode
 import com.niyaj.poposroom.features.employee.domain.utils.PaymentType
 import com.niyaj.poposroom.features.employee_payment.domain.utils.PaymentScreenTags.ADD_EDIT_PAYMENT_ENTRY_BUTTON
@@ -77,6 +80,7 @@ import com.niyaj.poposroom.features.employee_payment.domain.utils.PaymentScreenT
 import com.niyaj.poposroom.features.employee_payment.domain.utils.PaymentScreenTags.PAYMENT_NOTE_FIELD
 import com.niyaj.poposroom.features.employee_payment.domain.utils.PaymentScreenTags.PAYMENT_TYPE_FIELD
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
@@ -152,7 +156,7 @@ fun AddEditPaymentScreen(
                     .testTag(ADD_EDIT_PAYMENT_ENTRY_BUTTON)
                     .padding(horizontal = SpaceSmallMax),
                 enabled = enableBtn,
-                text = if (paymentId == 0) CREATE_NEW_PAYMENT else EDIT_PAYMENT_ITEM,
+                text = title,
                 icon = if (paymentId == 0) Icons.Default.Add else Icons.Default.Edit,
                 onClick = {
                     viewModel.onEvent(AddEditPaymentEvent.CreateOrUpdatePayment(paymentId))
@@ -198,7 +202,7 @@ fun AddEditPaymentScreen(
                     )
 
                     DropdownMenu(
-                        expanded = employees.isNotEmpty() && employeeToggled,
+                        expanded = employeeToggled,
                         onDismissRequest = {
                             employeeToggled = false
                         },
@@ -212,9 +216,7 @@ fun AddEditPaymentScreen(
                                     .fillMaxWidth(),
                                 onClick = {
                                     viewModel.onEvent(AddEditPaymentEvent.OnSelectEmployee(employee))
-                                    viewModel.onEvent(
-                                        AddEditPaymentEvent.EmployeeChanged(employee.employeeId)
-                                    )
+
                                     employeeToggled = false
                                 },
                                 text = {
@@ -226,6 +228,54 @@ fun AddEditPaymentScreen(
                                 Divider(modifier = Modifier.fillMaxWidth(), color = Color.Gray, thickness = 0.8.dp)
                             }
                         }
+
+                        if (employees.isEmpty()) {
+                            DropdownMenuItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .align(Alignment.CenterHorizontally),
+                                enabled = false,
+                                onClick = {},
+                                text = {
+                                    Text(
+                                        text = "Employees not available",
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .align(Alignment.CenterHorizontally)
+                                    )
+                                },
+                            )
+                        }
+
+                        Divider(modifier = Modifier.fillMaxWidth())
+
+                        DropdownMenuItem(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            onClick = {
+                                navController.navigate(AddEditEmployeeScreenDestination())
+                            },
+                            text = {
+                                Text(
+                                    text = "Create a new employee",
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Create",
+                                    tint = MaterialTheme.colorScheme.secondary
+                                )
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowRightAlt,
+                                    contentDescription = "trailing"
+                                )
+                            }
+                        )
                     }
                 }
 
