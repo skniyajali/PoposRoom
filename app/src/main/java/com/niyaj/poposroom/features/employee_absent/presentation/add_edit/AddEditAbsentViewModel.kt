@@ -7,8 +7,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.niyaj.poposroom.features.common.utils.Dispatcher
-import com.niyaj.poposroom.features.common.utils.PoposDispatchers
 import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.employee.domain.model.Employee
@@ -16,7 +14,6 @@ import com.niyaj.poposroom.features.employee_absent.domain.model.Absent
 import com.niyaj.poposroom.features.employee_absent.domain.repository.AbsentRepository
 import com.niyaj.poposroom.features.employee_absent.domain.repository.AbsentValidationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +33,6 @@ import javax.inject.Inject
 class AddEditAbsentViewModel @Inject constructor(
     private val absentRepository: AbsentRepository,
     private val validationRepository: AbsentValidationRepository,
-    @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -113,7 +109,7 @@ class AddEditAbsentViewModel @Inject constructor(
     }
 
     private fun getAbsentById(itemId: Int) {
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             when(val result = absentRepository.getAbsentById(itemId)) {
                 is Resource.Error -> {
                     _eventFlow.emit(UiEvent.OnError("Unable to find employee absent"))
@@ -141,7 +137,7 @@ class AddEditAbsentViewModel @Inject constructor(
     }
 
     private fun createOrUpdateAbsent(absentId: Int = 0) {
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             val hasError = listOf(employeeError, dateError).all { it.value == null }
 
             if (hasError) {
