@@ -7,20 +7,28 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.TurnedInNot
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -32,13 +40,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.niyaj.poposroom.features.category.domain.model.Category
+import com.niyaj.poposroom.features.category.domain.utils.CategoryConstants
 import com.niyaj.poposroom.features.common.components.CircularBox
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
@@ -49,6 +61,7 @@ import com.niyaj.poposroom.features.common.event.UiState
 import com.niyaj.poposroom.features.common.ui.theme.SpaceLarge
 import com.niyaj.poposroom.features.common.ui.theme.SpaceMini
 import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
+import com.niyaj.poposroom.features.common.ui.theme.SpaceSmallMax
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.isScrolled
 import com.niyaj.poposroom.features.common.utils.toPrettyDate
@@ -84,12 +97,16 @@ fun ProductScreen(
 
     val lazyListState = rememberLazyListState()
 
-    val showFab = viewModel.totalItems.isNotEmpty()
+    val selectedCategory = viewModel.selectedCategory.collectAsStateWithLifecycle().value
+
+    val showFab = viewModel.totalItems.isNotEmpty() && selectedCategory == 0
 
     val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
+
+    val categories = viewModel.categories.collectAsStateWithLifecycle().value
 
     val openDialog = remember { mutableStateOf(false) }
 
@@ -123,6 +140,12 @@ fun ProductScreen(
                     snackbarState.showSnackbar(result.value)
                 }
             }
+        }
+    }
+
+    LaunchedEffect(key1 = selectedCategory) {
+        scope.launch {
+            lazyListState.animateScrollToItem(0)
         }
     }
 
@@ -177,7 +200,6 @@ fun ProductScreen(
             modifier = Modifier
                 .padding(SpaceSmall),
         ) {
-
             when(state) {
                 is UiState.Empty -> {
                     ItemNotAvailable(
@@ -190,6 +212,12 @@ fun ProductScreen(
                 }
                 is UiState.Loading -> LoadingIndicator()
                 is UiState.Success -> {
+                    CategoriesData(
+                        categories = categories,
+                        selectedCategory = selectedCategory,
+                        onSelect = viewModel::selectCategory
+                    )
+
                     LazyColumn(
                         state = lazyListState,
                     ) {
@@ -258,6 +286,72 @@ fun ProductScreen(
     }
 }
 
+
+@Composable
+fun CategoriesData(
+    categories: List<Category>,
+    selectedCategory: Int,
+    onSelect: (Int) -> Unit,
+) {
+    LazyRow(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        items(categories) { category ->
+            CategoryData(
+                item = category,
+                doesSelected = {
+                    selectedCategory == it
+                } ,
+                onClick = onSelect,
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CategoryData(
+    modifier: Modifier = Modifier,
+    item: Category,
+    doesSelected: (Int) -> Boolean,
+    onClick: (Int) -> Unit,
+    selectedColor: Color = MaterialTheme.colorScheme.secondary,
+    unselectedColor: Color = MaterialTheme.colorScheme.surface
+) {
+    val color = if (doesSelected(item.categoryId)) selectedColor else unselectedColor
+
+    ElevatedCard(
+        modifier = modifier
+            .testTag(CategoryConstants.CATEGORY_ITEM_TAG.plus(item.categoryId))
+            .padding(SpaceSmall),
+        onClick = {
+            onClick(item.categoryId)
+        },
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = color
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SpaceSmall),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            CircularBox(
+                icon = Icons.Default.Category,
+                doesSelected = doesSelected(item.categoryId),
+                size = 25.dp,
+                text = item.categoryName
+            )
+
+            Spacer(modifier = Modifier.width(SpaceSmallMax))
+
+            Text(text = item.categoryName)
+        }
+    }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProductData(
@@ -309,7 +403,7 @@ fun ProductData(
                         icon = Icons.Default.Person,
                         doesSelected = doesSelected(item.productId),
                         text = item.productName,
-                        showBorder = item.productAvailability,
+                        showBorder = !item.productAvailability,
                     )
                 },
                 trailingContent = {
