@@ -139,7 +139,7 @@ class AddEditProductViewModel @Inject constructor(
         }
     }
 
-    private fun createOrUpdateProduct(productId: Int? = null) {
+    private fun createOrUpdateProduct(productId: Int = 0) {
         viewModelScope.launch(ioDispatcher) {
             val hasError = listOf(nameError, priceError, categoryError).all {
                 it.value != null
@@ -147,6 +147,7 @@ class AddEditProductViewModel @Inject constructor(
 
             if (!hasError) {
                 val newProduct = Product(
+                    productId = productId,
                     categoryId = _selectedCategory.value.categoryId,
                     productName = state.productName,
                     productPrice = state.productPrice.safeInt(),

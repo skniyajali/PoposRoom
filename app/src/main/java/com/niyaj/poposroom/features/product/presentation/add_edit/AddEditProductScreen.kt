@@ -215,8 +215,6 @@ fun AddEditProductScreen(
                         }
 
                         if (categories.isEmpty()) {
-                            Divider(modifier = Modifier.fillMaxWidth())
-
                             DropdownMenuItem(
                                 modifier = Modifier
                                     .fillMaxWidth()
