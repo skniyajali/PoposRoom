@@ -66,22 +66,21 @@ class AddEditAbsentViewModel @Inject constructor(
         }
     }
 
-    val employeeError: StateFlow<String?> = snapshotFlow { state.employeeId }
+    val employeeError: StateFlow<String?> = _selectedEmployee
         .mapLatest {
-            validationRepository.validateAbsentEmployee(it).errorMessage
+            validationRepository.validateAbsentEmployee(it.employeeId).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = null
         )
 
-    private val observeEmployee = snapshotFlow { state.employeeId }
     private val observeDate = snapshotFlow { state.absentDate }
 
-    val dateError = observeEmployee.combine(observeDate) { emp, date ->
+    val dateError = _selectedEmployee.combine(observeDate) { emp, date ->
         validationRepository.validateAbsentDate(
             absentDate = date,
-            employeeId = emp,
+            employeeId = emp.employeeId,
             absentId = absentId
         ).errorMessage
     }.stateIn(
@@ -92,9 +91,6 @@ class AddEditAbsentViewModel @Inject constructor(
 
     fun onEvent(event: AddEditAbsentEvent) {
         when (event) {
-            is AddEditAbsentEvent.EmployeeChanged -> {
-                state = state.copy(employeeId = event.employeeId)
-            }
 
             is AddEditAbsentEvent.AbsentDateChanged -> {
                 state = state.copy(absentDate = event.absentDate)
@@ -124,8 +120,9 @@ class AddEditAbsentViewModel @Inject constructor(
                 }
                 is Resource.Success -> {
                     result.data?.let { absent ->
+                        getEmployeeById(absent.employeeId)
+
                         state = state.copy(
-                            employeeId = absent.employeeId,
                             absentDate = absent.absentDate,
                             absentReason = absent.absentReason
                         )
@@ -138,9 +135,7 @@ class AddEditAbsentViewModel @Inject constructor(
     private fun getEmployeeById(employeeId: Int) {
         viewModelScope.launch {
             absentRepository.getEmployeeById(employeeId)?.let { employee ->
-                _selectedEmployee.emit(employee)
-
-                state = state.copy(employeeId = employee.employeeId)
+                _selectedEmployee.value = employee
             }
         }
     }
@@ -152,7 +147,7 @@ class AddEditAbsentViewModel @Inject constructor(
             if (hasError) {
                 val newAbsent = Absent(
                     absentId = absentId,
-                    employeeId = state.employeeId,
+                    employeeId = _selectedEmployee.value.employeeId,
                     absentDate = state.absentDate,
                     absentReason = state.absentReason,
                     createdAt = Date(),
