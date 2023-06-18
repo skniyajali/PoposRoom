@@ -8,6 +8,7 @@ import java.util.Date
 @Entity(tableName = "charges")
 data class Charges(
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(index = true)
     val chargesId: Int,
 
     val chargesName: String,

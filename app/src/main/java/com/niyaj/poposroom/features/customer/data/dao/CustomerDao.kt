@@ -22,6 +22,16 @@ interface CustomerDao {
     """)
     fun getCustomerById(customerId: Int): Customer?
 
+
+    /**
+     * Get customerId from database if it exist by [customerPhone]
+     */
+    @Query(value = """
+        SELECT customerId FROM customer WHERE customerPhone = :customerPhone
+    """
+    )
+    suspend fun getCustomerByPhone(customerPhone: String): Int?
+
     /**
      * Inserts [Customer] into the db if they don't exist, and ignores those that do
      */

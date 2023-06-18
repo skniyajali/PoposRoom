@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "4f85f021e7337216417c811fc182a646",
+    "identityHash": "74cfb5959e0a11fb2520aa7e5eea9c44",
     "entities": [
       {
         "tableName": "addonitem",
@@ -53,7 +53,17 @@
             "itemId"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_addonitem_itemId",
+            "unique": false,
+            "columnNames": [
+              "itemId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_addonitem_itemId` ON `${TABLE_NAME}` (`itemId`)"
+          }
+        ],
         "foreignKeys": []
       },
       {
@@ -151,7 +161,17 @@
             "chargesId"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_charges_chargesId",
+            "unique": false,
+            "columnNames": [
+              "chargesId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_charges_chargesId` ON `${TABLE_NAME}` (`chargesId`)"
+          }
+        ],
         "foreignKeys": []
       },
       {
@@ -714,12 +734,408 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "product",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`productId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `categoryId` INTEGER NOT NULL, `productName` TEXT NOT NULL, `productPrice` INTEGER NOT NULL, `productDescription` TEXT NOT NULL, `productAvailability` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, `updatedAt` INTEGER DEFAULT NULL, FOREIGN KEY(`categoryId`) REFERENCES `category`(`categoryId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "productId",
+            "columnName": "productId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryId",
+            "columnName": "categoryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productName",
+            "columnName": "productName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productPrice",
+            "columnName": "productPrice",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productDescription",
+            "columnName": "productDescription",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productAvailability",
+            "columnName": "productAvailability",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "CURRENT_TIMESTAMP"
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": false,
+            "defaultValue": "NULL"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "productId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_product_categoryId",
+            "unique": false,
+            "columnNames": [
+              "categoryId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_product_categoryId` ON `${TABLE_NAME}` (`categoryId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "category",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "categoryId"
+            ],
+            "referencedColumns": [
+              "categoryId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "CategoryWithProductCrossRef",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`categoryId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, PRIMARY KEY(`productId`, `categoryId`), FOREIGN KEY(`productId`) REFERENCES `product`(`productId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`categoryId`) REFERENCES `category`(`categoryId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "categoryId",
+            "columnName": "categoryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productId",
+            "columnName": "productId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "productId",
+            "categoryId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_CategoryWithProductCrossRef_categoryId",
+            "unique": false,
+            "columnNames": [
+              "categoryId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_CategoryWithProductCrossRef_categoryId` ON `${TABLE_NAME}` (`categoryId`)"
+          },
+          {
+            "name": "index_CategoryWithProductCrossRef_productId",
+            "unique": false,
+            "columnNames": [
+              "productId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_CategoryWithProductCrossRef_productId` ON `${TABLE_NAME}` (`productId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "product",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "productId"
+            ],
+            "referencedColumns": [
+              "productId"
+            ]
+          },
+          {
+            "table": "category",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "categoryId"
+            ],
+            "referencedColumns": [
+              "categoryId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "cartorder",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cartOrderId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `orderId` INTEGER NOT NULL, `orderType` TEXT NOT NULL, `orderStatus` TEXT NOT NULL, `doesChargesIncluded` INTEGER NOT NULL, `addressId` INTEGER NOT NULL, `customerId` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, `updatedAt` INTEGER DEFAULT NULL)",
+        "fields": [
+          {
+            "fieldPath": "cartOrderId",
+            "columnName": "cartOrderId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "orderId",
+            "columnName": "orderId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "orderType",
+            "columnName": "orderType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "orderStatus",
+            "columnName": "orderStatus",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "doesChargesIncluded",
+            "columnName": "doesChargesIncluded",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "addressId",
+            "columnName": "addressId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "customerId",
+            "columnName": "customerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "CURRENT_TIMESTAMP"
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": false,
+            "defaultValue": "NULL"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "cartOrderId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_cartorder_addressId",
+            "unique": false,
+            "columnNames": [
+              "addressId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_cartorder_addressId` ON `${TABLE_NAME}` (`addressId`)"
+          },
+          {
+            "name": "index_cartorder_customerId",
+            "unique": false,
+            "columnNames": [
+              "customerId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_cartorder_customerId` ON `${TABLE_NAME}` (`customerId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "cart_addon_items",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cartOrderId` INTEGER NOT NULL, `itemId` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(`cartOrderId`, `itemId`), FOREIGN KEY(`cartOrderId`) REFERENCES `cartorder`(`cartOrderId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`itemId`) REFERENCES `addonitem`(`itemId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "cartOrderId",
+            "columnName": "cartOrderId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "itemId",
+            "columnName": "itemId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "CURRENT_TIMESTAMP"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "cartOrderId",
+            "itemId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_cart_addon_items_cartOrderId",
+            "unique": false,
+            "columnNames": [
+              "cartOrderId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_cart_addon_items_cartOrderId` ON `${TABLE_NAME}` (`cartOrderId`)"
+          },
+          {
+            "name": "index_cart_addon_items_itemId",
+            "unique": false,
+            "columnNames": [
+              "itemId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_cart_addon_items_itemId` ON `${TABLE_NAME}` (`itemId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "cartorder",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "cartOrderId"
+            ],
+            "referencedColumns": [
+              "cartOrderId"
+            ]
+          },
+          {
+            "table": "addonitem",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "itemId"
+            ],
+            "referencedColumns": [
+              "itemId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "cart_charges",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cartOrderId` INTEGER NOT NULL, `chargesId` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(`cartOrderId`, `chargesId`), FOREIGN KEY(`cartOrderId`) REFERENCES `cartorder`(`cartOrderId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`chargesId`) REFERENCES `charges`(`chargesId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "cartOrderId",
+            "columnName": "cartOrderId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chargesId",
+            "columnName": "chargesId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "CURRENT_TIMESTAMP"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "cartOrderId",
+            "chargesId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_cart_charges_cartOrderId",
+            "unique": false,
+            "columnNames": [
+              "cartOrderId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_cart_charges_cartOrderId` ON `${TABLE_NAME}` (`cartOrderId`)"
+          },
+          {
+            "name": "index_cart_charges_chargesId",
+            "unique": false,
+            "columnNames": [
+              "chargesId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_cart_charges_chargesId` ON `${TABLE_NAME}` (`chargesId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "cartorder",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "cartOrderId"
+            ],
+            "referencedColumns": [
+              "cartOrderId"
+            ]
+          },
+          {
+            "table": "charges",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "chargesId"
+            ],
+            "referencedColumns": [
+              "chargesId"
+            ]
+          }
+        ]
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4f85f021e7337216417c811fc182a646')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '74cfb5959e0a11fb2520aa7e5eea9c44')"
     ]
   }
 }

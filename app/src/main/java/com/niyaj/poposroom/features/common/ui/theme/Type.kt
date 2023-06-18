@@ -116,7 +116,7 @@ val Typography = Typography(
         fontFamily = fontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
-        letterSpacing = 0.5.sp
+        letterSpacing = 0.25.sp
     ),
     labelSmall = TextStyle(
         fontFamily = fontFamily,

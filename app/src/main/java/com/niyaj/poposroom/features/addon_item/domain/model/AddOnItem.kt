@@ -8,6 +8,7 @@ import java.util.Date
 @Entity(tableName = "addonitem")
 data class AddOnItem(
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(index = true)
     val itemId: Int,
 
     val itemName: String,

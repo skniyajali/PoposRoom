@@ -8,7 +8,7 @@ import java.util.Date
 @Entity(tableName = "customer")
 data class Customer(
     @PrimaryKey(autoGenerate = true)
-    val customerId: Int,
+    val customerId: Int = 0,
 
     val customerName: String? = null,
 
@@ -17,7 +17,7 @@ data class Customer(
     val customerEmail: String? = null,
 
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
-    val createdAt: Date,
+    val createdAt: Date = Date(),
 
     @ColumnInfo(defaultValue = "NULL")
     val updatedAt: Date? = null,

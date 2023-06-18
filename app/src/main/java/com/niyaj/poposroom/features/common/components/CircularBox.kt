@@ -3,7 +3,10 @@ package com.niyaj.poposroom.features.common.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
@@ -46,8 +49,8 @@ fun CircularBox(
             .clip(CircleShape)
             .background(backgroundColor)
             .then(availBorder?.let {
-                    Modifier.border(it, CircleShape)
-                } ?: Modifier),
+                Modifier.border(it, CircleShape)
+            } ?: Modifier),
         contentAlignment = Alignment.Center,
     ) {
         if (text.isNullOrEmpty()) {
@@ -71,6 +74,61 @@ fun CircularBox(
                     style = textStyle
                 )
             }
+        }
+    }
+}
+
+
+@Composable
+fun CircularBoxWithIcon(
+    text: String,
+    icon: ImageVector,
+    doesSelected: Boolean,
+    showBorder: Boolean = false,
+    size: Dp = 40.dp,
+    selectedIcon: ImageVector = Icons.Default.Check,
+    backgroundColor: Color = MaterialTheme.colorScheme.background,
+    selectedTint: Color = MaterialTheme.colorScheme.primary,
+    unselectedTint: Color = MaterialTheme.colorScheme.surfaceTint,
+) {
+    val availBorder = if (showBorder) BorderStroke(1.dp, MaterialTheme.colorScheme.error) else null
+
+    val textStyle = if (size < 40.dp) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelMedium
+    val iconSize = if (size < 40.dp) IconSizeSmall else IconSizeMedium
+
+    Box(
+        modifier = Modifier
+            .size(size)
+            .clip(CircleShape)
+            .background(backgroundColor)
+            .then(availBorder?.let {
+                Modifier.border(it, CircleShape)
+            } ?: Modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            if (doesSelected) {
+                Icon(
+                    imageVector = selectedIcon,
+                    contentDescription = "",
+                    tint = selectedTint,
+                    modifier = Modifier.size(iconSize)
+                )
+            }else {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = "",
+                    tint = unselectedTint,
+                    modifier = Modifier.size(iconSize)
+                )
+
+                Text(text = text, style = textStyle)
+            }
+
         }
     }
 }

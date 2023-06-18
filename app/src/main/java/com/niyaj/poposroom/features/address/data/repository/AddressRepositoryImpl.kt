@@ -39,24 +39,22 @@ class AddressRepositoryImpl(
         }
     }
 
-    override suspend fun addOrIgnoreAddress(newAddress: Address): Resource<Boolean> {
+    override suspend fun addOrIgnoreAddress(newAddress: Address): Int {
         return try {
             withContext(ioDispatcher){
-                val validateAddressName = validateAddressName(newAddress.addressName, newAddress.addressId)
+                val validateAddressName = validateAddressName(newAddress.addressName)
                 val validateAddressShortName = validateAddressShortName(newAddress.shortName)
 
                 val hasError = listOf(validateAddressName, validateAddressShortName).any { !it.successful}
 
                 if (!hasError) {
-                    val result = addressDao.insertOrIgnoreAddress(newAddress)
-
-                    Resource.Success(result > 0)
+                    addressDao.insertOrIgnoreAddress(newAddress).toInt()
                 }else {
-                    Resource.Error("Unable to create address")
+                    0
                 }
             }
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unable to new address")
+            0
         }
     }
 

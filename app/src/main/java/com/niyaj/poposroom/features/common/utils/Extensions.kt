@@ -101,6 +101,17 @@ fun getAllCapitalizedLetters(string: String): String {
     return capitalizeLetters
 }
 
+fun String.getCapitalWord(): String {
+    var capitalizeLetters = ""
+
+    this.capitalizeWords.forEach {
+        if (it.isUpperCase()) {
+            capitalizeLetters += it.toString()
+        }
+    }
+
+    return capitalizeLetters
+}
 
 val zoneId: ZoneId = ZoneId.of("Asia/Kolkata")
 
@@ -141,6 +152,9 @@ val String.toDate
 val String.toTime
     get() = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(this.toLong()).toString()
 
+
+val Date.toTime
+    get() = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(this).toString()
 
 fun String.toPrettyDate(): String {
     val nowTime = Calendar.getInstance()
