@@ -10,7 +10,7 @@ interface CustomerRepository {
 
     suspend fun getCustomerById(customerId: Int): Resource<Customer?>
 
-    suspend fun addOrIgnoreCustomer(newCustomer: Customer): Resource<Boolean>
+    suspend fun addOrIgnoreCustomer(newCustomer: Customer): Int
 
     suspend fun updateCustomer(newCustomer: Customer): Resource<Boolean>
 

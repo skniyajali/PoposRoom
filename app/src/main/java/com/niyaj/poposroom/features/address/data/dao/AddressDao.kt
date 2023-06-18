@@ -23,6 +23,15 @@ interface AddressDao {
     fun getAddressById(addressId: Int): Address?
 
     /**
+     * Get addressId from database by [addressName]
+     */
+    @Query(value = """
+        SELECT addressId FROM address WHERE addressName = :addressName
+    """
+    )
+    suspend fun getAddressByName(addressName: String): Int?
+
+    /**
      * Inserts [Address] into the db if they don't exist, and ignores those that do
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)

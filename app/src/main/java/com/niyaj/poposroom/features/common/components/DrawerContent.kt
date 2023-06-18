@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AllInbox
 import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.BreakfastDining
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Category
@@ -26,6 +27,7 @@ import androidx.navigation.NavController
 import com.niyaj.poposroom.features.destinations.AbsentScreenDestination
 import com.niyaj.poposroom.features.destinations.AddOnItemScreenDestination
 import com.niyaj.poposroom.features.destinations.AddressScreenDestination
+import com.niyaj.poposroom.features.destinations.CartOrderScreenDestination
 import com.niyaj.poposroom.features.destinations.CategoryScreenDestination
 import com.niyaj.poposroom.features.destinations.ChargesScreenDestination
 import com.niyaj.poposroom.features.destinations.CustomerScreenDestination
@@ -149,5 +151,16 @@ fun DrawerContent(
             },
             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
         )
+
+        NavigationDrawerItem(
+            icon = { Icon(Icons.Default.BreakfastDining, contentDescription = null) },
+            label = { Text("Cart Orders") },
+            selected = currentRoute == CartOrderScreenDestination.route,
+            onClick = {
+                navController.navigate(CartOrderScreenDestination())
+            },
+            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+        )
+
     }
 }

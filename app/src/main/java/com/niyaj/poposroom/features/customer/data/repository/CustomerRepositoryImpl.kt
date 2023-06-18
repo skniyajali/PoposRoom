@@ -40,7 +40,7 @@ class CustomerRepositoryImpl(
         }
     }
 
-    override suspend fun addOrIgnoreCustomer(newCustomer: Customer): Resource<Boolean> {
+    override suspend fun addOrIgnoreCustomer(newCustomer: Customer): Int {
         return try {
             val validateCustomerName = validateCustomerName(newCustomer.customerName)
             val validateCustomerPhone = validateCustomerPhone(newCustomer.customerPhone)
@@ -54,15 +54,13 @@ class CustomerRepositoryImpl(
 
             if (!hasError) {
                 withContext(ioDispatcher){
-                    val result = customerDao.insertOrIgnoreCustomer(newCustomer)
-
-                    Resource.Success(result > 0)
+                    customerDao.insertOrIgnoreCustomer(newCustomer).toInt()
                 }
             }else {
-                Resource.Error("Unable to validate customer")
+                0
             }
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unable to create new customer")
+            0
         }
     }
 

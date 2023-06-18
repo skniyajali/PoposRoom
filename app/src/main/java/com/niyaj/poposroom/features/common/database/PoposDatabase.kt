@@ -7,6 +7,10 @@ import com.niyaj.poposroom.features.addon_item.data.dao.AddOnItemDao
 import com.niyaj.poposroom.features.addon_item.domain.model.AddOnItem
 import com.niyaj.poposroom.features.address.data.dao.AddressDao
 import com.niyaj.poposroom.features.address.domain.model.Address
+import com.niyaj.poposroom.features.cart_order.data.dao.CartOrderDao
+import com.niyaj.poposroom.features.cart_order.domain.model.CartAddOnItems
+import com.niyaj.poposroom.features.cart_order.domain.model.CartCharges
+import com.niyaj.poposroom.features.cart_order.domain.model.CartOrderEntity
 import com.niyaj.poposroom.features.category.data.dao.CategoryDao
 import com.niyaj.poposroom.features.category.domain.model.Category
 import com.niyaj.poposroom.features.charges.data.dao.ChargesDao
@@ -43,8 +47,11 @@ import com.niyaj.poposroom.features.product.domain.model.Product
         Expense::class,
         Product::class,
         CategoryWithProductCrossRef::class,
+        CartOrderEntity::class,
+        CartAddOnItems::class,
+        CartCharges::class,
     ],
-    version = 2,
+    version = 4,
     autoMigrations = [],
     exportSchema = true,
 )
@@ -60,4 +67,5 @@ abstract class PoposDatabase : RoomDatabase() {
     abstract fun absentDao(): AbsentDao
     abstract fun expenseDao(): ExpenseDao
     abstract fun productDao(): ProductDao
+    abstract fun cartOrderDao(): CartOrderDao
 }

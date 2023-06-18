@@ -10,7 +10,7 @@ interface AddressRepository {
 
     suspend fun getAddressById(addressId: Int): Resource<Address?>
 
-    suspend fun addOrIgnoreAddress(newAddress: Address): Resource<Boolean>
+    suspend fun addOrIgnoreAddress(newAddress: Address): Int
 
     suspend fun updateAddress(newAddress: Address): Resource<Boolean>
 

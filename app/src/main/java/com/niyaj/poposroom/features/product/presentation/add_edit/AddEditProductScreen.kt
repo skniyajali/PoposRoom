@@ -42,6 +42,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
+import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -181,6 +182,13 @@ fun AddEditProductScreen(
                         onDismissRequest = {
                             categoryToggled = false
                         },
+                        properties = PopupProperties(
+                            focusable = false,
+                            dismissOnBackPress = true,
+                            dismissOnClickOutside = true,
+                            excludeFromSystemGesture = true,
+                            clippingEnabled = true,
+                        ),
                         modifier = Modifier
                             .width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
                     ) {

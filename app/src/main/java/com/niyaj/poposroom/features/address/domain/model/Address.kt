@@ -8,14 +8,14 @@ import java.util.Date
 @Entity(tableName = "address")
 data class Address(
     @PrimaryKey(autoGenerate = true)
-    val addressId: Int,
+    val addressId: Int = 0,
 
-    val addressName: String,
+    val addressName: String = "",
 
-    val shortName: String,
+    val shortName: String = "",
 
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
-    val createdAt: Date,
+    val createdAt: Date = Date(),
 
     @ColumnInfo(defaultValue = "NULL")
     val updatedAt: Date? = null,
