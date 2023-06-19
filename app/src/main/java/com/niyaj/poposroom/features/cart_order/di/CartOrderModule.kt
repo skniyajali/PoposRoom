@@ -9,6 +9,7 @@ import com.niyaj.poposroom.features.common.database.PoposDatabase
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
 import com.niyaj.poposroom.features.customer.data.dao.CustomerDao
+import com.niyaj.poposroom.features.selected.data.dao.SelectedDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,9 +30,10 @@ object CartOrderModule {
         cartOrderDao: CartOrderDao,
         customerDao: CustomerDao,
         addressDao: AddressDao,
+        selectedDao: SelectedDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): CartOrderRepository {
-        return CartOrderRepositoryImpl(cartOrderDao, customerDao, addressDao, ioDispatcher)
+        return CartOrderRepositoryImpl(cartOrderDao, customerDao, addressDao, selectedDao, ioDispatcher)
     }
 
     @Provides
@@ -39,8 +41,9 @@ object CartOrderModule {
         cartOrderDao: CartOrderDao,
         customerDao: CustomerDao,
         addressDao: AddressDao,
+        selectedDao: SelectedDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): CartOrderValidationRepository {
-        return CartOrderRepositoryImpl(cartOrderDao, customerDao, addressDao, ioDispatcher)
+        return CartOrderRepositoryImpl(cartOrderDao, customerDao, addressDao, selectedDao, ioDispatcher)
     }
 }

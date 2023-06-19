@@ -35,6 +35,7 @@ import com.niyaj.poposroom.features.destinations.EmployeeScreenDestination
 import com.niyaj.poposroom.features.destinations.ExpensesScreenDestination
 import com.niyaj.poposroom.features.destinations.PaymentScreenDestination
 import com.niyaj.poposroom.features.destinations.ProductScreenDestination
+import com.niyaj.poposroom.features.destinations.SelectOrderScreenDestination
 import com.ramcosta.composedestinations.navigation.navigate
 
 @Composable
@@ -158,6 +159,16 @@ fun DrawerContent(
             selected = currentRoute == CartOrderScreenDestination.route,
             onClick = {
                 navController.navigate(CartOrderScreenDestination())
+            },
+            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+        )
+
+        NavigationDrawerItem(
+            icon = { Icon(Icons.Default.BreakfastDining, contentDescription = null) },
+            label = { Text("Selected Orders") },
+            selected = currentRoute == SelectOrderScreenDestination.route,
+            onClick = {
+                navController.navigate(SelectOrderScreenDestination())
             },
             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
         )

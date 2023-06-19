@@ -7,11 +7,12 @@ import com.niyaj.poposroom.features.common.event.BaseViewModel
 import com.niyaj.poposroom.features.common.event.UiState
 import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
+import com.niyaj.poposroom.features.selected.domain.model.Selected
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,14 +24,30 @@ class CartOrderViewModel @Inject constructor(
 
     override var totalItems: List<Int> = emptyList()
 
+    val text = snapshotFlow { _searchText.value }
+
     @OptIn(ExperimentalCoroutinesApi::class)
-    val cartOrders = snapshotFlow { searchText.value }
-        .flatMapLatest { it ->
-            cartOrderRepository.getAllCartOrders(it).map { list ->
-                totalItems = list.map { it.cartOrderId }
-                if (list.isEmpty()) {
+    val selectedId = cartOrderRepository.getSelectedCartOrder()
+        .mapLatest {
+            it?.cartOrderId ?: 0
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = 0
+        )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val cartOrders = snapshotFlow { _searchText.value }
+        .flatMapLatest { text ->
+            cartOrderRepository.getAllCartOrders(text).mapLatest { list ->
+                val data = list.sortedByDescending { it.cartOrderId == selectedId.value }
+
+                totalItems = data.map { it.cartOrderId }
+                if (data.isEmpty()) {
                     UiState.Empty
-                } else UiState.Success(list)
+                } else UiState.Success(data)
+
             }
         }.stateIn(
             scope = viewModelScope,
@@ -38,6 +55,24 @@ class CartOrderViewModel @Inject constructor(
             initialValue = UiState.Loading
         )
 
+
+    fun selectCartOrder() {
+        viewModelScope.launch {
+            val result = cartOrderRepository.insertOrUpdateSelectedOrder(
+                Selected(cartOrderId = selectedItems.first())
+            )
+
+            when (result) {
+                is Resource.Error -> {
+                    mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
+                }
+
+                is Resource.Success -> {
+                    deselectItems()
+                }
+            }
+        }
+    }
 
     override fun deleteItems() {
         super.deleteItems()

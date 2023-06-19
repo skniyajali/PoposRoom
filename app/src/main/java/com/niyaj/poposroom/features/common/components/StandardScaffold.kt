@@ -235,6 +235,7 @@ fun StandardScaffold(
                                                     contentDescription = DELETE_ICON
                                                 )
                                             }
+
                                             IconButton(onClick = onSelectAllClick) {
                                                 Icon(
                                                     imageVector = Icons.Default.Checklist,
@@ -249,6 +250,7 @@ fun StandardScaffold(
                                                 contentDescription = SEARCH_ICON
                                             )
                                         }
+
                                         if (showSettings) {
                                             IconButton(onClick = onSettingsClick) {
                                                 Icon(
@@ -278,6 +280,209 @@ fun StandardScaffold(
                         exit = fadeOut() + slideOutVertically(
                             targetOffsetY = {
                                 fullHeight -> fullHeight / 4
+                            }
+                        )
+                    ) {
+                        BottomAppBar(
+                            actions = {
+                                AnimatedContent(
+                                    targetState = selectedState,
+                                    transitionSpec = {
+                                        fadeIn().togetherWith(fadeOut(tween(200)))
+                                    },
+                                    label = "bottomActions",
+                                    contentKey = {
+                                        it.currentState
+                                    }
+                                ) { state ->
+                                    Row {
+                                        IconButton(onClick = onSelectAllClick) {
+                                            Icon(
+                                                imageVector = Icons.Default.Checklist,
+                                                contentDescription = SELECTALL_ICON
+                                            )
+                                        }
+
+                                        if (state.currentState == 1) {
+                                            IconButton(onClick = onEditClick) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Edit,
+                                                    contentDescription = EDIT_ICON
+                                                )
+                                            }
+                                        }
+
+                                        IconButton(onClick = onDeleteClick) {
+                                            Icon(
+                                                imageVector = Icons.Default.Delete,
+                                                contentDescription = DELETE_ICON
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        )
+                    }
+                }
+            },
+            floatingActionButton = floatingActionButton,
+            floatingActionButtonPosition = fabPosition,
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            modifier = modifier
+                .testTag(title)
+                .fillMaxSize(),
+        ) { padding ->
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
+                shape = shape.value,
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                content(padding)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun StandardScaffold(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    title: String,
+    floatingActionButton: @Composable () -> Unit,
+    navActions: @Composable () -> Unit,
+    fabPosition: FabPosition = FabPosition.Center,
+    selectionCount: Int,
+    showBottomBarActions: Boolean = false,
+    showBackButton: Boolean = false,
+    onDeselect: () -> Unit = {},
+    onEditClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {},
+    onSelectAllClick: () -> Unit = {},
+    onBackClick: () -> Unit = {},
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    content: @Composable (PaddingValues) -> Unit,
+) {
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    // Remember a SystemUiController
+    val systemUiController = rememberSystemUiController()
+
+    val colorTransitionFraction = scrollBehavior.state.collapsedFraction
+
+    val color = rememberUpdatedState(newValue = containerColor(colorTransitionFraction))
+    val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
+
+    val selectedState = MutableTransitionState(selectionCount)
+
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = color.value,
+            darkIcons = true,
+        )
+
+        systemUiController.setNavigationBarColor(
+            color = color.value
+        )
+    }
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            DrawerContent(
+                navController = navController,
+                onCloseClick = {
+                    scope.launch {
+                        drawerState.close()
+                    }
+                }
+            )
+        },
+        gesturesEnabled = true
+    ) {
+        Scaffold(
+            topBar = {
+                LargeTopAppBar(
+                    title = {
+                        Text(text = title)
+                    },
+                    navigationIcon = {
+                        if(showBackButton) {
+                            IconButton(
+                                onClick = onBackClick,
+                                modifier = Modifier.testTag(STANDARD_BACK_BUTTON)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowBack,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.scrim
+                                )
+                            }
+                        } else {
+                            AnimatedContent(
+                                targetState = selectedState,
+                                transitionSpec = {
+                                    (fadeIn()).togetherWith(
+                                        fadeOut(animationSpec = tween(200))
+                                    )
+                                },
+                                label = "navigationIcon",
+                                contentKey = {
+                                    it
+                                }
+                            ) { state ->
+                                if (state.currentState != 0) {
+                                    IconButton(
+                                        onClick = onDeselect
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = Constants.CLEAR_ICON
+                                        )
+                                    }
+                                } else {
+                                    IconButton(
+                                        onClick = {
+                                            scope.launch {
+                                                drawerState.open()
+                                            }
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Apps,
+                                            contentDescription = null
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    actions = {
+                        navActions()
+                    },
+                    scrollBehavior = scrollBehavior,
+                )
+            },
+            bottomBar = {
+                if (showBottomBarActions) {
+                    AnimatedVisibility(
+                        visible = selectionCount != 0,
+                        label = "BottomBar",
+                        enter = fadeIn() + slideInVertically(
+                            initialOffsetY = {
+                                    fullHeight -> fullHeight / 4
+                            }
+                        ),
+                        exit = fadeOut() + slideOutVertically(
+                            targetOffsetY = {
+                                    fullHeight -> fullHeight / 4
                             }
                         )
                     ) {

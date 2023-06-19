@@ -1,11 +1,13 @@
 package com.niyaj.poposroom.features.cart_order.presentation
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,8 +20,16 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Tag
+import androidx.compose.material.icons.filled.TaskAlt
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -30,9 +40,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +64,7 @@ import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.DE
 import com.niyaj.poposroom.features.common.components.CircularBox
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
+import com.niyaj.poposroom.features.common.components.ScaffoldNavActions
 import com.niyaj.poposroom.features.common.components.StandardFAB
 import com.niyaj.poposroom.features.common.components.StandardScaffold
 import com.niyaj.poposroom.features.common.event.UiState
@@ -63,6 +76,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @Destination
@@ -82,26 +96,32 @@ fun CartOrderScreen(
 
     val showFab = viewModel.totalItems.isNotEmpty()
 
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
-
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
 
+    val selectedOrder = viewModel.selectedId.collectAsStateWithLifecycle().value
+
     val openDialog = remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = event) {
-        event?.let { data ->
-            when(data) {
+    var showMenu by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when(event) {
                 is UiEvent.IsLoading -> {}
                 is UiEvent.OnError -> {
                     scope.launch {
-                        snackbarState.showSnackbar(data.errorMessage)
+                        snackbarState.showSnackbar(event.errorMessage)
                     }
+
+                    viewModel.deselectItems()
                 }
                 is UiEvent.OnSuccess -> {
                     scope.launch {
-                        snackbarState.showSnackbar(data.successMessage)
+                        snackbarState.showSnackbar(event.successMessage)
                     }
+
+                    viewModel.deselectItems()
                 }
             }
         }
@@ -133,9 +153,7 @@ fun CartOrderScreen(
         navController = navController,
         snackbarHostState = snackbarState,
         title = if (selectedItems.isEmpty()) CART_ORDER_SCREEN_TITLE else "${selectedItems.size} Selected",
-        showSearchBar = showSearchBar,
         selectionCount = selectedItems.size,
-        searchText = searchText,
         showBackButton = showSearchBar,
         floatingActionButton = {
             StandardFAB(
@@ -153,6 +171,33 @@ fun CartOrderScreen(
             )
         },
         fabPosition = if (lazyGridState.isScrolled) FabPosition.End else FabPosition.Center,
+        navActions = {
+            CartOrderScaffoldNavActions(
+                selectionCount = selectedItems.size,
+                showSearchIcon = showFab,
+                showSearchBar = showSearchBar,
+                searchText = searchText,
+                showMenu = showMenu,
+                onDeleteClick = {
+                    openDialog.value = true
+                },
+                onEditClick = {
+                    navController.navigate(AddEditCartOrderScreenDestination(selectedItems.first()))
+                },
+                onToggleMenu = { showMenu = !showMenu },
+                onDismissDropdown = { showMenu = false  },
+                onDropItemClick = {
+                    showMenu = false
+                },
+                onSearchTextChanged = viewModel::searchTextChanged,
+                onClearClick = viewModel::clearSearchText,
+                onSearchClick = viewModel::openSearchBar,
+                onSelectAllClick = viewModel::selectAllItems,
+                onSelectOrderClick = viewModel::selectCartOrder,
+                onSettingsClick = { /*TODO*/ },
+                onClickViewDetails = { /*TODO*/ }
+            )
+        },
         onEditClick = {
             navController.navigate(AddEditCartOrderScreenDestination(selectedItems.first()))
         },
@@ -161,10 +206,7 @@ fun CartOrderScreen(
         },
         onDeselect = viewModel::deselectItems,
         onSelectAllClick = viewModel::selectAllItems,
-        onSearchTextChanged = viewModel::searchTextChanged,
-        onSearchClick = viewModel::openSearchBar,
         onBackClick = viewModel::closeSearchBar,
-        onClearClick = viewModel::clearSearchText
     ) { _ ->
         when (state) {
             is UiState.Loading -> LoadingIndicator()
@@ -192,6 +234,9 @@ fun CartOrderScreen(
                     ) { cartOrder ->
                         CartOrderData(
                             item = cartOrder,
+                            orderSelected = {
+                                selectedOrder == it
+                            },
                             doesSelected = {
                                 selectedItems.contains(it)
                             },
@@ -248,12 +293,117 @@ fun CartOrderScreen(
     }
 }
 
+
+/**
+ * [ScaffoldNavActions] for [CartOrderScreen]
+ */
+@Composable
+fun CartOrderScaffoldNavActions(
+    selectionCount: Int,
+    showSearchIcon: Boolean,
+    showSearchBar : Boolean,
+    searchText : String,
+    showMenu: Boolean,
+    onDeleteClick : () -> Unit,
+    onEditClick : () -> Unit,
+    onToggleMenu: () -> Unit,
+    onDismissDropdown: () -> Unit,
+    onDropItemClick : () -> Unit,
+    onSearchTextChanged : (String) -> Unit,
+    onClearClick : () -> Unit,
+    onSearchClick : () -> Unit,
+    onSettingsClick : () -> Unit,
+    onSelectOrderClick: () -> Unit,
+    onClickViewDetails: () -> Unit,
+    onSelectAllClick: () -> Unit,
+) {
+    ScaffoldNavActions(
+        selectionCount = selectionCount,
+        showSearchIcon = showSearchIcon,
+        showBottomBarActions = false,
+        onEditClick = onEditClick,
+        onDeleteClick = onDeleteClick,
+        onSelectAllClick = onSelectAllClick,
+        showSearchBar = showSearchBar,
+        searchText = searchText,
+        onSearchTextChanged = onSearchTextChanged,
+        onClearClick = onClearClick,
+        onSearchClick = onSearchClick,
+        showSettings = true,
+        onSettingsClick = onSettingsClick,
+        content = {
+            Box {
+                IconButton(
+                    onClick = onToggleMenu,
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "View More Settings",
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = onDismissDropdown,
+                ) {
+                    DropdownMenuItem(
+                        onClick = onDropItemClick
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Visibility,
+                                contentDescription = "View All",
+                            )
+                            Spacer(modifier = Modifier.width(SpaceSmall))
+                            Text(
+                                text = "View All",
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        preActionContent = {
+            AnimatedVisibility(
+                visible = selectionCount == 1
+            ) {
+                IconButton(
+                    onClick = onSelectOrderClick
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.TaskAlt,
+                        contentDescription = "Select Order",
+                    )
+                }
+            }
+        },
+        postActionContent = {
+            AnimatedVisibility(
+                visible = selectionCount == 1
+            ) {
+                IconButton(
+                    onClick = onClickViewDetails
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.OpenInNew,
+                        contentDescription = "View Details",
+                    )
+                }
+            }
+        }
+    )
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CartOrderData(
     modifier: Modifier = Modifier,
     item: CartOrder,
     doesSelected: (Int) -> Boolean,
+    orderSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
@@ -286,7 +436,8 @@ fun CartOrderData(
         ) {
             CircularBox(
                 icon = Icons.Default.Tag,
-                doesSelected = doesSelected(item.cartOrderId)
+                doesSelected = doesSelected(item.cartOrderId),
+                showBorder = orderSelected(item.cartOrderId)
             )
 
             Spacer(modifier = Modifier.width(SpaceSmall))
@@ -296,7 +447,7 @@ fun CartOrderData(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = item.orderId.toString(),
+                    text = item.cartOrderId.toString(),
                     style = MaterialTheme.typography.labelLarge
                 )
 
