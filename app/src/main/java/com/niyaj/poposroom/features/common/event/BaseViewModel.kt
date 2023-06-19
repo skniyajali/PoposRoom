@@ -21,7 +21,7 @@ open class BaseViewModel @Inject constructor(): ViewModel() {
     private val _showSearchBar = MutableStateFlow(false)
     val showSearchBar = _showSearchBar.asStateFlow()
 
-    private val _searchText = mutableStateOf("")
+    val _searchText = mutableStateOf("")
     val searchText: State<String> = _searchText
 
     val mSelectedItems  =  mutableStateListOf<Int>()

@@ -118,12 +118,14 @@ fun ProductScreen(
                     scope.launch {
                         snackbarState.showSnackbar(data.errorMessage)
                     }
+                    viewModel.deselectItems()
                 }
 
                 is UiEvent.OnSuccess -> {
                     scope.launch {
                         snackbarState.showSnackbar(data.successMessage)
                     }
+                    viewModel.deselectItems()
                 }
             }
         }

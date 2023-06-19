@@ -11,28 +11,10 @@ import com.niyaj.poposroom.features.customer.domain.model.Customer
 import java.util.Date
 
 
-@Entity(
-    tableName = "cartorder",
-//    foreignKeys = [
-//        ForeignKey(
-//            entity = Address::class,
-//            parentColumns = arrayOf("addressId"),
-//            childColumns = arrayOf("addressId"),
-//            onDelete = ForeignKey.CASCADE
-//        ),
-//        ForeignKey(
-//            entity = Customer::class,
-//            parentColumns = arrayOf("customerId"),
-//            childColumns = arrayOf("customerId"),
-//            onDelete = ForeignKey.CASCADE
-//        )
-//    ]
-)
+@Entity(tableName = "cartorder")
 data class CartOrderEntity(
     @PrimaryKey(autoGenerate = true)
     val cartOrderId: Int,
-
-    val orderId: Int,
 
     val orderType: CartOrderType = CartOrderType.DineIn,
 
@@ -56,8 +38,6 @@ data class CartOrderEntity(
 
 data class CartOrder(
     val cartOrderId: Int = 0,
-
-    val orderId: Int = 0,
 
     val orderType: CartOrderType = CartOrderType.DineIn,
 
@@ -84,7 +64,7 @@ fun List<CartOrder>.filterCartOrder(searchText: String): List<CartOrder> {
             cartOrder.address.addressName.contains(searchText, true) ||
             cartOrder.address.shortName.contains(searchText, true) ||
             cartOrder.orderType.name.contains(searchText, true) ||
-            cartOrder.orderId.toString().contains(searchText, true) ||
+            cartOrder.cartOrderId.toString().contains(searchText, true) ||
             cartOrder.createdAt.toTime.contains(searchText, true) ||
             cartOrder.updatedAt?.toTime?.contains(searchText, true) == true
         }

@@ -1,5 +1,6 @@
 package com.niyaj.poposroom.features.common.utils
 
+import android.text.format.DateUtils
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
@@ -283,7 +284,6 @@ fun calculateEndOfDayTime(date: String = "", days: String = ""): String {
     return calendar.timeInMillis.toString()
 }
 
-
 fun safeString(price: String): Int {
     return if (price.isEmpty()) {
         0
@@ -310,3 +310,6 @@ fun String.safeInt(): Int {
 
 val startOfDayTime = LocalDate.now().toMilliSecond
 val endOfDayTime = calculateEndOfDayTime(startOfDayTime)
+
+val Date.toTimeSpan
+    get() = DateUtils.getRelativeTimeSpanString(this.time).toString()

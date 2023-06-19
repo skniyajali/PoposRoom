@@ -31,6 +31,8 @@ import com.niyaj.poposroom.features.expenses.domain.model.Expense
 import com.niyaj.poposroom.features.product.data.dao.ProductDao
 import com.niyaj.poposroom.features.product.domain.model.CategoryWithProductCrossRef
 import com.niyaj.poposroom.features.product.domain.model.Product
+import com.niyaj.poposroom.features.selected.data.dao.SelectedDao
+import com.niyaj.poposroom.features.selected.domain.model.Selected
 
 @Database(
     entities = [
@@ -50,8 +52,9 @@ import com.niyaj.poposroom.features.product.domain.model.Product
         CartOrderEntity::class,
         CartAddOnItems::class,
         CartCharges::class,
+        Selected::class,
     ],
-    version = 4,
+    version = 5,
     autoMigrations = [],
     exportSchema = true,
 )
@@ -68,4 +71,5 @@ abstract class PoposDatabase : RoomDatabase() {
     abstract fun expenseDao(): ExpenseDao
     abstract fun productDao(): ProductDao
     abstract fun cartOrderDao(): CartOrderDao
+    abstract fun selectedDao(): SelectedDao
 }

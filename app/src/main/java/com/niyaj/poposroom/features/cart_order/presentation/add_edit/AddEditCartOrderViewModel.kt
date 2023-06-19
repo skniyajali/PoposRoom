@@ -40,7 +40,7 @@ class AddEditCartOrderViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val cartOrderId = savedStateHandle.get<Int>("cartOrderId")
+    private val cartOrderId = savedStateHandle.get<Int>("cartOrderId") ?: 0
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -168,7 +168,6 @@ class AddEditCartOrderViewModel @Inject constructor(
             if (addressError.value == null && customerError.value == null) {
                 val newCartOrder = CartOrder(
                     cartOrderId = cartOrderId,
-                    orderId = orderId.value,
                     orderType = state.orderType,
                     orderStatus = CartOrderStatus.PROCESSING,
                     doesChargesIncluded = state.doesChargesIncluded,

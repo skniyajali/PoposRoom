@@ -16,19 +16,19 @@ import kotlinx.coroutines.flow.Flow
 interface CartOrderDao {
 
     @Query(value = """
-        SELECT orderId FROM cartorder ORDER BY createdAt DESC LIMIT 1
+        SELECT cartOrderId FROM cartorder ORDER BY cartOrderId DESC LIMIT 1
     """)
     suspend fun getLastCreatedOrderId(): Int?
 
     @Query(value = """
-        SELECT orderId FROM cartorder WHERE cartOrderId = :cartOrderId
+        SELECT cartOrderId FROM cartorder WHERE orderStatus = :orderStatus ORDER BY cartOrderId DESC LIMIT 1
     """)
-    suspend fun getOrderIdByCartOrderId(cartOrderId: Int): Int
+    suspend fun getLastProcessingId(orderStatus: CartOrderStatus = CartOrderStatus.PROCESSING): Int?
 
     @Query(value = """
-        SELECT cartOrderId FROM cartorder WHERE orderId = :orderId
+        SELECT orderStatus FROM cartorder WHERE cartOrderId = :cartOrderId
     """)
-    suspend fun getCartOrderIdByOrderId(orderId: Int): Int?
+    suspend fun getOrderStatus(cartOrderId: Int): CartOrderStatus
 
     @Transaction
     @Query(value = """

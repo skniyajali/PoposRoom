@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
@@ -39,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -285,6 +287,10 @@ fun AddEditExpenseScreen(
                     Spacer(modifier = Modifier.height(SpaceSmall))
 
                     ListItem(
+                        modifier = Modifier
+                            .height(48.dp)
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(SpaceMini)),
                         headlineContent = {
                             Text(
                                 text = it,
