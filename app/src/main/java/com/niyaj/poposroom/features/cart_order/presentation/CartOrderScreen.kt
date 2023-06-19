@@ -48,7 +48,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -61,6 +66,7 @@ import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.CA
 import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.CREATE_NEW_CART_ORDER
 import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.DELETE_CART_ORDER_ITEM_MESSAGE
 import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.DELETE_CART_ORDER_ITEM_TITLE
+import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderType
 import com.niyaj.poposroom.features.common.components.CircularBox
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
@@ -447,8 +453,23 @@ fun CartOrderData(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = item.cartOrderId.toString(),
-                    style = MaterialTheme.typography.labelLarge
+                    buildAnnotatedString {
+                        if (item.orderType == CartOrderType.DineOut) {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = Color.Red,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            ) {
+                                append(item.address.shortName.uppercase())
+
+                                append(" - ")
+                            }
+                        }
+
+                        append(item.cartOrderId.toString())
+                    },
+                    style = MaterialTheme.typography.labelMedium
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
