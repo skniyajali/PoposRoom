@@ -193,6 +193,10 @@ dependencies {
     implementation(libs.raamcosta.core)
     ksp(libs.raamcosta.ksp)
 
+    //Moshi
+    ksp(libs.moshi.kotlin.codegen)
+    implementation(libs.moshi)
+
     //ProfileInstaller
     implementation(libs.profileinstaller)
 
