@@ -218,7 +218,9 @@ fun AddEditProductScreen(
                             )
 
                             if (index != categories.size - 1) {
-                                Divider(modifier = Modifier.fillMaxWidth().padding(start = 44.dp))
+                                Divider(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 44.dp))
                             }
                         }
 

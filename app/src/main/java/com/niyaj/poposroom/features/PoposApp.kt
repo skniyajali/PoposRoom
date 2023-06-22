@@ -22,7 +22,7 @@ import com.niyaj.poposroom.features.common.navigation.PoposNavigation
 import com.niyaj.poposroom.features.common.ui.theme.PoposRoomTheme
 import com.niyaj.poposroom.features.common.utils.SheetLayout
 import com.niyaj.poposroom.features.common.utils.SheetScreen
-import com.niyaj.poposroom.features.destinations.AddOnItemScreenDestination
+import com.niyaj.poposroom.features.destinations.MainFeedScreenDestination
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,7 +83,7 @@ fun PoposApp(
                     scaffoldState = scaffoldState,
                     snackbarState = snackbarState,
                     navController = navController,
-                    startRoute = AddOnItemScreenDestination,
+                    startRoute = MainFeedScreenDestination,
                     closeSheet = closeBottomSheet,
                     onOpenSheet = openBottomSheet
                 )

@@ -28,6 +28,7 @@ import com.niyaj.poposroom.features.employee_payment.domain.model.EmployeeWithPa
 import com.niyaj.poposroom.features.employee_payment.domain.model.Payment
 import com.niyaj.poposroom.features.expenses.data.dao.ExpenseDao
 import com.niyaj.poposroom.features.expenses.domain.model.Expense
+import com.niyaj.poposroom.features.main_feed.data.dao.MainFeedDao
 import com.niyaj.poposroom.features.product.data.dao.ProductDao
 import com.niyaj.poposroom.features.product.domain.model.CategoryWithProductCrossRef
 import com.niyaj.poposroom.features.product.domain.model.Product
@@ -72,4 +73,5 @@ abstract class PoposDatabase : RoomDatabase() {
     abstract fun productDao(): ProductDao
     abstract fun cartOrderDao(): CartOrderDao
     abstract fun selectedDao(): SelectedDao
+    abstract fun mainFeedDao(): MainFeedDao
 }
