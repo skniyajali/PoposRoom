@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Note
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,6 +28,7 @@ fun TextWithIcon(
     iconModifier: Modifier = Modifier,
     text: String = "",
     icon: ImageVector? = null,
+    textStyle: TextStyle = MaterialTheme.typography.labelMedium,
     textColor : Color = MaterialTheme.colorScheme.onSurface,
     tintColor: Color = MaterialTheme.colorScheme.onSurface,
     isTitle: Boolean = false,
@@ -50,8 +51,7 @@ fun TextWithIcon(
 
             Text(
                 text = text,
-                fontFamily = if(text.startsWith("Email") || text.startsWith("Password")) FontFamily.Monospace else null,
-                style = MaterialTheme.typography.labelMedium,
+                style = textStyle,
                 fontWeight = if(isTitle) FontWeight.SemiBold else fontWeight,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -177,7 +177,7 @@ fun NoteText(
     modifier: Modifier = Modifier,
     iconModifier: Modifier = Modifier.size(SpaceMedium),
     text: String = "",
-    icon: ImageVector = Icons.Default.Note,
+    icon: ImageVector = Icons.Default.ErrorOutline,
     color : Color = MaterialTheme.colorScheme.secondary,
     fontWeight: FontWeight = FontWeight.Normal,
 ) {

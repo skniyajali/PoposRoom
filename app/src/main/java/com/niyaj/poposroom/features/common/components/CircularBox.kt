@@ -40,7 +40,8 @@ fun CircularBox(
 ) {
     val availBorder = if (showBorder) BorderStroke(1.dp, MaterialTheme.colorScheme.error) else null
 
-    val textStyle = if (size < 40.dp) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelMedium
+    val textStyle =
+        if (size < 40.dp) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelMedium
     val iconSize = if (size < 40.dp) IconSizeSmall else IconSizeMedium
 
     Box(
@@ -60,7 +61,7 @@ fun CircularBox(
                 tint = if (doesSelected) selectedTint else unselectedTint,
                 modifier = Modifier.size(iconSize)
             )
-        }else {
+        } else {
             if (doesSelected) {
                 Icon(
                     imageVector = selectedIcon,
@@ -68,12 +69,50 @@ fun CircularBox(
                     tint = selectedTint,
                     modifier = Modifier.size(iconSize)
                 )
-            }else {
+            } else {
                 Text(
                     text = getAllCapitalizedLetters(text).take(2),
                     style = textStyle
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun CircularBoxWithQty(
+    text: String,
+    qty: Int,
+    size: Dp = 40.dp,
+    showBorder: Boolean = true,
+    backgroundColor: Color = MaterialTheme.colorScheme.background,
+    borderColor: Color = MaterialTheme.colorScheme.secondary,
+) {
+    val textStyle = if (qty == 0) MaterialTheme.typography.labelSmall
+    else MaterialTheme.typography.labelLarge
+
+    val availBorder = if (showBorder && qty != 0) BorderStroke(1.dp, borderColor) else null
+
+    Box(
+        modifier = Modifier
+            .size(size)
+            .clip(CircleShape)
+            .background(backgroundColor)
+            .then(availBorder?.let {
+                Modifier.border(it, CircleShape)
+            } ?: Modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (qty == 0) {
+            Text(
+                text = getAllCapitalizedLetters(text).take(2),
+                style = textStyle
+            )
+        } else {
+            Text(
+                text = qty.toString(),
+                style = textStyle
+            )
         }
     }
 }
@@ -93,7 +132,8 @@ fun CircularBoxWithIcon(
 ) {
     val availBorder = if (showBorder) BorderStroke(1.dp, MaterialTheme.colorScheme.error) else null
 
-    val textStyle = if (size < 40.dp) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelMedium
+    val textStyle =
+        if (size < 40.dp) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelMedium
     val iconSize = if (size < 40.dp) IconSizeSmall else IconSizeMedium
 
     Box(
@@ -118,7 +158,7 @@ fun CircularBoxWithIcon(
                     tint = selectedTint,
                     modifier = Modifier.size(iconSize)
                 )
-            }else {
+            } else {
                 Icon(
                     imageVector = icon,
                     contentDescription = "",
