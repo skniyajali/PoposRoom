@@ -18,4 +18,12 @@ object Constants {
     const val DELETE_ICON = "DeleteIcon"
     const val CLEAR_ICON = "ClearIcon"
     const val SELECTALL_ICON = "SelectAllIcon"
+
+
+
+    const val JSON_FILE_TYPE = "application/json"
+
+    const val JSON_FILE_EXTENSION = ".json"
+
+    const val SAVABLE_FILE_NAME = "popos"
 }

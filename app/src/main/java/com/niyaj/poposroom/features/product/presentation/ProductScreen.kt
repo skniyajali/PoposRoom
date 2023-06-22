@@ -56,6 +56,7 @@ import com.niyaj.poposroom.features.common.components.CircularBox
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
 import com.niyaj.poposroom.features.common.components.NoteText
+import com.niyaj.poposroom.features.common.components.ScaffoldNavActions
 import com.niyaj.poposroom.features.common.components.StandardFAB
 import com.niyaj.poposroom.features.common.components.StandardScaffold
 import com.niyaj.poposroom.features.common.event.UiState
@@ -164,12 +165,30 @@ fun ProductScreen(
         navController = navController,
         snackbarHostState = snackbarState,
         title = if (selectedItems.isEmpty()) PRODUCT_SCREEN_TITLE else "${selectedItems.size} Selected",
-        placeholderText = PRODUCT_SEARCH_PLACEHOLDER,
-        showSearchBar = showSearchBar,
-        showSettings = false,
         selectionCount = selectedItems.size,
-        searchText = searchText,
         showBackButton = showSearchBar,
+        navActions = {
+             ScaffoldNavActions(
+                 placeholderText = PRODUCT_SEARCH_PLACEHOLDER,
+                 showSettingsIcon = true,
+                 selectionCount = selectedItems.size,
+                 showSearchIcon = showSearchBar,
+                 searchText = searchText,
+                 onEditClick = {
+                     navController.navigate(AddEditProductScreenDestination(selectedItems.first()))
+                 },
+                 onDeleteClick = {
+                     openDialog.value = true
+                 },
+                 onSettingsClick = {
+
+                 },
+                 onSelectAllClick = viewModel::selectAllItems,
+                 onClearClick = viewModel::clearSearchText,
+                 onSearchClick = viewModel::openSearchBar,
+                 onSearchTextChanged = viewModel::searchTextChanged
+             )
+        },
         floatingActionButton = {
             StandardFAB(
                 showScrollToTop = lazyListState.isScrolled,
@@ -194,10 +213,7 @@ fun ProductScreen(
         },
         onDeselect = viewModel::deselectItems,
         onSelectAllClick = viewModel::selectAllItems,
-        onSearchTextChanged = viewModel::searchTextChanged,
-        onSearchClick = viewModel::openSearchBar,
         onBackClick = viewModel::closeSearchBar,
-        onClearClick = viewModel::clearSearchText
     ) { _ ->
         Column(
             modifier = Modifier
