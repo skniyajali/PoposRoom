@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import com.niyaj.poposroom.features.cart_order.domain.model.CartOrderEntity
-import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderStatus
+import com.niyaj.poposroom.features.cart_order.domain.utils.OrderStatus
 import com.niyaj.poposroom.features.selected.domain.model.Selected
 import com.niyaj.poposroom.features.selected.domain.utils.SelectedTestTag.SELECTED_ID
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +21,7 @@ interface SelectedDao {
 
     @Query(
         value = """
-        SELECT cartOrderId FROM selected LIMIT 1
+        SELECT orderId FROM selected LIMIT 1
     """
     )
     fun getSelectedCartOrderId(): Int?
@@ -38,8 +38,8 @@ interface SelectedDao {
 
     @Query(
         value = """
-        SELECT * FROM cartorder WHERE orderStatus = :orderStatus ORDER BY cartOrderId DESC
+        SELECT * FROM cartorder WHERE orderStatus = :orderStatus ORDER BY orderId DESC
     """
     )
-    fun getAllProcessingCartOrders(orderStatus: CartOrderStatus = CartOrderStatus.PROCESSING): Flow<List<CartOrderEntity>>
+    fun getAllProcessingCartOrders(orderStatus: OrderStatus = OrderStatus.PROCESSING): Flow<List<CartOrderEntity>>
 }

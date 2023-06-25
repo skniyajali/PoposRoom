@@ -9,7 +9,6 @@ import com.niyaj.poposroom.features.cart_order.domain.model.CartOrderEntity
 import com.niyaj.poposroom.features.cart_order.domain.model.filterCartOrder
 import com.niyaj.poposroom.features.cart_order.domain.repository.CartOrderRepository
 import com.niyaj.poposroom.features.cart_order.domain.repository.CartOrderValidationRepository
-import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderStatus
 import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.ADDRESS_NAME_LENGTH_ERROR
 import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.CART_ORDER_NAME_EMPTY_ERROR
 import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.CART_ORDER_NAME_ERROR
@@ -19,7 +18,8 @@ import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.CU
 import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.CUSTOMER_PHONE_LETTER_ERROR
 import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.ORDER_PRICE_LESS_THAN_TWO_ERROR
 import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.ORDER_SHORT_NAME_EMPTY_ERROR
-import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderType
+import com.niyaj.poposroom.features.cart_order.domain.utils.OrderStatus
+import com.niyaj.poposroom.features.cart_order.domain.utils.OrderType
 import com.niyaj.poposroom.features.common.utils.Dispatcher
 import com.niyaj.poposroom.features.common.utils.PoposDispatchers
 import com.niyaj.poposroom.features.common.utils.Resource
@@ -50,20 +50,20 @@ class CartOrderRepositoryImpl(
         return withContext(ioDispatcher) {
             selectedDao.getAllProcessingCartOrders().mapLatest { list ->
                 list.map { cartOrder ->
-                    val address = if (cartOrder.orderType != CartOrderType.DineIn) {
+                    val address = if (cartOrder.orderType != OrderType.DineIn) {
                         withContext(ioDispatcher) {
                             addressDao.getAddressById(cartOrder.addressId)
                         }
                     } else null
 
-                    val customer = if (cartOrder.orderType != CartOrderType.DineIn) {
+                    val customer = if (cartOrder.orderType != OrderType.DineIn) {
                         withContext(ioDispatcher) {
                             customerDao.getCustomerById(cartOrder.customerId)
                         }
                     } else null
 
                     CartOrder(
-                        cartOrderId = cartOrder.cartOrderId,
+                        orderId = cartOrder.orderId,
                         orderType = cartOrder.orderType,
                         orderStatus = cartOrder.orderStatus,
                         doesChargesIncluded = cartOrder.doesChargesIncluded,
@@ -118,20 +118,20 @@ class CartOrderRepositoryImpl(
         return withContext(ioDispatcher) {
             cartOrderDao.getAllCartOrders().mapLatest { list ->
                 list.map { cartOrder ->
-                    val address = if (cartOrder.orderType != CartOrderType.DineIn) {
+                    val address = if (cartOrder.orderType != OrderType.DineIn) {
                         withContext(ioDispatcher) {
                             addressDao.getAddressById(cartOrder.addressId)
                         }
                     } else null
 
-                    val customer = if (cartOrder.orderType != CartOrderType.DineIn) {
+                    val customer = if (cartOrder.orderType != OrderType.DineIn) {
                         withContext(ioDispatcher) {
                             customerDao.getCustomerById(cartOrder.customerId)
                         }
                     } else null
 
                     CartOrder(
-                        cartOrderId = cartOrder.cartOrderId,
+                        orderId = cartOrder.orderId,
                         orderType = cartOrder.orderType,
                         orderStatus = cartOrder.orderStatus,
                         doesChargesIncluded = cartOrder.doesChargesIncluded,
@@ -147,26 +147,26 @@ class CartOrderRepositoryImpl(
         }
     }
 
-    override suspend fun getCartOrderById(cartOrderId: Int): Resource<CartOrder?> {
+    override suspend fun getCartOrderById(orderId: Int): Resource<CartOrder?> {
         return withContext(ioDispatcher) {
             try {
-                val result = cartOrderDao.getCartOrderById(cartOrderId)
+                val result = cartOrderDao.getCartOrderById(orderId)
 
                 val cartOrder = result?.let { cartOrder ->
-                    val address = if (cartOrder.orderType != CartOrderType.DineIn) {
+                    val address = if (cartOrder.orderType != OrderType.DineIn) {
                         withContext(ioDispatcher) {
                             addressDao.getAddressById(cartOrder.addressId)
                         }
                     } else null
 
-                    val customer = if (cartOrder.orderType != CartOrderType.DineIn) {
+                    val customer = if (cartOrder.orderType != OrderType.DineIn) {
                         withContext(ioDispatcher) {
                             customerDao.getCustomerById(cartOrder.customerId)
                         }
                     } else null
 
                     CartOrder(
-                        cartOrderId = cartOrder.cartOrderId,
+                        orderId = cartOrder.orderId,
                         orderType = cartOrder.orderType,
                         orderStatus = cartOrder.orderStatus,
                         doesChargesIncluded = cartOrder.doesChargesIncluded,
@@ -184,13 +184,13 @@ class CartOrderRepositoryImpl(
         }
     }
 
-    override suspend fun getLastCreatedOrderId(cartOrderId: Int): Int {
+    override suspend fun getLastCreatedOrderId(orderId: Int): Int {
         return withContext(ioDispatcher) {
-            if (cartOrderId == 0) {
+            if (orderId == 0) {
                 val result = cartOrderDao.getLastCreatedOrderId()
 
                 if (result == null) 1 else result + 1
-            } else cartOrderId
+            } else orderId
         }
     }
 
@@ -237,7 +237,7 @@ class CartOrderRepositoryImpl(
     override suspend fun createOrUpdateCartOrder(newCartOrder: CartOrder): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
-                val isDineOut = newCartOrder.orderType == CartOrderType.DineOut
+                val isDineOut = newCartOrder.orderType == OrderType.DineOut
 
                 val addressId = async {
                     if (isDineOut) {
@@ -264,7 +264,7 @@ class CartOrderRepositoryImpl(
 
                 if (!hasError) {
                     val newOrder = CartOrderEntity(
-                        cartOrderId = newCartOrder.cartOrderId,
+                        orderId = newCartOrder.orderId,
                         orderType = newCartOrder.orderType,
                         orderStatus = newCartOrder.orderStatus,
                         doesChargesIncluded = newCartOrder.doesChargesIncluded,
@@ -279,7 +279,7 @@ class CartOrderRepositoryImpl(
                     if (result > 0) {
                         async(ioDispatcher) {
                             selectedDao.insertOrUpdateSelectedOrder(
-                                Selected(cartOrderId = result.toInt())
+                                Selected(orderId = result.toInt())
                             )
                         }.await()
                     }
@@ -294,10 +294,10 @@ class CartOrderRepositoryImpl(
         }
     }
 
-    override suspend fun deleteCartOrder(cartOrderId: Int): Resource<Boolean> {
+    override suspend fun deleteCartOrder(orderId: Int): Resource<Boolean> {
         return try {
             val result = withContext(ioDispatcher) {
-                cartOrderDao.deleteCartOrder(cartOrderId)
+                cartOrderDao.deleteCartOrder(orderId)
             }
 
             if (result > 0) {
@@ -314,10 +314,10 @@ class CartOrderRepositoryImpl(
         }
     }
 
-    override suspend fun deleteCartOrders(cartOrderIds: List<Int>): Resource<Boolean> {
+    override suspend fun deleteCartOrders(orderIds: List<Int>): Resource<Boolean> {
         return try {
             val result = withContext(ioDispatcher) {
-                cartOrderDao.deleteCartOrders(cartOrderIds)
+                cartOrderDao.deleteCartOrders(orderIds)
             }
 
             if (result > 0) {
@@ -403,8 +403,8 @@ class CartOrderRepositoryImpl(
         )
     }
 
-    private fun validateCustomerAddress(orderType: CartOrderType, addressId: Int): ValidationResult {
-        if (orderType != CartOrderType.DineIn) {
+    private fun validateCustomerAddress(orderType: OrderType, addressId: Int): ValidationResult {
+        if (orderType != OrderType.DineIn) {
             if (addressId == 0) {
                 return ValidationResult(
                     successful = false,
@@ -425,8 +425,8 @@ class CartOrderRepositoryImpl(
         )
     }
 
-    private fun validateCustomerPhone(orderType: CartOrderType, customerId: Int): ValidationResult {
-        if (orderType != CartOrderType.DineIn) {
+    private fun validateCustomerPhone(orderType: OrderType, customerId: Int): ValidationResult {
+        if (orderType != OrderType.DineIn) {
             if (customerId == 0) {
                 return ValidationResult(
                     successful = false,
@@ -452,7 +452,7 @@ class CartOrderRepositoryImpl(
             val lastId = cartOrderDao.getLastProcessingId()
 
             lastId?.let {
-                selectedDao.insertOrUpdateSelectedOrder(Selected(cartOrderId = it))
+                selectedDao.insertOrUpdateSelectedOrder(Selected(orderId = it))
             } ?: selectedDao.deleteSelectedOrder()
         }
     }
@@ -464,20 +464,20 @@ class CartOrderRepositoryImpl(
             if (currentId != null) {
                 val status = cartOrderDao.getOrderStatus(currentId)
 
-                if (status == CartOrderStatus.PLACED) {
+                if (status == OrderStatus.PLACED) {
                     selectedDao.deleteSelectedOrder()
 
                     val lastId = cartOrderDao.getLastProcessingId()
 
                     lastId?.let {
-                        selectedDao.insertOrUpdateSelectedOrder(Selected(cartOrderId = it))
+                        selectedDao.insertOrUpdateSelectedOrder(Selected(orderId = it))
                     }
                 } else {}
             }else {
                 val lastId = cartOrderDao.getLastProcessingId()
 
                 lastId?.let {
-                    selectedDao.insertOrUpdateSelectedOrder(Selected(cartOrderId = it))
+                    selectedDao.insertOrUpdateSelectedOrder(Selected(orderId = it))
                 }
             }
         }

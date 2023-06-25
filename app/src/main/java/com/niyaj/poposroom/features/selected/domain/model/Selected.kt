@@ -12,8 +12,8 @@ import com.niyaj.poposroom.features.selected.domain.utils.SelectedTestTag.SELECT
     foreignKeys = [
         ForeignKey(
             entity = CartOrderEntity::class,
-            parentColumns = arrayOf("cartOrderId"),
-            childColumns = arrayOf("cartOrderId"),
+            parentColumns = arrayOf("orderId"),
+            childColumns = arrayOf("orderId"),
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.NO_ACTION
         )
@@ -25,5 +25,5 @@ data class Selected(
     val selectedId: String = SELECTED_ID,
 
     @ColumnInfo(index = true)
-    val cartOrderId: Int = 0,
+    val orderId: Int = 0,
 )

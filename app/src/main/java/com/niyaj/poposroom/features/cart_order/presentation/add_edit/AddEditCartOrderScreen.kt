@@ -57,7 +57,7 @@ import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.CU
 import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.EDIT_CART_ORDER
 import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.ORDER_ID_FIELD
 import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.ORDER_TYPE_FIELD
-import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderType
+import com.niyaj.poposroom.features.cart_order.domain.utils.OrderType
 import com.niyaj.poposroom.features.common.components.CircularBox
 import com.niyaj.poposroom.features.common.components.MultiSelector
 import com.niyaj.poposroom.features.common.components.StandardButton
@@ -152,7 +152,7 @@ fun AddEditCartOrderScreen(
         ) {
             item(ORDER_TYPE_FIELD) {
                 val orderTypes = listOf(
-                    CartOrderType.DineIn.name, CartOrderType.DineOut.name
+                    OrderType.DineIn.name, OrderType.DineOut.name
                 )
                 val icons = listOf(
                     Icons.Default.DinnerDining, Icons.Default.DeliveryDining
@@ -164,7 +164,7 @@ fun AddEditCartOrderScreen(
                     selectedOption = viewModel.state.orderType.name,
                     onOptionSelect = { option ->
                         viewModel.onEvent(
-                            AddEditCartOrderEvent.OrderTypeChanged(CartOrderType.valueOf(option))
+                            AddEditCartOrderEvent.OrderTypeChanged(OrderType.valueOf(option))
                         )
                     },
                     modifier = Modifier
@@ -188,7 +188,7 @@ fun AddEditCartOrderScreen(
 
             item(ADDRESS_NAME_FIELD) {
                 AnimatedVisibility(
-                    visible = viewModel.state.orderType != CartOrderType.DineIn,
+                    visible = viewModel.state.orderType != OrderType.DineIn,
                     enter = fadeIn(),
                     exit = fadeOut(),
                 ) {
@@ -281,7 +281,7 @@ fun AddEditCartOrderScreen(
 
             item(CUSTOMER_PHONE_FIELD) {
                 AnimatedVisibility(
-                    visible = viewModel.state.orderType != CartOrderType.DineIn,
+                    visible = viewModel.state.orderType != OrderType.DineIn,
                     enter = fadeIn(),
                     exit = fadeOut(),
                 ) {

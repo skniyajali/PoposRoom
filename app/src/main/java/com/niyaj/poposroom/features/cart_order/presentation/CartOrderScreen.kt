@@ -66,7 +66,7 @@ import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.CA
 import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.CREATE_NEW_CART_ORDER
 import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.DELETE_CART_ORDER_ITEM_MESSAGE
 import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags.DELETE_CART_ORDER_ITEM_TITLE
-import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderType
+import com.niyaj.poposroom.features.cart_order.domain.utils.OrderType
 import com.niyaj.poposroom.features.common.components.CircularBox
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
@@ -235,7 +235,7 @@ fun CartOrderScreen(
                     items(
                         items = state.data,
                         key = {
-                            it.cartOrderId
+                            it.orderId
                         }
                     ) { cartOrder ->
                         CartOrderData(
@@ -414,11 +414,11 @@ fun CartOrderData(
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
 ) {
-    val borderStroke = if (doesSelected(item.cartOrderId)) border else null
+    val borderStroke = if (doesSelected(item.orderId)) border else null
 
     ElevatedCard(
         modifier = modifier
-            .testTag(CART_ORDER_ITEM_TAG.plus(item.cartOrderId))
+            .testTag(CART_ORDER_ITEM_TAG.plus(item.orderId))
             .padding(SpaceSmall)
             .then(borderStroke?.let {
                 Modifier.border(it, CardDefaults.elevatedShape)
@@ -426,10 +426,10 @@ fun CartOrderData(
             .clip(CardDefaults.elevatedShape)
             .combinedClickable(
                 onClick = {
-                    onClick(item.cartOrderId)
+                    onClick(item.orderId)
                 },
                 onLongClick = {
-                    onLongClick(item.cartOrderId)
+                    onLongClick(item.orderId)
                 },
             ),
     ) {
@@ -442,8 +442,8 @@ fun CartOrderData(
         ) {
             CircularBox(
                 icon = Icons.Default.Tag,
-                doesSelected = doesSelected(item.cartOrderId),
-                showBorder = orderSelected(item.cartOrderId)
+                doesSelected = doesSelected(item.orderId),
+                showBorder = orderSelected(item.orderId)
             )
 
             Spacer(modifier = Modifier.width(SpaceSmall))
@@ -454,7 +454,7 @@ fun CartOrderData(
             ) {
                 Text(
                     buildAnnotatedString {
-                        if (item.orderType == CartOrderType.DineOut) {
+                        if (item.orderType == OrderType.DineOut) {
                             withStyle(
                                 style = SpanStyle(
                                     color = Color.Red,
@@ -467,7 +467,7 @@ fun CartOrderData(
                             }
                         }
 
-                        append(item.cartOrderId.toString())
+                        append(item.orderId.toString())
                     },
                     style = MaterialTheme.typography.labelMedium
                 )

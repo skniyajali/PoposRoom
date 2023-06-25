@@ -29,7 +29,7 @@ class CartOrderViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val selectedId = cartOrderRepository.getSelectedCartOrder()
         .mapLatest {
-            it?.cartOrderId ?: 0
+            it?.orderId ?: 0
         }
         .stateIn(
             scope = viewModelScope,
@@ -41,9 +41,9 @@ class CartOrderViewModel @Inject constructor(
     val cartOrders = snapshotFlow { _searchText.value }
         .flatMapLatest { text ->
             cartOrderRepository.getAllCartOrders(text).mapLatest { list ->
-                val data = list.sortedByDescending { it.cartOrderId == selectedId.value }
+                val data = list.sortedByDescending { it.orderId == selectedId.value }
 
-                totalItems = data.map { it.cartOrderId }
+                totalItems = data.map { it.orderId }
                 if (data.isEmpty()) {
                     UiState.Empty
                 } else UiState.Success(data)
@@ -59,7 +59,7 @@ class CartOrderViewModel @Inject constructor(
     fun selectCartOrder() {
         viewModelScope.launch {
             val result = cartOrderRepository.insertOrUpdateSelectedOrder(
-                Selected(cartOrderId = selectedItems.first())
+                Selected(orderId = selectedItems.first())
             )
 
             when (result) {

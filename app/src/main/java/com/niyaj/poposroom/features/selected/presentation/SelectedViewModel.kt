@@ -32,7 +32,7 @@ class SelectedViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val selectedId = cartOrderRepository.getSelectedCartOrder()
         .mapLatest {
-            it?.cartOrderId ?: 0
+            it?.orderId ?: 0
         }
         .stateIn(
             scope = viewModelScope,
@@ -61,10 +61,10 @@ class SelectedViewModel @Inject constructor(
         }
     }
 
-    fun selectCartOrder(cartOrderId: Int) {
+    fun selectCartOrder(orderId: Int) {
         viewModelScope.launch {
             val result = cartOrderRepository.insertOrUpdateSelectedOrder(
-                Selected(cartOrderId = cartOrderId)
+                Selected(orderId = orderId)
             )
 
             when (result) {

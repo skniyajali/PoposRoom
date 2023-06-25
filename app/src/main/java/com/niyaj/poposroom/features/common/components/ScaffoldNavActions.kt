@@ -59,8 +59,6 @@ fun ScaffoldNavActions(
     preActionContent: @Composable () -> Unit = {},
     postActionContent: @Composable () -> Unit = {},
 ) {
-    val selectedState = MutableTransitionState(selectionCount)
-
     if (selectionCount != 0) {
         preActionContent()
 

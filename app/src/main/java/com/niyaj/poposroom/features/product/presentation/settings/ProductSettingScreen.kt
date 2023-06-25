@@ -1,10 +1,10 @@
-package com.niyaj.poposroom.features.cart_order.presentation.settings.import_product
+package com.niyaj.poposroom.features.product.presentation.settings
 
 import androidx.compose.runtime.Composable
 import com.ramcosta.composedestinations.annotation.Destination
 
 @Destination
 @Composable
-fun ImportProductScreen() {
+fun ProductSettingScreen() {
 
 }

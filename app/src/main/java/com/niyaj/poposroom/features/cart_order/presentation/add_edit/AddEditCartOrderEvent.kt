@@ -1,12 +1,12 @@
 package com.niyaj.poposroom.features.cart_order.presentation.add_edit
 
 import com.niyaj.poposroom.features.address.domain.model.Address
-import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderType
+import com.niyaj.poposroom.features.cart_order.domain.utils.OrderType
 import com.niyaj.poposroom.features.customer.domain.model.Customer
 
 sealed interface AddEditCartOrderEvent {
 
-    data class OrderTypeChanged(val orderType: CartOrderType): AddEditCartOrderEvent
+    data class OrderTypeChanged(val orderType: OrderType): AddEditCartOrderEvent
 
     data class AddressNameChanged(val addressName: String): AddEditCartOrderEvent
 

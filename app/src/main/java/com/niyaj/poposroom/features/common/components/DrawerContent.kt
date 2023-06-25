@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Person4
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.StickyNote2
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
@@ -31,6 +32,7 @@ import com.niyaj.poposroom.features.destinations.AbsentScreenDestination
 import com.niyaj.poposroom.features.destinations.AddOnItemScreenDestination
 import com.niyaj.poposroom.features.destinations.AddressScreenDestination
 import com.niyaj.poposroom.features.destinations.CartOrderScreenDestination
+import com.niyaj.poposroom.features.destinations.CartScreenDestination
 import com.niyaj.poposroom.features.destinations.CategoryScreenDestination
 import com.niyaj.poposroom.features.destinations.ChargesScreenDestination
 import com.niyaj.poposroom.features.destinations.CustomerScreenDestination
@@ -221,6 +223,19 @@ fun DrawerContent(
             selected = currentRoute == SelectOrderScreenDestination.route,
             onClick = {
                 navController.navigate(SelectOrderScreenDestination())
+            },
+            modifier = Modifier
+                .height(48.dp)
+                .padding(NavigationDrawerItemDefaults.ItemPadding)
+        )
+
+        NavigationDrawerItem(
+            icon = { Icon(Icons.Default.ShoppingCart, contentDescription = null) },
+            label = { Text("Cart") },
+            shape = RoundedCornerShape(SpaceMini),
+            selected = currentRoute == CartScreenDestination.route,
+            onClick = {
+                navController.navigate(CartScreenDestination())
             },
             modifier = Modifier
                 .height(48.dp)

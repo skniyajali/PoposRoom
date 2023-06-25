@@ -7,6 +7,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -51,9 +53,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
-import com.google.accompanist.flowlayout.FlowMainAxisAlignment
-import com.google.accompanist.flowlayout.FlowRow
 import com.niyaj.poposroom.features.common.components.CircularBox
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
@@ -474,7 +473,7 @@ fun ExpensesData(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun GroupedExpensesData(
     modifier: Modifier = Modifier,
@@ -530,9 +529,6 @@ fun GroupedExpensesData(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(SpaceSmall),
-                crossAxisSpacing = SpaceMini,
-                mainAxisAlignment = FlowMainAxisAlignment.Center,
-                crossAxisAlignment = FlowCrossAxisAlignment.Center
             ) {
                 items.forEach { expense ->
                     val borderStroke = if (doesSelected(expense.expenseId)) border else null

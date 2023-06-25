@@ -7,5 +7,5 @@ interface ChargesValidationRepository {
 
     suspend fun validateChargesName(chargesName: String, chargesId: Int? = null): ValidationResult
 
-    fun validateChargesPrice(doesApplicable: Boolean, chargesPrice: Int): ValidationResult
+    fun validateChargesPrice(chargesPrice: Int): ValidationResult
 }

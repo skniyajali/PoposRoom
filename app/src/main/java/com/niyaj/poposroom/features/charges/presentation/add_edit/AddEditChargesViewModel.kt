@@ -61,7 +61,7 @@ class AddEditChargesViewModel @Inject constructor(
 
     val priceError: StateFlow<String?> = snapshotFlow { addEditState.chargesPrice }
         .mapLatest {
-            validationRepository.validateChargesPrice(addEditState.chargesApplicable, addEditState.chargesPrice).errorMessage
+            validationRepository.validateChargesPrice(it).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
