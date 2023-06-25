@@ -3,8 +3,6 @@ package com.niyaj.poposroom.features.common.components
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerDefaults
-import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material3.Icon
@@ -36,8 +34,8 @@ fun Tabs(tabs: List<CartTabItem>, pagerState: PagerState) {
             if (pagerState.currentPage < tabPositions.size) {
                 TabRowDefaults.PrimaryIndicator(
                     Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
-                    width = 73.dp,
-                    height = 5.dp,
+                    width = 80.dp,
+                    height = 4.dp,
                     shape = CutCornerShape(topStart = SpaceMini, topEnd = SpaceMini)
                 )
             }
@@ -64,14 +62,8 @@ fun Tabs(tabs: List<CartTabItem>, pagerState: PagerState) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TabsContent(tabs: List<CartTabItem>, pagerState: PagerState) {
-    val fling = PagerDefaults.flingBehavior(
-        state = pagerState,
-        pagerSnapDistance = PagerSnapDistance.atMost(10)
-    )
-
     HorizontalPager(
         state = pagerState,
-        flingBehavior = fling,
     ) { page ->
         tabs[page].screen()
     }
