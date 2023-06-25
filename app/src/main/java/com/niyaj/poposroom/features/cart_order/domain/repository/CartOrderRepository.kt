@@ -21,9 +21,9 @@ interface CartOrderRepository {
 
     suspend fun getAllCartOrders(searchText: String): Flow<List<CartOrder>>
 
-    suspend fun getCartOrderById(cartOrderId: Int): Resource<CartOrder?>
+    suspend fun getCartOrderById(orderId: Int): Resource<CartOrder?>
 
-    suspend fun getLastCreatedOrderId(cartOrderId: Int): Int
+    suspend fun getLastCreatedOrderId(orderId: Int): Int
 
     suspend fun addOrIgnoreAddress(newAddress: Address): Int
 
@@ -31,7 +31,7 @@ interface CartOrderRepository {
 
     suspend fun createOrUpdateCartOrder(newCartOrder: CartOrder): Resource<Boolean>
 
-    suspend fun deleteCartOrder(cartOrderId: Int): Resource<Boolean>
+    suspend fun deleteCartOrder(orderId: Int): Resource<Boolean>
 
-    suspend fun deleteCartOrders(cartOrderIds: List<Int>): Resource<Boolean>
+    suspend fun deleteCartOrders(orderIds: List<Int>): Resource<Boolean>
 }

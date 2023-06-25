@@ -22,9 +22,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -57,14 +59,16 @@ import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.isScrolled
 import com.niyaj.poposroom.features.common.utils.toRupee
+import com.niyaj.poposroom.features.destinations.AddEditCartOrderScreenDestination
 import com.niyaj.poposroom.features.destinations.AddEditProductScreenDestination
+import com.niyaj.poposroom.features.main_feed.domain.model.ProductWithFlowQuantity
 import com.niyaj.poposroom.features.main_feed.domain.utils.MainFeedTestTags
-import com.niyaj.poposroom.features.product.domain.model.Product
 import com.niyaj.poposroom.features.product.domain.utils.ProductTestTags
 import com.niyaj.poposroom.features.product.presentation.CategoriesData
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.navigate
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @Destination
@@ -85,26 +89,23 @@ fun MainFeedScreen(
 
     val showFab = viewModel.totalItems.isNotEmpty() && selectedCategory == 0
 
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
-
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
 
     val categories = viewModel.categories.collectAsStateWithLifecycle().value
 
-    LaunchedEffect(key1 = event) {
-        event?.let { data ->
-            when (data) {
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
                 is UiEvent.IsLoading -> {}
                 is UiEvent.OnError -> {
                     scope.launch {
-                        snackbarState.showSnackbar(data.errorMessage)
+                        snackbarState.showSnackbar(event.errorMessage)
                     }
                 }
-
                 is UiEvent.OnSuccess -> {
                     scope.launch {
-                        snackbarState.showSnackbar(data.successMessage)
+                        snackbarState.showSnackbar(event.successMessage)
                     }
                 }
             }
@@ -123,9 +124,11 @@ fun MainFeedScreen(
 
     StandardScaffoldWithBottomNavigation(
         navController = navController,
+        snackbarHostState = snackbarState,
         selectedId = selectedId.toString(),
         showFab = showFab && !lazyListState.isScrolled,
         isScrolling = lazyListState.isScrolled,
+        showSearchIcon = true,
         showSearchBar = showSearchBar,
         searchText = searchText,
         openSearchBar = viewModel::openSearchBar,
@@ -151,6 +154,7 @@ fun MainFeedScreen(
                         }
                     )
                 }
+
                 is UiState.Loading -> LoadingIndicator()
                 is UiState.Success -> {
                     Column(
@@ -166,9 +170,16 @@ fun MainFeedScreen(
                         MainFeedProducts(
                             lazyListState = lazyListState,
                             products = state.data,
-                            productQty = { 0 },
-                            onIncrease = {},
-                            onDecrease = {},
+                            onIncrease = {
+                                if (selectedId != 0) {
+                                    viewModel.addProductToCart(selectedId, it)
+                                } else {
+                                    navController.navigate(AddEditCartOrderScreenDestination())
+                                }
+                            },
+                            onDecrease = {
+                                viewModel.removeProductFromCart(selectedId, it)
+                            },
                             onCreateProduct = {
                                 navController.navigate(AddEditProductScreenDestination())
                             }
@@ -184,8 +195,7 @@ fun MainFeedScreen(
 fun MainFeedProducts(
     modifier: Modifier = Modifier,
     lazyListState: LazyListState,
-    products: List<Product>,
-    productQty: (Int) -> Int,
+    products: List<ProductWithFlowQuantity>,
     onIncrease: (Int) -> Unit,
     onDecrease: (Int) -> Unit,
     onCreateProduct: () -> Unit,
@@ -218,7 +228,6 @@ fun MainFeedProducts(
             ) { product ->
                 MainFeedProductData(
                     product = product,
-                    productQty = productQty,
                     onIncrease = onIncrease,
                     onDecrease = onDecrease
                 )
@@ -265,11 +274,12 @@ fun MainFeedProducts(
 @Composable
 fun MainFeedProductData(
     modifier: Modifier = Modifier,
-    product: Product,
-    productQty: (Int) -> Int,
+    product: ProductWithFlowQuantity,
     onIncrease: (Int) -> Unit,
     onDecrease: (Int) -> Unit,
 ) {
+    val productQty = product.quantity.collectAsStateWithLifecycle(initialValue = 0).value
+
     ListItem(
         modifier = modifier
             .testTag(ProductTestTags.PRODUCT_TAG.plus(product.productId))
@@ -289,11 +299,12 @@ fun MainFeedProductData(
         leadingContent = {
             CircularBoxWithQty(
                 text = product.productName,
-                qty = productQty(product.productId)
+                qty = productQty
             )
         },
         trailingContent = {
             IncDecBox(
+                enableDecreasing = productQty > 0,
                 onDecrease = { onDecrease(product.productId) },
                 onIncrease = { onIncrease(product.productId) },
             )
@@ -301,8 +312,10 @@ fun MainFeedProductData(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IncDecBox(
+    enableDecreasing: Boolean = false,
     onDecrease: () -> Unit,
     onIncrease: () -> Unit,
 ) {
@@ -320,22 +333,33 @@ fun IncDecBox(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Row(
+            Card(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .clickable {
-                        onDecrease()
-                    }
-                    .padding(SpaceSmall),
+                    .fillMaxHeight(),
+                onClick = onDecrease,
+                enabled = enableDecreasing,
+                shape = RoundedCornerShape(topStart = SpaceMini, topEnd = 0.dp, bottomStart = SpaceMini, bottomEnd = 0.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.onPrimary
+                )
             ) {
-                Spacer(modifier = Modifier.width(SpaceSmall))
-                Icon(imageVector = Icons.Default.Remove, contentDescription = "remove")
-                Spacer(modifier = Modifier.width(SpaceSmall))
+                Row(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(SpaceSmall),
+                ) {
+                    Spacer(modifier = Modifier.width(SpaceSmall))
+                    Icon(imageVector = Icons.Default.Remove, contentDescription = "remove")
+                    Spacer(modifier = Modifier.width(SpaceSmall))
+                }
             }
-            
-            Divider(modifier = Modifier
-                .width(1.dp)
-                .fillMaxHeight())
+
+
+            Divider(
+                modifier = Modifier
+                    .width(1.dp)
+                    .fillMaxHeight()
+            )
 
             Row(
                 modifier = Modifier

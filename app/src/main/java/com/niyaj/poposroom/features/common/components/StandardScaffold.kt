@@ -13,6 +13,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -90,6 +91,7 @@ import com.niyaj.poposroom.features.common.utils.Constants.SETTINGS_ICON
 import com.niyaj.poposroom.features.common.utils.Constants.STANDARD_BACK_BUTTON
 import com.niyaj.poposroom.features.destinations.AddEditCartOrderScreenDestination
 import com.niyaj.poposroom.features.destinations.CartOrderScreenDestination
+import com.niyaj.poposroom.features.destinations.CartScreenDestination
 import com.niyaj.poposroom.features.destinations.MainFeedScreenDestination
 import com.niyaj.poposroom.features.destinations.SelectOrderScreenDestination
 import com.niyaj.poposroom.features.main_feed.domain.utils.MainFeedTestTags
@@ -577,17 +579,20 @@ fun StandardScaffold(
 fun StandardScaffoldWithBottomNavigation(
     modifier: Modifier = Modifier,
     navController: NavController,
-    isScrolling: Boolean = false,
     title: String = "",
     selectedId: String = "0",
-    showFab: Boolean,
-    showSearchBar: Boolean,
-    searchText: String,
-    openSearchBar: () -> Unit,
-    closeSearchBar: () -> Unit,
-    onSearchTextChanged: (String) -> Unit,
-    onClearClick: () -> Unit,
+    isScrolling: Boolean = false,
+    showFab: Boolean = false,
+    showSearchBar: Boolean = false,
+    showSearchIcon: Boolean = false,
+    searchText: String = "",
+    openSearchBar: () -> Unit = {},
+    closeSearchBar: () -> Unit = {},
+    onSearchTextChanged: (String) -> Unit = {},
+    onClearClick: () -> Unit = {},
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    bottomBar: @Composable () -> Unit = { BottomNavigationBar(navController = navController) },
+    navActions: @Composable RowScope.() -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -629,20 +634,16 @@ fun StandardScaffoldWithBottomNavigation(
                     title = {
                         if (title.isNotEmpty()){
                             Text(text = title)
-                        }else{
-                            AnimatedVisibility(
-                                visible = selectedId != "0"
-                            ) {
-                                SelectedOrderBox(
-                                    modifier = Modifier
-                                        .padding(horizontal = SpaceMedium),
-                                    text = selectedId,
-                                    height = 40.dp,
-                                    onClick = {
-                                        navController.navigate(SelectOrderScreenDestination())
-                                    }
-                                )
-                            } 
+                        } else if (selectedId != "0"){
+                            SelectedOrderBox(
+                                modifier = Modifier
+                                    .padding(horizontal = SpaceMedium),
+                                text = selectedId,
+                                height = 40.dp,
+                                onClick = {
+                                    navController.navigate(SelectOrderScreenDestination())
+                                }
+                            )
                         }
                     },
                     navigationIcon = {
@@ -680,7 +681,7 @@ fun StandardScaffoldWithBottomNavigation(
                                 onClearClick = onClearClick,
                                 onSearchTextChanged = onSearchTextChanged
                             )
-                        } else {
+                        } else if (showSearchIcon) {
                             IconButton(
                                 onClick = openSearchBar
                             ) {
@@ -689,6 +690,8 @@ fun StandardScaffoldWithBottomNavigation(
                                     contentDescription = SEARCH_ICON
                                 )
                             }
+                        } else {
+                            navActions()
                         }
                     },
                     scrollBehavior = scrollBehavior,
@@ -731,7 +734,7 @@ fun StandardScaffoldWithBottomNavigation(
                         }
                     )
                 ) {
-                    BottomNavigationBar(navController = navController)
+                    bottomBar()
                 }
             },
             snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -931,9 +934,9 @@ fun BottomNavigationBar(
             }
         )
         NavigationBarItem(
-            selected = currentRoute == CartOrderScreenDestination.route,
+            selected = currentRoute == CartScreenDestination.route,
             label = {
-                val fontWeight = if (currentRoute == CartOrderScreenDestination.route)
+                val fontWeight = if (currentRoute == CartScreenDestination.route)
                     FontWeight.SemiBold else FontWeight.Normal
 
                 Text(
@@ -943,10 +946,10 @@ fun BottomNavigationBar(
                 )
             },
             onClick = {
-                navController.navigate(CartOrderScreenDestination())
+                navController.navigate(CartScreenDestination())
             },
             icon = {
-                val icon = if (currentRoute == CartOrderScreenDestination.route) {
+                val icon = if (currentRoute == CartScreenDestination.route) {
                     Icons.Rounded.ShoppingCart
                 }else Icons.Outlined.ShoppingCart
 

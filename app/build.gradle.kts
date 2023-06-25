@@ -119,13 +119,13 @@ dependencies {
     androidTestImplementation(libs.work.testing)
 
     //Accompanist
-    implementation(libs.flowlayout)
+//    implementation(libs.flowlayout)
     implementation(libs.systemuicontroller)
     implementation(libs.permissions)
-    implementation(libs.swiperefresh)
-    implementation(libs.placeholder.material)
-    implementation(libs.pager)
-    implementation(libs.pager.indicators)
+//    implementation(libs.swiperefresh)
+//    implementation(libs.placeholder.material)
+//    implementation(libs.pager)
+//    implementation(libs.pager.indicators)
 
     // Coroutines
     implementation(libs.coroutines.core)

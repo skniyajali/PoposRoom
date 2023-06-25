@@ -33,3 +33,9 @@ fun List<Charges>.searchCharges(searchText: String): List<Charges> {
         }
     }else this
 }
+
+data class ChargesPriceWithApplicable(
+    var chargesPrice: Int,
+
+    var isApplicable: Boolean
+)

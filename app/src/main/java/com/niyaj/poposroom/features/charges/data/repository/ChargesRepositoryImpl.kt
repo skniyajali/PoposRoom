@@ -42,7 +42,7 @@ class ChargesRepositoryImpl(
     override suspend fun addOrIgnoreCharges(newCharges: Charges): Resource<Boolean> {
         return try {
             val validateChargesName = validateChargesName(newCharges.chargesName, newCharges.chargesId)
-            val validateChargesPrice = validateChargesPrice(newCharges.isApplicable, newCharges.chargesPrice)
+            val validateChargesPrice = validateChargesPrice(newCharges.chargesPrice)
 
             val hasError = listOf(validateChargesName, validateChargesPrice).any { !it.successful }
 
@@ -63,7 +63,7 @@ class ChargesRepositoryImpl(
     override suspend fun updateCharges(newCharges: Charges): Resource<Boolean> {
         return try {
             val validateChargesName = validateChargesName(newCharges.chargesName, newCharges.chargesId)
-            val validateChargesPrice = validateChargesPrice(newCharges.isApplicable, newCharges.chargesPrice)
+            val validateChargesPrice = validateChargesPrice(newCharges.chargesPrice)
 
             val hasError = listOf(validateChargesName, validateChargesPrice).any { !it.successful }
 
@@ -84,7 +84,7 @@ class ChargesRepositoryImpl(
     override suspend fun upsertCharges(newCharges: Charges): Resource<Boolean> {
         return try {
             val validateChargesName = validateChargesName(newCharges.chargesName, newCharges.chargesId)
-            val validateChargesPrice = validateChargesPrice(newCharges.isApplicable, newCharges.chargesPrice)
+            val validateChargesPrice = validateChargesPrice(newCharges.chargesPrice)
 
             val hasError = listOf(validateChargesName, validateChargesPrice).any { !it.successful }
 
@@ -168,23 +168,20 @@ class ChargesRepositoryImpl(
     }
 
     override fun validateChargesPrice(
-        doesApplicable: Boolean,
         chargesPrice: Int
     ): ValidationResult {
-        if(doesApplicable) {
-            if(chargesPrice == 0){
-                return ValidationResult(
-                    successful = false,
-                    errorMessage = ChargesTestTags.CHARGES_PRICE_EMPTY_ERROR
-                )
-            }
+        if(chargesPrice == 0){
+            return ValidationResult(
+                successful = false,
+                errorMessage = ChargesTestTags.CHARGES_PRICE_EMPTY_ERROR
+            )
+        }
 
-            if(chargesPrice < 10){
-                return ValidationResult(
-                    successful = false,
-                    errorMessage = ChargesTestTags.CHARGES_PRICE_LESS_THAN_TEN_ERROR
-                )
-            }
+        if(chargesPrice < 10){
+            return ValidationResult(
+                successful = false,
+                errorMessage = ChargesTestTags.CHARGES_PRICE_LESS_THAN_TEN_ERROR
+            )
         }
 
         return ValidationResult(

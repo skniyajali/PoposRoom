@@ -19,7 +19,7 @@ interface MainFeedDao {
     @Query(value = """
         SELECT * FROM product WHERE productAvailability = :isAvailable ORDER BY categoryId ASC, productPrice ASC
     """)
-    fun getAllProduct(isAvailable: Boolean = true): Flow<List<Product>>
+    fun getAllProducts(isAvailable: Boolean = true): Flow<List<Product>>
 
 
     @Query(
@@ -28,4 +28,10 @@ interface MainFeedDao {
     """
     )
     fun getSelectedOrder(): Flow<Selected?>
+
+    @Query(value = """
+        SELECT quantity FROM cart WHERE orderId = :orderId AND productId = :productId
+    """
+    )
+    fun getProductQuantity(orderId: Int, productId: Int): Flow<Int>
 }

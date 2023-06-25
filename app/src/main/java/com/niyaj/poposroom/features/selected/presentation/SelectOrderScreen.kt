@@ -51,7 +51,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.poposroom.features.cart_order.domain.model.CartOrder
 import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderTestTags
-import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderType
+import com.niyaj.poposroom.features.cart_order.domain.utils.OrderType
 import com.niyaj.poposroom.features.common.components.CircularBox
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
@@ -181,7 +181,7 @@ fun SelectOrderScreen(
                         items(
                             items = state.data,
                             key = {
-                                it.cartOrderId
+                                it.orderId
                             }
                         ) { item: CartOrder ->
                             SelectedData(
@@ -267,12 +267,12 @@ fun SelectedData(
                 .weight(2f)
                 .clip(RoundedCornerShape(SpaceMini))
                 .clickable {
-                    onSelectOrder(cartOrder.cartOrderId)
+                    onSelectOrder(cartOrder.orderId)
                 },
             headlineContent = {
                 Text(
                     buildAnnotatedString {
-                        if (cartOrder.orderType == CartOrderType.DineOut) {
+                        if (cartOrder.orderType == OrderType.DineOut) {
                             withStyle(
                                 style = SpanStyle(
                                     color = Color.Red,
@@ -285,7 +285,7 @@ fun SelectedData(
                             }
                         }
 
-                        append(cartOrder.cartOrderId.toString())
+                        append(cartOrder.orderId.toString())
                     },
                     style = MaterialTheme.typography.titleMedium
                 )
@@ -293,7 +293,7 @@ fun SelectedData(
             leadingContent = {
                 CircularBox(
                     icon = Icons.Default.Tag,
-                    doesSelected = doesSelected(cartOrder.cartOrderId),
+                    doesSelected = doesSelected(cartOrder.orderId),
                     size = 30.dp,
                 )
             },
@@ -312,7 +312,7 @@ fun SelectedData(
 
         IconButton(
             onClick = {
-                onEditClick(cartOrder.cartOrderId)
+                onEditClick(cartOrder.orderId)
             },
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(SpaceMini))
@@ -328,7 +328,7 @@ fun SelectedData(
 
         IconButton(
             onClick = {
-                onDeleteClick(cartOrder.cartOrderId)
+                onDeleteClick(cartOrder.orderId)
             },
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.secondary, RoundedCornerShape(SpaceMini))

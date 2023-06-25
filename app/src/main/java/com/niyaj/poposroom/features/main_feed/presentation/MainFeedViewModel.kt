@@ -2,8 +2,11 @@ package com.niyaj.poposroom.features.main_feed.presentation
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
+import com.niyaj.poposroom.features.cart.domain.repository.CartRepository
 import com.niyaj.poposroom.features.common.event.BaseViewModel
 import com.niyaj.poposroom.features.common.event.UiState
+import com.niyaj.poposroom.features.common.utils.Resource
+import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.main_feed.domain.repository.MainFeedRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,7 +23,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainFeedViewModel @Inject constructor(
-    private val repository: MainFeedRepository
+    private val repository: MainFeedRepository,
+    private val cartRepository: CartRepository,
 ): BaseViewModel() {
 
     override var totalItems: List<Int> = emptyList()
@@ -30,11 +34,10 @@ class MainFeedViewModel @Inject constructor(
 
     private val _text = snapshotFlow { searchText.value }
 
-
     @OptIn(ExperimentalCoroutinesApi::class)
     val selectedId = repository.getSelectedOrder()
         .mapLatest {
-            it?.cartOrderId ?: 0
+            it?.orderId ?: 0
         }
         .stateIn(
             scope = viewModelScope,
@@ -67,13 +70,38 @@ class MainFeedViewModel @Inject constructor(
     )
 
 
-
     fun selectCategory(categoryId: Int) {
         viewModelScope.launch {
             if (_selectedCategory.value == categoryId) {
                 _selectedCategory.value = 0
             }else {
                 _selectedCategory.value = categoryId
+            }
+        }
+    }
+
+    fun addProductToCart(orderId: Int, productId: Int) {
+        viewModelScope.launch {
+            when (val result = cartRepository.addProductToCart(orderId, productId)) {
+                is Resource.Error -> {
+                    mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable to add product"))
+                }
+                is Resource.Success -> {
+                    mEventFlow.emit(UiEvent.OnSuccess("Product added to cart"))
+                }
+            }
+        }
+    }
+
+    fun removeProductFromCart(orderId: Int, productId: Int) {
+        viewModelScope.launch {
+            when (val result = cartRepository.removeProductFromCart(orderId, productId)) {
+                is Resource.Error -> {
+                    mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable to add product"))
+                }
+                is Resource.Success -> {
+                    mEventFlow.emit(UiEvent.OnSuccess("Product removed from cart"))
+                }
             }
         }
     }

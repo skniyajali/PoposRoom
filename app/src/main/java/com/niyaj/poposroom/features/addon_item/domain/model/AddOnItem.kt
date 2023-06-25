@@ -33,3 +33,5 @@ fun List<AddOnItem>.searchAddOnItem(searchText: String): List<AddOnItem> {
         }
     }else this
 }
+
+data class AddOnPriceWithApplicable(val itemPrice: Int, val isApplicable: Boolean)

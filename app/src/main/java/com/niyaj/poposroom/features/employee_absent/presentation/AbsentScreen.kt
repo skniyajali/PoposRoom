@@ -1,7 +1,10 @@
 package com.niyaj.poposroom.features.employee_absent.presentation
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.google.accompanist.flowlayout.FlowRow
 import com.niyaj.poposroom.features.common.components.ItemNotAvailable
 import com.niyaj.poposroom.features.common.components.LoadingIndicator
 import com.niyaj.poposroom.features.common.components.StandardAssistChip
@@ -320,6 +322,7 @@ fun AbsentData(
 /**
  * Employee Absent Dates
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun EmployeeAbsentData(
     modifier: Modifier = Modifier,
@@ -344,7 +347,7 @@ fun EmployeeAbsentData(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(SpaceMini),
-                crossAxisSpacing = SpaceMini,
+                horizontalArrangement = Arrangement.Start
             ) {
                 grouped.value.forEach{  item ->
                     StandardElevatedCard(

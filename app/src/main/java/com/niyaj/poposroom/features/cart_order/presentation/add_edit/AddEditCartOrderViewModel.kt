@@ -11,8 +11,8 @@ import com.niyaj.poposroom.features.address.domain.model.Address
 import com.niyaj.poposroom.features.cart_order.domain.model.CartOrder
 import com.niyaj.poposroom.features.cart_order.domain.repository.CartOrderRepository
 import com.niyaj.poposroom.features.cart_order.domain.repository.CartOrderValidationRepository
-import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderStatus
-import com.niyaj.poposroom.features.cart_order.domain.utils.CartOrderType
+import com.niyaj.poposroom.features.cart_order.domain.utils.OrderStatus
+import com.niyaj.poposroom.features.cart_order.domain.utils.OrderType
 import com.niyaj.poposroom.features.common.utils.Resource
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.capitalizeWords
@@ -56,7 +56,7 @@ class AddEditCartOrderViewModel @Inject constructor(
     val newCustomer = _newCustomer.asStateFlow()
 
     val customerError = orderType.combine(_newCustomer) { orderType, customer ->
-        if (orderType != CartOrderType.DineIn) {
+        if (orderType != OrderType.DineIn) {
             validationRepository.validateCustomerPhone(customer.customerPhone).errorMessage
         } else null
     }.stateIn(
@@ -66,7 +66,7 @@ class AddEditCartOrderViewModel @Inject constructor(
     )
 
     val addressError = orderType.combine(_newAddress) { orderType, address ->
-        if (orderType != CartOrderType.DineIn) {
+        if (orderType != OrderType.DineIn) {
             validationRepository.validateAddressName(address.addressName).errorMessage
         } else null
     }.stateIn(
@@ -167,9 +167,9 @@ class AddEditCartOrderViewModel @Inject constructor(
         viewModelScope.launch {
             if (addressError.value == null && customerError.value == null) {
                 val newCartOrder = CartOrder(
-                    cartOrderId = cartOrderId,
+                    orderId = cartOrderId,
                     orderType = state.orderType,
-                    orderStatus = CartOrderStatus.PROCESSING,
+                    orderStatus = OrderStatus.PROCESSING,
                     doesChargesIncluded = state.doesChargesIncluded,
                     customer = _newCustomer.value,
                     address = _newAddress.value,

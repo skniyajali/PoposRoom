@@ -7,6 +7,8 @@ import com.niyaj.poposroom.features.addon_item.data.dao.AddOnItemDao
 import com.niyaj.poposroom.features.addon_item.domain.model.AddOnItem
 import com.niyaj.poposroom.features.address.data.dao.AddressDao
 import com.niyaj.poposroom.features.address.domain.model.Address
+import com.niyaj.poposroom.features.cart.data.dao.CartDao
+import com.niyaj.poposroom.features.cart.domain.model.CartEntity
 import com.niyaj.poposroom.features.cart_order.data.dao.CartOrderDao
 import com.niyaj.poposroom.features.cart_order.domain.model.CartAddOnItems
 import com.niyaj.poposroom.features.cart_order.domain.model.CartCharges
@@ -54,8 +56,9 @@ import com.niyaj.poposroom.features.selected.domain.model.Selected
         CartAddOnItems::class,
         CartCharges::class,
         Selected::class,
+        CartEntity::class,
     ],
-    version = 5,
+    version = 1,
     autoMigrations = [],
     exportSchema = true,
 )
@@ -74,4 +77,5 @@ abstract class PoposDatabase : RoomDatabase() {
     abstract fun cartOrderDao(): CartOrderDao
     abstract fun selectedDao(): SelectedDao
     abstract fun mainFeedDao(): MainFeedDao
+    abstract fun cartDao(): CartDao
 }

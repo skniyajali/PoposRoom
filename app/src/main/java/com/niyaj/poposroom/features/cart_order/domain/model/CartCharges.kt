@@ -11,12 +11,12 @@ import java.util.Date
 
 @Entity(
     tableName = "cart_charges",
-    primaryKeys = ["cartOrderId", "chargesId"],
+    primaryKeys = ["orderId", "chargesId"],
     foreignKeys = [
         ForeignKey(
             entity = CartOrderEntity::class,
-            parentColumns = arrayOf("cartOrderId"),
-            childColumns = arrayOf("cartOrderId"),
+            parentColumns = arrayOf("orderId"),
+            childColumns = arrayOf("orderId"),
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.NO_ACTION
         ),
@@ -31,7 +31,7 @@ import java.util.Date
 )
 data class CartCharges(
     @ColumnInfo(index = true)
-    val cartOrderId: Int,
+    val orderId: Int,
 
     @ColumnInfo(index = true)
     val chargesId: Int,
@@ -46,7 +46,21 @@ data class CartOrderWithChargesId(
     val cartOrderEntity: CartOrderEntity,
 
     @Relation(
-        parentColumn = "cartOrderId",
+        parentColumn = "orderId",
+        entity = Charges::class,
+        entityColumn = "chargesId",
+        associateBy = Junction(CartCharges::class),
+        projection = ["chargesId"]
+    )
+    val items: List<Int> = emptyList()
+)
+
+data class CartOrderWithChargesPrice(
+    @Embedded
+    val cartOrderEntity: CartOrderEntity,
+
+    @Relation(
+        parentColumn = "orderId",
         entity = Charges::class,
         entityColumn = "chargesId",
         associateBy = Junction(CartCharges::class),

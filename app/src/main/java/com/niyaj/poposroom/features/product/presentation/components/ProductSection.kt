@@ -34,9 +34,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.fade
-import com.google.accompanist.placeholder.material.placeholder
 import com.niyaj.poposroom.features.common.ui.theme.IconSizeMedium
 import com.niyaj.poposroom.features.common.ui.theme.ProfilePictureSizeSmall
 import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
@@ -101,10 +98,6 @@ fun ProductItems(
                         ){
                             Column(
                                 modifier = Modifier
-                                    .placeholder(
-                                        visible = isLoading,
-                                        highlight = PlaceholderHighlight.fade(),
-                                    )
                                     .padding(SpaceSmall),
                                 horizontalAlignment = Alignment.Start,
                                 verticalArrangement = Arrangement.Center
