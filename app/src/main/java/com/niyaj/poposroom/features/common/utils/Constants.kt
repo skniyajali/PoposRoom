@@ -1,6 +1,23 @@
 package com.niyaj.poposroom.features.common.utils
 
 object Constants {
+    const val SPLASH_SCREEN_DURATION = 100L
+
+    const val PRINTER_DPI = 176
+
+    const val PRINTER_WIDTH_MM = 58f
+
+    const val PRINTER_NBR_LINE = 31
+
+    const val PAYMENT_QR_DATA = "upi://pay?pa=paytmqr281005050101zry6uqipmngr@paytm&pn=Paytm%20Merchant&paytmqr=281005050101ZRY6UQIPMNGR"
+
+    const val PRODUCT_NAME_LENGTH = 18
+
+    const val PAID = "Paid"
+
+    const val NOT_PAID = "Not Paid"
+
+
     const val TEXT_FIELD_LEADING_ICON = "TextFieldLeadingIcon"
     const val TEXT_FIELD_TRAILING_ICON = "TextFieldLeadingIcon"
 
@@ -18,7 +35,6 @@ object Constants {
     const val DELETE_ICON = "DeleteIcon"
     const val CLEAR_ICON = "ClearIcon"
     const val SELECTALL_ICON = "SelectAllIcon"
-
 
 
     const val JSON_FILE_TYPE = "application/json"

@@ -17,10 +17,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -38,6 +38,7 @@ import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
 @Composable
 fun StandardExpandable(
     modifier: Modifier = Modifier,
+    dividerModifier: Modifier = Modifier,
     expanded: Boolean,
     onExpandChanged: (Boolean) -> Unit,
     rowClickable: Boolean = true,
@@ -119,7 +120,7 @@ fun StandardExpandable(
         }
 
         if (expanded) {
-            Divider(modifier = Modifier.fillMaxWidth())
+            Divider(modifier = dividerModifier.fillMaxWidth())
 
             content()
         }

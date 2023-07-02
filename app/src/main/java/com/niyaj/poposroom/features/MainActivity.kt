@@ -24,6 +24,12 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
+//            val systemUiController: SystemUiController = rememberSystemUiController()
+//
+//            SideEffect {
+//                systemUiController.isNavigationBarVisible = false
+//            }
+
             val sizeClass = calculateWindowSizeClass(activity = this)
 
             PoposApp(sizeClass)

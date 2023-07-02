@@ -8,4 +8,8 @@
     <string name="fab_text">Create</string>
     <string name="password_visible_content_description">Show Password</string>
     <string name="password_hidden_content_description">Hide Password</string>
+    <string name="order_details">Order Details Icon</string>
+    <string name="print_order">Print Order</string>
+    <string name="restaurant_name">Popos Highlight</string>
+    <string name="restaurant_slogan">- Pure And Tasty -</string>
 </resources>

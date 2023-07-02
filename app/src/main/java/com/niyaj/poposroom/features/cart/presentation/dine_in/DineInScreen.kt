@@ -27,8 +27,9 @@ import com.niyaj.poposroom.features.common.components.LoadingIndicator
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.isScrollingUp
 import com.niyaj.poposroom.features.destinations.AddEditCartOrderScreenDestination
-import com.niyaj.poposroom.features.destinations.CartOrderScreenDestination
 import com.niyaj.poposroom.features.destinations.MainFeedScreenDestination
+import com.niyaj.poposroom.features.destinations.OrderDetailsScreenDestination
+import com.niyaj.poposroom.features.destinations.OrderScreenDestination
 import com.ramcosta.composedestinations.navigation.navigate
 import kotlinx.coroutines.flow.collectLatest
 
@@ -60,7 +61,7 @@ fun DineInScreen(
                         duration = SnackbarDuration.Short
                     )
                     if (result == SnackbarResult.ActionPerformed) {
-                        navController.navigate(CartOrderScreenDestination())
+                        navController.navigate(OrderScreenDestination())
                     }
                 }
 
@@ -75,7 +76,6 @@ fun DineInScreen(
             }
         }
     }
-
 
     Scaffold(
         bottomBar = {
@@ -133,7 +133,7 @@ fun DineInScreen(
                     navController.navigate(AddEditCartOrderScreenDestination(it))
                 },
                 onClickViewOrder = {
-//            navController.navigate(OrderDetailsScreenDestination(it))
+                    navController.navigate(OrderDetailsScreenDestination(it))
                 },
                 onClickDecreaseQty = { cartOrderId, productId ->
                     viewModel.onEvent(DineInEvent.DecreaseQuantity(cartOrderId, productId))

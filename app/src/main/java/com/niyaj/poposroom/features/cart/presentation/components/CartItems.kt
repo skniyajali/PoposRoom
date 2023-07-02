@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.poposroom.features.addon_item.domain.model.AddOnItem
 import com.niyaj.poposroom.features.cart.domain.model.CartItem
+import com.niyaj.poposroom.features.cart.domain.model.OrderPrice
 import com.niyaj.poposroom.features.common.ui.theme.ProfilePictureSizeSmall
 import com.niyaj.poposroom.features.common.ui.theme.SpaceMini
 import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
@@ -47,7 +48,7 @@ fun CartItems(
     LazyColumn(
         modifier = modifier
             .fillMaxWidth()
-            .padding(SpaceSmall),
+            .padding(start = SpaceSmall, top = SpaceSmall, end = SpaceSmall, bottom = 0.dp),
         verticalArrangement = Arrangement.Top,
         state = listState,
     ) {
@@ -105,6 +106,7 @@ fun CartItem(
     }else{
         cartItem.orderId.toString()
     }
+    val orderPrice = cartItem.orderPrice.collectAsStateWithLifecycle(OrderPrice()).value
 
     Card(
         modifier = Modifier
@@ -173,8 +175,8 @@ fun CartItem(
             CartItemTotalPriceSection(
                 itemCount = cartItem.cartProducts.size,
                 orderType = cartItem.orderType,
-                totalPrice = cartItem.orderPrice.totalPrice,
-                discountPrice = cartItem.orderPrice.discountPrice,
+                totalPrice = orderPrice.totalPrice,
+                discountPrice = orderPrice.discountPrice,
                 showPrintBtn = showPrintBtn,
                 onClickPlaceOrder = {
                     onClickPlaceOrder(cartItem.orderId)

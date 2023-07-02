@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -106,6 +107,7 @@ fun CartProduct(
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
+                        .background(Color.Transparent)
                         .weight(1f, true),
                     contentAlignment = Alignment.CenterEnd
                 ) {

@@ -12,9 +12,9 @@ interface CartRepository {
 
     suspend fun getAllCartOrders(): Flow<List<OrderWithCart>>
 
-    suspend fun getAllDineInOrder(): Flow<List<CartItem>>
+    suspend fun getAllDineInCart(): Flow<List<CartItem>>
 
-    suspend fun getAllDineOutOrder(): Flow<List<CartItem>>
+    suspend fun getAllDineOutCart(): Flow<List<CartItem>>
 
     suspend fun addProductToCart(orderId: Int, productId: Int): Resource<Boolean>
 
