@@ -6,10 +6,16 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
+import com.niyaj.poposroom.features.addon_item.domain.model.AddOnItem
+import com.niyaj.poposroom.features.addon_item.domain.model.AddOnPriceWithApplicable
+import com.niyaj.poposroom.features.cart.domain.model.OrderWithCart
+import com.niyaj.poposroom.features.cart.domain.model.ProductPriceWithQuantity
 import com.niyaj.poposroom.features.cart_order.domain.model.CartAddOnItems
 import com.niyaj.poposroom.features.cart_order.domain.model.CartCharges
 import com.niyaj.poposroom.features.cart_order.domain.model.CartOrderEntity
 import com.niyaj.poposroom.features.cart_order.domain.utils.OrderStatus
+import com.niyaj.poposroom.features.charges.domain.model.Charges
+import com.niyaj.poposroom.features.charges.domain.model.ChargesPriceWithApplicable
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
@@ -36,18 +42,56 @@ interface CartOrderDao {
 
     // --------------------------------
 
+    @Query(value = """
+        SELECT itemPrice, isApplicable FROM addonitem WHERE itemId IN (:items)
+    """)
+    suspend fun getAddOnPrice(items: List<Int>): List<AddOnPriceWithApplicable>
+
+    @Query(value = """
+        SELECT chargesPrice, isApplicable FROM charges WHERE chargesId IN (:charges)
+    """)
+    suspend fun getChargesPrice(charges: List<Int>): List<ChargesPriceWithApplicable>
+
+    @Query(value = """
+        SELECT chargesPrice, isApplicable FROM charges
+    """)
+    fun getAllChargesPrice(): List<ChargesPriceWithApplicable>
+
     @Transaction
     @Query(value = """
         SELECT itemId FROM cart_addon_items WHERE orderId = :orderId ORDER BY createdAt DESC
     """)
-    fun getCartAddOnItems(orderId: Int): Flow<List<Int>>
+    fun getCartAddOnItemsId(orderId: Int): Flow<List<Int>>
 
     @Transaction
     @Query(value = """
         SELECT chargesId FROM cart_charges WHERE orderId = :orderId ORDER BY createdAt DESC
     """)
-    fun getCartCharges(orderId: Int): Flow<List<Int>>
+    fun getCartChargesId(orderId: Int): Flow<List<Int>>
 
+    @Transaction
+    @Query(value = """
+        SELECT itemId FROM cart_addon_items WHERE orderId = :orderId ORDER BY createdAt DESC
+    """)
+    fun getCartAddOnItems(orderId: Int): List<Int>
+
+    @Transaction
+    @Query(value = """
+        SELECT chargesId FROM cart_charges WHERE orderId = :orderId ORDER BY createdAt DESC
+    """)
+    fun getCartCharges(orderId: Int): List<Int>
+
+    @Transaction
+    @Query(value = """
+        SELECT * FROM addonitem WHERE itemId = :itemId
+    """)
+    fun getAddOnItemById(itemId: Int): AddOnItem
+
+    @Transaction
+    @Query(value = """
+        SELECT * FROM charges WHERE chargesId = :chargesId
+    """)
+    fun getChargesById(chargesId: Int): Charges
 
     @Insert(entity = CartAddOnItems::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCartAddOnItem(items: CartAddOnItems): Long
@@ -74,6 +118,25 @@ interface CartOrderDao {
         DELETE FROM cart_charges WHERE orderId = :orderId AND chargesId = :chargesId
     """)
     suspend fun deleteCartCharges(orderId: Int, chargesId: Int): Int
+
+    //    ----------------------------------------------------------------
+
+    @Transaction
+    @Query(value = """
+        SELECT * FROM cartorder WHERE orderId = :orderId
+    """)
+    suspend fun getCartProductsByOrderId(
+        orderId: Int
+    ): OrderWithCart
+
+
+    @Query("""
+        SELECT cart.quantity AS quantity, product.productPrice AS productPrice 
+        FROM cart INNER JOIN product ON cart.productId = product.productId 
+        WHERE cart.orderId = :orderId AND cart.productId = :productId
+    """)
+    fun getProductPriceAndQuantity(orderId: Int, productId: Int): ProductPriceWithQuantity
+
 
 
     // ----------------
@@ -107,6 +170,15 @@ interface CartOrderDao {
         """,
     )
     suspend fun deleteCartOrders(orderIds: List<Int>): Int
+
+    @Query(value = """
+        UPDATE cartorder SET updatedAt = :updatedAt, orderStatus = :status WHERE orderId = :orderId
+    """)
+    suspend fun markAsProcessing(
+        orderId: Int,
+        status: OrderStatus = OrderStatus.PROCESSING,
+        updatedAt: Date = Date()
+    ): Int
 
     @Query(value = """
         UPDATE cartorder SET updatedAt = :updatedAt, orderStatus = :status WHERE orderId = :orderId

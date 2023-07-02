@@ -122,7 +122,7 @@ class DineOutViewModel @Inject constructor(
 
     private fun getAllDineOutOrders() {
         viewModelScope.launch {
-            cartRepository.getAllDineOutOrder().collectLatest { data ->
+            cartRepository.getAllDineOutCart().collectLatest { data ->
                 totalItems = data.map { it.orderId }
 
                 _state.value = _state.value.copy(

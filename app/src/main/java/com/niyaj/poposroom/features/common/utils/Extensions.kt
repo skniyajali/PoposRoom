@@ -44,24 +44,6 @@ fun LazyListState.isScrollingUp(): Boolean {
     }.value
 }
 
-@Composable
-fun LazyGridState.isScrollingUp(): Boolean {
-    var previousIndex by remember(this) { mutableIntStateOf(firstVisibleItemIndex) }
-    var previousScrollOffset by remember(this) { mutableIntStateOf(firstVisibleItemScrollOffset) }
-    return remember(this) {
-        derivedStateOf {
-            if (previousIndex != firstVisibleItemIndex) {
-                previousIndex > firstVisibleItemIndex
-            } else {
-                previousScrollOffset >= firstVisibleItemScrollOffset
-            }.also {
-                previousIndex = firstVisibleItemIndex
-                previousScrollOffset = firstVisibleItemScrollOffset
-            }
-        }
-    }.value
-}
-
 val LazyGridState.isScrolled: Boolean
     get() = derivedStateOf { firstVisibleItemIndex > 0 || firstVisibleItemScrollOffset > 0 }.value
 
@@ -310,6 +292,85 @@ fun String.safeInt(): Int {
 
 val startOfDayTime = LocalDate.now().toMilliSecond
 val endOfDayTime = calculateEndOfDayTime(startOfDayTime)
+
+fun startTime(): Calendar {
+    val startTime = Calendar.getInstance()
+    startTime[Calendar.HOUR_OF_DAY] = 0
+    startTime[Calendar.MINUTE] = 0
+    startTime[Calendar.SECOND] = 0
+    startTime[Calendar.MILLISECOND] = 0
+
+    return startTime
+}
+
+fun endTime(): Calendar {
+    val endTime = startTime().clone() as Calendar
+    endTime[Calendar.HOUR_OF_DAY] = 23
+    endTime[Calendar.MINUTE] = 59
+    endTime[Calendar.SECOND] = 59
+    endTime[Calendar.MILLISECOND] = 0
+
+    return endTime
+}
+
+fun calculateStartDate(date: String, days: String = ""): Long {
+    val calendar = Calendar.getInstance()
+    val s = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    try {
+        if (date.isNotEmpty()) {
+            calendar.time = s.parse(date) as Date
+        }
+    } catch (e: Exception) {
+        calendar.timeInMillis = date.toLong()
+    }
+
+    val day = try {
+        if (days.isNotEmpty()) days.toInt() else 0
+    } catch (e: Exception) {
+        0
+    }
+    calendar.add(Calendar.DAY_OF_YEAR, day)
+    calendar[Calendar.HOUR_OF_DAY] = 0
+    calendar[Calendar.MINUTE] = 0
+    calendar[Calendar.SECOND] = 0
+    calendar[Calendar.MILLISECOND] = 0
+
+    return calendar.timeInMillis
+}
+
+fun calculateEndDate(date: String, days: String = ""): Long {
+    val calendar = Calendar.getInstance()
+    val s = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    try {
+        if (date.isNotEmpty()) {
+            calendar.time = s.parse(date) as Date
+        }
+    } catch (e: Exception) {
+        calendar.timeInMillis = date.toLong()
+    }
+
+    val day = try {
+        if (days.isNotEmpty()) days.toInt() else 0
+    } catch (e: Exception) {
+        0
+    }
+    calendar.add(Calendar.DAY_OF_YEAR, day)
+    calendar[Calendar.HOUR_OF_DAY] = 23
+    calendar[Calendar.MINUTE] = 59
+    calendar[Calendar.SECOND] = 59
+    calendar[Calendar.MILLISECOND] = 0
+
+    return calendar.timeInMillis
+}
+
+val getStartTime: String = startTime().timeInMillis.toString()
+val getEndTime: String = endTime().timeInMillis.toString()
+
+val getStartDate: Date = startTime().time
+val getEndDate: Date = endTime().time
+
+val getStartDateLong: Long = startTime().timeInMillis
+val getEndDateLong: Long = endTime().timeInMillis
 
 val Date.toTimeSpan
     get() = DateUtils.getRelativeTimeSpanString(this.time).toString()

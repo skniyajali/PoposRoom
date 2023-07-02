@@ -29,10 +29,12 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -58,6 +60,7 @@ import com.niyaj.poposroom.features.common.ui.theme.SpaceMini
 import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
 import com.niyaj.poposroom.features.common.utils.UiEvent
 import com.niyaj.poposroom.features.common.utils.isScrolled
+import com.niyaj.poposroom.features.common.utils.isScrollingUp
 import com.niyaj.poposroom.features.common.utils.toRupee
 import com.niyaj.poposroom.features.destinations.AddEditCartOrderScreenDestination
 import com.niyaj.poposroom.features.destinations.AddEditProductScreenDestination
@@ -126,8 +129,8 @@ fun MainFeedScreen(
         navController = navController,
         snackbarHostState = snackbarState,
         selectedId = selectedId.toString(),
-        showFab = showFab && !lazyListState.isScrolled,
-        isScrolling = lazyListState.isScrolled,
+        showFab = showFab && lazyListState.isScrollingUp(),
+        showBottomBar = lazyListState.isScrollingUp(),
         showSearchIcon = true,
         showSearchBar = showSearchBar,
         searchText = searchText,
@@ -285,6 +288,9 @@ fun MainFeedProductData(
             .testTag(ProductTestTags.PRODUCT_TAG.plus(product.productId))
             .fillMaxWidth()
             .clip(RoundedCornerShape(SpaceMini)),
+        colors = ListItemDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)
+        ),
         headlineContent = {
             Text(
                 text = product.productName,

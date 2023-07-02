@@ -8,14 +8,12 @@ import androidx.room.Transaction
 import androidx.room.Upsert
 import com.niyaj.poposroom.features.addon_item.domain.model.AddOnItem
 import com.niyaj.poposroom.features.addon_item.domain.model.AddOnPriceWithApplicable
-import com.niyaj.poposroom.features.address.domain.model.Address
 import com.niyaj.poposroom.features.cart.domain.model.CartEntity
 import com.niyaj.poposroom.features.cart.domain.model.OrderWithCart
 import com.niyaj.poposroom.features.cart.domain.model.ProductPriceWithQuantity
 import com.niyaj.poposroom.features.cart_order.domain.utils.OrderStatus
 import com.niyaj.poposroom.features.cart_order.domain.utils.OrderType
 import com.niyaj.poposroom.features.charges.domain.model.ChargesPriceWithApplicable
-import com.niyaj.poposroom.features.customer.domain.model.Customer
 import com.niyaj.poposroom.features.product.domain.model.Product
 import kotlinx.coroutines.flow.Flow
 
@@ -92,14 +90,14 @@ interface CartDao {
     suspend fun getProductById(productId: Int): Product
 
     @Query(value = """
-        SELECT * FROM address WHERE addressId = :addressId
+        SELECT shortName FROM address WHERE addressId = :addressId
     """)
-    suspend fun getAddressById(addressId: Int): Address
+    suspend fun getAddressById(addressId: Int): String?
 
     @Query(value = """
-        SELECT * FROM customer WHERE customerId = :customerId
+        SELECT customerPhone FROM customer WHERE customerId = :customerId
     """)
-    suspend fun getCustomerById(customerId: Int): Customer
+    suspend fun getCustomerById(customerId: Int): String?
 
     @Query(value = """
         SELECT itemPrice, isApplicable FROM addonitem WHERE itemId IN (:items)

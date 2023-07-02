@@ -235,6 +235,7 @@ dependencies {
 
     // Vanpara DatePicker
     implementation(libs.dialog.datetime)
+    implementation(libs.navigation.bar)
 
     //Baseline Profile
 //    "baselineProfile"(project(mapOf("path" to ":benchmark")))

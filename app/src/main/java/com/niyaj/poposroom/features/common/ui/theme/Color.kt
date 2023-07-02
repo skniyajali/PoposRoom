@@ -77,3 +77,11 @@ val LightColor6 = Color(0xFFF7F7F7)
 val LightColor8 = Color(0xFFFDEFEF)
 val LightColor9 = Color(0xFFF9F9F9)
 val LightColor10 = Color(0xFFF9F3F3)
+val LightColor12 = Color(0xFFF9F9F9)
+
+
+val ElectricViolet = Color(0xFF7D26FE)
+val Purple = Color(0xFF742DF6)
+val LightPurple = Color(0xFFBCA1E7)
+val RoyalPurple = Color(0xFF64419F)
+val LightGrey = Color(0xFFB1B1B1)

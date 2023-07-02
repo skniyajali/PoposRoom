@@ -43,6 +43,7 @@ revealswipe-version = '1.1.0'
 pos-printer-version = '3.2.1'
 vanpra-compose-version = '0.9.0'
 moshi-version = '1.14.0'
+exyte-navigation = '1.0.0'
 
 #Navigation
 raamcosta-version = "1.8.32-beta"
@@ -239,6 +240,9 @@ paging-compose = { group = "androidx.paging", name = "paging-compose", version.r
 
 #KotlinX DateTime
 kotlinx-date = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime"}
+
+# Exyte Animated Bottom Navigation
+navigation-bar = { group = "com.exyte", name = "animated-navigation-bar", version.ref = "exyte-navigation"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

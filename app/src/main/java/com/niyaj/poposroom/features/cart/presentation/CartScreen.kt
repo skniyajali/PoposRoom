@@ -3,8 +3,6 @@ package com.niyaj.poposroom.features.cart.presentation
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -19,7 +17,7 @@ import com.niyaj.poposroom.features.cart.presentation.dine_out.DineOutScreen
 import com.niyaj.poposroom.features.common.components.StandardScaffoldWithBottomNavigation
 import com.niyaj.poposroom.features.common.components.Tabs
 import com.niyaj.poposroom.features.common.components.TabsContent
-import com.niyaj.poposroom.features.destinations.CartOrderScreenDestination
+import com.niyaj.poposroom.features.destinations.OrderScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
 
@@ -42,7 +40,7 @@ fun CartScreen(
         navActions = {
             IconButton(
                 onClick = {
-                    navController.navigate(CartOrderScreenDestination())
+                    navController.navigate(OrderScreenDestination())
                 },
             ){
                 Icon(
@@ -52,7 +50,6 @@ fun CartScreen(
             }
         },
         bottomBar = {},
-        modifier = Modifier.navigationBarsPadding(),
     ) {
         val tabs = listOf(
             CartTabItem.DineOutItem {
@@ -65,8 +62,7 @@ fun CartScreen(
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = it.calculateBottomPadding()),
+                .fillMaxSize(),
         ) {
             Tabs(tabs = tabs, pagerState = pagerState)
 

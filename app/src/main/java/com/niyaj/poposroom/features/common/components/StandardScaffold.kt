@@ -1,8 +1,11 @@
 package com.niyaj.poposroom.features.common.components
 
+import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -10,15 +13,18 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
@@ -53,6 +59,7 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -62,6 +69,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -76,9 +84,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.exyte.animatednavbar.AnimatedNavigationBar
+import com.exyte.animatednavbar.animation.balltrajectory.Teleport
+import com.exyte.animatednavbar.animation.indendshape.Height
+import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
+import com.exyte.animatednavbar.items.dropletbutton.DropletButton
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.niyaj.poposroom.R
+import com.niyaj.poposroom.features.common.ui.theme.LightColor8
+import com.niyaj.poposroom.features.common.ui.theme.Purple
 import com.niyaj.poposroom.features.common.ui.theme.SpaceMedium
 import com.niyaj.poposroom.features.common.ui.theme.SpaceSmall
 import com.niyaj.poposroom.features.common.utils.Constants
@@ -93,6 +110,7 @@ import com.niyaj.poposroom.features.destinations.AddEditCartOrderScreenDestinati
 import com.niyaj.poposroom.features.destinations.CartOrderScreenDestination
 import com.niyaj.poposroom.features.destinations.CartScreenDestination
 import com.niyaj.poposroom.features.destinations.MainFeedScreenDestination
+import com.niyaj.poposroom.features.destinations.OrderScreenDestination
 import com.niyaj.poposroom.features.destinations.SelectOrderScreenDestination
 import com.niyaj.poposroom.features.main_feed.domain.utils.MainFeedTestTags
 import com.ramcosta.composedestinations.navigation.navigate
@@ -153,7 +171,7 @@ fun StandardScaffold(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            DrawerContent(
+            StandardDrawer(
                 navController = navController,
                 onCloseClick = {
                     scope.launch {
@@ -418,7 +436,7 @@ fun StandardScaffold(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            DrawerContent(
+            StandardDrawer(
                 navController = navController,
                 onCloseClick = {
                     scope.launch {
@@ -563,6 +581,144 @@ fun StandardScaffold(
                     .padding(padding)
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
                 shape = shape.value,
+                elevation = CardDefaults.cardElevation(),
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                content(padding)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun StandardScaffoldNew(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    title: String,
+    showDrawer: Boolean = true,
+    showBackButton: Boolean = false,
+    showBottomBar: Boolean,
+    fabPosition: FabPosition = FabPosition.Center,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    onBackClick: () -> Unit = { navController.navigateUp() },
+    navigationIcon: @Composable () -> Unit = {},
+    navActions: @Composable RowScope.() -> Unit = {},
+    floatingActionButton: @Composable () -> Unit = {},
+    bottomBar: @Composable () -> Unit = { AnimatedBottomNavigationBar(navController) },
+    content: @Composable (PaddingValues) -> Unit = {},
+) {
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    // Remember a SystemUiController
+    val systemUiController = rememberSystemUiController()
+
+    val colorTransitionFraction = scrollBehavior.state.collapsedFraction
+
+    val color = rememberUpdatedState(newValue = containerColor(colorTransitionFraction))
+    val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
+    val navColor = MaterialTheme.colorScheme.surface
+
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = color.value,
+            darkIcons = true,
+        )
+
+        systemUiController.setNavigationBarColor(
+            color = navColor
+        )
+    }
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            StandardDrawer(
+                navController = navController,
+                onCloseClick = {
+                    scope.launch {
+                        drawerState.close()
+                    }
+                }
+            )
+        },
+        gesturesEnabled = true
+    ) {
+        Scaffold(
+            topBar = {
+                LargeTopAppBar(
+                    title = {
+                        Text(text = title)
+                    },
+                    navigationIcon = {
+                        if (showBackButton) {
+                            IconButton(
+                                onClick = onBackClick,
+                                modifier = Modifier.testTag(STANDARD_BACK_BUTTON)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowBack,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.scrim
+                                )
+                            }
+                        } else if (showDrawer) {
+                            IconButton(
+                                onClick = {
+                                    scope.launch {
+                                        drawerState.open()
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Apps,
+                                    contentDescription = null
+                                )
+                            }
+                        } else navigationIcon()
+                    },
+                    actions = {
+                        navActions()
+                    },
+                    scrollBehavior = scrollBehavior,
+                )
+            },
+            bottomBar = {
+                AnimatedVisibility(
+                    visible = showBottomBar,
+                    label = "BottomBar",
+                    enter = fadeIn() + slideInVertically(
+                        initialOffsetY = { fullHeight ->
+                            fullHeight / 4
+                        }
+                    ),
+                    exit = fadeOut() + slideOutVertically(
+                        targetOffsetY = { fullHeight ->
+                            fullHeight / 4
+                        }
+                    )
+                ) {
+                    bottomBar()
+                }
+            },
+            floatingActionButton = floatingActionButton,
+            floatingActionButtonPosition = fabPosition,
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            modifier = modifier
+                .testTag(title)
+                .fillMaxSize()
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+        ) { padding ->
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                shape = shape.value,
+                elevation = CardDefaults.cardElevation(),
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = MaterialTheme.colorScheme.onPrimary
                 )
@@ -581,7 +737,7 @@ fun StandardScaffoldWithBottomNavigation(
     navController: NavController,
     title: String = "",
     selectedId: String = "0",
-    isScrolling: Boolean = false,
+    showBottomBar: Boolean = false,
     showFab: Boolean = false,
     showSearchBar: Boolean = false,
     showSearchIcon: Boolean = false,
@@ -591,7 +747,7 @@ fun StandardScaffoldWithBottomNavigation(
     onSearchTextChanged: (String) -> Unit = {},
     onClearClick: () -> Unit = {},
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    bottomBar: @Composable () -> Unit = { BottomNavigationBar(navController = navController) },
+    bottomBar: @Composable () -> Unit = { AnimatedBottomNavigationBar(navController = navController) },
     navActions: @Composable RowScope.() -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -605,8 +761,8 @@ fun StandardScaffoldWithBottomNavigation(
     val colorTransitionFraction = scrollBehavior.state.collapsedFraction
 
     val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
-    val navColor = MaterialTheme.colorScheme.surfaceVariant
     val statusColor = MaterialTheme.colorScheme.surface
+    val navColor = MaterialTheme.colorScheme.surfaceVariant
 
     SideEffect {
         systemUiController.setStatusBarColor(color = statusColor, darkIcons = true)
@@ -617,7 +773,7 @@ fun StandardScaffoldWithBottomNavigation(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            DrawerContent(
+            StandardDrawer(
                 navController = navController,
                 onCloseClick = {
                     scope.launch {
@@ -632,9 +788,9 @@ fun StandardScaffoldWithBottomNavigation(
             topBar = {
                 CenterAlignedTopAppBar(
                     title = {
-                        if (title.isNotEmpty()){
+                        if (title.isNotEmpty()) {
                             Text(text = title)
-                        } else if (selectedId != "0"){
+                        } else if (selectedId != "0") {
                             SelectedOrderBox(
                                 modifier = Modifier
                                     .padding(horizontal = SpaceMedium),
@@ -695,7 +851,7 @@ fun StandardScaffoldWithBottomNavigation(
                         }
                     },
                     scrollBehavior = scrollBehavior,
-                    colors =TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                         containerColor = MaterialTheme.colorScheme.surface,
                         scrolledContainerColor = MaterialTheme.colorScheme.surface
                     )
@@ -721,7 +877,7 @@ fun StandardScaffoldWithBottomNavigation(
             floatingActionButtonPosition = FabPosition.End,
             bottomBar = {
                 AnimatedVisibility(
-                    visible = !isScrolling,
+                    visible = showBottomBar,
                     label = "BottomBar",
                     enter = fadeIn() + slideInVertically(
                         initialOffsetY = { fullHeight ->
@@ -746,11 +902,9 @@ fun StandardScaffoldWithBottomNavigation(
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(
-                        top = padding.calculateTopPadding(),
-                        bottom = 0.dp,
-                    ),
+                    .padding(padding),
                 shape = shape.value,
+                elevation = CardDefaults.cardElevation(),
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = MaterialTheme.colorScheme.onPrimary
                 )
@@ -905,7 +1059,7 @@ fun StandardFAB(
 
 @Composable
 fun BottomNavigationBar(
-    navController: NavController,
+    navController: NavController
 ) {
     val currentRoute = navController.currentBackStackEntry?.destination?.route
 
@@ -928,11 +1082,12 @@ fun BottomNavigationBar(
             icon = {
                 val icon = if (currentRoute == MainFeedScreenDestination.route) {
                     Icons.Rounded.Home
-                }else Icons.Outlined.Home
+                } else Icons.Outlined.Home
 
                 Icon(imageVector = icon, contentDescription = "Home")
             }
         )
+
         NavigationBarItem(
             selected = currentRoute == CartScreenDestination.route,
             label = {
@@ -951,15 +1106,16 @@ fun BottomNavigationBar(
             icon = {
                 val icon = if (currentRoute == CartScreenDestination.route) {
                     Icons.Rounded.ShoppingCart
-                }else Icons.Outlined.ShoppingCart
+                } else Icons.Outlined.ShoppingCart
 
                 Icon(imageVector = icon, contentDescription = "Cart")
             }
         )
+
         NavigationBarItem(
-            selected = currentRoute == CartOrderScreenDestination.route,
+            selected = currentRoute == OrderScreenDestination.route,
             label = {
-                val fontWeight = if (currentRoute == CartOrderScreenDestination.route)
+                val fontWeight = if (currentRoute == OrderScreenDestination.route)
                     FontWeight.SemiBold else FontWeight.Normal
 
                 Text(
@@ -969,16 +1125,17 @@ fun BottomNavigationBar(
                 )
             },
             onClick = {
-                navController.navigate(CartOrderScreenDestination())
+                navController.navigate(OrderScreenDestination())
             },
             icon = {
-                val icon = if (currentRoute == CartOrderScreenDestination.route) {
+                val icon = if (currentRoute == OrderScreenDestination.route) {
                     Icons.Rounded.Inventory2
-                }else Icons.Outlined.Inventory2
+                } else Icons.Outlined.Inventory2
 
                 Icon(imageVector = icon, contentDescription = "Orders")
             }
         )
+
         NavigationBarItem(
             selected = currentRoute == CartOrderScreenDestination.route,
             label = {
@@ -997,13 +1154,116 @@ fun BottomNavigationBar(
             icon = {
                 val icon = if (currentRoute == CartOrderScreenDestination.route) {
                     Icons.Rounded.Assessment
-                }else Icons.Outlined.Assessment
+                } else Icons.Outlined.Assessment
 
                 Icon(imageVector = icon, contentDescription = "Reports")
             }
         )
     }
 }
+
+@Composable
+fun AnimatedBottomNavigationBar(
+    navController: NavController,
+    tonalElevation: Dp = NavigationBarDefaults.Elevation,
+    windowInsets: WindowInsets = NavigationBarDefaults.windowInsets,
+) {
+    val currentRoute = navController.currentBackStackEntry?.destination?.route.hashCode()
+
+    val navItems = listOf(
+        NavigationItem(
+            index = MainFeedScreenDestination.route.hashCode(),
+            name = "Home",
+            selected = currentRoute == MainFeedScreenDestination.route.hashCode(),
+            selectedIcon = R.drawable.round_home,
+            unselectedIcon = R.drawable.outline_home,
+            onClick = {
+                navController.navigate(MainFeedScreenDestination())
+            }
+        ),
+        NavigationItem(
+            index = CartScreenDestination.route.hashCode(),
+            name = "Cart",
+            selected = currentRoute == CartScreenDestination.route.hashCode(),
+            selectedIcon = R.drawable.round_cart,
+            unselectedIcon = R.drawable.outline_cart,
+            onClick = {
+                navController.navigate(CartScreenDestination())
+            }
+        ),
+        NavigationItem(
+            index = OrderScreenDestination.route.hashCode(),
+            name = "Orders",
+            selected = currentRoute == OrderScreenDestination.route.hashCode(),
+            selectedIcon = R.drawable.round_orders,
+            unselectedIcon = R.drawable.outline_orders,
+            onClick = {
+                navController.navigate(OrderScreenDestination())
+            }
+        ),
+        NavigationItem(
+            index = OrderScreenDestination.route.hashCode(),
+            name = "Reports",
+            selected = currentRoute == OrderScreenDestination.route.hashCode(),
+            selectedIcon = R.drawable.round_reports,
+            unselectedIcon = R.drawable.outline_reports,
+            onClick = {
+                navController.navigate(OrderScreenDestination())
+            }
+        )
+    )
+
+    val index = navItems.indexOf(navItems.find { it.index == currentRoute })
+
+    AnimatedNavigationBar(
+        modifier = Modifier
+            .windowInsetsPadding(windowInsets)
+            .height(80.dp),
+        selectedIndex = index,
+        cornerRadius = shapeCornerRadius(0.dp),
+        barColor = LightColor8,
+        ballColor = MaterialTheme.colorScheme.secondary,
+        ballAnimation = Teleport(tween(Duration, easing = LinearOutSlowInEasing)),
+        indentAnimation = Height(
+            indentWidth = 56.dp,
+            indentHeight = 15.dp,
+            animationSpec = tween(
+                DoubleDuration,
+                easing = { OvershootInterpolator().getInterpolation(it) }
+            )
+        )
+    ) {
+        navItems.forEach {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                DropletButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    isSelected = it.selected,
+                    onClick = it.onClick,
+                    icon = if (it.selected) it.selectedIcon else it.unselectedIcon,
+                    dropletColor = Purple,
+                    iconColor = MaterialTheme.colorScheme.tertiary,
+                    size = 24.dp,
+                    animationSpec = tween(durationMillis = Duration, easing = LinearEasing)
+                )
+
+                Spacer(modifier = Modifier.height(3.dp))
+
+                Text(
+                    text = it.name,
+                    color = if (it.selected) Purple else MaterialTheme.colorScheme.tertiary,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = if (it.selected) FontWeight.SemiBold else FontWeight.Normal,
+                )
+            }
+        }
+    }
+
+}
+
 
 @Composable
 internal fun containerColor(colorTransitionFraction: Float): Color {
@@ -1024,3 +1284,16 @@ internal fun containerShape(colorTransitionFraction: Float): Shape {
 
     return RoundedCornerShape(data.x, data.y)
 }
+
+@Stable
+data class NavigationItem(
+    val index: Int,
+    val name: String,
+    val selected: Boolean,
+    val selectedIcon: Int,
+    val unselectedIcon: Int,
+    val onClick: () -> Unit,
+)
+
+const val Duration = 500
+const val DoubleDuration = 1000
