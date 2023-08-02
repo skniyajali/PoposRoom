@@ -1,262 +1,290 @@
 [versions]
-androidGradlePlugin = '8.0.1'
-kotlin = '1.8.10'
-kotlinx-coroutines-version = '1.6.4'
-kotlinx-datetime = "0.4.0"
-#DI support
-dagger-hilt-version = "2.45"
-hilt-version = '1.0.0'
-
-#Database
-realm-version = "1.8.0"
-room-version = "2.5.1"
-
-#Code Generation
-ksp-version = '1.8.10-1.0.9'
-
-#AndroidX Versions
-androidx-core-version = "1.10.1"
-androidx-test-ext-junit = '1.1.5'
-androidx-work-version = '2.8.1'
-androidx-livedata-version = "1.4.3"
-androidx-navigation-compose-version = "2.6.0-beta01"
-androidx-test-core-version = '1.5.0'
-androidx-test-runner = '1.5.2'
-androidx-arch-core-version = '2.2.0'
-androidx-startup-version = '1.1.1'
-androidx-splash-version = "1.0.1"
-androidx-paging-version = "3.1.1"
-androidx-paging-compose = "1.0.0-alpha19"
-
-# App validation and testing
-acra-version = '5.9.7'
-timber-version = '5.0.1'
-leakcanary-version = '2.10'
-sentry-version = '3.5.0'
-sentry-android-version = '6.17.0'
+accompanist = "0.28.0"
+accompanistSwipeRefresh = '0.27.0'
+acraVersion = '5.9.7'
 appsweep = 'latest.release'
-
-#Third party libraries
-accompanist-version = '0.30.1'
-accompanist-swiperefresh-version = '0.27.0'
-revealswipe-version = '1.1.0'
-pos-printer-version = '3.2.1'
-vanpra-compose-version = '0.9.0'
-moshi-version = '1.14.0'
+androidDesugarJdkLibs = "2.0.3"
+androidGradlePlugin = "8.0.2"
+androidxActivity = "1.7.2"
+androidxAppCompat = "1.6.1"
+androidxArchCore = '2.2.0'
+androidxComposeBom = "2023.06.01"
+androidxComposeCompiler = "1.5.0"
+androidxComposeUi = "1.4.3"
+androidxComposeRuntime = "1.4.3"
+androidxComposeRuntimeTracing = "1.0.0-alpha03"
+androidxComposeMaterial3 = "1.2.0-alpha03"
+androidxCore = "1.10.1"
+androidxCoreSplashscreen = "1.0.1"
+androidxEspresso = "3.5.1"
+androidxHiltNavigationCompose = "1.0.0"
+androidxLifecycle = "2.6.1"
+androidxLivedata = "1.4.3"
+androidxMacroBenchmark = "1.2.0-beta01"
+androidxBaselineProfile = "1.2.0-alpha13"
+androidxBenchmark = "1.1.1"
+androidxBenchmarkJunit4 = "1.1.1"
+androidxMetrics = "1.0.0-alpha04"
+androidxNavigation = "2.6.0"
+androidxProfileinstaller = "1.3.1"
+androidxStartup = "1.1.1"
+androidxTestCore = "1.5.0"
+androidxTestExt = "1.1.5"
+androidxTestRules = "1.5.0"
+androidxTestRunner = "1.5.2"
+androidxTracing = "1.1.0"
+androidxUiAutomator = "2.2.0"
+androidxWindowManager = "1.1.0"
+androidxWork = "2.8.1"
+coil = "2.4.0"
 exyte-navigation = '1.0.0'
-
-#Navigation
-raamcosta-version = "1.8.32-beta"
-
-#Testing
-truth-version = '1.1.3'
-mockk-version = "1.13.5"
-junit = '4.13.2'
-espresso-core = '3.5.1'
-
-# Compose
-compose-version = '1.4.0-beta01'
-material3-version = '1.2.0-alpha02'
-compose-bom = "2023.05.01"
-activity-compose = "1.7.1"
-lifecycle-version = "2.6.1"
-ui-test-junit = '1.4.3'
-kotlinComposeExtension = '1.4.1' # As per Kotlin version
-
-# Profileing & Benchmark Variables
-profileinstaller-version = '1.3.1'
-uiautomator = '2.2.0'
-benchmark-macro = "1.2.0-alpha14"
-androidx-baselineprofile = "1.2.0-alpha13"
-androidx-benchmark = "1.1.1"
-benchmark-junit4 = "1.1.1"
+gmsPlugin = "4.3.14"
+googleOss = "17.0.1"
+googleOssPlugin = "0.10.6"
+hilt = "2.47"
+hiltExt = "1.0.0"
+jacoco = "0.8.7"
+junit4 = "4.13.2"
+junit = "1.1.5"
+kotlin = "1.9.0"
+kotlinxCoroutines = "1.6.4"
+kotlinxDatetime = "0.4.0"
+kotlinxSerializationJson = "1.5.1"
+ksp = "1.9.0-1.0.11"
+lint = "31.0.2"
+leakcanaryVersion = '2.10'
+moshiVersion = '1.15.0'
+mockkVersion = "1.13.5"
+okhttp = "4.10.0"
+posPrinterVersion = '3.2.1'
+protobuf = "3.23.4"
+protobufPlugin = "0.8.19"
+playIntegrity = '1.1.0'
+playUpdate = "2.1.0"
+playScanner = "16.0.0"
+playService = "18.2.0"
+revealswipeVersion = '1.1.0'
+raamcostaVersion = "1.8.32-beta"
+realmVersion = "1.8.0"
+room = "2.5.2"
+secrets = "2.0.1"
+sentryVersion = '3.5.0'
+sentryAndroidVersion = '6.17.0'
+turbine = "0.12.1"
+timberVersion = '5.0.1'
+truthVersion = '1.1.3'
+vanpraComposeVersion = '0.9.0'
+zxing = "3.5.1"
 
 # App Version
 namespace = "com.niyaj.poposroom"
 minSdk = "26"
-compileSdk = "33"
-targetSdk = "33"
+compileSdk = "34"
+targetSdk = "34"
 versionCode = "1"
 versionName = "1.0.0"
+sourceCompatibility = "VERSION_11"
+targetCompatibility = "VERSION_11"
+jvmTarget = "11"
+kotlin1821 = "1.8.21"
+androidx-test-ext-junit = "1.1.5"
+material = "1.9.0"
 
 [libraries]
-# Androidx Core
-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-version" }
+# ACRA Logger
+acra-mail = { group = "ch.acra", name = "acra-mail", version.ref = "acraVersion" }
+acra-toast = { group = "ch.acra", name = "acra-toast", version.ref = "acraVersion" }
+
+# Accompanist library
+accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
+accompanist-testharness = { group = "com.google.accompanist", name = "accompanist-testharness", version.ref = "accompanist" }
+accompanist-flowlayout = { group = "com.google.accompanist", name = "accompanist-flowlayout", version.ref = "accompanist" }
+accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
+accompanist-swiperefresh = { group = "com.google.accompanist", name = "accompanist-swiperefresh", version.ref = "accompanistSwipeRefresh" }
+
+# AndroidX Libraries
+android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }
+# Androidx Activity Compose
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivity" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppCompat" }
+androidx-benchmark-macro = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "androidxMacroBenchmark" }
 
 # Androidx Compose UI
-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
-ui = { group = "androidx.compose.ui", name = "ui" }
-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-ui-test-junit = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref="ui-test-junit" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout" }
 
 # Androidx Compose Material
-material-icons = { group = "androidx.compose.material", name = "material-icons-extended" }
-material = { group = "androidx.compose.material", name = "material"}
-material3 = { group = "androidx.compose.material3", name = "material3", version.ref="material3-version"}
-material3-window-size = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref="material3-version"}
+androidx-compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "androidxComposeMaterial3" }
+androidx-compose-material3-windowSizeClass = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref = "androidxComposeMaterial3" }
 
-# Androidx Activity Compose
-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
-
-# Androidx Lifecycle
-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle-version" }
-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle-version" }
-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle-version" }
-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-version" }
-viewmodel-savedstate = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-savedstate", version.ref = "lifecycle-version" }
-common-java8 = { group = "androidx.lifecycle", name = "lifecycle-common-java8", version.ref = "lifecycle-version" }
-
-# Androidx Run-Time LiveData
-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "androidx-livedata-version" }
-
-# Androidx Navigation
-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidx-navigation-compose-version" }
+# Androidx Compose Runtime
+androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "androidxComposeRuntime" }
+androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "androidxComposeRuntime" }
+androidx-compose-runtime-tracing = { group = "androidx.compose.runtime", name = "runtime-tracing", version.ref = "androidxComposeRuntimeTracing" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "androidxComposeUi" }
+androidx-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "androidxComposeUi" }
+androidx-compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "androidxComposeUi" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "androidxComposeUi" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "androidxComposeUi" }
+androidx-compose-ui-util = { group = "androidx.compose.ui", name = "ui-util", version.ref = "androidxComposeUi" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "androidxComposeUi" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 
 # Androidx Startup and Splash Screen
-startup = { group = "androidx.startup", name = "startup-runtime", version.ref = "androidx-startup-version" }
-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidx-splash-version" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxCoreSplashscreen" }
+androidx-core-startup = { group = "androidx.startup", name = "startup-runtime", version.ref = "androidxStartup" }
+
+# Androidx Hilt Navigation
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
+
+# Androidx Lifecycle
+androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "androidxLifecycle" }
+androidx-lifecycle-runtimeCompose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
+androidx-lifecycle-viewModelCompose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidxLifecycle" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidxLifecycle" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }
+androidx-lifecycle-viewmodel-savedstate = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-savedstate", version.ref = "androidxLifecycle" }
+
+androidx-metrics = { group = "androidx.metrics", name = "metrics-performance", version.ref = "androidxMetrics" }
+
+# Androidx Navigation
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigation" }
+androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "androidxNavigation" }
+
+androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "androidxProfileinstaller" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
+androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspresso" }
+androidx-test-ext = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidxTestExt" }
+androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidxTestRules" }
+androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTestRunner" }
+androidx-test-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "androidxUiAutomator" }
+androidx-tracing-ktx = { group = "androidx.tracing", name = "tracing-ktx", version.ref = "androidxTracing" }
+androidx-window-manager = { module = "androidx.window:window", version.ref = "androidxWindowManager" }
 
 # Androidx Work
-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidx-work-version" }
-work-testing = { group = "androidx.work", name = "work-testing", version.ref = "androidx-work-version" }
+androidx-work-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidxWork" }
+androidx-work-testing = { group = "androidx.work", name = "work-testing", version.ref = "androidxWork" }
 
-# Accompanist
-flowlayout = { group = "com.google.accompanist", name = "accompanist-flowlayout", version.ref = "accompanist-version" }
-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist-version" }
-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist-version" }
-swiperefresh = { group = "com.google.accompanist", name = "accompanist-swiperefresh", version.ref = "accompanist-swiperefresh-version" }
-placeholder-material = { group = "com.google.accompanist", name = "accompanist-placeholder-material", version.ref = "accompanist-version" }
-pager = { group = "com.google.accompanist", name = "accompanist-pager", version.ref = "accompanist-version" }
-pager-indicators = { group = "com.google.accompanist", name = "accompanist-pager-indicators", version.ref = "accompanist-version" }
-
-# Coroutines
-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines-version" }
-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx-coroutines-version" }
-# For testing
-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-version" }
-
-# Hilt.
-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hilt-version" }
-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hilt-version" }
-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-version" }
-# Dagger
-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger-hilt-version" }
-hilt-dagger-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "dagger-hilt-version" }
-hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "dagger-hilt-version" }
-
-# Timber
-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber-version" }
-
-# RevealSwipe
-revealswipe = { group = "de.charlex.compose", name = "revealswipe", version.ref = "revealswipe-version" }
-
-# Pos-printer
-pos-printer = { group = "com.github.DantSu", name = "ESCPOS-ThermalPrinter-Android", version.ref = "pos-printer-version" }
-
-# Realm
-realm-library-base = { group = "io.realm.kotlin", name = "library-base", version.ref = "realm-version" }
-
-
-# debugImplementation because LeakCanary should only run in debug builds.
-leakcanary = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary-version" }
+coil-kt = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
+coil-kt-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+coil-kt-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
 
 # Compose Material Dialogs
-dialog-core = { group = "io.github.vanpra.compose-material-dialogs", name = "core", version.ref = "vanpra-compose-version" }
-dialog-datetime = { group = "io.github.vanpra.compose-material-dialogs", name = "datetime", version.ref = "vanpra-compose-version" }
+dialog-core = { group = "io.github.vanpra.compose-material-dialogs", name = "core", version.ref = "vanpraComposeVersion" }
+dialog-datetime = { group = "io.github.vanpra.compose-material-dialogs", name = "datetime", version.ref = "vanpraComposeVersion" }
 
-# RamCosta Library
-raamcosta-core = { group = "io.github.raamcosta.compose-destinations", name = "core", version.ref = "raamcosta-version" }
-raamcosta-animation-core = { group = "io.github.raamcosta.compose-destinations", name = "animations-core", version.ref = "raamcosta-version" }
-raamcosta-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "raamcosta-version" }
+# Google OSS Plugins
+google-oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-licenses", version.ref = "googleOss" }
+google-oss-licenses-plugin = { group = "com.google.android.gms", name = "oss-licenses-plugin", version.ref = "googleOssPlugin" }
+
+# Hilt.
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+hilt-ext-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltExt" }
+hilt-ext-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hiltExt" }
+
+junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
+
+# Coroutines
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlin" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
+kotlinx-coroutines-guava = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-guava", version.ref = "kotlinxCoroutines" }
+# For testing
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDatetime" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+
+lint-api = { group = "com.android.tools.lint", name = "lint-api", version.ref = "lint" }
+# debugImplementation because LeakCanary should only run in debug builds.
+leakcanary = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanaryVersion" }
 
 # Moshi
-moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi-version" }
-moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi-version" }
-
-# ProfileInstaller
-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller-version" }
-
-# Junit
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-
-# Androidx Test
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
-
-# Androidx Test Core
-androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidx-test-core-version" }
-androidx-test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidx-test-core-version" }
-androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test-runner" }
-
-# Androidx Arch Test
-androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidx-arch-core-version" }
-
-# Truth
-truth = { group = "com.google.truth", name = "truth", version.ref = "truth-version" }
+moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshiVersion" }
+moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshiVersion" }
 
 # Mockk
-mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk-version" }
-mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk-version" }
+mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockkVersion" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockkVersion" }
 
-# ACRA Logger
-acra-mail = { group = "ch.acra", name = "acra-mail", version.ref = "acra-version" }
-acra-toast = { group = "ch.acra", name = "acra-toast", version.ref = "acra-version" }
-acra-notification = { group = "ch.acra", name = "acra-notification", version.ref = "acra-version" }
-acra-limiter = { group = "ch.acra", name = "acra-limiter", version.ref = "acra-version" }
-acra-advanced-scheduler = { group = "ch.acra", name = "acra-advanced-scheduler", version.ref = "acra-version" }
+# Exyte Animated Bottom Navigation
+navigation-bar = { group = "com.exyte", name = "animated-navigation-bar", version.ref = "exyte-navigation"}
+
+# Pos-printer
+pos-printer = { group = "com.github.DantSu", name = "ESCPOS-ThermalPrinter-Android", version.ref = "posPrinterVersion" }
+
+#Google Play
+play-app-update = { group = "com.google.android.play", name = "app-update", version.ref="playUpdate"}
+play-app-update-ktx = { group = "com.google.android.play", name = "app-update-ktx", version.ref="playUpdate"}
+play-gms-scanner = { group = "com.google.android.gms", name = "play-services-code-scanner", version.ref = "playScanner"}
+play-integrity = { group = "com.google.android.play", name = "integrity", version.ref = "playIntegrity"}
+play-service = {group = "com.google.android.gms", name = "play-services-base", version.ref = "playService"}
+
+#Protobuf
+protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
+protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
+
+# Room Database
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
+
+# RevealSwipe
+revealswipe = { group = "de.charlex.compose", name = "revealswipe", version.ref = "revealswipeVersion" }
+# Realm
+realm-library-base = { group = "io.realm.kotlin", name = "library-base", version.ref = "realmVersion" }
+
+# RamCosta Library
+raamcosta-animation-core = { group = "io.github.raamcosta.compose-destinations", name = "animations-core", version.ref = "raamcostaVersion" }
+raamcosta-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "raamcostaVersion" }
 
 # Sentry
-sentry-android = { group = "io.sentry", name = "sentry-android", version.ref = "sentry-android-version" }
-sentry-compose-android = { group = "io.sentry", name = "sentry-compose-android", version.ref = "sentry-android-version" }
+sentry-android = { group = "io.sentry", name = "sentry-android", version.ref = "sentryAndroidVersion" }
+sentry-compose-android = { group = "io.sentry", name = "sentry-compose-android", version.ref = "sentryAndroidVersion" }
+
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+
+# Timber
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timberVersion" }
+
+# Truth
+truth = { group = "com.google.truth", name = "truth", version.ref = "truthVersion" }
+
+# zxing core & zxing-android-embedded
+zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxing"}
+
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
-kotlin-serialization-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlin" }
-hilt-gradlePlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "dagger-hilt-version" }
-realm-gradlePlugin = { group = "io.realm.kotlin", name = "gradle-plugin", version.ref = "realm-version" }
+ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+hilt-gradlePlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt" }
+realm-gradlePlugin = { group = "io.realm.kotlin", name = "gradle-plugin", version.ref = "realmVersion" }
+junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
-# Kotlin Bom
-kotlin-bom = { group = "org.jetbrains.kotlin", name = "kotlin-bom", version.ref = "kotlin" }
-
-# Benchmarking
-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
-benchmark-macro = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmark-macro" }
-benchmark-junit4 = { group = "androidx.benchmark", name = "benchmark-junit4", version.ref = "benchmark-junit4" }
-
-#Room
-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room-version"}
-room-complier = { group = "androidx.room", name = "room-compiler", version.ref = "room-version"}
-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room-version"}
-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room-version"}
-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room-version"}
-
-#Paging 3
-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "androidx-paging-version"}
-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "androidx-paging-compose"}
-
-#KotlinX DateTime
-kotlinx-date = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime"}
-
-# Exyte Animated Bottom Navigation
-navigation-bar = { group = "com.exyte", name = "animated-navigation-bar", version.ref = "exyte-navigation"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 android-test = { id = "com.android.test", version.ref = "androidGradlePlugin" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-kotlin-parcelize = { id = "kotlin-parcelize", version.ref = "kotlin" }
-hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger-hilt-version" }
-realm = { id = "io.realm.kotlin", version.ref = "realm-version" }
+androidx-baselineprofile = { id = "androidx.baselineprofile", version.ref = "androidxBaselineProfile" }
+androidx-benchmark = { id = "androidx.benchmark", version.ref = "androidxBenchmark" }
 appsweep = { id = "com.guardsquare.appsweep", version.ref = "appsweep" }
-sentry = { id = "io.sentry.android.gradle", version.ref = "sentry-version" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-version" }
+gms = { id = "com.google.gms.google-services", version.ref = "gmsPlugin" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-kapt = { id = "kotlin-kapt", version.ref = "kotlin" }
-androidx-baselineprofile = { id = "androidx.baselineprofile", version.ref = "androidx-baselineprofile" }
-androidx-benchmark = { id = "androidx.benchmark", version.ref = "androidx-benchmark" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
+realm = { id = "io.realm.kotlin", version.ref = "realmVersion" }
+sentry = { id = "io.sentry.android.gradle", version.ref = "sentryVersion" }
+secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin1821" }
+
+

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "496db8e04a7bf378d7cd583a90d6451f",
+    "identityHash": "a8393431475bf855d7b354dbcdca75a7",
     "entities": [
       {
         "tableName": "addonitem",
@@ -1275,12 +1275,104 @@
             ]
           }
         ]
+      },
+      {
+        "tableName": "Profile",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`restaurantId` INTEGER NOT NULL, `name` TEXT NOT NULL, `email` TEXT NOT NULL, `primaryPhone` TEXT NOT NULL, `secondaryPhone` TEXT NOT NULL, `tagline` TEXT NOT NULL, `description` TEXT NOT NULL, `address` TEXT NOT NULL, `logo` TEXT NOT NULL, `printLogo` TEXT NOT NULL, `paymentQrCode` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `updatedAt` TEXT, PRIMARY KEY(`restaurantId`))",
+        "fields": [
+          {
+            "fieldPath": "restaurantId",
+            "columnName": "restaurantId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "primaryPhone",
+            "columnName": "primaryPhone",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "secondaryPhone",
+            "columnName": "secondaryPhone",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tagline",
+            "columnName": "tagline",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "address",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "logo",
+            "columnName": "logo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "printLogo",
+            "columnName": "printLogo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "paymentQrCode",
+            "columnName": "paymentQrCode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "restaurantId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '496db8e04a7bf378d7cd583a90d6451f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a8393431475bf855d7b354dbcdca75a7')"
     ]
   }
 }

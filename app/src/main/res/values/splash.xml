@@ -2,7 +2,7 @@
 <resources>
     <style name="Theme.MySplash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/popos</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/popos_splash</item>
         <item name="postSplashScreenTheme">@style/Theme.PoposRoom</item>
         <item name="windowSplashScreenAnimationDuration">10</item>
     </style>
