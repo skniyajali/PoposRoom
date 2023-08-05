@@ -379,7 +379,6 @@ fun TotalExpenses(
                     onClick = onDateClick,
                     trailingIcon = Icons.Default.ArrowDropDown
                 )
-
             }
 
             Spacer(modifier = Modifier.height(SpaceSmallMax))

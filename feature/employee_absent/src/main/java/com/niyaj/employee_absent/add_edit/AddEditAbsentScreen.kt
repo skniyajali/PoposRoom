@@ -74,9 +74,7 @@ import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination(
-    route = Screens.AddEditAbsentScreen
-)
+@Destination
 @Composable
 fun AddEditAbsentScreen(
     absentId: Int = 0,

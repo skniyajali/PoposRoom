@@ -117,6 +117,7 @@ object Constants {
     const val EDIT_ICON = "EditIcon"
     const val DELETE_ICON = "DeleteIcon"
     const val CLEAR_ICON = "ClearIcon"
+    const val DRAWER_ICON = "DrawerIcon"
     const val SELECTALL_ICON = "SelectAllIcon"
     const val PASSWORD_HIDDEN_ICON = "Password Hidden"
     const val PASSWORD_SHOWN_ICON = "Password Shown"

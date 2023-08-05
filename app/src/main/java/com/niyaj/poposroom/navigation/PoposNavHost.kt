@@ -10,6 +10,10 @@ import com.niyaj.cart_selected.destinations.SelectOrderScreenDestination
 import com.niyaj.cartorder.CartOrderScreen
 import com.niyaj.cartorder.destinations.AddEditCartOrderScreenDestination
 import com.niyaj.cartorder.destinations.CartOrderScreenDestination
+import com.niyaj.employee.destinations.EmployeeDetailsScreenDestination
+import com.niyaj.employee.details.EmployeeDetailsScreen
+import com.niyaj.employee_absent.destinations.AddEditAbsentScreenDestination
+import com.niyaj.employee_payment.destinations.AddEditPaymentScreenDestination
 import com.niyaj.order.OrderScreen
 import com.niyaj.order.destinations.OrderDetailsScreenDestination
 import com.niyaj.order.destinations.OrderScreenDestination
@@ -92,6 +96,17 @@ fun PoposNavHost(
                 )
             }
 
+            composable(EmployeeDetailsScreenDestination) {
+                EmployeeDetailsScreen(
+                    navController = navController,
+                    onClickAddPayment = {
+                        navController.navigate(AddEditPaymentScreenDestination(employeeId = it))
+                    },
+                    onClickAddAbsent = {
+                        navController.navigate(AddEditAbsentScreenDestination(employeeId = it))
+                    }
+                )
+            }
 
         }
     )

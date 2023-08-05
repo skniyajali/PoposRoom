@@ -1,13 +1,12 @@
 package com.niyaj.data.repository
 
 import com.niyaj.common.result.Resource
-import com.niyaj.model.CalculatedSalary
+import com.niyaj.model.EmployeeSalaryEstimation
 import com.niyaj.model.Employee
-import com.niyaj.model.EmployeeWithPayment
 import com.niyaj.model.EmployeeWithPayments
 import com.niyaj.model.Payment
-import com.niyaj.model.SalaryCalculableDate
-import com.niyaj.model.SalaryCalculation
+import com.niyaj.model.EmployeeMonthlyDate
+import com.niyaj.model.EmployeePayments
 import kotlinx.coroutines.flow.Flow
 
 interface PaymentRepository {
@@ -32,9 +31,9 @@ interface PaymentRepository {
 
     suspend fun deletePayments(paymentIds: List<Int>): Resource<Boolean>
 
-    suspend fun getPaymentByEmployeeId(employeeId: Int, selectedDate: Pair<String, String>): CalculatedSalary?
+    suspend fun getPaymentByEmployeeId(employeeId: Int, selectedDate: Pair<String, String>): EmployeeSalaryEstimation?
 
-    suspend fun getEmployeePayment(employeeId: Int): Flow<List<SalaryCalculation>>
+    suspend fun getEmployeePayment(employeeId: Int): Flow<List<EmployeePayments>>
 
-    suspend fun getPaymentCalculableDate(employeeId: Int): Flow<List<SalaryCalculableDate>>
+    suspend fun getPaymentCalculableDate(employeeId: Int): Flow<List<EmployeeMonthlyDate>>
 }

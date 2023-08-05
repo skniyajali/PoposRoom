@@ -22,13 +22,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.niyaj.common.utils.Constants.NOT_PAID
+import com.niyaj.common.utils.Constants.PAID
 import com.niyaj.designsystem.theme.IconSizeSmall
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.common.utils.Constants.NOT_PAID
-import com.niyaj.common.utils.Constants.PAID
 import com.niyaj.ui.utils.PaymentStatus
 
 @Composable
@@ -187,7 +188,7 @@ fun PaymentStatusChip(
 fun StandardChip(
     modifier: Modifier = Modifier,
     text: String = "",
-    secondaryText: String = "",
+    icon: ImageVector? = null,
     isPrimary: Boolean = false,
     isClickable: Boolean = false,
     primaryColor: Color = MaterialTheme.colorScheme.primary,
@@ -207,10 +208,10 @@ fun StandardChip(
                 .padding(SpaceMini),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if(!isPrimary){
+            icon?.let {
                 Icon(
-                    imageVector = Icons.Default.Done,
-                    contentDescription = "$text added",
+                    imageVector = it,
+                    contentDescription = "$text icon",
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(IconSizeSmall)
                 )
@@ -224,15 +225,6 @@ fun StandardChip(
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onPrimary,
             )
-
-            if(secondaryText.isNotEmpty() && text.startsWith("Cold")){
-                Text(
-                    text = " Rs. $secondaryText",
-                    style = MaterialTheme.typography.labelSmall,
-                    textAlign = TextAlign.Center,
-                    color = if (isPrimary) secondaryColor else primaryColor,
-                )
-            }
         }
     }
 }

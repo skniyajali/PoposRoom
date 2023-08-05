@@ -109,7 +109,7 @@ val Typography = Typography(
         fontFamily = fontFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 16.sp,
-        letterSpacing = 1.5.sp,
+        letterSpacing = 0.25.sp,
         fontFeatureSettings = "titl"
     ),
     labelMedium = TextStyle(

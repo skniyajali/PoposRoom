@@ -9,14 +9,14 @@ import com.niyaj.data.repository.PaymentRepository
 import com.niyaj.data.repository.validation.PaymentValidationRepository
 import com.niyaj.database.model.EmployeeWithPaymentCrossRef
 import com.niyaj.database.model.asExternalModel
-import com.niyaj.model.CalculatedSalary
+import com.niyaj.model.EmployeeSalaryEstimation
 import com.niyaj.model.Employee
 import com.niyaj.model.EmployeeWithPayments
 import com.niyaj.model.Payment
 import com.niyaj.model.PaymentMode
 import com.niyaj.model.PaymentType
-import com.niyaj.model.SalaryCalculableDate
-import com.niyaj.model.SalaryCalculation
+import com.niyaj.model.EmployeeMonthlyDate
+import com.niyaj.model.EmployeePayments
 import com.niyaj.model.searchPayment
 import com.niyaj.poposroom.features.employee_payment.data.dao.PaymentDao
 import com.niyaj.data.utils.PaymentScreenTags
@@ -228,19 +228,19 @@ class PaymentRepositoryImpl(
     override suspend fun getPaymentByEmployeeId(
         employeeId: Int,
         selectedDate: Pair<String, String>,
-    ): CalculatedSalary? {
+    ): EmployeeSalaryEstimation? {
         return null
     }
 
     override suspend fun getEmployeePayment(
         employeeId: Int,
-    ): Flow<List<SalaryCalculation>> {
+    ): Flow<List<EmployeePayments>> {
         return flow { }
     }
 
     override suspend fun getPaymentCalculableDate(
         employeeId: Int,
-    ): Flow<List<SalaryCalculableDate>> {
+    ): Flow<List<EmployeeMonthlyDate>> {
         return flow { }
     }
 

@@ -1,5 +1,6 @@
 package com.niyaj.employee_absent.add_edit
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -130,6 +131,8 @@ class AddEditAbsentViewModel @Inject constructor(
     }
 
     private fun getEmployeeById(employeeId: Int) {
+        Log.d("getEmployeeById", "Employee with id $employeeId")
+
         viewModelScope.launch {
             absentRepository.getEmployeeById(employeeId)?.let { employee ->
                 _selectedEmployee.value = employee

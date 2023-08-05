@@ -1,21 +1,36 @@
 package com.niyaj.data.data.repository
 
+import android.util.Log
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
+import com.niyaj.common.utils.Constants.NOT_PAID
+import com.niyaj.common.utils.Constants.PAID
+import com.niyaj.common.utils.compareSalaryDates
+import com.niyaj.common.utils.getSalaryDates
+import com.niyaj.common.utils.toRupee
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.EmployeeRepository
 import com.niyaj.data.repository.EmployeeValidationRepository
+import com.niyaj.data.utils.EmployeeTestTags
 import com.niyaj.database.dao.EmployeeDao
 import com.niyaj.database.model.asExternalModel
+import com.niyaj.model.Absent
 import com.niyaj.model.Employee
+import com.niyaj.model.EmployeeAbsentDates
+import com.niyaj.model.EmployeeMonthlyDate
+import com.niyaj.model.EmployeePayments
+import com.niyaj.model.EmployeeSalaryEstimation
+import com.niyaj.model.Payment
 import com.niyaj.model.searchEmployee
-import com.niyaj.data.utils.EmployeeTestTags
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.produceIn
 import kotlinx.coroutines.withContext
 
 class EmployeeRepositoryImpl(
@@ -35,13 +50,13 @@ class EmployeeRepositoryImpl(
         }
     }
 
-    override suspend fun getEmployeeById(employeeId: Int): Resource<Employee?> {
+    override suspend fun getEmployeeById(employeeId: Int): Employee? {
         return try {
             withContext(ioDispatcher) {
-                Resource.Success(employeeDao.getEmployeeById(employeeId)?.asExternalModel())
+                employeeDao.getEmployeeById(employeeId)?.asExternalModel()
             }
         } catch (e: Exception) {
-            Resource.Error(e.message)
+            null
         }
     }
 
@@ -273,5 +288,238 @@ class EmployeeRepositoryImpl(
         return ValidationResult(
             successful = true,
         )
+    }
+
+    override suspend fun getEmployeePaymentById(employeeId: Int): Resource<Payment?> {
+        return try {
+            val result = employeeDao.getEmployeePaymentById(employeeId)?.asExternalModel()
+
+            Resource.Success(result)
+        } catch (e: Exception) {
+            Resource.Error(e.message)
+        }
+    }
+
+    override suspend fun getEmployeeAbsentById(employeeId: Int): Resource<Absent?> {
+        return try {
+            val result = employeeDao.getEmployeeAbsentById(employeeId)?.asExternalModel()
+
+            Resource.Success(result)
+        } catch (e: Exception) {
+            Resource.Error(e.message)
+        }
+    }
+
+    override suspend fun findEmployeeAttendanceByAbsentDate(
+        absentDate: String,
+        employeeId: Int,
+        absentId: Int?,
+    ): Boolean {
+        return try {
+            withContext(ioDispatcher) {
+                val result =
+                    employeeDao.findEmployeeAbsentDateByIdAndDate(absentDate, employeeId, absentId)
+
+                result != null
+            }
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    override suspend fun getEmployeeSalaryEstimation(
+        employeeId: Int,
+        selectedDate: Pair<String, String>?,
+    ): Flow<EmployeeSalaryEstimation> {
+        return channelFlow {
+            try {
+                val employeeSalary = withContext(ioDispatcher) {
+                    employeeDao.getEmployeeSalary(employeeId)
+                }
+                val joinedDate = withContext(ioDispatcher) {
+                    employeeDao.getEmployeeJoinedDate(employeeId)
+                }
+                val salaryDate = joinedDate?.let { getSalaryDates(it).first() } ?: Pair("", "")
+
+                val firstDate = selectedDate?.first ?: salaryDate.first
+                val secondDate = selectedDate?.second ?: salaryDate.second
+
+                if (employeeSalary != null) {
+                    var amountPaid: Long = 0
+                    var noOfPayments: Long = 0
+                    var noOfAbsents: Long = 0
+
+                    val empSalary = employeeSalary.toLong()
+                    val perDaySalary = empSalary.div(30)
+
+                    employeeDao.getEmployeePaymentAmountsByDate(
+                        employeeId,
+                        firstDate,
+                        secondDate
+                    ).flowOn(ioDispatcher).produceIn(this).receive().forEach { payment ->
+                        amountPaid += payment.toLong()
+
+                        noOfPayments += 1
+                    }
+
+                    employeeDao.getEmployeeAbsentDatesByDate(
+                        employeeId,
+                        firstDate,
+                        secondDate
+                    ).flowOn(ioDispatcher).produceIn(this).receive().map {
+                        noOfAbsents += 1
+                    }
+
+                    val absentSalary = perDaySalary.times(noOfAbsents)
+                    val currentSalary = empSalary.minus(absentSalary)
+
+                    val status = if (currentSalary >= amountPaid) NOT_PAID else PAID
+
+                    val message: String? = if (currentSalary < amountPaid) {
+                        "Paid Extra ${
+                            amountPaid.minus(currentSalary).toString().toRupee
+                        } Amount"
+                    } else if (currentSalary > amountPaid) {
+                        "Remaining  ${
+                            currentSalary.minus(amountPaid).toString().toRupee
+                        } have to pay."
+                    } else null
+
+                    val remainingAmount = currentSalary.minus(amountPaid)
+
+                    send(
+                        EmployeeSalaryEstimation(
+                            startDate = firstDate,
+                            endDate = secondDate,
+                            status = status,
+                            message = message,
+                            remainingAmount = remainingAmount.toString(),
+                            paymentCount = noOfPayments.toString(),
+                            absentCount = noOfAbsents.toString(),
+                        )
+                    )
+                } else {
+                    Log.e("EmployeeEstimation", "Unable to find employee")
+
+                    send(EmployeeSalaryEstimation())
+                }
+            } catch (e: Exception) {
+                Log.e("EmployeeEstimation", e.message ?: "Error")
+
+                send(EmployeeSalaryEstimation())
+            }
+        }
+    }
+
+    override suspend fun getEmployeeAbsentDates(employeeId: Int): Flow<List<EmployeeAbsentDates>> {
+        return channelFlow {
+            try {
+                val joinedDate = withContext(ioDispatcher) {
+                    employeeDao.getEmployeeJoinedDate(employeeId)
+                }
+                val employeeAbsentDates = mutableListOf<EmployeeAbsentDates>()
+
+                if (joinedDate != null) {
+                    val dates = getSalaryDates(joinedDate)
+
+                    dates.forEach { date ->
+                        if (joinedDate <= date.first) {
+                            val absentDates = employeeDao.getEmployeeAbsentDatesByDate(
+                                employeeId,
+                                date.first,
+                                date.second
+                            ).flowOn(ioDispatcher).produceIn(this).receive()
+
+                            employeeAbsentDates.add(
+                                EmployeeAbsentDates(
+                                    startDate = date.first,
+                                    endDate = date.second,
+                                    absentDates = absentDates
+                                )
+                            )
+                        }
+                    }
+
+                    send(employeeAbsentDates)
+
+                } else {
+                    send(emptyList())
+                }
+            } catch (e: Exception) {
+                send(emptyList())
+            }
+        }
+    }
+
+    override suspend fun getEmployeePayments(employeeId: Int): Flow<List<EmployeePayments>> {
+        return channelFlow {
+            try {
+                val employeePayments = mutableListOf<EmployeePayments>()
+                val joinedDate = withContext(ioDispatcher) {
+                    employeeDao.getEmployeeJoinedDate(employeeId)
+                }
+
+                if (joinedDate != null) {
+                    val dates = getSalaryDates(joinedDate)
+
+                    dates.forEach { date ->
+                        if (joinedDate <= date.first) {
+                            val result = employeeDao.getEmployeePaymentsByDate(
+                                employeeId,
+                                date.first,
+                                date.second
+                            ).flowOn(ioDispatcher).produceIn(this).receive()
+                                .map { it.asExternalModel() }
+
+                            employeePayments.add(
+                                EmployeePayments(
+                                    startDate = date.first,
+                                    endDate = date.second,
+                                    payments = result
+                                )
+                            )
+                        }
+                    }
+
+                    send(employeePayments)
+                } else {
+                    send(emptyList())
+                }
+            } catch (e: Exception) {
+                send(emptyList())
+            }
+        }
+    }
+
+    override suspend fun getSalaryCalculableDate(employeeId: Int): List<EmployeeMonthlyDate> {
+        return try {
+            val joinedDate = withContext(ioDispatcher) {
+                employeeDao.getEmployeeJoinedDate(employeeId)
+            }
+
+            if (joinedDate != null) {
+                val list = mutableListOf<EmployeeMonthlyDate>()
+
+                val dates = getSalaryDates(joinedDate)
+
+                dates.forEach { date ->
+                    if (compareSalaryDates(joinedDate, date.first)) {
+                        list.add(
+                            EmployeeMonthlyDate(
+                                startDate = date.first,
+                                endDate = date.second
+                            )
+                        )
+                    }
+                }
+
+                list
+            } else {
+                emptyList()
+            }
+
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 }

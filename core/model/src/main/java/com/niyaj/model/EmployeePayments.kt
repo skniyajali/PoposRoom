@@ -1,19 +1,17 @@
 package com.niyaj.model
 
-data class SalaryCalculation(
+data class EmployeePayments(
     val startDate: String = "",
     val endDate: String = "",
-    val status: String = "",
-    val message: String? = null,
     val payments: List<Payment> = emptyList(),
 )
 
-data class SalaryCalculableDate(
+data class EmployeeMonthlyDate(
     val startDate: String = "",
     val endDate: String = "",
 )
 
-data class CalculatedSalary(
+data class EmployeeSalaryEstimation(
     val startDate: String = "",
     val endDate: String = "",
     val status: String = "",

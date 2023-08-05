@@ -51,6 +51,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.utils.Constants
+import com.niyaj.common.utils.Constants.DRAWER_ICON
 import com.niyaj.common.utils.Constants.STANDARD_BACK_BUTTON
 import com.niyaj.designsystem.theme.RoyalPurple
 import kotlinx.coroutines.launch
@@ -69,7 +70,7 @@ fun StandardScaffold(
     showBottomBar: Boolean = false,
     showBackButton: Boolean = false,
     onDeselect: () -> Unit = {},
-    onBackClick: () -> Unit = {},
+    onBackClick: () -> Unit = { navController.navigateUp() },
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -123,7 +124,6 @@ fun StandardScaffold(
                                 Icon(
                                     imageVector = Icons.Default.ArrowBack,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.scrim
                                 )
                             }
                         } else {
@@ -158,7 +158,7 @@ fun StandardScaffold(
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Apps,
-                                            contentDescription = null
+                                            contentDescription = DRAWER_ICON
                                         )
                                     }
                                 }
@@ -209,9 +209,9 @@ fun StandardScaffold(
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
                 shape = shape.value,
                 elevation = CardDefaults.cardElevation(),
-                colors = CardDefaults.elevatedCardColors(
-                    containerColor = MaterialTheme.colorScheme.onPrimary
-                )
+//                colors = CardDefaults.elevatedCardColors(
+//                    containerColor = MaterialTheme.colorScheme.onPrimary
+//                )
             ) {
                 content(padding)
             }
@@ -341,9 +341,9 @@ fun StandardScaffoldNew(
                     .padding(padding),
                 shape = shape.value,
                 elevation = CardDefaults.cardElevation(),
-                colors = CardDefaults.elevatedCardColors(
-                    containerColor = MaterialTheme.colorScheme.onPrimary
-                )
+//                colors = CardDefaults.elevatedCardColors(
+//                    containerColor = MaterialTheme.colorScheme.onPrimary
+//                )
             ) {
                 content(padding)
             }

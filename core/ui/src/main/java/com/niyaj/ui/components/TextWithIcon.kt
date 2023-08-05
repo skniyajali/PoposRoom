@@ -104,6 +104,39 @@ fun TextWithIcon(
     }
 }
 
+@Composable
+fun IconWithText(
+    modifier: Modifier = Modifier,
+    iconModifier: Modifier = Modifier,
+    text: String,
+    icon: ImageVector,
+    style : TextStyle = MaterialTheme.typography.labelLarge,
+    fontWeight: FontWeight = FontWeight.SemiBold,
+    textColor : Color = MaterialTheme.colorScheme.onSurface,
+    tintColor: Color = MaterialTheme.colorScheme.primary,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(SpaceMini)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = text,
+            tint = tintColor,
+            modifier = iconModifier,
+        )
+
+        Text(
+            text = text,
+            style = style,
+            fontWeight = fontWeight,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = textColor,
+        )
+    }
+}
 
 @Composable
 fun TextWithTitle(
@@ -143,41 +176,6 @@ fun TextWithTitle(
     }
 }
 
-@Composable
-fun TopBarTitle(
-    modifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier,
-    text: String,
-    icon: ImageVector? = null,
-    style : TextStyle = MaterialTheme.typography.displayMedium,
-    fontWeight: FontWeight = FontWeight.SemiBold,
-    textColor : Color = MaterialTheme.colorScheme.onPrimary,
-    tintColor: Color = MaterialTheme.colorScheme.onPrimary,
-) {
-    Row(
-        modifier = modifier,
-    ) {
-        icon?.let {
-            Icon(
-                imageVector = icon,
-                contentDescription = text,
-                tint = tintColor,
-                modifier = iconModifier,
-            )
-
-            Spacer(modifier = Modifier.width(SpaceMini))
-        }
-
-        Text(
-            text = text,
-            style = style,
-            fontWeight = fontWeight,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = textColor,
-        )
-    }
-}
 
 @Composable
 fun NoteText(
