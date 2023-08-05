@@ -103,7 +103,7 @@ fun StandardOutlinedButton(
     icon: ImageVector? = null,
     enabled: Boolean = true,
     shape: Shape = RoundedCornerShape(SpaceMini),
-    colors: ButtonColors = ButtonDefaults.buttonColors(),
+    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(),
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
     onClick: () -> Unit,
 ) {

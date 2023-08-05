@@ -47,6 +47,7 @@ import com.niyaj.designsystem.theme.LightColor9
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.employee.destinations.AddEditEmployeeScreenDestination
+import com.niyaj.employee.destinations.EmployeeDetailsScreenDestination
 import com.niyaj.model.Employee
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
@@ -204,6 +205,8 @@ fun EmployeeScreen(
                             onClick = {
                                 if (selectedItems.isNotEmpty()) {
                                     viewModel.selectItem(it)
+                                }else {
+                                    navController.navigate(EmployeeDetailsScreenDestination(item.employeeId))
                                 }
                             },
                             onLongClick = viewModel::selectItem
@@ -305,6 +308,8 @@ fun EmployeeData(
                 contentDescription = "Localized description",
             )
         },
+        shadowElevation = 1.dp,
+        tonalElevation = 1.dp,
         colors = ListItemDefaults.colors(
             containerColor = LightColor9
         )

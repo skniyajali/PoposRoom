@@ -87,5 +87,5 @@ interface AbsentDao {
             ELSE absentId != :absentId AND absentDate = :absentDate AND employeeId = :employeeId
             END LIMIT 1
     """)
-    fun findEmployeeByDate(absentDate: String, employeeId: Int, absentId: Int?,): AbsentEntity?
+    fun findEmployeeByDate(absentDate: String, employeeId: Int, absentId: Int?): AbsentEntity?
 }

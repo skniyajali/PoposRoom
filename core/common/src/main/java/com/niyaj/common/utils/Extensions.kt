@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.Year
+import java.time.YearMonth
 import java.time.ZoneId
 import java.util.Calendar
 import java.util.Date
@@ -105,9 +106,39 @@ val String.toTime
 val Date.toTime
     get() = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(this).toString()
 
+val String.toBarDate
+    get() = SimpleDateFormat(
+        "dd MMM",
+        Locale.getDefault()
+    ).format(this.toLong()).toString()
+
+val String.toFormattedDate
+    get() = SimpleDateFormat(
+        "dd MMM yy",
+        Locale.getDefault()
+    ).format(this.toLong()).toString()
+
 val String.toFormattedTime
     get() = SimpleDateFormat(
         "hh:mm a",
+        Locale.getDefault()
+    ).format(this.toLong()).toString()
+
+val String.toFormattedDateAndTime
+    get() = SimpleDateFormat(
+        "dd MMM, hh:mm a",
+        Locale.getDefault()
+    ).format(this.toLong()).toString()
+
+val Date.toFormattedDateAndTime
+    get() = SimpleDateFormat(
+        "dd MMM, hh:mm a",
+        Locale.getDefault()
+    ).format(this).toString()
+
+val String.toYearAndMonth
+    get() = SimpleDateFormat(
+        "MMM yyyy",
         Locale.getDefault()
     ).format(this.toLong()).toString()
 
@@ -399,4 +430,108 @@ fun createDottedString(name : String, limit: Int) : String {
 
         return newName
     } else return name
+}
+
+
+fun getSalaryDates(joinedDate : String) : List<Pair<String, String>> {
+
+    val currentYearAndMonth = YearMonth.now()
+
+    val salaryDates = mutableListOf<Pair<String, String>>()
+
+    val formatDate = SimpleDateFormat("dd", Locale.getDefault())
+    val formattedDate = formatDate.format(joinedDate.toLong()).toInt()
+
+    for (i in 0 until 5) {
+        var previousMonth = 0
+        var previousYear = 0
+
+        val subtractMonth = currentYearAndMonth.minusMonths(i.toLong())
+
+        for (j in 1 until 2) {
+            previousMonth = subtractMonth.minusMonths(j.toLong()).month.value
+            previousYear = subtractMonth.minusMonths(j.toLong()).year
+        }
+
+        val currentMonth = subtractMonth.month.value
+        val currentYear = subtractMonth.year
+
+        val comparePreDate = compareSalaryDates(
+            getStartDate(formattedDate, previousMonth, previousYear),
+            Calendar.getInstance().timeInMillis.toString()
+        )
+
+        if (comparePreDate) {
+            salaryDates.add(
+                getStartAndEndDate(
+                    date = formattedDate,
+                    currentMonth = currentMonth,
+                    currentYear = currentYear,
+                    previousMonth = previousMonth,
+                    previousYear = previousYear
+                )
+            )
+        }
+    }
+
+    return salaryDates
+}
+
+private fun getStartAndEndDate(
+    date : Int,
+    currentMonth : Int,
+    currentYear : Int,
+    previousMonth : Int,
+    previousYear : Int
+) : Pair<String, String> {
+    val startCalender = Calendar.getInstance()
+    startCalender[Calendar.DATE] = date
+    startCalender[Calendar.YEAR] = previousYear
+    startCalender[Calendar.MONTH] = previousMonth
+    startCalender[Calendar.HOUR_OF_DAY] = 0
+    startCalender[Calendar.MINUTE] = 0
+    startCalender[Calendar.SECOND] = 0
+    startCalender[Calendar.MILLISECOND] = 0
+
+
+    val endCalender = Calendar.getInstance()
+    endCalender[Calendar.DATE] = date
+    endCalender[Calendar.YEAR] = currentYear
+    endCalender[Calendar.MONTH] = currentMonth
+    endCalender[Calendar.HOUR_OF_DAY] = 23
+    endCalender[Calendar.MINUTE] = 59
+    endCalender[Calendar.SECOND] = 59
+
+    return Pair(startCalender.timeInMillis.toString(), endCalender.timeInMillis.toString())
+}
+
+fun compareSalaryDates(joinedDate : String, comparableDate : String) : Boolean {
+    val calendar = Calendar.getInstance()
+
+    calendar.timeInMillis = joinedDate.toLong()
+    val firstDate = calendar.time
+
+    calendar.timeInMillis = comparableDate.toLong()
+    val secondDate = calendar.time
+
+    val cmp = firstDate.compareTo(secondDate)
+
+    return when {
+        cmp < 0 -> true
+        cmp > 0 -> false
+        else -> true
+    }
+}
+
+private fun getStartDate(date : Int, currentMonth : Int, currentYear : Int) : String {
+    val startCalender = Calendar.getInstance()
+    startCalender[Calendar.DATE] = date
+    startCalender[Calendar.YEAR] = currentYear
+    startCalender[Calendar.MONTH] = currentMonth
+    startCalender[Calendar.HOUR_OF_DAY] = 0
+    startCalender[Calendar.MINUTE] = 0
+    startCalender[Calendar.SECOND] = 0
+    startCalender[Calendar.MILLISECOND] = 0
+
+    return startCalender.timeInMillis.toString()
 }

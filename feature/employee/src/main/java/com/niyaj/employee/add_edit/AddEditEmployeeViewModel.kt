@@ -29,8 +29,8 @@ import javax.inject.Inject
 class AddEditEmployeeViewModel @Inject constructor(
     private val employeeRepository: EmployeeRepository,
     private val validationRepository: EmployeeValidationRepository,
-    savedStateHandle: SavedStateHandle
-): ViewModel() {
+    savedStateHandle: SavedStateHandle,
+) : ViewModel() {
 
     private var employeeId = savedStateHandle.get<Int>("employeeId")
 
@@ -125,24 +125,17 @@ class AddEditEmployeeViewModel @Inject constructor(
 
     private fun getCustomerById(itemId: Int) {
         viewModelScope.launch {
-            when (val result = employeeRepository.getEmployeeById(itemId)) {
-                is Resource.Error -> {
-                    _eventFlow.emit(UiEvent.OnError("Unable to find employee"))
-                }
-                is Resource.Success -> {
-                    result.data?.let { employee ->
-                        state = state.copy(
-                            employeePhone = employee.employeePhone,
-                            employeeName = employee.employeeName,
-                            employeeEmail = employee.employeeEmail,
-                            employeeSalary = employee.employeeSalary,
-                            employeePosition = employee.employeePosition,
-                            employeeSalaryType = employee.employeeSalaryType,
-                            employeeType = employee.employeeType,
-                            employeeJoinedDate = employee.employeeJoinedDate
-                        )
-                    }
-                }
+            employeeRepository.getEmployeeById(itemId)?.let { employee ->
+                state = state.copy(
+                    employeePhone = employee.employeePhone,
+                    employeeName = employee.employeeName,
+                    employeeEmail = employee.employeeEmail,
+                    employeeSalary = employee.employeeSalary,
+                    employeePosition = employee.employeePosition,
+                    employeeSalaryType = employee.employeeSalaryType,
+                    employeeType = employee.employeeType,
+                    employeeJoinedDate = employee.employeeJoinedDate
+                )
             }
         }
     }
@@ -168,10 +161,11 @@ class AddEditEmployeeViewModel @Inject constructor(
                     updatedAt = if (employeeId != 0) Date() else null
                 )
 
-                when(employeeRepository.upsertEmployee(addOnItem)) {
+                when (employeeRepository.upsertEmployee(addOnItem)) {
                     is Resource.Error -> {
                         _eventFlow.emit(UiEvent.OnError("Unable To Create Employee."))
                     }
+
                     is Resource.Success -> {
                         _eventFlow.emit(UiEvent.OnSuccess("Employee Created Successfully."))
                     }
