@@ -21,7 +21,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonPin
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Radar
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedFilterChip
@@ -260,7 +260,7 @@ fun AddEditEmployeeScreen(
                                 )
 
                                 if (index != positions.size - 1) {
-                                    Divider(
+                                    HorizontalDivider(
                                         modifier = Modifier.fillMaxWidth(),
                                         color = Color.Gray,
                                         thickness = 0.8.dp

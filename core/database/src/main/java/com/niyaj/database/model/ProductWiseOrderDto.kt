@@ -2,15 +2,11 @@ package com.niyaj.database.model
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.niyaj.model.Address
-import com.niyaj.model.CartOrder
-import com.niyaj.model.Customer
-import com.niyaj.model.OrderWithCartItems
 import com.niyaj.model.ProductAndQuantity
 
-data class OrderWithCartDto(
+data class ProductWiseOrderDto(
     @Embedded
-    val cartOrder: CartOrderEntity,
+    val cartOrderEntity: CartOrderEntity,
 
     @Relation(
         parentColumn = "orderId",

@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -47,6 +47,7 @@ fun StandardExpandable(
     title: @Composable (RowScope.() -> Unit)? = null,
     trailing: @Composable (RowScope.() -> Unit)? = null,
     expand: @Composable (RowScope.(Modifier) -> Unit)? = null,
+    contentDesc: String = "Item",
     contentAnimation: FiniteAnimationSpec<IntSize> = spring(
         dampingRatio = Spring.DampingRatioLowBouncy,
         stiffness = Spring.StiffnessVeryLow
@@ -67,9 +68,7 @@ fun StandardExpandable(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(
-                    interactionSource = remember {
-                        MutableInteractionSource()
-                    },
+                    interactionSource = remember { MutableInteractionSource() },
                     indication = null,
                     enabled = rowClickable,
                 ) {
@@ -112,7 +111,7 @@ fun StandardExpandable(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.ArrowDropDown,
-                            contentDescription = "Expand Less",
+                            contentDescription = contentDesc.plus("Expand Less"),
                             tint = iconTint
                         )
                     }
@@ -121,7 +120,7 @@ fun StandardExpandable(
         }
 
         if (expanded) {
-            Divider(modifier = dividerModifier.fillMaxWidth())
+            HorizontalDivider(modifier = dividerModifier.fillMaxWidth())
 
             content()
         }

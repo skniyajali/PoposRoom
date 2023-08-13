@@ -237,5 +237,4 @@ fun DineOutScreen(
             )
         }
     }
-
 }

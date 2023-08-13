@@ -13,6 +13,7 @@ import com.niyaj.employee.EmployeeNavGraph
 import com.niyaj.employee_absent.EmployeeabsentNavGraph
 import com.niyaj.employee_payment.EmployeepaymentNavGraph
 import com.niyaj.expenses.ExpensesNavGraph
+import com.niyaj.feature.reports.ReportsNavGraph
 import com.niyaj.home.HomeNavGraph
 import com.niyaj.order.OrderNavGraph
 import com.niyaj.printer_info.PrinterinfoNavGraph
@@ -48,5 +49,6 @@ object RootNavGraph : NavGraphSpec {
         ProductNavGraph,
         ProfileNavGraph,
         PrinterinfoNavGraph,
+        ReportsNavGraph,
     )
 }

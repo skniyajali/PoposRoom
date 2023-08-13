@@ -34,8 +34,8 @@ import com.niyaj.model.OrderType
 fun CartItemTotalPriceSection(
     modifier: Modifier = Modifier,
     itemCount: Int = 0,
-    totalPrice: Int = 0,
-    discountPrice: Int = 0,
+    basePrice: Long = 0,
+    discountPrice: Long = 0,
     orderType: OrderType = OrderType.DineIn,
     showPrintBtn: Boolean = true,
     onClickPlaceOrder: () -> Unit = {},
@@ -68,7 +68,7 @@ fun CartItemTotalPriceSection(
 
             Text(
                 modifier = Modifier.weight(0.8f),
-                text = "Rs. ${totalPrice.minus(discountPrice)}",
+                text = "Rs. ${basePrice.minus(discountPrice)}",
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = color

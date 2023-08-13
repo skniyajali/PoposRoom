@@ -7,11 +7,12 @@ import com.niyaj.common.result.ValidationResult
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.AddressRepository
 import com.niyaj.data.repository.validation.AddressValidationRepository
+import com.niyaj.data.utils.AddressTestTags
 import com.niyaj.database.dao.AddressDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Address
+import com.niyaj.model.AddressWiseOrder
 import com.niyaj.model.searchAddress
-import com.niyaj.data.utils.AddressTestTags
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -184,5 +185,21 @@ class AddressRepositoryImpl(
         return ValidationResult(
             successful = true
         )
+    }
+
+    override suspend fun getAddressWiseOrders(addressId: Int): Flow<List<AddressWiseOrder>> {
+        return withContext(ioDispatcher) {
+            addressDao.getAddressOrderDetails(addressId).mapLatest { list ->
+                list.map {
+                    AddressWiseOrder(
+                        orderId = it.orderId,
+                        customerPhone = it.customer.customerPhone,
+                        totalPrice = it.orderPrice.totalPrice,
+                        updatedAt = (it.updatedAt ?: it.createdAt).toString(),
+                        customerName = it.customer.customerName
+                    )
+                }
+            }
+        }
     }
 }

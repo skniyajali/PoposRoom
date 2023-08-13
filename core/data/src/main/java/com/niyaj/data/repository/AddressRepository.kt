@@ -2,6 +2,7 @@ package com.niyaj.data.repository
 
 import com.niyaj.common.result.Resource
 import com.niyaj.model.Address
+import com.niyaj.model.AddressWiseOrder
 import kotlinx.coroutines.flow.Flow
 
 interface AddressRepository {
@@ -19,4 +20,6 @@ interface AddressRepository {
     suspend fun deleteAddress(addressId: Int): Resource<Boolean>
 
     suspend fun deleteAddresses(addressIds: List<Int>): Resource<Boolean>
+
+    suspend fun getAddressWiseOrders(addressId: Int): Flow<List<AddressWiseOrder>>
 }

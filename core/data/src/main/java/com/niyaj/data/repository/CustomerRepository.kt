@@ -2,6 +2,7 @@ package com.niyaj.data.repository
 
 import com.niyaj.common.result.Resource
 import com.niyaj.model.Customer
+import com.niyaj.model.CustomerWiseOrder
 import kotlinx.coroutines.flow.Flow
 
 interface CustomerRepository {
@@ -19,4 +20,6 @@ interface CustomerRepository {
     suspend fun deleteCustomer(customerId: Int): Resource<Boolean>
 
     suspend fun deleteCustomers(customerIds: List<Int>): Resource<Boolean>
+
+    suspend fun getCustomerWiseOrders(customerId: Int): Flow<List<CustomerWiseOrder>>
 }

@@ -33,8 +33,8 @@ import com.niyaj.data.utils.CategoryConstants.UPDATE_CATEGORY
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.ui.components.StandardButton
+import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
-import com.niyaj.ui.components.StandardTextField
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
@@ -98,7 +98,7 @@ fun AddEditCategoryScreen(
                 .padding(SpaceSmall),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
-            StandardTextField(
+            StandardOutlinedTextField(
                 value = viewModel.addEditState.categoryName,
                 label = CATEGORY_NAME_FIELD,
                 leadingIcon = Icons.Default.Category,

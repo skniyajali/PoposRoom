@@ -1,11 +1,8 @@
 package com.niyaj.database.model
 
 import androidx.room.ColumnInfo
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.Junction
-import androidx.room.Relation
 import java.util.Date
 
 @Entity(
@@ -37,33 +34,4 @@ data class CartChargesEntity(
 
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     val createdAt: Date = Date(),
-)
-
-
-data class CartOrderWithChargesIdDto(
-    @Embedded
-    val cartOrderEntity: CartOrderEntity,
-
-    @Relation(
-        parentColumn = "orderId",
-        entity = ChargesEntity::class,
-        entityColumn = "chargesId",
-        associateBy = Junction(CartChargesEntity::class),
-        projection = ["chargesId"]
-    )
-    val items: List<Int> = emptyList()
-)
-
-data class CartOrderWithChargesPriceDto(
-    @Embedded
-    val cartOrderEntity: CartOrderEntity,
-
-    @Relation(
-        parentColumn = "orderId",
-        entity = ChargesEntity::class,
-        entityColumn = "chargesId",
-        associateBy = Junction(CartChargesEntity::class),
-        projection = ["chargesId"]
-    )
-    val items: List<Int> = emptyList()
 )

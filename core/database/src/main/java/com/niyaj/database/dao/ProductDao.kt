@@ -11,36 +11,46 @@ import com.niyaj.database.model.CategoryEntity
 import com.niyaj.database.model.CategoryWithProductCrossRef
 import com.niyaj.database.model.CategoryWithProductsDto
 import com.niyaj.database.model.ProductEntity
+import com.niyaj.database.model.ProductWiseOrderDetailsDto
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProductDao {
 
     @Transaction
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM category
-    """)
+    """
+    )
     fun getAllCategoryProduct(): Flow<List<CategoryWithProductsDto>>
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM category
-    """)
+    """
+    )
     fun getAllCategory(): Flow<List<CategoryEntity>>
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM category WHERE categoryId = :categoryId
     """
     )
     suspend fun getCategoryById(categoryId: Int): CategoryEntity?
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM product ORDER BY categoryId ASC, productPrice ASC
-    """)
+    """
+    )
     fun getAllProduct(): Flow<List<ProductEntity>>
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM product WHERE productId = :productId
-    """)
+    """
+    )
     suspend fun getProductById(productId: Int): ProductEntity?
 
     /**
@@ -64,9 +74,11 @@ interface ProductDao {
     @Insert(entity = CategoryWithProductCrossRef::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertCategoryWithProductCrossReference(categoryWithProduct: CategoryWithProductCrossRef)
 
-    @Query(value = """
+    @Query(
+        value = """
         DELETE FROM product WHERE productId = :productId
-    """)
+    """
+    )
     suspend fun deleteProduct(productId: Int): Int
 
     /**
@@ -80,7 +92,8 @@ interface ProductDao {
     )
     suspend fun deleteProducts(productIds: List<Int>): Int
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM product WHERE
             CASE WHEN :productId IS NULL OR :productId = 0
             THEN productName = :productName
@@ -90,4 +103,27 @@ interface ProductDao {
     )
     fun findProductByName(productName: String, productId: Int?): ProductEntity?
 
+    @Query(
+        value = """
+            SELECT productPrice FROM product WHERE productId = :productId
+        """
+    )
+    suspend fun getProductPriceById(productId: Int): Int
+
+    @Transaction
+    @Query(
+        value = """
+            SELECT orderId FROM cart WHERE productId = :productId ORDER BY updatedAt DESC
+        """
+    )
+    fun getOrderIdsAndQuantity(productId: Int): Flow<List<Int>>
+
+
+    @Transaction
+    @Query(
+        value = """
+            SELECT * FROM cartorder WHERE orderId IN (:orderIds) ORDER BY updatedAt DESC
+        """
+    )
+    fun getProductWiseOrders(orderIds: List<Int>): Flow<List<ProductWiseOrderDetailsDto>>
 }

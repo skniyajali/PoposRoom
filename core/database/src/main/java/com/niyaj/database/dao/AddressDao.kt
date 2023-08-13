@@ -4,9 +4,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import androidx.room.Upsert
 import com.niyaj.database.model.AddressEntity
+import com.niyaj.database.model.AddressWiseOrderDto
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -73,4 +75,13 @@ interface AddressDao {
             END LIMIT 1
     """)
     fun findAddressByName(addressName: String, addressId: Int?): AddressEntity?
+
+
+    @Transaction
+    @Query(
+        value = """
+            SELECT orderId, createdAt, updatedAt, customerId FROM cartorder WHERE addressId = :addressId ORDER BY updatedAt DESC
+        """
+    )
+    fun getAddressOrderDetails(addressId: Int): Flow<List<AddressWiseOrderDto>>
 }

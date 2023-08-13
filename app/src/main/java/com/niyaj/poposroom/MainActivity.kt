@@ -20,6 +20,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.metrics.performance.JankStats
 import androidx.profileinstaller.ProfileVerifier
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.niyaj.common.utils.endOfDayTime
+import com.niyaj.common.utils.startOfDayTime
 import com.niyaj.data.utils.NetworkMonitor
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.model.DarkThemeConfig
@@ -74,6 +76,7 @@ class MainActivity : ComponentActivity() {
         // including IME animations
 //        WindowCompat.setDecorFitsSystemWindows(window, false)
 
+        Timber.d("startDate $startOfDayTime and endDate $endOfDayTime")
         setContent {
             val systemUiController = rememberSystemUiController()
             val darkTheme = shouldUseDarkTheme(uiState)

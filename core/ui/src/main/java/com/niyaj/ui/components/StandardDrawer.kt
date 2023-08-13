@@ -54,7 +54,7 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.StickyNote2
 import androidx.compose.material.icons.outlined.SwitchAccount
 import androidx.compose.material.icons.outlined.Widgets
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -119,7 +119,7 @@ fun StandardDrawer(
                 .weight(2.5f)
         ) {
             item {
-                Divider(thickness = 1.dp, modifier = Modifier.fillMaxWidth())
+                HorizontalDivider(thickness = 1.dp, modifier = Modifier.fillMaxWidth())
                 Spacer(modifier = Modifier.height(SpaceMini))
             }
 
@@ -178,7 +178,7 @@ fun StandardDrawer(
             item {
                 Spacer(modifier = Modifier.height(SpaceMedium))
 
-                Divider(
+                HorizontalDivider(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(LightColor12)
@@ -582,7 +582,7 @@ fun StandardDrawer(
         Column(
             modifier = Modifier.weight(0.2f)
         ) {
-            Divider(thickness = 1.dp, modifier = Modifier.fillMaxWidth())
+            HorizontalDivider(thickness = 1.dp, modifier = Modifier.fillMaxWidth())
 
             Spacer(modifier = Modifier.height(SpaceSmall))
 

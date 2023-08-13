@@ -256,9 +256,7 @@ fun StandardScaffoldNew(
             darkIcons = true,
         )
 
-        systemUiController.setNavigationBarColor(
-            color = navColor
-        )
+        systemUiController.setNavigationBarColor(color = navColor)
     }
 
     ModalNavigationDrawer(
@@ -307,6 +305,9 @@ fun StandardScaffoldNew(
                         navActions()
                     },
                     scrollBehavior = scrollBehavior,
+                    colors = TopAppBarDefaults.largeTopAppBarColors(
+                        containerColor = color.value
+                    )
                 )
             },
             bottomBar = {
@@ -334,6 +335,7 @@ fun StandardScaffoldNew(
                 .testTag(title)
                 .fillMaxSize()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
+            containerColor = MaterialTheme.colorScheme.background
         ) { padding ->
             ElevatedCard(
                 modifier = Modifier
@@ -341,9 +343,6 @@ fun StandardScaffoldNew(
                     .padding(padding),
                 shape = shape.value,
                 elevation = CardDefaults.cardElevation(),
-//                colors = CardDefaults.elevatedCardColors(
-//                    containerColor = MaterialTheme.colorScheme.onPrimary
-//                )
             ) {
                 content(padding)
             }
@@ -365,7 +364,7 @@ internal fun containerColorForPrimary(colorTransitionFraction: Float): Color {
 internal fun containerColor(colorTransitionFraction: Float): Color {
     return lerp(
         MaterialTheme.colorScheme.background,
-        MaterialTheme.colorScheme.surfaceVariant,
+        MaterialTheme.colorScheme.tertiaryContainer,
         FastOutLinearInEasing.transform(colorTransitionFraction)
     )
 }

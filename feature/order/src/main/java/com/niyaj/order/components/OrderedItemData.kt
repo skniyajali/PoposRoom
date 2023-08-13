@@ -104,7 +104,7 @@ fun OrderedItemData(
                     }
 
                     TextWithIcon(
-                        text = order.orderPrice.totalPrice.minus(order.orderPrice.discountPrice).toString(),
+                        text = order.orderPrice.basePrice.minus(order.orderPrice.discountPrice).toString(),
                         icon = Icons.Outlined.CurrencyRupee
                     )
                 }

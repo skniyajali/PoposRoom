@@ -39,6 +39,7 @@ android {
             // TODO: Abstract the signing configuration to a separate file to avoid hardcoding this.
             signingConfig = signingConfigs.getByName("debug")
         }
+
         val benchmark by creating {
             // Enable all the optimizations from release build through initWith(release).
             initWith(release)
@@ -112,6 +113,7 @@ dependencies {
     implementation(project(":feature:profile"))
     implementation(project(":feature:settings"))
     implementation(project(":feature:printer_info"))
+    implementation(project(":feature:reports"))
 
 
     implementation(project(":core:common"))

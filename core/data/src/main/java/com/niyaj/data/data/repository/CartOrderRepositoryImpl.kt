@@ -18,9 +18,11 @@ import com.niyaj.data.utils.CartOrderTestTags.ORDER_PRICE_LESS_THAN_TWO_ERROR
 import com.niyaj.data.utils.CartOrderTestTags.ORDER_SHORT_NAME_EMPTY_ERROR
 import com.niyaj.database.dao.AddressDao
 import com.niyaj.database.dao.CartOrderDao
+import com.niyaj.database.dao.CartPriceDao
 import com.niyaj.database.dao.CustomerDao
 import com.niyaj.database.dao.SelectedDao
 import com.niyaj.database.model.CartOrderEntity
+import com.niyaj.database.model.CartPriceEntity
 import com.niyaj.database.model.SelectedEntity
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Address
@@ -41,11 +43,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 
+
 class CartOrderRepositoryImpl(
     private val cartOrderDao: CartOrderDao,
     private val customerDao: CustomerDao,
     private val addressDao: AddressDao,
     private val selectedDao: SelectedDao,
+    private val cartPriceDao: CartPriceDao,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
 ) : CartOrderRepository, CartOrderValidationRepository {
@@ -300,6 +304,10 @@ class CartOrderRepositoryImpl(
 
                     if (result > 0) {
                         async(ioDispatcher) {
+                            insertOrIgnoreCartPrice(result.toInt(), newOrder.orderType, newOrder.doesChargesIncluded)
+                        }.await()
+
+                        async(ioDispatcher) {
                             selectedDao.insertOrUpdateSelectedOrder(
                                 SelectedEntity(
                                     selectedId = SELECTED_ID,
@@ -521,6 +529,28 @@ class CartOrderRepositoryImpl(
                     )
                 }
             }
+        }
+    }
+
+    private suspend fun insertOrIgnoreCartPrice(orderId: Int, orderType: OrderType, included: Boolean) {
+        return withContext(ioDispatcher) {
+            var basePrice = 0
+
+            if (included) {
+                cartOrderDao.getAllChargesPrice().forEach {
+                    if (it.isApplicable && orderType == OrderType.DineOut) {
+                        basePrice += it.chargesPrice
+                    }
+                }
+            }
+
+            cartPriceDao.insertOrIgnoreCartPrice(
+                CartPriceEntity(
+                    orderId = orderId,
+                    basePrice = basePrice.toLong(),
+                    totalPrice = basePrice.toLong()
+                )
+            )
         }
     }
 }

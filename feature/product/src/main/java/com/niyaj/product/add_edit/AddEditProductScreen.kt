@@ -18,7 +18,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FeaturedPlayList
 import androidx.compose.material.icons.filled.Money
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -220,7 +220,7 @@ fun AddEditProductScreen(
                             )
 
                             if (index != categories.size - 1) {
-                                Divider(modifier = Modifier
+                                HorizontalDivider(modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 44.dp))
                             }
@@ -245,7 +245,7 @@ fun AddEditProductScreen(
                             )
                         }
 
-                        Divider(modifier = Modifier.fillMaxWidth())
+                        HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
                         DropdownMenuItem(
                             modifier = Modifier

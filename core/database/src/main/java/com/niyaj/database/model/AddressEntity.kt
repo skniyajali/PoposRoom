@@ -9,6 +9,7 @@ import java.util.Date
 @Entity(tableName = "address")
 data class AddressEntity(
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(index = true)
     val addressId: Int = 0,
 
     val addressName: String = "",

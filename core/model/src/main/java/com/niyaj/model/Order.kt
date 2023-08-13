@@ -21,7 +21,7 @@ fun List<Order>.searchOrder(searchText: String): List<Order> {
                     it.customerPhone?.contains(searchText, true) == true ||
                     it.customerAddress?.contains(searchText, true) == true ||
                     it.orderDate.toTime.contains(searchText, true) ||
-                    it.orderPrice.totalPrice.plus(it.orderPrice.discountPrice).toString()
+                    it.orderPrice.basePrice.plus(it.orderPrice.discountPrice).toString()
                         .contains(searchText, true)
         }
     } else this
