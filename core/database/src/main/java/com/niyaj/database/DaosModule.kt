@@ -5,6 +5,7 @@ import com.niyaj.database.dao.AddOnItemDao
 import com.niyaj.database.dao.AddressDao
 import com.niyaj.database.dao.CartDao
 import com.niyaj.database.dao.CartOrderDao
+import com.niyaj.database.dao.CartPriceDao
 import com.niyaj.database.dao.CategoryDao
 import com.niyaj.database.dao.CustomerDao
 import com.niyaj.database.dao.EmployeeDao
@@ -15,6 +16,7 @@ import com.niyaj.database.dao.PrintDao
 import com.niyaj.database.dao.PrinterDao
 import com.niyaj.database.dao.ProductDao
 import com.niyaj.database.dao.ProfileDao
+import com.niyaj.database.dao.ReportsDao
 import com.niyaj.database.dao.SelectedDao
 import com.niyaj.poposroom.features.charges.data.dao.ChargesDao
 import com.niyaj.poposroom.features.employee_payment.data.dao.PaymentDao
@@ -41,6 +43,9 @@ object DaosModule {
 
     @Provides
     fun providesCartOrderDao(database: PoposDatabase): CartOrderDao = database.cartOrderDao()
+
+    @Provides
+    fun providesCartPriceDao(database: PoposDatabase): CartPriceDao = database.cartPriceDao()
 
     @Provides
     fun providesCategoryDao(database: PoposDatabase): CategoryDao = database.categoryDao()
@@ -77,6 +82,9 @@ object DaosModule {
 
     @Provides
     fun provideProfileDao(database: PoposDatabase): ProfileDao = database.profileDao()
+
+    @Provides
+    fun provideReportsDao(database: PoposDatabase): ReportsDao = database.reportsDao()
 
     @Provides
     fun provideSelectedDao(database: PoposDatabase): SelectedDao = database.selectedDao()

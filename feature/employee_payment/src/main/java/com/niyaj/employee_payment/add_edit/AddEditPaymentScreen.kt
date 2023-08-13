@@ -21,7 +21,6 @@ import androidx.compose.material.icons.filled.MergeType
 import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Person4
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedFilterChip
@@ -30,6 +29,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -235,7 +235,7 @@ fun AddEditPaymentScreen(
                             )
 
                             if(index != employees.size - 1) {
-                                Divider(modifier = Modifier
+                                HorizontalDivider(modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 44.dp))
                             }
@@ -260,7 +260,7 @@ fun AddEditPaymentScreen(
                             )
                         }
 
-                        Divider(modifier = Modifier.fillMaxWidth())
+                        HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
                         DropdownMenuItem(
                             modifier = Modifier

@@ -7,23 +7,25 @@ import com.niyaj.common.result.ValidationResult
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.ProductRepository
 import com.niyaj.data.repository.validation.ProductValidationRepository
-import com.niyaj.database.dao.ProductDao
-import com.niyaj.database.model.CategoryWithProductCrossRef
-import com.niyaj.database.model.asExternalModel
-import com.niyaj.model.Category
-import com.niyaj.model.CategoryWithProducts
-import com.niyaj.model.Product
-import com.niyaj.model.filterCategory
-import com.niyaj.model.filterProducts
 import com.niyaj.data.utils.ProductTestTags.PRODUCT_CATEGORY_EMPTY_ERROR
 import com.niyaj.data.utils.ProductTestTags.PRODUCT_NAME_ALREADY_EXIST_ERROR
 import com.niyaj.data.utils.ProductTestTags.PRODUCT_NAME_EMPTY_ERROR
 import com.niyaj.data.utils.ProductTestTags.PRODUCT_NAME_LENGTH_ERROR
 import com.niyaj.data.utils.ProductTestTags.PRODUCT_PRICE_EMPTY_ERROR
 import com.niyaj.data.utils.ProductTestTags.PRODUCT_PRICE_LENGTH_ERROR
+import com.niyaj.database.dao.ProductDao
+import com.niyaj.database.model.CategoryWithProductCrossRef
+import com.niyaj.database.model.asExternalModel
+import com.niyaj.model.Category
+import com.niyaj.model.CategoryWithProducts
+import com.niyaj.model.Product
+import com.niyaj.model.ProductWiseOrder
+import com.niyaj.model.filterCategory
+import com.niyaj.model.filterProducts
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 
@@ -301,5 +303,30 @@ class ProductRepositoryImpl(
         return ValidationResult(
             successful = true
         )
+    }
+
+    override suspend fun getProductPrice(productId: Int): Int {
+        return withContext(ioDispatcher) {
+            productDao.getProductPriceById(productId)
+        }
+    }
+
+    override suspend fun getProductWiseOrderDetails(productId: Int): Flow<List<ProductWiseOrder>> {
+        return withContext(ioDispatcher) {
+            productDao.getOrderIdsAndQuantity(productId).flatMapLatest { list ->
+                productDao.getProductWiseOrders(list)
+            }.mapLatest { items ->
+                items.map {
+                    ProductWiseOrder(
+                        orderId = it.cartOrder.orderId,
+                        orderedDate = it.cartOrder.updatedAt ?: it.cartOrder.createdAt,
+                        orderType = it.cartOrder.orderType,
+                        quantity = it.productQuantity.quantity,
+                        customerPhone = it.customer?.customerPhone,
+                        customerAddress = it.address?.addressName
+                    )
+                }
+            }
+        }
     }
 }

@@ -29,7 +29,7 @@ import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -350,77 +350,77 @@ fun PrinterInfoScreen(
                                         fontWeight = FontWeight.SemiBold,
                                     )
 
-                                    Divider(modifier = Modifier.fillMaxWidth())
+                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
                                     TwoGridText(
                                         textOne = "Printer DPI",
                                         textTwo = state.data.printerDpi.toString()
                                     )
 
-                                    Divider(modifier = Modifier.fillMaxWidth())
+                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
                                     TwoGridText(
                                         textOne = "Printer Width",
                                         textTwo = "${state.data.printerWidth} mm"
                                     )
 
-                                    Divider(modifier = Modifier.fillMaxWidth())
+                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
                                     TwoGridText(
                                         textOne = "Printer NBR Lines",
                                         textTwo = state.data.printerNbrLines.toString()
                                     )
 
-                                    Divider(modifier = Modifier.fillMaxWidth())
+                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
                                     TwoGridText(
                                         textOne = "Product Name Length",
                                         textTwo = state.data.productNameLength.toString()
                                     )
 
-                                    Divider(modifier = Modifier.fillMaxWidth())
+                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
                                     TwoGridText(
                                         textOne = "Product Report Limit",
                                         textTwo = state.data.productWiseReportLimit.toString()
                                     )
 
-                                    Divider(modifier = Modifier.fillMaxWidth())
+                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
                                     TwoGridText(
                                         textOne = "Address Report Limit",
                                         textTwo = state.data.addressWiseReportLimit.toString()
                                     )
 
-                                    Divider(modifier = Modifier.fillMaxWidth())
+                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
                                     TwoGridText(
                                         textOne = "Customer Report Limit",
                                         textTwo = state.data.customerWiseReportLimit.toString()
                                     )
 
-                                    Divider(modifier = Modifier.fillMaxWidth())
+                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
                                     TwoGridText(
                                         textOne = "Print QR Code",
                                         textTwo = state.data.printQRCode.toSafeString
                                     )
 
-                                    Divider(modifier = Modifier.fillMaxWidth())
+                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
                                     TwoGridText(
                                         textOne = "Print Restaurant Logo",
                                         textTwo = state.data.printResLogo.toSafeString
                                     )
 
-                                    Divider(modifier = Modifier.fillMaxWidth())
+                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
                                     TwoGridText(
                                         textOne = "Print Welcome Text",
                                         textTwo = state.data.printWelcomeText.toSafeString
                                     )
 
-                                    Divider(modifier = Modifier.fillMaxWidth())
+                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
                                     TwoGridText(
                                         textOne = "Last Updated",

@@ -33,7 +33,7 @@ import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -293,7 +293,7 @@ fun SalaryEstimationCard(
 
         Spacer(modifier = Modifier.height(SpaceSmall))
         Spacer(modifier = Modifier.height(SpaceSmall))
-        Divider(modifier = Modifier.fillMaxWidth())
+        HorizontalDivider(modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.height(SpaceSmall))
 
         Crossfade(
@@ -344,7 +344,7 @@ fun SalaryEstimationCard(
                         }
 
                         Spacer(modifier = Modifier.height(SpaceSmall))
-                        Divider(modifier = Modifier.fillMaxWidth())
+                        HorizontalDivider(modifier = Modifier.fillMaxWidth())
                         Spacer(modifier = Modifier.height(SpaceSmall))
 
                         Row(
@@ -373,7 +373,7 @@ fun SalaryEstimationCard(
                         }
 
                         Spacer(modifier = Modifier.height(SpaceSmall))
-                        Divider(modifier = Modifier.fillMaxWidth())
+                        HorizontalDivider(modifier = Modifier.fillMaxWidth())
                         Spacer(modifier = Modifier.height(SpaceSmall))
                         Spacer(modifier = Modifier.height(SpaceSmall))
 
@@ -641,7 +641,7 @@ fun PaymentDetails(
                                         }
 
                                         Spacer(modifier = Modifier.height(SpaceSmall))
-                                        Divider(modifier = Modifier.fillMaxWidth())
+                                        HorizontalDivider(modifier = Modifier.fillMaxWidth())
                                         Spacer(modifier = Modifier.height(SpaceSmall))
 
                                         salaries.payments.forEachIndexed { index, salary ->
@@ -649,7 +649,7 @@ fun PaymentDetails(
 
                                             if (index != salaries.payments.size - 1) {
                                                 Spacer(modifier = Modifier.height(SpaceSmall))
-                                                Divider(modifier = Modifier.fillMaxWidth())
+                                                HorizontalDivider(modifier = Modifier.fillMaxWidth())
                                                 Spacer(modifier = Modifier.height(SpaceSmall))
                                             }
                                         }
@@ -657,7 +657,7 @@ fun PaymentDetails(
 
                                     if (index != state.data.size - 1) {
                                         Spacer(modifier = Modifier.height(SpaceMini))
-                                        Divider(modifier = Modifier.fillMaxWidth())
+                                        HorizontalDivider(modifier = Modifier.fillMaxWidth())
                                         Spacer(modifier = Modifier.height(SpaceMini))
                                     }
                                 }
@@ -809,7 +809,7 @@ fun AbsentDetails(
                                         }
 
                                         Spacer(modifier = Modifier.height(SpaceSmall))
-                                        Divider(modifier = Modifier.fillMaxWidth())
+                                        HorizontalDivider(modifier = Modifier.fillMaxWidth())
                                         Spacer(modifier = Modifier.height(SpaceSmall))
 
                                         FlowRow(
@@ -842,7 +842,7 @@ fun AbsentDetails(
 
                                     if (index != state.data.size - 1) {
                                         Spacer(modifier = Modifier.height(SpaceMini))
-                                        Divider(modifier = Modifier.fillMaxWidth())
+                                        HorizontalDivider(modifier = Modifier.fillMaxWidth())
                                         Spacer(modifier = Modifier.height(SpaceMini))
                                     }
                                 }

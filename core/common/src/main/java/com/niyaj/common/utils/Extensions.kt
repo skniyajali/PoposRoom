@@ -1,7 +1,9 @@
 package com.niyaj.common.utils
 
 import android.text.format.DateUtils
+import java.math.RoundingMode
 import java.text.DecimalFormat
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalTime
@@ -19,6 +21,12 @@ val String.toRupee
     get() = DecimalFormat
         .getCurrencyInstance(Locale("en", "IN"))
         .format(this.toLong())
+        .substringBefore(".")
+
+val Long.toRupee
+    get() = DecimalFormat
+        .getCurrencyInstance(Locale("en", "IN"))
+        .format(this)
         .substringBefore(".")
 
 val Int.toRupee
@@ -66,6 +74,10 @@ fun String.getCapitalWord(): String {
 
 val zoneId: ZoneId = ZoneId.of("Asia/Kolkata")
 
+val Date.toMillis: String
+    get() = this.time.toString()
+
+
 val LocalDate.toMilliSecond: String
     get() = this.atStartOfDay(zoneId)
         .toLocalDateTime()
@@ -99,6 +111,10 @@ fun toMonthAndYear(date: String): String {
 
 val String.toDate
     get() = SimpleDateFormat("dd", Locale.getDefault()).format(this.toLong()).toString()
+
+val Date.toDate
+    get() = SimpleDateFormat("dd", Locale.getDefault()).format(this).toString()
+
 
 val String.toTime
     get() = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(this.toLong()).toString()
@@ -535,3 +551,22 @@ private fun getStartDate(date : Int, currentMonth : Int, currentYear : Int) : St
 
     return startCalender.timeInMillis.toString()
 }
+
+fun String.toDailySalaryAmount() : String {
+    val dailyAmount = this.toLong().div(30).toInt()
+    val numberFormat = NumberFormat.getInstance()
+    numberFormat.roundingMode = RoundingMode.CEILING
+    numberFormat.format(dailyAmount)
+
+    return dailyAmount.toString().toRupee
+}
+
+fun Pair<String, String>.isSameDay() : Boolean {
+    val checkFirst = DateUtils.isToday(this.first.toLong())
+    val checkSecond = DateUtils.isToday(this.second.toLong())
+
+    return checkFirst && checkSecond
+}
+
+val String.isToday : Boolean
+    get() = DateUtils.isToday(this.toLong())

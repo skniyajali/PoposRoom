@@ -16,12 +16,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.designsystem.theme.ProfilePictureSizeSmall
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
 import com.niyaj.model.CartItem
-import com.niyaj.model.OrderPrice
 
 
 @Composable
@@ -103,7 +101,6 @@ fun CartItem(
     } else {
         cartItem.orderId.toString()
     }
-    val orderPrice = cartItem.orderPrice.collectAsStateWithLifecycle(OrderPrice()).value
 
     Card(
         modifier = Modifier
@@ -147,7 +144,7 @@ fun CartItem(
         if (addOnItems.isNotEmpty()) {
             CartAddOnItems(
                 addOnItems = addOnItems,
-                selectedAddOnItem = cartItem.addOnItems.collectAsStateWithLifecycle(initialValue = emptyList()).value,
+                selectedAddOnItem = cartItem.addOnItems,
                 onClick = {
                     onClickAddOnItem(it, cartItem.orderId)
                 },
@@ -157,8 +154,8 @@ fun CartItem(
         CartItemTotalPriceSection(
             itemCount = cartItem.cartProducts.size,
             orderType = cartItem.orderType,
-            totalPrice = orderPrice.totalPrice,
-            discountPrice = orderPrice.discountPrice,
+            basePrice = cartItem.orderPrice.basePrice,
+            discountPrice = cartItem.orderPrice.discountPrice,
             showPrintBtn = showPrintBtn,
             onClickPlaceOrder = {
                 onClickPlaceOrder(cartItem.orderId)

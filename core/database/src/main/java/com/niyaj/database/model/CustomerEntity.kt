@@ -9,6 +9,7 @@ import java.util.Date
 @Entity(tableName = "customer")
 data class CustomerEntity(
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(index = true)
     val customerId: Int = 0,
 
     val customerPhone: String,

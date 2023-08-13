@@ -43,6 +43,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -203,9 +204,6 @@ fun OrderDetailsScreen(
                 is UiState.Loading -> LoadingIndicator()
                 is UiState.Success -> {
                     val orderDetails = newState.data
-                    val addOnItems = orderDetails.addOnItems.collectAsStateWithLifecycle(emptyList()).value
-                    val additionalCharges = orderDetails.charges.collectAsStateWithLifecycle(emptyList()).value
-
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
@@ -259,10 +257,10 @@ fun OrderDetailsScreen(
                                 CartItemDetails(
                                     orderType = orderDetails.cartOrder.orderType,
                                     doesChargesIncluded = orderDetails.cartOrder.doesChargesIncluded,
-                                    addOnItems = addOnItems,
+                                    addOnItems = orderDetails.addOnItems,
                                     cartProduct = orderDetails.cartProducts,
                                     charges = charges,
-                                    additionalCharges = additionalCharges,
+                                    additionalCharges = orderDetails.charges,
                                     orderPrice = orderDetails.orderPrice,
                                     doesExpanded = cartExpended,
                                     onExpandChanged = {
@@ -698,7 +696,7 @@ fun CartItemDetails(
                     )
                     Spacer(modifier = Modifier.height(SpaceSmall))
 
-                    Divider(modifier = Modifier.fillMaxWidth())
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
                     Spacer(modifier = Modifier.height(SpaceSmall))
 
@@ -770,7 +768,7 @@ fun CartItemDetails(
 
                     Spacer(modifier = Modifier.height(SpaceSmall))
 
-                    Divider(modifier = Modifier.fillMaxWidth())
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
                     Spacer(modifier = Modifier.height(SpaceSmall))
 
@@ -785,7 +783,7 @@ fun CartItemDetails(
                         )
 
                         Text(
-                            text = orderPrice.totalPrice.toRupee,
+                            text = orderPrice.basePrice.toRupee,
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -812,7 +810,7 @@ fun CartItemDetails(
 
                     Spacer(modifier = Modifier.height(SpaceSmall))
 
-                    Divider(modifier = Modifier.fillMaxWidth(), thickness = 2.dp)
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 2.dp)
 
                     Spacer(modifier = Modifier.height(SpaceSmall))
 
@@ -828,7 +826,7 @@ fun CartItemDetails(
                         )
 
                         Text(
-                            text = (orderPrice.totalPrice.minus(orderPrice.discountPrice)).toRupee,
+                            text = (orderPrice.basePrice.minus(orderPrice.discountPrice)).toRupee,
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.SemiBold
                         )

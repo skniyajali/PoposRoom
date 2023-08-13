@@ -6,6 +6,7 @@ import com.niyaj.data.data.repository.CartRepositoryImpl
 import com.niyaj.data.repository.CartRepository
 import com.niyaj.database.dao.CartDao
 import com.niyaj.database.dao.CartOrderDao
+import com.niyaj.database.dao.CartPriceDao
 import com.niyaj.database.dao.SelectedDao
 import dagger.Module
 import dagger.Provides
@@ -22,8 +23,9 @@ object CartModule {
         cartDao: CartDao,
         cartOrderDao: CartOrderDao,
         selectedDao: SelectedDao,
+        cartPriceDao: CartPriceDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): CartRepository {
-        return CartRepositoryImpl(cartDao, cartOrderDao,selectedDao, ioDispatcher)
+        return CartRepositoryImpl(cartDao, cartOrderDao,selectedDao, cartPriceDao, ioDispatcher)
     }
 }

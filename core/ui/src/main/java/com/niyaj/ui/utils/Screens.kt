@@ -34,8 +34,10 @@ object Screens {
     const val AddEditProductScreen = "add_edit_product_screen"
 
     const val AddressScreen = "address_screen"
+    const val AddressDetailsScreen = "address_details_screen"
 
     const val CustomerScreen = "customer_screen"
+    const val CustomerDetailsScreen = "customer_details_screen"
 
     const val CartOrderScreen = "cart_order_screen"
     const val AddEditCartOrderScreen = "add_edit_cart_order_screen"

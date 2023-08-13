@@ -1,6 +1,7 @@
 package com.niyaj.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -110,10 +111,11 @@ fun IconWithText(
     iconModifier: Modifier = Modifier,
     text: String,
     icon: ImageVector,
-    style : TextStyle = MaterialTheme.typography.labelLarge,
+    secondaryText: String? = null,
+    style : TextStyle = MaterialTheme.typography.labelMedium,
     fontWeight: FontWeight = FontWeight.SemiBold,
     textColor : Color = MaterialTheme.colorScheme.onSurface,
-    tintColor: Color = MaterialTheme.colorScheme.primary,
+    tintColor: Color = MaterialTheme.colorScheme.secondary,
 ) {
     Row(
         modifier = modifier,
@@ -126,15 +128,28 @@ fun IconWithText(
             tint = tintColor,
             modifier = iconModifier,
         )
+        Column(
+            modifier = Modifier,
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(SpaceMini)
+        ) {
+            Text(
+                text = text,
+                style = style,
+                fontWeight = fontWeight,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = textColor,
+            )
 
-        Text(
-            text = text,
-            style = style,
-            fontWeight = fontWeight,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = textColor,
-        )
+            secondaryText?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = textColor,
+                )
+            }
+        }
     }
 }
 

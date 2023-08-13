@@ -31,7 +31,7 @@ import androidx.compose.material.icons.filled.TurnedInNot
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -382,7 +382,7 @@ fun TotalExpenses(
             }
 
             Spacer(modifier = Modifier.height(SpaceSmallMax))
-            Divider(modifier = Modifier.fillMaxWidth())
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(SpaceSmallMax))
 
             Row(
@@ -591,7 +591,7 @@ fun GroupedExpensesData(
             Spacer(modifier = Modifier.height(SpaceMini))
 
             if (notes.isNotEmpty()) {
-                Divider(modifier = Modifier.fillMaxWidth())
+                HorizontalDivider(modifier = Modifier.fillMaxWidth())
                 Spacer(modifier = Modifier.height(SpaceMini))
 
                 Column(

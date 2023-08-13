@@ -3,10 +3,12 @@ package com.niyaj.database.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
+import com.niyaj.database.model.AddOnItemEntity
 import com.niyaj.database.model.AddressEntity
 import com.niyaj.database.model.ChargesEntity
 import com.niyaj.database.model.CustomerEntity
-import com.niyaj.database.model.OrderWithCartDto
+import com.niyaj.database.model.CartItemDto
+import com.niyaj.database.model.OrderDto
 import com.niyaj.database.model.ProductEntity
 import com.niyaj.model.OrderStatus
 import kotlinx.coroutines.flow.Flow
@@ -23,21 +25,30 @@ interface OrderDao {
         startDate: Long,
         endDate: Long,
         orderStatus: OrderStatus = OrderStatus.PLACED
-    ): Flow<List<OrderWithCartDto>>
+    ): Flow<List<OrderDto>>
 
     @Transaction
     @Query(value = """
         SELECT * FROM cartorder WHERE orderId = :orderId
     """)
-    fun getOrderDetails(orderId: Int): Flow<OrderWithCartDto>
+    fun getOrderDetails(orderId: Int): Flow<CartItemDto>
 
 
     // ----------------------------------------------------------------
 
-    @Query(value = """
-        SELECT productPrice FROM product WHERE productId = :productId
-    """)
-    suspend fun getProductPriceById(productId: Int): Int
+    @Query(
+        value = """
+        SELECT * FROM addonitem WHERE itemId = :itemId
+    """
+    )
+    fun getAddOnItemById(itemId: Int): AddOnItemEntity
+
+    @Query(
+        value = """
+        SELECT * FROM charges WHERE chargesId = :chargesId
+    """
+    )
+    fun getChargesById(chargesId: Int): ChargesEntity
 
     @Query(value = """
         SELECT shortName FROM address WHERE addressId = :addressId

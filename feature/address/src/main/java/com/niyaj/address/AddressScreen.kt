@@ -42,6 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.address.destinations.AddEditAddressScreenDestination
+import com.niyaj.address.destinations.AddressDetailsScreenDestination
 import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
 import com.niyaj.data.utils.AddressTestTags.ADDRESS_ITEM_TAG
 import com.niyaj.data.utils.AddressTestTags.ADDRESS_NOT_AVAIlABLE
@@ -190,6 +191,7 @@ fun AddressScreen(
         ) { state ->
             when (state) {
                 is UiState.Loading -> LoadingIndicator()
+
                 is UiState.Empty -> {
                     ItemNotAvailable(
                         text = if (searchText.isEmpty()) ADDRESS_NOT_AVAIlABLE else SEARCH_ITEM_NOT_FOUND,
@@ -222,6 +224,8 @@ fun AddressScreen(
                                 onClick = {
                                     if (selectedItems.isNotEmpty()) {
                                         viewModel.selectItem(it)
+                                    } else {
+                                        navController.navigate(AddressDetailsScreenDestination(it))
                                     }
                                 },
                                 onLongClick = viewModel::selectItem

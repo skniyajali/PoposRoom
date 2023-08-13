@@ -18,13 +18,13 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Person4
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -207,7 +207,7 @@ fun AddEditAbsentScreen(
                             )
 
                             if(index != employees.size - 1) {
-                                Divider(modifier = Modifier
+                                HorizontalDivider(modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 44.dp))
                             }
@@ -232,7 +232,7 @@ fun AddEditAbsentScreen(
                             )
                         }
 
-                        Divider(modifier = Modifier.fillMaxWidth())
+                        HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
                         DropdownMenuItem(
                             modifier = Modifier

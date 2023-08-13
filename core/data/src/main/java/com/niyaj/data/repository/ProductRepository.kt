@@ -4,6 +4,7 @@ import com.niyaj.common.result.Resource
 import com.niyaj.model.Category
 import com.niyaj.model.CategoryWithProducts
 import com.niyaj.model.Product
+import com.niyaj.model.ProductWiseOrder
 import kotlinx.coroutines.flow.Flow
 
 interface ProductRepository {
@@ -27,5 +28,9 @@ interface ProductRepository {
     suspend fun deleteProduct(productId: Int): Resource<Boolean>
 
     suspend fun deleteProducts(productIds: List<Int>): Resource<Boolean>
+
+    suspend fun getProductPrice(productId: Int): Int
+
+    suspend fun getProductWiseOrderDetails(productId: Int): Flow<List<ProductWiseOrder>>
 
 }

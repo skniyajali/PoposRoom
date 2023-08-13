@@ -22,7 +22,7 @@ import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -126,7 +126,7 @@ fun ProductItems(
                         }
                     }
 
-                    Divider(
+                    HorizontalDivider(
                         color = MaterialTheme.colorScheme.errorContainer,
                         modifier = Modifier
                             .fillMaxHeight()
@@ -264,7 +264,7 @@ fun ProductItems(
                         }
                     }
 
-                    Divider(
+                    HorizontalDivider(
                         color = MaterialTheme.colorScheme.errorContainer,
                         modifier = Modifier
                             .fillMaxHeight()

@@ -8,11 +8,12 @@ import com.niyaj.common.result.ValidationResult
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.CustomerRepository
 import com.niyaj.data.repository.validation.CustomerValidationRepository
+import com.niyaj.data.utils.CustomerTestTags
 import com.niyaj.database.dao.CustomerDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Customer
+import com.niyaj.model.CustomerWiseOrder
 import com.niyaj.model.searchCustomer
-import com.niyaj.data.utils.CustomerTestTags
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -219,5 +220,20 @@ class CustomerRepositoryImpl(
         return ValidationResult(
             successful = true
         )
+    }
+
+    override suspend fun getCustomerWiseOrders(customerId: Int): Flow<List<CustomerWiseOrder>> {
+        return withContext(ioDispatcher) {
+            customerDao.getCustomerWiseOrders(customerId).mapLatest { orders ->
+                orders.map {
+                    CustomerWiseOrder(
+                        orderId = it.orderId,
+                        totalPrice = it.orderPrice.totalPrice,
+                        updatedAt = (it.updatedAt ?: it.createdAt).toString(),
+                        customerAddress = it.address.addressName
+                    )
+                }
+            }
+        }
     }
 }

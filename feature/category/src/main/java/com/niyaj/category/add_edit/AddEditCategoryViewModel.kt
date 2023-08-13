@@ -7,15 +7,12 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.niyaj.common.network.Dispatcher
-import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.data.repository.CategoryRepository
 import com.niyaj.data.repository.validation.CategoryValidationRepository
 import com.niyaj.model.Category
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -32,11 +29,10 @@ import javax.inject.Inject
 class AddEditCategoryViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val validationRepository: CategoryValidationRepository,
-    @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private var categoryId = savedStateHandle.get<Int>("addOnItemId")
+    private var categoryId = savedStateHandle.get<Int>("categoryId")
 
     var addEditState by mutableStateOf(AddEditCategoryState())
 
@@ -44,8 +40,8 @@ class AddEditCategoryViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        savedStateHandle.get<Int>("addOnItemId")?.let { addOnItemId ->
-            getCategoryById(addOnItemId)
+        savedStateHandle.get<Int>("categoryId")?.let { categoryId ->
+            getCategoryById(categoryId)
         }
     }
 
@@ -76,7 +72,7 @@ class AddEditCategoryViewModel @Inject constructor(
     }
 
     private fun getCategoryById(itemId: Int) {
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             when (val result = categoryRepository.getCategoryById(itemId)) {
                 is Resource.Error -> {
                     _eventFlow.emit(UiEvent.OnError(result.message ?: "unable"))
@@ -84,8 +80,6 @@ class AddEditCategoryViewModel @Inject constructor(
 
                 is Resource.Success -> {
                     result.data?.let { category ->
-                        categoryId = category.categoryId
-
                         addEditState = addEditState.copy(
                             categoryName = category.categoryName,
                             isAvailable = category.isAvailable
@@ -97,7 +91,7 @@ class AddEditCategoryViewModel @Inject constructor(
     }
 
     private fun createOrUpdateCategory(categoryId: Int = 0) {
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             if (nameError.value == null) {
                 val addOnItem = Category(
                     categoryId = categoryId,
@@ -113,7 +107,7 @@ class AddEditCategoryViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
-                        _eventFlow.emit(UiEvent.OnSuccess("Category Created Successfully."))
+                        _eventFlow.emit(UiEvent.OnSuccess("Category Created Or Updated Successfully."))
                     }
                 }
                 addEditState = AddEditCategoryState()

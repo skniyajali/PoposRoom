@@ -20,9 +20,11 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.TurnedInNot
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -54,6 +56,7 @@ import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Product
 import com.niyaj.product.destinations.AddEditProductScreenDestination
+import com.niyaj.product.destinations.ProductDetailsScreenDestination
 import com.niyaj.ui.components.CategoriesData
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
@@ -74,14 +77,12 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
-@Destination(
-    route = Screens.ProductsScreen
-)
+@Destination(route = Screens.ProductsScreen)
 @Composable
 fun ProductScreen(
     navController: NavController,
     viewModel: ProductViewModel = hiltViewModel(),
-    resultRecipient: ResultRecipient<AddEditProductScreenDestination, String>
+    resultRecipient: ResultRecipient<AddEditProductScreenDestination, String>,
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -113,6 +114,7 @@ fun ProductScreen(
                     }
                     viewModel.deselectItems()
                 }
+
                 is UiEvent.OnSuccess -> {
                     scope.launch {
                         snackbarState.showSnackbar(data.successMessage)
@@ -124,10 +126,11 @@ fun ProductScreen(
     }
 
     resultRecipient.onNavResult { result ->
-        when(result) {
+        when (result) {
             is NavResult.Canceled -> {
                 viewModel.deselectItems()
             }
+
             is NavResult.Value -> {
                 scope.launch {
                     viewModel.deselectItems()
@@ -170,26 +173,26 @@ fun ProductScreen(
             )
         },
         navActions = {
-             ScaffoldNavActions(
-                 placeholderText = PRODUCT_SEARCH_PLACEHOLDER,
-                 showSettingsIcon = true,
-                 selectionCount = selectedItems.size,
-                 showSearchIcon = showSearchBar,
-                 searchText = searchText,
-                 onEditClick = {
-                     navController.navigate(AddEditProductScreenDestination(selectedItems.first()))
-                 },
-                 onDeleteClick = {
-                     openDialog.value = true
-                 },
-                 onSettingsClick = {
+            ScaffoldNavActions(
+                placeholderText = PRODUCT_SEARCH_PLACEHOLDER,
+                showSettingsIcon = true,
+                selectionCount = selectedItems.size,
+                showSearchIcon = showSearchBar,
+                searchText = searchText,
+                onEditClick = {
+                    navController.navigate(AddEditProductScreenDestination(selectedItems.first()))
+                },
+                onDeleteClick = {
+                    openDialog.value = true
+                },
+                onSettingsClick = {
 
-                 },
-                 onSelectAllClick = viewModel::selectAllItems,
-                 onClearClick = viewModel::clearSearchText,
-                 onSearchClick = viewModel::openSearchBar,
-                 onSearchTextChanged = viewModel::searchTextChanged
-             )
+                },
+                onSelectAllClick = viewModel::selectAllItems,
+                onClearClick = viewModel::clearSearchText,
+                onSearchClick = viewModel::openSearchBar,
+                onSearchTextChanged = viewModel::searchTextChanged
+            )
         },
         fabPosition = if (lazyListState.isScrolled) FabPosition.End else FabPosition.Center,
         selectionCount = selectedItems.size,
@@ -202,7 +205,9 @@ fun ProductScreen(
             modifier = Modifier
                 .padding(SpaceSmall),
         ) {
-            when(state) {
+            when (state) {
+                is UiState.Loading -> LoadingIndicator()
+
                 is UiState.Empty -> {
                     ItemNotAvailable(
                         text = if (searchText.isEmpty()) PRODUCT_NOT_AVAIlABLE else NO_ITEMS_IN_PRODUCT,
@@ -212,7 +217,7 @@ fun ProductScreen(
                         }
                     )
                 }
-                is UiState.Loading -> LoadingIndicator()
+
                 is UiState.Success -> {
                     CategoriesData(
                         categories = categories,
@@ -223,7 +228,12 @@ fun ProductScreen(
                     LazyColumn(
                         state = lazyListState,
                     ) {
-                        itemsIndexed(state.data) { index, item ->
+                        itemsIndexed(
+                            items = state.data,
+                            key = { index, item ->
+                                item.productName.plus(index).plus(item.productId)
+                            }
+                        ) { index, item ->
                             ProductData(
                                 item = item,
                                 doesSelected = {
@@ -232,6 +242,8 @@ fun ProductScreen(
                                 onClick = {
                                     if (selectedItems.isNotEmpty()) {
                                         viewModel.selectItem(it)
+                                    } else {
+                                        navController.navigate(ProductDetailsScreenDestination(it))
                                     }
                                 },
                                 onLongClick = viewModel::selectItem
@@ -297,13 +309,14 @@ fun ProductData(
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
-    border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
+    border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
 ) {
     val borderStroke = if (doesSelected(item.productId)) border else null
 
-    Card(
-        modifier = modifier
+    ElevatedCard(
+        modifier = Modifier
             .fillMaxWidth()
+            .testTag(PRODUCT_TAG.plus(item.productId))
             .padding(SpaceSmall)
             .then(borderStroke?.let {
                 Modifier.border(it, RoundedCornerShape(SpaceMini))
@@ -317,14 +330,19 @@ fun ProductData(
                     onLongClick(item.productId)
                 },
             ),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.background
+        ),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 2.dp
+        )
     ) {
         Column(
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             ListItem(
                 modifier = modifier
-                    .testTag(PRODUCT_TAG.plus(item.productId))
                     .fillMaxWidth(),
                 headlineContent = {
                     Text(
@@ -348,7 +366,10 @@ fun ProductData(
                         text = item.createdAt.toPrettyDate(),
                         icon = Icons.Default.CalendarMonth
                     )
-                }
+                },
+                colors = ListItemDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
 
             if (item.productDescription.isNotEmpty()) {

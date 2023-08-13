@@ -19,6 +19,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -30,12 +31,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.customer.destinations.AddEditCustomerScreenDestination
+import com.niyaj.customer.destinations.CustomerDetailsScreenDestination
 import com.niyaj.data.utils.CustomerTestTags.CREATE_NEW_CUSTOMER
 import com.niyaj.data.utils.CustomerTestTags.CUSTOMER_NOT_AVAIlABLE
 import com.niyaj.data.utils.CustomerTestTags.CUSTOMER_SCREEN_TITLE
@@ -211,6 +214,8 @@ fun CustomerScreen(
                                 onClick = {
                                     if (selectedItems.isNotEmpty()) {
                                         viewModel.selectItem(it)
+                                    }else {
+                                        navController.navigate(CustomerDetailsScreenDestination(it))
                                     }
                                 },
                                 onLongClick = viewModel::selectItem
@@ -316,6 +321,10 @@ fun CustomerData(
                 Icons.Filled.ArrowRight,
                 contentDescription = "Localized description",
             )
-        }
+        },
+        shadowElevation = 4.dp,
+        colors = ListItemDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.background
+        )
     )
 }

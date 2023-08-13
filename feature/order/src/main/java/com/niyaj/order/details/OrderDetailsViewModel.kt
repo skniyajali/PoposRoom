@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
+@OptIn(ExperimentalCoroutinesApi::class)
 class OrderDetailsViewModel @Inject constructor(
     private val orderRepository: OrderRepository,
     savedStateHandle: SavedStateHandle,
@@ -22,22 +23,21 @@ class OrderDetailsViewModel @Inject constructor(
 
     private val orderId = savedStateHandle.get<Int>("orderId") ?: 0
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val orderDetails = snapshotFlow { orderId }
-        .flatMapLatest { it ->
-            orderRepository.getOrderDetails(it).map {
-                if (it.cartOrder.orderId == 0) {
-                    UiState.Empty
-                }else {
-                    UiState.Success(it)
-                }
+    val orderDetails = snapshotFlow { orderId }.flatMapLatest { it ->
+        orderRepository.getOrderDetails(it).map {
+            if (it.cartOrder.orderId == 0) {
+                UiState.Empty
+            } else {
+                UiState.Success(it)
             }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = UiState.Loading
-        )
-    @OptIn(ExperimentalCoroutinesApi::class)
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = UiState.Loading
+    )
+
+
     val charges = snapshotFlow { orderId }.flatMapLatest {
         orderRepository.getAllCharges()
     }.stateIn(

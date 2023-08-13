@@ -3,7 +3,7 @@ package com.niyaj.order.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +21,7 @@ fun TextDivider(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Divider(
+        HorizontalDivider(
             modifier = Modifier
                 .weight(1f, true)
         )
@@ -34,7 +34,7 @@ fun TextDivider(
             modifier = Modifier.weight(1f)
         )
 
-        Divider(
+        HorizontalDivider(
             modifier = Modifier
                 .weight(1f, true)
         )
