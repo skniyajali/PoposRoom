@@ -20,13 +20,14 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -49,10 +50,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.niyaj.common.tags.MainFeedTestTags
+import com.niyaj.common.tags.ProductTestTags
 import com.niyaj.common.utils.toRupee
 import com.niyaj.core.ui.R
-import com.niyaj.data.utils.MainFeedTestTags
-import com.niyaj.data.utils.ProductTestTags
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.ProductWithFlowQuantity
@@ -130,7 +131,7 @@ fun HomeScreen(
         snackbarHostState = snackbarState,
         selectedId = selectedId.toString(),
         showFab = showFab && lazyListState.isScrollingUp(),
-        showBottomBar = lazyListState.isScrollingUp(),
+        showBottomBar = showFab && lazyListState.isScrollingUp(),
         showSearchIcon = true,
         showSearchBar = showSearchBar,
         searchText = searchText,
@@ -209,9 +210,11 @@ fun MainFeedProducts(
         modifier = modifier
             .fillMaxWidth()
             .padding(SpaceSmall),
+        verticalArrangement = Arrangement.spacedBy(SpaceSmall)
     ) {
         TitleWithIcon(
             text = "Products",
+            icon = Icons.Default.Dns,
             showScrollToTop = lazyListState.isScrolled,
             onClickScrollToTop = {
                 scope.launch {
@@ -366,11 +369,7 @@ fun IncDecBox(
             }
 
 
-            Divider(
-                modifier = Modifier
-                    .width(1.dp)
-                    .fillMaxHeight()
-            )
+            HorizontalDivider(modifier = Modifier.width(1.dp).fillMaxHeight())
 
             Row(
                 modifier = Modifier

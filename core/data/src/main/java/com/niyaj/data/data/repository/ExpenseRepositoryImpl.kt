@@ -11,11 +11,11 @@ import com.niyaj.database.dao.ExpenseDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Expense
 import com.niyaj.model.searchExpense
-import com.niyaj.data.utils.ExpenseTestTags.EXPENSE_DATE_EMPTY_ERROR
-import com.niyaj.data.utils.ExpenseTestTags.EXPENSE_NAME_EMPTY_ERROR
-import com.niyaj.data.utils.ExpenseTestTags.EXPENSE_NAME_LENGTH_ERROR
-import com.niyaj.data.utils.ExpenseTestTags.EXPENSE_PRICE_EMPTY_ERROR
-import com.niyaj.data.utils.ExpenseTestTags.EXPENSE_PRICE_LESS_THAN_TEN_ERROR
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_DATE_EMPTY_ERROR
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NAME_EMPTY_ERROR
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NAME_LENGTH_ERROR
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_PRICE_EMPTY_ERROR
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_PRICE_LESS_THAN_TEN_ERROR
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

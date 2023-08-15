@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.stateIn
 fun rememberPoposAppState(
     windowSizeClass: WindowSizeClass,
     networkMonitor: NetworkMonitor,
-//    userNewsResourceRepository: UserNewsResourceRepository,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     navController: NavHostController = rememberNavController(),
 ): PoposAppState {
@@ -31,14 +30,12 @@ fun rememberPoposAppState(
         coroutineScope,
         windowSizeClass,
         networkMonitor,
-//        userNewsResourceRepository,
     ) {
         PoposAppState(
             navController,
             coroutineScope,
             windowSizeClass,
             networkMonitor,
-//            userNewsResourceRepository,
         )
     }
 }

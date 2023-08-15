@@ -48,8 +48,7 @@ class MainFeedViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val products = _text.combine(_selectedCategory) { text, category ->
         repository.getAllProduct(text, category)
-    }
-        .flatMapLatest { it ->
+    }.flatMapLatest { it ->
             it.map { items ->
                 totalItems = items.map { it.productId }
 

@@ -7,9 +7,9 @@ import com.niyaj.common.result.ValidationResult
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.AbsentRepository
 import com.niyaj.data.repository.validation.AbsentValidationRepository
-import com.niyaj.data.utils.AbsentScreenTags.ABSENT_DATE_EMPTY
-import com.niyaj.data.utils.AbsentScreenTags.ABSENT_DATE_EXIST
-import com.niyaj.data.utils.AbsentScreenTags.ABSENT_EMPLOYEE_NAME_EMPTY
+import com.niyaj.common.tags.AbsentScreenTags.ABSENT_DATE_EMPTY
+import com.niyaj.common.tags.AbsentScreenTags.ABSENT_DATE_EXIST
+import com.niyaj.common.tags.AbsentScreenTags.ABSENT_EMPLOYEE_NAME_EMPTY
 import com.niyaj.database.dao.AbsentDao
 import com.niyaj.database.model.EmployeeEntity
 import com.niyaj.database.model.EmployeeWithAbsentCrossRef

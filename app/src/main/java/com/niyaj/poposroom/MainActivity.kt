@@ -1,9 +1,13 @@
 package com.niyaj.poposroom
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -13,6 +17,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -20,8 +25,17 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.metrics.performance.JankStats
 import androidx.profileinstaller.ProfileVerifier
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.niyaj.common.utils.endOfDayTime
-import com.niyaj.common.utils.startOfDayTime
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
+import com.google.android.play.core.ktx.isImmediateUpdateAllowed
+import com.niyaj.common.utils.Constants.NETWORK_PERMISSION_REQUEST_CODE
+import com.niyaj.common.utils.Constants.NOTIFICATION_PERMISSION_REQUEST_CODE
+import com.niyaj.common.utils.Constants.UPDATE_MANAGER_REQUEST_CODE
+import com.niyaj.common.utils.hasNetworkPermission
+import com.niyaj.common.utils.hasNotificationPermission
 import com.niyaj.data.utils.NetworkMonitor
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.model.DarkThemeConfig
@@ -53,10 +67,42 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: MainActivityViewModel by viewModels()
 
+    private lateinit var appUpdateManager: AppUpdateManager
+    private val updateOptions = AppUpdateOptions
+        .newBuilder(AppUpdateType.IMMEDIATE)
+        .setAllowAssetPackDeletion(false)
+        .build()
+
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
+
+        appUpdateManager = AppUpdateManagerFactory.create(this)
+
+        val hasNotificationPermission = this.hasNotificationPermission()
+        val hasNetworkPermission = this.hasNetworkPermission()
+
+        if (!hasNotificationPermission) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    NOTIFICATION_PERMISSION_REQUEST_CODE
+                )
+            }
+        }
+
+        if (!hasNetworkPermission) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.ACCESS_NETWORK_STATE,
+                    Manifest.permission.CHANGE_NETWORK_STATE,
+                ),
+                NETWORK_PERMISSION_REQUEST_CODE
+            )
+        }
 
         var uiState: MainActivityUiState by mutableStateOf(MainActivityUiState.Loading)
 
@@ -76,7 +122,18 @@ class MainActivity : ComponentActivity() {
         // including IME animations
 //        WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        Timber.d("startDate $startOfDayTime and endDate $endOfDayTime")
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            run {
+                if (result.resultCode != RESULT_OK) {
+                    Toast.makeText(
+                        this,
+                        "Something Went Wrong!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+
         setContent {
             val systemUiController = rememberSystemUiController()
             val darkTheme = shouldUseDarkTheme(uiState)
@@ -95,8 +152,12 @@ class MainActivity : ComponentActivity() {
                 disableDynamicTheming = shouldDisableDynamicTheming(uiState),
             ) {
                 PoposApp(
+                    viewModel = viewModel,
                     windowSizeClass = sizeClass,
-                    networkMonitor = networkMonitor
+                    networkMonitor = networkMonitor,
+                    onCheckForAppUpdate = {
+                        checkForAppUpdates()
+                    }
                 )
             }
         }
@@ -108,6 +169,22 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             logCompilationStatus()
         }
+
+        appUpdateManager
+            .appUpdateInfo
+            .addOnSuccessListener { appUpdateInfo ->
+                if (appUpdateInfo.updateAvailability()
+                    == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
+                ) {
+                    // If an in-app update is already running, resume the update.
+                    appUpdateManager.startUpdateFlowForResult(
+                        appUpdateInfo,
+                        this,
+                        updateOptions,
+                        UPDATE_MANAGER_REQUEST_CODE
+                    )
+                }
+            }
     }
 
     override fun onPause() {
@@ -146,6 +223,38 @@ class MainActivity : ComponentActivity() {
                     else -> "Profile not compiled or enqueued"
                 },
             )
+        }
+    }
+
+    private fun checkForAppUpdates() {
+        if (!BuildConfig.DEBUG) {
+            appUpdateManager
+                .appUpdateInfo
+                .addOnSuccessListener { info ->
+                    val isUpdateAvailable =
+                        info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+
+                    val isUpdateAllowed = when (updateOptions.appUpdateType()) {
+                        AppUpdateType.IMMEDIATE -> info.isImmediateUpdateAllowed
+                        else -> false
+                    }
+
+                    if (isUpdateAvailable && isUpdateAllowed) {
+                        appUpdateManager.startUpdateFlowForResult(
+                            info,
+                            this,
+                            updateOptions,
+                            UPDATE_MANAGER_REQUEST_CODE
+                        )
+                    }
+
+                }.addOnFailureListener {
+                    Toast.makeText(
+                        this,
+                        "Unable to update app!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
         }
     }
 }

@@ -1,20 +1,38 @@
 package com.niyaj.poposroom
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.niyaj.data.utils.WorkMonitor
 import com.niyaj.model.UserData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-//    userDataRepository: UserDataRepository,
+    workMonitor: WorkMonitor
 ) : ViewModel() {
     private val _uiState =
         MutableStateFlow<MainActivityUiState>(MainActivityUiState.Success(UserData()))
     val uiState = _uiState.asStateFlow()
+
+    val reportState = workMonitor.isGeneratingReport.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        false,
+    )
+
+    val deleteState = workMonitor.isDeletingData.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        false,
+    )
+
 }
+
 
 sealed interface MainActivityUiState {
     data object Loading : MainActivityUiState

@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -24,7 +25,7 @@ fun TitleWithIcon(
     textModifier : Modifier = Modifier,
     iconModifier : Modifier = Modifier,
     text: String,
-    icon: ImageVector? = null,
+    icon: ImageVector,
     showScrollToTop: Boolean = false,
     onClickScrollToTop: () -> Unit = {},
 ) {
@@ -35,12 +36,12 @@ fun TitleWithIcon(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TextWithIcon(
+        IconWithText(
             modifier = textModifier,
             text = text,
             icon = icon,
-            isTitle = true,
-            textStyle = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.SemiBold,
+            style = MaterialTheme.typography.labelLarge
         )
 
         AnimatedVisibility(

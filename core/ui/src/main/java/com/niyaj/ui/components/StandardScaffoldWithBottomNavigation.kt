@@ -80,12 +80,11 @@ fun StandardScaffoldWithBottomNavigation(
 
     val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
     val statusColor = MaterialTheme.colorScheme.surface
-    val navColor = MaterialTheme.colorScheme.surfaceVariant
 
     SideEffect {
         systemUiController.setStatusBarColor(color = statusColor, darkIcons = true)
 
-        systemUiController.setNavigationBarColor(color = navColor)
+        systemUiController.setNavigationBarColor(color = statusColor)
     }
 
     ModalNavigationDrawer(
@@ -172,7 +171,18 @@ fun StandardScaffoldWithBottomNavigation(
             },
             floatingActionButton = {
                 AnimatedVisibility(
-                    visible = showFab
+                    visible = showFab,
+                    label = "FloatingActionButton",
+                    enter = fadeIn() + slideInVertically(
+                        initialOffsetY = { fullHeight ->
+                            fullHeight / 4
+                        }
+                    ),
+                    exit = fadeOut() + slideOutVertically(
+                        targetOffsetY = { fullHeight ->
+                            fullHeight / 4
+                        }
+                    )
                 ) {
                     FloatingActionButton(
                         onClick = {

@@ -50,10 +50,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.common.utils.toTimeSpan
-import com.niyaj.data.utils.CartOrderTestTags
-import com.niyaj.data.utils.ProductTestTags
-import com.niyaj.data.utils.SelectedTestTag.SELECTED_SCREEN_NOTE
-import com.niyaj.data.utils.SelectedTestTag.SELECTED_SCREEN_TITLE
+import com.niyaj.common.tags.CartOrderTestTags
+import com.niyaj.common.tags.ProductTestTags
+import com.niyaj.common.tags.SelectedTestTag.SELECTED_SCREEN_NOTE
+import com.niyaj.common.tags.SelectedTestTag.SELECTED_SCREEN_TITLE
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall

@@ -2,17 +2,17 @@ package com.niyaj.data.data.repository
 
 import com.niyaj.common.result.ValidationResult
 import com.niyaj.data.repository.validation.PrinterValidationRepository
-import com.niyaj.data.utils.PrinterInfoTestTags.ADDRESS_REPORT_LENGTH_ERROR
-import com.niyaj.data.utils.PrinterInfoTestTags.ADDRESS_REPORT_LIMIT_IS_REQUIRED
-import com.niyaj.data.utils.PrinterInfoTestTags.CUSTOM_REPORT_LENGTH_ERROR
-import com.niyaj.data.utils.PrinterInfoTestTags.CUSTOM_REPORT_LIMIT_IS_REQUIRED
-import com.niyaj.data.utils.PrinterInfoTestTags.DPI_IS_REQUIRED
-import com.niyaj.data.utils.PrinterInfoTestTags.NBR_LINES_IS_REQUIRED
-import com.niyaj.data.utils.PrinterInfoTestTags.PRODUCT_NAME_LENGTH_IS_ERROR
-import com.niyaj.data.utils.PrinterInfoTestTags.PRODUCT_NAME_LENGTH_IS_REQUIRED
-import com.niyaj.data.utils.PrinterInfoTestTags.PRODUCT_REPORT_LENGTH_ERROR
-import com.niyaj.data.utils.PrinterInfoTestTags.PRODUCT_REPORT_LIMIT_IS_REQUIRED
-import com.niyaj.data.utils.PrinterInfoTestTags.WIDTH_IS_REQUIRED
+import com.niyaj.common.tags.PrinterInfoTestTags.ADDRESS_REPORT_LENGTH_ERROR
+import com.niyaj.common.tags.PrinterInfoTestTags.ADDRESS_REPORT_LIMIT_IS_REQUIRED
+import com.niyaj.common.tags.PrinterInfoTestTags.CUSTOM_REPORT_LENGTH_ERROR
+import com.niyaj.common.tags.PrinterInfoTestTags.CUSTOM_REPORT_LIMIT_IS_REQUIRED
+import com.niyaj.common.tags.PrinterInfoTestTags.DPI_IS_REQUIRED
+import com.niyaj.common.tags.PrinterInfoTestTags.NBR_LINES_IS_REQUIRED
+import com.niyaj.common.tags.PrinterInfoTestTags.PRODUCT_NAME_LENGTH_IS_ERROR
+import com.niyaj.common.tags.PrinterInfoTestTags.PRODUCT_NAME_LENGTH_IS_REQUIRED
+import com.niyaj.common.tags.PrinterInfoTestTags.PRODUCT_REPORT_LENGTH_ERROR
+import com.niyaj.common.tags.PrinterInfoTestTags.PRODUCT_REPORT_LIMIT_IS_REQUIRED
+import com.niyaj.common.tags.PrinterInfoTestTags.WIDTH_IS_REQUIRED
 
 class PrinterValidationRepositoryImpl : PrinterValidationRepository {
 

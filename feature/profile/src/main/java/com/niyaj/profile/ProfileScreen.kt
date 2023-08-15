@@ -14,9 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.niyaj.data.utils.ProfileTestTags.CREATE_NEW_PROFILE
-import com.niyaj.data.utils.ProfileTestTags.PROFILE_NOT_AVAILABLE
-import com.niyaj.data.utils.ProfileTestTags.PROFILE_SCREEN
+import com.niyaj.common.tags.ProfileTestTags.CREATE_NEW_PROFILE
+import com.niyaj.common.tags.ProfileTestTags.PROFILE_NOT_AVAILABLE
+import com.niyaj.common.tags.ProfileTestTags.PROFILE_SCREEN
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.profile.destinations.AddEditProfileScreenDestination
 import com.niyaj.ui.components.ItemNotAvailable

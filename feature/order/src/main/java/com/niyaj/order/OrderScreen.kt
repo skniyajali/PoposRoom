@@ -42,8 +42,8 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
-import com.niyaj.data.utils.OrderTestTags.DELETE_ORDER
-import com.niyaj.data.utils.OrderTestTags.DELETE_ORDER_MESSAGE
+import com.niyaj.common.tags.OrderTestTags.DELETE_ORDER
+import com.niyaj.common.tags.OrderTestTags.DELETE_ORDER_MESSAGE
 import com.niyaj.model.OrderType
 import com.niyaj.order.components.OrderTab
 import com.niyaj.order.components.OrderTabs

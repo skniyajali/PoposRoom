@@ -8,7 +8,7 @@ import com.niyaj.common.result.ValidationResult
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.CustomerRepository
 import com.niyaj.data.repository.validation.CustomerValidationRepository
-import com.niyaj.data.utils.CustomerTestTags
+import com.niyaj.common.tags.CustomerTestTags
 import com.niyaj.database.dao.CustomerDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Customer
