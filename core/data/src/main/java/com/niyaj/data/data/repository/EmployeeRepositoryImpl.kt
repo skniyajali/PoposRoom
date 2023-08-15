@@ -13,7 +13,7 @@ import com.niyaj.common.utils.toRupee
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.EmployeeRepository
 import com.niyaj.data.repository.EmployeeValidationRepository
-import com.niyaj.data.utils.EmployeeTestTags
+import com.niyaj.common.tags.EmployeeTestTags
 import com.niyaj.database.dao.EmployeeDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Absent

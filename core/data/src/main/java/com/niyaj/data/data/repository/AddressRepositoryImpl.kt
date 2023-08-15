@@ -7,7 +7,7 @@ import com.niyaj.common.result.ValidationResult
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.AddressRepository
 import com.niyaj.data.repository.validation.AddressValidationRepository
-import com.niyaj.data.utils.AddressTestTags
+import com.niyaj.common.tags.AddressTestTags
 import com.niyaj.database.dao.AddressDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Address

@@ -11,9 +11,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.niyaj.core.ui.R
-import com.niyaj.data.utils.OrderTestTags.ADD_ITEM_TO_CART
-import com.niyaj.data.utils.OrderTestTags.ORDER_NOT_AVAILABLE
-import com.niyaj.data.utils.OrderTestTags.SEARCH_ORDER_NOT_AVAILABLE
+import com.niyaj.common.tags.OrderTestTags.ADD_ITEM_TO_CART
+import com.niyaj.common.tags.OrderTestTags.ORDER_NOT_AVAILABLE
+import com.niyaj.common.tags.OrderTestTags.SEARCH_ORDER_NOT_AVAILABLE
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Order
 import com.niyaj.ui.components.ItemNotAvailable

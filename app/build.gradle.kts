@@ -121,6 +121,7 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":core:data"))
     implementation(project(":core:model"))
+    implementation(project(":core:worker"))
 
     androidTestImplementation(project(":core:testing"))
     androidTestImplementation(libs.androidx.navigation.testing)
@@ -136,11 +137,9 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.androidx.core.startup)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.compose.material3.windowSizeClass)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.compose.runtime.tracing)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.navigation.compose)
@@ -151,7 +150,6 @@ dependencies {
     //RaamCosta Library
     implementation(libs.raamcosta.animation.core)
     ksp(libs.raamcosta.ksp)
-
 
     // Timber
     implementation(libs.timber)

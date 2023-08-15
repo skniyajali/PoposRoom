@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reminder_notification_title">Generating Report</string>
+    <string name="reminder_notification_text">Sit relax while generating report</string>
+    <string name="reminder_notification_channel_name">Report</string>
+    <string name="reminder_notification_channel_description">Automatically Generate Report Within Period Of Time</string>
+    <string name="deletion_notification_channel_name">Data Deletion</string>
+    <string name="deletion_notification_channel_description">Deleting app data within a peroid of time.</string>
+    <string name="deletion_notification_title">Deleting Data</string>
+    <string name="deletion_notification_text">Deleting Old App Data</string>
+</resources>

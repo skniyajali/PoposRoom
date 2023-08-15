@@ -66,7 +66,7 @@ import com.niyaj.common.utils.toJoinedDate
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
 import com.niyaj.common.utils.toYearAndMonth
-import com.niyaj.data.utils.EmployeeTestTags.REMAINING_AMOUNT_TEXT
+import com.niyaj.common.tags.EmployeeTestTags.REMAINING_AMOUNT_TEXT
 import com.niyaj.designsystem.theme.LightColor6
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini

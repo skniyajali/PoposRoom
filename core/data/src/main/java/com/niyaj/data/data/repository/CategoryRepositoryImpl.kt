@@ -7,7 +7,7 @@ import com.niyaj.common.result.ValidationResult
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.CategoryRepository
 import com.niyaj.data.repository.validation.CategoryValidationRepository
-import com.niyaj.data.utils.CategoryConstants
+import com.niyaj.common.tags.CategoryConstants
 import com.niyaj.database.dao.CategoryDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Category

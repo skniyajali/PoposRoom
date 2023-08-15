@@ -11,7 +11,7 @@ import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Charges
 import com.niyaj.model.searchCharges
 import com.niyaj.poposroom.features.charges.data.dao.ChargesDao
-import com.niyaj.data.utils.ChargesTestTags
+import com.niyaj.common.tags.ChargesTestTags
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

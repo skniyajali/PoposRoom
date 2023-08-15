@@ -7,7 +7,7 @@ import com.niyaj.common.result.ValidationResult
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.AddOnItemRepository
 import com.niyaj.data.repository.validation.AddOnItemValidationRepository
-import com.niyaj.data.utils.AddOnTestTags
+import com.niyaj.common.tags.AddOnTestTags
 import com.niyaj.database.dao.AddOnItemDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.AddOnItem

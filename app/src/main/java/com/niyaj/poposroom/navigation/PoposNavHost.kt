@@ -59,7 +59,6 @@ fun PoposNavHost(
             dependency(navController)
         },
         manualComposableCallsBuilder = {
-
             composable(CartOrderScreenDestination) {
                 CartOrderScreen(
                     navController = navController,
