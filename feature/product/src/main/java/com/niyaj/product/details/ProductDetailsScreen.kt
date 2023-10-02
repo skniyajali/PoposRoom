@@ -1,11 +1,6 @@
 package com.niyaj.product.details
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -68,7 +63,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.niyaj.common.utils.isSameDay
 import com.niyaj.common.utils.toBarDate
-import com.niyaj.common.utils.toDate
+import com.niyaj.common.utils.toDateString
 import com.niyaj.common.utils.toFormattedDateAndTime
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
@@ -133,28 +128,14 @@ fun ProductDetailsScreen(
         showBottomBar = false,
         fabPosition = FabPosition.End,
         floatingActionButton = {
-            AnimatedVisibility(
+            ScrollToTop(
                 visible = !lazyListState.isScrollingUp(),
-                enter = fadeIn() + slideInVertically(
-                    initialOffsetY = { fullHeight ->
-                        fullHeight / 4
+                onClick = {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(index = 0)
                     }
-                ),
-                exit = fadeOut() + slideOutVertically(
-                    targetOffsetY = { fullHeight ->
-                        fullHeight / 4
-                    }
-                ),
-                label = "FloatingActionButton"
-            ) {
-                ScrollToTop(
-                    onClick = {
-                        scope.launch {
-                            lazyListState.animateScrollToItem(index = 0)
-                        }
-                    }
-                )
-            }
+                }
+            )
         }
     ) {
         LazyColumn(
@@ -443,7 +424,7 @@ fun ProductDetails(
                                 )
 
                                 TextWithIcon(
-                                    modifier = Modifier.testTag(state.data.createdAt.toDate),
+                                    modifier = Modifier.testTag(state.data.createdAt.toDateString),
                                     text = "Created At : ${state.data.createdAt.toFormattedDateAndTime}",
                                     icon = Icons.Default.CalendarToday
                                 )

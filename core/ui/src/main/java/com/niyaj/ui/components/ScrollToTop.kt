@@ -1,5 +1,10 @@
 package com.niyaj.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.FilledTonalIconButton
@@ -26,6 +31,33 @@ fun ScrollToTop(
         Icon(
             imageVector = Icons.Default.KeyboardArrowUp,
             contentDescription = "Scroll To Top",
+        )
+    }
+}
+
+@Composable
+fun ScrollToTop(
+    modifier: Modifier = Modifier,
+    visible: Boolean,
+    onClick: () -> Unit,
+    containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn() + slideInVertically(
+            initialOffsetY = { fullHeight ->
+                fullHeight / 4
+            }
+        ),
+        exit = fadeOut() + slideOutVertically(
+            targetOffsetY = { fullHeight ->
+                fullHeight / 4
+            }
+        ),
+        label = "FloatingActionButton"
+    ) {
+        ScrollToTop(
+            onClick = onClick
         )
     }
 }

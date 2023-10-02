@@ -47,7 +47,7 @@ fun ProductEntity.asExternalModel(): Product {
         productPrice = this.productPrice,
         productDescription = this.productDescription,
         productAvailability = this.productAvailability,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt
+        createdAt = this.createdAt.time,
+        updatedAt = this.updatedAt?.time
     )
 }

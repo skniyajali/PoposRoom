@@ -1,8 +1,5 @@
-package com.niyaj.product.settings.export_product
+package com.niyaj.product.settings.product_price
 
-import android.Manifest
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +12,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checklist
-import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.filled.CurrencyRupee
+import androidx.compose.material.icons.filled.RemoveCircleOutline
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -26,18 +24,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.common.tags.ProductTestTags
-import com.niyaj.common.tags.ProductTestTags.EXPORT_PRODUCTS_BTN_TEXT
-import com.niyaj.common.tags.ProductTestTags.EXPORT_PRODUCTS_TITLE
 import com.niyaj.common.utils.Constants
+import com.niyaj.common.utils.safeString
+import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.product.components.ProductCard
@@ -47,19 +43,17 @@ import com.niyaj.ui.components.CategoriesData
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
+import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
-import com.niyaj.utils.ImportExport.createFile
-import com.niyaj.utils.ImportExport.writeData
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Destination
 @Composable
-fun ExportProductScreen(
+fun DecreaseProductPriceScreen(
     navController: NavController,
     viewModel: ProductSettingsViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
@@ -69,12 +63,13 @@ fun ExportProductScreen(
 
     val categories = viewModel.categories.collectAsStateWithLifecycle().value
     val products = viewModel.products.collectAsStateWithLifecycle().value
-    val exportedProducts = viewModel.exportedProducts.collectAsStateWithLifecycle().value
 
     val selectedItems = viewModel.selectedItems.toList()
     val selectedCategory = viewModel.selectedCategory.toList()
 
     val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
+
+    val productPrice = viewModel.productPrice.value.safeString
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -88,43 +83,11 @@ fun ExportProductScreen(
                 }
             }
         }
-    }sss
-
-    val context = LocalContext.current
-
-    val hasStoragePermission = rememberMultiplePermissionsState(
-        permissions = listOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        )
-    )
-
-    val askForPermissions = {
-        if (!hasStoragePermission.allPermissionsGranted) {
-            hasStoragePermission.launchMultiplePermissionRequest()
-        }
     }
-
-    val exportLauncher =
-        rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) {
-            it.data?.data?.let {
-                scope.launch {
-                    val result = writeData(context, it, exportedProducts)
-
-                    if (result) {
-                        resultBackNavigator.navigateBack("${exportedProducts.size} Products has been exported")
-                    } else {
-                        resultBackNavigator.navigateBack("Unable to export products")
-                    }
-                }
-            }
-        }
 
     StandardScaffoldNew(
         navController = navController,
-        title = if (selectedItems.isEmpty()) EXPORT_PRODUCTS_TITLE else "${selectedItems.size} Selected",
+        title = if (selectedItems.isEmpty()) ProductTestTags.DECREASE_PRODUCTS_TITLE else "${selectedItems.size} Selected",
         showBackButton = true,
         showBottomBar = true,
         navActions = {
@@ -146,27 +109,32 @@ fun ExportProductScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(SpaceSmallMax),
-                verticalArrangement = Arrangement.spacedBy(SpaceSmall)
+                verticalArrangement = Arrangement.spacedBy(SpaceMedium)
             ) {
-                NoteCard(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} products will be exported.")
+                StandardOutlinedTextField(
+                    value = productPrice,
+                    label = ProductTestTags.DECREASE_PRODUCTS_TEXT_FIELD,
+                    leadingIcon = Icons.Default.CurrencyRupee,
+                    keyboardType = KeyboardType.Number,
+                    onValueChange = {
+                        viewModel.onEvent(ProductSettingsEvent.OnChangeProductPrice(it))
+                    }
+                )
+
+                NoteCard(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} products price will be decreased.")
 
                 StandardButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag(ProductTestTags.EXPORT_PRODUCTS_BTN),
-                    enabled = true,
-                    text = EXPORT_PRODUCTS_BTN_TEXT,
-                    icon = Icons.Default.Upload,
+                        .testTag(ProductTestTags.DECREASE_PRODUCTS_BTN_TEXT),
+                    enabled = productPrice.isNotEmpty(),
+                    text = ProductTestTags.DECREASE_PRODUCTS_BTN_TEXT,
+                    icon = Icons.Default.RemoveCircleOutline,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary
                     ),
                     onClick = {
-                        scope.launch {
-                            askForPermissions()
-                            val result = createFile(context = context, fileName = "products")
-                            exportLauncher.launch(result)
-                            viewModel.onEvent(ProductSettingsEvent.GetExportedProduct)
-                        }
+                        viewModel.onEvent(ProductSettingsEvent.OnDecreaseProductPrice)
                     }
                 )
             }

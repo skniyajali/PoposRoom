@@ -1,8 +1,10 @@
 package com.niyaj.model
 
 import com.niyaj.common.utils.getAllCapitalizedLetters
+import com.squareup.moshi.JsonClass
 import java.util.Date
 
+@JsonClass(generateAdapter = true)
 data class Product(
     val productId: Int = 0,
 
@@ -16,9 +18,9 @@ data class Product(
 
     val productAvailability : Boolean = true,
 
-    val createdAt: Date,
+    val createdAt: Long,
 
-    val updatedAt: Date? = null
+    val updatedAt: Long? = null
 
 )
 

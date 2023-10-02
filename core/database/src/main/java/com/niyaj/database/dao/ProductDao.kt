@@ -126,4 +126,12 @@ interface ProductDao {
         """
     )
     fun getProductWiseOrders(orderIds: List<Int>): Flow<List<ProductWiseOrderDetailsDto>>
+
+
+    @Query(
+        value = """
+            UPDATE product SET productPrice = :productPrice WHERE productId = :productId
+        """
+    )
+    suspend fun updateProductPrice(productId: Int, productPrice: Int): Int
 }

@@ -7,12 +7,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -246,28 +241,14 @@ fun ReportScreen(
         },
         fabPosition = FabPosition.End,
         floatingActionButton = {
-            AnimatedVisibility(
+            ScrollToTop(
                 visible = !lazyListState.isScrollingUp(),
-                enter = fadeIn() + slideInVertically(
-                    initialOffsetY = { fullHeight ->
-                        fullHeight / 4
+                onClick = {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(index = 0)
                     }
-                ),
-                exit = fadeOut() + slideOutVertically(
-                    targetOffsetY = { fullHeight ->
-                        fullHeight / 4
-                    }
-                ),
-                label = "FloatingActionButton"
-            ) {
-                ScrollToTop(
-                    onClick = {
-                        scope.launch {
-                            lazyListState.animateScrollToItem(index = 0)
-                        }
-                    }
-                )
-            }
+                }
+            )
         },
     ) {
         MaterialDialog(

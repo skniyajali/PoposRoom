@@ -38,4 +38,21 @@ object ProductTestTags {
     const val DELETE_PRODUCT_MESSAGE = "Are you sure to delete these products?"
 
     const val PRODUCT_TAG = "Product-"
+
+    const val EXPORT_PRODUCTS_TITLE = "Export Products"
+    const val EXPORT_PRODUCTS_BTN_TEXT = "Export Products"
+    const val EXPORT_PRODUCTS_BTN = "Export Products"
+
+    const val IMPORT_PRODUCTS_TITLE = "Import Products"
+    const val IMPORT_PRODUCTS_BTN_TEXT = "Import Products"
+    const val IMPORT_PRODUCTS_OPN_FILE = "Open File"
+    const val IMPORT_PRODUCTS_NOTE_TEXT = "Make sure to open products.json file."
+
+    const val INCREASE_PRODUCTS_TITLE = "Increase Products Price"
+    const val INCREASE_PRODUCTS_TEXT_FIELD = "Product Price"
+    const val INCREASE_PRODUCTS_BTN_TEXT = "Increase Price"
+
+    const val DECREASE_PRODUCTS_TITLE = "Decrease Products Price"
+    const val DECREASE_PRODUCTS_TEXT_FIELD = "Product Price"
+    const val DECREASE_PRODUCTS_BTN_TEXT = "Decrease Price"
 }

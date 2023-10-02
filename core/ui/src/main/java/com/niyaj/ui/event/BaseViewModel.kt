@@ -34,6 +34,9 @@ open class BaseViewModel @Inject constructor(): ViewModel() {
 
     private var count: Int = 0
 
+    private var itemCount = 0
+
+
     open fun selectItem(itemId: Int) {
         viewModelScope.launch {
             if(mSelectedItems.contains(itemId)){
@@ -63,6 +66,24 @@ open class BaseViewModel @Inject constructor(): ViewModel() {
                             mSelectedItems.remove(itemId)
                         }
                     }
+                }
+            }
+        }
+    }
+
+    open fun selectItems(items: List<Int>) {
+        itemCount += 1
+
+        viewModelScope.launch {
+            items.forEach { item ->
+                if(itemCount % 2 != 0){
+                    val selectedItem = mSelectedItems.find { it == item }
+
+                    if (selectedItem == null){
+                        mSelectedItems.add(item)
+                    }
+                }else {
+                    mSelectedItems.remove(item)
                 }
             }
         }
