@@ -115,6 +115,9 @@ val String.toDate
 val Date.toDate
     get() = SimpleDateFormat("dd", Locale.getDefault()).format(this).toString()
 
+val Long.toDateString
+    get() = SimpleDateFormat("dd", Locale.getDefault()).format(this).toString()
+
 
 val String.toTime
     get() = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(this.toLong()).toString()
@@ -152,11 +155,20 @@ val Date.toFormattedDateAndTime
         Locale.getDefault()
     ).format(this).toString()
 
+val Long.toFormattedDateAndTime
+    get() = SimpleDateFormat(
+        "dd MMM, hh:mm a",
+        Locale.getDefault()
+    ).format(this).toString()
+
 val String.toYearAndMonth
     get() = SimpleDateFormat(
         "MMM yyyy",
         Locale.getDefault()
     ).format(this.toLong()).toString()
+
+val Long.toDate
+    get() = Date(this)
 
 fun String.toPrettyDate(): String {
     val nowTime = Calendar.getInstance()
@@ -193,6 +205,44 @@ fun String.toPrettyDate(): String {
     } else {
         //here return like "May 31 2022, 12:00" - it's a different year we need to show it
         SimpleDateFormat("MMMM dd yyyy", Locale.getDefault()).format(Date(this.toLong()))
+    }
+}
+
+fun Long.toPrettyDate(): String {
+    val nowTime = Calendar.getInstance()
+    val neededTime = Calendar.getInstance()
+    neededTime.timeInMillis = this
+
+    return if (neededTime[Calendar.YEAR] == nowTime[Calendar.YEAR]) {
+        if (neededTime[Calendar.MONTH] == nowTime[Calendar.MONTH]) {
+            when {
+                neededTime[Calendar.DATE] - nowTime[Calendar.DATE] == 1 -> {
+                    //here return like "Tomorrow at 12:00"
+                    "Tomorrow"
+                }
+
+                nowTime[Calendar.DATE] == neededTime[Calendar.DATE] -> {
+                    //here return like "Today at 12:00"
+                    "Today"
+                }
+
+                nowTime[Calendar.DATE] - neededTime[Calendar.DATE] == 1 -> {
+                    //here return like "Yesterday at 12:00"
+                    "Yesterday"
+                }
+
+                else -> {
+                    //here return like "May 31, 12:00"
+                    SimpleDateFormat("MMMM dd", Locale.getDefault()).format(Date(this))
+                }
+            }
+        } else {
+            //here return like "May 31, 12:00"
+            SimpleDateFormat("MMMM dd", Locale.getDefault()).format(Date(this))
+        }
+    } else {
+        //here return like "May 31 2022, 12:00" - it's a different year we need to show it
+        SimpleDateFormat("MMMM dd yyyy", Locale.getDefault()).format(Date(this))
     }
 }
 

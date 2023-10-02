@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -153,8 +152,8 @@ class AddEditProductViewModel @Inject constructor(
                     productPrice = state.productPrice.safeInt(),
                     productDescription = state.productDesc,
                     productAvailability = state.productAvailability,
-                    createdAt = Date(),
-                    updatedAt = if (productId == 0) null else Date()
+                    createdAt = System.currentTimeMillis(),
+                    updatedAt = if (productId == 0) null else System.currentTimeMillis()
                 )
 
                 when (productRepository.upsertProduct(newProduct)) {

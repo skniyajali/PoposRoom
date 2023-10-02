@@ -4,21 +4,22 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
-import com.niyaj.data.mapper.toEntity
-import com.niyaj.data.repository.ProductRepository
-import com.niyaj.data.repository.validation.ProductValidationRepository
 import com.niyaj.common.tags.ProductTestTags.PRODUCT_CATEGORY_EMPTY_ERROR
 import com.niyaj.common.tags.ProductTestTags.PRODUCT_NAME_ALREADY_EXIST_ERROR
 import com.niyaj.common.tags.ProductTestTags.PRODUCT_NAME_EMPTY_ERROR
 import com.niyaj.common.tags.ProductTestTags.PRODUCT_NAME_LENGTH_ERROR
 import com.niyaj.common.tags.ProductTestTags.PRODUCT_PRICE_EMPTY_ERROR
 import com.niyaj.common.tags.ProductTestTags.PRODUCT_PRICE_LENGTH_ERROR
+import com.niyaj.data.mapper.toEntity
+import com.niyaj.data.repository.ProductRepository
+import com.niyaj.data.repository.validation.ProductValidationRepository
 import com.niyaj.database.dao.ProductDao
 import com.niyaj.database.model.CategoryWithProductCrossRef
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Category
 import com.niyaj.model.CategoryWithProducts
 import com.niyaj.model.Product
+import com.niyaj.model.ProductIdWithPrice
 import com.niyaj.model.ProductWiseOrder
 import com.niyaj.model.filterCategory
 import com.niyaj.model.filterProducts
@@ -327,6 +328,85 @@ class ProductRepositoryImpl(
                     )
                 }
             }
+        }
+    }
+
+    override suspend fun importProductsToDatabase(products: List<Product>): Resource<Boolean> {
+        try {
+            products.forEach { newProduct ->
+                val validateCategory = validateCategoryId(newProduct.categoryId)
+                val valProduct = validateProductName(newProduct.productName, newProduct.productId)
+                val validateProductPrice = validateProductPrice(newProduct.productPrice)
+
+                val hasError = listOf(
+                    validateCategory,
+                    validateProductPrice,
+                    valProduct
+                ).any { !it.successful }
+
+                if (!hasError) {
+                    val category = withContext(ioDispatcher) {
+                        productDao.getCategoryById(newProduct.categoryId)
+                    }
+
+                    if (category != null) {
+                        val result = withContext(ioDispatcher) {
+                            productDao.upsertProduct(newProduct.toEntity())
+                        }
+
+                        if (result > 0) {
+                            withContext(ioDispatcher) {
+                                productDao.upsertCategoryWithProductCrossReference(
+                                    CategoryWithProductCrossRef(
+                                        newProduct.categoryId,
+                                        result.toInt()
+                                    )
+                                )
+                            }
+                        }
+                    } else {
+                        return Resource.Error("Unable to find category")
+                    }
+                } else {
+                    return Resource.Error("Unable to validate product")
+                }
+            }
+
+            return Resource.Success(true)
+        } catch (e: Exception) {
+            return Resource.Error(e.message ?: "Unable to import products to database")
+        }
+    }
+
+    override suspend fun increaseProductsPrice(products: List<ProductIdWithPrice>): Resource<Boolean> {
+        return try {
+            withContext(ioDispatcher) {
+                products.forEach {
+                    withContext(ioDispatcher) {
+                        productDao.updateProductPrice(it.productId, it.productPrice)
+                    }
+                }
+
+                Resource.Success(true)
+            }
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Unable to increase products price")
+        }
+    }
+
+    override suspend fun decreaseProductsPrice(products: List<ProductIdWithPrice>): Resource<Boolean> {
+        return try {
+            withContext(ioDispatcher) {
+                products.forEach {
+                    withContext(ioDispatcher) {
+                        productDao.updateProductPrice(it.productId, it.productPrice)
+                    }
+                }
+
+                Resource.Success(true)
+            }
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Unable to decrease product price")
         }
     }
 }

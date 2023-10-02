@@ -2,6 +2,7 @@
 plugins {
     id("popos.android.library")
 //    id("kotlin")
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -15,4 +16,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
+
+    api(libs.moshi)
+    ksp(libs.moshi.kotlin.codegen)
 }

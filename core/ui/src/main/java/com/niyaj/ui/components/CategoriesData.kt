@@ -51,6 +51,27 @@ fun CategoriesData(
     }
 }
 
+@Composable
+fun CategoriesData(
+    categories: List<Category>,
+    selectedCategory: List<Int>,
+    onSelect: (Int) -> Unit,
+) {
+    LazyRow(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        items(categories) { category ->
+            CategoryData(
+                item = category,
+                doesSelected = {
+                    selectedCategory.contains(it)
+                } ,
+                onClick = onSelect,
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryData(

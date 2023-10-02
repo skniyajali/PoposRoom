@@ -1,5 +1,7 @@
 package com.niyaj.data.mapper
 
+import com.niyaj.common.utils.toDate
+import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.database.model.ProductEntity
 import com.niyaj.model.Product
 
@@ -11,7 +13,7 @@ fun Product.toEntity(): ProductEntity {
         productPrice = this.productPrice,
         productDescription = this.productDescription,
         productAvailability = this.productAvailability,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt
+        createdAt = this.createdAt.toDate,
+        updatedAt = this.updatedAt?.toDate
     )
 }
