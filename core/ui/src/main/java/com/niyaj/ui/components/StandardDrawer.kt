@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.StickyNote2
+import androidx.compose.material.icons.automirrored.outlined.Logout
+import androidx.compose.material.icons.automirrored.outlined.StickyNote2
 import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.BreakfastDining
@@ -30,7 +33,6 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PeopleAlt
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.StickyNote2
 import androidx.compose.material.icons.filled.SwitchAccount
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.AllInbox
@@ -45,7 +47,6 @@ import androidx.compose.material.icons.outlined.EventBusy
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.InsertLink
 import androidx.compose.material.icons.outlined.Inventory2
-import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Money
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.PeopleAlt
@@ -167,7 +168,7 @@ fun StandardDrawer(
 
                 DrawerItem(
                     text = "View Expenses",
-                    icon = if (currentRoute == Screens.ExpensesScreen) Icons.Default.StickyNote2 else Icons.Outlined.StickyNote2,
+                    icon = if (currentRoute == Screens.ExpensesScreen) Icons.AutoMirrored.Filled.StickyNote2 else Icons.AutoMirrored.Outlined.StickyNote2,
                     selected = currentRoute == Screens.ExpensesScreen,
                     onClick = {
                         navController.navigate(Screens.ExpensesScreen)
@@ -588,7 +589,7 @@ fun StandardDrawer(
 
             DrawerItem(
                 text = "Logout",
-                icon = Icons.Outlined.Logout,
+                icon = Icons.AutoMirrored.Outlined.Logout,
                 selected = false,
                 onClick = {
 

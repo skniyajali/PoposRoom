@@ -19,4 +19,6 @@ interface CategoryRepository {
     suspend fun deleteCategory(categoryId: Int): Resource<Boolean>
 
     suspend fun deleteCategories(categoryIds: List<Int>): Resource<Boolean>
+
+    suspend fun importCategoriesToDatabase(categories: List<Category>): Resource<Boolean>
 }

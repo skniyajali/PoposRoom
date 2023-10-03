@@ -97,8 +97,8 @@ class AddEditCategoryViewModel @Inject constructor(
                     categoryId = categoryId,
                     categoryName = addEditState.categoryName,
                     isAvailable = addEditState.isAvailable,
-                    createdAt = Date(),
-                    updatedAt = if (categoryId != 0) Date() else null
+                    createdAt = System.currentTimeMillis(),
+                    updatedAt = if (categoryId != 0) System.currentTimeMillis() else null
                 )
 
                 when (categoryRepository.upsertCategory(addOnItem)) {

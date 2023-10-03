@@ -170,7 +170,3 @@ dependencies {
     // Play Service Base
     implementation(libs.play.service)
 }
-
-kapt {
-    correctErrorTypes = true
-}

@@ -27,7 +27,7 @@ fun CategoryEntity.asExternalModel(): Category {
         categoryId = this.categoryId,
         categoryName = this.categoryName,
         isAvailable = this.isAvailable,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt
+        createdAt = this.createdAt.time,
+        updatedAt = this.updatedAt?.time
     )
 }

@@ -13,11 +13,12 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Apps
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
@@ -122,7 +123,7 @@ fun StandardScaffold(
                                 modifier = Modifier.testTag(STANDARD_BACK_BUTTON)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.ArrowBack,
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = null,
                                 )
                             }
@@ -281,7 +282,7 @@ fun StandardScaffoldNew(
                                 modifier = Modifier.testTag(STANDARD_BACK_BUTTON)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.ArrowBack,
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.scrim
                                 )
@@ -334,6 +335,7 @@ fun StandardScaffoldNew(
             modifier = modifier
                 .testTag(title)
                 .fillMaxSize()
+                .navigationBarsPadding()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             containerColor = MaterialTheme.colorScheme.background
         ) { padding ->

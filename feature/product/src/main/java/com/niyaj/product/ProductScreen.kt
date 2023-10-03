@@ -156,7 +156,8 @@ fun ProductScreen(
                 placeholderText = PRODUCT_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = showSearchBar,
+                showSearchIcon = true,
+                showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
                     navController.navigate(AddEditProductScreenDestination(selectedItems.first()))

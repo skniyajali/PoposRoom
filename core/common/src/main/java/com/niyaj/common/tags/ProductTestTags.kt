@@ -55,4 +55,6 @@ object ProductTestTags {
     const val DECREASE_PRODUCTS_TITLE = "Decrease Products Price"
     const val DECREASE_PRODUCTS_TEXT_FIELD = "Product Price"
     const val DECREASE_PRODUCTS_BTN_TEXT = "Decrease Price"
+
+    const val EXPORTED_PRODUCTS_FILE_NAME = "products"
 }
