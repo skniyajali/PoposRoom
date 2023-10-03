@@ -1,4 +1,4 @@
-package com.niyaj.product.settings
+package com.niyaj.category.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ControlPoint
-import androidx.compose.material.icons.filled.RemoveCircleOutline
 import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.FabPosition
@@ -17,11 +15,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.niyaj.category.destinations.ExportCategoryScreenDestination
+import com.niyaj.category.destinations.ImportCategoryScreenDestination
+import com.niyaj.common.tags.CategoryConstants.CATEGORY_SETTINGS_TITLE
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.product.destinations.DecreaseProductPriceScreenDestination
-import com.niyaj.product.destinations.ExportProductScreenDestination
-import com.niyaj.product.destinations.ImportProductScreenDestination
-import com.niyaj.product.destinations.IncreaseProductPriceScreenDestination
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -34,16 +31,15 @@ import kotlinx.coroutines.launch
 
 @Destination
 @Composable
-fun ProductSettingScreen(
+fun CategorySettingsScreen(
     navController: NavController,
-    exportRecipient: ResultRecipient<ExportProductScreenDestination, String>,
-    importRecipient: ResultRecipient<ImportProductScreenDestination, String>,
-    increaseRecipient: ResultRecipient<IncreaseProductPriceScreenDestination, String>,
-    decreaseRecipient: ResultRecipient<DecreaseProductPriceScreenDestination, String>,
+    exportRecipient: ResultRecipient<ExportCategoryScreenDestination, String>,
+    importRecipient: ResultRecipient<ImportCategoryScreenDestination, String>,
 ) {
     val snackbarState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
+
 
     exportRecipient.onNavResult { result ->
         when(result) {
@@ -65,30 +61,10 @@ fun ProductSettingScreen(
             }
         }
     }
-    increaseRecipient.onNavResult { result ->
-        when(result) {
-            is NavResult.Canceled -> {}
-            is NavResult.Value -> {
-                scope.launch {
-                    snackbarState.showSnackbar(result.value)
-                }
-            }
-        }
-    }
-    decreaseRecipient.onNavResult { result ->
-        when(result) {
-            is NavResult.Canceled -> {}
-            is NavResult.Value -> {
-                scope.launch {
-                    snackbarState.showSnackbar(result.value)
-                }
-            }
-        }
-    }
 
     StandardScaffoldNew(
         navController = navController,
-        title = "Product Settings",
+        title = CATEGORY_SETTINGS_TITLE,
         snackbarHostState = snackbarState,
         showBackButton = true,
         showBottomBar = false,
@@ -111,46 +87,24 @@ fun ProductSettingScreen(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceSmall)
         ){
-            item("IncreaseProductPrice") {
+            item("ImportCategory") {
                 SettingsCard(
-                    title = "Increase Product Price",
-                    subtitle = "Click here to increase product price.",
-                    icon = Icons.Default.ControlPoint,
-                    onClick = {
-                        navController.navigate(IncreaseProductPriceScreenDestination)
-                    }
-                )
-            }
-
-            item("decreaseProductPrice") {
-                SettingsCard(
-                    title = "Decrease Product Price",
-                    subtitle = "Click here to decrease product price.",
-                    icon = Icons.Default.RemoveCircleOutline,
-                    onClick = {
-                        navController.navigate(DecreaseProductPriceScreenDestination)
-                    }
-                )
-            }
-
-            item("ImportProduct") {
-                SettingsCard(
-                    title = "Import Product",
+                    title = "Import Category",
                     subtitle = "Click here to import product from file.",
                     icon = Icons.Default.SaveAlt,
                     onClick = {
-                        navController.navigate(ImportProductScreenDestination())
+                        navController.navigate(ImportCategoryScreenDestination())
                     }
                 )
             }
 
-            item("ExportProduct") {
+            item("ExportCategory") {
                 SettingsCard(
-                    title = "Export Product",
-                    subtitle = "Click here to export products to file.",
+                    title = "Export Category",
+                    subtitle = "Click here to export category to file.",
                     icon = Icons.Default.Upload,
                     onClick = {
-                        navController.navigate(ExportProductScreenDestination())
+                        navController.navigate(ExportCategoryScreenDestination())
                     }
                 )
             }

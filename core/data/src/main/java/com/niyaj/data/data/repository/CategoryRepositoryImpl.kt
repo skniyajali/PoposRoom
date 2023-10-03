@@ -4,10 +4,10 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
+import com.niyaj.common.tags.CategoryConstants
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.CategoryRepository
 import com.niyaj.data.repository.validation.CategoryValidationRepository
-import com.niyaj.common.tags.CategoryConstants
 import com.niyaj.database.dao.CategoryDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Category
@@ -159,5 +159,26 @@ class CategoryRepositoryImpl(
         return ValidationResult(
             successful = true
         )
+    }
+
+    override suspend fun importCategoriesToDatabase(categories: List<Category>): Resource<Boolean> {
+        try {
+            categories.forEach { category ->
+                val validateCategoryName =
+                    validateCategoryName(category.categoryName, category.categoryId)
+
+                if (validateCategoryName.successful) {
+                    withContext(ioDispatcher) {
+                        categoryDao.upsertCategory(category.toEntity())
+                    }
+                } else {
+                    return Resource.Error(validateCategoryName.errorMessage ?: "Unable")
+                }
+            }
+
+            return Resource.Success(true)
+        } catch (e: Exception) {
+            return Resource.Error(e.message ?: "Unable")
+        }
     }
 }

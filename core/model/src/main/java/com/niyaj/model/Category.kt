@@ -1,7 +1,8 @@
 package com.niyaj.model
 
-import java.util.Date
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class Category(
     val categoryId: Int = 0,
 
@@ -9,9 +10,9 @@ data class Category(
 
     val isAvailable: Boolean = true,
 
-    val createdAt: Date = Date(),
+    val createdAt: Long = System.currentTimeMillis(),
 
-    val updatedAt: Date? = null,
+    val updatedAt: Long? = null,
 )
 
 

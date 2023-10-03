@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -22,7 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -36,7 +34,6 @@ import com.niyaj.common.utils.Constants.SEARCH_BAR_CLEAR_BUTTON
 import com.niyaj.common.utils.Constants.SEARCH_PLACEHOLDER
 import com.niyaj.common.utils.Constants.STANDARD_SEARCH_BAR
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun StandardSearchBar(
     modifier: Modifier = Modifier,
@@ -55,8 +52,8 @@ fun StandardSearchBar(
 
     OutlinedTextField(
         modifier = modifier
-            .testTag(STANDARD_SEARCH_BAR)
             .fillMaxWidth()
+            .testTag(STANDARD_SEARCH_BAR)
             .padding(start = 48.dp)
             .padding(vertical = 2.dp)
             .onFocusChanged { focusState ->
@@ -68,15 +65,16 @@ fun StandardSearchBar(
         placeholder = {
             Text(
                 text = placeholderText,
-                color = Color.LightGray,
                 modifier = Modifier.testTag(SEARCH_PLACEHOLDER)
             )
         },
         colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = LocalContentColor.current,
             focusedBorderColor = Color.Transparent,
             unfocusedBorderColor = Color.Transparent,
             focusedContainerColor = Color.Transparent,
-            cursorColor = LocalContentColor.current.copy(alpha = 0.2f)
+            cursorColor = LocalContentColor.current.copy(alpha = 0.2f),
+            focusedTrailingIconColor = LocalContentColor.current
         ),
         trailingIcon = {
             if (searchText.isNotEmpty()) {
@@ -91,8 +89,7 @@ fun StandardSearchBar(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Close,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.scrim,
+                            contentDescription = "Search Bar Clear Text",
                         )
                     }
 

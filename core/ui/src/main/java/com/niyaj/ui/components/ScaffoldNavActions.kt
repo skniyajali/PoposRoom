@@ -8,10 +8,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Rule
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Rule
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
@@ -89,7 +89,7 @@ fun ScaffoldNavActions(
             modifier = Modifier.testTag(NAV_SELECT_ALL_BTN)
         ) {
             Icon(
-                imageVector = Icons.Default.Rule,
+                imageVector = Icons.AutoMirrored.Filled.Rule,
                 contentDescription = "Select All Item",
             )
         }

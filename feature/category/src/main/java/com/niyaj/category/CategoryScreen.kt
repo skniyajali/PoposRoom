@@ -1,26 +1,14 @@
 package com.niyaj.category
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.border
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Category
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -29,26 +17,23 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.niyaj.category.components.CategoryData
 import com.niyaj.category.destinations.AddEditCategoryScreenDestination
-import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
-import com.niyaj.common.tags.CategoryConstants.CATEGORY_ITEM_TAG
+import com.niyaj.category.destinations.CategorySettingsScreenDestination
 import com.niyaj.common.tags.CategoryConstants.CATEGORY_NOT_AVAIlABLE
 import com.niyaj.common.tags.CategoryConstants.CATEGORY_SCREEN_TITLE
 import com.niyaj.common.tags.CategoryConstants.CATEGORY_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.CategoryConstants.CREATE_NEW_CATEGORY
 import com.niyaj.common.tags.CategoryConstants.DELETE_CATEGORY_ITEM_MESSAGE
 import com.niyaj.common.tags.CategoryConstants.DELETE_CATEGORY_ITEM_TITLE
+import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Category
-import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
@@ -156,7 +141,8 @@ fun CategoryScreen(
                 placeholderText = CATEGORY_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = showSearchBar,
+                showSearchBar = showSearchBar,
+                showSearchIcon = true,
                 searchText = searchText,
                 onEditClick = {
                     navController.navigate(AddEditCategoryScreenDestination(selectedItems.first()))
@@ -164,7 +150,9 @@ fun CategoryScreen(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = {},
+                onSettingsClick = {
+                    navController.navigate(CategorySettingsScreenDestination)
+                },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
                 onSearchClick = viewModel::openSearchBar,
@@ -255,54 +243,5 @@ fun CategoryScreen(
             },
             shape = RoundedCornerShape(28.dp)
         )
-    }
-}
-
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun CategoryData(
-    modifier: Modifier = Modifier,
-    item: Category,
-    doesSelected: (Int) -> Boolean,
-    onClick: (Int) -> Unit,
-    onLongClick: (Int) -> Unit,
-    border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-) {
-    val borderStroke = if (doesSelected(item.categoryId)) border else null
-
-    ElevatedCard(
-        modifier = modifier
-            .testTag(CATEGORY_ITEM_TAG.plus(item.categoryId))
-            .padding(SpaceSmall)
-            .then(borderStroke?.let {
-                Modifier.border(it, CardDefaults.elevatedShape)
-            } ?: Modifier)
-            .clip(CardDefaults.elevatedShape)
-            .combinedClickable(
-                onClick = {
-                    onClick(item.categoryId)
-                },
-                onLongClick = {
-                    onLongClick(item.categoryId)
-                },
-            ),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = item.categoryName)
-
-            CircularBox(
-                icon = Icons.Default.Category,
-                doesSelected = doesSelected(item.categoryId),
-                showBorder = !item.isAvailable,
-                text = item.categoryName
-            )
-        }
     }
 }
