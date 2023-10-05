@@ -4,10 +4,10 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
+import com.niyaj.common.tags.AddOnTestTags
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.AddOnItemRepository
 import com.niyaj.data.repository.validation.AddOnItemValidationRepository
-import com.niyaj.common.tags.AddOnTestTags
 import com.niyaj.database.dao.AddOnItemDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.AddOnItem
@@ -24,6 +24,7 @@ class AddOnItemRepositoryImpl(
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher
 ) : AddOnItemRepository, AddOnItemValidationRepository {
+
     override suspend fun getAllAddOnItem(searchText: String): Flow<List<AddOnItem>> {
         return withContext(ioDispatcher) {
             addOnItemDao.getAllAddOnItems()
@@ -191,5 +192,28 @@ class AddOnItemRepositoryImpl(
         return ValidationResult(
             successful = true
         )
+    }
+
+    override suspend fun importAddOnItemsToDatabase(addOnItems: List<AddOnItem>): Resource<Boolean> {
+        try {
+            addOnItems.forEach { newAddOnItem ->
+                val validateName = validateItemName(newAddOnItem.itemName, newAddOnItem.itemId)
+                val validatePrice = validateItemPrice(newAddOnItem.itemPrice)
+
+                val hasError = listOf(validateName, validatePrice).any { !it.successful }
+
+                if (!hasError) {
+                    withContext(ioDispatcher) {
+                        addOnItemDao.upsertAddOnItem(newAddOnItem.toEntity())
+                    }
+                } else {
+                    return Resource.Error("Unable to create or update addon item")
+                }
+            }
+
+            return Resource.Success(true)
+        }catch (e: Exception) {
+            return Resource.Error(e.message)
+        }
     }
 }

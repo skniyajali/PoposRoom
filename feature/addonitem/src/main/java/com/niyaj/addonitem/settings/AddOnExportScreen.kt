@@ -1,4 +1,4 @@
-package com.niyaj.category.settings
+package com.niyaj.addonitem.settings
 
 import android.Manifest
 import androidx.activity.compose.BackHandler
@@ -6,7 +6,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -33,17 +32,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.niyaj.category.components.CategoryData
-import com.niyaj.category.destinations.AddEditCategoryScreenDestination
-import com.niyaj.common.tags.CategoryConstants
-import com.niyaj.common.tags.CategoryConstants.EXPORT_CATEGORY_BTN
-import com.niyaj.common.tags.CategoryConstants.EXPORT_CATEGORY_BTN_TEXT
-import com.niyaj.common.tags.CategoryConstants.EXPORT_CATEGORY_FILE_NAME
-import com.niyaj.common.tags.CategoryConstants.EXPORT_CATEGORY_TITLE
+import com.niyaj.addonitem.AddOnItemData
+import com.niyaj.addonitem.destinations.AddEditAddOnItemScreenDestination
+import com.niyaj.common.tags.AddOnTestTags
+import com.niyaj.common.tags.AddOnTestTags.EXPORT_ADDON_BTN
+import com.niyaj.common.tags.AddOnTestTags.EXPORT_ADDON_BTN_TEXT
+import com.niyaj.common.tags.AddOnTestTags.EXPORT_ADDON_FILE_NAME
+import com.niyaj.common.tags.AddOnTestTags.EXPORT_ADDON_TITLE
 import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
-import com.niyaj.model.Category
+import com.niyaj.model.AddOnItem
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.NoteCard
@@ -59,20 +58,20 @@ import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Destination
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun ExportCategoryScreen(
+fun AddOnExportScreen(
     navController: NavController,
     resultBackNavigator: ResultBackNavigator<String>,
-    viewModel: CategorySettingsViewModel = hiltViewModel(),
+    viewModel: AddOnSettingsViewModel = hiltViewModel(),
 ) {
 
     val scope = rememberCoroutineScope()
-    val lazyListState = rememberLazyGridState()
+    val lazyGridState = rememberLazyGridState()
 
-    val categories = viewModel.categories.collectAsStateWithLifecycle().value
-    val exportedCategories = viewModel.exportedCategories.collectAsStateWithLifecycle().value
+    val addOnItems = viewModel.addonItems.collectAsStateWithLifecycle().value
+    val exportedItems = viewModel.exportedItems.collectAsStateWithLifecycle().value
 
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
@@ -116,12 +115,12 @@ fun ExportCategoryScreen(
         ) {
             it.data?.data?.let {
                 scope.launch {
-                    val result = ImportExport.writeData(context, it, exportedCategories)
+                    val result = ImportExport.writeData(context, it, exportedItems)
 
                     if (result) {
-                        resultBackNavigator.navigateBack("${exportedCategories.size} Categories has been exported.")
+                        resultBackNavigator.navigateBack("${exportedItems.size} Items has been exported.")
                     } else {
-                        resultBackNavigator.navigateBack("Unable to export categories.")
+                        resultBackNavigator.navigateBack("Unable to export addon items.")
                     }
                 }
             }
@@ -137,19 +136,19 @@ fun ExportCategoryScreen(
 
     StandardScaffoldNew(
         navController = navController,
-        title = if (selectedItems.isEmpty()) EXPORT_CATEGORY_TITLE else "${selectedItems.size} Selected",
+        title = if (selectedItems.isEmpty()) EXPORT_ADDON_TITLE else "${selectedItems.size} Selected",
         showBackButton = true,
         showBottomBar = true,
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
                     searchText = searchText,
-                    placeholderText = "Search for categories...",
+                    placeholderText = "Search for addon items...",
                     onClearClick = viewModel::clearSearchText,
                     onSearchTextChanged = viewModel::searchTextChanged
                 )
             }else {
-                if (categories.isNotEmpty()) {
+                if (addOnItems.isNotEmpty()) {
                     IconButton(
                         onClick = viewModel::selectAllItems
                     ) {
@@ -178,14 +177,14 @@ fun ExportCategoryScreen(
                     .padding(SpaceSmallMax),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall)
             ) {
-                NoteCard(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} categories will be exported.")
+                NoteCard(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} addon items will be exported.")
 
                 StandardButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag(EXPORT_CATEGORY_BTN),
+                        .testTag(EXPORT_ADDON_BTN),
                     enabled = true,
-                    text = EXPORT_CATEGORY_BTN_TEXT,
+                    text = EXPORT_ADDON_BTN_TEXT,
                     icon = Icons.Default.Upload,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary
@@ -193,9 +192,9 @@ fun ExportCategoryScreen(
                     onClick = {
                         scope.launch {
                             askForPermissions()
-                            val result = ImportExport.createFile(context = context, fileName = EXPORT_CATEGORY_FILE_NAME)
+                            val result = ImportExport.createFile(context = context, fileName = EXPORT_ADDON_FILE_NAME)
                             exportLauncher.launch(result)
-                            viewModel.onEvent(CategorySettingsEvent.GetExportedCategory)
+                            viewModel.onEvent(AddOnSettingsEvent.GetExportedItems)
                         }
                     }
                 )
@@ -204,43 +203,40 @@ fun ExportCategoryScreen(
         fabPosition = FabPosition.End,
         floatingActionButton = {
             ScrollToTop(
-                visible = !lazyListState.isScrollingUp(),
+                visible = !lazyGridState.isScrollingUp(),
                 onClick = {
                     scope.launch {
-                        lazyListState.animateScrollToItem(index = 0)
+                        lazyGridState.animateScrollToItem(index = 0)
                     }
                 }
             )
         }
     ) {
-        if(categories.isEmpty()) {
+        if (addOnItems.isEmpty()) {
             ItemNotAvailable(
-                text = if (searchText.isEmpty()) CategoryConstants.CATEGORY_NOT_AVAIlABLE else Constants.SEARCH_ITEM_NOT_FOUND,
-                buttonText = CategoryConstants.CREATE_NEW_CATEGORY,
+                text = if (searchText.isEmpty()) AddOnTestTags.ADDON_NOT_AVAIlABLE else Constants.SEARCH_ITEM_NOT_FOUND,
+                buttonText = AddOnTestTags.CREATE_NEW_ADD_ON,
                 onClick = {
-                    navController.navigate(AddEditCategoryScreenDestination())
+                    navController.navigate(AddEditAddOnItemScreenDestination())
                 }
             )
         }else {
             LazyVerticalGrid(
                 modifier = Modifier
-                    .fillMaxSize()
                     .padding(SpaceSmall),
                 columns = GridCells.Fixed(2),
-                state = lazyListState,
+                state = lazyGridState,
             ) {
                 items(
-                    items = categories,
-                    key = { it.categoryId }
-                ) { item: Category ->
-                    CategoryData(
+                    items = addOnItems,
+                    key = { it.itemId }
+                ) { item: AddOnItem ->
+                    AddOnItemData(
                         item = item,
                         doesSelected = {
                             selectedItems.contains(it)
                         },
-                        onClick = {
-                            viewModel.selectItem(it)
-                        },
+                        onClick = viewModel::selectItem,
                         onLongClick = viewModel::selectItem
                     )
                 }

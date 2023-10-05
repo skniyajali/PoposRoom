@@ -25,6 +25,7 @@ dependencies {
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.accompanist.swiperefresh)
     implementation(libs.accompanist.flowlayout)
+    implementation(libs.accompanist.permissions)
     implementation(libs.timber)
 
     //RaamCosta Library

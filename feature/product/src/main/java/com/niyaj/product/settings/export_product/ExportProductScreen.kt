@@ -3,7 +3,6 @@ package com.niyaj.product.settings.export_product
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,6 +14,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
@@ -42,18 +42,23 @@ import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.product.components.ProductCard
+import com.niyaj.product.destinations.AddEditProductScreenDestination
 import com.niyaj.product.settings.ProductSettingsEvent
 import com.niyaj.product.settings.ProductSettingsViewModel
 import com.niyaj.ui.components.CategoriesData
+import com.niyaj.ui.components.ItemNotAvailable
+import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.utils.ImportExport.createFile
 import com.niyaj.utils.ImportExport.writeData
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import kotlinx.coroutines.launch
 
@@ -74,6 +79,9 @@ fun ExportProductScreen(
 
     val selectedItems = viewModel.selectedItems.toList()
     val selectedCategory = viewModel.selectedCategory.toList()
+
+    val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
+    val searchText = viewModel.searchText.value
 
     val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
@@ -129,16 +137,33 @@ fun ExportProductScreen(
         showBackButton = true,
         showBottomBar = true,
         navActions = {
-            AnimatedVisibility(
-                visible = products.isNotEmpty()
-            ) {
-                IconButton(
-                    onClick = viewModel::selectAllItems
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Checklist,
-                        contentDescription = Constants.SELECTALL_ICON
-                    )
+            if (showSearchBar) {
+                StandardSearchBar(
+                    searchText = searchText,
+                    placeholderText = "Search for products...",
+                    onClearClick = viewModel::clearSearchText,
+                    onSearchTextChanged = viewModel::searchTextChanged
+                )
+            }else {
+                if (products.isNotEmpty()) {
+                    IconButton(
+                        onClick = viewModel::selectAllItems
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Checklist,
+                            contentDescription = Constants.SELECTALL_ICON
+                        )
+                    }
+
+                    IconButton(
+                        onClick = viewModel::openSearchBar,
+                        modifier = Modifier.testTag(NAV_SEARCH_BTN)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search Icon",
+                        )
+                    }
                 }
             }
         },
@@ -184,37 +209,47 @@ fun ExportProductScreen(
             )
         }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(SpaceSmall),
-        ) {
-            CategoriesData(
-                categories = categories,
-                selectedCategory = selectedCategory,
-                onSelect = {
-                    viewModel.onEvent(ProductSettingsEvent.OnSelectCategory(it))
+        if (products.isEmpty()) {
+            ItemNotAvailable(
+                text = if (searchText.isEmpty()) ProductTestTags.PRODUCT_NOT_AVAIlABLE else ProductTestTags.NO_ITEMS_IN_PRODUCT,
+                buttonText = ProductTestTags.CREATE_NEW_PRODUCT,
+                onClick = {
+                    navController.navigate(AddEditProductScreenDestination())
                 }
             )
-
-            LazyColumn(
-                state = lazyListState,
+        }else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(SpaceSmall),
             ) {
-                itemsIndexed(
-                    items = products,
-                    key = { index, item ->
-                        item.productName.plus(index).plus(item.productId)
+                CategoriesData(
+                    categories = categories,
+                    selectedCategory = selectedCategory,
+                    onSelect = {
+                        viewModel.onEvent(ProductSettingsEvent.OnSelectCategory(it))
                     }
-                ) { _, item ->
-                    ProductCard(
-                        item = item,
-                        doesSelected = {
-                            selectedItems.contains(it)
-                        },
-                        onClick = viewModel::selectItem,
-                        onLongClick = viewModel::selectItem,
-                        border = BorderStroke(0.dp, Color.Transparent)
-                    )
+                )
+
+                LazyColumn(
+                    state = lazyListState,
+                ) {
+                    itemsIndexed(
+                        items = products,
+                        key = { index, item ->
+                            item.productName.plus(index).plus(item.productId)
+                        }
+                    ) { _, item ->
+                        ProductCard(
+                            item = item,
+                            doesSelected = {
+                                selectedItems.contains(it)
+                            },
+                            onClick = viewModel::selectItem,
+                            onLongClick = viewModel::selectItem,
+                            border = BorderStroke(0.dp, Color.Transparent)
+                        )
+                    }
                 }
             }
         }
