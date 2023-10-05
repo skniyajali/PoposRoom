@@ -23,6 +23,8 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.accompanist.swiperefresh)
     implementation(libs.accompanist.flowlayout)
+    implementation(libs.accompanist.permissions)
+
 
     //RaamCosta Library
     implementation(libs.raamcosta.animation.core)

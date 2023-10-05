@@ -31,7 +31,7 @@ fun ChargesEntity.asExternalModel(): Charges {
         chargesName = this.chargesName,
         chargesPrice = this.chargesPrice,
         isApplicable = this.isApplicable,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt
+        createdAt = this.createdAt.time,
+        updatedAt = this.updatedAt?.time
     )
 }

@@ -19,4 +19,6 @@ interface ChargesRepository {
     suspend fun deleteCharges(chargesId: Int): Resource<Boolean>
 
     suspend fun deleteCharges(chargesIds: List<Int>): Resource<Boolean>
+
+    suspend fun importChargesItemsToDatabase(charges: List<Charges>): Resource<Boolean>
 }
