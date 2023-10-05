@@ -1,5 +1,6 @@
 package com.niyaj.product.settings.product_price
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -90,6 +91,20 @@ fun DecreaseProductPriceScreen(
         }
     }
 
+    fun onBackClick() {
+        if (selectedItems.isNotEmpty()) {
+            viewModel.deselectItems()
+        } else if (showSearchBar) {
+            viewModel.closeSearchBar()
+        }else {
+            navController.navigateUp()
+        }
+    }
+
+    BackHandler {
+        onBackClick()
+    }
+
     StandardScaffoldNew(
         navController = navController,
         title = if (selectedItems.isEmpty()) ProductTestTags.DECREASE_PRODUCTS_TITLE else "${selectedItems.size} Selected",
@@ -161,6 +176,7 @@ fun DecreaseProductPriceScreen(
                 )
             }
         },
+        onBackClick = {onBackClick()},
         fabPosition = FabPosition.End,
         floatingActionButton = {
             ScrollToTop(

@@ -127,12 +127,18 @@ fun ExportCategoryScreen(
             }
         }
 
-    BackHandler {
+    fun onBackClick() {
         if (selectedItems.isNotEmpty()) {
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
+        }else {
+            navController.navigateUp()
         }
+    }
+
+    BackHandler {
+        onBackClick()
     }
 
     StandardScaffoldNew(
