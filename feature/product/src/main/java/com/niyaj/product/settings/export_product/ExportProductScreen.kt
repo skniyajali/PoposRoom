@@ -1,6 +1,7 @@
 package com.niyaj.product.settings.export_product
 
 import android.Manifest
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -131,6 +132,20 @@ fun ExportProductScreen(
             }
         }
 
+    fun onBackClick() {
+        if (selectedItems.isNotEmpty()) {
+            viewModel.deselectItems()
+        } else if (showSearchBar) {
+            viewModel.closeSearchBar()
+        } else {
+            navController.navigateUp()
+        }
+    }
+
+    BackHandler {
+        onBackClick()
+    }
+
     StandardScaffoldNew(
         navController = navController,
         title = if (selectedItems.isEmpty()) EXPORT_PRODUCTS_TITLE else "${selectedItems.size} Selected",
@@ -144,7 +159,7 @@ fun ExportProductScreen(
                     onClearClick = viewModel::clearSearchText,
                     onSearchTextChanged = viewModel::searchTextChanged
                 )
-            }else {
+            } else {
                 if (products.isNotEmpty()) {
                     IconButton(
                         onClick = viewModel::selectAllItems
@@ -189,7 +204,10 @@ fun ExportProductScreen(
                     onClick = {
                         scope.launch {
                             askForPermissions()
-                            val result = createFile(context = context, fileName = EXPORTED_PRODUCTS_FILE_NAME)
+                            val result = createFile(
+                                context = context,
+                                fileName = EXPORTED_PRODUCTS_FILE_NAME
+                            )
                             exportLauncher.launch(result)
                             viewModel.onEvent(ProductSettingsEvent.GetExportedProduct)
                         }
@@ -197,6 +215,7 @@ fun ExportProductScreen(
                 )
             }
         },
+        onBackClick = { onBackClick() },
         fabPosition = FabPosition.End,
         floatingActionButton = {
             ScrollToTop(
@@ -217,7 +236,7 @@ fun ExportProductScreen(
                     navController.navigate(AddEditProductScreenDestination())
                 }
             )
-        }else {
+        } else {
             Column(
                 modifier = Modifier
                     .fillMaxSize()

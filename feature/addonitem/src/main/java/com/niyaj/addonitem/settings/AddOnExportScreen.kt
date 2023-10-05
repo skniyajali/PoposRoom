@@ -126,12 +126,18 @@ fun AddOnExportScreen(
             }
         }
 
-    BackHandler {
+    fun onBackClick() {
         if (selectedItems.isNotEmpty()) {
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
+        }else {
+            navController.navigateUp()
         }
+    }
+
+    BackHandler {
+        onBackClick()
     }
 
     StandardScaffoldNew(
@@ -200,6 +206,7 @@ fun AddOnExportScreen(
                 )
             }
         },
+        onBackClick = {onBackClick()},
         fabPosition = FabPosition.End,
         floatingActionButton = {
             ScrollToTop(
