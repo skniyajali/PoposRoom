@@ -1,7 +1,8 @@
 package com.niyaj.model
 
-import java.util.Date
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class Charges(
     val chargesId: Int,
 
@@ -11,9 +12,9 @@ data class Charges(
 
     val isApplicable: Boolean,
 
-    val createdAt: Date,
+    val createdAt: Long,
 
-    val updatedAt: Date? = null,
+    val updatedAt: Long? = null,
 )
 
 

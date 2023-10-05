@@ -32,7 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.charges.destinations.AddEditChargesScreenDestination
-import com.niyaj.common.utils.toRupee
+import com.niyaj.charges.destinations.ChargesSettingsScreenDestination
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_NOT_AVAIlABLE
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_SCREEN_TITLE
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_SEARCH_PLACEHOLDER
@@ -41,6 +41,7 @@ import com.niyaj.common.tags.ChargesTestTags.CREATE_NEW_CHARGES
 import com.niyaj.common.tags.ChargesTestTags.DELETE_CHARGES_MESSAGE
 import com.niyaj.common.tags.ChargesTestTags.DELETE_CHARGES_TITLE
 import com.niyaj.common.tags.ChargesTestTags.NO_ITEMS_IN_CHARGES
+import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Charges
 import com.niyaj.ui.components.CircularBox
@@ -153,7 +154,8 @@ fun ChargesScreen(
                 placeholderText = CHARGES_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = showSearchBar,
+                showSearchIcon = true,
+                showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
                     navController.navigate(AddEditChargesScreenDestination(selectedItems.first()))
@@ -161,7 +163,9 @@ fun ChargesScreen(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = {},
+                onSettingsClick = {
+                    navController.navigate(ChargesSettingsScreenDestination)
+                },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
                 onSearchClick = viewModel::openSearchBar,

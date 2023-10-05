@@ -4,6 +4,7 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
+import com.niyaj.common.tags.ChargesTestTags
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.ChargesRepository
 import com.niyaj.data.repository.validation.ChargesValidationRepository
@@ -11,7 +12,6 @@ import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Charges
 import com.niyaj.model.searchCharges
 import com.niyaj.poposroom.features.charges.data.dao.ChargesDao
-import com.niyaj.common.tags.ChargesTestTags
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -193,5 +193,27 @@ class ChargesRepositoryImpl(
         return ValidationResult(
             successful = true
         )
+    }
+
+    override suspend fun importChargesItemsToDatabase(charges: List<Charges>): Resource<Boolean> {
+        try {
+            charges.forEach { newCharges ->
+                val validateChargesName = validateChargesName(newCharges.chargesName, newCharges.chargesId)
+                val validateChargesPrice = validateChargesPrice(newCharges.chargesPrice)
+
+                val hasError = listOf(validateChargesName, validateChargesPrice).any { !it.successful }
+
+                if (!hasError) {
+                    withContext(ioDispatcher){
+                        chargesDao.upsertCharges(newCharges.toEntity())
+                    }
+                }else{
+                    return Resource.Error( "Unable to  or update Charges Item")
+                }
+            }
+            return Resource.Success(true)
+        }catch (e: Exception) {
+            return Resource.Error(e.message)
+        }
     }
 }

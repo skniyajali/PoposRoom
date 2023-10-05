@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -116,8 +115,8 @@ class AddEditChargesViewModel @Inject constructor(
                     chargesName = addEditState.chargesName,
                     chargesPrice = addEditState.chargesPrice,
                     isApplicable = addEditState.chargesApplicable,
-                    createdAt = Date(),
-                    updatedAt = if (chargesId != 0) Date() else null
+                    createdAt = System.currentTimeMillis(),
+                    updatedAt = if (chargesId != 0) System.currentTimeMillis() else null
                 )
 
                 when (chargesRepository.upsertCharges(addOnItem)) {

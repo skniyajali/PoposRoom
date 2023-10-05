@@ -33,4 +33,17 @@ object ChargesTestTags {
     const val DELETE_CHARGES_MESSAGE = "Are you sure to delete these charges?"
 
     const val CHARGES_TAG = "Charges-"
+
+    const val CHARGES_SETTINGS_TITLE = "Charges Settings"
+
+    const val IMPORT_CHARGES_TITLE = "Import Charges Item"
+    const val IMPORT_CHARGES_BTN_TEXT = "Import Charges"
+    const val IMPORT_CHARGES_OPN_FILE = "Open File"
+    const val IMPORT_CHARGES_NOTE_TEXT = "Make sure to open charges.json file."
+
+    const val EXPORT_CHARGES_TITLE = "Export Charges Item"
+    const val EXPORT_CHARGES_BTN_TEXT = "Export Charges"
+    const val EXPORT_CHARGES_BTN = "Export Charges"
+
+    const val EXPORT_CHARGES_FILE_NAME = "charges"
 }
