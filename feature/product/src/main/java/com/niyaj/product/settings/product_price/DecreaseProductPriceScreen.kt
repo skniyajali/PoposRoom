@@ -1,6 +1,5 @@
 package com.niyaj.product.settings.product_price
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.RemoveCircleOutline
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -40,11 +40,13 @@ import com.niyaj.product.components.ProductCard
 import com.niyaj.product.settings.ProductSettingsEvent
 import com.niyaj.product.settings.ProductSettingsViewModel
 import com.niyaj.ui.components.CategoriesData
+import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
@@ -66,6 +68,9 @@ fun DecreaseProductPriceScreen(
 
     val selectedItems = viewModel.selectedItems.toList()
     val selectedCategory = viewModel.selectedCategory.toList()
+
+    val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
+    val searchText = viewModel.searchText.value
 
     val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
@@ -91,16 +96,33 @@ fun DecreaseProductPriceScreen(
         showBackButton = true,
         showBottomBar = true,
         navActions = {
-            AnimatedVisibility(
-                visible = products.isNotEmpty()
-            ) {
-                IconButton(
-                    onClick = viewModel::selectAllItems
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Checklist,
-                        contentDescription = Constants.SELECTALL_ICON
-                    )
+            if (showSearchBar) {
+                StandardSearchBar(
+                    searchText = searchText,
+                    placeholderText = "Search for products...",
+                    onClearClick = viewModel::clearSearchText,
+                    onSearchTextChanged = viewModel::searchTextChanged
+                )
+            }else {
+                if (products.isNotEmpty()) {
+                    IconButton(
+                        onClick = viewModel::selectAllItems
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Checklist,
+                            contentDescription = Constants.SELECTALL_ICON
+                        )
+                    }
+
+                    IconButton(
+                        onClick = viewModel::openSearchBar,
+                        modifier = Modifier.testTag(NAV_SEARCH_BTN)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search Icon",
+                        )
+                    }
                 }
             }
         },

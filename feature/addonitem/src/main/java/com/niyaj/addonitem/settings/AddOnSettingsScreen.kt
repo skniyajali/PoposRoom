@@ -1,4 +1,4 @@
-package com.niyaj.category.settings
+package com.niyaj.addonitem.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,9 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.niyaj.category.destinations.ExportCategoryScreenDestination
-import com.niyaj.category.destinations.ImportCategoryScreenDestination
-import com.niyaj.common.tags.CategoryConstants.CATEGORY_SETTINGS_TITLE
+import com.niyaj.addonitem.destinations.AddOnExportScreenDestination
+import com.niyaj.addonitem.destinations.AddOnImportScreenDestination
+import com.niyaj.common.tags.AddOnTestTags.ADDON_SETTINGS_TITLE
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.SettingsCard
@@ -31,10 +31,10 @@ import kotlinx.coroutines.launch
 
 @Destination
 @Composable
-fun CategorySettingsScreen(
+fun AddOnSettingsScreen(
     navController: NavController,
-    exportRecipient: ResultRecipient<ExportCategoryScreenDestination, String>,
-    importRecipient: ResultRecipient<ImportCategoryScreenDestination, String>,
+    exportRecipient: ResultRecipient<AddOnExportScreenDestination, String>,
+    importRecipient: ResultRecipient<AddOnImportScreenDestination, String>,
 ) {
     val snackbarState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -64,7 +64,7 @@ fun CategorySettingsScreen(
 
     StandardScaffoldNew(
         navController = navController,
-        title = CATEGORY_SETTINGS_TITLE,
+        title = ADDON_SETTINGS_TITLE,
         snackbarHostState = snackbarState,
         showBackButton = true,
         showBottomBar = false,
@@ -87,24 +87,24 @@ fun CategorySettingsScreen(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceSmall)
         ){
-            item("ImportCategory") {
+            item("ImportAddOn") {
                 SettingsCard(
-                    title = "Import Category",
-                    subtitle = "Click here to import category from file.",
+                    title = "Import AddOn",
+                    subtitle = "Click here to import addon from file.",
                     icon = Icons.Default.SaveAlt,
                     onClick = {
-                        navController.navigate(ImportCategoryScreenDestination())
+                        navController.navigate(AddOnImportScreenDestination())
                     }
                 )
             }
 
-            item("ExportCategory") {
+            item("ExportAddOn") {
                 SettingsCard(
-                    title = "Export Category",
-                    subtitle = "Click here to export category to file.",
+                    title = "Export AddOn",
+                    subtitle = "Click here to export addon to file.",
                     icon = Icons.Default.Upload,
                     onClick = {
-                        navController.navigate(ExportCategoryScreenDestination())
+                        navController.navigate(AddOnExportScreenDestination())
                     }
                 )
             }

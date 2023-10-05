@@ -1,7 +1,8 @@
 package com.niyaj.model
 
-import java.util.Date
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class AddOnItem(
     val itemId: Int,
 
@@ -11,9 +12,9 @@ data class AddOnItem(
 
     val isApplicable: Boolean,
 
-    val createdAt: Date,
+    val createdAt: Long,
 
-    val updatedAt: Date? = null,
+    val updatedAt: Long? = null,
 )
 
 data class AddOnPriceWithApplicable(val itemPrice: Int, val isApplicable: Boolean)

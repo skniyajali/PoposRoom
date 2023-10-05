@@ -65,7 +65,8 @@ fun StandardSearchBar(
         placeholder = {
             Text(
                 text = placeholderText,
-                modifier = Modifier.testTag(SEARCH_PLACEHOLDER)
+                modifier = Modifier.testTag(SEARCH_PLACEHOLDER),
+                color = LocalContentColor.current
             )
         },
         colors = OutlinedTextFieldDefaults.colors(
@@ -74,7 +75,9 @@ fun StandardSearchBar(
             unfocusedBorderColor = Color.Transparent,
             focusedContainerColor = Color.Transparent,
             cursorColor = LocalContentColor.current.copy(alpha = 0.2f),
-            focusedTrailingIconColor = LocalContentColor.current
+            focusedTrailingIconColor = LocalContentColor.current,
+            focusedPlaceholderColor = LocalContentColor.current,
+            unfocusedPlaceholderColor = LocalContentColor.current
         ),
         trailingIcon = {
             if (searchText.isNotEmpty()) {

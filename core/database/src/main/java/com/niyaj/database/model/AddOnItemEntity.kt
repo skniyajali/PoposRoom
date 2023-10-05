@@ -32,7 +32,7 @@ fun AddOnItemEntity.asExternalModel(): AddOnItem {
         itemName = this.itemName,
         itemPrice = this.itemPrice,
         isApplicable = this.isApplicable,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt
+        createdAt = this.createdAt.time,
+        updatedAt = this.updatedAt?.time
     )
 }

@@ -41,8 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.addonitem.destinations.AddEditAddOnItemScreenDestination
-import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
-import com.niyaj.common.utils.toRupee
+import com.niyaj.addonitem.destinations.AddOnSettingsScreenDestination
 import com.niyaj.common.tags.AddOnTestTags.ADDON_ITEM_TAG
 import com.niyaj.common.tags.AddOnTestTags.ADDON_NOT_AVAIlABLE
 import com.niyaj.common.tags.AddOnTestTags.ADDON_SCREEN_TITLE
@@ -50,6 +49,8 @@ import com.niyaj.common.tags.AddOnTestTags.ADDON_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.AddOnTestTags.CREATE_NEW_ADD_ON
 import com.niyaj.common.tags.AddOnTestTags.DELETE_ADD_ON_ITEM_MESSAGE
 import com.niyaj.common.tags.AddOnTestTags.DELETE_ADD_ON_ITEM_TITLE
+import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
+import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
 import com.niyaj.ui.components.CircularBox
@@ -161,7 +162,8 @@ fun AddOnItemScreen(
                 placeholderText = ADDON_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = showSearchBar,
+                showSearchIcon = true,
+                showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
                     navController.navigate(AddEditAddOnItemScreenDestination(selectedItems.first()))
@@ -170,7 +172,7 @@ fun AddOnItemScreen(
                     openDialog.value = true
                 },
                 onSettingsClick = {
-
+                    navController.navigate(AddOnSettingsScreenDestination)
                 },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
