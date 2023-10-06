@@ -1,4 +1,4 @@
-package com.niyaj.address.settings
+package com.niyaj.customer.settings
 
 import android.Manifest
 import androidx.activity.compose.BackHandler
@@ -8,10 +8,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Search
@@ -32,16 +31,20 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.niyaj.address.AddressData
-import com.niyaj.address.destinations.AddEditAddressScreenDestination
-import com.niyaj.common.tags.AddressTestTags
-import com.niyaj.common.tags.AddressTestTags.EXPORT_ADDRESS_BTN
-import com.niyaj.common.tags.AddressTestTags.EXPORT_ADDRESS_BTN_TEXT
-import com.niyaj.common.tags.AddressTestTags.EXPORT_ADDRESS_FILE_NAME
-import com.niyaj.common.tags.AddressTestTags.EXPORT_ADDRESS_TITLE
+import com.niyaj.common.tags.CustomerTestTags.CREATE_NEW_CUSTOMER
+import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_NOT_AVAIlABLE
+import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_BTN
+import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_BTN_TEXT
+import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_FILE_NAME
+import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_TITLE
+import com.niyaj.common.tags.CustomerTestTags.NO_ITEMS_IN_CUSTOMER
 import com.niyaj.common.utils.Constants
+import com.niyaj.customer.CustomerData
+import com.niyaj.customer.destinations.AddEditCustomerScreenDestination
+import com.niyaj.customer.destinations.CustomerDetailsScreenDestination
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
+import com.niyaj.model.Customer
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.NoteCard
@@ -60,16 +63,16 @@ import kotlinx.coroutines.launch
 @Destination
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun AddressExportScreen(
+fun CustomerExportScreen(
     navController: NavController,
     resultBackNavigator: ResultBackNavigator<String>,
-    viewModel: AddressSettingsViewModel = hiltViewModel(),
+    viewModel: CustomerSettingsViewModel = hiltViewModel(),
 ) {
 
     val scope = rememberCoroutineScope()
-    val lazyGridState = rememberLazyGridState()
+    val lazyListState = rememberLazyListState()
 
-    val addresses = viewModel.addresses.collectAsStateWithLifecycle().value
+    val customers = viewModel.customers.collectAsStateWithLifecycle().value
     val exportedItems = viewModel.exportedItems.collectAsStateWithLifecycle().value
 
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
@@ -117,9 +120,9 @@ fun AddressExportScreen(
                     val result = ImportExport.writeData(context, it, exportedItems)
 
                     if (result) {
-                        resultBackNavigator.navigateBack("${exportedItems.size} Items has been exported.")
+                        resultBackNavigator.navigateBack("${exportedItems.size} Customers has been exported.")
                     } else {
-                        resultBackNavigator.navigateBack("Unable to export addresses.")
+                        resultBackNavigator.navigateBack("Unable to export customers.")
                     }
                 }
             }
@@ -141,7 +144,7 @@ fun AddressExportScreen(
 
     StandardScaffoldNew(
         navController = navController,
-        title = if (selectedItems.isEmpty()) EXPORT_ADDRESS_TITLE else "${selectedItems.size} Selected",
+        title = if (selectedItems.isEmpty()) EXPORT_CUSTOMER_TITLE else "${selectedItems.size} Selected",
         showBackButton = true,
         showBottomBar = true,
         navActions = {
@@ -153,7 +156,7 @@ fun AddressExportScreen(
                     onSearchTextChanged = viewModel::searchTextChanged
                 )
             }else {
-                if (addresses.isNotEmpty()) {
+                if (customers.isNotEmpty()) {
                     IconButton(
                         onClick = viewModel::selectAllItems
                     ) {
@@ -182,14 +185,14 @@ fun AddressExportScreen(
                     .padding(SpaceSmallMax),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall)
             ) {
-                NoteCard(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} addresses will be exported.")
+                NoteCard(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} customers will be exported.")
 
                 StandardButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag(EXPORT_ADDRESS_BTN),
+                        .testTag(EXPORT_CUSTOMER_BTN),
                     enabled = true,
-                    text = EXPORT_ADDRESS_BTN_TEXT,
+                    text = EXPORT_CUSTOMER_BTN_TEXT,
                     icon = Icons.Default.Upload,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary
@@ -197,9 +200,9 @@ fun AddressExportScreen(
                     onClick = {
                         scope.launch {
                             askForPermissions()
-                            val result = ImportExport.createFile(context = context, fileName = EXPORT_ADDRESS_FILE_NAME)
+                            val result = ImportExport.createFile(context = context, fileName = EXPORT_CUSTOMER_FILE_NAME)
                             exportLauncher.launch(result)
-                            viewModel.onEvent(AddressSettingsEvent.GetExportedItems)
+                            viewModel.onEvent(CustomerSettingsEvent.GetExportedItems)
                         }
                     }
                 )
@@ -209,39 +212,35 @@ fun AddressExportScreen(
         fabPosition = FabPosition.End,
         floatingActionButton = {
             ScrollToTop(
-                visible = !lazyGridState.isScrollingUp(),
+                visible = !lazyListState.isScrollingUp(),
                 onClick = {
                     scope.launch {
-                        lazyGridState.animateScrollToItem(index = 0)
+                        lazyListState.animateScrollToItem(index = 0)
                     }
                 }
             )
         }
     ) {
-        if (addresses.isEmpty()) {
+        if (customers.isEmpty()) {
             ItemNotAvailable(
-                text = if (searchText.isEmpty()) AddressTestTags.ADDRESS_NOT_AVAIlABLE else Constants.SEARCH_ITEM_NOT_FOUND,
-                buttonText = AddressTestTags.CREATE_NEW_ADDRESS,
+                text = if (searchText.isEmpty()) CUSTOMER_NOT_AVAIlABLE else NO_ITEMS_IN_CUSTOMER,
+                buttonText = CREATE_NEW_CUSTOMER,
                 onClick = {
-                    navController.navigate(AddEditAddressScreenDestination())
+                    navController.navigate(AddEditCustomerScreenDestination())
                 }
             )
         }else {
-            LazyVerticalGrid(
+            LazyColumn(
                 modifier = Modifier
                     .padding(SpaceSmall),
-                columns = GridCells.Fixed(2),
-                state = lazyGridState,
+                state = lazyListState
             ) {
                 items(
-                    items = addresses,
-                    key = {
-                        it.addressName.plus(it.addressId)
-                    }
-                ) { address ->
-                    AddressData(
-                        modifier = Modifier.testTag(AddressTestTags.ADDRESS_ITEM_TAG.plus(address.addressId)),
-                        item = address,
+                    items = customers,
+                    key = { it.customerId }
+                ) { item: Customer ->
+                    CustomerData(
+                        item = item,
                         doesSelected = {
                             selectedItems.contains(it)
                         },

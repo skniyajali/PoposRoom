@@ -36,4 +36,17 @@ object CustomerTestTags {
     const val DELETE_CUSTOMER_MESSAGE = "Are you sure to delete these customers?"
 
     const val CUSTOMER_TAG = "Customer-"
+
+    const val CUSTOMER_SETTINGS_TITLE = "Customer Settings"
+
+    const val IMPORT_CUSTOMER_TITLE = "Import Customers"
+    const val IMPORT_CUSTOMER_BTN_TEXT = "Import Customer"
+    const val IMPORT_CUSTOMER_NOTE_TEXT = "Make sure to open customers.json file."
+    const val IMPORT_CUSTOMER_OPN_FILE = "Open File"
+
+    const val EXPORT_CUSTOMER_TITLE = "Export Customers"
+    const val EXPORT_CUSTOMER_BTN_TEXT = "Export Customer"
+    const val EXPORT_CUSTOMER_BTN = "Export Customer"
+
+    const val EXPORT_CUSTOMER_FILE_NAME = "customers"
 }

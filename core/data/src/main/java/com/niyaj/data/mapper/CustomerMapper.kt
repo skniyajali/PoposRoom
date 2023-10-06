@@ -1,5 +1,6 @@
 package com.niyaj.data.mapper
 
+import com.niyaj.common.utils.toDate
 import com.niyaj.database.model.CustomerEntity
 import com.niyaj.model.Customer
 
@@ -9,7 +10,7 @@ fun Customer.toEntity(): CustomerEntity {
         customerName = this.customerName,
         customerPhone = this.customerPhone,
         customerEmail = this.customerEmail,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt
+        createdAt = this.createdAt.toDate,
+        updatedAt = this.updatedAt?.toDate
     )
 }
