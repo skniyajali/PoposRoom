@@ -1,7 +1,8 @@
 package com.niyaj.model
 
-import java.util.Date
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class Customer(
     val customerId: Int = 0,
 
@@ -11,9 +12,9 @@ data class Customer(
 
     val customerEmail: String? = null,
 
-    val createdAt: Date = Date(),
+    val createdAt: Long = System.currentTimeMillis(),
 
-    val updatedAt: Date? = null,
+    val updatedAt: Long? = null,
 )
 
 

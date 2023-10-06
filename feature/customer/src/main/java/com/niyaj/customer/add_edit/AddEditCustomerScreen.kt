@@ -30,11 +30,12 @@ import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_NAME_FIELD
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_PHONE_ERROR
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_PHONE_FIELD
 import com.niyaj.common.tags.CustomerTestTags.EDIT_CUSTOMER_ITEM
+import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.theme.SpaceSmallMax
+import com.niyaj.ui.components.PhoneNoCountBox
 import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
-import com.niyaj.ui.components.StandardTextField
+import com.niyaj.ui.components.StandardOutlinedTextField
+import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
@@ -69,17 +70,19 @@ fun AddEditCustomerScreen(
         }
     }
 
-    StandardScaffoldWithOutDrawer(
+    StandardScaffoldNew(
+        navController = navController,
         title = title,
+        showBottomBar = enableBtn,
+        showBackButton = true,
         onBackClick = {
             navController.navigateUp()
         },
-        showBottomBar = enableBtn,
         bottomBar = {
             StandardButton(
                 modifier = Modifier
                     .testTag(ADD_EDIT_CUSTOMER_BUTTON)
-                    .padding(horizontal = SpaceSmallMax),
+                    .padding(SpaceMedium),
                 text = title,
                 icon = if (customerId == 0) Icons.Default.Add else Icons.Default.Edit,
                 enabled = enableBtn,
@@ -87,16 +90,16 @@ fun AddEditCustomerScreen(
                     viewModel.onEvent(AddEditCustomerEvent.CreateOrUpdateCustomer(customerId))
                 }
             )
-        }
+        },
     ) {
         Column(
             modifier = Modifier
                 .testTag(ADD_EDIT_CUSTOMER_SCREEN)
                 .fillMaxWidth()
-                .padding(SpaceSmall),
+                .padding(SpaceMedium),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
-            StandardTextField(
+            StandardOutlinedTextField(
                 value = viewModel.addEditState.customerPhone,
                 label = CUSTOMER_PHONE_FIELD,
                 leadingIcon = Icons.Default.PhoneAndroid,
@@ -106,11 +109,16 @@ fun AddEditCustomerScreen(
                 keyboardType = KeyboardType.Number,
                 onValueChange = {
                     viewModel.onEvent(AddEditCustomerEvent.CustomerPhoneChanged(it))
-                }
+                },
+                trailingIcon = {
+                    PhoneNoCountBox(
+                        count = viewModel.addEditState.customerPhone.length
+                    )
+                },
             )
 
 
-            StandardTextField(
+            StandardOutlinedTextField(
                 value = viewModel.addEditState.customerName ?: "",
                 label = CUSTOMER_NAME_FIELD,
                 leadingIcon = Icons.Default.Person,
@@ -123,7 +131,7 @@ fun AddEditCustomerScreen(
             )
 
 
-            StandardTextField(
+            StandardOutlinedTextField(
                 value = viewModel.addEditState.customerEmail ?: "",
                 label = CUSTOMER_EMAIL_FIELD,
                 leadingIcon = Icons.Default.Email,

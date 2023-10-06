@@ -31,7 +31,7 @@ fun CustomerEntity.asExternalModel(): Customer {
         customerName = this.customerName,
         customerPhone = this.customerPhone,
         customerEmail = this.customerEmail,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt
+        createdAt = this.createdAt.time,
+        updatedAt = this.updatedAt?.time
     )
 }

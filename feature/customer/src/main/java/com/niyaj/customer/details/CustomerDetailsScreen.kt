@@ -50,7 +50,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.niyaj.common.utils.toDate
 import com.niyaj.common.utils.toFormattedDateAndTime
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
@@ -266,8 +265,8 @@ fun CustomerDetailsCard(
                                 Spacer(modifier = Modifier.height(SpaceSmall))
 
                                 TextWithIcon(
-                                    modifier = Modifier.testTag(state.data.createdAt.toDate),
-                                    text = "Created At : ${state.data.createdAt.toFormattedDateAndTime}",
+                                    modifier = Modifier.testTag(state.data.createdAt.toFormattedDateAndTime),
+                                    text = "Created At : ${state.data.createdAt.toPrettyDate()}",
                                     icon = Icons.Default.CalendarToday
                                 )
 

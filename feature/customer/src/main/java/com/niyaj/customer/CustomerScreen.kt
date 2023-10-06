@@ -13,7 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FabPosition
@@ -36,8 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.niyaj.customer.destinations.AddEditCustomerScreenDestination
-import com.niyaj.customer.destinations.CustomerDetailsScreenDestination
 import com.niyaj.common.tags.CustomerTestTags.CREATE_NEW_CUSTOMER
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_NOT_AVAIlABLE
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_SCREEN_TITLE
@@ -46,6 +44,9 @@ import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_TAG
 import com.niyaj.common.tags.CustomerTestTags.DELETE_CUSTOMER_MESSAGE
 import com.niyaj.common.tags.CustomerTestTags.DELETE_CUSTOMER_TITLE
 import com.niyaj.common.tags.CustomerTestTags.NO_ITEMS_IN_CUSTOMER
+import com.niyaj.customer.destinations.AddEditCustomerScreenDestination
+import com.niyaj.customer.destinations.CustomerDetailsScreenDestination
+import com.niyaj.customer.destinations.CustomerSettingsScreenDestination
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Customer
@@ -157,7 +158,8 @@ fun CustomerScreen(
                 placeholderText = CUSTOMER_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = showSearchBar,
+                showSearchIcon = true,
+                showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
                     navController.navigate(AddEditCustomerScreenDestination(selectedItems.first()))
@@ -165,7 +167,9 @@ fun CustomerScreen(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = {},
+                onSettingsClick = {
+                    navController.navigate(CustomerSettingsScreenDestination)
+                },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
                 onSearchClick = viewModel::openSearchBar,
@@ -317,7 +321,7 @@ fun CustomerData(
         },
         trailingContent = {
             Icon(
-                Icons.Filled.ArrowRight,
+                Icons.AutoMirrored.Filled.ArrowRight,
                 contentDescription = "Localized description",
             )
         },

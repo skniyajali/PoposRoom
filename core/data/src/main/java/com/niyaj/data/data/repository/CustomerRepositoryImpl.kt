@@ -5,10 +5,10 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
+import com.niyaj.common.tags.CustomerTestTags
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.CustomerRepository
 import com.niyaj.data.repository.validation.CustomerValidationRepository
-import com.niyaj.common.tags.CustomerTestTags
 import com.niyaj.database.dao.CustomerDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Customer
@@ -234,6 +234,36 @@ class CustomerRepositoryImpl(
                     )
                 }
             }
+        }
+    }
+
+    override suspend fun importCustomerToDatabase(customers: List<Customer>): Resource<Boolean> {
+        try {
+            customers.forEach { newCustomer ->
+                val validateCustomerName = validateCustomerName(newCustomer.customerName)
+                val validateCustomerPhone =
+                    validateCustomerPhone(newCustomer.customerPhone, newCustomer.customerId)
+                val validateCustomerEmail = validateCustomerEmail(newCustomer.customerEmail)
+
+                val hasError = listOf(
+                    validateCustomerName,
+                    validateCustomerPhone,
+                    validateCustomerEmail
+                ).any { !it.successful }
+
+                if (!hasError) {
+                    withContext(ioDispatcher) {
+                        customerDao.upsertCustomer(newCustomer.toEntity())
+                    }
+                } else {
+                    return Resource.Error("Unable to validate customer")
+                }
+            }
+
+            return Resource.Success(true)
+
+        } catch (e: Exception) {
+            return Resource.Error(e.message ?: "Unable to create or update customer")
         }
     }
 }

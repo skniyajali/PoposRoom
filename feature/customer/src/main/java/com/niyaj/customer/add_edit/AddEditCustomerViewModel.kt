@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -97,7 +96,7 @@ class AddEditCustomerViewModel @Inject constructor(
         }
     }
 
-    fun getCustomerById(itemId: Int) {
+    private fun getCustomerById(itemId: Int) {
         viewModelScope.launch(ioDispatcher) {
             when (val result = customerRepository.getCustomerById(itemId)) {
                 is Resource.Error -> {
@@ -118,10 +117,6 @@ class AddEditCustomerViewModel @Inject constructor(
         }
     }
 
-    fun resetFields() {
-        addEditState = AddEditCustomerState()
-    }
-
     private fun createOrUpdateCustomer(customerId: Int = 0) {
         viewModelScope.launch(ioDispatcher) {
             if (phoneError.value == null && nameError.value == null && emailError.value == null) {
@@ -130,8 +125,8 @@ class AddEditCustomerViewModel @Inject constructor(
                     customerPhone = addEditState.customerPhone,
                     customerName = addEditState.customerName,
                     customerEmail = addEditState.customerEmail,
-                    createdAt = Date(),
-                    updatedAt = if (customerId != 0) Date() else null
+                    createdAt = System.currentTimeMillis(),
+                    updatedAt = if (customerId != 0) System.currentTimeMillis() else null
                 )
 
                 when(customerRepository.upsertCustomer(addOnItem)) {
