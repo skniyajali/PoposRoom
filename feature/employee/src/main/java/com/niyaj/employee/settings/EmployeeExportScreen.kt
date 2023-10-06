@@ -182,7 +182,7 @@ fun EmployeeExportScreen(
                     .padding(SpaceSmallMax),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall)
             ) {
-                NoteCard(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} expenses will be exported.")
+                NoteCard(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} employees will be exported.")
 
                 StandardButton(
                     modifier = Modifier
