@@ -12,20 +12,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.NoteAdd
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.NoteAdd
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Radar
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -53,8 +53,6 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.niyaj.common.utils.toMilliSecond
-import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.tags.ExpenseTestTags.ADD_EDIT_EXPENSE_BUTTON
 import com.niyaj.common.tags.ExpenseTestTags.CREATE_NEW_EXPENSE
 import com.niyaj.common.tags.ExpenseTestTags.EDIT_EXPENSE_ITEM
@@ -65,9 +63,11 @@ import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_DATE_FIELD
 import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NAME_ERROR
 import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NAME_FIELD
 import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NOTE_FIELD
+import com.niyaj.common.utils.toMilliSecond
+import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
@@ -135,7 +135,7 @@ fun AddEditExpenseScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag(ADD_EDIT_EXPENSE_BUTTON)
-                    .padding(horizontal = SpaceSmallMax),
+                    .padding(SpaceMedium),
                 text = if (expenseId == 0) CREATE_NEW_EXPENSE else EDIT_EXPENSE_ITEM,
                 icon = if (expenseId == 0) Icons.Default.Add else Icons.Default.Edit,
                 enabled = enableBtn,
@@ -148,7 +148,7 @@ fun AddEditExpenseScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(SpaceSmall),
+                .padding(SpaceMedium),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
             item(EXPENSE_NAME_FIELD) {
@@ -211,10 +211,10 @@ fun AddEditExpenseScreen(
                                 )
 
                                 if (index != expensesNames.size - 1) {
-                                    Divider(
+                                    HorizontalDivider(
                                         modifier = Modifier.fillMaxWidth(),
-                                        color = Color.Gray,
-                                        thickness = 0.8.dp
+                                        thickness = 0.8.dp,
+                                        color = Color.Gray
                                     )
                                 }
                             }
@@ -264,7 +264,7 @@ fun AddEditExpenseScreen(
                         ) {
                             Text(text = "Click Here")
                             Spacer(modifier = Modifier.width(SpaceMini))
-                            Icon(imageVector = Icons.Default.ArrowForward, null)
+                            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, "Click Here")
                         }
                     }
                 )
@@ -274,7 +274,7 @@ fun AddEditExpenseScreen(
                 StandardOutlinedTextField(
                     value = viewModel.state.expenseNote,
                     label = EXPENSE_NOTE_FIELD,
-                    leadingIcon = Icons.Default.NoteAdd,
+                    leadingIcon = Icons.AutoMirrored.Filled.NoteAdd,
                     onValueChange = {
                         viewModel.onEvent(AddEditExpenseEvent.ExpensesNoteChanged(it))
                     }

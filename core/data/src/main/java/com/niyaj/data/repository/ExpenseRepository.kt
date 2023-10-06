@@ -6,7 +6,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface ExpenseRepository {
 
-    suspend fun getAllExpense(searchText: String, givenDate: String): Flow<List<Expense>>
+    suspend fun getAllExpensesOnSpecificDate(searchText: String, givenDate: String): Flow<List<Expense>>
+
+    suspend fun getAllExpenses(searchText: String): Flow<List<Expense>>
 
     suspend fun getAllPagingExpenses(searchText: String, limit: Int = 0, offset: Int = 0): List<Expense>
 
@@ -25,4 +27,6 @@ interface ExpenseRepository {
     suspend fun deleteExpense(expenseId: Int): Resource<Boolean>
 
     suspend fun deleteExpenses(expenseIds: List<Int>): Resource<Boolean>
+
+    suspend fun importExpensesDataToDatabase(expenses: List<Expense>): Resource<Boolean>
 }

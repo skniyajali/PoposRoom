@@ -23,6 +23,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.accompanist.swiperefresh)
     implementation(libs.accompanist.flowlayout)
+    implementation(libs.accompanist.permissions)
     implementation(libs.dialog.core)
     implementation(libs.dialog.datetime)
 

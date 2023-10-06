@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -157,8 +156,8 @@ class AddEditEmployeeViewModel @Inject constructor(
                     employeeSalaryType = state.employeeSalaryType,
                     employeeType = state.employeeType,
                     employeeJoinedDate = state.employeeJoinedDate,
-                    createdAt = Date(),
-                    updatedAt = if (employeeId != 0) Date() else null
+                    createdAt = System.currentTimeMillis(),
+                    updatedAt = if (employeeId != 0) System.currentTimeMillis() else null
                 )
 
                 when (employeeRepository.upsertEmployee(addOnItem)) {

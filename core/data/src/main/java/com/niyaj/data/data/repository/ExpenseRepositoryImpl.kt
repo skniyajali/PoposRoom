@@ -4,6 +4,11 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_DATE_EMPTY_ERROR
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NAME_EMPTY_ERROR
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NAME_LENGTH_ERROR
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_PRICE_EMPTY_ERROR
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_PRICE_LESS_THAN_TEN_ERROR
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.ExpenseRepository
 import com.niyaj.data.repository.ExpenseValidationRepository
@@ -11,11 +16,6 @@ import com.niyaj.database.dao.ExpenseDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Expense
 import com.niyaj.model.searchExpense
-import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_DATE_EMPTY_ERROR
-import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NAME_EMPTY_ERROR
-import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NAME_LENGTH_ERROR
-import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_PRICE_EMPTY_ERROR
-import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_PRICE_LESS_THAN_TEN_ERROR
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -29,9 +29,19 @@ class ExpenseRepositoryImpl(
 ) : ExpenseRepository, ExpenseValidationRepository {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun getAllExpense(searchText: String, givenDate: String): Flow<List<Expense>> {
+    override suspend fun getAllExpensesOnSpecificDate(searchText: String, givenDate: String): Flow<List<Expense>> {
         return withContext(ioDispatcher) {
-            expenseDao.getAllExpense(givenDate).mapLatest { it ->
+            expenseDao.getAllExpenseOnGivenDate(givenDate).mapLatest { it ->
+                it.map {
+                    it.asExternalModel()
+                }.searchExpense(searchText)
+            }
+        }
+    }
+
+    override suspend fun getAllExpenses(searchText: String): Flow<List<Expense>> {
+        return withContext(ioDispatcher) {
+            expenseDao.getAllExpense().mapLatest { it ->
                 it.map {
                     it.asExternalModel()
                 }.searchExpense(searchText)
@@ -222,5 +232,31 @@ class ExpenseRepositoryImpl(
         }
 
         return ValidationResult(true)
+    }
+
+    override suspend fun importExpensesDataToDatabase(expenses: List<Expense>): Resource<Boolean> {
+        try {
+            expenses.forEach { newExpense ->
+                val validateName = validateExpenseName(newExpense.expenseName)
+                val validateAmount = validateExpenseName(newExpense.expenseAmount)
+                val validateDate = validateExpenseName(newExpense.expenseDate)
+
+                val hasError = listOf(validateName, validateAmount, validateDate).any {
+                    !it.successful
+                }
+
+                if (!hasError) {
+                    withContext(ioDispatcher) {
+                        expenseDao.upsertExpense(newExpense.toEntity())
+                    }
+                } else {
+                    return Resource.Error("Unable to validate expenses")
+                }
+            }
+
+            return Resource.Success(true)
+        } catch (e: Exception) {
+            return Resource.Error("Unable to add or update expense")
+        }
     }
 }

@@ -33,7 +33,7 @@ fun ExpenseEntity.asExternalModel(): Expense {
         expenseAmount = this.expenseAmount,
         expenseDate = this.expenseDate,
         expenseNote = this.expenseNote,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt
+        createdAt = this.createdAt.time,
+        updatedAt = this.updatedAt?.time
     )
 }

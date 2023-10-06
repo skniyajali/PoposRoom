@@ -16,7 +16,12 @@ interface ExpenseDao {
     @Query(value = """
         SELECT * FROM expense WHERE expenseDate = :givenDate ORDER BY expenseDate DESC
     """)
-    fun getAllExpense(givenDate: String): Flow<List<ExpenseEntity>>
+    fun getAllExpenseOnGivenDate(givenDate: String): Flow<List<ExpenseEntity>>
+
+    @Query(value = """
+        SELECT * FROM expense ORDER BY expenseDate DESC
+    """)
+    fun getAllExpense(): Flow<List<ExpenseEntity>>
 
     @RawQuery(observedEntities = [ExpenseEntity::class])
     fun getAllPagingExpenses(query: SupportSQLiteQuery): List<ExpenseEntity>

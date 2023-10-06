@@ -46,4 +46,6 @@ interface EmployeeRepository {
     suspend fun deleteEmployee(employeeId: Int): Resource<Boolean>
 
     suspend fun deleteEmployees(employeeIds: List<Int>): Resource<Boolean>
+
+    suspend fun importEmployeesToDatabase(employees: List<Employee>): Resource<Boolean>
 }
