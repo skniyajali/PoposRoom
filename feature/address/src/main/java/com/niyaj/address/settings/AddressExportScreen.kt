@@ -1,4 +1,4 @@
-package com.niyaj.charges.settings
+package com.niyaj.address.settings
 
 import android.Manifest
 import androidx.activity.compose.BackHandler
@@ -32,17 +32,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.niyaj.charges.ChargesData
-import com.niyaj.charges.destinations.AddEditChargesScreenDestination
-import com.niyaj.common.tags.ChargesTestTags
-import com.niyaj.common.tags.ChargesTestTags.EXPORT_CHARGES_BTN
-import com.niyaj.common.tags.ChargesTestTags.EXPORT_CHARGES_BTN_TEXT
-import com.niyaj.common.tags.ChargesTestTags.EXPORT_CHARGES_FILE_NAME
-import com.niyaj.common.tags.ChargesTestTags.EXPORT_CHARGES_TITLE
+import com.niyaj.address.AddressData
+import com.niyaj.address.destinations.AddEditAddressScreenDestination
+import com.niyaj.common.tags.AddressTestTags
+import com.niyaj.common.tags.AddressTestTags.EXPORT_ADDRESS_BTN
+import com.niyaj.common.tags.AddressTestTags.EXPORT_ADDRESS_BTN_TEXT
+import com.niyaj.common.tags.AddressTestTags.EXPORT_ADDRESS_FILE_NAME
+import com.niyaj.common.tags.AddressTestTags.EXPORT_ADDRESS_TITLE
 import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
-import com.niyaj.model.Charges
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.NoteCard
@@ -61,16 +60,16 @@ import kotlinx.coroutines.launch
 @Destination
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun ChargesExportScreen(
+fun AddressExportScreen(
     navController: NavController,
     resultBackNavigator: ResultBackNavigator<String>,
-    viewModel: ChargesSettingsViewModel = hiltViewModel(),
+    viewModel: AddressSettingsViewModel = hiltViewModel(),
 ) {
 
     val scope = rememberCoroutineScope()
     val lazyGridState = rememberLazyGridState()
 
-    val charges = viewModel.charges.collectAsStateWithLifecycle().value
+    val addresses = viewModel.addresses.collectAsStateWithLifecycle().value
     val exportedItems = viewModel.exportedItems.collectAsStateWithLifecycle().value
 
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
@@ -120,7 +119,7 @@ fun ChargesExportScreen(
                     if (result) {
                         resultBackNavigator.navigateBack("${exportedItems.size} Items has been exported.")
                     } else {
-                        resultBackNavigator.navigateBack("Unable to export charges item.")
+                        resultBackNavigator.navigateBack("Unable to export addresses.")
                     }
                 }
             }
@@ -142,7 +141,7 @@ fun ChargesExportScreen(
 
     StandardScaffoldNew(
         navController = navController,
-        title = if (selectedItems.isEmpty()) EXPORT_CHARGES_TITLE else "${selectedItems.size} Selected",
+        title = if (selectedItems.isEmpty()) EXPORT_ADDRESS_TITLE else "${selectedItems.size} Selected",
         showBackButton = true,
         showBottomBar = true,
         navActions = {
@@ -154,7 +153,7 @@ fun ChargesExportScreen(
                     onSearchTextChanged = viewModel::searchTextChanged
                 )
             }else {
-                if (charges.isNotEmpty()) {
+                if (addresses.isNotEmpty()) {
                     IconButton(
                         onClick = viewModel::selectAllItems
                     ) {
@@ -188,9 +187,9 @@ fun ChargesExportScreen(
                 StandardButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag(EXPORT_CHARGES_BTN),
+                        .testTag(EXPORT_ADDRESS_BTN),
                     enabled = true,
-                    text = EXPORT_CHARGES_BTN_TEXT,
+                    text = EXPORT_ADDRESS_BTN_TEXT,
                     icon = Icons.Default.Upload,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary
@@ -198,9 +197,9 @@ fun ChargesExportScreen(
                     onClick = {
                         scope.launch {
                             askForPermissions()
-                            val result = ImportExport.createFile(context = context, fileName = EXPORT_CHARGES_FILE_NAME)
+                            val result = ImportExport.createFile(context = context, fileName = EXPORT_ADDRESS_FILE_NAME)
                             exportLauncher.launch(result)
-                            viewModel.onEvent(ChargesSettingsEvent.GetExportedItems)
+                            viewModel.onEvent(AddressSettingsEvent.GetExportedItems)
                         }
                     }
                 )
@@ -219,12 +218,12 @@ fun ChargesExportScreen(
             )
         }
     ) {
-        if (charges.isEmpty()) {
+        if (addresses.isEmpty()) {
             ItemNotAvailable(
-                text = if (searchText.isEmpty()) ChargesTestTags.CHARGES_NOT_AVAIlABLE else ChargesTestTags.NO_ITEMS_IN_CHARGES,
-                buttonText = ChargesTestTags.CREATE_NEW_CHARGES,
+                text = if (searchText.isEmpty()) AddressTestTags.ADDRESS_NOT_AVAIlABLE else Constants.SEARCH_ITEM_NOT_FOUND,
+                buttonText = AddressTestTags.CREATE_NEW_ADDRESS,
                 onClick = {
-                    navController.navigate(AddEditChargesScreenDestination())
+                    navController.navigate(AddEditAddressScreenDestination())
                 }
             )
         }else {
@@ -235,11 +234,14 @@ fun ChargesExportScreen(
                 state = lazyGridState,
             ) {
                 items(
-                    items = charges,
-                    key = { it.chargesId }
-                ) { item: Charges ->
-                    ChargesData(
-                        item = item,
+                    items = addresses,
+                    key = {
+                        it.addressName.plus(it.addressId)
+                    }
+                ) { address ->
+                    AddressData(
+                        modifier = Modifier.testTag(AddressTestTags.ADDRESS_ITEM_TAG.plus(address.addressId)),
+                        item = address,
                         doesSelected = {
                             selectedItems.contains(it)
                         },
