@@ -48,7 +48,7 @@ fun EmployeeEntity.asExternalModel(): Employee {
         employeeEmail = this.employeeEmail,
         employeeSalaryType = this.employeeSalaryType,
         employeeType = this.employeeType,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt
+        createdAt = this.createdAt.time,
+        updatedAt = this.updatedAt?.time
     )
 }

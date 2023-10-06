@@ -35,4 +35,17 @@ object ExpenseTestTags {
     const val DELETE_EXPENSE_MESSAGE = "Are you sure to delete these expenses?"
 
     const val EXPENSE_TAG = "Expense-"
+
+    const val EXPENSE_SETTINGS_TITLE = "Expenses Settings"
+
+    const val IMPORT_EXPENSE_TITLE = "Import Expenses"
+    const val IMPORT_EXPENSE_BTN_TEXT = "Import Expenses"
+    const val IMPORT_EXPENSE_NOTE_TEXT = "Make sure to open expenses.json file."
+    const val IMPORT_EXPENSE_OPN_FILE = "Open File"
+
+    const val EXPORT_EXPENSE_TITLE = "Export Expenses"
+    const val EXPORT_EXPENSE_BTN_TEXT = "Export Expenses"
+    const val EXPORT_EXPENSE_BTN = "Export Expenses"
+
+    const val EXPORT_EXPENSE_FILE_NAME = "expenses"
 }

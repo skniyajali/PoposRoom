@@ -1,7 +1,9 @@
 package com.niyaj.model
 
+import com.squareup.moshi.JsonClass
 import java.util.Date
 
+@JsonClass(generateAdapter = true)
 data class Employee(
     val employeeId: Int = 0,
 
@@ -21,9 +23,9 @@ data class Employee(
 
     val employeeType: EmployeeType = EmployeeType.FullTime,
 
-    val createdAt: Date = Date(),
+    val createdAt: Long = System.currentTimeMillis(),
 
-    val updatedAt: Date? = null,
+    val updatedAt: Long? = null,
 )
 
 fun List<Employee>.searchEmployee(searchText: String): List<Employee> {

@@ -5,6 +5,7 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
+import com.niyaj.common.tags.EmployeeTestTags
 import com.niyaj.common.utils.Constants.NOT_PAID
 import com.niyaj.common.utils.Constants.PAID
 import com.niyaj.common.utils.compareSalaryDates
@@ -13,7 +14,6 @@ import com.niyaj.common.utils.toRupee
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.EmployeeRepository
 import com.niyaj.data.repository.EmployeeValidationRepository
-import com.niyaj.common.tags.EmployeeTestTags
 import com.niyaj.database.dao.EmployeeDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Absent
@@ -520,6 +520,38 @@ class EmployeeRepositoryImpl(
 
         } catch (e: Exception) {
             emptyList()
+        }
+    }
+
+    override suspend fun importEmployeesToDatabase(employees: List<Employee>): Resource<Boolean> {
+        try {
+            employees.forEach { newEmployee ->
+                val validateEmployeeName = validateEmployeeName(newEmployee.employeeName)
+                val validateEmployeePhone =
+                    validateEmployeePhone(newEmployee.employeePhone, newEmployee.employeeId)
+                val validateEmployeePosition =
+                    validateEmployeePosition(newEmployee.employeePosition)
+                val validateEmployeeSalary = validateEmployeeSalary(newEmployee.employeeSalary)
+
+                val hasError = listOf(
+                    validateEmployeeName,
+                    validateEmployeePhone,
+                    validateEmployeePosition,
+                    validateEmployeeSalary
+                ).any { !it.successful }
+
+                if (!hasError) {
+                    withContext(ioDispatcher) {
+                        employeeDao.upsertEmployee(newEmployee.toEntity())
+                    }
+                } else {
+                    return Resource.Error("Unable to validate employee")
+                }
+            }
+
+            return Resource.Success(true)
+        } catch (e: Exception) {
+            return Resource.Error(e.message ?: "Error creating Employee Item")
         }
     }
 }

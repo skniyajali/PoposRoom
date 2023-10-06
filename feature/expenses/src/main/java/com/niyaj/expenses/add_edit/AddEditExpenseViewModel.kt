@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Date
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -150,8 +149,8 @@ class AddEditExpenseViewModel @Inject constructor(
                     expenseAmount = state.expenseAmount,
                     expenseDate = state.expenseDate,
                     expenseNote = state.expenseNote,
-                    createdAt = Date(),
-                    updatedAt = if (expenseId != 0) Date() else null
+                    createdAt = System.currentTimeMillis(),
+                    updatedAt = if (expenseId != 0) System.currentTimeMillis() else null
                 )
 
                 when (val result = expenseRepository.upsertExpense(newExpense)) {

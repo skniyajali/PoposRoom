@@ -20,22 +20,23 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.StickyNote2
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.StickyNote2
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.filled.TurnedInNot
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -53,9 +54,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.niyaj.common.utils.toMilliSecond
-import com.niyaj.common.utils.toPrettyDate
-import com.niyaj.common.utils.toRupee
 import com.niyaj.common.tags.ExpenseTestTags.CREATE_NEW_EXPENSE
 import com.niyaj.common.tags.ExpenseTestTags.DELETE_EXPENSE_MESSAGE
 import com.niyaj.common.tags.ExpenseTestTags.DELETE_EXPENSE_TITLE
@@ -64,11 +62,15 @@ import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_SCREEN_TITLE
 import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_TAG
 import com.niyaj.common.tags.ExpenseTestTags.NO_ITEMS_IN_EXPENSE
+import com.niyaj.common.utils.toMilliSecond
+import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.theme.IconSizeSmall
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.expenses.destinations.AddEditExpenseScreenDestination
+import com.niyaj.expenses.destinations.ExpensesSettingsScreenDestination
 import com.niyaj.model.Expense
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
@@ -188,7 +190,8 @@ fun ExpensesScreen(
                 placeholderText = EXPENSE_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = showSearchBar,
+                showSearchIcon = true,
+                showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
                   navController.navigate(AddEditExpenseScreenDestination(selectedItems.first()))
@@ -196,7 +199,9 @@ fun ExpensesScreen(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = {},
+                onSettingsClick = {
+                    navController.navigate(ExpensesSettingsScreenDestination)
+                },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
                 onSearchClick = viewModel::openSearchBar,
@@ -363,7 +368,7 @@ fun TotalExpenses(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     CircularBox(
-                        icon = Icons.Default.TrendingUp,
+                        icon = Icons.AutoMirrored.Filled.TrendingUp,
                         doesSelected = false,
                     )
                     Spacer(modifier = Modifier.width(SpaceSmall))
@@ -398,7 +403,7 @@ fun TotalExpenses(
                 )
                 NoteText(
                     text = "Total $totalItem Expenses",
-                    icon = Icons.Default.TrendingUp
+                    icon = Icons.AutoMirrored.Filled.TrendingUp
                 )
             }
         }
@@ -442,7 +447,7 @@ fun ExpensesData(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             ListItem(
-                modifier = modifier
+                modifier = Modifier
                     .testTag(EXPENSE_TAG.plus(item.expenseId))
                     .fillMaxWidth(),
                 headlineContent = {
@@ -466,7 +471,10 @@ fun ExpensesData(
                         text = item.expenseDate.toPrettyDate(),
                         icon = Icons.Default.CalendarMonth
                     )
-                }
+                },
+                colors = ListItemDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
 
             if (item.expenseNote.isNotEmpty()) {
@@ -602,7 +610,7 @@ fun GroupedExpensesData(
                     notes.forEach { note ->
                         NoteText(
                             text = note,
-                            icon = Icons.Default.StickyNote2,
+                            icon = Icons.AutoMirrored.Filled.StickyNote2,
                             color = MaterialTheme.colorScheme.error
                         ) 
                         Spacer(modifier = Modifier.height(SpaceMini))

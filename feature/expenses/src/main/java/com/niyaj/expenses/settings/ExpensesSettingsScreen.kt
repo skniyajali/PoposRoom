@@ -1,4 +1,4 @@
-package com.niyaj.customer.settings
+package com.niyaj.expenses.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,10 +15,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_SETTINGS_TITLE
-import com.niyaj.customer.destinations.CustomerExportScreenDestination
-import com.niyaj.customer.destinations.CustomerImportScreenDestination
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_SETTINGS_TITLE
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.expenses.destinations.ExpensesExportScreenDestination
+import com.niyaj.expenses.destinations.ExpensesImportScreenDestination
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -31,10 +31,10 @@ import kotlinx.coroutines.launch
 
 @Destination
 @Composable
-fun CustomerSettingsScreen(
+fun ExpensesSettingsScreen(
     navController: NavController,
-    exportRecipient: ResultRecipient<CustomerExportScreenDestination, String>,
-    importRecipient: ResultRecipient<CustomerImportScreenDestination, String>,
+    exportRecipient: ResultRecipient<ExpensesExportScreenDestination, String>,
+    importRecipient: ResultRecipient<ExpensesImportScreenDestination, String>,
 ) {
     val snackbarState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -64,7 +64,7 @@ fun CustomerSettingsScreen(
 
     StandardScaffoldNew(
         navController = navController,
-        title = CUSTOMER_SETTINGS_TITLE,
+        title = EXPENSE_SETTINGS_TITLE,
         snackbarHostState = snackbarState,
         showBackButton = true,
         showBottomBar = false,
@@ -87,24 +87,24 @@ fun CustomerSettingsScreen(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceSmall)
         ){
-            item("ImportCustomer") {
+            item("ImportExpenses") {
                 SettingsCard(
-                    title = "Import Customer",
+                    title = "Import Expenses",
                     subtitle = "Click here to import data from file.",
                     icon = Icons.Default.SaveAlt,
                     onClick = {
-                        navController.navigate(CustomerImportScreenDestination())
+                        navController.navigate(ExpensesImportScreenDestination())
                     }
                 )
             }
 
-            item("ExportCustomer") {
+            item("ExportExpense") {
                 SettingsCard(
-                    title = "Export Customer",
-                    subtitle = "Click here to export data to file.",
+                    title = "Export Expenses",
+                    subtitle = "Click here to export expenses to file.",
                     icon = Icons.Default.Upload,
                     onClick = {
-                        navController.navigate(CustomerExportScreenDestination())
+                        navController.navigate(ExpensesExportScreenDestination())
                     }
                 )
             }
