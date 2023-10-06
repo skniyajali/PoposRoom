@@ -148,7 +148,7 @@ fun AddressExportScreen(
             if (showSearchBar) {
                 StandardSearchBar(
                     searchText = searchText,
-                    placeholderText = "Search for charges items...",
+                    placeholderText = "Search for Addresses...",
                     onClearClick = viewModel::clearSearchText,
                     onSearchTextChanged = viewModel::searchTextChanged
                 )

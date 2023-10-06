@@ -1,4 +1,4 @@
-package com.niyaj.expenses.settings
+package com.niyaj.employee.settings
 
 import android.Manifest
 import androidx.activity.compose.BackHandler
@@ -31,18 +31,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.niyaj.common.tags.ExpenseTestTags
-import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NOT_AVAIlABLE
-import com.niyaj.common.tags.ExpenseTestTags.EXPORT_EXPENSE_BTN
-import com.niyaj.common.tags.ExpenseTestTags.EXPORT_EXPENSE_BTN_TEXT
-import com.niyaj.common.tags.ExpenseTestTags.EXPORT_EXPENSE_FILE_NAME
-import com.niyaj.common.tags.ExpenseTestTags.EXPORT_EXPENSE_TITLE
-import com.niyaj.common.tags.ExpenseTestTags.NO_ITEMS_IN_EXPENSE
+import com.niyaj.common.tags.EmployeeTestTags
+import com.niyaj.common.tags.EmployeeTestTags.EXPORT_EMPLOYEE_BTN
+import com.niyaj.common.tags.EmployeeTestTags.EXPORT_EMPLOYEE_BTN_TEXT
+import com.niyaj.common.tags.EmployeeTestTags.EXPORT_EMPLOYEE_FILE_NAME
+import com.niyaj.common.tags.EmployeeTestTags.EXPORT_EMPLOYEE_TITLE
 import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
-import com.niyaj.expenses.ExpensesData
-import com.niyaj.expenses.destinations.AddEditExpenseScreenDestination
+import com.niyaj.employee.EmployeeData
+import com.niyaj.employee.destinations.AddEditEmployeeScreenDestination
+import com.niyaj.model.Employee
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.NoteCard
@@ -61,16 +60,16 @@ import kotlinx.coroutines.launch
 @Destination
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun ExpensesExportScreen(
+fun EmployeeExportScreen(
     navController: NavController,
     resultBackNavigator: ResultBackNavigator<String>,
-    viewModel: ExpensesSettingsViewModel = hiltViewModel(),
+    viewModel: EmployeeSettingsViewModel = hiltViewModel(),
 ) {
 
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
 
-    val expenseList = viewModel.expenses.collectAsStateWithLifecycle().value
+    val employees = viewModel.employees.collectAsStateWithLifecycle().value
     val exportedItems = viewModel.exportedItems.collectAsStateWithLifecycle().value
 
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
@@ -118,9 +117,9 @@ fun ExpensesExportScreen(
                     val result = ImportExport.writeData(context, it, exportedItems)
 
                     if (result) {
-                        resultBackNavigator.navigateBack("${exportedItems.size} Expenses has been exported.")
+                        resultBackNavigator.navigateBack("${exportedItems.size} Employees has been exported.")
                     } else {
-                        resultBackNavigator.navigateBack("Unable to export expenses.")
+                        resultBackNavigator.navigateBack("Unable to export employees.")
                     }
                 }
             }
@@ -142,19 +141,19 @@ fun ExpensesExportScreen(
 
     StandardScaffoldNew(
         navController = navController,
-        title = if (selectedItems.isEmpty()) EXPORT_EXPENSE_TITLE else "${selectedItems.size} Selected",
+        title = if (selectedItems.isEmpty()) EXPORT_EMPLOYEE_TITLE else "${selectedItems.size} Selected",
         showBackButton = true,
         showBottomBar = true,
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
                     searchText = searchText,
-                    placeholderText = "Search for expenses...",
+                    placeholderText = "Search for employees...",
                     onClearClick = viewModel::clearSearchText,
                     onSearchTextChanged = viewModel::searchTextChanged
                 )
             } else {
-                if (expenseList.isNotEmpty()) {
+                if (employees.isNotEmpty()) {
                     IconButton(
                         onClick = viewModel::selectAllItems
                     ) {
@@ -188,9 +187,9 @@ fun ExpensesExportScreen(
                 StandardButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag(EXPORT_EXPENSE_BTN),
+                        .testTag(EXPORT_EMPLOYEE_BTN),
                     enabled = true,
-                    text = EXPORT_EXPENSE_BTN_TEXT,
+                    text = EXPORT_EMPLOYEE_BTN_TEXT,
                     icon = Icons.Default.Upload,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary
@@ -200,10 +199,10 @@ fun ExpensesExportScreen(
                             askForPermissions()
                             val result = ImportExport.createFile(
                                 context = context,
-                                fileName = EXPORT_EXPENSE_FILE_NAME
+                                fileName = EXPORT_EMPLOYEE_FILE_NAME
                             )
                             exportLauncher.launch(result)
-                            viewModel.onEvent(ExpensesSettingsEvent.GetExportedItems)
+                            viewModel.onEvent(EmployeeSettingsEvent.GetExportedItems)
                         }
                     }
                 )
@@ -222,26 +221,26 @@ fun ExpensesExportScreen(
             )
         }
     ) {
-        if (expenseList.isEmpty()) {
+        if (employees.isEmpty()) {
             ItemNotAvailable(
-                text = if (searchText.isEmpty()) EXPENSE_NOT_AVAIlABLE else NO_ITEMS_IN_EXPENSE,
-                buttonText = ExpenseTestTags.CREATE_NEW_EXPENSE,
+                text = if (searchText.isEmpty()) EmployeeTestTags.EMPLOYEE_NOT_AVAIlABLE else EmployeeTestTags.NO_ITEMS_IN_EMPLOYEE,
+                buttonText = EmployeeTestTags.CREATE_NEW_EMPLOYEE,
                 onClick = {
-                    navController.navigate(AddEditExpenseScreenDestination())
+                    navController.navigate(AddEditEmployeeScreenDestination())
                 }
             )
         } else {
             LazyColumn(
+                modifier = Modifier
+                    .padding(SpaceSmall),
                 state = lazyListState
             ) {
                 items(
-                    items = expenseList,
-                    key = {
-                        it.expenseId
-                    }
-                ) { expense ->
-                    ExpensesData(
-                        item = expense,
+                    items = employees,
+                    key = { it.employeeId}
+                ) { item: Employee ->
+                    EmployeeData(
+                        item = item,
                         doesSelected = {
                             selectedItems.contains(it)
                         },

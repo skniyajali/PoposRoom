@@ -151,7 +151,7 @@ fun CustomerExportScreen(
             if (showSearchBar) {
                 StandardSearchBar(
                     searchText = searchText,
-                    placeholderText = "Search for charges items...",
+                    placeholderText = "Search for customers...",
                     onClearClick = viewModel::clearSearchText,
                     onSearchTextChanged = viewModel::searchTextChanged
                 )
