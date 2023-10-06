@@ -12,7 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FabPosition
@@ -43,11 +43,11 @@ import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SCREEN_TITLE
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_TAG
 import com.niyaj.common.tags.EmployeeTestTags.NO_ITEMS_IN_EMPLOYEE
-import com.niyaj.designsystem.theme.LightColor9
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.employee.destinations.AddEditEmployeeScreenDestination
 import com.niyaj.employee.destinations.EmployeeDetailsScreenDestination
+import com.niyaj.employee.destinations.EmployeeSettingsScreenDestination
 import com.niyaj.model.Employee
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
@@ -154,7 +154,8 @@ fun EmployeeScreen(
                 placeholderText = EMPLOYEE_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = showSearchBar,
+                showSearchIcon = true,
+                showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
                   navController.navigate(AddEditEmployeeScreenDestination(selectedItems.first()))
@@ -162,7 +163,9 @@ fun EmployeeScreen(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = {},
+                onSettingsClick = {
+                    navController.navigate(EmployeeSettingsScreenDestination)
+                },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
                 onSearchClick = viewModel::openSearchBar,
@@ -304,14 +307,14 @@ fun EmployeeData(
         },
         trailingContent = {
             Icon(
-                Icons.Filled.ArrowRight,
+                Icons.AutoMirrored.Filled.ArrowRight,
                 contentDescription = "Localized description",
             )
         },
         shadowElevation = 1.dp,
         tonalElevation = 1.dp,
         colors = ListItemDefaults.colors(
-            containerColor = LightColor9
+            containerColor = MaterialTheme.colorScheme.background
         )
     )
 }

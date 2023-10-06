@@ -124,7 +124,7 @@ class EmployeeRepositoryImpl(
     override suspend fun upsertEmployee(newEmployee: Employee): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
-                val validateEmployeeName = validateEmployeeName(newEmployee.employeeName)
+                val validateEmployeeName = validateEmployeeName(newEmployee.employeeName, newEmployee.employeeId)
                 val validateEmployeePhone =
                     validateEmployeePhone(newEmployee.employeePhone, newEmployee.employeeId)
                 val validateEmployeePosition =
@@ -526,7 +526,7 @@ class EmployeeRepositoryImpl(
     override suspend fun importEmployeesToDatabase(employees: List<Employee>): Resource<Boolean> {
         try {
             employees.forEach { newEmployee ->
-                val validateEmployeeName = validateEmployeeName(newEmployee.employeeName)
+                val validateEmployeeName = validateEmployeeName(newEmployee.employeeName, newEmployee.employeeId)
                 val validateEmployeePhone =
                     validateEmployeePhone(newEmployee.employeePhone, newEmployee.employeeId)
                 val validateEmployeePosition =
