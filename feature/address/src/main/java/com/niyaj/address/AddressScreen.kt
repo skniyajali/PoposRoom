@@ -43,7 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.address.destinations.AddEditAddressScreenDestination
 import com.niyaj.address.destinations.AddressDetailsScreenDestination
-import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
+import com.niyaj.address.destinations.AddressSettingsScreenDestination
 import com.niyaj.common.tags.AddressTestTags.ADDRESS_ITEM_TAG
 import com.niyaj.common.tags.AddressTestTags.ADDRESS_NOT_AVAIlABLE
 import com.niyaj.common.tags.AddressTestTags.ADDRESS_SCREEN_TITLE
@@ -51,6 +51,7 @@ import com.niyaj.common.tags.AddressTestTags.ADDRESS_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.AddressTestTags.CREATE_NEW_ADDRESS
 import com.niyaj.common.tags.AddressTestTags.DELETE_ADDRESS_ITEM_MESSAGE
 import com.niyaj.common.tags.AddressTestTags.DELETE_ADDRESS_ITEM_TITLE
+import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Address
 import com.niyaj.ui.components.CircularBox
@@ -161,7 +162,8 @@ fun AddressScreen(
                 placeholderText = ADDRESS_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = showSearchBar,
+                showSearchIcon = true,
+                showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
                     navController.navigate(AddEditAddressScreenDestination(selectedItems.first()))
@@ -170,7 +172,7 @@ fun AddressScreen(
                     openDialog.value = true
                 },
                 onSettingsClick = {
-
+                    navController.navigate(AddressSettingsScreenDestination)
                 },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,

@@ -15,14 +15,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
+import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.AllInbox
-import androidx.compose.material.icons.filled.ArrowRightAlt
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material3.CardDefaults
@@ -55,7 +55,6 @@ import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.niyaj.address.destinations.AddEditAddressScreenDestination
-import com.niyaj.common.utils.toDate
 import com.niyaj.common.utils.toFormattedDateAndTime
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
@@ -260,7 +259,7 @@ fun AddressDetailsCard(
                                 Spacer(modifier = Modifier.height(SpaceSmall))
 
                                 TextWithIcon(
-                                    modifier = Modifier.testTag(state.data.createdAt.toDate),
+                                    modifier = Modifier.testTag(state.data.createdAt.toFormattedDateAndTime),
                                     text = "Created At : ${state.data.createdAt.toPrettyDate()}",
                                     icon = Icons.Default.CalendarToday
                                 )
@@ -269,7 +268,7 @@ fun AddressDetailsCard(
                                     Spacer(modifier = Modifier.height(SpaceSmall))
                                     TextWithIcon(
                                         text = "Updated At : ${it.toFormattedDateAndTime}",
-                                        icon = Icons.Default.Login
+                                        icon = Icons.AutoMirrored.Filled.Login
                                     )
                                 }
                             }
@@ -413,7 +412,7 @@ fun GroupedOrders(
 
                 Spacer(modifier = Modifier.width(SpaceMini))
                 Icon(
-                    imageVector = Icons.Default.ArrowRightAlt,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
                     contentDescription = "DatePeriod"
                 )
                 Spacer(modifier = Modifier.width(SpaceMini))

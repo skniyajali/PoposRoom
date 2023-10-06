@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Date
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -96,8 +95,8 @@ class AddEditAddressViewModel @Inject constructor(
                     addressId = addressId,
                     addressName = state.addressName,
                     shortName = state.shortName,
-                    createdAt = Date(),
-                    updatedAt = if (addressId != 0) Date() else null
+                    createdAt = System.currentTimeMillis(),
+                    updatedAt = if (addressId != 0) System.currentTimeMillis() else null
                 )
 
                 when (val result = addressRepository.upsertAddress(address)) {

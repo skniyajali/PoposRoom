@@ -27,11 +27,12 @@ import com.niyaj.common.tags.AddressTestTags.CREATE_ADDRESS_SCREEN
 import com.niyaj.common.tags.AddressTestTags.CREATE_NEW_ADDRESS
 import com.niyaj.common.tags.AddressTestTags.EDIT_ADDRESS
 import com.niyaj.common.tags.AddressTestTags.UPDATE_ADDRESS_SCREEN
+import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
-import com.niyaj.ui.components.StandardTextField
+import com.niyaj.ui.components.StandardOutlinedTextField
+import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
@@ -67,7 +68,8 @@ fun AddEditAddressScreen(
 
     val title = if (addressId == 0) CREATE_ADDRESS_SCREEN else UPDATE_ADDRESS_SCREEN
 
-    StandardScaffoldWithOutDrawer(
+    StandardScaffoldNew(
+        navController = navController,
         title = title,
         onBackClick = {
             navController.navigateUp()
@@ -77,7 +79,7 @@ fun AddEditAddressScreen(
             StandardButton(
                 modifier = Modifier
                     .testTag(ADD_EDIT_ADDRESS_BTN)
-                    .padding(horizontal = SpaceSmallMax),
+                    .padding(SpaceSmallMax),
                 text = if (addressId == 0) CREATE_NEW_ADDRESS else EDIT_ADDRESS,
                 enabled = enableBtn,
                 icon = if (addressId == 0) Icons.Default.Add else Icons.Default.EditLocationAlt,
@@ -85,15 +87,17 @@ fun AddEditAddressScreen(
                     viewModel.onEvent(AddEditAddressEvent.CreateOrUpdateAddress(addressId))
                 }
             )
-        }
+        },
+        showBackButton = true,
     ) {
         Column(
             modifier = Modifier
                 .testTag(title)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(SpaceMedium),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
-            StandardTextField(
+            StandardOutlinedTextField(
                 value = viewModel.state.addressName,
                 label = ADDRESS_FULL_NAME_FIELD,
                 leadingIcon = Icons.Default.Business,
@@ -105,7 +109,7 @@ fun AddEditAddressScreen(
                 }
             )
 
-            StandardTextField(
+            StandardOutlinedTextField(
                 value = viewModel.state.shortName,
                 label = ADDRESS_SHORT_NAME_FIELD,
                 leadingIcon = Icons.Default.CurrencyRupee,

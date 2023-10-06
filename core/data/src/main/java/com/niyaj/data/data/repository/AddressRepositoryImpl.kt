@@ -4,10 +4,10 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
+import com.niyaj.common.tags.AddressTestTags
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.AddressRepository
 import com.niyaj.data.repository.validation.AddressValidationRepository
-import com.niyaj.common.tags.AddressTestTags
 import com.niyaj.database.dao.AddressDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Address
@@ -200,6 +200,30 @@ class AddressRepositoryImpl(
                     )
                 }
             }
+        }
+    }
+
+    override suspend fun importAddressesToDatabase(addresses: List<Address>): Resource<Boolean> {
+        try {
+            addresses.forEach { newAddress ->
+                val validateAddressName =
+                    validateAddressName(newAddress.addressName, newAddress.addressId)
+                val validateAddressShortName = validateAddressShortName(newAddress.shortName)
+
+                val hasError =
+                    listOf(validateAddressName, validateAddressShortName).any { !it.successful }
+
+                if (!hasError) {
+                    withContext(ioDispatcher) {
+                        addressDao.upsertAddress(newAddress.toEntity())
+                    }
+                } else {
+                    return Resource.Error("Unable to create or update address")
+                }
+            }
+            return Resource.Success(true)
+        }catch (e: Exception) {
+            return Resource.Error(e.message)
         }
     }
 }
