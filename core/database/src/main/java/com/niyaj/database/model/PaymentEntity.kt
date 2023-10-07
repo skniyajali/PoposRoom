@@ -52,7 +52,7 @@ fun PaymentEntity.asExternalModel(): Payment {
         paymentType = this.paymentType,
         paymentMode = this.paymentMode,
         paymentNote = this.paymentNote,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt
+        createdAt = this.createdAt.time,
+        updatedAt = this.updatedAt?.time
     )
 }

@@ -30,7 +30,7 @@ class PaymentViewModel @Inject constructor(
     override var totalItems: List<Int> = emptyList()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val payments = snapshotFlow { searchText.value }
+    val payments = snapshotFlow { _searchText.value }
         .flatMapLatest { it ->
             paymentRepository.getAllEmployeePayments(it)
                 .onStart { UiState.Loading }

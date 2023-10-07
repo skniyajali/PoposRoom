@@ -19,7 +19,7 @@ import com.niyaj.database.dao.ProfileDao
 import com.niyaj.database.dao.ReportsDao
 import com.niyaj.database.dao.SelectedDao
 import com.niyaj.poposroom.features.charges.data.dao.ChargesDao
-import com.niyaj.poposroom.features.employee_payment.data.dao.PaymentDao
+import com.niyaj.database.dao.PaymentDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

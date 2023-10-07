@@ -1,11 +1,14 @@
 package com.niyaj.model
 
+import com.squareup.moshi.JsonClass
+
 data class EmployeeWithPayment(
     val employeeId: Int,
 
     val paymentId: Int
 )
 
+@JsonClass(generateAdapter = true)
 data class EmployeeWithPayments(
     val employee: Employee,
 

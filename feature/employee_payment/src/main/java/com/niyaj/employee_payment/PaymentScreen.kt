@@ -17,7 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MergeType
+import androidx.compose.material.icons.automirrored.filled.MergeType
 import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Person
@@ -49,8 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.niyaj.common.utils.toPrettyDate
-import com.niyaj.common.utils.toRupee
 import com.niyaj.common.tags.PaymentScreenTags.CREATE_NEW_PAYMENT
 import com.niyaj.common.tags.PaymentScreenTags.DELETE_PAYMENT_MESSAGE
 import com.niyaj.common.tags.PaymentScreenTags.DELETE_PAYMENT_TITLE
@@ -59,10 +57,13 @@ import com.niyaj.common.tags.PaymentScreenTags.PAYMENT_NOT_AVAIlABLE
 import com.niyaj.common.tags.PaymentScreenTags.PAYMENT_SCREEN_TITLE
 import com.niyaj.common.tags.PaymentScreenTags.PAYMENT_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.PaymentScreenTags.PAYMENT_TAG
+import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.theme.IconSizeSmall
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.employee_payment.destinations.AddEditPaymentScreenDestination
+import com.niyaj.employee_payment.destinations.PaymentSettingsScreenDestination
 import com.niyaj.model.Payment
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
@@ -175,7 +176,8 @@ fun PaymentScreen(
                 placeholderText = PAYMENT_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = showSearchBar,
+                showSearchIcon = true,
+                showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
                   navController.navigate(AddEditPaymentScreenDestination(selectedItems.first()))
@@ -183,7 +185,9 @@ fun PaymentScreen(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = {},
+                onSettingsClick = {
+                    navController.navigate(PaymentSettingsScreenDestination)
+                },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
                 onSearchClick = viewModel::openSearchBar,
@@ -360,7 +364,7 @@ fun PaymentData(
                     },
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Default.MergeType,
+                            imageVector = Icons.AutoMirrored.Filled.MergeType,
                             contentDescription = null,
                             modifier = Modifier.size(IconSizeSmall)
                         )

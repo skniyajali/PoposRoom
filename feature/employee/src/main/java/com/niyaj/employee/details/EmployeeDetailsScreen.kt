@@ -14,6 +14,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Login
+import androidx.compose.material.icons.automirrored.filled.MergeType
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Add
@@ -23,9 +25,7 @@ import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EventBusy
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.Merge
-import androidx.compose.material.icons.filled.MergeType
 import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Person
@@ -33,8 +33,8 @@ import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -58,6 +58,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.flowlayout.FlowRow
+import com.niyaj.common.tags.EmployeeTestTags.REMAINING_AMOUNT_TEXT
 import com.niyaj.common.utils.Constants.PAID
 import com.niyaj.common.utils.toBarDate
 import com.niyaj.common.utils.toDate
@@ -66,7 +67,6 @@ import com.niyaj.common.utils.toJoinedDate
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
 import com.niyaj.common.utils.toYearAndMonth
-import com.niyaj.common.tags.EmployeeTestTags.REMAINING_AMOUNT_TEXT
 import com.niyaj.designsystem.theme.LightColor6
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
@@ -520,7 +520,7 @@ fun EmployeeDetails(
                                 TextWithIcon(
                                     modifier = Modifier.testTag(state.data.employeeType.name),
                                     text = "Type - ${state.data.employeeType}",
-                                    icon = Icons.Default.MergeType
+                                    icon = Icons.AutoMirrored.Filled.MergeType
                                 )
                                 Spacer(modifier = Modifier.height(SpaceSmall))
                                 TextWithIcon(
@@ -537,7 +537,7 @@ fun EmployeeDetails(
                                     Spacer(modifier = Modifier.height(SpaceSmall))
                                     TextWithIcon(
                                         text = "Updated At : ${it.toPrettyDate()}",
-                                        icon = Icons.Default.Login
+                                        icon = Icons.AutoMirrored.Filled.Login
                                     )
                                 }
                             }

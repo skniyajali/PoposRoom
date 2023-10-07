@@ -4,22 +4,23 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
+import com.niyaj.common.tags.PaymentScreenTags
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.PaymentRepository
 import com.niyaj.data.repository.validation.PaymentValidationRepository
+import com.niyaj.database.dao.PaymentDao
 import com.niyaj.database.model.EmployeeWithPaymentCrossRef
 import com.niyaj.database.model.asExternalModel
-import com.niyaj.model.EmployeeSalaryEstimation
 import com.niyaj.model.Employee
+import com.niyaj.model.EmployeeMonthlyDate
+import com.niyaj.model.EmployeePayments
+import com.niyaj.model.EmployeeSalaryEstimation
 import com.niyaj.model.EmployeeWithPayments
 import com.niyaj.model.Payment
 import com.niyaj.model.PaymentMode
 import com.niyaj.model.PaymentType
-import com.niyaj.model.EmployeeMonthlyDate
-import com.niyaj.model.EmployeePayments
+import com.niyaj.model.searchEmployeeWithPayments
 import com.niyaj.model.searchPayment
-import com.niyaj.poposroom.features.employee_payment.data.dao.PaymentDao
-import com.niyaj.common.tags.PaymentScreenTags
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -53,7 +54,7 @@ class PaymentRepositoryImpl(
             paymentDao.getAllEmployeePayment().mapLatest { list ->
                 list.map {
                     it.asExternalModel()
-                }
+                }.searchEmployeeWithPayments(searchText)
             }
         }
     }
@@ -330,5 +331,37 @@ class PaymentRepositoryImpl(
         }
 
         return ValidationResult(true)
+    }
+
+    override suspend fun importPaymentsToDatabase(payments: List<EmployeeWithPayments>): Resource<Boolean> {
+        try {
+            payments.forEach { empWithPayment ->
+                val findEmployee = withContext(ioDispatcher) {
+                    paymentDao.findEmployeeByName(empWithPayment.employee.employeeName, empWithPayment.employee.employeeId)
+                }
+
+                if (findEmployee != null) {
+                    empWithPayment.payments.forEach { payment ->
+                        upsertPayment(payment)
+                    }
+                }else {
+                    val result = withContext(ioDispatcher) {
+                        paymentDao.upsertEmployee(empWithPayment.employee.toEntity())
+                    }
+
+                    if (result > 0){
+                        empWithPayment.payments.forEach { payment ->
+                            upsertPayment(payment)
+                        }
+                    }else {
+                        return Resource.Error("Something went wrong inserting employee!")
+                    }
+                }
+            }
+
+            return Resource.Success(true)
+        } catch (e: Exception) {
+            return Resource.Error(e.message ?: "Unable to add or update absent entry.")
+        }
     }
 }

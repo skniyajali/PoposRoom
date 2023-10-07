@@ -5,7 +5,7 @@ import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.data.data.repository.PaymentRepositoryImpl
 import com.niyaj.data.repository.PaymentRepository
 import com.niyaj.data.repository.validation.PaymentValidationRepository
-import com.niyaj.poposroom.features.employee_payment.data.dao.PaymentDao
+import com.niyaj.database.dao.PaymentDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
