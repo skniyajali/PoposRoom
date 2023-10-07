@@ -65,25 +65,25 @@ interface EmployeeDao {
 
     @Query(
         value = """
-        SELECT * FROM employee WHERE
+        SELECT employeeId FROM employee WHERE
             CASE WHEN :employeeId IS NULL OR :employeeId = 0
             THEN employeePhone = :employeePhone
             ELSE employeeId != :employeeId AND employeePhone = :employeePhone
             END LIMIT 1
     """
     )
-    fun findEmployeeByPhone(employeePhone: String, employeeId: Int?): EmployeeEntity?
+    fun findEmployeeByPhone(employeePhone: String, employeeId: Int?): Int?
 
     @Query(
         value = """
-        SELECT * FROM employee WHERE
+        SELECT employeeId FROM employee WHERE
             CASE WHEN :employeeId IS NULL OR :employeeId = 0
             THEN employeeName = :employeeName
             ELSE employeeId != :employeeId AND employeeName = :employeeName
             END LIMIT 1
     """
     )
-    fun findEmployeeByName(employeeName: String, employeeId: Int?): EmployeeEntity?
+    fun findEmployeeByName(employeeName: String, employeeId: Int?): Int?
 
     @Query(
         value = """

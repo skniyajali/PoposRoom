@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowRightAlt
@@ -46,8 +48,6 @@ import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.niyaj.common.utils.toMilliSecond
-import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_DATE_ERROR
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_DATE_FIELD
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_EMPLOYEE_NAME_ERROR
@@ -57,13 +57,15 @@ import com.niyaj.common.tags.AbsentScreenTags.ADD_EDIT_ABSENT_ENTRY_BUTTON
 import com.niyaj.common.tags.AbsentScreenTags.ADD_EDIT_ABSENT_SCREEN
 import com.niyaj.common.tags.AbsentScreenTags.CREATE_NEW_ABSENT
 import com.niyaj.common.tags.AbsentScreenTags.EDIT_ABSENT_ITEM
+import com.niyaj.common.utils.toMilliSecond
+import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
+import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
@@ -81,7 +83,7 @@ fun AddEditAbsentScreen(
     employeeId: Int = 0,
     navController: NavController,
     viewModel: AddEditAbsentViewModel = hiltViewModel(),
-    resultBackNavigator: ResultBackNavigator<String>
+    resultBackNavigator: ResultBackNavigator<String>,
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -96,10 +98,11 @@ fun AddEditAbsentScreen(
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
-            when(data) {
+            when (data) {
                 is UiEvent.OnError -> {
                     resultBackNavigator.navigateBack(data.errorMessage)
                 }
+
                 is UiEvent.OnSuccess -> {
                     resultBackNavigator.navigateBack(data.successMessage)
                 }
@@ -117,12 +120,14 @@ fun AddEditAbsentScreen(
 
     val title = if (absentId == 0) CREATE_NEW_ABSENT else EDIT_ABSENT_ITEM
 
-    StandardScaffoldWithOutDrawer(
+    StandardScaffoldNew(
+        navController = navController,
         title = title,
         onBackClick = {
             navController.navigateUp()
         },
         showBottomBar = enableBtn,
+        showBackButton = true,
         bottomBar = {
             StandardButton(
                 modifier = Modifier
@@ -181,9 +186,9 @@ fun AddEditAbsentScreen(
                             employeeToggled = false
                         },
                         modifier = Modifier
-                            .width(with(LocalDensity.current){textFieldSize.width.toDp()}),
+                            .width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
                     ) {
-                        employees.forEachIndexed{ index, employee ->
+                        employees.forEachIndexed { index, employee ->
                             DropdownMenuItem(
                                 modifier = Modifier
                                     .testTag(employee.employeeName)
@@ -206,10 +211,12 @@ fun AddEditAbsentScreen(
                                 }
                             )
 
-                            if(index != employees.size - 1) {
-                                HorizontalDivider(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 44.dp))
+                            if (index != employees.size - 1) {
+                                HorizontalDivider(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 44.dp)
+                                )
                             }
                         }
 
@@ -255,7 +262,7 @@ fun AddEditAbsentScreen(
                             },
                             trailingIcon = {
                                 Icon(
-                                    imageVector = Icons.Default.ArrowRightAlt,
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
                                     contentDescription = "trailing"
                                 )
                             }
@@ -275,7 +282,10 @@ fun AddEditAbsentScreen(
                         FilledTonalIconButton(
                             onClick = { dialogState.show() }
                         ) {
-                            Icon(imageVector = Icons.Default.CalendarMonth, contentDescription = "Choose a date")
+                            Icon(
+                                imageVector = Icons.Default.CalendarMonth,
+                                contentDescription = "Choose a date"
+                            )
                         }
                     },
                     isError = dateError != null,
@@ -289,7 +299,7 @@ fun AddEditAbsentScreen(
                         ) {
                             Text(text = "Click Here")
                             Spacer(modifier = Modifier.width(SpaceMini))
-                            Icon(imageVector = Icons.Default.ArrowForward, null)
+                            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, "Click Here")
                         }
                     }
                 )
@@ -326,7 +336,7 @@ fun AddEditAbsentScreen(
                     (date.toMilliSecond >= selectedEmployee.employeeJoinedDate) && (date <= LocalDate.now())
                 } else date == LocalDate.now()
             }
-        ) {date ->
+        ) { date ->
             viewModel.onEvent(AddEditAbsentEvent.AbsentDateChanged(date.toMilliSecond))
         }
     }

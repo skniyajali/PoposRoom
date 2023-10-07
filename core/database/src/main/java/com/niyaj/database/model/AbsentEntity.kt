@@ -40,7 +40,7 @@ fun AbsentEntity.asExternalModel(): Absent {
         employeeId = this.employeeId,
         absentReason = this.absentReason,
         absentDate = this.absentDate,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt
+        createdAt = this.createdAt.time,
+        updatedAt = this.updatedAt?.time
     )
 }

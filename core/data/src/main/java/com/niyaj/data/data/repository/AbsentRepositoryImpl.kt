@@ -4,12 +4,12 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
-import com.niyaj.data.mapper.toEntity
-import com.niyaj.data.repository.AbsentRepository
-import com.niyaj.data.repository.validation.AbsentValidationRepository
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_DATE_EMPTY
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_DATE_EXIST
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_EMPLOYEE_NAME_EMPTY
+import com.niyaj.data.mapper.toEntity
+import com.niyaj.data.repository.AbsentRepository
+import com.niyaj.data.repository.validation.AbsentValidationRepository
 import com.niyaj.database.dao.AbsentDao
 import com.niyaj.database.model.EmployeeEntity
 import com.niyaj.database.model.EmployeeWithAbsentCrossRef
@@ -217,5 +217,37 @@ class AbsentRepositoryImpl(
         return ValidationResult(
             successful = true,
         )
+    }
+
+    override suspend fun importAbsentDataToDatabase(absentees: List<EmployeeWithAbsents>): Resource<Boolean> {
+        try {
+            absentees.forEach { empWithAbsents ->
+                val findEmployee = withContext(ioDispatcher) {
+                    absentDao.findEmployeeByName(empWithAbsents.employee.employeeName, empWithAbsents.employee.employeeId)
+                }
+
+                if (findEmployee != null) {
+                    empWithAbsents.absents.forEach { newAbsent ->
+                        upsertAbsent(newAbsent)
+                    }
+                }else {
+                    val result = withContext(ioDispatcher) {
+                        absentDao.upsertEmployee(empWithAbsents.employee.toEntity())
+                    }
+
+                    if (result > 0){
+                        empWithAbsents.absents.forEach { newAbsent ->
+                            upsertAbsent(newAbsent)
+                        }
+                    }else {
+                        return Resource.Error("Something went wrong inserting employee!")
+                    }
+                }
+            }
+
+            return Resource.Success(true)
+        } catch (e: Exception) {
+            return Resource.Error(e.message ?: "Unable to add or update absent entry.")
+        }
     }
 }

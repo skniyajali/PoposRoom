@@ -1,8 +1,9 @@
 package com.niyaj.model
 
 import com.niyaj.common.utils.toJoinedDate
-import java.util.Date
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class Absent(
     val absentId: Int = 0,
 
@@ -12,9 +13,9 @@ data class Absent(
 
     val absentDate: String = "",
 
-    val createdAt: Date,
+    val createdAt: Long = System.currentTimeMillis(),
 
-    val updatedAt: Date? = null,
+    val updatedAt: Long? = null,
 )
 
 /**
