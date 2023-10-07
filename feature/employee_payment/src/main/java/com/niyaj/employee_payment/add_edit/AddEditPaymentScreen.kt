@@ -10,14 +10,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
+import androidx.compose.material.icons.automirrored.filled.MergeType
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.ArrowRightAlt
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.MergeType
 import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Person4
@@ -52,8 +52,6 @@ import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.niyaj.common.utils.toMilliSecond
-import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.tags.PaymentScreenTags.ADD_EDIT_PAYMENT_ENTRY_BUTTON
 import com.niyaj.common.tags.PaymentScreenTags.ADD_EDIT_PAYMENT_SCREEN
 import com.niyaj.common.tags.PaymentScreenTags.CREATE_NEW_PAYMENT
@@ -68,6 +66,8 @@ import com.niyaj.common.tags.PaymentScreenTags.PAYMENT_MODE_FIELD
 import com.niyaj.common.tags.PaymentScreenTags.PAYMENT_NOTE_ERROR
 import com.niyaj.common.tags.PaymentScreenTags.PAYMENT_NOTE_FIELD
 import com.niyaj.common.tags.PaymentScreenTags.PAYMENT_TYPE_FIELD
+import com.niyaj.common.utils.toMilliSecond
+import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
@@ -76,7 +76,7 @@ import com.niyaj.model.PaymentType
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
+import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.TextWithIcon
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
@@ -144,11 +144,13 @@ fun AddEditPaymentScreen(
 
     val title = if (paymentId == 0) CREATE_NEW_PAYMENT else EDIT_PAYMENT_ITEM
 
-    StandardScaffoldWithOutDrawer(
+    StandardScaffoldNew(
+        navController = navController,
         title = title,
         onBackClick = {
             navController.navigateUp()
         },
+        showBackButton = true,
         showBottomBar = enableBtn,
         bottomBar = {
             StandardButton(
@@ -283,7 +285,7 @@ fun AddEditPaymentScreen(
                             },
                             trailingIcon = {
                                 Icon(
-                                    imageVector = Icons.Default.ArrowRightAlt,
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
                                     contentDescription = "trailing"
                                 )
                             }
@@ -317,7 +319,7 @@ fun AddEditPaymentScreen(
                         ) {
                             Text(text = "Click Here")
                             Spacer(modifier = Modifier.width(SpaceMini))
-                            Icon(imageVector = Icons.Default.ArrowForward, null)
+                            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, "Click Here")
                         }
                     }
                 )
@@ -366,13 +368,13 @@ fun AddEditPaymentScreen(
                 ) {
                     TextWithIcon(
                         text = PAYMENT_TYPE_FIELD,
-                        icon = Icons.Default.MergeType
+                        icon = Icons.AutoMirrored.Filled.MergeType
                     )
 
                     Spacer(modifier = Modifier.height(SpaceMini))
 
                     Row {
-                        PaymentType.values().forEach { type ->
+                        PaymentType.entries.forEach { type ->
                             ElevatedFilterChip(
                                 modifier = Modifier.testTag(PAYMENT_TYPE_FIELD.plus(type.name)),
                                 selected = viewModel.state.paymentType == type,
@@ -400,13 +402,13 @@ fun AddEditPaymentScreen(
                 ) {
                     TextWithIcon(
                         text = PAYMENT_MODE_FIELD,
-                        icon = Icons.Default.MergeType
+                        icon = Icons.AutoMirrored.Filled.MergeType
                     )
 
                     Spacer(modifier = Modifier.height(SpaceMini))
 
                     Row {
-                        PaymentMode.values().forEach { type ->
+                        PaymentMode.entries.forEach { type ->
                             ElevatedFilterChip(
                                 modifier = Modifier.testTag(PAYMENT_MODE_FIELD.plus(type.name)),
                                 selected = viewModel.state.paymentMode == type,

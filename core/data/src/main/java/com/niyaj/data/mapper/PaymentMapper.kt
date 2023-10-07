@@ -1,5 +1,6 @@
 package com.niyaj.data.mapper
 
+import com.niyaj.common.utils.toDate
 import com.niyaj.database.model.PaymentEntity
 import com.niyaj.model.Payment
 
@@ -12,7 +13,7 @@ fun Payment.toEntity(): PaymentEntity {
         paymentType = this.paymentType,
         paymentMode = this.paymentMode,
         paymentNote = this.paymentNote,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt
+        createdAt = this.createdAt.toDate,
+        updatedAt = this.updatedAt?.toDate
     )
 }

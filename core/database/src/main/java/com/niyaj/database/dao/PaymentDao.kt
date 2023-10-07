@@ -1,4 +1,4 @@
-package com.niyaj.poposroom.features.employee_payment.data.dao
+package com.niyaj.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -80,4 +80,17 @@ interface PaymentDao {
         """,
     )
     suspend fun deletePayments(paymentIds: List<Int>): Int
+
+    @Query(
+        value = """
+        SELECT employeeId FROM employee WHERE employeeId == :employeeId OR employeeName = :employeeName
+    """
+    )
+    fun findEmployeeByName(employeeName: String, employeeId: Int?): Int?
+
+    /**
+     * Inserts or updates [EmployeeEntity] in the db under the specified primary keys
+     */
+    @Upsert(entity = EmployeeEntity::class)
+    suspend fun upsertEmployee(employeeEntity: EmployeeEntity): Long
 }

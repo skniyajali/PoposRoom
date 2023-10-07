@@ -1,12 +1,12 @@
 package com.niyaj.data.repository
 
 import com.niyaj.common.result.Resource
-import com.niyaj.model.EmployeeSalaryEstimation
 import com.niyaj.model.Employee
-import com.niyaj.model.EmployeeWithPayments
-import com.niyaj.model.Payment
 import com.niyaj.model.EmployeeMonthlyDate
 import com.niyaj.model.EmployeePayments
+import com.niyaj.model.EmployeeSalaryEstimation
+import com.niyaj.model.EmployeeWithPayments
+import com.niyaj.model.Payment
 import kotlinx.coroutines.flow.Flow
 
 interface PaymentRepository {
@@ -36,4 +36,6 @@ interface PaymentRepository {
     suspend fun getEmployeePayment(employeeId: Int): Flow<List<EmployeePayments>>
 
     suspend fun getPaymentCalculableDate(employeeId: Int): Flow<List<EmployeeMonthlyDate>>
+
+    suspend fun importPaymentsToDatabase(payments: List<EmployeeWithPayments>): Resource<Boolean>
 }

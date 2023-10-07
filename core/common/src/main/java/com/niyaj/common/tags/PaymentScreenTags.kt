@@ -49,4 +49,17 @@ object PaymentScreenTags {
     const val DELETE_PAYMENT_MESSAGE = "Are you sure to delete these payments?"
 
     const val PAYMENT_TAG = "Payment-"
+
+    const val PAYMENT_SETTINGS_TITLE = "Payment Settings"
+
+    const val IMPORT_PAYMENT_TITLE = "Import Employee Payments"
+    const val IMPORT_PAYMENT_BTN_TEXT = "Import Employee Payments"
+    const val IMPORT_PAYMENT_OPN_FILE = "Open File"
+    const val IMPORT_PAYMENT_NOTE_TEXT = "Make sure to open payments.json file."
+
+    const val EXPORT_PAYMENT_TITLE = "Export Employee Payments"
+    const val EXPORT_PAYMENT_BTN_TEXT = "Export Employee Payments"
+    const val EXPORT_PAYMENT_BTN = "Export Payment"
+
+    const val EXPORT_PAYMENT_FILE_NAME = "payments"
 }

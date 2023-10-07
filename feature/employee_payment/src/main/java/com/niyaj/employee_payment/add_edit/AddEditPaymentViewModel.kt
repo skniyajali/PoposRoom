@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -202,8 +201,8 @@ class AddEditPaymentViewModel @Inject constructor(
                     paymentType = state.paymentType,
                     paymentMode = state.paymentMode,
                     paymentNote = state.paymentNote,
-                    createdAt = Date(),
-                    updatedAt = if (paymentId != 0) Date() else null
+                    createdAt = System.currentTimeMillis(),
+                    updatedAt = if (paymentId != 0) System.currentTimeMillis() else null
                 )
 
                 when(paymentRepository.upsertPayment(newPayment)) {

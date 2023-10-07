@@ -45,7 +45,7 @@ import com.niyaj.database.model.ReportsEntity
 import com.niyaj.database.model.SelectedEntity
 import com.niyaj.database.util.TimestampConverters
 import com.niyaj.poposroom.features.charges.data.dao.ChargesDao
-import com.niyaj.poposroom.features.employee_payment.data.dao.PaymentDao
+import com.niyaj.database.dao.PaymentDao
 
 
 @Database(
