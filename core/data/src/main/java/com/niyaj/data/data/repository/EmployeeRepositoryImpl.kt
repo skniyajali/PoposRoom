@@ -526,26 +526,8 @@ class EmployeeRepositoryImpl(
     override suspend fun importEmployeesToDatabase(employees: List<Employee>): Resource<Boolean> {
         try {
             employees.forEach { newEmployee ->
-                val validateEmployeeName = validateEmployeeName(newEmployee.employeeName, newEmployee.employeeId)
-                val validateEmployeePhone =
-                    validateEmployeePhone(newEmployee.employeePhone, newEmployee.employeeId)
-                val validateEmployeePosition =
-                    validateEmployeePosition(newEmployee.employeePosition)
-                val validateEmployeeSalary = validateEmployeeSalary(newEmployee.employeeSalary)
-
-                val hasError = listOf(
-                    validateEmployeeName,
-                    validateEmployeePhone,
-                    validateEmployeePosition,
-                    validateEmployeeSalary
-                ).any { !it.successful }
-
-                if (!hasError) {
-                    withContext(ioDispatcher) {
-                        employeeDao.upsertEmployee(newEmployee.toEntity())
-                    }
-                } else {
-                    return Resource.Error("Unable to validate employee")
+                return withContext(ioDispatcher) {
+                    upsertEmployee(newEmployee)
                 }
             }
 

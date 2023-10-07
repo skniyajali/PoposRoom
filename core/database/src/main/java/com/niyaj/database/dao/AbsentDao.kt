@@ -61,6 +61,12 @@ interface AbsentDao {
     @Upsert
     suspend fun upsertAbsent(absent: AbsentEntity): Long
 
+    /**
+     * Inserts or updates [EmployeeEntity] in the db under the specified primary keys
+     */
+    @Upsert(entity = EmployeeEntity::class)
+    suspend fun upsertEmployee(employeeEntity: EmployeeEntity): Long
+
     @Insert(entity = EmployeeWithAbsentCrossRef::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertEmployeeWithAbsentCrossReference(employeeWithAbsent: EmployeeWithAbsentCrossRef)
 
@@ -81,11 +87,18 @@ interface AbsentDao {
     suspend fun deleteAbsents(absentIds: List<Int>): Int
 
     @Query(value = """
-        SELECT * FROM absent WHERE
+        SELECT absentId FROM absent WHERE
             CASE WHEN :absentId IS NULL OR :absentId = 0
             THEN absentDate = :absentDate AND employeeId = :employeeId
             ELSE absentId != :absentId AND absentDate = :absentDate AND employeeId = :employeeId
             END LIMIT 1
     """)
-    fun findEmployeeByDate(absentDate: String, employeeId: Int, absentId: Int?): AbsentEntity?
+    fun findEmployeeByDate(absentDate: String, employeeId: Int, absentId: Int?): Int?
+
+    @Query(
+        value = """
+        SELECT employeeId FROM employee WHERE employeeId == :employeeId OR employeeName = :employeeName
+    """
+    )
+    fun findEmployeeByName(employeeName: String, employeeId: Int?): Int?
 }

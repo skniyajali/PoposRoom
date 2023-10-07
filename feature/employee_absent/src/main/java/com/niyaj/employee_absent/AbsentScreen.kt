@@ -39,8 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.niyaj.common.utils.toDate
-import com.niyaj.common.utils.toMonthAndYear
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_NOT_AVAIlABLE
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_SCREEN_TITLE
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_SEARCH_PLACEHOLDER
@@ -49,8 +47,11 @@ import com.niyaj.common.tags.AbsentScreenTags.CREATE_NEW_ABSENT
 import com.niyaj.common.tags.AbsentScreenTags.DELETE_ABSENT_MESSAGE
 import com.niyaj.common.tags.AbsentScreenTags.DELETE_ABSENT_TITLE
 import com.niyaj.common.tags.AbsentScreenTags.NO_ITEMS_IN_ABSENT
+import com.niyaj.common.utils.toDate
+import com.niyaj.common.utils.toMonthAndYear
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.employee_absent.destinations.AbsentSettingsScreenDestination
 import com.niyaj.employee_absent.destinations.AddEditAbsentScreenDestination
 import com.niyaj.model.Absent
 import com.niyaj.model.EmployeeWithAbsents
@@ -167,7 +168,8 @@ fun AbsentScreen(
                 placeholderText = ABSENT_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = showSearchBar,
+                showSearchIcon = true,
+                showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
                     navController.navigate(AddEditAbsentScreenDestination(selectedItems.first()))
@@ -175,7 +177,9 @@ fun AbsentScreen(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = {},
+                onSettingsClick = {
+                    navController.navigate(AbsentSettingsScreenDestination)
+                },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
                 onSearchClick = viewModel::openSearchBar,
@@ -232,7 +236,7 @@ fun AbsentScreen(
                                     onExpandChanged = viewModel::selectEmployee,
                                     onLongClick = viewModel::selectItem,
                                     onChipClick = {
-//                                    navController.navigate(AddEditAbsentScreenDestination(employeeId = it))
+                                        navController.navigate(AddEditAbsentScreenDestination(employeeId = it))
                                     }
                                 )
 

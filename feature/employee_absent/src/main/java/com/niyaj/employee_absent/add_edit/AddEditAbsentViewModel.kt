@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -150,8 +149,8 @@ class AddEditAbsentViewModel @Inject constructor(
                     employeeId = _selectedEmployee.value.employeeId,
                     absentDate = state.absentDate,
                     absentReason = state.absentReason,
-                    createdAt = Date(),
-                    updatedAt = if (absentId == 0) null else Date()
+                    createdAt = System.currentTimeMillis(),
+                    updatedAt = if (absentId == 0) null else System.currentTimeMillis()
                 )
 
                 when (absentRepository.upsertAbsent(newAbsent)) {

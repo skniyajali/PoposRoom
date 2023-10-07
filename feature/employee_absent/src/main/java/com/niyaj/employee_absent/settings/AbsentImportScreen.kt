@@ -1,4 +1,4 @@
-package com.niyaj.charges.settings
+package com.niyaj.employee_absent.settings
 
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -7,12 +7,13 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Download
@@ -33,15 +34,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.niyaj.charges.ChargesData
-import com.niyaj.common.tags.ChargesTestTags.IMPORT_CHARGES_BTN_TEXT
-import com.niyaj.common.tags.ChargesTestTags.IMPORT_CHARGES_NOTE_TEXT
-import com.niyaj.common.tags.ChargesTestTags.IMPORT_CHARGES_OPN_FILE
-import com.niyaj.common.tags.ChargesTestTags.IMPORT_CHARGES_TITLE
+import com.niyaj.common.tags.AbsentScreenTags.IMPORT_ABSENT_BTN_TEXT
+import com.niyaj.common.tags.AbsentScreenTags.IMPORT_ABSENT_NOTE_TEXT
+import com.niyaj.common.tags.AbsentScreenTags.IMPORT_ABSENT_OPN_FILE
+import com.niyaj.common.tags.AbsentScreenTags.IMPORT_ABSENT_TITLE
 import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
-import com.niyaj.model.Charges
+import com.niyaj.employee_absent.AbsentData
+import com.niyaj.employee_absent.destinations.AddEditAbsentScreenDestination
+import com.niyaj.model.EmployeeWithAbsents
 import com.niyaj.ui.components.ImportScreen
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.ScrollToTop
@@ -51,6 +53,7 @@ import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.utils.ImportExport
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -58,15 +61,16 @@ import kotlinx.coroutines.launch
 @Destination
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun ChargesImportScreen(
+fun AbsentImportScreen(
     navController: NavController,
     resultBackNavigator: ResultBackNavigator<String>,
-    viewModel: ChargesSettingsViewModel = hiltViewModel(),
+    viewModel: AbsentSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val lazyGridState = rememberLazyGridState()
+    val lazyListState = rememberLazyListState()
 
+    val selectedEmployee = viewModel.selectedEmployee.collectAsStateWithLifecycle().value
     val importedItems = viewModel.importedItems.collectAsStateWithLifecycle().value
 
     val selectedItems = viewModel.selectedItems.toList()
@@ -93,9 +97,9 @@ fun ChargesImportScreen(
                 importJob?.cancel()
 
                 importJob = scope.launch {
-                    val data = ImportExport.readData<Charges>(context, it)
+                    val data = ImportExport.readData<EmployeeWithAbsents>(context, it)
 
-                    viewModel.onEvent(ChargesSettingsEvent.OnImportChargesItemsFromFile(data))
+                    viewModel.onEvent(AbsentSettingsEvent.OnImportAbsentItemsFromFile(data))
                 }
             }
         }
@@ -118,7 +122,7 @@ fun ChargesImportScreen(
 
     StandardScaffoldNew(
         navController = navController,
-        title = if (selectedItems.isEmpty()) IMPORT_CHARGES_TITLE else "${selectedItems.size} Selected",
+        title = if (selectedItems.isEmpty()) IMPORT_ABSENT_TITLE else "${selectedItems.size} Selected",
         showBackButton = true,
         showBottomBar = importedItems.isNotEmpty(),
         navActions = {
@@ -142,21 +146,21 @@ fun ChargesImportScreen(
                     .padding(SpaceSmallMax),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall)
             ) {
-                NoteCard(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} charges item will be imported.")
+                NoteCard(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} item will be imported.")
 
                 StandardButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag(IMPORT_CHARGES_BTN_TEXT),
+                        .testTag(IMPORT_ABSENT_BTN_TEXT),
                     enabled = true,
-                    text = IMPORT_CHARGES_BTN_TEXT,
+                    text = IMPORT_ABSENT_BTN_TEXT,
                     icon = Icons.Default.Download,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary
                     ),
                     onClick = {
                         scope.launch {
-                            viewModel.onEvent(ChargesSettingsEvent.ImportChargesItemsToDatabase)
+                            viewModel.onEvent(AbsentSettingsEvent.ImportAbsentItemsToDatabase)
                         }
                     }
                 )
@@ -165,10 +169,10 @@ fun ChargesImportScreen(
         fabPosition = FabPosition.End,
         floatingActionButton = {
             ScrollToTop(
-                visible = !lazyGridState.isScrollingUp(),
+                visible = !lazyListState.isScrollingUp(),
                 onClick = {
                     scope.launch {
-                        lazyGridState.animateScrollToItem(index = 0)
+                        lazyListState.animateScrollToItem(index = 0)
                     }
                 }
             )
@@ -180,8 +184,8 @@ fun ChargesImportScreen(
         ) { itemAvailable ->
             if (itemAvailable) {
                 ImportScreen(
-                    text = IMPORT_CHARGES_NOTE_TEXT,
-                    buttonText = IMPORT_CHARGES_OPN_FILE,
+                    text = IMPORT_ABSENT_NOTE_TEXT,
+                    buttonText = IMPORT_ABSENT_OPN_FILE,
                     icon = Icons.Default.FileOpen,
                     onClick = {
                         scope.launch {
@@ -192,24 +196,34 @@ fun ChargesImportScreen(
                     }
                 )
             }else {
-                LazyVerticalGrid(
+                LazyColumn(
                     modifier = Modifier
                         .padding(SpaceSmall),
-                    columns = GridCells.Fixed(2),
-                    state = lazyGridState,
+                    state = lazyListState
                 ) {
                     items(
                         items = importedItems,
-                        key = { it.chargesId }
-                    ) { item: Charges ->
-                        ChargesData(
-                            item = item,
-                            doesSelected = {
-                                selectedItems.contains(it)
-                            },
-                            onClick = viewModel::selectItem,
-                            onLongClick = viewModel::selectItem
-                        )
+                        key = { it.employee.employeeId }
+                    ) { item ->
+                        if (item.absents.isNotEmpty()) {
+                            AbsentData(
+                                item = item,
+                                expanded = {
+                                    selectedEmployee == it
+                                },
+                                doesSelected = {
+                                    selectedItems.contains(it)
+                                },
+                                onClick = viewModel::selectItem,
+                                onExpandChanged = viewModel::selectEmployee,
+                                onLongClick = viewModel::selectItem,
+                                onChipClick = {
+                                    navController.navigate(AddEditAbsentScreenDestination(employeeId = it))
+                                }
+                            )
+
+                            Spacer(modifier = Modifier.height(SpaceSmall))
+                        }
                     }
                 }
             }

@@ -18,8 +18,8 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.kotlinx.coroutines.android)
 
-    api(libs.hilt.ext.work)
-    api(libs.androidx.work.ktx)
+    implementation(libs.hilt.ext.work)
+    implementation(libs.androidx.work.ktx)
     kapt(libs.hilt.ext.compiler)
 
     testImplementation(project(":core:testing"))
