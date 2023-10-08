@@ -17,7 +17,9 @@ import com.niyaj.customer.details.CustomerDetailsScreen
 import com.niyaj.employee.destinations.EmployeeDetailsScreenDestination
 import com.niyaj.employee.details.EmployeeDetailsScreen
 import com.niyaj.employee_absent.destinations.AddEditAbsentScreenDestination
+import com.niyaj.employee_payment.PaymentScreen
 import com.niyaj.employee_payment.destinations.AddEditPaymentScreenDestination
+import com.niyaj.employee_payment.destinations.PaymentScreenDestination
 import com.niyaj.feature.reports.ReportScreen
 import com.niyaj.feature.reports.destinations.ReportScreenDestination
 import com.niyaj.order.OrderScreen
@@ -153,6 +155,16 @@ fun PoposNavHost(
                     },
                     onClickProduct = {
                         navController.navigate(ProductDetailsScreenDestination(it))
+                    }
+                )
+            }
+
+            composable(PaymentScreenDestination) {
+                PaymentScreen(
+                    navController = navController,
+                    resultRecipient = resultRecipient(),
+                    onClickEmployee = {
+                        navController.navigate(EmployeeDetailsScreenDestination(it))
                     }
                 )
             }

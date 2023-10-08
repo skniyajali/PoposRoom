@@ -36,6 +36,7 @@ fun IconBox(
 ) {
     val borderStroke =
         if (selected) BorderStroke(1.dp, borderColor) else BorderStroke(0.dp, Color.Transparent)
+
     Card(
         onClick = onClick,
         shape = RoundedCornerShape(2.dp),
