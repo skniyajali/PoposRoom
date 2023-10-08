@@ -327,7 +327,6 @@ fun AbsentData(
                     modifier = Modifier.wrapContentSize(),
                     text = "Add Entry",
                     icon = Icons.Default.Add,
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     onClick = { onChipClick(item.employee.employeeId) },
                 )
             },

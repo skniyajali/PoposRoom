@@ -106,7 +106,7 @@ fun ScaffoldNavActions(
         if (showSearchIcon) {
             IconButton(
                 onClick = onSearchClick,
-                modifier = Modifier.testTag(NAV_SEARCH_BTN)
+                modifier = Modifier.testTag(NAV_SEARCH_BTN),
             ) {
                 Icon(
                     imageVector = Icons.Default.Search,

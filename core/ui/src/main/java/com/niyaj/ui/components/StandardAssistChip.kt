@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
-import androidx.compose.material3.ElevatedAssistChip
 import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChipDefaults
@@ -27,10 +26,10 @@ fun StandardAssistChip(
     modifier: Modifier = Modifier,
     text: String,
     icon: ImageVector,
-    containerColor: Color = MaterialTheme.colorScheme.surface,
+    borderColor: Color = MaterialTheme.colorScheme.secondary,
     onClick: () -> Unit = {},
 ) {
-    ElevatedAssistChip(
+    AssistChip(
         modifier = modifier,
         onClick = onClick,
         label = {
@@ -42,12 +41,12 @@ fun StandardAssistChip(
         leadingIcon = {
             Icon(
                 imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(IconSizeMini)
+                contentDescription = text,
+                tint = borderColor
             )
         },
-        colors = AssistChipDefaults.elevatedAssistChipColors(
-            containerColor = containerColor
+        border = AssistChipDefaults.assistChipBorder(
+            borderColor = borderColor
         )
     )
 }
@@ -59,8 +58,8 @@ fun StandardFilterChip(
     text: String,
     icon: ImageVector? = null,
     selected: Boolean = false,
-    containerColor: Color = MaterialTheme.colorScheme.surface,
-    selectedColor: Color = MaterialTheme.colorScheme.secondary,
+    containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
+    selectedColor: Color = MaterialTheme.colorScheme.secondaryContainer,
     onClick: () -> Unit = {},
 ) {
     ElevatedFilterChip(
@@ -77,15 +76,13 @@ fun StandardFilterChip(
             icon?.let {
                 Icon(
                     imageVector = icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(IconSizeMini)
+                    contentDescription = text,
                 )
             }
         },
         colors = FilterChipDefaults.elevatedFilterChipColors(
             containerColor = containerColor,
-            selectedContainerColor = selectedColor,
-            selectedLabelColor = MaterialTheme.colorScheme.onSecondary
+            selectedContainerColor = selectedColor
         )
     )
 }
