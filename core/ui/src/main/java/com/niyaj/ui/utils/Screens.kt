@@ -81,4 +81,6 @@ object Screens {
     const val PrinterInfoScreen = "printer_info_screen"
     const val UpdatePrinterInfoScreen = "update_printer_info_screen"
 
+    const val MARKET_SCREEN = "market_screen"
+
 }

@@ -11,7 +11,9 @@ import com.niyaj.database.dao.CustomerDao
 import com.niyaj.database.dao.EmployeeDao
 import com.niyaj.database.dao.ExpenseDao
 import com.niyaj.database.dao.MainFeedDao
+import com.niyaj.database.dao.MarketListDao
 import com.niyaj.database.dao.OrderDao
+import com.niyaj.database.dao.PaymentDao
 import com.niyaj.database.dao.PrintDao
 import com.niyaj.database.dao.PrinterDao
 import com.niyaj.database.dao.ProductDao
@@ -19,7 +21,6 @@ import com.niyaj.database.dao.ProfileDao
 import com.niyaj.database.dao.ReportsDao
 import com.niyaj.database.dao.SelectedDao
 import com.niyaj.poposroom.features.charges.data.dao.ChargesDao
-import com.niyaj.database.dao.PaymentDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -88,4 +89,7 @@ object DaosModule {
 
     @Provides
     fun provideSelectedDao(database: PoposDatabase): SelectedDao = database.selectedDao()
+
+    @Provides
+    fun provideMarketListDao(database: PoposDatabase): MarketListDao = database.marketListDao()
 }

@@ -9,6 +9,7 @@ import com.niyaj.cartorder.CartorderNavGraph
 import com.niyaj.category.CategoryNavGraph
 import com.niyaj.charges.ChargesNavGraph
 import com.niyaj.customer.CustomerNavGraph
+import com.niyaj.daily_market.DailymarketNavGraph
 import com.niyaj.employee.EmployeeNavGraph
 import com.niyaj.employee_absent.EmployeeabsentNavGraph
 import com.niyaj.employee_payment.EmployeepaymentNavGraph
@@ -50,5 +51,6 @@ object RootNavGraph : NavGraphSpec {
         ProfileNavGraph,
         PrinterinfoNavGraph,
         ReportsNavGraph,
+        DailymarketNavGraph
     )
 }

@@ -36,7 +36,6 @@ object AddOnTestTags {
 
     const val ADDON_ITEM_TAG = "AddOn-"
 
-
     const val ADDON_SETTINGS_TITLE = "AddOn Settings"
 
     const val IMPORT_ADDON_TITLE = "Import AddOn Item"

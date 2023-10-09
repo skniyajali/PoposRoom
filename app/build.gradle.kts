@@ -114,6 +114,7 @@ dependencies {
     implementation(project(":feature:settings"))
     implementation(project(":feature:printer_info"))
     implementation(project(":feature:reports"))
+    implementation(project(":feature:daily_market"))
 
 
     implementation(project(":core:common"))
