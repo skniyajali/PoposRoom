@@ -347,6 +347,18 @@ fun safeString(price: String): Int {
     }
 }
 
+fun String.safeString(): String {
+    return if (this.isEmpty()) {
+        "0"
+    } else {
+        try {
+            this
+        } catch (e: NumberFormatException) {
+            "0"
+        }
+    }
+}
+
 fun String.safeInt(): Int {
     return if (this.isEmpty()) {
         0
@@ -359,13 +371,13 @@ fun String.safeInt(): Int {
     }
 }
 
-fun String.safeFloat() : Float {
+fun String.safeFloat(): Float {
     return if (this.isEmpty()) {
         0f
     } else {
         try {
             this.toFloat()
-        } catch (e : NumberFormatException) {
+        } catch (e: NumberFormatException) {
             0f
         }
     }
@@ -459,7 +471,7 @@ val getEndDateLong: Long = endTime().timeInMillis
 val Date.toTimeSpan
     get() = DateUtils.getRelativeTimeSpanString(this.time).toString()
 
-fun createDottedString(name : String, limit: Int) : String {
+fun createDottedString(name: String, limit: Int): String {
     if (name.length > limit) {
         var wordLength = 0
         var firstWordLength = 0
@@ -499,7 +511,7 @@ fun createDottedString(name : String, limit: Int) : String {
 }
 
 
-fun getSalaryDates(joinedDate : String) : List<Pair<String, String>> {
+fun getSalaryDates(joinedDate: String): List<Pair<String, String>> {
 
     val currentYearAndMonth = YearMonth.now()
 
@@ -544,12 +556,12 @@ fun getSalaryDates(joinedDate : String) : List<Pair<String, String>> {
 }
 
 private fun getStartAndEndDate(
-    date : Int,
-    currentMonth : Int,
-    currentYear : Int,
-    previousMonth : Int,
-    previousYear : Int
-) : Pair<String, String> {
+    date: Int,
+    currentMonth: Int,
+    currentYear: Int,
+    previousMonth: Int,
+    previousYear: Int,
+): Pair<String, String> {
     val startCalender = Calendar.getInstance()
     startCalender[Calendar.DATE] = date
     startCalender[Calendar.YEAR] = previousYear
@@ -571,7 +583,7 @@ private fun getStartAndEndDate(
     return Pair(startCalender.timeInMillis.toString(), endCalender.timeInMillis.toString())
 }
 
-fun compareSalaryDates(joinedDate : String, comparableDate : String) : Boolean {
+fun compareSalaryDates(joinedDate: String, comparableDate: String): Boolean {
     val calendar = Calendar.getInstance()
 
     calendar.timeInMillis = joinedDate.toLong()
@@ -589,7 +601,7 @@ fun compareSalaryDates(joinedDate : String, comparableDate : String) : Boolean {
     }
 }
 
-private fun getStartDate(date : Int, currentMonth : Int, currentYear : Int) : String {
+private fun getStartDate(date: Int, currentMonth: Int, currentYear: Int): String {
     val startCalender = Calendar.getInstance()
     startCalender[Calendar.DATE] = date
     startCalender[Calendar.YEAR] = currentYear
@@ -602,7 +614,7 @@ private fun getStartDate(date : Int, currentMonth : Int, currentYear : Int) : St
     return startCalender.timeInMillis.toString()
 }
 
-fun String.toDailySalaryAmount() : String {
+fun String.toDailySalaryAmount(): String {
     val dailyAmount = this.toLong().div(30).toInt()
     val numberFormat = NumberFormat.getInstance()
     numberFormat.roundingMode = RoundingMode.CEILING
@@ -611,12 +623,27 @@ fun String.toDailySalaryAmount() : String {
     return dailyAmount.toString().toRupee
 }
 
-fun Pair<String, String>.isSameDay() : Boolean {
+fun Pair<String, String>.isSameDay(): Boolean {
     val checkFirst = DateUtils.isToday(this.first.toLong())
     val checkSecond = DateUtils.isToday(this.second.toLong())
 
     return checkFirst && checkSecond
 }
 
-val String.isToday : Boolean
+val String.isToday: Boolean
     get() = DateUtils.isToday(this.toLong())
+
+
+// Create a list of all measure units.
+val measureUnitLists = listOf(
+    "kg", "gm", "li", "ml", "unit", "bottle", "packet",
+    "tsp", "tbsp", "cup", "pint", "quart", "gallon",
+    "ounce", "pound", "yard", "foot", "inch", "mile",
+    "kilometer", "meter", "centimeter", "millimeter",
+    "acre", "hectare", "square meter", "square foot", "square inch",
+    "cubic meter", "cubic foot", "cubic inch",
+    "fluid ounce", "fluid dram", "minim", "drop",
+    "grain", "scruple", "ounce troy", "pound troy", "carat",
+    "milligram", "micrograms", "nano gram", "pictogram",
+    "femto-gram", "atto-gram", "zepto gram", "yocto-gram"
+)

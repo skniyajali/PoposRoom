@@ -1,16 +1,13 @@
-package com.niyaj.addonitem
+package com.niyaj.daily_market
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
-import com.niyaj.common.network.Dispatcher
-import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
-import com.niyaj.data.repository.AddOnItemRepository
+import com.niyaj.data.repository.MarketListRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
@@ -21,17 +18,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddOnViewModel @Inject constructor(
-    private val itemRepository: AddOnItemRepository,
-    @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
-) : BaseViewModel() {
-
-    override var totalItems: List<Int> = emptyList()
+class MarketListViewModel @Inject constructor(
+    private val marketListRepository: MarketListRepository,
+): BaseViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val addOnItems = snapshotFlow { searchText.value }
         .flatMapLatest { it ->
-            itemRepository.getAllAddOnItem(it)
+            marketListRepository.getAllMarketList(it)
                 .onStart { UiState.Loading }
                 .map { items ->
                     totalItems = items.map { it.itemId }
@@ -48,8 +42,8 @@ class AddOnViewModel @Inject constructor(
     override fun deleteItems() {
         super.deleteItems()
 
-        viewModelScope.launch(ioDispatcher) {
-            when (val result = itemRepository.deleteAddOnItems(selectedItems.toList())) {
+        viewModelScope.launch {
+            when (val result = marketListRepository.deleteMarketLists(selectedItems.toList())) {
                 is Resource.Success -> {
                     mEventFlow.emit(
                         UiEvent.OnSuccess(
@@ -68,5 +62,4 @@ class AddOnViewModel @Inject constructor(
             mSelectedItems.clear()
         }
     }
-
 }

@@ -70,7 +70,7 @@ import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
+import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
@@ -124,12 +124,14 @@ fun AddEditExpenseScreen(
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
-    StandardScaffoldWithOutDrawer(
+    StandardScaffoldNew(
+        navController = navController,
         title = title,
         onBackClick = {
             navController.navigateUp()
         },
         showBottomBar = enableBtn,
+        showBackButton = true,
         bottomBar = {
             StandardButton(
                 modifier = Modifier
