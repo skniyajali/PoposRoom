@@ -23,14 +23,14 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.InsertLink
-import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Card
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -51,8 +51,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.niyaj.common.utils.toPrettyDate
-import com.niyaj.common.utils.toSafeString
 import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_INFO_NOTES_FOUR
 import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_INFO_NOTES_ONE
 import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_INFO_NOTES_THREE
@@ -60,6 +58,8 @@ import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_INFO_NOTES_TWO
 import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_NOT_AVAIlABLE
 import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_SCREEN_TITLE
 import com.niyaj.common.tags.PrinterInfoTestTags.UPDATE_PRINTER_INFO
+import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.common.utils.toSafeString
 import com.niyaj.designsystem.theme.LightColor9
 import com.niyaj.designsystem.theme.ProfilePictureSizeMedium
 import com.niyaj.designsystem.theme.ProfilePictureSizeSmall
@@ -88,7 +88,7 @@ import kotlinx.coroutines.launch
 @Composable
 @RootNavGraph(start = true)
 @Destination(
-    route = Screens.PrinterInfoScreen
+    route = Screens.PRINTER_INFO_SCREEN
 )
 fun PrinterInfoScreen(
     navController: NavController,
@@ -261,7 +261,7 @@ fun PrinterInfoScreen(
                                                 ) {
                                                     TextWithIcon(
                                                         text = data.name,
-                                                        icon = Icons.Default.Notes
+                                                        icon = Icons.AutoMirrored.Filled.Notes
                                                     )
 
                                                     TextWithIcon(

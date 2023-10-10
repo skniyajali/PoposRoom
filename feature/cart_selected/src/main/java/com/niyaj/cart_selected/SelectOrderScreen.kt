@@ -76,7 +76,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @RootNavGraph(start = true)
 @Destination(
-    route = Screens.SelectOrderScreen
+    route = Screens.SELECT_ORDER_SCREEN
 )
 @Composable
 fun SelectOrderScreen(
@@ -126,7 +126,7 @@ fun SelectOrderScreen(
                 text = CartOrderTestTags.CREATE_NEW_CART_ORDER,
                 icon = Icons.Default.Add,
                 onClick = {
-                    navController.navigate(Screens.AddEditCartOrderScreen)
+                    navController.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
                 }
             )
         }
@@ -142,7 +142,7 @@ fun SelectOrderScreen(
                         text = CartOrderTestTags.CART_ORDER_NOT_AVAIlABLE,
                         buttonText = CartOrderTestTags.CREATE_NEW_CART_ORDER,
                         onClick = {
-                            navController.navigate(Screens.AddEditCartOrderScreen)
+                            navController.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
                         }
                     )
                 }

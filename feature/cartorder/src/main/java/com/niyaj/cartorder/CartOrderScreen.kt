@@ -89,7 +89,7 @@ import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
 @Destination(
-    route = Screens.CartOrderScreen
+    route = Screens.CART_ORDER_SCREEN
 )
 @Composable
 fun CartOrderScreen(

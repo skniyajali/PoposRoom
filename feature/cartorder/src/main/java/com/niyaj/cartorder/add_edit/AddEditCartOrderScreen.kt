@@ -75,7 +75,7 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination(
-    route = Screens.AddEditCartOrderScreen
+    route = Screens.ADD_EDIT_CART_ORDER_SCREEN
 )
 @Composable
 fun AddEditCartOrderScreen(

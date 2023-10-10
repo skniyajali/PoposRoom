@@ -6,54 +6,54 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
-import com.niyaj.database.model.MarketListEntity
+import com.niyaj.database.model.MarketItemEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface MarketListDao {
+interface MarketItemDao {
 
     @Query(
         value = """
-        SELECT * FROM market_list ORDER BY createdAt DESC
+        SELECT * FROM market_item ORDER BY createdAt DESC
     """
     )
-    fun getAllMarketLists(): Flow<List<MarketListEntity>>
+    fun getAllMarketLists(): Flow<List<MarketItemEntity>>
 
     @Query(
         value = """
-        SELECT * FROM market_list WHERE itemId = :itemId
+        SELECT * FROM market_item WHERE itemId = :itemId
     """
     )
-    fun getMarketListById(itemId: Int): MarketListEntity?
+    fun getMarketListById(itemId: Int): MarketItemEntity?
 
     @Query(
         value = """
-            SELECT itemType FROM market_list ORDER BY createdAt DESC
+            SELECT DISTINCT itemType FROM market_item ORDER BY createdAt DESC
         """
     )
     fun getAllItemTypes(): Flow<List<String>>
 
     /**
-     * Inserts [MarketListEntity] into the db if they don't exist, and ignores those that do
+     * Inserts [MarketItemEntity] into the db if they don't exist, and ignores those that do
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertOrIgnoreMarketList(marketList: MarketListEntity): Long
+    suspend fun insertOrIgnoreMarketList(marketList: MarketItemEntity): Long
 
     /**
-     * Updates [MarketListEntity] in the db that match the primary key, and no-ops if they don't
+     * Updates [MarketItemEntity] in the db that match the primary key, and no-ops if they don't
      */
     @Update
-    suspend fun updateMarketList(marketList: MarketListEntity): Int
+    suspend fun updateMarketList(marketList: MarketItemEntity): Int
 
     /**
-     * Inserts or updates [MarketListEntity] in the db under the specified primary keys
+     * Inserts or updates [MarketItemEntity] in the db under the specified primary keys
      */
     @Upsert
-    suspend fun upsertMarketList(marketList: MarketListEntity): Long
+    suspend fun upsertMarketList(marketList: MarketItemEntity): Long
 
     @Query(
         value = """
-                DELETE FROM market_list WHERE itemId = :itemId
+                DELETE FROM market_item WHERE itemId = :itemId
         """
     )
     suspend fun deleteMarketList(itemId: Int): Int
@@ -63,7 +63,7 @@ interface MarketListDao {
      */
     @Query(
         value = """
-                DELETE FROM market_list
+                DELETE FROM market_item
                 WHERE itemId in(:itemIds)
         """,
     )
@@ -71,7 +71,7 @@ interface MarketListDao {
 
     @Query(
         value = """
-                SELECT itemId FROM market_list WHERE
+                SELECT itemId FROM market_item WHERE
                 CASE WHEN :itemId IS NULL OR :itemId = 0
     THEN itemName = :itemName
     ELSE itemId != :itemId AND itemName = :itemName

@@ -91,7 +91,7 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Destination(
-    route = Screens.AddEditEmployeeScreen
+    route = Screens.ADD_EDIT_EMPLOYEE_SCREEN
 )
 fun AddEditEmployeeScreen(
     employeeId: Int = 0,

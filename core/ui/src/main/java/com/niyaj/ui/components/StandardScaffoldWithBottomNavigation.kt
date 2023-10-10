@@ -109,7 +109,7 @@ fun StandardScaffoldWithBottomNavigation(
                                 text = selectedId,
                                 height = 40.dp,
                                 onClick = {
-                                    navController.navigate(Screens.SelectOrderScreen)
+                                    navController.navigate(Screens.SELECT_ORDER_SCREEN)
                                 }
                             )
                         }
@@ -186,7 +186,7 @@ fun StandardScaffoldWithBottomNavigation(
                 ) {
                     FloatingActionButton(
                         onClick = {
-                            navController.navigate(Screens.AddEditCartOrderScreen)
+                            navController.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
                         },
                         containerColor = MaterialTheme.colorScheme.secondary
                     ) {

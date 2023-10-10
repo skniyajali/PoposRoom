@@ -75,7 +75,7 @@ import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
 @Destination(
-    route = Screens.HomeScreen
+    route = Screens.HOME_SCREEN
 )
 @Composable
 fun HomeScreen(
@@ -154,7 +154,7 @@ fun HomeScreen(
                         image = painterResource(id = R.drawable.nothinghere),
                         buttonText = MainFeedTestTags.CREATE_NEW_PRODUCT,
                         onClick = {
-                            navController.navigate(Screens.AddEditProductScreen)
+                            navController.navigate(Screens.ADD_EDIT_PRODUCT_SCREEN)
                         }
                     )
                 }
@@ -178,14 +178,14 @@ fun HomeScreen(
                                 if (selectedId != 0) {
                                     viewModel.addProductToCart(selectedId, it)
                                 } else {
-                                    navController.navigate(Screens.AddEditCartOrderScreen)
+                                    navController.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
                                 }
                             },
                             onDecrease = {
                                 viewModel.removeProductFromCart(selectedId, it)
                             },
                             onCreateProduct = {
-                                navController.navigate(Screens.AddEditProductScreen)
+                                navController.navigate(Screens.ADD_EDIT_PRODUCT_SCREEN)
                             }
                         )
                     }

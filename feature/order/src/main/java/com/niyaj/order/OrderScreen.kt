@@ -70,7 +70,7 @@ import java.time.LocalDate
 @OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class)
 @RootNavGraph(start = true)
 @Destination(
-    route = Screens.OrderScreen
+    route = Screens.ORDER_SCREEN
 )
 @Composable
 fun OrderScreen(
@@ -191,7 +191,7 @@ fun OrderScreen(
                         duration = SnackbarDuration.Short
                     )
                     if (result == SnackbarResult.ActionPerformed) {
-                        navController.navigate(Screens.CartScreen)
+                        navController.navigate(Screens.CART_SCREEN)
                     }
                 }
 
@@ -335,7 +335,7 @@ fun OrderScreen(
                         viewModel.onOrderEvent(OrderEvent.MarkedAsProcessing(it))
                     },
                     onNavigateToHomeScreen = {
-                        navController.navigate(Screens.HomeScreen)
+                        navController.navigate(Screens.HOME_SCREEN)
                     },
                     onClickOrderDetails = {
                         navController.navigate(OrderDetailsScreenDestination(it))
@@ -359,7 +359,7 @@ fun OrderScreen(
                         viewModel.onOrderEvent(OrderEvent.MarkedAsProcessing(it))
                     },
                     onNavigateToHomeScreen = {
-                        navController.navigate(Screens.HomeScreen)
+                        navController.navigate(Screens.HOME_SCREEN)
                     },
                     onClickOrderDetails = {
                         navController.navigate(OrderDetailsScreenDestination(it))

@@ -130,10 +130,10 @@ fun StandardDrawer(
 
                 DrawerItem(
                     text = "Home",
-                    icon = if (currentRoute == Screens.HomeScreen) Icons.Default.Home else Icons.Outlined.Home,
-                    selected = currentRoute == Screens.HomeScreen,
+                    icon = if (currentRoute == Screens.HOME_SCREEN) Icons.Default.Home else Icons.Outlined.Home,
+                    selected = currentRoute == Screens.HOME_SCREEN,
                     onClick = {
-                        navController.navigate(Screens.HomeScreen)
+                        navController.navigate(Screens.HOME_SCREEN)
                     }
                 )
             }
@@ -143,10 +143,10 @@ fun StandardDrawer(
 
                 DrawerItem(
                     text = "View Orders",
-                    icon = if (currentRoute == Screens.OrderScreen) Icons.Default.Inventory else Icons.Outlined.Inventory2,
-                    selected = currentRoute == Screens.OrderScreen,
+                    icon = if (currentRoute == Screens.ORDER_SCREEN) Icons.Default.Inventory else Icons.Outlined.Inventory2,
+                    selected = currentRoute == Screens.ORDER_SCREEN,
                     onClick = {
-                        navController.navigate(Screens.OrderScreen)
+                        navController.navigate(Screens.ORDER_SCREEN)
                     }
                 )
             }
@@ -156,10 +156,10 @@ fun StandardDrawer(
 
                 DrawerItem(
                     text = "View Reports",
-                    icon = if (currentRoute == Screens.ReportScreen) Icons.Default.Assessment else Icons.Outlined.Assessment,
-                    selected = currentRoute == Screens.ReportScreen,
+                    icon = if (currentRoute == Screens.REPORT_SCREEN) Icons.Default.Assessment else Icons.Outlined.Assessment,
+                    selected = currentRoute == Screens.REPORT_SCREEN,
                     onClick = {
-                        navController.navigate(Screens.ReportScreen)
+                        navController.navigate(Screens.REPORT_SCREEN)
                     }
                 )
             }
@@ -169,10 +169,10 @@ fun StandardDrawer(
 
                 DrawerItem(
                     text = "View Expenses",
-                    icon = if (currentRoute == Screens.ExpensesScreen) Icons.AutoMirrored.Filled.StickyNote2 else Icons.AutoMirrored.Outlined.StickyNote2,
-                    selected = currentRoute == Screens.ExpensesScreen,
+                    icon = if (currentRoute == Screens.EXPENSES_SCREEN) Icons.AutoMirrored.Filled.StickyNote2 else Icons.AutoMirrored.Outlined.StickyNote2,
+                    selected = currentRoute == Screens.EXPENSES_SCREEN,
                     onClick = {
-                        navController.navigate(Screens.ExpensesScreen)
+                        navController.navigate(Screens.EXPENSES_SCREEN)
                     }
                 )
             }
@@ -241,21 +241,21 @@ fun StandardDrawer(
                         ) {
                             DrawerItem(
                                 text = "Orders",
-                                icon = if (currentRoute == Screens.OrderScreen)
+                                icon = if (currentRoute == Screens.ORDER_SCREEN)
                                     Icons.Default.Inventory else Icons.Outlined.Inventory2,
-                                selected = currentRoute == Screens.OrderScreen,
+                                selected = currentRoute == Screens.ORDER_SCREEN,
                                 onClick = {
-                                    navController.navigate(Screens.OrderScreen)
+                                    navController.navigate(Screens.ORDER_SCREEN)
                                 }
                             )
                             Spacer(modifier = Modifier.height(SpaceSmall))
                             DrawerItem(
                                 text = "Cart Orders",
-                                icon = if (currentRoute == Screens.CartOrderScreen)
+                                icon = if (currentRoute == Screens.CART_ORDER_SCREEN)
                                     Icons.Default.BreakfastDining else Icons.Outlined.BreakfastDining,
-                                selected = currentRoute == Screens.CartOrderScreen,
+                                selected = currentRoute == Screens.CART_ORDER_SCREEN,
                                 onClick = {
-                                    navController.navigate(Screens.CartOrderScreen)
+                                    navController.navigate(Screens.CART_ORDER_SCREEN)
                                 }
                             )
                         }
@@ -267,8 +267,8 @@ fun StandardDrawer(
                 Spacer(modifier = Modifier.height(SpaceSmall))
 
                 val doesExpanded = currentRoute in listOf(
-                    Screens.CustomerScreen,
-                    Screens.AddressScreen
+                    Screens.CUSTOMER_SCREEN,
+                    Screens.ADDRESS_SCREEN
                 )
 
                 StandardExpandable(
@@ -310,11 +310,11 @@ fun StandardDrawer(
                         ) {
                             DrawerItem(
                                 text = "Customers",
-                                icon = if (currentRoute == Screens.CustomerScreen)
+                                icon = if (currentRoute == Screens.CUSTOMER_SCREEN)
                                     Icons.Default.PeopleAlt else Icons.Outlined.PeopleAlt,
-                                selected = currentRoute == Screens.CustomerScreen,
+                                selected = currentRoute == Screens.CUSTOMER_SCREEN,
                                 onClick = {
-                                    navController.navigate(Screens.CustomerScreen)
+                                    navController.navigate(Screens.CUSTOMER_SCREEN)
                                 }
                             )
 
@@ -322,11 +322,11 @@ fun StandardDrawer(
 
                             DrawerItem(
                                 text = "Addresses",
-                                icon = if (currentRoute == Screens.AddressScreen)
+                                icon = if (currentRoute == Screens.ADDRESS_SCREEN)
                                     Icons.Default.Business else Icons.Outlined.Business,
-                                selected = currentRoute == Screens.AddressScreen,
+                                selected = currentRoute == Screens.ADDRESS_SCREEN,
                                 onClick = {
-                                    navController.navigate(Screens.AddressScreen)
+                                    navController.navigate(Screens.ADDRESS_SCREEN)
                                 }
                             )
                         }
@@ -338,9 +338,9 @@ fun StandardDrawer(
                 Spacer(modifier = Modifier.height(SpaceSmall))
 
                 val doesExpanded = currentRoute in listOf(
-                    Screens.EmployeeScreen,
-                    Screens.PaymentScreen,
-                    Screens.AbsentScreen
+                    Screens.EMPLOYEE_SCREEN,
+                    Screens.PAYMENT_SCREEN,
+                    Screens.ABSENT_SCREEN
                 )
 
                 StandardExpandable(
@@ -382,11 +382,11 @@ fun StandardDrawer(
                         ) {
                             DrawerItem(
                                 text = "Employees",
-                                icon = if (currentRoute == Screens.EmployeeScreen)
+                                icon = if (currentRoute == Screens.EMPLOYEE_SCREEN)
                                     Icons.Default.SwitchAccount else Icons.Outlined.SwitchAccount,
-                                selected = currentRoute == Screens.EmployeeScreen,
+                                selected = currentRoute == Screens.EMPLOYEE_SCREEN,
                                 onClick = {
-                                    navController.navigate(Screens.EmployeeScreen)
+                                    navController.navigate(Screens.EMPLOYEE_SCREEN)
                                 }
                             )
 
@@ -394,11 +394,11 @@ fun StandardDrawer(
 
                             DrawerItem(
                                 text = "Employee Absent Report",
-                                icon = if (currentRoute == Screens.AbsentScreen)
+                                icon = if (currentRoute == Screens.ABSENT_SCREEN)
                                     Icons.Default.EventBusy else Icons.Outlined.EventBusy,
-                                selected = currentRoute == Screens.AbsentScreen,
+                                selected = currentRoute == Screens.ABSENT_SCREEN,
                                 onClick = {
-                                    navController.navigate(Screens.AbsentScreen)
+                                    navController.navigate(Screens.ABSENT_SCREEN)
                                 }
                             )
 
@@ -406,11 +406,11 @@ fun StandardDrawer(
 
                             DrawerItem(
                                 text = "Employee Payments",
-                                icon = if (currentRoute == Screens.PaymentScreen)
+                                icon = if (currentRoute == Screens.PAYMENT_SCREEN)
                                     Icons.Default.Money else Icons.Outlined.Money,
-                                selected = currentRoute == Screens.PaymentScreen,
+                                selected = currentRoute == Screens.PAYMENT_SCREEN,
                                 onClick = {
-                                    navController.navigate(Screens.PaymentScreen)
+                                    navController.navigate(Screens.PAYMENT_SCREEN)
                                 }
                             )
                         }
@@ -422,10 +422,10 @@ fun StandardDrawer(
                 Spacer(modifier = Modifier.height(SpaceSmall))
 
                 val doesExpanded = currentRoute in listOf(
-                    Screens.CategoryScreen,
-                    Screens.ProductsScreen,
-                    Screens.AddOnItemScreen,
-                    Screens.ChargesScreen
+                    Screens.CATEGORY_SCREEN,
+                    Screens.PRODUCT_SCREEN,
+                    Screens.ADD_ON_ITEM_SCREEN,
+                    Screens.CHARGES_SCREEN
                 )
 
                 StandardExpandable(
@@ -469,11 +469,11 @@ fun StandardDrawer(
 
                             DrawerItem(
                                 text = "Categories",
-                                icon = if (currentRoute == Screens.CategoryScreen)
+                                icon = if (currentRoute == Screens.CATEGORY_SCREEN)
                                     Icons.Default.Category else Icons.Outlined.Category,
-                                selected = currentRoute == Screens.CategoryScreen,
+                                selected = currentRoute == Screens.CATEGORY_SCREEN,
                                 onClick = {
-                                    navController.navigate(Screens.CategoryScreen)
+                                    navController.navigate(Screens.CATEGORY_SCREEN)
                                 }
                             )
 
@@ -481,11 +481,11 @@ fun StandardDrawer(
 
                             DrawerItem(
                                 text = "Products",
-                                icon = if (currentRoute == Screens.ProductsScreen)
+                                icon = if (currentRoute == Screens.PRODUCT_SCREEN)
                                     Icons.Default.Dns else Icons.Outlined.Dns,
-                                selected = currentRoute == Screens.ProductsScreen,
+                                selected = currentRoute == Screens.PRODUCT_SCREEN,
                                 onClick = {
-                                    navController.navigate(Screens.ProductsScreen)
+                                    navController.navigate(Screens.PRODUCT_SCREEN)
                                 }
                             )
 
@@ -493,11 +493,11 @@ fun StandardDrawer(
 
                             DrawerItem(
                                 text = "AddOn Item",
-                                icon = if (currentRoute == Screens.AddOnItemScreen)
+                                icon = if (currentRoute == Screens.ADD_ON_ITEM_SCREEN)
                                     Icons.Default.InsertLink else Icons.Outlined.InsertLink,
-                                selected = currentRoute == Screens.AddOnItemScreen,
+                                selected = currentRoute == Screens.ADD_ON_ITEM_SCREEN,
                                 onClick = {
-                                    navController.navigate(Screens.AddOnItemScreen)
+                                    navController.navigate(Screens.ADD_ON_ITEM_SCREEN)
                                 }
                             )
 
@@ -505,11 +505,11 @@ fun StandardDrawer(
 
                             DrawerItem(
                                 text = "Charges Item",
-                                icon = if (currentRoute == Screens.ChargesScreen)
+                                icon = if (currentRoute == Screens.CHARGES_SCREEN)
                                     Icons.Default.Bolt else Icons.Outlined.Bolt,
-                                selected = currentRoute == Screens.ChargesScreen,
+                                selected = currentRoute == Screens.CHARGES_SCREEN,
                                 onClick = {
-                                    navController.navigate(Screens.ChargesScreen)
+                                    navController.navigate(Screens.CHARGES_SCREEN)
                                 }
                             )
 
@@ -560,9 +560,9 @@ fun StandardDrawer(
                         ) {
                             DrawerItem(
                                 text = "Reminders",
-                                icon = if (currentRoute == Screens.ReminderScreen)
+                                icon = if (currentRoute == Screens.REMINDER_SCREEN)
                                     Icons.Default.Notifications else Icons.Outlined.Notifications,
-                                selected = currentRoute == Screens.ReminderScreen,
+                                selected = currentRoute == Screens.REMINDER_SCREEN,
                                 onClick = {
 //                                    navController.navigate(ReminderScreenDestination())
                                 }
@@ -570,9 +570,9 @@ fun StandardDrawer(
                             Spacer(modifier = Modifier.height(SpaceSmall))
                             DrawerItem(
                                 text = "App Settings",
-                                icon = if (currentRoute == Screens.SettingsScreen)
+                                icon = if (currentRoute == Screens.SETTINGS_SCREEN)
                                     Icons.Default.Settings else Icons.Outlined.Settings,
-                                selected = currentRoute == Screens.SettingsScreen,
+                                selected = currentRoute == Screens.SETTINGS_SCREEN,
                                 onClick = {
 //                                    navController.navigate(SettingsScreenDestination())
                                 }
@@ -581,11 +581,11 @@ fun StandardDrawer(
 
                             DrawerItem(
                                 text = "Printer Information",
-                                icon = if (currentRoute == Screens.PrinterInfoScreen)
+                                icon = if (currentRoute == Screens.PRINTER_INFO_SCREEN)
                                     Icons.Default.Print else Icons.Outlined.Print,
-                                selected = currentRoute == Screens.PrinterInfoScreen,
+                                selected = currentRoute == Screens.PRINTER_INFO_SCREEN,
                                 onClick = {
-                                    navController.navigate(Screens.PrinterInfoScreen)
+                                    navController.navigate(Screens.PRINTER_INFO_SCREEN)
                                 }
                             )
                         }
@@ -660,7 +660,7 @@ fun DrawerHeader(
 
         IconButton(
             onClick = {
-                navController.navigate(Screens.ProfileScreen)
+                navController.navigate(Screens.PROFILE_SCREEN)
             },
             modifier = Modifier.padding(end = SpaceSmall)
         ) {

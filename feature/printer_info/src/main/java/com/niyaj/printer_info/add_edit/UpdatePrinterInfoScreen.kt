@@ -52,7 +52,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
 @Destination(
-    route = Screens.UpdatePrinterInfoScreen
+    route = Screens.UPDATE_PRINTER_INFO_SCREEN
 )
 @Composable
 fun UpdatePrinterInfoScreen(

@@ -89,7 +89,7 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination(
-    route = Screens.AddEditPaymentScreen
+    route = Screens.ADD_EDIT_PAYMENT_SCREEN
 )
 @Composable
 fun AddEditPaymentScreen(
@@ -268,7 +268,7 @@ fun AddEditPaymentScreen(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             onClick = {
-                                navController.navigate(Screens.AddEditEmployeeScreen)
+                                navController.navigate(Screens.ADD_EDIT_EMPLOYEE_SCREEN)
                             },
                             text = {
                                 Text(

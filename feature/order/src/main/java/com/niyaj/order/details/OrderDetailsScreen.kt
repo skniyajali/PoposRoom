@@ -92,7 +92,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Destination(
-    route = Screens.OrderDetailsScreen
+    route = Screens.ORDER_DETAILS_SCREEN
 )
 @Composable
 fun OrderDetailsScreen(

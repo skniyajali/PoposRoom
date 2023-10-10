@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
 @Destination(
-    route = Screens.ProfileScreen
+    route = Screens.PROFILE_SCREEN
 )
 @Composable
 fun ProfileScreen(

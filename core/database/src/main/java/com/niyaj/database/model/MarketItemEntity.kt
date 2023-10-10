@@ -2,10 +2,10 @@ package com.niyaj.database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.niyaj.model.MarketList
+import com.niyaj.model.MarketItem
 
-@Entity(tableName = "market_list")
-data class MarketListEntity(
+@Entity(tableName = "market_item")
+data class MarketItemEntity(
 
     @PrimaryKey(autoGenerate = true)
     val itemId: Int = 0,
@@ -26,8 +26,8 @@ data class MarketListEntity(
 )
 
 
-fun MarketListEntity.asExternalModel(): MarketList {
-    return MarketList(
+fun MarketItemEntity.asExternalModel(): MarketItem {
+    return MarketItem(
         itemId = itemId,
         itemType = itemType,
         itemName = itemName,

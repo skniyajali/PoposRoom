@@ -4,7 +4,7 @@ import com.niyaj.common.utils.toDateString
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class MarketList(
+data class MarketItem(
     val itemId: Int = 0,
 
     val itemType: String,
@@ -23,7 +23,7 @@ data class MarketList(
 )
 
 
-fun List<MarketList>.searchMarketList(searchText: String): List<MarketList> {
+fun List<MarketItem>.searchMarketItems(searchText: String): List<MarketItem> {
     return if (searchText.isNotEmpty()) {
         this.filter {
             it.itemType.contains(searchText, true) ||

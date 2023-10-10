@@ -52,7 +52,7 @@ import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
 @Destination(
-    route = Screens.CategoryScreen
+    route = Screens.CATEGORY_SCREEN
 )
 @Composable
 fun CategoryScreen(
