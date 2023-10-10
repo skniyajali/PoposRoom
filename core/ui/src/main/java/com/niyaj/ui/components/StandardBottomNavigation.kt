@@ -31,7 +31,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -64,9 +63,9 @@ private fun BottomNavigationBar(
 
     NavigationBar {
         NavigationBarItem(
-            selected = currentRoute == Screens.HomeScreen,
+            selected = currentRoute == Screens.HOME_SCREEN,
             label = {
-                val fontWeight = if (currentRoute == Screens.HomeScreen)
+                val fontWeight = if (currentRoute == Screens.HOME_SCREEN)
                     FontWeight.SemiBold else FontWeight.Normal
 
                 Text(
@@ -76,10 +75,10 @@ private fun BottomNavigationBar(
                 )
             },
             onClick = {
-                navController.navigate(Screens.HomeScreen)
+                navController.navigate(Screens.HOME_SCREEN)
             },
             icon = {
-                val icon = if (currentRoute == Screens.HomeScreen) {
+                val icon = if (currentRoute == Screens.HOME_SCREEN) {
                     Icons.Rounded.Home
                 } else Icons.Outlined.Home
 
@@ -88,9 +87,9 @@ private fun BottomNavigationBar(
         )
 
         NavigationBarItem(
-            selected = currentRoute == Screens.CartScreen,
+            selected = currentRoute == Screens.CART_SCREEN,
             label = {
-                val fontWeight = if (currentRoute == Screens.CartScreen)
+                val fontWeight = if (currentRoute == Screens.CART_SCREEN)
                     FontWeight.SemiBold else FontWeight.Normal
 
                 Text(
@@ -100,10 +99,10 @@ private fun BottomNavigationBar(
                 )
             },
             onClick = {
-                navController.navigate(Screens.CartScreen)
+                navController.navigate(Screens.CART_SCREEN)
             },
             icon = {
-                val icon = if (currentRoute == Screens.CartScreen) {
+                val icon = if (currentRoute == Screens.CART_SCREEN) {
                     Icons.Rounded.ShoppingCart
                 } else Icons.Outlined.ShoppingCart
 
@@ -112,9 +111,9 @@ private fun BottomNavigationBar(
         )
 
         NavigationBarItem(
-            selected = currentRoute == Screens.OrderScreen,
+            selected = currentRoute == Screens.ORDER_SCREEN,
             label = {
-                val fontWeight = if (currentRoute == Screens.OrderScreen)
+                val fontWeight = if (currentRoute == Screens.ORDER_SCREEN)
                     FontWeight.SemiBold else FontWeight.Normal
 
                 Text(
@@ -124,10 +123,10 @@ private fun BottomNavigationBar(
                 )
             },
             onClick = {
-                navController.navigate(Screens.OrderScreen)
+                navController.navigate(Screens.ORDER_SCREEN)
             },
             icon = {
-                val icon = if (currentRoute == Screens.OrderScreen) {
+                val icon = if (currentRoute == Screens.ORDER_SCREEN) {
                     Icons.Rounded.Inventory2
                 } else Icons.Outlined.Inventory2
 
@@ -136,9 +135,9 @@ private fun BottomNavigationBar(
         )
 
         NavigationBarItem(
-            selected = currentRoute == Screens.ReportScreen,
+            selected = currentRoute == Screens.REPORT_SCREEN,
             label = {
-                val fontWeight = if (currentRoute == Screens.ReportScreen)
+                val fontWeight = if (currentRoute == Screens.REPORT_SCREEN)
                     FontWeight.SemiBold else FontWeight.Normal
 
                 Text(
@@ -148,10 +147,10 @@ private fun BottomNavigationBar(
                 )
             },
             onClick = {
-                navController.navigate(Screens.ReportScreen)
+                navController.navigate(Screens.REPORT_SCREEN)
             },
             icon = {
-                val icon = if (currentRoute == Screens.OrderScreen) {
+                val icon = if (currentRoute == Screens.ORDER_SCREEN) {
                     Icons.Rounded.Assessment
                 } else Icons.Outlined.Assessment
 
@@ -171,43 +170,43 @@ internal fun AnimatedBottomNavigationBar(
 
     val navItems = listOf(
         NavigationItem(
-            index = Screens.HomeScreen.hashCode(),
+            index = Screens.HOME_SCREEN.hashCode(),
             name = "Home",
-            selected = currentRoute == Screens.HomeScreen.hashCode(),
+            selected = currentRoute == Screens.HOME_SCREEN.hashCode(),
             selectedIcon = R.drawable.round_home,
             unselectedIcon = R.drawable.outline_home,
             onClick = {
-                navController.navigate(Screens.HomeScreen)
+                navController.navigate(Screens.HOME_SCREEN)
             }
         ),
         NavigationItem(
-            index = Screens.CartScreen.hashCode(),
+            index = Screens.CART_SCREEN.hashCode(),
             name = "Cart",
-            selected = currentRoute == Screens.CartScreen.hashCode(),
+            selected = currentRoute == Screens.CART_SCREEN.hashCode(),
             selectedIcon = R.drawable.round_cart,
             unselectedIcon = R.drawable.outline_cart,
             onClick = {
-                navController.navigate(Screens.CartScreen)
+                navController.navigate(Screens.CART_SCREEN)
             }
         ),
         NavigationItem(
-            index = Screens.OrderScreen.hashCode(),
+            index = Screens.ORDER_SCREEN.hashCode(),
             name = "Orders",
-            selected = currentRoute == Screens.OrderScreen.hashCode(),
+            selected = currentRoute == Screens.ORDER_SCREEN.hashCode(),
             selectedIcon = R.drawable.round_orders,
             unselectedIcon = R.drawable.outline_orders,
             onClick = {
-                navController.navigate(Screens.OrderScreen)
+                navController.navigate(Screens.ORDER_SCREEN)
             }
         ),
         NavigationItem(
-            index = Screens.ReportScreen.hashCode(),
+            index = Screens.REPORT_SCREEN.hashCode(),
             name = "Reports",
-            selected = currentRoute == Screens.ReportScreen.hashCode(),
+            selected = currentRoute == Screens.REPORT_SCREEN.hashCode(),
             selectedIcon = R.drawable.round_reports,
             unselectedIcon = R.drawable.outline_reports,
             onClick = {
-                navController.navigate(Screens.ReportScreen)
+                navController.navigate(Screens.REPORT_SCREEN)
             }
         )
     )

@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -43,15 +44,15 @@ import androidx.navigation.NavController
 import com.niyaj.common.tags.MarketListTestTags.CREATE_NEW_ITEM
 import com.niyaj.common.tags.MarketListTestTags.DELETE_ITEM_MESSAGE
 import com.niyaj.common.tags.MarketListTestTags.DELETE_ITEM_TITLE
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_NOT_AVAILABLE
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_SCREEN_TITLE
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_ITEM_TAG
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_NOT_AVAILABLE
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_SCREEN_TITLE
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_SEARCH_PLACEHOLDER
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.toRupee
-import com.niyaj.daily_market.destinations.AddEditMarketListScreenDestination
+import com.niyaj.daily_market.destinations.AddEditMarketItemScreenDestination
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.model.MarketList
+import com.niyaj.model.MarketItem
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
@@ -73,10 +74,10 @@ import kotlinx.coroutines.launch
 @RootNavGraph(start = true)
 @Destination(route = MARKET_SCREEN)
 @Composable
-fun MarketListScreen(
+fun MarketItemScreen(
     navController: NavController,
-    viewModel: MarketListViewModel = hiltViewModel(),
-    resultRecipient: ResultRecipient<AddEditMarketListScreenDestination, String>
+    viewModel: MarketItemViewModel = hiltViewModel(),
+    resultRecipient: ResultRecipient<AddEditMarketItemScreenDestination, String>
 ) {
 
     val scope = rememberCoroutineScope()
@@ -139,14 +140,14 @@ fun MarketListScreen(
 
     StandardScaffold(
         navController = navController,
-        title = if (selectedItems.isEmpty()) MARKET_LIST_SCREEN_TITLE else "${selectedItems.size} Selected",
+        title = if (selectedItems.isEmpty()) MARKET_ITEM_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
                 showScrollToTop = lazyGridState.isScrolled,
                 fabText = CREATE_NEW_ITEM,
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
                 onFabClick = {
-                    navController.navigate(AddEditMarketListScreenDestination())
+                    navController.navigate(AddEditMarketItemScreenDestination())
                 },
                 onClickScroll = {
                     scope.launch {
@@ -157,14 +158,14 @@ fun MarketListScreen(
         },
         navActions = {
             ScaffoldNavActions(
-                placeholderText = MARKET_LIST_SEARCH_PLACEHOLDER,
+                placeholderText = MARKET_ITEM_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
                 showSearchIcon = true,
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
-                    navController.navigate(AddEditMarketListScreenDestination(selectedItems.first()))
+                    navController.navigate(AddEditMarketItemScreenDestination(selectedItems.first()))
                 },
                 onDeleteClick = {
                     openDialog.value = true
@@ -187,17 +188,17 @@ fun MarketListScreen(
     ) { _ ->
         Crossfade(
             targetState = state,
-            label = "List State"
+            label = "Item State"
         ) { state ->
             when (state) {
                 is UiState.Loading -> LoadingIndicator()
 
                 is UiState.Empty -> {
                     ItemNotAvailable(
-                        text = if (searchText.isEmpty()) MARKET_LIST_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND,
+                        text = if (searchText.isEmpty()) MARKET_ITEM_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND,
                         buttonText = CREATE_NEW_ITEM,
                         onClick = {
-                            navController.navigate(AddEditMarketListScreenDestination())
+                            navController.navigate(AddEditMarketItemScreenDestination())
                         }
                     )
                 }
@@ -212,7 +213,7 @@ fun MarketListScreen(
                         items(
                             items = state.data,
                             key = { it.itemId }
-                        ) { item: MarketList ->
+                        ) { item: MarketItem ->
                             MarketItem(
                                 item = item,
                                 doesSelected = {
@@ -276,7 +277,7 @@ fun MarketListScreen(
 @Composable
 fun MarketItem(
     modifier: Modifier = Modifier,
-    item: MarketList,
+    item: MarketItem,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
@@ -320,7 +321,11 @@ fun MarketItem(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = item.itemName)
+                Text(
+                    text = item.itemName,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
 
                 item.itemPrice?.let {
                     Spacer(modifier = Modifier.height(SpaceSmall))

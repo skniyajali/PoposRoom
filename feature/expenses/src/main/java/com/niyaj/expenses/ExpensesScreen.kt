@@ -97,7 +97,7 @@ import java.time.LocalDate
 
 @RootNavGraph(start = true)
 @Destination(
-    route = Screens.ExpensesScreen
+    route = Screens.EXPENSES_SCREEN
 )
 @Composable
 fun ExpensesScreen(

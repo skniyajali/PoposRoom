@@ -40,17 +40,17 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.niyaj.common.tags.MarketListTestTags.ADD_EDIT_MARKET_LIST_BUTTON
+import com.niyaj.common.tags.MarketListTestTags.ADD_EDIT_MARKET_ITEM_BUTTON
 import com.niyaj.common.tags.MarketListTestTags.CREATE_NEW_ITEM
 import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_ITEM_DESC
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_MEASURE_ERROR_TAG
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_MEASURE_FIELD
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_NAME_ERROR_TAG
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_NAME_FIELD
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_PRICE_ERROR_TAG
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_PRICE_FIELD
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_TYPE_ERROR_TAG
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_TYPE_FIELD
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_MEASURE_ERROR_TAG
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_MEASURE_FIELD
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_NAME_ERROR_TAG
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_NAME_FIELD
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_PRICE_ERROR_TAG
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_PRICE_FIELD
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_TYPE_ERROR_TAG
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_TYPE_FIELD
 import com.niyaj.common.tags.MarketListTestTags.UPDATE_ITEM
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -64,10 +64,10 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
-fun AddEditMarketListScreen(
+fun AddEditMarketItemScreen(
     itemId: Int = 0,
     navController: NavController,
-    viewModel: AddEditMarketListViewModel = hiltViewModel(),
+    viewModel: AddEditMarketItemViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
 
@@ -115,13 +115,13 @@ fun AddEditMarketListScreen(
             StandardButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(ADD_EDIT_MARKET_LIST_BUTTON)
+                    .testTag(ADD_EDIT_MARKET_ITEM_BUTTON)
                     .padding(SpaceMedium),
                 text = if (itemId == 0) CREATE_NEW_ITEM else UPDATE_ITEM,
                 icon = if (itemId == 0) Icons.Default.Add else Icons.Default.Edit,
                 enabled = enableBtn,
                 onClick = {
-                    viewModel.onEvent(AddEditMarketListEvent.AddOrUpdateItem)
+                    viewModel.onEvent(AddEditMarketItemEvent.AddOrUpdateItem)
                 }
             )
         }
@@ -132,7 +132,7 @@ fun AddEditMarketListScreen(
                 .padding(SpaceMedium),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
-            item(MARKET_LIST_TYPE_FIELD) {
+            item(MARKET_ITEM_TYPE_FIELD) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
@@ -144,15 +144,15 @@ fun AddEditMarketListScreen(
                                 textFieldSize = coordinates.size.toSize()
                             },
                         value = viewModel.state.itemType,
-                        label = MARKET_LIST_TYPE_FIELD,
+                        label = MARKET_ITEM_TYPE_FIELD,
                         leadingIcon = Icons.Default.Radar,
                         isError = typeError != null,
                         errorText = typeError,
-                        errorTextTag = MARKET_LIST_TYPE_ERROR_TAG,
+                        errorTextTag = MARKET_ITEM_TYPE_ERROR_TAG,
                         readOnly = false,
                         onValueChange = {
                             expanded = true
-                            viewModel.onEvent(AddEditMarketListEvent.ItemTypeChanged(it))
+                            viewModel.onEvent(AddEditMarketItemEvent.ItemTypeChanged(it))
                         },
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
@@ -183,7 +183,7 @@ fun AddEditMarketListScreen(
                                     onClick = {
                                         expanded = false
                                         viewModel.onEvent(
-                                            AddEditMarketListEvent.ItemTypeChanged(name)
+                                            AddEditMarketItemEvent.ItemTypeChanged(name)
                                         )
                                     },
                                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
@@ -202,21 +202,21 @@ fun AddEditMarketListScreen(
                 }
             }
 
-            item(MARKET_LIST_NAME_FIELD) {
+            item(MARKET_ITEM_NAME_FIELD) {
                 StandardOutlinedTextField(
                     value = viewModel.state.itemName,
-                    label = MARKET_LIST_NAME_FIELD,
+                    label = MARKET_ITEM_NAME_FIELD,
                     leadingIcon = Icons.Default.WorkOutline,
                     isError = nameError != null,
                     errorText = nameError,
-                    errorTextTag = MARKET_LIST_NAME_ERROR_TAG,
+                    errorTextTag = MARKET_ITEM_NAME_ERROR_TAG,
                     onValueChange = {
-                        viewModel.onEvent(AddEditMarketListEvent.ItemNameChanged(it))
+                        viewModel.onEvent(AddEditMarketItemEvent.ItemNameChanged(it))
                     }
                 )
             }
 
-            item(MARKET_LIST_MEASURE_FIELD) {
+            item(MARKET_ITEM_MEASURE_FIELD) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
@@ -228,15 +228,15 @@ fun AddEditMarketListScreen(
                                 textFieldSize = coordinates.size.toSize()
                             },
                         value = viewModel.state.itemMeasureUnit,
-                        label = MARKET_LIST_MEASURE_FIELD,
+                        label = MARKET_ITEM_MEASURE_FIELD,
                         leadingIcon = Icons.Default.MonitorWeight,
                         isError = unitError != null,
                         errorText = unitError,
-                        errorTextTag = MARKET_LIST_MEASURE_ERROR_TAG,
+                        errorTextTag = MARKET_ITEM_MEASURE_ERROR_TAG,
                         readOnly = false,
                         onValueChange = {
                             measureExpanded = true
-                            viewModel.onEvent(AddEditMarketListEvent.ItemMeasureUnitChanged(it))
+                            viewModel.onEvent(AddEditMarketItemEvent.ItemMeasureUnitChanged(it))
                         },
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = measureExpanded)
@@ -266,7 +266,7 @@ fun AddEditMarketListScreen(
                                     text = { Text(name) },
                                     onClick = {
                                         measureExpanded = false
-                                        viewModel.onEvent(AddEditMarketListEvent.ItemMeasureUnitChanged(name))
+                                        viewModel.onEvent(AddEditMarketItemEvent.ItemMeasureUnitChanged(name))
                                     },
                                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                                 )
@@ -285,17 +285,17 @@ fun AddEditMarketListScreen(
 
             }
 
-            item(MARKET_LIST_PRICE_FIELD) {
+            item(MARKET_ITEM_PRICE_FIELD) {
                 StandardOutlinedTextField(
                     value = viewModel.state.itemPrice ?: "",
-                    label = MARKET_LIST_PRICE_FIELD,
+                    label = MARKET_ITEM_PRICE_FIELD,
                     leadingIcon = Icons.Default.CurrencyRupee,
                     isError = amountError != null,
                     errorText = amountError,
-                    errorTextTag = MARKET_LIST_PRICE_ERROR_TAG,
+                    errorTextTag = MARKET_ITEM_PRICE_ERROR_TAG,
                     keyboardType = KeyboardType.Number,
                     onValueChange = {
-                        viewModel.onEvent(AddEditMarketListEvent.ItemPriceChanged(it))
+                        viewModel.onEvent(AddEditMarketItemEvent.ItemPriceChanged(it))
                     }
                 )
             }
@@ -306,7 +306,7 @@ fun AddEditMarketListScreen(
                     label = MARKET_LIST_ITEM_DESC,
                     leadingIcon = Icons.AutoMirrored.Filled.Note,
                     onValueChange = {
-                        viewModel.onEvent(AddEditMarketListEvent.ItemDescriptionChanged(it))
+                        viewModel.onEvent(AddEditMarketItemEvent.ItemDescriptionChanged(it))
                     }
                 )
             }

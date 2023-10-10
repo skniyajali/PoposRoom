@@ -24,7 +24,7 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 @OptIn(ExperimentalFoundationApi::class)
 @RootNavGraph(start = true)
 @Destination(
-    route = Screens.CartScreen
+    route = Screens.CART_SCREEN
 )
 @Composable
 fun CartScreen(

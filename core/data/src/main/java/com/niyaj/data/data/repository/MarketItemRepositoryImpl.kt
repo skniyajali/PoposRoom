@@ -4,46 +4,46 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_MEASURE_EMPTY_ERROR
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_NAME_ALREADY_EXIST_ERROR
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_NAME_DIGIT_ERROR
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_NAME_EMPTY_ERROR
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_NAME_LENGTH_ERROR
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_PRICE_INVALID
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_PRICE_LESS_THAN_FIVE_ERROR
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_TYPE_DIGIT_ERROR
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_TYPE_EMPTY_ERROR
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_TYPE_LENGTH_ERROR
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_MEASURE_EMPTY_ERROR
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_NAME_ALREADY_EXIST_ERROR
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_NAME_DIGIT_ERROR
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_NAME_EMPTY_ERROR
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_NAME_LENGTH_ERROR
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_PRICE_INVALID
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_PRICE_LESS_THAN_FIVE_ERROR
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_TYPE_DIGIT_ERROR
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_TYPE_EMPTY_ERROR
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_TYPE_LENGTH_ERROR
 import com.niyaj.data.mapper.toEntity
-import com.niyaj.data.repository.MarketListRepository
-import com.niyaj.data.repository.validation.MarketListValidationRepository
-import com.niyaj.database.dao.MarketListDao
+import com.niyaj.data.repository.MarketItemRepository
+import com.niyaj.data.repository.validation.MarketItemValidationRepository
+import com.niyaj.database.dao.MarketItemDao
 import com.niyaj.database.model.asExternalModel
-import com.niyaj.model.MarketList
-import com.niyaj.model.searchMarketList
+import com.niyaj.model.MarketItem
+import com.niyaj.model.searchMarketItems
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 
-class MarketListRepositoryImpl(
-    private val marketListDao: MarketListDao,
+class MarketItemRepositoryImpl(
+    private val marketItemDao: MarketItemDao,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
-) : MarketListRepository, MarketListValidationRepository {
+) : MarketItemRepository, MarketItemValidationRepository {
 
-    override suspend fun getAllMarketList(searchText: String): Flow<List<MarketList>> {
+    override suspend fun getAllMarketItems(searchText: String): Flow<List<MarketItem>> {
         return withContext(ioDispatcher) {
-            marketListDao.getAllMarketLists()
+            marketItemDao.getAllMarketLists()
                 .mapLatest { list ->
-                    list.map { it.asExternalModel() }.searchMarketList(searchText)
+                    list.map { it.asExternalModel() }.searchMarketItems(searchText)
                 }
         }
     }
 
     override suspend fun getAllItemType(searchText: String): Flow<List<String>> {
         return withContext(ioDispatcher) {
-            marketListDao.getAllItemTypes().mapLatest { list ->
+            marketItemDao.getAllItemTypes().mapLatest { list ->
                 list.filter {
                     it.contains(searchText, true)
                 }
@@ -51,23 +51,23 @@ class MarketListRepositoryImpl(
         }
     }
 
-    override suspend fun getMarketListById(itemId: Int): Resource<MarketList?> {
+    override suspend fun getMarketItemById(itemId: Int): Resource<MarketItem?> {
         return try {
             withContext(ioDispatcher) {
-                Resource.Success(marketListDao.getMarketListById(itemId)?.asExternalModel())
+                Resource.Success(marketItemDao.getMarketListById(itemId)?.asExternalModel())
             }
         } catch (e: Exception) {
             Resource.Error(e.message)
         }
     }
 
-    override suspend fun addOrIgnoreMarketList(newMarketList: MarketList): Resource<Boolean> {
+    override suspend fun addOrIgnoreMarketItem(newMarketItem: MarketItem): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
-                val validateItemType = validateItemType(newMarketList.itemType)
-                val validateName = validateItemName(newMarketList.itemName, newMarketList.itemId)
-                val validatePrice = validateItemPrice(newMarketList.itemPrice)
-                val validateItemUnit = validateItemMeasureUnit(newMarketList.itemMeasureUnit)
+                val validateItemType = validateItemType(newMarketItem.itemType)
+                val validateName = validateItemName(newMarketItem.itemName, newMarketItem.itemId)
+                val validatePrice = validateItemPrice(newMarketItem.itemPrice)
+                val validateItemUnit = validateItemMeasureUnit(newMarketItem.itemMeasureUnit)
 
                 val hasError = listOf(
                     validateItemType,
@@ -77,7 +77,7 @@ class MarketListRepositoryImpl(
                 ).any { !it.successful }
 
                 if (!hasError) {
-                    val result = marketListDao.insertOrIgnoreMarketList(newMarketList.toEntity())
+                    val result = marketItemDao.insertOrIgnoreMarketList(newMarketItem.toEntity())
 
                     Resource.Success(result > 0)
                 } else {
@@ -89,13 +89,13 @@ class MarketListRepositoryImpl(
         }
     }
 
-    override suspend fun updateMarketList(newMarketList: MarketList): Resource<Boolean> {
+    override suspend fun updateMarketItem(newMarketItem: MarketItem): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
-                val validateItemType = validateItemType(newMarketList.itemType)
-                val validateName = validateItemName(newMarketList.itemName, newMarketList.itemId)
-                val validatePrice = validateItemPrice(newMarketList.itemPrice)
-                val validateItemUnit = validateItemMeasureUnit(newMarketList.itemMeasureUnit)
+                val validateItemType = validateItemType(newMarketItem.itemType)
+                val validateName = validateItemName(newMarketItem.itemName, newMarketItem.itemId)
+                val validatePrice = validateItemPrice(newMarketItem.itemPrice)
+                val validateItemUnit = validateItemMeasureUnit(newMarketItem.itemMeasureUnit)
 
                 val hasError = listOf(
                     validateItemType,
@@ -105,7 +105,7 @@ class MarketListRepositoryImpl(
                 ).any { !it.successful }
 
                 if (!hasError) {
-                    val result = marketListDao.updateMarketList(newMarketList.toEntity())
+                    val result = marketItemDao.updateMarketList(newMarketItem.toEntity())
 
                     Resource.Success(result > 0)
                 } else {
@@ -117,13 +117,13 @@ class MarketListRepositoryImpl(
         }
     }
 
-    override suspend fun upsertMarketList(newMarketList: MarketList): Resource<Boolean> {
+    override suspend fun upsertMarketItem(newMarketItem: MarketItem): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
-                val validateItemType = validateItemType(newMarketList.itemType)
-                val validateName = validateItemName(newMarketList.itemName, newMarketList.itemId)
-                val validatePrice = validateItemPrice(newMarketList.itemPrice)
-                val validateItemUnit = validateItemMeasureUnit(newMarketList.itemMeasureUnit)
+                val validateItemType = validateItemType(newMarketItem.itemType)
+                val validateName = validateItemName(newMarketItem.itemName, newMarketItem.itemId)
+                val validatePrice = validateItemPrice(newMarketItem.itemPrice)
+                val validateItemUnit = validateItemMeasureUnit(newMarketItem.itemMeasureUnit)
 
                 val hasError = listOf(
                     validateItemType,
@@ -133,7 +133,7 @@ class MarketListRepositoryImpl(
                 ).any { !it.successful }
 
                 if (!hasError) {
-                    val result = marketListDao.upsertMarketList(newMarketList.toEntity())
+                    val result = marketItemDao.upsertMarketList(newMarketItem.toEntity())
 
                     Resource.Success(result > 0)
                 } else {
@@ -145,10 +145,10 @@ class MarketListRepositoryImpl(
         }
     }
 
-    override suspend fun deleteMarketList(itemId: Int): Resource<Boolean> {
+    override suspend fun deleteMarketItem(itemId: Int): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
-                val result = marketListDao.deleteMarketList(itemId)
+                val result = marketItemDao.deleteMarketList(itemId)
 
                 Resource.Success(result > 0)
             }
@@ -157,10 +157,10 @@ class MarketListRepositoryImpl(
         }
     }
 
-    override suspend fun deleteMarketLists(itemIds: List<Int>): Resource<Boolean> {
+    override suspend fun deleteMarketItems(itemIds: List<Int>): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
-                val result = marketListDao.deleteMarketLists(itemIds)
+                val result = marketItemDao.deleteMarketLists(itemIds)
 
                 Resource.Success(result > 0)
             }
@@ -169,7 +169,7 @@ class MarketListRepositoryImpl(
         }
     }
 
-    override suspend fun importMarketListsToDatabase(marketLists: List<MarketList>): Resource<Boolean> {
+    override suspend fun importMarketItemsToDatabase(marketItems: List<MarketItem>): Resource<Boolean> {
         TODO("Not yet implemented")
     }
 
@@ -177,14 +177,14 @@ class MarketListRepositoryImpl(
         if (itemType.isEmpty()) {
             return ValidationResult(
                 successful = false,
-                errorMessage = MARKET_LIST_TYPE_EMPTY_ERROR,
+                errorMessage = MARKET_ITEM_TYPE_EMPTY_ERROR,
             )
         }
 
         if (itemType.length < 4) {
             return ValidationResult(
                 successful = false,
-                errorMessage = MARKET_LIST_TYPE_LENGTH_ERROR,
+                errorMessage = MARKET_ITEM_TYPE_LENGTH_ERROR,
             )
         }
 
@@ -193,7 +193,7 @@ class MarketListRepositoryImpl(
         if (result) {
             return ValidationResult(
                 successful = false,
-                errorMessage = MARKET_LIST_TYPE_DIGIT_ERROR,
+                errorMessage = MARKET_ITEM_TYPE_DIGIT_ERROR,
             )
         }
 
@@ -205,14 +205,14 @@ class MarketListRepositoryImpl(
         if (itemName.isEmpty()) {
             return ValidationResult(
                 successful = false,
-                errorMessage = MARKET_LIST_NAME_EMPTY_ERROR,
+                errorMessage = MARKET_ITEM_NAME_EMPTY_ERROR,
             )
         }
 
         if (itemName.length < 3) {
             return ValidationResult(
                 successful = false,
-                errorMessage = MARKET_LIST_NAME_LENGTH_ERROR,
+                errorMessage = MARKET_ITEM_NAME_LENGTH_ERROR,
             )
         }
 
@@ -221,18 +221,18 @@ class MarketListRepositoryImpl(
         if (result) {
             return ValidationResult(
                 successful = false,
-                errorMessage = MARKET_LIST_NAME_DIGIT_ERROR,
+                errorMessage = MARKET_ITEM_NAME_DIGIT_ERROR,
             )
         }
 
         val serverResult = withContext(ioDispatcher) {
-            marketListDao.findItemByName(itemName, itemId) != null
+            marketItemDao.findItemByName(itemName, itemId) != null
         }
 
         if (serverResult) {
             return ValidationResult(
                 successful = false,
-                errorMessage = MARKET_LIST_NAME_ALREADY_EXIST_ERROR,
+                errorMessage = MARKET_ITEM_NAME_ALREADY_EXIST_ERROR,
             )
         }
 
@@ -243,7 +243,7 @@ class MarketListRepositoryImpl(
         if (itemMeasureUnit.isEmpty()) {
             return ValidationResult(
                 successful = false,
-                errorMessage = MARKET_LIST_MEASURE_EMPTY_ERROR,
+                errorMessage = MARKET_ITEM_MEASURE_EMPTY_ERROR,
             )
         }
 
@@ -255,14 +255,14 @@ class MarketListRepositoryImpl(
             if (price.any { it.isLetter() }) {
                 return ValidationResult(
                     successful = false,
-                    errorMessage = MARKET_LIST_PRICE_INVALID,
+                    errorMessage = MARKET_ITEM_PRICE_INVALID,
                 )
             }
 
             if (price.toInt() <= 5) {
                 return ValidationResult(
                     successful = false,
-                    errorMessage = MARKET_LIST_PRICE_LESS_THAN_FIVE_ERROR,
+                    errorMessage = MARKET_ITEM_PRICE_LESS_THAN_FIVE_ERROR,
                 )
             }
 

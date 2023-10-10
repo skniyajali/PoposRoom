@@ -82,7 +82,7 @@ import com.ramcosta.composedestinations.navigation.navigate
 import kotlinx.coroutines.launch
 
 @Destination(
-    route = Screens.AddressDetailsScreen
+    route = Screens.ADDRESS_DETAILS_SCREEN
 )
 @Composable
 fun AddressDetailsScreen(

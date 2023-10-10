@@ -41,7 +41,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
 @Destination(
-    route = Screens.AddEditCategoryScreen
+    route = Screens.ADD_EDIT_CATEGORY_SCREEN
 )
 @Composable
 fun AddEditCategoryScreen(

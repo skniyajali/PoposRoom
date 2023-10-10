@@ -2,7 +2,7 @@ package com.niyaj.data.repository.validation
 
 import com.niyaj.common.result.ValidationResult
 
-interface MarketListValidationRepository {
+interface MarketItemValidationRepository {
 
     fun validateItemType(itemType: String): ValidationResult
 

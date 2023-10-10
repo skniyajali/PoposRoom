@@ -73,7 +73,7 @@ import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
 @Destination(
-    route = Screens.AddOnItemScreen
+    route = Screens.ADD_ON_ITEM_SCREEN
 )
 @Composable
 fun AddOnItemScreen(

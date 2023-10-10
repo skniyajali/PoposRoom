@@ -10,20 +10,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
+import androidx.compose.material.icons.automirrored.filled.FeaturedPlayList
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowRightAlt
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.FeaturedPlayList
 import androidx.compose.material.icons.filled.Money
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -72,7 +72,7 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination(
-    route = Screens.AddEditProductScreen
+    route = Screens.ADD_EDIT_PRODUCT_SCREEN
 )
 @Composable
 fun AddEditProductScreen(
@@ -251,7 +251,7 @@ fun AddEditProductScreen(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             onClick = {
-                                navController.navigate(Screens.AddEditCategoryScreen)
+                                navController.navigate(Screens.ADD_EDIT_CATEGORY_SCREEN)
                             },
                             text = {
                                 Text(
@@ -268,7 +268,7 @@ fun AddEditProductScreen(
                             },
                             trailingIcon = {
                                 Icon(
-                                    imageVector = Icons.Default.ArrowRightAlt,
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
                                     contentDescription = "trailing"
                                 )
                             }
@@ -281,7 +281,7 @@ fun AddEditProductScreen(
                 StandardOutlinedTextField(
                     value = viewModel.state.productName,
                     label = PRODUCT_NAME_FIELD,
-                    leadingIcon = Icons.Default.FeaturedPlayList,
+                    leadingIcon = Icons.AutoMirrored.Filled.FeaturedPlayList,
                     isError = nameError != null,
                     errorText = nameError,
                     errorTextTag = PRODUCT_NAME_ERROR,

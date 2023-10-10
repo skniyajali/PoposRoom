@@ -2,10 +2,10 @@ package com.niyaj.data.di
 
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
-import com.niyaj.data.data.repository.MarketListRepositoryImpl
-import com.niyaj.data.repository.MarketListRepository
-import com.niyaj.data.repository.validation.MarketListValidationRepository
-import com.niyaj.database.dao.MarketListDao
+import com.niyaj.data.data.repository.MarketItemRepositoryImpl
+import com.niyaj.data.repository.MarketItemRepository
+import com.niyaj.data.repository.validation.MarketItemValidationRepository
+import com.niyaj.database.dao.MarketItemDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,17 +18,17 @@ object MarketListModule {
 
     @Provides
     fun provideMarketListValidationRepository(
-        marketListDao: MarketListDao,
+        marketItemDao: MarketItemDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
-    ): MarketListValidationRepository {
-        return MarketListRepositoryImpl(marketListDao, ioDispatcher)
+    ): MarketItemValidationRepository {
+        return MarketItemRepositoryImpl(marketItemDao, ioDispatcher)
     }
 
     @Provides
     fun provideMarketListRepository(
-        marketListDao: MarketListDao,
+        marketItemDao: MarketItemDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
-    ): MarketListRepository {
-        return MarketListRepositoryImpl(marketListDao, ioDispatcher)
+    ): MarketItemRepository {
+        return MarketItemRepositoryImpl(marketItemDao, ioDispatcher)
     }
 }

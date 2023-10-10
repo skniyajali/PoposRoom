@@ -78,7 +78,7 @@ import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
 @Destination(
-    route = Screens.AbsentScreen
+    route = Screens.ABSENT_SCREEN
 )
 @Composable
 fun AbsentScreen(

@@ -103,7 +103,7 @@ import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
 @Destination(
-    route = Screens.PaymentScreen
+    route = Screens.PAYMENT_SCREEN
 )
 @Composable
 fun PaymentScreen(

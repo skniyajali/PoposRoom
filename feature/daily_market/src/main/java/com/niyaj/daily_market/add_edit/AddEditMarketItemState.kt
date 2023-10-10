@@ -1,6 +1,6 @@
 package com.niyaj.daily_market.add_edit
 
-data class AddEditMarketListState(
+data class AddEditMarketItemState(
     val itemType: String = "",
 
     val itemName: String = "",

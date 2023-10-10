@@ -55,7 +55,7 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
-@Destination(route = Screens.ProductsScreen)
+@Destination(route = Screens.PRODUCT_SCREEN)
 @Composable
 fun ProductScreen(
     navController: NavController,

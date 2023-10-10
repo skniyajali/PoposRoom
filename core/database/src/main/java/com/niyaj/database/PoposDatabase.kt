@@ -14,8 +14,9 @@ import com.niyaj.database.dao.CustomerDao
 import com.niyaj.database.dao.EmployeeDao
 import com.niyaj.database.dao.ExpenseDao
 import com.niyaj.database.dao.MainFeedDao
-import com.niyaj.database.dao.MarketListDao
+import com.niyaj.database.dao.MarketItemDao
 import com.niyaj.database.dao.OrderDao
+import com.niyaj.database.dao.PaymentDao
 import com.niyaj.database.dao.PrintDao
 import com.niyaj.database.dao.PrinterDao
 import com.niyaj.database.dao.ProductDao
@@ -38,6 +39,7 @@ import com.niyaj.database.model.EmployeeEntity
 import com.niyaj.database.model.EmployeeWithAbsentCrossRef
 import com.niyaj.database.model.EmployeeWithPaymentCrossRef
 import com.niyaj.database.model.ExpenseEntity
+import com.niyaj.database.model.MarketItemEntity
 import com.niyaj.database.model.PaymentEntity
 import com.niyaj.database.model.PrinterEntity
 import com.niyaj.database.model.ProductEntity
@@ -46,8 +48,6 @@ import com.niyaj.database.model.ReportsEntity
 import com.niyaj.database.model.SelectedEntity
 import com.niyaj.database.util.TimestampConverters
 import com.niyaj.poposroom.features.charges.data.dao.ChargesDao
-import com.niyaj.database.dao.PaymentDao
-import com.niyaj.database.model.MarketListEntity
 
 
 @Database(
@@ -74,9 +74,9 @@ import com.niyaj.database.model.MarketListEntity
         ProfileEntity::class,
         PrinterEntity::class,
         ReportsEntity::class,
-        MarketListEntity::class,
+        MarketItemEntity::class,
     ],
-    version = 6,
+    version = 7,
     autoMigrations = [],
     exportSchema = true,
 )
@@ -102,5 +102,5 @@ abstract class PoposDatabase : RoomDatabase() {
     abstract fun printerDao(): PrinterDao
     abstract fun profileDao(): ProfileDao
     abstract fun reportsDao(): ReportsDao
-    abstract fun marketListDao(): MarketListDao
+    abstract fun marketListDao(): MarketItemDao
 }

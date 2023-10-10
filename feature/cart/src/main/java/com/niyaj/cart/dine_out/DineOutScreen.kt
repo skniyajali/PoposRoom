@@ -197,7 +197,7 @@ fun DineOutScreen(
                 buttonText = "Add Item To Cart",
                 image = painterResource(R.drawable.emptycarttwo),
                 onClick = {
-                    navController.navigate(Screens.HomeScreen)
+                    navController.navigate(Screens.HOME_SCREEN)
                 }
             )
         } else {

@@ -64,7 +64,7 @@ import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
 @Destination(
-    route = Screens.ChargesScreen
+    route = Screens.CHARGES_SCREEN
 )
 @Composable
 fun ChargesScreen(

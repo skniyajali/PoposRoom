@@ -3,7 +3,7 @@ package com.niyaj.daily_market
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
-import com.niyaj.data.repository.MarketListRepository
+import com.niyaj.data.repository.MarketItemRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
@@ -18,14 +18,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MarketListViewModel @Inject constructor(
-    private val marketListRepository: MarketListRepository,
+class MarketItemViewModel @Inject constructor(
+    private val marketItemRepository: MarketItemRepository,
 ): BaseViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val addOnItems = snapshotFlow { searchText.value }
         .flatMapLatest { it ->
-            marketListRepository.getAllMarketList(it)
+            marketItemRepository.getAllMarketItems(it)
                 .onStart { UiState.Loading }
                 .map { items ->
                     totalItems = items.map { it.itemId }
@@ -43,7 +43,7 @@ class MarketListViewModel @Inject constructor(
         super.deleteItems()
 
         viewModelScope.launch {
-            when (val result = marketListRepository.deleteMarketLists(selectedItems.toList())) {
+            when (val result = marketItemRepository.deleteMarketItems(selectedItems.toList())) {
                 is Resource.Success -> {
                     mEventFlow.emit(
                         UiEvent.OnSuccess(

@@ -106,7 +106,7 @@ import java.time.LocalDate
  */
 @OptIn(ExperimentalPermissionsApi::class)
 @RootNavGraph(start = true)
-@Destination(route = Screens.ReportScreen)
+@Destination(route = Screens.REPORT_SCREEN)
 @Composable
 fun ReportScreen(
     navController: NavController,
@@ -279,10 +279,10 @@ fun ReportScreen(
                 ReportBoxData(
                     report = report,
                     onOrderClick = {
-                        navController.navigate(Screens.OrderScreen)
+                        navController.navigate(Screens.ORDER_SCREEN)
                     },
                     onExpensesClick = {
-                        navController.navigate(Screens.ExpensesScreen)
+                        navController.navigate(Screens.EXPENSES_SCREEN)
                     },
                     onRefreshReport = {
                         reportsViewModel.onReportEvent(ReportsEvent.RefreshReport)

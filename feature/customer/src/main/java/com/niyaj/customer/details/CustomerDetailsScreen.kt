@@ -76,7 +76,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
 import kotlinx.coroutines.launch
 
-@Destination(route = Screens.CustomerDetailsScreen)
+@Destination(route = Screens.CUSTOMER_DETAILS_SCREEN)
 @Composable
 fun CustomerDetailsScreen(
     customerId: Int = 0,

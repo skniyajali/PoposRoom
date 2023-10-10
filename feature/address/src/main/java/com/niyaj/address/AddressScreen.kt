@@ -73,7 +73,7 @@ import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
 @Destination(
-    route = Screens.AddressScreen
+    route = Screens.ADDRESS_SCREEN
 )
 @Composable
 fun AddressScreen(

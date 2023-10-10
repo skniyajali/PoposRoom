@@ -10,9 +10,9 @@ import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.measureUnitLists
 import com.niyaj.common.utils.safeString
-import com.niyaj.data.repository.MarketListRepository
-import com.niyaj.data.repository.validation.MarketListValidationRepository
-import com.niyaj.model.MarketList
+import com.niyaj.data.repository.MarketItemRepository
+import com.niyaj.data.repository.validation.MarketItemValidationRepository
+import com.niyaj.model.MarketItem
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,15 +25,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddEditMarketListViewModel @Inject constructor(
-    private val repository: MarketListRepository,
-    private val validationRepository: MarketListValidationRepository,
+class AddEditMarketItemViewModel @Inject constructor(
+    private val repository: MarketItemRepository,
+    private val validationRepository: MarketItemValidationRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val itemId = savedStateHandle.get<Int>("itemId") ?: 0
 
-    var state by mutableStateOf(AddEditMarketListState())
+    var state by mutableStateOf(AddEditMarketItemState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -92,29 +92,29 @@ class AddEditMarketListViewModel @Inject constructor(
         null
     )
 
-    fun onEvent(event: AddEditMarketListEvent) {
+    fun onEvent(event: AddEditMarketItemEvent) {
         when (event) {
-            is AddEditMarketListEvent.ItemTypeChanged -> {
-                state = state.copy(itemType = event.type)
+            is AddEditMarketItemEvent.ItemTypeChanged -> {
+                state = state.copy(itemType = event.type.trim())
             }
 
-            is AddEditMarketListEvent.ItemNameChanged -> {
-                state = state.copy(itemName = event.name)
+            is AddEditMarketItemEvent.ItemNameChanged -> {
+                state = state.copy(itemName = event.name.trim())
             }
 
-            is AddEditMarketListEvent.ItemMeasureUnitChanged -> {
-                state = state.copy(itemMeasureUnit = event.unit)
+            is AddEditMarketItemEvent.ItemMeasureUnitChanged -> {
+                state = state.copy(itemMeasureUnit = event.unit.trim())
             }
 
-            is AddEditMarketListEvent.ItemDescriptionChanged -> {
-                state = state.copy(itemDesc = event.description)
+            is AddEditMarketItemEvent.ItemDescriptionChanged -> {
+                state = state.copy(itemDesc = event.description.trim())
             }
 
-            is AddEditMarketListEvent.ItemPriceChanged -> {
+            is AddEditMarketItemEvent.ItemPriceChanged -> {
                 state = state.copy(itemPrice = event.price.safeString())
             }
 
-            is AddEditMarketListEvent.AddOrUpdateItem -> {
+            is AddEditMarketItemEvent.AddOrUpdateItem -> {
                 createOrUpdateItem(itemId)
             }
 
@@ -123,7 +123,7 @@ class AddEditMarketListViewModel @Inject constructor(
 
     private fun getMarketListById(itemId: Int) {
         viewModelScope.launch {
-            repository.getMarketListById(itemId).data?.let {
+            repository.getMarketItemById(itemId).data?.let {
                 state = state.copy(
                     itemType = it.itemType,
                     itemName = it.itemName,
@@ -141,7 +141,7 @@ class AddEditMarketListViewModel @Inject constructor(
                 listOf(nameError, typeError, priceError, unitError).all { it.value != null }
 
             if (!hasError) {
-                val newItem = MarketList(
+                val newItem = MarketItem(
                     itemId = itemId,
                     itemType = state.itemType,
                     itemName = state.itemName,
@@ -152,7 +152,7 @@ class AddEditMarketListViewModel @Inject constructor(
                     updatedAt = if (itemId != 0) System.currentTimeMillis() else null
                 )
 
-                when (val result = repository.upsertMarketList(newItem)) {
+                when (val result = repository.upsertMarketItem(newItem)) {
                     is Resource.Error -> {
                         _eventFlow.emit(UiEvent.OnError(result.message ?: "Invalid"))
                     }
@@ -164,7 +164,7 @@ class AddEditMarketListViewModel @Inject constructor(
                     }
                 }
 
-                state = AddEditMarketListState()
+                state = AddEditMarketItemState()
             }
         }
     }
