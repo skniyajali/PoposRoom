@@ -34,9 +34,25 @@ class MarketItemRepositoryImpl(
 
     override suspend fun getAllMarketItems(searchText: String): Flow<List<MarketItem>> {
         return withContext(ioDispatcher) {
-            marketItemDao.getAllMarketLists()
+            marketItemDao.getAllMarketItems()
                 .mapLatest { list ->
                     list.map { it.asExternalModel() }.searchMarketItems(searchText)
+                }
+        }
+    }
+
+    override suspend fun getAllMarketItemLists(
+        searchText: String,
+        removedItems: List<Int>,
+    ): Flow<List<MarketItem>> {
+        return withContext(ioDispatcher) {
+            marketItemDao.getAllMarketItems()
+                .mapLatest { list ->
+                    list.filterNot {
+                        removedItems.contains(it.itemId)
+                    }.map {
+                        it.asExternalModel()
+                    }.searchMarketItems(searchText)
                 }
         }
     }
@@ -54,7 +70,7 @@ class MarketItemRepositoryImpl(
     override suspend fun getMarketItemById(itemId: Int): Resource<MarketItem?> {
         return try {
             withContext(ioDispatcher) {
-                Resource.Success(marketItemDao.getMarketListById(itemId)?.asExternalModel())
+                Resource.Success(marketItemDao.getMarketItemById(itemId)?.asExternalModel())
             }
         } catch (e: Exception) {
             Resource.Error(e.message)
@@ -77,7 +93,7 @@ class MarketItemRepositoryImpl(
                 ).any { !it.successful }
 
                 if (!hasError) {
-                    val result = marketItemDao.insertOrIgnoreMarketList(newMarketItem.toEntity())
+                    val result = marketItemDao.insertOrIgnoreMarketItem(newMarketItem.toEntity())
 
                     Resource.Success(result > 0)
                 } else {
@@ -105,7 +121,7 @@ class MarketItemRepositoryImpl(
                 ).any { !it.successful }
 
                 if (!hasError) {
-                    val result = marketItemDao.updateMarketList(newMarketItem.toEntity())
+                    val result = marketItemDao.updateMarketItem(newMarketItem.toEntity())
 
                     Resource.Success(result > 0)
                 } else {
@@ -133,7 +149,7 @@ class MarketItemRepositoryImpl(
                 ).any { !it.successful }
 
                 if (!hasError) {
-                    val result = marketItemDao.upsertMarketList(newMarketItem.toEntity())
+                    val result = marketItemDao.upsertMarketItem(newMarketItem.toEntity())
 
                     Resource.Success(result > 0)
                 } else {
@@ -148,7 +164,7 @@ class MarketItemRepositoryImpl(
     override suspend fun deleteMarketItem(itemId: Int): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
-                val result = marketItemDao.deleteMarketList(itemId)
+                val result = marketItemDao.deleteMarketItem(itemId)
 
                 Resource.Success(result > 0)
             }
@@ -160,7 +176,7 @@ class MarketItemRepositoryImpl(
     override suspend fun deleteMarketItems(itemIds: List<Int>): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
-                val result = marketItemDao.deleteMarketLists(itemIds)
+                val result = marketItemDao.deleteMarketItems(itemIds)
 
                 Resource.Success(result > 0)
             }

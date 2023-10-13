@@ -51,6 +51,7 @@ import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_ITEM_TAG
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.toRupee
 import com.niyaj.daily_market.destinations.AddEditMarketItemScreenDestination
+import com.niyaj.daily_market.destinations.MarketListScreenDestination
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.MarketItem
 import com.niyaj.ui.components.CircularBox
@@ -171,7 +172,7 @@ fun MarketItemScreen(
                     openDialog.value = true
                 },
                 onSettingsClick = {
-//                    navController.navigate(AddOnSettingsScreenDestination)
+                    navController.navigate(MarketListScreenDestination)
                 },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,

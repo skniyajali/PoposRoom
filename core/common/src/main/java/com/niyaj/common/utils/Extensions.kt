@@ -17,6 +17,9 @@ import java.util.Locale
 val Int.safeString: String
     get() = if (this == 0) "" else this.toString()
 
+val Double.safeString: String
+    get() = if (this == 0.0) "0" else this.toString()
+
 val String.toRupee
     get() = DecimalFormat
         .getCurrencyInstance(Locale("en", "IN"))
@@ -379,6 +382,18 @@ fun String.safeFloat(): Float {
             this.toFloat()
         } catch (e: NumberFormatException) {
             0f
+        }
+    }
+}
+
+fun String.safeDouble(): Double {
+    return if (this.isEmpty()) {
+        0.0
+    } else {
+        try {
+            this.toDouble()
+        } catch (e: NumberFormatException) {
+            0.0
         }
     }
 }
