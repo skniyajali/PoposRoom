@@ -3,6 +3,7 @@ import com.niyaj.samples.apps.popos.PoposBuildType
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     id("popos.android.application")
+    id("popos.android.application.compose")
     id("popos.android.application.flavors")
     id("popos.android.application.jacoco")
     id("popos.android.hilt")
@@ -51,15 +52,6 @@ android {
             isMinifyEnabled = true
             applicationIdSuffix = PoposBuildType.BENCHMARK.applicationIdSuffix
         }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = "11"
     }
 
     buildFeatures {

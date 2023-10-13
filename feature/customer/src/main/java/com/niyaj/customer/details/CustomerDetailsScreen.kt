@@ -14,13 +14,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.AllInbox
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Tag
@@ -274,7 +274,7 @@ fun CustomerDetailsCard(
                                     Spacer(modifier = Modifier.height(SpaceSmall))
                                     TextWithIcon(
                                         text = "Updated At : ${it.toFormattedDateAndTime}",
-                                        icon = Icons.Default.Login
+                                        icon = Icons.AutoMirrored.Filled.Login
                                     )
                                 }
                             }

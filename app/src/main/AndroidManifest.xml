@@ -26,6 +26,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MySplash"
         android:enableOnBackInvokedCallback="true"
+        android:windowSoftInputMode="adjustResize"
         >
         <activity
             android:name=".MainActivity"

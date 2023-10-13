@@ -119,6 +119,7 @@ class MainActivity : ComponentActivity() {
 
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
+//        enableSystemInsetsHandling()
         // Turn off the decor fitting system windows, which allows us to handle insets,
         // including IME animations
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -259,7 +260,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 /**
  * Returns `true` if the Android theme should be used, as a function of the [uiState].
