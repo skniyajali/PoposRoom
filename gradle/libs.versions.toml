@@ -290,5 +290,3 @@ realm = { id = "io.realm.kotlin", version.ref = "realmVersion" }
 sentry = { id = "io.sentry.android.gradle", version.ref = "sentryVersion" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin1821" }
-
-
