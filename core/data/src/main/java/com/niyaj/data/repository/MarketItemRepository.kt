@@ -8,6 +8,8 @@ interface MarketItemRepository {
 
     suspend fun getAllMarketItems(searchText: String): Flow<List<MarketItem>>
 
+    suspend fun getAllMarketItemLists(searchText: String, removedItems: List<Int>): Flow<List<MarketItem>>
+
     suspend fun getMarketItemById(itemId: Int): Resource<MarketItem?>
 
     suspend fun getAllItemType(searchText: String): Flow<List<String>>

@@ -17,14 +17,14 @@ interface MarketItemDao {
         SELECT * FROM market_item ORDER BY createdAt DESC
     """
     )
-    fun getAllMarketLists(): Flow<List<MarketItemEntity>>
+    fun getAllMarketItems(): Flow<List<MarketItemEntity>>
 
     @Query(
         value = """
         SELECT * FROM market_item WHERE itemId = :itemId
     """
     )
-    fun getMarketListById(itemId: Int): MarketItemEntity?
+    fun getMarketItemById(itemId: Int): MarketItemEntity?
 
     @Query(
         value = """
@@ -37,26 +37,27 @@ interface MarketItemDao {
      * Inserts [MarketItemEntity] into the db if they don't exist, and ignores those that do
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertOrIgnoreMarketList(marketList: MarketItemEntity): Long
+    suspend fun insertOrIgnoreMarketItem(marketItem: MarketItemEntity): Long
+
 
     /**
      * Updates [MarketItemEntity] in the db that match the primary key, and no-ops if they don't
      */
     @Update
-    suspend fun updateMarketList(marketList: MarketItemEntity): Int
+    suspend fun updateMarketItem(marketItem: MarketItemEntity): Int
 
     /**
      * Inserts or updates [MarketItemEntity] in the db under the specified primary keys
      */
     @Upsert
-    suspend fun upsertMarketList(marketList: MarketItemEntity): Long
+    suspend fun upsertMarketItem(marketItem: MarketItemEntity): Long
 
     @Query(
         value = """
                 DELETE FROM market_item WHERE itemId = :itemId
         """
     )
-    suspend fun deleteMarketList(itemId: Int): Int
+    suspend fun deleteMarketItem(itemId: Int): Int
 
     /**
      * Deletes rows in the db matching the specified [itemIds]
@@ -67,7 +68,7 @@ interface MarketItemDao {
                 WHERE itemId in(:itemIds)
         """,
     )
-    suspend fun deleteMarketLists(itemIds: List<Int>): Int
+    suspend fun deleteMarketItems(itemIds: List<Int>): Int
 
     @Query(
         value = """

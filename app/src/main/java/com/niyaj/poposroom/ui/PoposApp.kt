@@ -1,6 +1,15 @@
 package com.niyaj.poposroom.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -11,12 +20,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.data.utils.NetworkMonitor
 import com.niyaj.designsystem.components.PoposBackground
 import com.niyaj.designsystem.components.PoposGradientBackground
-import com.niyaj.designsystem.theme.GradientColors
+import com.niyaj.designsystem.theme.LocalGradientColors
 import com.niyaj.poposroom.MainActivityViewModel
 import com.niyaj.poposroom.navigation.PoposNavHost
 import com.niyaj.poposroom.navigation.RootNavGraph
@@ -25,6 +37,7 @@ import com.niyaj.poposroom.navigation.RootNavGraph
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PoposApp(
+    modifier: Modifier = Modifier,
     viewModel: MainActivityViewModel,
     windowSizeClass: WindowSizeClass,
     networkMonitor: NetworkMonitor,
@@ -34,9 +47,9 @@ fun PoposApp(
         windowSizeClass = windowSizeClass,
     ),
 ) {
-    PoposBackground {
+    PoposBackground(modifier) {
         PoposGradientBackground(
-            gradientColors = GradientColors(),
+            gradientColors = LocalGradientColors.current,
         ) {
             val snackbarHostState = remember { SnackbarHostState() }
 
@@ -54,7 +67,7 @@ fun PoposApp(
             }
 
             LaunchedEffect(key1 = reportState) {
-                if (reportState){
+                if (reportState) {
                     snackbarHostState.showSnackbar(
                         "Generating Reports",
                         duration = SnackbarDuration.Long,
@@ -75,14 +88,30 @@ fun PoposApp(
             }
 
             Scaffold(
+                modifier = Modifier.semantics {
+                    testTagsAsResourceId = true
+                },
+                contentWindowInsets = WindowInsets(0, 0, 0, 0),
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 containerColor = Color.White,
                 contentColor = Color.Transparent
-            ) {
-                PoposNavHost(
-                    appState = appState,
-                    startRoute = RootNavGraph.startRoute,
-                )
+            ) { padding ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .consumeWindowInsets(padding)
+                        .windowInsetsPadding(
+                            WindowInsets.safeDrawing.only(
+                                WindowInsetsSides.Horizontal,
+                            ),
+                        )
+                ) {
+                    PoposNavHost(
+                        appState = appState,
+                        startRoute = RootNavGraph.startRoute,
+                    )
+                }
             }
         }
     }

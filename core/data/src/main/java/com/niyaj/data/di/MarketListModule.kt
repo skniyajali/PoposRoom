@@ -2,10 +2,9 @@ package com.niyaj.data.di
 
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
-import com.niyaj.data.data.repository.MarketItemRepositoryImpl
-import com.niyaj.data.repository.MarketItemRepository
-import com.niyaj.data.repository.validation.MarketItemValidationRepository
-import com.niyaj.database.dao.MarketItemDao
+import com.niyaj.data.data.repository.MarketListRepositoryImpl
+import com.niyaj.data.repository.MarketListRepository
+import com.niyaj.database.dao.MarketListDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,18 +16,10 @@ import kotlinx.coroutines.CoroutineDispatcher
 object MarketListModule {
 
     @Provides
-    fun provideMarketListValidationRepository(
-        marketItemDao: MarketItemDao,
-        @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
-    ): MarketItemValidationRepository {
-        return MarketItemRepositoryImpl(marketItemDao, ioDispatcher)
-    }
-
-    @Provides
     fun provideMarketListRepository(
-        marketItemDao: MarketItemDao,
+        marketListDao: MarketListDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
-    ): MarketItemRepository {
-        return MarketItemRepositoryImpl(marketItemDao, ioDispatcher)
+    ): MarketListRepository {
+        return MarketListRepositoryImpl(marketListDao, ioDispatcher)
     }
 }

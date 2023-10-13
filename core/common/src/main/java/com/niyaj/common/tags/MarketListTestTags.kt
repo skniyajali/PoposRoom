@@ -11,6 +11,14 @@ object MarketListTestTags {
     const val CREATE_NEW_ITEM = "Create New Item"
     const val UPDATE_ITEM = "Update Item"
 
+    const val MARKET_LIST_SCREEN_TITLE = "Market Items"
+
+    const val ADD_EDIT_MARKET_LIST_BUTTON = "AddEdit Item"
+
+    const val CREATE_NEW_LIST = "Create New List"
+    const val UPDATE_LIST = "Update List"
+
+
     const val MARKET_ITEM_TYPE_FIELD = "Item Type"
     const val MARKET_ITEM_TYPE_ERROR_TAG = "Item Type Error"
 
