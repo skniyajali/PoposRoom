@@ -95,19 +95,19 @@ class AddEditMarketItemViewModel @Inject constructor(
     fun onEvent(event: AddEditMarketItemEvent) {
         when (event) {
             is AddEditMarketItemEvent.ItemTypeChanged -> {
-                state = state.copy(itemType = event.type.trim())
+                state = state.copy(itemType = event.type)
             }
 
             is AddEditMarketItemEvent.ItemNameChanged -> {
-                state = state.copy(itemName = event.name.trim())
+                state = state.copy(itemName = event.name)
             }
 
             is AddEditMarketItemEvent.ItemMeasureUnitChanged -> {
-                state = state.copy(itemMeasureUnit = event.unit.trim())
+                state = state.copy(itemMeasureUnit = event.unit)
             }
 
             is AddEditMarketItemEvent.ItemDescriptionChanged -> {
-                state = state.copy(itemDesc = event.description.trim())
+                state = state.copy(itemDesc = event.description)
             }
 
             is AddEditMarketItemEvent.ItemPriceChanged -> {
@@ -143,10 +143,10 @@ class AddEditMarketItemViewModel @Inject constructor(
             if (!hasError) {
                 val newItem = MarketItem(
                     itemId = itemId,
-                    itemType = state.itemType,
-                    itemName = state.itemName,
-                    itemPrice = state.itemPrice,
-                    itemDescription = state.itemDesc,
+                    itemType = state.itemType.trim(),
+                    itemName = state.itemName.trim(),
+                    itemPrice = state.itemPrice?.trim(),
+                    itemDescription = state.itemDesc?.trim(),
                     itemMeasureUnit = state.itemMeasureUnit,
                     createdAt = System.currentTimeMillis(),
                     updatedAt = if (itemId != 0) System.currentTimeMillis() else null
