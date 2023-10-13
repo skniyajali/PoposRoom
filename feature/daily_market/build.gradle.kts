@@ -25,6 +25,7 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.dialog.core)
     implementation(libs.dialog.datetime)
+    implementation(libs.saket.swipe)
 
 
     //RaamCosta Library

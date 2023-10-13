@@ -12,6 +12,7 @@ import com.niyaj.database.dao.EmployeeDao
 import com.niyaj.database.dao.ExpenseDao
 import com.niyaj.database.dao.MainFeedDao
 import com.niyaj.database.dao.MarketItemDao
+import com.niyaj.database.dao.MarketListDao
 import com.niyaj.database.dao.OrderDao
 import com.niyaj.database.dao.PaymentDao
 import com.niyaj.database.dao.PrintDao
@@ -91,5 +92,8 @@ object DaosModule {
     fun provideSelectedDao(database: PoposDatabase): SelectedDao = database.selectedDao()
 
     @Provides
-    fun provideMarketListDao(database: PoposDatabase): MarketItemDao = database.marketListDao()
+    fun provideMarketItemDao(database: PoposDatabase): MarketItemDao = database.marketItemDao()
+
+    @Provides
+    fun provideMarketListDao(database: PoposDatabase): MarketListDao = database.marketListDao()
 }

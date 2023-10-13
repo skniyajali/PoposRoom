@@ -196,7 +196,7 @@ fun TextWithTitle(
 fun NoteText(
     modifier: Modifier = Modifier,
     iconModifier: Modifier = Modifier.size(SpaceMedium),
-    text: String = "",
+    text: String,
     icon: ImageVector = Icons.Default.ErrorOutline,
     color : Color = MaterialTheme.colorScheme.secondary,
     fontWeight: FontWeight = FontWeight.Normal,
@@ -205,24 +205,23 @@ fun NoteText(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if(text.isNotEmpty()) {
-            Icon(
-                imageVector = icon,
-                contentDescription = text,
-                tint = color,
-                modifier = iconModifier,
-            )
-            Spacer(modifier = Modifier.width(SpaceMini))
+        Icon(
+            imageVector = icon,
+            contentDescription = text,
+            tint = color,
+            modifier = iconModifier,
+        )
 
-            Text(
-                text = text,
-                style = MaterialTheme.typography.labelSmall,
-                fontWeight = fontWeight,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = color,
-            )
-        }
+        Spacer(modifier = Modifier.width(SpaceMini))
+
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = fontWeight,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = color,
+        )
     }
 }
 
@@ -235,6 +234,7 @@ fun NoteCard(
     backgroundColor: Color = MaterialTheme.colorScheme.errorContainer,
     textColor : Color = MaterialTheme.colorScheme.error,
     fontWeight: FontWeight = FontWeight.Normal,
+    textStyle: TextStyle = MaterialTheme.typography.labelSmall
 ) {
     Card(
         modifier = modifier
@@ -260,7 +260,7 @@ fun NoteCard(
 
             Text(
                 text = text,
-                style = MaterialTheme.typography.labelSmall,
+                style = textStyle,
                 fontWeight = fontWeight,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,

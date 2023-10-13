@@ -64,6 +64,7 @@ import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.message
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
+import de.charlex.compose.RevealSwipe
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
 

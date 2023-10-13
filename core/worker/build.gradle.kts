@@ -3,7 +3,6 @@ plugins {
     id("popos.android.library")
     id("popos.android.library.jacoco")
     id("popos.android.hilt")
-    kotlin("kapt")
 }
 
 android {
