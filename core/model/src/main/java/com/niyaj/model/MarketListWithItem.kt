@@ -11,5 +11,3 @@ data class MarketListWithItem(
 
     val marketListType: MarketListType,
 )
-
-
