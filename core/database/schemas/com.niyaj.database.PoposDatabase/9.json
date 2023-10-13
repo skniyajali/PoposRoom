@@ -49,17 +49,13 @@
         ],
         "primaryKey": {
           "autoGenerate": true,
-          "columnNames": [
-            "itemId"
-          ]
+          "columnNames": ["itemId"]
         },
         "indices": [
           {
             "name": "index_addonitem_itemId",
             "unique": false,
-            "columnNames": [
-              "itemId"
-            ],
+            "columnNames": ["itemId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_addonitem_itemId` ON `${TABLE_NAME}` (`itemId`)"
           }
@@ -105,17 +101,13 @@
         ],
         "primaryKey": {
           "autoGenerate": true,
-          "columnNames": [
-            "addressId"
-          ]
+          "columnNames": ["addressId"]
         },
         "indices": [
           {
             "name": "index_address_addressId",
             "unique": false,
-            "columnNames": [
-              "addressId"
-            ],
+            "columnNames": ["addressId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_address_addressId` ON `${TABLE_NAME}` (`addressId`)"
           }
@@ -167,17 +159,13 @@
         ],
         "primaryKey": {
           "autoGenerate": true,
-          "columnNames": [
-            "chargesId"
-          ]
+          "columnNames": ["chargesId"]
         },
         "indices": [
           {
             "name": "index_charges_chargesId",
             "unique": false,
-            "columnNames": [
-              "chargesId"
-            ],
+            "columnNames": ["chargesId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_charges_chargesId` ON `${TABLE_NAME}` (`chargesId`)"
           }
@@ -223,9 +211,7 @@
         ],
         "primaryKey": {
           "autoGenerate": true,
-          "columnNames": [
-            "categoryId"
-          ]
+          "columnNames": ["categoryId"]
         },
         "indices": [],
         "foreignKeys": []
@@ -275,17 +261,13 @@
         ],
         "primaryKey": {
           "autoGenerate": true,
-          "columnNames": [
-            "customerId"
-          ]
+          "columnNames": ["customerId"]
         },
         "indices": [
           {
             "name": "index_customer_customerId",
             "unique": false,
-            "columnNames": [
-              "customerId"
-            ],
+            "columnNames": ["customerId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_customer_customerId` ON `${TABLE_NAME}` (`customerId`)"
           }
@@ -367,17 +349,13 @@
         ],
         "primaryKey": {
           "autoGenerate": true,
-          "columnNames": [
-            "employeeId"
-          ]
+          "columnNames": ["employeeId"]
         },
         "indices": [
           {
             "name": "index_employee_employeeId",
             "unique": false,
-            "columnNames": [
-              "employeeId"
-            ],
+            "columnNames": ["employeeId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_employee_employeeId` ON `${TABLE_NAME}` (`employeeId`)"
           }
@@ -447,26 +425,20 @@
         ],
         "primaryKey": {
           "autoGenerate": true,
-          "columnNames": [
-            "paymentId"
-          ]
+          "columnNames": ["paymentId"]
         },
         "indices": [
           {
             "name": "index_payment_paymentId",
             "unique": false,
-            "columnNames": [
-              "paymentId"
-            ],
+            "columnNames": ["paymentId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_payment_paymentId` ON `${TABLE_NAME}` (`paymentId`)"
           },
           {
             "name": "index_payment_employeeId",
             "unique": false,
-            "columnNames": [
-              "employeeId"
-            ],
+            "columnNames": ["employeeId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_payment_employeeId` ON `${TABLE_NAME}` (`employeeId`)"
           }
@@ -476,12 +448,8 @@
             "table": "employee",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "employeeId"
-            ],
-            "referencedColumns": [
-              "employeeId"
-            ]
+            "columns": ["employeeId"],
+            "referencedColumns": ["employeeId"]
           }
         ]
       },
@@ -504,27 +472,20 @@
         ],
         "primaryKey": {
           "autoGenerate": false,
-          "columnNames": [
-            "employeeId",
-            "paymentId"
-          ]
+          "columnNames": ["employeeId", "paymentId"]
         },
         "indices": [
           {
             "name": "index_EmployeeWithPaymentCrossRef_employeeId",
             "unique": false,
-            "columnNames": [
-              "employeeId"
-            ],
+            "columnNames": ["employeeId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_EmployeeWithPaymentCrossRef_employeeId` ON `${TABLE_NAME}` (`employeeId`)"
           },
           {
             "name": "index_EmployeeWithPaymentCrossRef_paymentId",
             "unique": false,
-            "columnNames": [
-              "paymentId"
-            ],
+            "columnNames": ["paymentId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_EmployeeWithPaymentCrossRef_paymentId` ON `${TABLE_NAME}` (`paymentId`)"
           }
@@ -534,23 +495,15 @@
             "table": "employee",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "employeeId"
-            ],
-            "referencedColumns": [
-              "employeeId"
-            ]
+            "columns": ["employeeId"],
+            "referencedColumns": ["employeeId"]
           },
           {
             "table": "payment",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "paymentId"
-            ],
-            "referencedColumns": [
-              "paymentId"
-            ]
+            "columns": ["paymentId"],
+            "referencedColumns": ["paymentId"]
           }
         ]
       },
@@ -599,17 +552,13 @@
         ],
         "primaryKey": {
           "autoGenerate": true,
-          "columnNames": [
-            "absentId"
-          ]
+          "columnNames": ["absentId"]
         },
         "indices": [
           {
             "name": "index_absent_employeeId",
             "unique": false,
-            "columnNames": [
-              "employeeId"
-            ],
+            "columnNames": ["employeeId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_absent_employeeId` ON `${TABLE_NAME}` (`employeeId`)"
           }
@@ -619,12 +568,8 @@
             "table": "employee",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "employeeId"
-            ],
-            "referencedColumns": [
-              "employeeId"
-            ]
+            "columns": ["employeeId"],
+            "referencedColumns": ["employeeId"]
           }
         ]
       },
@@ -647,27 +592,20 @@
         ],
         "primaryKey": {
           "autoGenerate": false,
-          "columnNames": [
-            "employeeId",
-            "absentId"
-          ]
+          "columnNames": ["employeeId", "absentId"]
         },
         "indices": [
           {
             "name": "index_EmployeeWithAbsentCrossRef_employeeId",
             "unique": false,
-            "columnNames": [
-              "employeeId"
-            ],
+            "columnNames": ["employeeId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_EmployeeWithAbsentCrossRef_employeeId` ON `${TABLE_NAME}` (`employeeId`)"
           },
           {
             "name": "index_EmployeeWithAbsentCrossRef_absentId",
             "unique": false,
-            "columnNames": [
-              "absentId"
-            ],
+            "columnNames": ["absentId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_EmployeeWithAbsentCrossRef_absentId` ON `${TABLE_NAME}` (`absentId`)"
           }
@@ -677,23 +615,15 @@
             "table": "employee",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "employeeId"
-            ],
-            "referencedColumns": [
-              "employeeId"
-            ]
+            "columns": ["employeeId"],
+            "referencedColumns": ["employeeId"]
           },
           {
             "table": "absent",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "absentId"
-            ],
-            "referencedColumns": [
-              "absentId"
-            ]
+            "columns": ["absentId"],
+            "referencedColumns": ["absentId"]
           }
         ]
       },
@@ -748,9 +678,7 @@
         ],
         "primaryKey": {
           "autoGenerate": true,
-          "columnNames": [
-            "expenseId"
-          ]
+          "columnNames": ["expenseId"]
         },
         "indices": [],
         "foreignKeys": []
@@ -812,17 +740,13 @@
         ],
         "primaryKey": {
           "autoGenerate": true,
-          "columnNames": [
-            "productId"
-          ]
+          "columnNames": ["productId"]
         },
         "indices": [
           {
             "name": "index_product_categoryId",
             "unique": false,
-            "columnNames": [
-              "categoryId"
-            ],
+            "columnNames": ["categoryId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_product_categoryId` ON `${TABLE_NAME}` (`categoryId`)"
           }
@@ -832,12 +756,8 @@
             "table": "category",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "categoryId"
-            ],
-            "referencedColumns": [
-              "categoryId"
-            ]
+            "columns": ["categoryId"],
+            "referencedColumns": ["categoryId"]
           }
         ]
       },
@@ -860,27 +780,20 @@
         ],
         "primaryKey": {
           "autoGenerate": false,
-          "columnNames": [
-            "productId",
-            "categoryId"
-          ]
+          "columnNames": ["productId", "categoryId"]
         },
         "indices": [
           {
             "name": "index_CategoryWithProductCrossRef_categoryId",
             "unique": false,
-            "columnNames": [
-              "categoryId"
-            ],
+            "columnNames": ["categoryId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_CategoryWithProductCrossRef_categoryId` ON `${TABLE_NAME}` (`categoryId`)"
           },
           {
             "name": "index_CategoryWithProductCrossRef_productId",
             "unique": false,
-            "columnNames": [
-              "productId"
-            ],
+            "columnNames": ["productId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_CategoryWithProductCrossRef_productId` ON `${TABLE_NAME}` (`productId`)"
           }
@@ -890,23 +803,15 @@
             "table": "product",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "productId"
-            ],
-            "referencedColumns": [
-              "productId"
-            ]
+            "columns": ["productId"],
+            "referencedColumns": ["productId"]
           },
           {
             "table": "category",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "categoryId"
-            ],
-            "referencedColumns": [
-              "categoryId"
-            ]
+            "columns": ["categoryId"],
+            "referencedColumns": ["categoryId"]
           }
         ]
       },
@@ -967,26 +872,20 @@
         ],
         "primaryKey": {
           "autoGenerate": true,
-          "columnNames": [
-            "orderId"
-          ]
+          "columnNames": ["orderId"]
         },
         "indices": [
           {
             "name": "index_cartorder_addressId",
             "unique": false,
-            "columnNames": [
-              "addressId"
-            ],
+            "columnNames": ["addressId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_cartorder_addressId` ON `${TABLE_NAME}` (`addressId`)"
           },
           {
             "name": "index_cartorder_customerId",
             "unique": false,
-            "columnNames": [
-              "customerId"
-            ],
+            "columnNames": ["customerId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_cartorder_customerId` ON `${TABLE_NAME}` (`customerId`)"
           }
@@ -1030,17 +929,13 @@
         ],
         "primaryKey": {
           "autoGenerate": false,
-          "columnNames": [
-            "orderId"
-          ]
+          "columnNames": ["orderId"]
         },
         "indices": [
           {
             "name": "index_cart_price_orderId",
             "unique": false,
-            "columnNames": [
-              "orderId"
-            ],
+            "columnNames": ["orderId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_cart_price_orderId` ON `${TABLE_NAME}` (`orderId`)"
           }
@@ -1050,12 +945,8 @@
             "table": "cartorder",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "orderId"
-            ],
-            "referencedColumns": [
-              "orderId"
-            ]
+            "columns": ["orderId"],
+            "referencedColumns": ["orderId"]
           }
         ]
       },
@@ -1085,27 +976,20 @@
         ],
         "primaryKey": {
           "autoGenerate": false,
-          "columnNames": [
-            "orderId",
-            "itemId"
-          ]
+          "columnNames": ["orderId", "itemId"]
         },
         "indices": [
           {
             "name": "index_cart_addon_items_orderId",
             "unique": false,
-            "columnNames": [
-              "orderId"
-            ],
+            "columnNames": ["orderId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_cart_addon_items_orderId` ON `${TABLE_NAME}` (`orderId`)"
           },
           {
             "name": "index_cart_addon_items_itemId",
             "unique": false,
-            "columnNames": [
-              "itemId"
-            ],
+            "columnNames": ["itemId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_cart_addon_items_itemId` ON `${TABLE_NAME}` (`itemId`)"
           }
@@ -1115,23 +999,15 @@
             "table": "cartorder",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "orderId"
-            ],
-            "referencedColumns": [
-              "orderId"
-            ]
+            "columns": ["orderId"],
+            "referencedColumns": ["orderId"]
           },
           {
             "table": "addonitem",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "itemId"
-            ],
-            "referencedColumns": [
-              "itemId"
-            ]
+            "columns": ["itemId"],
+            "referencedColumns": ["itemId"]
           }
         ]
       },
@@ -1161,27 +1037,20 @@
         ],
         "primaryKey": {
           "autoGenerate": false,
-          "columnNames": [
-            "orderId",
-            "chargesId"
-          ]
+          "columnNames": ["orderId", "chargesId"]
         },
         "indices": [
           {
             "name": "index_cart_charges_orderId",
             "unique": false,
-            "columnNames": [
-              "orderId"
-            ],
+            "columnNames": ["orderId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_cart_charges_orderId` ON `${TABLE_NAME}` (`orderId`)"
           },
           {
             "name": "index_cart_charges_chargesId",
             "unique": false,
-            "columnNames": [
-              "chargesId"
-            ],
+            "columnNames": ["chargesId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_cart_charges_chargesId` ON `${TABLE_NAME}` (`chargesId`)"
           }
@@ -1191,23 +1060,15 @@
             "table": "cartorder",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "orderId"
-            ],
-            "referencedColumns": [
-              "orderId"
-            ]
+            "columns": ["orderId"],
+            "referencedColumns": ["orderId"]
           },
           {
             "table": "charges",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "chargesId"
-            ],
-            "referencedColumns": [
-              "chargesId"
-            ]
+            "columns": ["chargesId"],
+            "referencedColumns": ["chargesId"]
           }
         ]
       },
@@ -1230,26 +1091,20 @@
         ],
         "primaryKey": {
           "autoGenerate": false,
-          "columnNames": [
-            "selectedId"
-          ]
+          "columnNames": ["selectedId"]
         },
         "indices": [
           {
             "name": "index_selected_selectedId",
             "unique": false,
-            "columnNames": [
-              "selectedId"
-            ],
+            "columnNames": ["selectedId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_selected_selectedId` ON `${TABLE_NAME}` (`selectedId`)"
           },
           {
             "name": "index_selected_orderId",
             "unique": false,
-            "columnNames": [
-              "orderId"
-            ],
+            "columnNames": ["orderId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_selected_orderId` ON `${TABLE_NAME}` (`orderId`)"
           }
@@ -1259,12 +1114,8 @@
             "table": "cartorder",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "orderId"
-            ],
-            "referencedColumns": [
-              "orderId"
-            ]
+            "columns": ["orderId"],
+            "referencedColumns": ["orderId"]
           }
         ]
       },
@@ -1313,26 +1164,20 @@
         ],
         "primaryKey": {
           "autoGenerate": true,
-          "columnNames": [
-            "cartId"
-          ]
+          "columnNames": ["cartId"]
         },
         "indices": [
           {
             "name": "index_cart_orderId",
             "unique": false,
-            "columnNames": [
-              "orderId"
-            ],
+            "columnNames": ["orderId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_cart_orderId` ON `${TABLE_NAME}` (`orderId`)"
           },
           {
             "name": "index_cart_productId",
             "unique": false,
-            "columnNames": [
-              "productId"
-            ],
+            "columnNames": ["productId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_cart_productId` ON `${TABLE_NAME}` (`productId`)"
           }
@@ -1342,23 +1187,15 @@
             "table": "cartorder",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "orderId"
-            ],
-            "referencedColumns": [
-              "orderId"
-            ]
+            "columns": ["orderId"],
+            "referencedColumns": ["orderId"]
           },
           {
             "table": "product",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "productId"
-            ],
-            "referencedColumns": [
-              "productId"
-            ]
+            "columns": ["productId"],
+            "referencedColumns": ["productId"]
           }
         ]
       },
@@ -1447,9 +1284,7 @@
         ],
         "primaryKey": {
           "autoGenerate": false,
-          "columnNames": [
-            "restaurantId"
-          ]
+          "columnNames": ["restaurantId"]
         },
         "indices": [],
         "foreignKeys": []
@@ -1539,17 +1374,13 @@
         ],
         "primaryKey": {
           "autoGenerate": false,
-          "columnNames": [
-            "printerId"
-          ]
+          "columnNames": ["printerId"]
         },
         "indices": [
           {
             "name": "index_printerInfo_printerId",
             "unique": false,
-            "columnNames": [
-              "printerId"
-            ],
+            "columnNames": ["printerId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_printerInfo_printerId` ON `${TABLE_NAME}` (`printerId`)"
           }
@@ -1623,17 +1454,13 @@
         ],
         "primaryKey": {
           "autoGenerate": true,
-          "columnNames": [
-            "reportId"
-          ]
+          "columnNames": ["reportId"]
         },
         "indices": [
           {
             "name": "index_reports_reportId",
             "unique": false,
-            "columnNames": [
-              "reportId"
-            ],
+            "columnNames": ["reportId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_reports_reportId` ON `${TABLE_NAME}` (`reportId`)"
           }
@@ -1695,9 +1522,7 @@
         ],
         "primaryKey": {
           "autoGenerate": true,
-          "columnNames": [
-            "itemId"
-          ]
+          "columnNames": ["itemId"]
         },
         "indices": [],
         "foreignKeys": []
@@ -1733,9 +1558,7 @@
         ],
         "primaryKey": {
           "autoGenerate": true,
-          "columnNames": [
-            "marketId"
-          ]
+          "columnNames": ["marketId"]
         },
         "indices": [],
         "foreignKeys": []
@@ -1777,26 +1600,20 @@
         ],
         "primaryKey": {
           "autoGenerate": true,
-          "columnNames": [
-            "listId"
-          ]
+          "columnNames": ["listId"]
         },
         "indices": [
           {
             "name": "index_market_list_with_item_marketId",
             "unique": false,
-            "columnNames": [
-              "marketId"
-            ],
+            "columnNames": ["marketId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_market_list_with_item_marketId` ON `${TABLE_NAME}` (`marketId`)"
           },
           {
             "name": "index_market_list_with_item_itemId",
             "unique": false,
-            "columnNames": [
-              "itemId"
-            ],
+            "columnNames": ["itemId"],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_market_list_with_item_itemId` ON `${TABLE_NAME}` (`itemId`)"
           }
@@ -1806,23 +1623,15 @@
             "table": "market_list",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "marketId"
-            ],
-            "referencedColumns": [
-              "marketId"
-            ]
+            "columns": ["marketId"],
+            "referencedColumns": ["marketId"]
           },
           {
             "table": "market_item",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
-            "columns": [
-              "itemId"
-            ],
-            "referencedColumns": [
-              "itemId"
-            ]
+            "columns": ["itemId"],
+            "referencedColumns": ["itemId"]
           }
         ]
       }
