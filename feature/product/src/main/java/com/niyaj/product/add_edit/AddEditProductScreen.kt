@@ -64,7 +64,7 @@ import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
+import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
@@ -120,18 +120,17 @@ fun AddEditProductScreen(
 
     val title = if (productId == 0) CREATE_NEW_PRODUCT else EDIT_PRODUCT
 
-    StandardScaffoldWithOutDrawer(
+    StandardScaffoldNew(
+        navController = navController,
         title = title,
-        onBackClick = {
-            navController.navigateUp()
-        },
+        showBackButton = true,
         showBottomBar = enableBtn,
         bottomBar = {
             StandardButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag(ADD_EDIT_PRODUCT_BUTTON)
-                    .padding(horizontal = SpaceSmallMax),
+                    .padding(SpaceSmallMax),
                 enabled = enableBtn,
                 text = title,
                 icon = if (productId == 0) Icons.Default.Add else Icons.Default.Edit,
@@ -146,7 +145,7 @@ fun AddEditProductScreen(
             modifier = Modifier
                 .testTag(PaymentScreenTags.ADD_EDIT_PAYMENT_SCREEN)
                 .fillMaxWidth()
-                .padding(SpaceSmall),
+                .padding(SpaceSmallMax),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall)
         ) {
             item(PRODUCT_CATEGORY_FIELD) {

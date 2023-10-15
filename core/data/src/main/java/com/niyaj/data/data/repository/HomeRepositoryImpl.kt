@@ -2,7 +2,7 @@ package com.niyaj.data.data.repository
 
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
-import com.niyaj.data.repository.MainFeedRepository
+import com.niyaj.data.repository.HomeRepository
 import com.niyaj.database.dao.MainFeedDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Category
@@ -21,11 +21,11 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 
-class MainFeedRepositoryImpl(
+class HomeRepositoryImpl(
     private val mainFeedDao: MainFeedDao,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
-) : MainFeedRepository {
+) : HomeRepository {
 
     override fun getAllCategory(): Flow<List<Category>> {
         return mainFeedDao.getAllCategories().mapLatest { list ->

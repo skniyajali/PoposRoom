@@ -186,7 +186,17 @@ class MarketItemRepositoryImpl(
     }
 
     override suspend fun importMarketItemsToDatabase(marketItems: List<MarketItem>): Resource<Boolean> {
-        TODO("Not yet implemented")
+        return try {
+            withContext(ioDispatcher) {
+                marketItems.forEach {
+                    upsertMarketItem(it)
+                }
+            }
+
+            Resource.Success(true)
+        }catch (e: Exception) {
+            Resource.Error(e.message)
+        }
     }
 
     override fun validateItemType(itemType: String): ValidationResult {

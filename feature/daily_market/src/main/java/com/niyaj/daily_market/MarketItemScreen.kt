@@ -13,12 +13,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dns
+import androidx.compose.material.icons.filled.PostAdd
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -51,6 +53,7 @@ import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_ITEM_TAG
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.toRupee
 import com.niyaj.daily_market.destinations.AddEditMarketItemScreenDestination
+import com.niyaj.daily_market.destinations.MarketItemSettingsScreenDestination
 import com.niyaj.daily_market.destinations.MarketListScreenDestination
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.MarketItem
@@ -58,6 +61,7 @@ import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
+import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.StandardScaffold
 import com.niyaj.ui.components.drawAnimatedBorder
@@ -172,7 +176,7 @@ fun MarketItemScreen(
                     openDialog.value = true
                 },
                 onSettingsClick = {
-                    navController.navigate(MarketListScreenDestination)
+                    navController.navigate(MarketItemSettingsScreenDestination)
                 },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
@@ -211,6 +215,19 @@ fun MarketItemScreen(
                         columns = GridCells.Fixed(2),
                         state = lazyGridState,
                     ) {
+                        item(
+                            span = {GridItemSpan(2)}
+                        ) {
+                            SettingsCard(
+                                title = "Create New List",
+                                subtitle = "",
+                                icon = Icons.Default.PostAdd,
+                                onClick = {
+                                    navController.navigate(MarketListScreenDestination)
+                                }
+                            )
+                        }
+
                         items(
                             items = state.data,
                             key = { it.itemId }

@@ -2,8 +2,8 @@ package com.niyaj.data.di
 
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
-import com.niyaj.data.data.repository.MainFeedRepositoryImpl
-import com.niyaj.data.repository.MainFeedRepository
+import com.niyaj.data.data.repository.HomeRepositoryImpl
+import com.niyaj.data.repository.HomeRepository
 import com.niyaj.database.dao.MainFeedDao
 import dagger.Module
 import dagger.Provides
@@ -19,8 +19,8 @@ object MainFeedModule {
     fun provideMainFeedRepository(
         mainFeedDao: MainFeedDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
-    ): MainFeedRepository {
-        return MainFeedRepositoryImpl(mainFeedDao, ioDispatcher)
+    ): HomeRepository {
+        return HomeRepositoryImpl(mainFeedDao, ioDispatcher)
     }
 
 }

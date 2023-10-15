@@ -38,9 +38,11 @@ fun SettingsCard(
                 style = MaterialTheme.typography.labelLarge
             )
         },
-        supportingContent = {
-            Text(text = subtitle)
-        },
+        supportingContent = if (subtitle.isEmpty()) null else (
+                {
+                    Text(text = subtitle)
+                }
+                ),
         leadingContent = {
             CircularBox(
                 icon = icon,

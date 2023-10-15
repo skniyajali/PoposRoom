@@ -2,26 +2,21 @@ package com.niyaj.daily_market.market_list.add_edit
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Remove
@@ -35,15 +30,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.state.ToggleableState
@@ -62,6 +53,7 @@ import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.MarketItem
 import com.niyaj.ui.components.NAV_SEARCH_BTN
+import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.StandardSearchBar
@@ -108,7 +100,7 @@ fun AddEditMarketListScreen(
                     .padding(SpaceMedium),
                 text = title,
                 icon = if (marketId == 0) Icons.Default.Add else Icons.Default.Edit,
-                enabled = true,
+                enabled = selectedItems.isNotEmpty(),
                 onClick = {
 
                 }
@@ -145,34 +137,54 @@ fun AddEditMarketListScreen(
                 }
             }
         },
-    ) { paddingValues ->
+    ) {
         LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall)
-                .consumeWindowInsets(paddingValues)
-                .imePadding(),
+                .fillMaxSize()
+                .padding(SpaceSmall),
             state = lazyListState
         ) {
-            items(
-                items = items,
-                key = {
-                    it.itemId
+            groupedByType.forEach { (type, marketItems) ->
+                stickyHeader {
+                    NoteCard(
+                        text = type,
+                        icon = Icons.Default.Category,
+                        backgroundColor = MaterialTheme.colorScheme.surface,
+                        textStyle = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
-            ) { item ->
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = "0",
-                    onValueChange = {
 
-                    },
-                )
+                items(
+                    items = marketItems,
+                    key = {
+                        it.itemId
+                    }
+                ) { item ->
+                    MarketItemCard(
+                        item = item,
+                        itemQuantity = { itemId ->
+                            itemQuantity.find {
+                                it.itemId == itemId
+                            }?.quantity ?: "0"
+                        },
+                        doesSelected = {
+                            if (selectedItems.contains(it)) {
+                                ToggleableState.On
+                            } else if (removedItems.contains(it)) {
+                                ToggleableState.Indeterminate
+                            } else {
+                                ToggleableState.Off
+                            }
+                        },
+                        onSelectItem = viewModel::selectItem,
+                        onDismiss = viewModel::removeItem,
+                        decreaseQuantity = viewModel::decreaseQuantity,
+                        increaseQuantity = viewModel::increaseQuantity
+                    )
 
-                Spacer(modifier = Modifier.height(SpaceSmall))
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(SpaceSmall))
+                    Spacer(modifier = Modifier.height(SpaceMini))
+                }
             }
         }
     }
@@ -252,70 +264,6 @@ fun MarketItemCard(
 
 
 @Composable
-fun MarketItemCard(
-    item: MarketItem,
-    itemQuantity: (itemId: Int) -> String,
-    doesSelected: (itemId: Int) -> ToggleableState,
-    onSelectItem: (itemId: Int) -> Unit,
-    onDismiss: (itemId: Int) -> Unit,
-    onValueChanged: (itemId: Int, quantity: String) -> Unit,
-) {
-    val archive = SwipeAction(
-        icon = rememberVectorPainter(Icons.TwoTone.RestartAlt),
-        background = MaterialTheme.colorScheme.primaryContainer,
-        isUndo = true,
-        onSwipe = {
-            onDismiss(item.itemId)
-        }
-    )
-
-    val snooze = SwipeAction(
-        icon = rememberVectorPainter(Icons.TwoTone.Delete),
-        background = MaterialTheme.colorScheme.secondaryContainer,
-        isUndo = true,
-        onSwipe = {
-            onDismiss(item.itemId)
-        },
-    )
-
-    key(item.itemId) {
-        SwipeableActionsBox(
-            startActions = listOf(archive),
-            endActions = listOf(snooze),
-            backgroundUntilSwipeThreshold = MaterialTheme.colorScheme.background
-        ) {
-            ListItem(
-                leadingContent = {
-                    TriStateCheckbox(
-                        state = doesSelected(item.itemId),
-                        onClick = {
-                            onSelectItem(item.itemId)
-                        }
-                    )
-                },
-                headlineContent = {
-                    Text(
-                        text = item.itemName,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                },
-                supportingContent = {
-                    item.itemPrice?.let {
-                        Text(text = it.toRupee)
-                    }
-                },
-                trailingContent = {
-                },
-                colors = ListItemDefaults.colors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
-            )
-        }
-    }
-}
-
-
-@Composable
 fun MarketItemIncDecCard(
     itemQuantity: String,
     decreaseQuantity: () -> Unit,
@@ -367,119 +315,3 @@ fun MarketItemIncDecCard(
         }
     }
 }
-
-
-
-@Composable
-private fun DuckieTextField(
-    text: String,
-    onTextChanged: (String) -> Unit,
-) {
-    BasicTextField(
-        value = text,
-        onValueChange = onTextChanged,
-        decorationBox = {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                text.forEachIndexed { index, char ->
-                    DuckieTextFieldCharContainer(
-                        text = char,
-                        isFocused = index == text.lastIndex,
-                    )
-                }
-                repeat(3 - text.length) {
-                    DuckieTextFieldCharContainer(
-                        text = ' ',
-                        isFocused = false,
-                    )
-                }
-            }
-        },
-    )
-}
-
-@Composable
-private fun DuckieTextFieldCharContainer(
-    modifier: Modifier = Modifier,
-    text: Char,
-    isFocused: Boolean,
-) {
-    val shape = remember { RoundedCornerShape(4.dp) }
-
-    Box(
-        modifier = modifier
-            .size(
-                width = 29.dp,
-                height = 40.dp,
-            )
-            .background(
-                color = Color(0xFFF6F6F6),
-                shape = shape,
-            )
-            .run {
-                if (isFocused) {
-                    border(
-                        width = 1.dp,
-                        color = Color(0xFFFF8300),
-                        shape = shape,
-                    )
-                } else {
-                    this
-                }
-            },
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(text = text.toString())
-    }
-}
-
-
-//            groupedByType.forEach { (type, marketItems) ->
-//                stickyHeader {
-//                    NoteCard(
-//                        text = type,
-//                        icon = Icons.Default.Category,
-//                        backgroundColor = MaterialTheme.colorScheme.surface,
-//                        textStyle = MaterialTheme.typography.labelLarge,
-//                        fontWeight = FontWeight.SemiBold
-//                    )
-//                }
-//
-//                items(
-//                    items = marketItems,
-//                    key = {
-//                        it.itemId
-//                    }
-//                ) { item ->
-////                    MarketItemCard(
-////                        item = item,
-////                        itemQuantity = { itemId ->
-////                            itemQuantity.find {
-////                                it.itemId == itemId
-////                            }?.quantity ?: "0"
-////                        },
-////                        doesSelected = {
-////                            if (selectedItems.contains(it)) {
-////                                ToggleableState.On
-////                            } else if (removedItems.contains(it)) {
-////                                ToggleableState.Indeterminate
-////                            } else {
-////                                ToggleableState.Off
-////                            }
-////                        },
-////                        onSelectItem = viewModel::selectItem,
-////                        onDismiss = viewModel::removeItem,
-////                        onValueChanged = viewModel::onValueChanged
-////                    )
-//
-//                    TextField(
-//                        value = itemQuantity.find {
-//                            it.itemId == item.itemId
-//                        }?.quantity ?: "0",
-//                        onValueChange = {
-//                            viewModel.onValueChanged(item.itemId, it)
-//                        },
-//                    )
-//
-//                    Spacer(modifier = Modifier.height(SpaceMini))
-//                }
-//            }

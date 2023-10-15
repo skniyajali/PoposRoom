@@ -5,7 +5,7 @@ import com.niyaj.model.ProductWithFlowQuantity
 import com.niyaj.model.Selected
 import kotlinx.coroutines.flow.Flow
 
-interface MainFeedRepository {
+interface HomeRepository {
 
     fun getAllCategory(): Flow<List<Category>>
 
