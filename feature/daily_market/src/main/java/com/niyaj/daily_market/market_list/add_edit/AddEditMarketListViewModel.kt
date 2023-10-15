@@ -33,6 +33,7 @@ class AddEditMarketListViewModel @Inject constructor(
 
     private val _removedItems = mutableStateListOf<Int>()
     val removedItems: SnapshotStateList<Int> = _removedItems
+    
 
     val items = snapshotFlow { _searchText.value }.flatMapLatest { searchText ->
         itemRepository.getAllMarketItems(searchText)
@@ -113,9 +114,5 @@ class AddEditMarketListViewModel @Inject constructor(
         viewModelScope.launch {
 
         }
-    }
-
-    fun createOrUpdateMarketList() {
-
     }
 }

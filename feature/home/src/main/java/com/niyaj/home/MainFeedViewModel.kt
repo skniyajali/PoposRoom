@@ -4,7 +4,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.data.repository.CartRepository
-import com.niyaj.data.repository.MainFeedRepository
+import com.niyaj.data.repository.HomeRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainFeedViewModel @Inject constructor(
-    private val repository: MainFeedRepository,
+    private val repository: HomeRepository,
     private val cartRepository: CartRepository,
 ): BaseViewModel() {
 

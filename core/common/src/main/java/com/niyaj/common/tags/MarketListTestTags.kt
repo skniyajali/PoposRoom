@@ -57,12 +57,12 @@ object MarketListTestTags {
     const val IMPORT_MARKET_ITEM_TITLE = "Import Item"
     const val IMPORT_MARKET_ITEM_BTN_TEXT = "Import Item"
     const val IMPORT_MARKET_ITEM_OPN_FILE = "Open File"
-    const val IMPORT_MARKET_ITEM_NOTE_TEXT = "Make sure to open market-lists.json file."
+    const val IMPORT_MARKET_ITEM_NOTE_TEXT = "Make sure to open market-items.json file."
 
     const val EXPORT_MARKET_ITEM_TITLE = "Export Item"
     const val EXPORT_MARKET_ITEM_BTN_TEXT = "Export Item"
     const val EXPORT_MARKET_ITEM_BTN = "Export Item"
 
-    const val EXPORT_MARKET_ITEM_FILE_NAME = "market-lists"
+    const val EXPORT_MARKET_ITEM_FILE_NAME = "market-items"
 
 }

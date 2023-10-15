@@ -34,7 +34,7 @@ import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
+import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
@@ -71,17 +71,16 @@ fun AddEditCategoryScreen(
         }
     }
 
-    StandardScaffoldWithOutDrawer(
+    StandardScaffoldNew(
+        navController = navController,
         title = title,
-        onBackClick = {
-            navController.navigateUp()
-        },
+        showBackButton = true,
         showBottomBar = enableBtn,
         bottomBar = {
             StandardButton(
                 modifier = Modifier
                     .testTag(AddressTestTags.ADD_EDIT_ADDRESS_BTN)
-                    .padding(horizontal = SpaceSmallMax),
+                    .padding(SpaceSmallMax),
                 text = title,
                 icon = if (categoryId == 0) Icons.Default.Add else Icons.Default.Edit,
                 enabled = enableBtn,
@@ -95,7 +94,7 @@ fun AddEditCategoryScreen(
             modifier = Modifier
                 .testTag(ADD_EDIT_CATEGORY_SCREEN)
                 .fillMaxWidth()
-                .padding(SpaceSmall),
+                .padding(SpaceSmallMax),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
             StandardOutlinedTextField(
