@@ -6,8 +6,9 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import com.niyaj.model.ItemQuantityAndType
+import com.niyaj.model.MarketListItem
 import com.niyaj.model.MarketListType
-import com.niyaj.model.MarketListWithItem
 import com.niyaj.model.MarketListWithItems
 
 @Entity(
@@ -55,8 +56,23 @@ data class MarketListWithItemsDto(
     val marketItems: List<MarketListWithItemEntity>,
 )
 
-fun MarketListWithItemEntity.asExternalModel(): MarketListWithItem {
-    return MarketListWithItem(
+
+data class MarketItemWithQuantityDto(
+    @Embedded
+    val item: MarketItemEntity,
+
+    @Relation(
+        parentColumn = "itemId",
+        entityColumn = "itemId",
+        entity = MarketListWithItemEntity::class,
+        projection = ["itemQuantity",  "marketListType"]
+    )
+    val itemQuantity: ItemQuantityAndType
+)
+
+
+fun MarketListWithItemEntity.asExternalModel(): MarketListItem {
+    return MarketListItem(
         listId = listId,
         marketId = marketId,
         itemId = itemId,
@@ -65,10 +81,9 @@ fun MarketListWithItemEntity.asExternalModel(): MarketListWithItem {
     )
 }
 
-
 fun MarketListWithItemsDto.asExternalModel(): MarketListWithItems {
     return MarketListWithItems(
-        marketList = this.marketList.asExternalModel(),
-        items = this.marketItems.map { it.asExternalModel() }
+        marketList = marketList.asExternalModel(),
+        items = marketItems.map { it.asExternalModel() }
     )
 }

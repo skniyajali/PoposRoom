@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
 import com.niyaj.database.model.MarketItemEntity
+import com.niyaj.database.model.MeasureUnitEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -18,6 +19,13 @@ interface MarketItemDao {
     """
     )
     fun getAllMarketItems(): Flow<List<MarketItemEntity>>
+
+    @Query(
+        value = """
+        SELECT * FROM measure_unit
+    """
+    )
+    fun getAllMeasureUnits(): Flow<List<MeasureUnitEntity>>
 
     @Query(
         value = """
@@ -80,4 +88,38 @@ interface MarketItemDao {
     """
     )
     fun findItemByName(itemName: String, itemId: Int?): Int?
+
+
+    /**
+     * Inserts or updates [MeasureUnitEntity] in the db under the specified primary keys
+     */
+    @Upsert(entity = MeasureUnitEntity::class)
+    suspend fun upsertMeasureUnit(measureUnit: MeasureUnitEntity): Long
+
+    @Query(value = """
+        SELECT * FROM measure_unit WHERE unitId = :unitId
+    """)
+    fun getMeasureUnitById(unitId: Int): MeasureUnitEntity?
+
+    @Query(
+        value = """
+            SELECT * FROM measure_unit WHERE unitId = :unitId OR unitName = :unitName
+        """
+    )
+    fun findMeasureUnitByIdOrName(unitId: Int, unitName: String): MeasureUnitEntity?
+
+
+    @Query("""
+        SELECT whitelistItems FROM market_list WHERE marketId = :marketId
+    """)
+    suspend fun getWhitelistItems(marketId: Int): String
+
+    @Query("""
+        UPDATE market_list SET whitelistItems = :whitelistItems  WHERE marketId = :marketId
+    """)
+    suspend fun updateWhiteListItems(marketId: Int, whitelistItems: String): Int
 }
+
+data class WhiteListItems(
+    val whitelistItems: List<Int>,
+)

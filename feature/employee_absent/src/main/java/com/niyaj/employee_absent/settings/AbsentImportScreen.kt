@@ -44,7 +44,7 @@ import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.employee_absent.AbsentData
 import com.niyaj.employee_absent.destinations.AddEditAbsentScreenDestination
 import com.niyaj.model.EmployeeWithAbsents
-import com.niyaj.ui.components.ImportScreen
+import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
@@ -183,7 +183,7 @@ fun AbsentImportScreen(
             label = "Imported Items"
         ) { itemAvailable ->
             if (itemAvailable) {
-                ImportScreen(
+                EmptyImportScreen(
                     text = IMPORT_ABSENT_NOTE_TEXT,
                     buttonText = IMPORT_ABSENT_OPN_FILE,
                     icon = Icons.Default.FileOpen,

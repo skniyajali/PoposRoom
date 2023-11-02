@@ -15,7 +15,7 @@ data class MarketItem(
 
     val itemDescription: String? = null,
 
-    val itemMeasureUnit: String,
+    val itemMeasureUnit: MeasureUnit?,
 
     val createdAt: Long = System.currentTimeMillis(),
 
@@ -30,7 +30,7 @@ fun List<MarketItem>.searchMarketItems(searchText: String): List<MarketItem> {
                     it.itemName.contains(searchText, true) ||
                     it.itemPrice?.contains(searchText, true) == true ||
                     it.itemDescription?.contains(searchText, true) == true ||
-                    it.itemMeasureUnit.contains(searchText, true) ||
+                    it.itemMeasureUnit?.unitName?.contains(searchText, true) == true ||
                     it.createdAt.toDateString.contains(searchText, true) ||
                     it.updatedAt?.toDateString?.contains(searchText, true) == true
         }

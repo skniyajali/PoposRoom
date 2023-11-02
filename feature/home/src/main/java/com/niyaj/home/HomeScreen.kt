@@ -9,29 +9,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Dns
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
@@ -52,6 +46,7 @@ import com.niyaj.ui.components.CategoriesData
 import com.niyaj.ui.components.CircularBoxWithQty
 import com.niyaj.ui.components.IncDecBox
 import com.niyaj.ui.components.ItemNotAvailable
+import com.niyaj.ui.components.ItemNotFound
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.StandardScaffoldWithBottomNavigation
 import com.niyaj.ui.components.TitleWithIcon
@@ -234,34 +229,10 @@ fun MainFeedProducts(
             }
 
             item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(SpaceSmall),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(
-                        text = "Could not find what you were looking for?",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-
-                    Spacer(modifier = Modifier.height(SpaceSmall))
-
-                    TextButton(
-                        onClick = onCreateProduct,
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    ) {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = "")
-
-                        Spacer(modifier = Modifier.width(SpaceMini))
-
-                        Text(text = MainFeedTestTags.CREATE_NEW_PRODUCT)
-                    }
-                }
+                ItemNotFound(
+                    btnText = MainFeedTestTags.CREATE_NEW_PRODUCT,
+                    onBtnClick = onCreateProduct
+                )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
             }

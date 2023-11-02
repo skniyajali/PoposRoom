@@ -486,6 +486,9 @@ val getEndDateLong: Long = endTime().timeInMillis
 val Date.toTimeSpan
     get() = DateUtils.getRelativeTimeSpanString(this.time).toString()
 
+val Long.toTimeSpan
+    get() = DateUtils.getRelativeTimeSpanString(this).toString()
+
 fun createDottedString(name: String, limit: Int): String {
     if (name.length > limit) {
         var wordLength = 0
@@ -651,14 +654,34 @@ val String.isToday: Boolean
 
 // Create a list of all measure units.
 val measureUnitLists = listOf(
-    "kg", "gm", "li", "ml", "unit", "bottle", "packet",
-    "tsp", "tbsp", "cup", "pint", "quart", "gallon",
-    "ounce", "pound", "yard", "foot", "inch", "mile",
-    "kilometer", "meter", "centimeter", "millimeter",
-    "acre", "hectare", "square meter", "square foot", "square inch",
-    "cubic meter", "cubic foot", "cubic inch",
-    "fluid ounce", "fluid dram", "minim", "drop",
-    "grain", "scruple", "ounce troy", "pound troy", "carat",
-    "milligram", "micrograms", "nano gram", "pictogram",
-    "femto-gram", "atto-gram", "zepto gram", "yocto-gram"
+    "kg", "gm", "li", "bottle", "packet",
+    "tsp", "tbsp", "cup", "pcs"
 )
+
+
+fun List<Int>.toListString(): String {
+    val sb = StringBuilder()
+    for (item in this) {
+        sb.append(item).append(",")
+    }
+    return sb.toString()
+}
+
+fun String.toListString(): MutableList<Int> {
+    if (this.isEmpty()) return mutableListOf()
+
+    val items = this.trimEnd().split(",")
+
+    return items.map { it.trim() } // Trim to remove leading/trailing whitespace
+        .filter { it.isNotEmpty() } // Filter out empty strings
+        .map { it.toInt() }.toMutableList()
+}
+
+
+fun Double.toSafeString(): String {
+    return when {
+        this == 0.0 -> "0"
+        this == this.toInt().toDouble() -> this.toInt().toString()
+        else -> this.toString()
+    }
+}

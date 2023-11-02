@@ -3,7 +3,7 @@ package com.niyaj.data.mapper
 import com.niyaj.database.model.MarketListEntity
 import com.niyaj.database.model.MarketListWithItemEntity
 import com.niyaj.model.MarketList
-import com.niyaj.model.MarketListWithItem
+import com.niyaj.model.MarketListItem
 
 fun MarketList.toEntity(): MarketListEntity {
     return MarketListEntity(
@@ -14,7 +14,7 @@ fun MarketList.toEntity(): MarketListEntity {
     )
 }
 
-fun MarketListWithItem.toEntity(): MarketListWithItemEntity {
+fun MarketListItem.toEntity(): MarketListWithItemEntity {
     return MarketListWithItemEntity(
         listId = listId,
         marketId = marketId,

@@ -241,7 +241,6 @@ fun OrderScreen(
                             dialogState.show()
                         },
                         trailingIcon = Icons.Default.ArrowDropDown,
-                        borderColor = MaterialTheme.colorScheme.outline,
                     )
                 } else {
                     IconButton(

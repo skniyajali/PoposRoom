@@ -2,6 +2,10 @@ package com.niyaj.daily_market.market_list
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,8 +13,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
+import androidx.compose.material.icons.filled.ShoppingBag
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +29,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -27,9 +40,12 @@ import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_SCREEN_TITLE
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.common.utils.toTimeSpan
 import com.niyaj.daily_market.destinations.AddEditMarketItemScreenDestination
 import com.niyaj.daily_market.destinations.AddEditMarketListScreenDestination
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.model.MarketList
+import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
@@ -117,9 +133,7 @@ fun MarketListScreen(
                 showScrollToTop = lazyGridState.isScrolled,
                 fabText = MarketListTestTags.CREATE_NEW_LIST,
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
-                onFabClick = {
-                    navController.navigate(AddEditMarketListScreenDestination(0))
-                },
+                onFabClick = viewModel::createNewList,
                 onClickScroll = {
                     scope.launch {
                         lazyGridState.animateScrollToItem(0)
@@ -168,9 +182,7 @@ fun MarketListScreen(
                     ItemNotAvailable(
                         text = if (searchText.isEmpty()) MarketListTestTags.MARKET_ITEM_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND,
                         buttonText = MarketListTestTags.CREATE_NEW_LIST,
-                        onClick = {
-                            navController.navigate(AddEditMarketListScreenDestination(0))
-                        }
+                        onClick = viewModel::createNewList
                     )
                 }
 
@@ -180,17 +192,80 @@ fun MarketListScreen(
                             .fillMaxSize()
                             .padding(SpaceSmall)
                     ) {
-                        items(state.data) {
-                            Text(text = it.marketList.marketDate.toPrettyDate())
+                        items(
+                            items = state.data,
+                            key = {
+                                it.marketList.marketId
+                            }
+                        ) { items ->
+                            MarketListItemCard(
+                                marketList = items.marketList,
+                                onClickList = {
+                                    navController.navigate(AddEditMarketListScreenDestination(it))
+                                }
+                            )
 
                             Spacer(modifier = Modifier.fillMaxWidth())
-                            HorizontalDivider()
-                            Spacer(modifier = Modifier.fillMaxWidth())
-
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun MarketListItemCard(
+    marketList: MarketList,
+    onClickList: (marketId: Int) -> Unit
+) {
+    ElevatedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(SpaceSmall),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.background
+        )
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            ListItem(
+                headlineContent = {
+                    Text(
+                        text = marketList.marketDate.toPrettyDate(),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
+                leadingContent = {
+                    CircularBox(
+                        icon = Icons.Default.ShoppingBag,
+                        doesSelected = false
+                    )
+                },
+                trailingContent = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(
+                            SpaceSmall,
+                            Alignment.CenterHorizontally
+                        )
+                    ) {
+                        Text(
+                            text = marketList.createdAt.toTimeSpan,
+                            style = MaterialTheme.typography.labelSmall,
+                        )
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowRight,
+                            contentDescription = "View Details"
+                        )
+                    }
+                },
+                modifier = Modifier.clickable {
+                    onClickList(marketList.marketId)
+                }
+            )
         }
     }
 }

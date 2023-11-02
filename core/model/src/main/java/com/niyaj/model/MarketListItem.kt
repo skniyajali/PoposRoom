@@ -1,6 +1,6 @@
 package com.niyaj.model
 
-data class MarketListWithItem(
+data class MarketListItem(
     val listId: Int = 0,
 
     val marketId: Int,

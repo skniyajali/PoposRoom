@@ -26,7 +26,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.niyaj.core.ui.R
-import com.niyaj.designsystem.theme.ProfilePictureSizeExtraLarge
 import com.niyaj.designsystem.theme.SpaceMedium
 
 @Composable
@@ -83,7 +82,7 @@ fun ItemNotAvailable(
 
 
 @Composable
-fun ImportScreen(
+fun EmptyImportScreen(
     modifier: Modifier = Modifier,
     btnModifier: Modifier = Modifier,
     text: String,

@@ -23,7 +23,7 @@ class MarketItemViewModel @Inject constructor(
 ): BaseViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val addOnItems = snapshotFlow { searchText.value }
+    val marketItems = snapshotFlow { searchText.value }
         .flatMapLatest { it ->
             marketItemRepository.getAllMarketItems(it)
                 .onStart { UiState.Loading }

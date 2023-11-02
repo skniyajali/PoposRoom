@@ -42,7 +42,7 @@ import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.Charges
-import com.niyaj.ui.components.ImportScreen
+import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
@@ -179,7 +179,7 @@ fun ChargesImportScreen(
             label = "Imported Items"
         ) { itemAvailable ->
             if (itemAvailable) {
-                ImportScreen(
+                EmptyImportScreen(
                     text = IMPORT_CHARGES_NOTE_TEXT,
                     buttonText = IMPORT_CHARGES_OPN_FILE,
                     icon = Icons.Default.FileOpen,

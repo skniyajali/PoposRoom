@@ -42,7 +42,7 @@ import com.niyaj.model.Product
 import com.niyaj.product.components.ProductCard
 import com.niyaj.product.settings.ProductSettingsEvent
 import com.niyaj.product.settings.ProductSettingsViewModel
-import com.niyaj.ui.components.ImportScreen
+import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
@@ -165,7 +165,7 @@ fun ImportProductScreen(
             label = "Imported Products"
         ) { productsAvailable ->
             if (productsAvailable) {
-                ImportScreen(
+                EmptyImportScreen(
                     text = IMPORT_PRODUCTS_NOTE_TEXT,
                     buttonText = IMPORT_PRODUCTS_OPN_FILE,
                     icon = Icons.Default.FileOpen,

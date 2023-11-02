@@ -1,118 +1,201 @@
 package com.niyaj.daily_market.market_list.add_edit
 
-import androidx.compose.runtime.mutableStateListOf
+import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.FileProvider
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.niyaj.common.utils.safeDouble
-import com.niyaj.common.utils.safeString
-import com.niyaj.data.repository.MarketItemRepository
+import com.niyaj.common.result.Resource
 import com.niyaj.data.repository.MarketListRepository
+import com.niyaj.model.MarketItemAndQuantity
 import com.niyaj.ui.event.BaseViewModel
+import com.niyaj.ui.event.UiState
+import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
 class AddEditMarketListViewModel @Inject constructor(
     private val repository: MarketListRepository,
-    private val itemRepository: MarketItemRepository,
     savedStateHandle: SavedStateHandle,
 ) : BaseViewModel() {
 
     private val marketId = savedStateHandle.get<Int>("marketId") ?: 0
 
-    private val _itemWithQuantity = mutableStateListOf<MarketItemWithQuantityState>()
-    val itemWithQuantity: SnapshotStateList<MarketItemWithQuantityState> = _itemWithQuantity
+    private val _selectedDate = MutableStateFlow("")
+    val selectedDate = _selectedDate.asStateFlow()
 
-    private val _removedItems = mutableStateListOf<Int>()
-    val removedItems: SnapshotStateList<Int> = _removedItems
-    
-
-    val items = snapshotFlow { _searchText.value }.flatMapLatest { searchText ->
-        itemRepository.getAllMarketItems(searchText)
-    }.mapLatest { itemList ->
-        totalItems = itemList.map { it.itemId }
-        itemList
+    val marketList = snapshotFlow { marketId }.flatMapLatest {
+        repository.getMarketListById(it)
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
-        emptyList()
+        null
     )
 
+    val items = snapshotFlow { _searchText.value }.flatMapLatest { searchText ->
+        repository.getMarketItemsWithQuantityById(marketId, searchText)
+    }.mapLatest { itemList ->
+        if (itemList.isEmpty()) UiState.Empty else UiState.Success(itemList)
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        UiState.Loading
+    )
 
-    fun removeItem(itemId: Int) {
+    private val _showList = MutableStateFlow(false)
+    val showList = _showList.asStateFlow()
+
+    private val _listItems = MutableStateFlow<List<MarketItemAndQuantity>>(emptyList())
+    val listItems = _listItems.asStateFlow()
+
+    fun onAddItem(itemId: Int) {
         viewModelScope.launch {
-            delay(500)
+            when (val result = repository.addMarketListItem(marketId, itemId)) {
+                is Resource.Error -> {
+                    mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
+                }
 
-            if (!_removedItems.contains(itemId)) {
-                _removedItems.add(itemId)
+                is Resource.Success -> {}
             }
         }
     }
 
-    fun increaseQuantity(itemId: Int) {
-        if (!mSelectedItems.contains(itemId)) {
-            mSelectedItems.add(itemId)
-        }
-
-        val item = _itemWithQuantity.find { it.itemId == itemId }
-        if (item == null) {
-            _itemWithQuantity.add(
-                MarketItemWithQuantityState(
-                    itemId = itemId,
-                    quantity = "0.5"
-                )
-            )
-        } else {
-            _itemWithQuantity[_itemWithQuantity.indexOf(item)] = MarketItemWithQuantityState(
-                itemId = itemId,
-                quantity = (item.quantity.safeDouble().plus(0.5)).safeString
-            )
-        }
-    }
-
-    fun decreaseQuantity(itemId: Int) {
-        val item = _itemWithQuantity.find { it.itemId == itemId }
-
-        if (item != null && item.quantity.safeDouble() > 0) {
-            _itemWithQuantity[_itemWithQuantity.indexOf(item)] = MarketItemWithQuantityState(
-                itemId = itemId,
-                quantity = (item.quantity.safeDouble() - 0.5).safeString
-            )
-        }
-    }
-
-    fun onValueChanged(itemId: Int, quantity: String) {
-        if (!mSelectedItems.contains(itemId)) {
-            mSelectedItems.add(itemId)
-        }
-
-        val item = _itemWithQuantity.find { it.itemId == itemId }
-        if (item == null) {
-            _itemWithQuantity.add(
-                MarketItemWithQuantityState(
-                    itemId = itemId,
-                    quantity = quantity
-                )
-            )
-        } else {
-            _itemWithQuantity[_itemWithQuantity.indexOf(item)] = MarketItemWithQuantityState(
-                itemId = itemId,
-                quantity = quantity
-            )
-        }
-    }
-
-    private fun getItemListById(marketId: Int) {
+    fun onRemoveItem(itemId: Int) {
         viewModelScope.launch {
+            when (val result = repository.removeMarketListItem(marketId, itemId)) {
+                is Resource.Error -> {
+                    mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
+                }
 
+                is Resource.Success -> {}
+            }
         }
     }
+
+    fun onIncreaseQuantity(itemId: Int) {
+        viewModelScope.launch {
+            when (val result = repository.increaseMarketListItemQuantity(marketId, itemId)) {
+                is Resource.Error -> {
+                    mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
+                }
+
+                is Resource.Success -> {}
+            }
+        }
+    }
+
+    fun onDecreaseQuantity(itemId: Int) {
+        viewModelScope.launch {
+            when (val result = repository.decreaseMarketListItemQuantity(marketId, itemId)) {
+                is Resource.Error -> {
+                    mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
+                }
+
+                is Resource.Success -> {}
+            }
+        }
+    }
+
+    fun selectDate(selectedDate: String) {
+        viewModelScope.launch {
+            _selectedDate.value = selectedDate
+        }
+    }
+
+    fun onDismissList() {
+        viewModelScope.launch {
+            _showList.value = false
+        }
+    }
+
+
+    fun onShowList() {
+        viewModelScope.launch {
+            getListItems()
+            _showList.value = true
+        }
+    }
+
+    private fun getListItems() {
+        viewModelScope.launch {
+            repository.getMarketItemsAndQuantity(marketId).collectLatest {
+                _listItems.value = it
+            }
+        }
+    }
+
+    fun shareContent(
+        context: Context,
+        title: String,
+        message: String,
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, message)
+                type = "text/plain"
+            }
+
+            val shareIntent = Intent.createChooser(sendIntent, title)
+            startActivity(context, shareIntent, null)
+        }
+    }
+
+    fun shareContent(
+        context: Context,
+        title: String,
+        uri: Uri,
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_STREAM, uri);
+                setDataAndType(uri, "image/png")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            }
+
+            val shareIntent = Intent.createChooser(sendIntent, title)
+            startActivity(context, shareIntent, null)
+        }
+    }
+
+    suspend fun saveImage(image: Bitmap, context: Context): Uri? {
+        return withContext(Dispatchers.IO) {
+            val imagesFolder = File(context.cacheDir, "images")
+            try {
+                imagesFolder.mkdirs()
+                val file = File(imagesFolder, "shared_image.png")
+
+                val stream = FileOutputStream(file)
+                image.compress(Bitmap.CompressFormat.PNG, 90, stream)
+                stream.flush()
+                stream.close()
+
+                FileProvider.getUriForFile(context, "com.popos.fileprovider", file)
+            } catch (e: IOException) {
+                Log.d("saving bitmap","saving bitmap error ${e.message}")
+                null
+            }
+        }
+    }
+
 }

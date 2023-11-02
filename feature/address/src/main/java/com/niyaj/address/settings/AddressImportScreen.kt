@@ -43,7 +43,7 @@ import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.Address
-import com.niyaj.ui.components.ImportScreen
+import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
@@ -180,7 +180,7 @@ fun AddressImportScreen(
             label = "Imported Items"
         ) { itemAvailable ->
             if (itemAvailable) {
-                ImportScreen(
+                EmptyImportScreen(
                     text = IMPORT_ADDRESS_NOTE_TEXT,
                     buttonText = IMPORT_ADDRESS_OPN_FILE,
                     icon = Icons.Default.FileOpen,

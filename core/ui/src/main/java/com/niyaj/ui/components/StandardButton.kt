@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.theme.ButtonSize
 import com.niyaj.designsystem.theme.SpaceMini
 
@@ -104,7 +103,7 @@ fun StandardOutlinedButton(
     enabled: Boolean = true,
     shape: Shape = RoundedCornerShape(SpaceMini),
     colors: ButtonColors = ButtonDefaults.outlinedButtonColors(),
-    border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+    border: BorderStroke = ButtonDefaults.outlinedButtonBorder,
     onClick: () -> Unit,
 ) {
     OutlinedButton(
@@ -115,7 +114,6 @@ fun StandardOutlinedButton(
         border = border,
         modifier = modifier
             .testTag(text)
-            .fillMaxWidth()
             .heightIn(ButtonSize),
     ) {
         icon?.let {

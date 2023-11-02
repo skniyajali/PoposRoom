@@ -92,7 +92,6 @@ object Constants {
     const val SELECTALL_ICON = "SelectAllIcon"
     const val PASSWORD_HIDDEN_ICON = "Password Hidden"
     const val PASSWORD_SHOWN_ICON = "Password Shown"
-
 }
 
 

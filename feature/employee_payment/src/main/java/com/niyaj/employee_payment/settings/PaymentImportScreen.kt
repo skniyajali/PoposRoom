@@ -48,7 +48,7 @@ import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.employee_payment.PaymentData
 import com.niyaj.model.EmployeeWithPayments
-import com.niyaj.ui.components.ImportScreen
+import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
@@ -186,7 +186,7 @@ fun PaymentImportScreen(
             label = "Imported Items"
         ) { itemAvailable ->
             if (itemAvailable) {
-                ImportScreen(
+                EmptyImportScreen(
                     text = IMPORT_PAYMENT_NOTE_TEXT,
                     buttonText = IMPORT_PAYMENT_OPN_FILE,
                     icon = Icons.Default.FileOpen,

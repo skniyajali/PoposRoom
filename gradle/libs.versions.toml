@@ -76,6 +76,7 @@ truthVersion = '1.1.3'
 vanpraComposeVersion = '0.9.0'
 zxing = "3.5.1"
 saketSwipe = "1.2.0"
+capturable = "1.0.3"
 
 # App Version
 namespace = "com.niyaj.poposroom"
@@ -260,6 +261,9 @@ zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxing"}
 
 #Saket Swipe To Dismiss
 saket-swipe = { group = "me.saket.swipe", name = "swipe", version.ref = "saketSwipe"}
+
+#Capturable Library
+capturable = { group = "dev.shreyaspatil", name = "capturable", version.ref = "capturable" }
 
 
 # Dependencies of the included build-logic

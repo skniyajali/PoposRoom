@@ -87,7 +87,7 @@ fun MarketItemScreen(
 
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
-    val state = viewModel.addOnItems.collectAsStateWithLifecycle().value
+    val state = viewModel.marketItems.collectAsStateWithLifecycle().value
 
     val selectedItems = viewModel.selectedItems.toList()
 

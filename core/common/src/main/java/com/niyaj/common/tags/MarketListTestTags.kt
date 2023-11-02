@@ -11,7 +11,7 @@ object MarketListTestTags {
     const val CREATE_NEW_ITEM = "Create New Item"
     const val UPDATE_ITEM = "Update Item"
 
-    const val MARKET_LIST_SCREEN_TITLE = "Market Items"
+    const val MARKET_LIST_SCREEN_TITLE = "Market Lists"
 
     const val ADD_EDIT_MARKET_LIST_BUTTON = "AddEdit Item"
 

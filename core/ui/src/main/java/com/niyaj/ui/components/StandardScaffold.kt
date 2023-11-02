@@ -12,9 +12,16 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -201,18 +208,21 @@ fun StandardScaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
             modifier = modifier
                 .testTag(title)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .navigationBarsPadding()
+                .imePadding(),
         ) { padding ->
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
+                    .consumeWindowInsets(padding)
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+                    )
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
                 shape = shape.value,
                 elevation = CardDefaults.cardElevation(),
-//                colors = CardDefaults.elevatedCardColors(
-//                    containerColor = MaterialTheme.colorScheme.onPrimary
-//                )
             ) {
                 content(padding)
             }
@@ -336,13 +346,18 @@ fun StandardScaffoldNew(
                 .testTag(title)
                 .fillMaxSize()
                 .navigationBarsPadding()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
+                .imePadding(),
             containerColor = MaterialTheme.colorScheme.background
         ) { padding ->
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding),
+                    .padding(padding)
+                    .consumeWindowInsets(padding)
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+                    )
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
                 shape = shape.value,
                 elevation = CardDefaults.cardElevation(),
             ) {

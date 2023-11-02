@@ -26,6 +26,7 @@ dependencies {
     implementation(libs.dialog.core)
     implementation(libs.dialog.datetime)
     implementation(libs.saket.swipe)
+//    implementation(libs.capturable)
 
 
     //RaamCosta Library

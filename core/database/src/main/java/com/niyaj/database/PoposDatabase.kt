@@ -16,6 +16,7 @@ import com.niyaj.database.dao.ExpenseDao
 import com.niyaj.database.dao.MainFeedDao
 import com.niyaj.database.dao.MarketItemDao
 import com.niyaj.database.dao.MarketListDao
+import com.niyaj.database.dao.MeasureUnitDao
 import com.niyaj.database.dao.OrderDao
 import com.niyaj.database.dao.PaymentDao
 import com.niyaj.database.dao.PrintDao
@@ -43,12 +44,14 @@ import com.niyaj.database.model.ExpenseEntity
 import com.niyaj.database.model.MarketItemEntity
 import com.niyaj.database.model.MarketListEntity
 import com.niyaj.database.model.MarketListWithItemEntity
+import com.niyaj.database.model.MeasureUnitEntity
 import com.niyaj.database.model.PaymentEntity
 import com.niyaj.database.model.PrinterEntity
 import com.niyaj.database.model.ProductEntity
 import com.niyaj.database.model.ProfileEntity
 import com.niyaj.database.model.ReportsEntity
 import com.niyaj.database.model.SelectedEntity
+import com.niyaj.database.util.ListConverter
 import com.niyaj.database.util.TimestampConverters
 import com.niyaj.poposroom.features.charges.data.dao.ChargesDao
 
@@ -80,12 +83,13 @@ import com.niyaj.poposroom.features.charges.data.dao.ChargesDao
         MarketItemEntity::class,
         MarketListEntity::class,
         MarketListWithItemEntity::class,
+        MeasureUnitEntity::class,
     ],
-    version = 9,
+    version = 11,
     autoMigrations = [],
     exportSchema = true,
 )
-@TypeConverters(TimestampConverters::class)
+@TypeConverters(TimestampConverters::class, ListConverter::class)
 abstract class PoposDatabase : RoomDatabase() {
     abstract fun addOnItemDao(): AddOnItemDao
     abstract fun addressDao(): AddressDao
@@ -109,4 +113,5 @@ abstract class PoposDatabase : RoomDatabase() {
     abstract fun reportsDao(): ReportsDao
     abstract fun marketItemDao(): MarketItemDao
     abstract fun marketListDao(): MarketListDao
+    abstract fun measureUnitDao(): MeasureUnitDao
 }

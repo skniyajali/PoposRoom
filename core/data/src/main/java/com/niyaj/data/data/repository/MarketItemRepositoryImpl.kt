@@ -18,10 +18,14 @@ import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.MarketItemRepository
 import com.niyaj.data.repository.validation.MarketItemValidationRepository
 import com.niyaj.database.dao.MarketItemDao
+import com.niyaj.database.model.MarketItemEntity
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.MarketItem
+import com.niyaj.model.MeasureUnit
 import com.niyaj.model.searchMarketItems
+import com.niyaj.model.searchMeasureUnit
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
@@ -37,6 +41,15 @@ class MarketItemRepositoryImpl(
             marketItemDao.getAllMarketItems()
                 .mapLatest { list ->
                     list.map { it.asExternalModel() }.searchMarketItems(searchText)
+                }
+        }
+    }
+
+    override suspend fun getAllMeasureUnits(searchText: String): Flow<List<MeasureUnit>> {
+        return withContext(ioDispatcher) {
+            marketItemDao.getAllMeasureUnits()
+                .mapLatest { list ->
+                    list.map { it.asExternalModel() }.searchMeasureUnit(searchText)
                 }
         }
     }
@@ -83,7 +96,8 @@ class MarketItemRepositoryImpl(
                 val validateItemType = validateItemType(newMarketItem.itemType)
                 val validateName = validateItemName(newMarketItem.itemName, newMarketItem.itemId)
                 val validatePrice = validateItemPrice(newMarketItem.itemPrice)
-                val validateItemUnit = validateItemMeasureUnit(newMarketItem.itemMeasureUnit)
+                val validateItemUnit =
+                    validateItemMeasureUnit(newMarketItem.itemMeasureUnit?.unitName ?: "")
 
                 val hasError = listOf(
                     validateItemType,
@@ -93,7 +107,33 @@ class MarketItemRepositoryImpl(
                 ).any { !it.successful }
 
                 if (!hasError) {
-                    val result = marketItemDao.insertOrIgnoreMarketItem(newMarketItem.toEntity())
+                    val findUnit = newMarketItem.itemMeasureUnit?.let {
+                        async {
+                            marketItemDao.findMeasureUnitByIdOrName(it.unitId, it.unitName)
+                        }.await()
+                    }
+
+                    val measureUnit = if (findUnit == null) {
+                        val result = newMarketItem.itemMeasureUnit?.toEntity()?.let {
+                            marketItemDao.upsertMeasureUnit(it)
+                        }
+                        result?.let {
+                            marketItemDao.getMeasureUnitById(it.toInt())
+                        }
+                    }else findUnit
+
+                    val newItem = MarketItemEntity(
+                        itemId = newMarketItem.itemId,
+                        itemType = newMarketItem.itemType,
+                        itemName = newMarketItem.itemName,
+                        itemPrice = newMarketItem.itemPrice,
+                        itemDescription = newMarketItem.itemDescription,
+                        itemMeasureUnit = measureUnit,
+                        createdAt = System.currentTimeMillis(),
+                        updatedAt = if (newMarketItem.itemId == 0) null else System.currentTimeMillis()
+                    )
+
+                    val result = marketItemDao.insertOrIgnoreMarketItem(newItem)
 
                     Resource.Success(result > 0)
                 } else {
@@ -111,7 +151,8 @@ class MarketItemRepositoryImpl(
                 val validateItemType = validateItemType(newMarketItem.itemType)
                 val validateName = validateItemName(newMarketItem.itemName, newMarketItem.itemId)
                 val validatePrice = validateItemPrice(newMarketItem.itemPrice)
-                val validateItemUnit = validateItemMeasureUnit(newMarketItem.itemMeasureUnit)
+                val validateItemUnit =
+                    validateItemMeasureUnit(newMarketItem.itemMeasureUnit?.unitName ?: "")
 
                 val hasError = listOf(
                     validateItemType,
@@ -121,7 +162,33 @@ class MarketItemRepositoryImpl(
                 ).any { !it.successful }
 
                 if (!hasError) {
-                    val result = marketItemDao.updateMarketItem(newMarketItem.toEntity())
+                    val findUnit = newMarketItem.itemMeasureUnit?.let {
+                        async {
+                            marketItemDao.findMeasureUnitByIdOrName(it.unitId, it.unitName)
+                        }.await()
+                    }
+
+                    val measureUnit = if (findUnit == null) {
+                        val result = newMarketItem.itemMeasureUnit?.toEntity()?.let {
+                            marketItemDao.upsertMeasureUnit(it)
+                        }
+                        result?.let {
+                            marketItemDao.getMeasureUnitById(it.toInt())
+                        }
+                    }else findUnit
+
+                    val newItem = MarketItemEntity(
+                        itemId = newMarketItem.itemId,
+                        itemType = newMarketItem.itemType,
+                        itemName = newMarketItem.itemName,
+                        itemPrice = newMarketItem.itemPrice,
+                        itemDescription = newMarketItem.itemDescription,
+                        itemMeasureUnit = measureUnit,
+                        createdAt = System.currentTimeMillis(),
+                        updatedAt = if (newMarketItem.itemId == 0) null else System.currentTimeMillis()
+                    )
+
+                    val result = marketItemDao.updateMarketItem(newItem)
 
                     Resource.Success(result > 0)
                 } else {
@@ -139,7 +206,8 @@ class MarketItemRepositoryImpl(
                 val validateItemType = validateItemType(newMarketItem.itemType)
                 val validateName = validateItemName(newMarketItem.itemName, newMarketItem.itemId)
                 val validatePrice = validateItemPrice(newMarketItem.itemPrice)
-                val validateItemUnit = validateItemMeasureUnit(newMarketItem.itemMeasureUnit)
+                val validateItemUnit =
+                    validateItemMeasureUnit(newMarketItem.itemMeasureUnit?.unitName ?: "")
 
                 val hasError = listOf(
                     validateItemType,
@@ -149,9 +217,38 @@ class MarketItemRepositoryImpl(
                 ).any { !it.successful }
 
                 if (!hasError) {
-                    val result = marketItemDao.upsertMarketItem(newMarketItem.toEntity())
+                    val findUnit = newMarketItem.itemMeasureUnit?.let {
+                        marketItemDao.findMeasureUnitByIdOrName(it.unitId, it.unitName)
+                    }
 
-                    Resource.Success(result > 0)
+                    val measureUnit = if (findUnit == null) {
+                        val result = newMarketItem.itemMeasureUnit?.toEntity()?.let {
+                            marketItemDao.upsertMeasureUnit(it)
+                        }
+                        result?.let {
+                            marketItemDao.getMeasureUnitById(it.toInt())
+                        }
+                    } else findUnit
+
+                    if (measureUnit == null) {
+                        Resource.Error("Unable to create or get Measure Unit")
+                    }else {
+
+                        val newItem = MarketItemEntity(
+                            itemId = newMarketItem.itemId,
+                            itemType = newMarketItem.itemType,
+                            itemName = newMarketItem.itemName,
+                            itemPrice = newMarketItem.itemPrice,
+                            itemDescription = newMarketItem.itemDescription,
+                            itemMeasureUnit = measureUnit,
+                            createdAt = System.currentTimeMillis(),
+                            updatedAt = if (newMarketItem.itemId == 0) null else System.currentTimeMillis()
+                        )
+
+                        val result = marketItemDao.upsertMarketItem(newItem)
+
+                        Resource.Success(result > 0)
+                    }
                 } else {
                     Resource.Error("Unable to create or update item")
                 }
@@ -194,7 +291,7 @@ class MarketItemRepositoryImpl(
             }
 
             Resource.Success(true)
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             Resource.Error(e.message)
         }
     }

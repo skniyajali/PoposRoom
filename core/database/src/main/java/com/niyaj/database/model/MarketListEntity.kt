@@ -2,6 +2,8 @@ package com.niyaj.database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.niyaj.database.util.ListConverter
 import com.niyaj.model.MarketList
 
 @Entity(tableName = "market_list")
@@ -15,6 +17,9 @@ data class MarketListEntity(
     val createdAt: Long,
 
     val updatedAt: Long? = null,
+
+    @TypeConverters(ListConverter::class)
+    val whitelistItems: List<Int> = emptyList(),
 )
 
 
@@ -23,6 +28,7 @@ fun MarketListEntity.asExternalModel(): MarketList {
         marketId = marketId,
         marketDate = marketDate,
         createdAt = createdAt,
-        updatedAt = updatedAt
+        updatedAt = updatedAt,
+        whitelistItems = whitelistItems,
     )
 }
