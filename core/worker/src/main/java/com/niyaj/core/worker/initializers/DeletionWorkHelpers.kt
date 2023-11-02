@@ -1,8 +1,6 @@
 package com.niyaj.core.worker.initializers
 
 import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
 import androidx.core.app.NotificationCompat
 import androidx.work.ForegroundInfo
@@ -26,18 +24,23 @@ fun Context.deletionForegroundInfo() = ForegroundInfo(
  * run with a foreground service
  */
 private fun Context.deletionWorkNotification(): Notification {
-    val channel = NotificationChannel(
-        DeletionNotificationChannelID,
-        getString(R.string.deletion_notification_channel_name),
-        NotificationManager.IMPORTANCE_DEFAULT,
-    ).apply {
-        description = getString(R.string.deletion_notification_channel_description)
-    }
-    // Register the channel with the system
-    val notificationManager: NotificationManager? =
-        getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
 
-    notificationManager?.createNotificationChannel(channel)
+//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+//    val channel = NotificationChannel(
+//        DeletionNotificationChannelID,
+//        getString(R.string.deletion_notification_channel_name),
+//        NotificationManager.IMPORTANCE_DEFAULT,
+//    ).apply {
+//        description = getString(R.string.deletion_notification_channel_description)
+//    }
+//    // Register the channel with the system
+//    val notificationManager: NotificationManager? =
+//        getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+//
+//    notificationManager?.createNotificationChannel(channel)
+
+//    }
 
     return NotificationCompat.Builder(this, DeletionNotificationChannelID)
         .setSmallIcon(R.drawable.auto_delete_icon)
