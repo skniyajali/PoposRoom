@@ -1,5 +1,6 @@
 package com.niyaj.database.model
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.niyaj.model.MarketItem
@@ -18,7 +19,8 @@ data class MarketItemEntity(
 
     val itemDescription: String? = null,
 
-    val itemMeasureUnit: String,
+    @Embedded
+    val itemMeasureUnit: MeasureUnitEntity?,
 
     val createdAt: Long,
 
@@ -33,7 +35,7 @@ fun MarketItemEntity.asExternalModel(): MarketItem {
         itemName = itemName,
         itemPrice = itemPrice,
         itemDescription = itemDescription,
-        itemMeasureUnit = itemMeasureUnit,
+        itemMeasureUnit = itemMeasureUnit?.asExternalModel(),
         createdAt = createdAt,
         updatedAt = updatedAt
     )

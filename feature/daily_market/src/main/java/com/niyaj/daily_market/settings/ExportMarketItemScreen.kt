@@ -70,8 +70,8 @@ fun ExportMarketItemScreen(
     val scope = rememberCoroutineScope()
     val lazyGridState = rememberLazyGridState()
 
-    val items = viewModel.categories.collectAsStateWithLifecycle().value
-    val exportedItems = viewModel.exportedCategories.collectAsStateWithLifecycle().value
+    val items = viewModel.items.collectAsStateWithLifecycle().value
+    val exportedItems = viewModel.exportedItems.collectAsStateWithLifecycle().value
 
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value

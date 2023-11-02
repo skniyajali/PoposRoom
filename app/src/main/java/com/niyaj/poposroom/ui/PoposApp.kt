@@ -1,15 +1,8 @@
 package com.niyaj.poposroom.ui
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -88,30 +81,20 @@ fun PoposApp(
             }
 
             Scaffold(
-                modifier = Modifier.semantics {
-                    testTagsAsResourceId = true
-                },
+                modifier = Modifier
+                    .semantics {
+                        testTagsAsResourceId = true
+                    }
+                    .fillMaxSize(),
                 contentWindowInsets = WindowInsets(0, 0, 0, 0),
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 containerColor = Color.White,
                 contentColor = Color.Transparent
-            ) { padding ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .consumeWindowInsets(padding)
-                        .windowInsetsPadding(
-                            WindowInsets.safeDrawing.only(
-                                WindowInsetsSides.Horizontal,
-                            ),
-                        )
-                ) {
-                    PoposNavHost(
-                        appState = appState,
-                        startRoute = RootNavGraph.startRoute,
-                    )
-                }
+            ) {
+                PoposNavHost(
+                    appState = appState,
+                    startRoute = RootNavGraph.startRoute,
+                )
             }
         }
     }

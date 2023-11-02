@@ -42,7 +42,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.common.tags.MarketListTestTags.ADD_EDIT_MARKET_ITEM_BUTTON
 import com.niyaj.common.tags.MarketListTestTags.CREATE_NEW_ITEM
-import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_ITEM_DESC
 import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_MEASURE_ERROR_TAG
 import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_MEASURE_FIELD
 import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_NAME_ERROR_TAG
@@ -51,6 +50,7 @@ import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_PRICE_ERROR_TAG
 import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_PRICE_FIELD
 import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_TYPE_ERROR_TAG
 import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_TYPE_FIELD
+import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_ITEM_DESC
 import com.niyaj.common.tags.MarketListTestTags.UPDATE_ITEM
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -106,10 +106,11 @@ fun AddEditMarketItemScreen(
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
+
     StandardScaffoldNew(
         navController = navController,
         title = title,
-        showBottomBar = enableBtn,
+        showBottomBar = true,
         showBackButton = true,
         bottomBar = {
             StandardButton(
@@ -227,7 +228,7 @@ fun AddEditMarketItemScreen(
                                 //This is used to assign to the DropDown the same width
                                 textFieldSize = coordinates.size.toSize()
                             },
-                        value = viewModel.state.itemMeasureUnit,
+                        value = viewModel.state.itemMeasureUnit.unitName,
                         label = MARKET_ITEM_MEASURE_FIELD,
                         leadingIcon = Icons.Default.MonitorWeight,
                         isError = unitError != null,
@@ -236,7 +237,7 @@ fun AddEditMarketItemScreen(
                         readOnly = false,
                         onValueChange = {
                             measureExpanded = true
-                            viewModel.onEvent(AddEditMarketItemEvent.ItemMeasureUnitChanged(it))
+                            viewModel.onEvent(AddEditMarketItemEvent.ItemMeasureUnitNameChanged(it))
                         },
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = measureExpanded)
@@ -258,15 +259,15 @@ fun AddEditMarketItemScreen(
                                 clippingEnabled = true,
                             ),
                         ) {
-                            measureUnits.forEachIndexed { index, name ->
+                            measureUnits.forEachIndexed { index, unit ->
                                 DropdownMenuItem(
                                     modifier = Modifier
-                                        .testTag(name)
+                                        .testTag(unit.unitName)
                                         .fillMaxWidth(),
-                                    text = { Text(name) },
+                                    text = { Text(unit.unitName) },
                                     onClick = {
                                         measureExpanded = false
-                                        viewModel.onEvent(AddEditMarketItemEvent.ItemMeasureUnitChanged(name))
+                                        viewModel.onEvent(AddEditMarketItemEvent.ItemMeasureUnitChanged(unit))
                                     },
                                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                                 )
@@ -282,7 +283,6 @@ fun AddEditMarketItemScreen(
                         }
                     }
                 }
-
             }
 
             item(MARKET_ITEM_PRICE_FIELD) {
@@ -312,5 +312,4 @@ fun AddEditMarketItemScreen(
             }
         }
     }
-
 }

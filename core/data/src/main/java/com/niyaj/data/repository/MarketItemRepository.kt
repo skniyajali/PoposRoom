@@ -2,11 +2,14 @@ package com.niyaj.data.repository
 
 import com.niyaj.common.result.Resource
 import com.niyaj.model.MarketItem
+import com.niyaj.model.MeasureUnit
 import kotlinx.coroutines.flow.Flow
 
 interface MarketItemRepository {
 
     suspend fun getAllMarketItems(searchText: String): Flow<List<MarketItem>>
+
+    suspend fun getAllMeasureUnits(searchText: String): Flow<List<MeasureUnit>>
 
     suspend fun getAllMarketItemLists(searchText: String, removedItems: List<Int>): Flow<List<MarketItem>>
 

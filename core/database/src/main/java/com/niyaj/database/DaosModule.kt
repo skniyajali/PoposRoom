@@ -13,6 +13,7 @@ import com.niyaj.database.dao.ExpenseDao
 import com.niyaj.database.dao.MainFeedDao
 import com.niyaj.database.dao.MarketItemDao
 import com.niyaj.database.dao.MarketListDao
+import com.niyaj.database.dao.MeasureUnitDao
 import com.niyaj.database.dao.OrderDao
 import com.niyaj.database.dao.PaymentDao
 import com.niyaj.database.dao.PrintDao
@@ -96,4 +97,7 @@ object DaosModule {
 
     @Provides
     fun provideMarketListDao(database: PoposDatabase): MarketListDao = database.marketListDao()
+
+    @Provides
+    fun provideMeasureUnitDao(database: PoposDatabase): MeasureUnitDao = database.measureUnitDao()
 }

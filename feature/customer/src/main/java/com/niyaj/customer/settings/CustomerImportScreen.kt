@@ -41,7 +41,7 @@ import com.niyaj.customer.CustomerData
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.Customer
-import com.niyaj.ui.components.ImportScreen
+import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
@@ -178,7 +178,7 @@ fun CustomerImportScreen(
             label = "Imported Items"
         ) { itemAvailable ->
             if (itemAvailable) {
-                ImportScreen(
+                EmptyImportScreen(
                     text = IMPORT_CUSTOMER_NOTE_TEXT,
                     buttonText = IMPORT_CUSTOMER_OPN_FILE,
                     icon = Icons.Default.FileOpen,

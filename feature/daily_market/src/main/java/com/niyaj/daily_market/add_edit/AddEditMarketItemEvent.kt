@@ -1,5 +1,7 @@
 package com.niyaj.daily_market.add_edit
 
+import com.niyaj.model.MeasureUnit
+
 sealed class AddEditMarketItemEvent {
 
     data class ItemTypeChanged(val type: String): AddEditMarketItemEvent()
@@ -10,7 +12,9 @@ sealed class AddEditMarketItemEvent {
 
     data class ItemDescriptionChanged(val description: String): AddEditMarketItemEvent()
 
-    data class ItemMeasureUnitChanged(val unit: String): AddEditMarketItemEvent()
+    data class ItemMeasureUnitChanged(val unit: MeasureUnit): AddEditMarketItemEvent()
+
+    data class ItemMeasureUnitNameChanged(val unitName: String): AddEditMarketItemEvent()
 
     data object AddOrUpdateItem : AddEditMarketItemEvent()
 }

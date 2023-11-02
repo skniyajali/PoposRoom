@@ -42,7 +42,7 @@ import com.niyaj.daily_market.MarketItem
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.MarketItem
-import com.niyaj.ui.components.ImportScreen
+import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
@@ -67,7 +67,7 @@ fun ImportMarketItemScreen(
     val scope = rememberCoroutineScope()
     val lazyGridState = rememberLazyGridState()
 
-    val importedItems = viewModel.importedCategories.collectAsStateWithLifecycle().value
+    val importedItems = viewModel.importedItems.collectAsStateWithLifecycle().value
 
     val selectedItems = viewModel.selectedItems.toList()
     var importJob : Job? = null
@@ -179,7 +179,7 @@ fun ImportMarketItemScreen(
             label = "Imported Products"
         ) { categoriesAvailable ->
             if (categoriesAvailable) {
-                ImportScreen(
+                EmptyImportScreen(
                     text = IMPORT_MARKET_ITEM_NOTE_TEXT,
                     buttonText = IMPORT_MARKET_ITEM_OPN_FILE,
                     icon = Icons.Default.FileOpen,

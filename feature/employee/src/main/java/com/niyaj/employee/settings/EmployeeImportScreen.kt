@@ -41,7 +41,7 @@ import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.employee.EmployeeData
 import com.niyaj.model.Employee
-import com.niyaj.ui.components.ImportScreen
+import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
@@ -178,7 +178,7 @@ fun EmployeeImportScreen(
             label = "Imported Items"
         ) { itemAvailable ->
             if (itemAvailable) {
-                ImportScreen(
+                EmptyImportScreen(
                     text = IMPORT_EMPLOYEE_NOTE_TEXT,
                     buttonText = IMPORT_EMPLOYEE_OPN_FILE,
                     icon = Icons.Default.FileOpen,

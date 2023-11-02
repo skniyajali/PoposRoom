@@ -42,7 +42,7 @@ import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.Category
-import com.niyaj.ui.components.ImportScreen
+import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
@@ -179,7 +179,7 @@ fun ImportCategoryScreen(
             label = "Imported Products"
         ) { categoriesAvailable ->
             if (categoriesAvailable) {
-                ImportScreen(
+                EmptyImportScreen(
                     text = IMPORT_CATEGORY_NOTE_TEXT,
                     buttonText = IMPORT_CATEGORY_OPN_FILE,
                     icon = Icons.Default.FileOpen,

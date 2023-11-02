@@ -8,11 +8,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
-import com.niyaj.common.utils.measureUnitLists
 import com.niyaj.common.utils.safeString
 import com.niyaj.data.repository.MarketItemRepository
 import com.niyaj.data.repository.validation.MarketItemValidationRepository
 import com.niyaj.model.MarketItem
+import com.niyaj.model.MeasureUnit
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -52,8 +52,8 @@ class AddEditMarketItemViewModel @Inject constructor(
         emptyList()
     )
 
-    val measureUnits = snapshotFlow { state.itemMeasureUnit }.mapLatest { searchText ->
-        measureUnitLists.filter { it.contains(searchText, true) }
+    val measureUnits = snapshotFlow { state.itemMeasureUnit.unitName }.flatMapLatest { searchText ->
+        repository.getAllMeasureUnits(searchText)
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
@@ -84,7 +84,7 @@ class AddEditMarketItemViewModel @Inject constructor(
         null
     )
 
-    val unitError = snapshotFlow { state.itemMeasureUnit }.mapLatest {
+    val unitError = snapshotFlow { state.itemMeasureUnit.unitName }.mapLatest {
         validationRepository.validateItemMeasureUnit(it).errorMessage
     }.stateIn(
         viewModelScope,
@@ -104,6 +104,12 @@ class AddEditMarketItemViewModel @Inject constructor(
 
             is AddEditMarketItemEvent.ItemMeasureUnitChanged -> {
                 state = state.copy(itemMeasureUnit = event.unit)
+            }
+
+            is AddEditMarketItemEvent.ItemMeasureUnitNameChanged -> {
+                state = state.copy(
+                    itemMeasureUnit = MeasureUnit(unitName = event.unitName.lowercase())
+                )
             }
 
             is AddEditMarketItemEvent.ItemDescriptionChanged -> {
@@ -129,7 +135,7 @@ class AddEditMarketItemViewModel @Inject constructor(
                     itemName = it.itemName,
                     itemPrice = it.itemPrice,
                     itemDesc = it.itemDescription,
-                    itemMeasureUnit = it.itemMeasureUnit
+                    itemMeasureUnit = it.itemMeasureUnit ?: MeasureUnit()
                 )
             }
         }
@@ -158,8 +164,9 @@ class AddEditMarketItemViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
+                        val message = if (itemId == 0) "created" else "updated"
                         _eventFlow.emit(
-                            UiEvent.OnSuccess("Item has been successfully created or updated")
+                            UiEvent.OnSuccess("Item has been successfully $message")
                         )
                     }
                 }

@@ -78,7 +78,7 @@ class HomeRepositoryImpl(
         selectedCartOrder: Int? = null,
         products: List<Product>,
     ): List<ProductWithFlowQuantity> {
-        val data = products.map { product ->
+        return products.map { product ->
             ProductWithFlowQuantity(
                 categoryId = product.categoryId,
                 productId = product.productId,
@@ -87,7 +87,5 @@ class HomeRepositoryImpl(
                 quantity = getQuantity(selectedCartOrder, product.productId).distinctUntilChanged()
             )
         }
-
-        return data
     }
 }

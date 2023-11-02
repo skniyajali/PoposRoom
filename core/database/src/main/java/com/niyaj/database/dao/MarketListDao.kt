@@ -4,13 +4,16 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Update
 import androidx.room.Upsert
+import com.niyaj.database.model.MarketItemEntity
+import com.niyaj.database.model.MarketItemWithQuantityDto
 import com.niyaj.database.model.MarketListEntity
 import com.niyaj.database.model.MarketListWithItemEntity
 import com.niyaj.database.model.MarketListWithItemsDto
-import com.niyaj.model.MarketListWithItem
+import com.niyaj.model.ItemQuantityAndType
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -24,13 +27,28 @@ interface MarketListDao {
     )
     fun getAllMarketLists(): Flow<List<MarketListWithItemsDto>>
 
-    @Transaction
     @Query(
         value = """
         SELECT * FROM market_list WHERE marketId = :marketId
     """
     )
-    fun getMarketListById(marketId: Int): MarketListWithItemsDto?
+    fun getMarketListById(marketId: Int): Flow<MarketListEntity?>
+
+    @Query(
+        value = """
+        SELECT * FROM market_item ORDER BY createdAt DESC
+    """
+    )
+    fun getMarketItems(): Flow<List<MarketItemEntity>>
+
+
+    @Query(
+        value = """
+        SELECT itemQuantity, marketListType FROM market_list_with_item WHERE marketId = :marketId AND itemId = :itemId
+    """
+    )
+    fun getItemQuantityAndType(marketId: Int, itemId: Int): Flow<ItemQuantityAndType?>
+
 
     /**
      * Inserts [MarketListEntity] into the db if they don't exist, and ignores those that do
@@ -68,18 +86,39 @@ interface MarketListDao {
     )
     suspend fun deleteMarketLists(marketIds: List<Int>): Int
 
-
-
     @Query("""
         SELECT * FROM market_list_with_item WHERE marketId = :marketId
     """)
     fun getItemsByMarketId(marketId: Int): Flow<List<MarketListWithItemEntity>>
 
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query("""
+        SELECT * FROM market_item JOIN market_list_with_item ON market_item.itemId is market_list_with_item.itemId WHERE marketId = :marketId
+    """)
+    fun getItemsWithQuantityByMarketId(marketId: Int): Flow<List<MarketItemWithQuantityDto>>
+
 
     @Query("""
-        SELECT * FROM market_list_with_item WHERE marketId = :marketId AND itemId = :itemId
+        SELECT itemQuantity FROM market_list_with_item WHERE marketId = :marketId AND itemId = :itemId
     """)
-    fun getItemByMarketIdAndItemId(marketId: Int, itemId: Int): MarketListWithItemEntity?
+    suspend fun getItemQuantityByMarketIdAndItemId(marketId: Int, itemId: Int): Double?
+
+    @Query("""
+        SELECT unitValue FROM market_item WHERE itemId = :itemId
+    """)
+    suspend fun getItemMeasureUnitValueItemId(itemId: Int): Double?
+
+
+    @Query("""
+        SELECT itemQuantity, marketListType FROM market_list_with_item WHERE marketId = :marketId AND itemId = :itemId
+    """)
+    suspend fun findItemByMarketIdAndItemId(marketId: Int, itemId: Int): ItemQuantityAndType?
+
+    @Query("""
+        SELECT listId FROM market_list_with_item WHERE marketId = :marketId AND itemId = :itemId
+    """)
+    fun findItemIdByMarketIdAndItemId(marketId: Int, itemId: Int): Flow<Int?>
 
     /**
      * Inserts [MarketListWithItemEntity] into the db if they don't exist, and ignores those that do

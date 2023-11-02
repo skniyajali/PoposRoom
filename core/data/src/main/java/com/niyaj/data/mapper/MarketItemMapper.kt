@@ -10,7 +10,7 @@ fun MarketItem.toEntity(): MarketItemEntity {
         itemName = itemName,
         itemPrice = itemPrice,
         itemDescription = itemDescription,
-        itemMeasureUnit = itemMeasureUnit,
+        itemMeasureUnit = itemMeasureUnit?.toEntity(),
         createdAt = createdAt,
         updatedAt = updatedAt
     )

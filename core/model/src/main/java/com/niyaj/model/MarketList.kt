@@ -5,6 +5,7 @@ data class MarketList(
     val marketDate: Long,
     val createdAt: Long,
     val updatedAt: Long? = null,
+    val whitelistItems: List<Int> = emptyList(),
 )
 
 
