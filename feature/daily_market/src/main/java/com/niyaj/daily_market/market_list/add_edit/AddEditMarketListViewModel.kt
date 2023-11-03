@@ -12,6 +12,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.data.repository.MarketListRepository
+import com.niyaj.model.ItemQuantityAndType
 import com.niyaj.model.MarketItemAndQuantity
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
@@ -51,16 +52,26 @@ class AddEditMarketListViewModel @Inject constructor(
         null
     )
 
-    val items = snapshotFlow { _searchText.value }.flatMapLatest { searchText ->
+    val marketItems = snapshotFlow { _searchText.value }.flatMapLatest { searchText ->
         repository.getMarketItemsWithQuantityById(marketId, searchText)
     }.mapLatest { itemList ->
-        if (itemList.isEmpty()) UiState.Empty else UiState.Success(itemList)
+        if (itemList.isEmpty()) UiState.Empty else {
+            val data = itemList.map { item ->
+                MarketItemWithQuantityState(
+                    item = item.item,
+                    doesExist = item.doesExist.stateIn(viewModelScope),
+                    quantity = item.quantity.mapLatest { it ?: ItemQuantityAndType() }
+                        .stateIn(viewModelScope)
+                )
+            }
+            UiState.Success(data)
+        }
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
         UiState.Loading
     )
-
+    
     private val _showList = MutableStateFlow(false)
     val showList = _showList.asStateFlow()
 
@@ -127,7 +138,6 @@ class AddEditMarketListViewModel @Inject constructor(
         }
     }
 
-
     fun onShowList() {
         viewModelScope.launch {
             getListItems()
@@ -146,31 +156,14 @@ class AddEditMarketListViewModel @Inject constructor(
     fun shareContent(
         context: Context,
         title: String,
-        message: String,
-    ) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val sendIntent: Intent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TEXT, message)
-                type = "text/plain"
-            }
-
-            val shareIntent = Intent.createChooser(sendIntent, title)
-            startActivity(context, shareIntent, null)
-        }
-    }
-
-    fun shareContent(
-        context: Context,
-        title: String,
         uri: Uri,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_STREAM, uri);
+                putExtra(Intent.EXTRA_STREAM, uri)
                 setDataAndType(uri, "image/png")
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
             val shareIntent = Intent.createChooser(sendIntent, title)
@@ -192,10 +185,9 @@ class AddEditMarketListViewModel @Inject constructor(
 
                 FileProvider.getUriForFile(context, "com.popos.fileprovider", file)
             } catch (e: IOException) {
-                Log.d("saving bitmap","saving bitmap error ${e.message}")
+                Log.d("saving bitmap", "saving bitmap error ${e.message}")
                 null
             }
         }
     }
-
 }

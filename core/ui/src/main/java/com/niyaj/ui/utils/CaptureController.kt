@@ -27,7 +27,10 @@ package com.niyaj.ui.utils
 import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ExperimentalComposeApi
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
@@ -46,24 +49,18 @@ class CaptureController internal constructor() {
     private val _captureRequests = MutableSharedFlow<CaptureRequest>(extraBufferCapacity = 1)
     internal val captureRequests = _captureRequests.asSharedFlow()
 
+    var readyForCapture by mutableStateOf(false)
+        private set
+
     /**
-     * Creates and send a Bitmap capture request with specified [config].
+     * Creates and send a Bitmap capture request
      *
      * Make sure to call this method as a part of callback function and not as a part of the
      * [Composable] function itself.
      *
-     * @param config Bitmap config of the desired bitmap. Defaults to [Bitmap.Config.ARGB_8888]
      */
-    @Suppress("DeferredResultUnused")
-    @OptIn(ExperimentalComposeApi::class)
-    @Deprecated(
-        message = "This method has been deprecated and will be removed in the upcoming releases. " +
-            "Use `captureAsync()` instead",
-        replaceWith = ReplaceWith("captureAsync(config)"),
-        level = DeprecationLevel.WARNING
-    )
-    fun capture(config: Bitmap.Config = Bitmap.Config.ARGB_8888) {
-        captureAsync(config)
+    fun captureLongScreenshot() {
+        readyForCapture = true
     }
 
     /**
@@ -83,6 +80,11 @@ class CaptureController internal constructor() {
         return deferredImageBitmap.also {
             _captureRequests.tryEmit(CaptureRequest(imageBitmapDeferred = it, config = config))
         }
+    }
+
+
+    internal fun captured() {
+        readyForCapture = false
     }
 
     /**

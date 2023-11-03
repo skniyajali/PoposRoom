@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun TwoGridTexts(
@@ -144,6 +145,40 @@ fun TextDivider(
         HorizontalDivider(
             modifier = Modifier
                 .weight(1f, true)
+        )
+    }
+}
+
+@Composable
+fun AnimatedTextDivider(
+    modifier: Modifier = Modifier,
+    text: String,
+    textStyle: TextStyle = MaterialTheme.typography.bodySmall,
+    fontWeight: FontWeight = FontWeight.SemiBold,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        HorizontalDivider(
+            modifier = Modifier
+                .weight(1f, true)
+                .drawRainbowBorder(1.dp, durationMillis = 5000)
+        )
+
+        Text(
+            text = text,
+            style = textStyle,
+            fontWeight = fontWeight,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.weight(1f)
+        )
+
+        HorizontalDivider(
+            modifier = Modifier
+                .weight(1f, true)
+                .drawRainbowBorder(1.dp, durationMillis = 5000)
         )
     }
 }
