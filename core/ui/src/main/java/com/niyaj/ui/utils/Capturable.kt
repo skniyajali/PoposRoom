@@ -27,6 +27,7 @@ package com.niyaj.ui.utils
 import android.graphics.Bitmap
 import android.graphics.Picture
 import android.os.Build
+import android.widget.ScrollView
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,6 +45,8 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.node.DelegatableNode
 import androidx.compose.ui.node.DelegatingNode
 import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -109,6 +112,71 @@ fun Capturable(
         }
     }
 }
+
+
+/**
+ * @param controller A [CaptureController] which gives control to capture the [content].
+ * @param modifier The [Modifier] to be applied to the layout.
+ * @param onCaptured The callback which gives back [Bitmap] after composable is captured.
+ * If any error is occurred while capturing bitmap, [Exception] is provided.
+ * @param content [Composable] content to be captured.
+ *
+ * Note: Don't use scrollable layouts such as LazyColumn or scrollable Column. This will cause
+ * an error. The content will be scrollable by default, because it's wrapped in a ScrollView.
+ */
+@Composable
+fun ScrollableCapturable(
+    modifier: Modifier = Modifier,
+    controller: CaptureController,
+    onCaptured: (Bitmap?, Throwable?) -> Unit,
+    content: @Composable () -> Unit
+) {
+    AndroidView(
+        factory = { context ->
+            val scrollView = ScrollView(context)
+            val composeView = ComposeView(context).apply {
+                setContent {
+                    content()
+                }
+            }
+            scrollView.addView(composeView)
+            scrollView
+        },
+        update = { scrollView ->
+            if (controller.readyForCapture) {
+                // Hide scrollbars for capture
+                scrollView.isVerticalScrollBarEnabled = false
+                scrollView.isHorizontalScrollBarEnabled = false
+                try {
+                    val bitmap = loadBitmapFromScrollView(scrollView)
+                    onCaptured(bitmap, null)
+                } catch (throwable: Throwable) {
+                    onCaptured(null, throwable)
+                }
+                scrollView.isVerticalScrollBarEnabled = true
+                scrollView.isHorizontalScrollBarEnabled = true
+                controller.captured()
+            }
+        },
+        modifier = modifier
+    )
+}
+
+/**
+ * Need to use view.getChildAt(0).height instead of just view.height,
+ * so you can get all ScrollView content.
+ */
+private fun loadBitmapFromScrollView(scrollView: ScrollView): Bitmap {
+    val bitmap = Bitmap.createBitmap(
+        scrollView.width,
+        scrollView.getChildAt(0).height,
+        Bitmap.Config.ARGB_8888
+    )
+    val canvas = android.graphics.Canvas(bitmap)
+    scrollView.draw(canvas)
+    return bitmap
+}
+
 
 /**
  * Adds a capture-ability on the Composable which can draw Bitmap from the Composable component.

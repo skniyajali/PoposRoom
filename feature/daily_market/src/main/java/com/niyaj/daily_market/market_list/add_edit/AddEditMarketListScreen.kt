@@ -1,11 +1,13 @@
 package com.niyaj.daily_market.market_list.add_edit
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +25,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Category
@@ -37,8 +38,13 @@ import androidx.compose.material.icons.twotone.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -50,20 +56,21 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -89,6 +96,7 @@ import com.niyaj.model.ItemQuantityAndType
 import com.niyaj.model.MarketItem
 import com.niyaj.model.MarketItemAndQuantity
 import com.niyaj.model.MarketList
+import com.niyaj.ui.components.AnimatedTextDivider
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.IncDecBox
 import com.niyaj.ui.components.ItemNotAvailable
@@ -100,10 +108,11 @@ import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedAssistChip
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.StandardSearchBar
-import com.niyaj.ui.components.TextDivider
 import com.niyaj.ui.components.TwoGridTexts
+import com.niyaj.ui.components.drawRainbowBorder
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.CaptureController
+import com.niyaj.ui.utils.ScrollableCapturable
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.ui.utils.rememberCaptureController
@@ -118,7 +127,7 @@ import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 import java.time.LocalDate
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalComposeApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 @Destination
 fun AddEditMarketListScreen(
@@ -127,13 +136,13 @@ fun AddEditMarketListScreen(
     viewModel: AddEditMarketListViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
-    val captureController = rememberCaptureController()
     val lazyListState = rememberLazyListState()
     val snackbarState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val captureController = rememberCaptureController()
 
-    val items = viewModel.items.collectAsStateWithLifecycle().value
+    val marketItems = viewModel.marketItems.collectAsStateWithLifecycle().value
     val marketList = viewModel.marketList.collectAsStateWithLifecycle().value
 
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
@@ -170,54 +179,15 @@ fun AddEditMarketListScreen(
         navController = navController,
         title = title,
         showBackButton = true,
-        showBottomBar = lazyListState.isScrollingUp(),
+        showFab = lazyListState.isScrollingUp(),
         snackbarHostState = snackbarState,
-        bottomBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(SpaceMedium),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+        fabPosition = FabPosition.EndOverlay,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = viewModel::onShowList,
+                containerColor = MaterialTheme.colorScheme.primary
             ) {
-                OutlinedButton(
-                    modifier = Modifier
-                        .heightIn(ButtonSize)
-                        .weight(1.4f),
-                    onClick = viewModel::onShowList,
-                    shape = RoundedCornerShape(SpaceMini),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.secondary,
-                    ),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ViewList,
-                        contentDescription = "View Data"
-                    )
-                    Spacer(modifier = Modifier.width(SpaceMini))
-                    Text(text = "View List")
-                }
-
-                Spacer(modifier = Modifier.width(SpaceMedium))
-
-                Button(
-                    onClick = {
-                        viewModel.shareContent(
-                            context = context,
-                            title = "This is demo share title",
-                            message = "this is demo share message",
-                        )
-                    },
-                    modifier = Modifier
-                        .heightIn(ButtonSize)
-                        .weight(1.4f),
-                    shape = RoundedCornerShape(SpaceMini)
-                ) {
-                    Icon(imageVector = Icons.Default.Share, contentDescription = "Share Data")
-                    Spacer(modifier = Modifier.width(SpaceMini))
-                    Text(text = "Share")
-                }
+                Icon(imageVector = Icons.Default.Share, contentDescription = "Share List")
             }
         },
         navActions = {
@@ -242,7 +212,7 @@ fun AddEditMarketListScreen(
         },
     ) {
         Crossfade(
-            targetState = items,
+            targetState = marketItems,
             label = "Add Edit Market List State"
         ) { state ->
             when (state) {
@@ -300,20 +270,15 @@ fun AddEditMarketListScreen(
                                     it.item.itemId
                                 }
                             ) { itemWithQuantity ->
-
                                 val quantity =
-                                    itemWithQuantity.quantity.collectAsStateWithLifecycle(
-                                        initialValue = null
-                                    ).value ?: ItemQuantityAndType()
+                                    itemWithQuantity.quantity.collectAsStateWithLifecycle().value
 
                                 val doesExist =
-                                    itemWithQuantity.doesExist.collectAsStateWithLifecycle(
-                                        initialValue = false
-                                    ).value
+                                    itemWithQuantity.doesExist.collectAsStateWithLifecycle().value
 
                                 MarketItemCard(
                                     item = itemWithQuantity.item,
-                                    itemQuantity = quantity.itemQuantity,
+                                    itemQuantity = quantity,
                                     itemState = {
                                         if (doesExist) {
                                             ToggleableState.On
@@ -374,25 +339,26 @@ fun AddEditMarketListScreen(
             onDismiss = viewModel::onDismissList,
             marketLists = marketLists,
             onClickShare = {
-                scope.launch {
-                    val data = captureController.captureAsync().await().asAndroidBitmap()
-
-                    val uri = viewModel.saveImage(data, context)
-
-                    uri?.let {
-                        viewModel.shareContent(
-                            context = context,
-                            title = "This is demo share title",
-                            uri = it,
-                        )
-                    } ?: Log.d("bitmap", "error saving bitmap")
+                captureController.captureLongScreenshot()
+            },
+            onCaptured = { bitmap, error ->
+                bitmap?.let {
+                    scope.launch {
+                        val uri = viewModel.saveImage(it, context)
+                        uri?.let {
+                            viewModel.shareContent(context, "Share Image", uri)
+                        }
+                    }
+                }
+                error?.let {
+                    Log.d("Capturable", "Error: ${it.message}\n${it.stackTrace.joinToString()}")
                 }
             },
         )
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ViewMarketList(
     captureController: CaptureController,
@@ -400,6 +366,7 @@ fun ViewMarketList(
     marketLists: List<MarketItemAndQuantity>,
     onDismiss: () -> Unit,
     onClickShare: () -> Unit,
+    onCaptured: (Bitmap?, Throwable?) -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -410,122 +377,138 @@ fun ViewMarketList(
         ),
         modifier = Modifier
             .fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background,
-        confirmButton = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(SpaceSmall),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                OutlinedButton(
-                    modifier = Modifier
-                        .heightIn(ButtonSize)
-                        .weight(1.4f),
-                    onClick = onDismiss,
-                    shape = RoundedCornerShape(SpaceMini),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error,
-                    ),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.error)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close"
-                    )
-                    Spacer(modifier = Modifier.width(SpaceMini))
-                    Text(text = "Close")
-                }
-
-                Spacer(modifier = Modifier.width(SpaceMedium))
-
-                Button(
-                    onClick = onClickShare,
-                    modifier = Modifier
-                        .heightIn(ButtonSize)
-                        .weight(1.4f),
-                    shape = RoundedCornerShape(SpaceMini),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                    ),
-                ) {
-                    Icon(imageVector = Icons.Default.Share, contentDescription = "Share Data")
-                    Spacer(modifier = Modifier.width(SpaceMini))
-                    Text(text = "Share")
-                }
-            }
-        },
-        icon = {
-            CircularBox(
-                icon = Icons.Default.ShoppingBag,
-                doesSelected = false,
-                size = 80.dp,
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(SpaceSmall),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.background
             )
-        },
-        title = {
+        ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(
-                    SpaceSmall,
-                    Alignment.CenterVertically
-                ),
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "Market Date".uppercase(),
-                    style = MaterialTheme.typography.bodySmall
-                )
+                ScrollableCapturable(
+                    controller = captureController,
+                    onCaptured = onCaptured,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(2.5f)
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(SpaceMedium),
+                            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
 
-                Text(
-                    text = marketDate.toPrettyDate(),
-                    style = MaterialTheme.typography.titleLarge
-                )
+                            CircularBox(
+                                icon = Icons.Default.ShoppingBag,
+                                doesSelected = false,
+                                size = 80.dp,
+                            )
 
-                HorizontalDivider(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(SpaceSmall))
-            }
-        },
-        text = {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(SpaceSmall)
-            ) {
-                val groupedByType = marketLists.groupBy { it.item.itemType }
+                            Text(
+                                text = "Market Date".uppercase(),
+                                style = MaterialTheme.typography.bodySmall
+                            )
 
-                groupedByType.forEach { (itemType, list) ->
-                    item {
-                        TextDivider(
-                            text = itemType,
-                            textStyle = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.SemiBold,
+                            Text(
+                                text = marketDate.toPrettyDate(),
+                                style = MaterialTheme.typography.titleLarge
+                            )
+
+                            HorizontalDivider(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = SpaceLarge)
+                                    .drawRainbowBorder(3.dp, durationMillis = 5000),
+                                thickness = SpaceMini
+                            )
+                            val groupedByType = marketLists.groupBy { it.item.itemType }
+
+                            groupedByType.forEach { (itemType, list) ->
+                                AnimatedTextDivider(
+                                    text = itemType,
+                                    textStyle = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+
+                                list.fastForEachIndexed { i, it ->
+                                    TwoGridTexts(
+                                        textOne = it.item.itemName,
+                                        textTwo = it.quantityAndType.itemQuantity.toSafeString() +
+                                                " " + it.item.itemMeasureUnit?.unitName,
+                                        textStyle = MaterialTheme.typography.bodyLarge,
+                                        isTitle = true
+                                    )
+                                    if (i != list.size - 1) {
+                                        Spacer(modifier = Modifier.height(SpaceMini))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(SpaceSmall),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    OutlinedButton(
+                        modifier = Modifier
+                            .heightIn(ButtonSize)
+                            .weight(1.4f),
+                        onClick = onDismiss,
+                        shape = RoundedCornerShape(SpaceMini),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error,
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close"
                         )
+                        Spacer(modifier = Modifier.width(SpaceMini))
+                        Text(text = "Close")
                     }
 
-                    items(
-                        items = list,
-                        key = {
-                            it.item.itemId
-                        }
-                    ) {
-                        TwoGridTexts(
-                            textOne = it.item.itemName,
-                            textTwo = it.quantityAndType.itemQuantity.toSafeString() +
-                                    " " + it.item.itemMeasureUnit?.unitName,
-                            textStyle = MaterialTheme.typography.bodyLarge,
-                            isTitle = true
-                        )
+                    Spacer(modifier = Modifier.width(SpaceMedium))
 
-                        Spacer(modifier = Modifier.height(SpaceLarge))
+                    Button(
+                        onClick = onClickShare,
+                        modifier = Modifier
+                            .heightIn(ButtonSize)
+                            .weight(1.4f),
+                        shape = RoundedCornerShape(SpaceMini),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                        ),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = "Share Data"
+                        )
+                        Spacer(modifier = Modifier.width(SpaceMini))
+                        Text(text = "Share")
                     }
                 }
             }
         }
-    )
-
+    }
 }
 
 
@@ -609,7 +592,7 @@ fun ItemHeader(
 @Composable
 fun MarketItemCard(
     item: MarketItem,
-    itemQuantity: Double,
+    itemQuantity: ItemQuantityAndType,
     itemState: (itemId: Int) -> ToggleableState,
     onAddItem: (itemId: Int) -> Unit,
     onRemoveItem: (itemId: Int) -> Unit,
@@ -617,25 +600,30 @@ fun MarketItemCard(
     onIncreaseQuantity: (itemId: Int) -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val toggleState = itemState(item.itemId)
+    val toggleState by rememberUpdatedState(newValue = itemState(item.itemId))
+    val quantity by rememberUpdatedState(newValue = itemQuantity.itemQuantity)
 
-    val addItem = SwipeAction(
-        icon = rememberVectorPainter(Icons.TwoTone.Add),
-        background = MaterialTheme.colorScheme.primaryContainer,
-        isUndo = true,
-        onSwipe = {
-            onAddItem(item.itemId)
-        }
-    )
+    val addItem = key(item.itemId) {
+        SwipeAction(
+            icon = rememberVectorPainter(Icons.TwoTone.Add),
+            background = MaterialTheme.colorScheme.primaryContainer,
+            isUndo = true,
+            onSwipe = {
+                onAddItem(item.itemId)
+            }
+        )
+    }
 
-    val removeItem = SwipeAction(
-        icon = rememberVectorPainter(Icons.TwoTone.Delete),
-        background = MaterialTheme.colorScheme.secondaryContainer,
-        isUndo = true,
-        onSwipe = {
-            onRemoveItem(item.itemId)
-        },
-    )
+    val removeItem = key(item.itemId) {
+        SwipeAction(
+            icon = rememberVectorPainter(Icons.TwoTone.Delete),
+            background = MaterialTheme.colorScheme.secondaryContainer,
+            isUndo = true,
+            onSwipe = {
+                onRemoveItem(item.itemId)
+            },
+        )
+    }
 
     val color = animateColorAsState(
         targetValue = when (toggleState) {
@@ -679,9 +667,9 @@ fun MarketItemCard(
             },
             trailingContent = {
                 IncDecBox(
-                    quantity = itemQuantity.toSafeString(),
+                    quantity = quantity.toSafeString(),
                     measureUnit = item.itemMeasureUnit?.unitName ?: "",
-                    enableDecreasing = itemQuantity != 0.0 && toggleState == ToggleableState.On,
+                    enableDecreasing = quantity != 0.0 && toggleState == ToggleableState.On,
                     enableIncreasing = toggleState == ToggleableState.On,
                     onDecrease = {
                         onDecreaseQuantity(item.itemId)

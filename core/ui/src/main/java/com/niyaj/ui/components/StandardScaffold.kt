@@ -238,7 +238,8 @@ fun StandardScaffoldNew(
     title: String,
     showDrawer: Boolean = true,
     showBackButton: Boolean = false,
-    showBottomBar: Boolean,
+    showBottomBar: Boolean = false,
+    showFab: Boolean = false,
     fabPosition: FabPosition = FabPosition.Center,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onBackClick: () -> Unit = { navController.navigateUp() },
@@ -339,7 +340,24 @@ fun StandardScaffoldNew(
                     bottomBar()
                 }
             },
-            floatingActionButton = floatingActionButton,
+            floatingActionButton = {
+                AnimatedVisibility(
+                    visible = showFab,
+                    label = "BottomBar",
+                    enter = fadeIn() + slideInVertically(
+                        initialOffsetY = { fullHeight ->
+                            fullHeight / 4
+                        }
+                    ),
+                    exit = fadeOut() + slideOutVertically(
+                        targetOffsetY = { fullHeight ->
+                            fullHeight / 4
+                        }
+                    )
+                ) {
+                    floatingActionButton()
+                }
+            },
             floatingActionButtonPosition = fabPosition,
             snackbarHost = { SnackbarHost(snackbarHostState) },
             modifier = modifier
