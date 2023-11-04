@@ -10,8 +10,10 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.utils.getEndTime
 import com.niyaj.common.utils.getStartTime
-import com.niyaj.core.worker.initializers.reportForegroundInfo
 import com.niyaj.data.repository.ReportsRepository
+import com.popos.core.notifications.Notifier
+import com.popos.core.notifications.utils.REPORT_NOTIFICATION_ID
+import com.popos.core.notifications.utils.reportWorkNotification
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
@@ -28,12 +30,15 @@ class GenerateReportWorker @AssistedInject constructor(
     private val reportsRepository: ReportsRepository,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
+    private val notifier: Notifier
 ) : CoroutineWorker(context, workParams) {
 
     override suspend fun getForegroundInfo(): ForegroundInfo =
         context.reportForegroundInfo()
 
     override suspend fun doWork(): Result = withContext(ioDispatcher) {
+        notifier.showReportGenerationNotification()
+
         val startDate = getStartTime
         val endDate = getEndTime
 
@@ -61,3 +66,12 @@ class GenerateReportWorker @AssistedInject constructor(
 
     }
 }
+
+/**
+ * Foreground information for sync on lower API levels when sync workers are being
+ * run with a foreground service
+ */
+fun Context.reportForegroundInfo() = ForegroundInfo(
+    REPORT_NOTIFICATION_ID,
+    reportWorkNotification(),
+)

@@ -8,8 +8,10 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkerParameters
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
-import com.niyaj.core.worker.initializers.deletionForegroundInfo
 import com.niyaj.data.repository.DataDeletionRepository
+import com.popos.core.notifications.Notifier
+import com.popos.core.notifications.utils.DELETION_NOTIFICATION_ID
+import com.popos.core.notifications.utils.deletionWorkNotification
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
@@ -27,6 +29,7 @@ class DataDeletionWorker @AssistedInject constructor(
     private val deletionRepository: DataDeletionRepository,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
+    private val notifier: Notifier,
 ) : CoroutineWorker(context, workParams) {
 
     override suspend fun getForegroundInfo(): ForegroundInfo =
@@ -34,8 +37,10 @@ class DataDeletionWorker @AssistedInject constructor(
 
 
     override suspend fun doWork(): Result = withContext(ioDispatcher) {
-        val result = deletionRepository.deleteData()
+        // Send the notifications
+        notifier.showDataDeletionNotification()
 
+        val result = deletionRepository.deleteData()
         result.message?.let {
             Result.retry()
 
@@ -58,3 +63,12 @@ class DataDeletionWorker @AssistedInject constructor(
             .build()
     }
 }
+
+/**
+ * Foreground information for sync on lower API levels when sync workers are being
+ * run with a foreground service
+ */
+fun Context.deletionForegroundInfo() = ForegroundInfo(
+    DELETION_NOTIFICATION_ID,
+    deletionWorkNotification(),
+)
