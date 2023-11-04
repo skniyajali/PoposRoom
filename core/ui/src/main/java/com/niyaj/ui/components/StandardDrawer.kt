@@ -21,7 +21,6 @@ import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.BreakfastDining
 import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.CardTravel
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.EventBusy
@@ -34,6 +33,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PeopleAlt
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.SwitchAccount
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.AllInbox
@@ -42,7 +42,6 @@ import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.BreakfastDining
 import androidx.compose.material.icons.outlined.Business
-import androidx.compose.material.icons.outlined.CardTravel
 import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.EventBusy
@@ -54,6 +53,7 @@ import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.PeopleAlt
 import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material.icons.outlined.SwitchAccount
 import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material3.HorizontalDivider
@@ -182,10 +182,10 @@ fun StandardDrawer(
 
                 DrawerItem(
                     text = "Market List",
-                    icon = if (currentRoute == Screens.MARKET_SCREEN) Icons.Default.CardTravel else Icons.Outlined.CardTravel,
-                    selected = currentRoute == Screens.MARKET_SCREEN,
+                    icon = if (currentRoute == Screens.MARKET_LIST_SCREEN) Icons.Default.ShoppingBag else Icons.Outlined.ShoppingBag,
+                    selected = currentRoute == Screens.MARKET_LIST_SCREEN,
                     onClick = {
-                        navController.navigate(Screens.MARKET_SCREEN)
+                        navController.navigate(Screens.MARKET_LIST_SCREEN)
                     }
                 )
             }

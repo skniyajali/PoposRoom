@@ -31,13 +31,13 @@ import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 
 @Composable
-fun TextWithIcon(
+fun IconWithText(
     modifier: Modifier = Modifier,
     iconModifier: Modifier = Modifier,
-    text: String = "",
+    text: String,
     icon: ImageVector? = null,
     textStyle: TextStyle = MaterialTheme.typography.labelMedium,
-    textColor : Color = MaterialTheme.colorScheme.onSurface,
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
     tintColor: Color = MaterialTheme.colorScheme.onSurface,
     isTitle: Boolean = false,
     fontWeight: FontWeight = FontWeight.Normal,
@@ -46,32 +46,30 @@ fun TextWithIcon(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if(text.isNotEmpty()) {
-            if (icon != null) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = text,
-                    tint = tintColor,
-                    modifier = iconModifier,
-                )
-                Spacer(modifier = Modifier.width(SpaceMini))
-            }
-
-            Text(
-                text = text,
-                style = textStyle,
-                fontWeight = if(isTitle) FontWeight.SemiBold else fontWeight,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = textColor,
+        icon?.let {
+            Icon(
+                imageVector = it,
+                contentDescription = text,
+                tint = tintColor,
+                modifier = iconModifier,
             )
+            Spacer(modifier = Modifier.width(SpaceMini))
         }
+
+        Text(
+            text = text,
+            style = textStyle,
+            fontWeight = if (isTitle) FontWeight.SemiBold else fontWeight,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = textColor,
+        )
     }
 }
 
 
 @Composable
-fun TextWithIcon(
+fun IconWithText(
     modifier: Modifier = Modifier,
     iconModifier: Modifier = Modifier,
     text: AnnotatedString,
@@ -83,7 +81,7 @@ fun TextWithIcon(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if(text.isNotEmpty()) {
+        if (text.isNotEmpty()) {
             if (icon != null) {
                 Icon(
                     imageVector = icon,
@@ -95,9 +93,9 @@ fun TextWithIcon(
             }
             Text(
                 text = text,
-                fontFamily = if(text.startsWith("Email") || text.startsWith("Password")) FontFamily.Monospace else null,
+                fontFamily = if (text.startsWith("Email") || text.startsWith("Password")) FontFamily.Monospace else null,
                 style = MaterialTheme.typography.labelMedium,
-                fontWeight = if(isTitle) FontWeight.SemiBold else fontWeight,
+                fontWeight = if (isTitle) FontWeight.SemiBold else fontWeight,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -112,9 +110,9 @@ fun IconWithText(
     text: String,
     icon: ImageVector,
     secondaryText: String? = null,
-    style : TextStyle = MaterialTheme.typography.labelMedium,
+    style: TextStyle = MaterialTheme.typography.labelMedium,
     fontWeight: FontWeight = FontWeight.SemiBold,
-    textColor : Color = MaterialTheme.colorScheme.onSurface,
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
     tintColor: Color = MaterialTheme.colorScheme.secondary,
 ) {
     Row(
@@ -154,21 +152,70 @@ fun IconWithText(
 }
 
 @Composable
+fun TextWithIcon(
+    modifier: Modifier = Modifier,
+    iconModifier: Modifier = Modifier,
+    text: String,
+    icon: ImageVector,
+    secondaryText: String? = null,
+    style: TextStyle = MaterialTheme.typography.labelMedium,
+    fontWeight: FontWeight = FontWeight.SemiBold,
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
+    tintColor: Color = MaterialTheme.colorScheme.secondary,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(SpaceMini)
+    ) {
+        Column(
+            modifier = Modifier,
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(SpaceMini)
+        ) {
+            Text(
+                text = text,
+                style = style,
+                fontWeight = fontWeight,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = textColor,
+            )
+
+            secondaryText?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = textColor,
+                )
+            }
+        }
+
+        Icon(
+            imageVector = icon,
+            contentDescription = text,
+            tint = tintColor,
+            modifier = iconModifier,
+        )
+    }
+}
+
+@Composable
 fun TextWithTitle(
     modifier: Modifier = Modifier,
     iconModifier: Modifier = Modifier,
     text: String = "",
     icon: ImageVector? = null,
-    style : TextStyle = MaterialTheme.typography.labelMedium,
+    style: TextStyle = MaterialTheme.typography.labelMedium,
     fontWeight: FontWeight = FontWeight.SemiBold,
-    textColor : Color = MaterialTheme.colorScheme.onSurface,
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
     tintColor: Color = MaterialTheme.colorScheme.primary,
 ) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if(text.isNotEmpty()) {
+        if (text.isNotEmpty()) {
             Text(
                 text = text,
                 style = style,
@@ -198,7 +245,7 @@ fun NoteText(
     iconModifier: Modifier = Modifier.size(SpaceMedium),
     text: String,
     icon: ImageVector = Icons.Default.ErrorOutline,
-    color : Color = MaterialTheme.colorScheme.secondary,
+    color: Color = MaterialTheme.colorScheme.secondary,
     fontWeight: FontWeight = FontWeight.Normal,
 ) {
     Row(
@@ -232,7 +279,7 @@ fun NoteCard(
     text: String,
     icon: ImageVector = Icons.Default.ErrorOutline,
     backgroundColor: Color = MaterialTheme.colorScheme.errorContainer,
-    textColor : Color = MaterialTheme.colorScheme.error,
+    textColor: Color = MaterialTheme.colorScheme.error,
     fontWeight: FontWeight = FontWeight.Normal,
     textStyle: TextStyle = MaterialTheme.typography.labelSmall
 ) {

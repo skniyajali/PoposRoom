@@ -83,7 +83,7 @@ import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.components.StandardOutlinedChip
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.TextDivider
-import com.niyaj.ui.components.TextWithIcon
+import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.ThreeGridTexts
 import com.niyaj.ui.components.TwoGridTexts
 import com.niyaj.ui.event.UiState
@@ -306,7 +306,7 @@ fun CartOrderDetails(
                 onExpandChanged()
             },
             title = {
-                TextWithIcon(
+                IconWithText(
                     text = "Order Details",
                     icon = Icons.Default.Inventory,
                     isTitle = true
@@ -341,14 +341,14 @@ fun CartOrderDetails(
                         .fillMaxWidth()
                         .padding(SpaceSmall)
                 ) {
-                    TextWithIcon(
+                    IconWithText(
                         text = cartOrder.orderId.toString(),
                         icon = Icons.Default.Tag
                     )
 
                     Spacer(modifier = Modifier.height(SpaceSmall))
 
-                    TextWithIcon(
+                    IconWithText(
                         text = "Order Type : ${cartOrder.orderType}",
                         icon = if(cartOrder.orderType == OrderType.DineIn)
                             Icons.Default.RoomService else Icons.Default.DeliveryDining
@@ -356,7 +356,7 @@ fun CartOrderDetails(
 
                     Spacer(modifier = Modifier.height(SpaceSmall))
 
-                    TextWithIcon(
+                    IconWithText(
                         text = "Created At : ${cartOrder.createdAt.toPrettyDate()}",
                         icon = Icons.Default.MoreTime
                     )
@@ -364,7 +364,7 @@ fun CartOrderDetails(
                     cartOrder.updatedAt?.let {
                         Spacer(modifier = Modifier.height(SpaceSmall))
 
-                        TextWithIcon(
+                        IconWithText(
                             text = "Updated At : ${it.toPrettyDate()}",
                             icon = Icons.Default.Update
                         )
@@ -406,7 +406,7 @@ fun CustomerDetails(
                 .padding(SpaceSmall),
             expanded = doesExpanded,
             title = {
-                TextWithIcon(
+                IconWithText(
                     text = "Customer Details",
                     icon = Icons.Default.Person,
                     isTitle = true
@@ -445,14 +445,14 @@ fun CustomerDetails(
                         .padding(SpaceSmall),
                 ) {
                     customer.customerName?.let {
-                        TextWithIcon(
+                        IconWithText(
                             text = "Name: $it",
                             icon = Icons.Default.Person,
                         )
                         Spacer(modifier = Modifier.height(SpaceSmall))
                     }
 
-                    TextWithIcon(
+                    IconWithText(
                         text = "Phone: ${customer.customerPhone}",
                         icon = Icons.Default.PhoneAndroid,
                     )
@@ -460,7 +460,7 @@ fun CustomerDetails(
                     customer.customerEmail?.let {
                         Spacer(modifier = Modifier.height(SpaceSmall))
 
-                        TextWithIcon(
+                        IconWithText(
                             text = "Name: $it",
                             icon = Icons.Default.AlternateEmail,
                         )
@@ -468,7 +468,7 @@ fun CustomerDetails(
 
                     Spacer(modifier = Modifier.height(SpaceSmall))
 
-                    TextWithIcon(
+                    IconWithText(
                         text = "Created At : ${customer.createdAt.toPrettyDate()}",
                         icon = Icons.Default.MoreTime
                     )
@@ -476,7 +476,7 @@ fun CustomerDetails(
                     customer.updatedAt?.let {
                         Spacer(modifier = Modifier.height(SpaceSmall))
 
-                        TextWithIcon(
+                        IconWithText(
                             text = "Updated At : ${it.toPrettyDate()}",
                             icon = Icons.Default.Update
                         )
@@ -531,7 +531,7 @@ fun AddressDetails(
                 .padding(SpaceSmall),
             expanded = doesExpanded,
             title = {
-                TextWithIcon(
+                IconWithText(
                     text = "Address Details",
                     icon = Icons.Default.LocationOn,
                     isTitle = true
@@ -570,20 +570,20 @@ fun AddressDetails(
                         .fillMaxWidth()
                         .padding(SpaceSmall),
                 ) {
-                    TextWithIcon(
+                    IconWithText(
                         text = "Short Name: ${address.shortName}",
                         icon = Icons.Default.Business,
                     )
                     Spacer(modifier = Modifier.height(SpaceSmall))
 
-                    TextWithIcon(
+                    IconWithText(
                         text = "Name: ${address.addressName}",
                         icon = Icons.Default.Home,
                     )
 
                     Spacer(modifier = Modifier.height(SpaceSmall))
 
-                    TextWithIcon(
+                    IconWithText(
                         text = "Created At : ${address.createdAt.toPrettyDate()}",
                         icon = Icons.Default.MoreTime
                     )
@@ -591,7 +591,7 @@ fun AddressDetails(
                     address.updatedAt?.let {
                         Spacer(modifier = Modifier.height(SpaceSmall))
 
-                        TextWithIcon(
+                        IconWithText(
                             text = "Updated At : ${it.toPrettyDate()}",
                             icon = Icons.Default.Update
                         )
@@ -652,7 +652,7 @@ fun CartItemDetails(
                 onExpandChanged()
             },
             title = {
-                TextWithIcon(
+                IconWithText(
                     text = "Cart Items",
                     icon = Icons.Default.ShoppingBag,
                     isTitle = true

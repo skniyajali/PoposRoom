@@ -6,7 +6,6 @@ import com.niyaj.model.MarketItemAndQuantity
 import com.niyaj.model.MarketItemWithQuantity
 import com.niyaj.model.MarketList
 import com.niyaj.model.MarketListWithItems
-import com.niyaj.model.MarketListWithItemsAndQuantity
 import kotlinx.coroutines.flow.Flow
 
 interface MarketListRepository {
@@ -38,8 +37,6 @@ interface MarketListRepository {
     suspend fun increaseMarketListItemQuantity(marketId: Int, itemId: Int): Resource<Boolean>
 
     suspend fun decreaseMarketListItemQuantity(marketId: Int, itemId: Int): Resource<Boolean>
-
-    suspend fun addOrUpdateMarketListItems(listWithItems: MarketListWithItemsAndQuantity): Resource<Boolean>
 
     fun validateItemQuantity(quantity: String): ValidationResult
 

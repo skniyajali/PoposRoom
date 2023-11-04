@@ -64,7 +64,7 @@ import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.StandardScaffold
 import com.niyaj.ui.components.TextWithBorderCount
-import com.niyaj.ui.components.TextWithIcon
+import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
@@ -316,7 +316,7 @@ fun AbsentData(
                 onExpandChanged(item.employee.employeeId)
             },
             title = {
-                TextWithIcon(
+                IconWithText(
                     text = item.employee.employeeName,
                     icon = Icons.Default.Person,
                     isTitle = true

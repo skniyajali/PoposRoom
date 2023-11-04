@@ -22,7 +22,7 @@ class EmployeeSettingsViewModel @Inject constructor(
     private val repository: EmployeeRepository,
 ) : BaseViewModel() {
 
-    val employees = snapshotFlow { _searchText.value }.flatMapLatest {
+    val employees = snapshotFlow { mSearchText.value }.flatMapLatest {
         repository.getAllEmployee(it)
     }.mapLatest { list ->
         totalItems = list.map { it.employeeId }

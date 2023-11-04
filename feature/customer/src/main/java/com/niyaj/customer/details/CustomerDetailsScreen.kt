@@ -67,7 +67,6 @@ import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.TextWithCount
-import com.niyaj.ui.components.TextWithIcon
 import com.niyaj.ui.components.TotalOrderDetailsCard
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
@@ -238,14 +237,14 @@ fun CustomerDetailsCard(
                                     .fillMaxWidth()
                                     .padding(SpaceSmall)
                             ) {
-                                TextWithIcon(
+                                IconWithText(
                                     modifier = Modifier.testTag(state.data.customerPhone),
                                     text = "Phone - ${state.data.customerPhone}",
                                     icon = Icons.Default.PhoneAndroid
                                 )
                                 state.data.customerName?.let { name ->
                                     Spacer(modifier = Modifier.height(SpaceSmall))
-                                    TextWithIcon(
+                                    IconWithText(
                                         modifier = Modifier.testTag(name),
                                         text = "Name - $name",
                                         icon = Icons.Default.Person
@@ -255,7 +254,7 @@ fun CustomerDetailsCard(
                                 state.data.customerEmail?.let { email ->
                                     Spacer(modifier = Modifier.height(SpaceSmall))
 
-                                    TextWithIcon(
+                                    IconWithText(
                                         modifier = Modifier.testTag(email),
                                         text = "Email : $email",
                                         icon = Icons.Default.Email
@@ -264,7 +263,7 @@ fun CustomerDetailsCard(
 
                                 Spacer(modifier = Modifier.height(SpaceSmall))
 
-                                TextWithIcon(
+                                IconWithText(
                                     modifier = Modifier.testTag(state.data.createdAt.toFormattedDateAndTime),
                                     text = "Created At : ${state.data.createdAt.toPrettyDate()}",
                                     icon = Icons.Default.CalendarToday
@@ -272,7 +271,7 @@ fun CustomerDetailsCard(
 
                                 state.data.updatedAt?.let {
                                     Spacer(modifier = Modifier.height(SpaceSmall))
-                                    TextWithIcon(
+                                    IconWithText(
                                         text = "Updated At : ${it.toFormattedDateAndTime}",
                                         icon = Icons.AutoMirrored.Filled.Login
                                     )
@@ -366,7 +365,7 @@ fun RecentOrders(
                                             verticalAlignment = Alignment.CenterVertically,
                                             horizontalArrangement = Arrangement.SpaceBetween
                                         ) {
-                                            TextWithIcon(
+                                            IconWithText(
                                                 text = "${order.orderId}",
                                                 icon = Icons.Default.Tag,
                                                 isTitle = true,

@@ -1,8 +1,12 @@
 package com.niyaj.daily_market.market_list
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,17 +17,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowRight
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Inbox
+import androidx.compose.material.icons.filled.Print
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ShoppingBag
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -31,7 +40,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -41,35 +55,40 @@ import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_SCREEN_TITLE
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toTimeSpan
-import com.niyaj.daily_market.destinations.AddEditMarketItemScreenDestination
 import com.niyaj.daily_market.destinations.AddEditMarketListScreenDestination
+import com.niyaj.daily_market.market_list.add_edit.ShareableMarketList
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.model.MarketList
+import com.niyaj.model.MarketListWithItems
 import com.niyaj.ui.components.CircularBox
+import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
 import com.niyaj.ui.components.StandardFAB
+import com.niyaj.ui.components.StandardFilledTonalIconButton
 import com.niyaj.ui.components.StandardScaffold
+import com.niyaj.ui.components.TextWithIcon
+import com.niyaj.ui.components.drawAnimatedBorder
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.utils.Screens.MARKET_LIST_SCREEN
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
+import com.niyaj.ui.utils.rememberCaptureController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
-import com.ramcosta.composedestinations.result.NavResult
-import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
 
 @Composable
-@Destination
+@Destination(route = MARKET_LIST_SCREEN)
 fun MarketListScreen(
     navController: NavController,
     viewModel: MarketListViewModel = hiltViewModel(),
-    resultRecipient: ResultRecipient<AddEditMarketListScreenDestination, String>
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
     val state = viewModel.items.collectAsStateWithLifecycle().value
+    val context = LocalContext.current
+    val captureController = rememberCaptureController()
 
     val selectedItems = viewModel.selectedItems.toList()
 
@@ -83,21 +102,8 @@ fun MarketListScreen(
     val searchText = viewModel.searchText.value
 
     val openDialog = remember { mutableStateOf(false) }
-
-    resultRecipient.onNavResult { result ->
-        when (result) {
-            is NavResult.Canceled -> {
-                viewModel.deselectItems()
-            }
-
-            is NavResult.Value -> {
-                viewModel.deselectItems()
-                scope.launch {
-                    snackbarState.showSnackbar(result.value)
-                }
-            }
-        }
-    }
+    val showList = viewModel.showList.collectAsStateWithLifecycle().value
+    val marketLists = viewModel.listItems.collectAsStateWithLifecycle().value
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -122,6 +128,8 @@ fun MarketListScreen(
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
+        } else {
+            navController.navigateUp()
         }
     }
 
@@ -150,10 +158,10 @@ fun MarketListScreen(
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
-                    navController.navigate(AddEditMarketItemScreenDestination(selectedItems.first()))
+                    navController.navigate(AddEditMarketListScreenDestination(selectedItems.first()))
                 },
                 onDeleteClick = {
-
+                    openDialog.value = true
                 },
                 onSettingsClick = {
 //                    navController.navigate(AddEditMarketItemScreenDestination())
@@ -199,10 +207,22 @@ fun MarketListScreen(
                             }
                         ) { items ->
                             MarketListItemCard(
-                                marketList = items.marketList,
-                                onClickList = {
-                                    navController.navigate(AddEditMarketListScreenDestination(it))
-                                }
+                                withItems = items,
+                                doesSelected = {
+                                    selectedItems.contains(it)
+                                },
+                                onClick = {
+                                    if (selectedItems.isEmpty()) {
+                                        navController.navigate(AddEditMarketListScreenDestination(it))
+                                    } else {
+                                        viewModel.selectItem(it)
+                                    }
+                                },
+                                onLongClick = viewModel::selectItem,
+                                onClickShare = viewModel::onShowList,
+                                onClickPrint = {
+                                    // TODO:: print market list
+                                },
                             )
 
                             Spacer(modifier = Modifier.fillMaxWidth())
@@ -212,28 +232,117 @@ fun MarketListScreen(
             }
         }
     }
+
+
+    AnimatedVisibility(
+        visible = showList != 0L && marketLists.isNotEmpty()
+    ) {
+        ShareableMarketList(
+            captureController = captureController,
+            marketDate = showList,
+            onDismiss = viewModel::onDismissList,
+            marketLists = marketLists,
+            onClickShare = {
+                captureController.captureLongScreenshot()
+            },
+            onCaptured = { bitmap, error ->
+                bitmap?.let {
+                    scope.launch {
+                        val uri = viewModel.saveImage(it, context)
+                        uri?.let {
+                            viewModel.shareContent(context, "Share Image", uri)
+                        }
+                    }
+                }
+                error?.let {
+                    Log.d("Capturable", "Error: ${it.message}\n${it.stackTrace.joinToString()}")
+                }
+            },
+        )
+    }
+
+
+    if (openDialog.value) {
+        AlertDialog(
+            onDismissRequest = {
+                openDialog.value = false
+                viewModel.deselectItems()
+            },
+            title = {
+                Text(text = MarketListTestTags.DELETE_LIST_TITLE)
+            },
+            text = {
+                Text(
+                    text = MarketListTestTags.DELETE_LIST_MESSAGE
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        openDialog.value = false
+                        viewModel.deleteItems()
+                    },
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        openDialog.value = false
+                        viewModel.deselectItems()
+                    },
+                ) {
+                    Text("Cancel")
+                }
+            },
+            shape = RoundedCornerShape(28.dp)
+        )
+    }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MarketListItemCard(
-    marketList: MarketList,
-    onClickList: (marketId: Int) -> Unit
+    withItems: MarketListWithItems,
+    doesSelected: (Int) -> Boolean,
+    onClick: (Int) -> Unit,
+    onLongClick: (Int) -> Unit,
+    onClickShare: (Int, Long) -> Unit,
+    onClickPrint: (Int) -> Unit,
+    border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
 ) {
+    val marketId = withItems.marketList.marketId
+    val borderStroke = if (doesSelected(marketId)) border else null
+
     ElevatedCard(
         modifier = Modifier
+            .testTag(MarketListTestTags.MARKET_LIST_ITEM_TAG.plus(marketId))
             .fillMaxWidth()
-            .padding(SpaceSmall),
+            .padding(SpaceSmall)
+            .then(borderStroke?.let {
+                Modifier
+                    .drawAnimatedBorder(
+                        strokeWidth = 1.dp,
+                        durationMillis = 2000,
+                        shape = CardDefaults.elevatedShape
+                    )
+            } ?: Modifier)
+            .clip(CardDefaults.elevatedShape),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 2.dp
+        ),
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.background
         )
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             ListItem(
                 headlineContent = {
                     Text(
-                        text = marketList.marketDate.toPrettyDate(),
+                        text = withItems.marketList.marketDate.toPrettyDate(),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -252,20 +361,55 @@ fun MarketListItemCard(
                             Alignment.CenterHorizontally
                         )
                     ) {
-                        Text(
-                            text = marketList.createdAt.toTimeSpan,
-                            style = MaterialTheme.typography.labelSmall,
+                        StandardFilledTonalIconButton(
+                            icon = Icons.Default.Print,
+                            onClick = {
+                                onClickPrint(marketId)
+                            },
+                            enabled = withItems.items.isNotEmpty(),
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer
                         )
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowRight,
-                            contentDescription = "View Details"
+
+                        StandardFilledTonalIconButton(
+                            icon = Icons.Default.Share,
+                            onClick = {
+                                onClickShare(marketId, withItems.marketList.marketDate)
+                            },
+                            enabled = withItems.items.isNotEmpty(),
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
                         )
                     }
                 },
-                modifier = Modifier.clickable {
-                    onClickList(marketList.marketId)
-                }
+                modifier = Modifier.combinedClickable(
+                    onClick = {
+                        onClick(marketId)
+                    },
+                    onLongClick = {
+                        onLongClick(marketId)
+                    },
+                )
             )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(SpaceSmall),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                IconWithText(
+                    text = "${withItems.items.size} Items",
+                    icon = Icons.Default.Inbox
+                )
+
+                TextWithIcon(
+                    text = (withItems.marketList.updatedAt
+                        ?: withItems.marketList.createdAt).toTimeSpan,
+                    icon = Icons.Default.AccessTime,
+                    tintColor = Color.Gray,
+                    textColor = Color.Gray
+                )
+            }
         }
     }
 }

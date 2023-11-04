@@ -50,6 +50,9 @@ object MarketListTestTags {
     const val DELETE_ITEM_TITLE = "Delete Item?"
     const val DELETE_ITEM_MESSAGE = "Are you sure to delete these items?"
 
+    const val DELETE_LIST_TITLE = "Delete Market List?"
+    const val DELETE_LIST_MESSAGE = "Are you sure to delete these market lists with items?"
+
     const val MARKET_LIST_ITEM_TAG = "Item-"
 
     const val MARKET_ITEM_SETTINGS_TITLE = "Item Settings"

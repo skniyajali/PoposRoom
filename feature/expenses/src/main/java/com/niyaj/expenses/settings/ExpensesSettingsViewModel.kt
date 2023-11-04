@@ -22,7 +22,7 @@ class ExpensesSettingsViewModel @Inject constructor(
     private val expenseRepository: ExpenseRepository,
 ) : BaseViewModel() {
 
-    val expenses = snapshotFlow { _searchText.value }.flatMapLatest {
+    val expenses = snapshotFlow { mSearchText.value }.flatMapLatest {
         expenseRepository.getAllExpenses(it)
     }.mapLatest { list ->
         totalItems = list.map { it.expenseId }

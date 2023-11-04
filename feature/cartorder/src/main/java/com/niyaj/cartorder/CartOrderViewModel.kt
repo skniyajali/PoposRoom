@@ -40,7 +40,7 @@ class CartOrderViewModel @Inject constructor(
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val cartOrders = snapshotFlow { _searchText.value }
+    val cartOrders = snapshotFlow { mSearchText.value }
         .combine(_viewAll) { text, viewAll ->
             cartOrderRepository.getAllCartOrders(text, viewAll)
         }.flatMapLatest { listFlow ->

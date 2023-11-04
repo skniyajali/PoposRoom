@@ -78,7 +78,7 @@ import com.niyaj.ui.components.PhoneNoCountBox
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
-import com.niyaj.ui.components.TextWithIcon
+import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
@@ -320,7 +320,7 @@ fun AddEditEmployeeScreen(
                         .fillMaxWidth()
                         .padding(horizontal = SpaceSmall),
                 ) {
-                    TextWithIcon(
+                    IconWithText(
                         text = "Employee Type",
                         icon = Icons.Default.PersonPin
                     )
@@ -352,7 +352,7 @@ fun AddEditEmployeeScreen(
                         .fillMaxWidth()
                         .padding(horizontal = SpaceSmall),
                 ) {
-                    TextWithIcon(
+                    IconWithText(
                         text = "Employee Salary Type",
                         icon = Icons.Default.CalendarMonth
                     )

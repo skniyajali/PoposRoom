@@ -22,7 +22,7 @@ class CategorySettingsViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
 ): BaseViewModel() {
 
-    val categories = snapshotFlow { _searchText.value }.flatMapLatest {
+    val categories = snapshotFlow { mSearchText.value }.flatMapLatest {
         categoryRepository.getAllCategory(it)
     }.mapLatest { list ->
         totalItems = list.map { it.categoryId }

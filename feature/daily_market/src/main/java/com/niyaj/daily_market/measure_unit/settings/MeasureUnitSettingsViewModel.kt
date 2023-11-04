@@ -22,7 +22,7 @@ class MeasureUnitSettingsViewModel @Inject constructor(
     private val repository: MeasureUnitRepository,
 ): BaseViewModel() {
 
-    val items = snapshotFlow { _searchText.value }.flatMapLatest {
+    val items = snapshotFlow { mSearchText.value }.flatMapLatest {
         repository.getAllMeasureUnits(it)
     }.mapLatest { list ->
         totalItems = list.map { it.unitId }

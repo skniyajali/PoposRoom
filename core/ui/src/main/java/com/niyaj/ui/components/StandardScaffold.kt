@@ -92,7 +92,7 @@ fun StandardScaffold(
     val colorTransitionFraction = scrollBehavior.state.collapsedFraction
 
     val color = rememberUpdatedState(newValue = containerColorForPrimary(colorTransitionFraction))
-    val navColor = rememberUpdatedState(newValue = containerColor(colorTransitionFraction))
+    val navColor = MaterialTheme.colorScheme.surface
     val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
 
     val selectedState = updateTransition(targetState = selectionCount, label = "selection count")
@@ -104,7 +104,7 @@ fun StandardScaffold(
         )
 
         systemUiController.setNavigationBarColor(
-            color = navColor.value
+            color = navColor
         )
     }
 

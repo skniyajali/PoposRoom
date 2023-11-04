@@ -21,8 +21,8 @@ open class BaseViewModel @Inject constructor(): ViewModel() {
     private val _showSearchBar = MutableStateFlow(false)
     val showSearchBar = _showSearchBar.asStateFlow()
 
-    val _searchText = mutableStateOf("")
-    val searchText: State<String> = _searchText
+    val mSearchText = mutableStateOf("")
+    val searchText: State<String> = mSearchText
 
     val mSelectedItems  =  mutableStateListOf<Int>()
     val selectedItems: SnapshotStateList<Int> = mSelectedItems
@@ -33,9 +33,6 @@ open class BaseViewModel @Inject constructor(): ViewModel() {
     val eventFlow = mEventFlow.asSharedFlow()
 
     private var count: Int = 0
-
-    private var itemCount = 0
-
 
     open fun selectItem(itemId: Int) {
         viewModelScope.launch {
@@ -71,31 +68,11 @@ open class BaseViewModel @Inject constructor(): ViewModel() {
         }
     }
 
-    open fun selectItems(items: List<Int>) {
-        itemCount += 1
-
-        viewModelScope.launch {
-            items.forEach { item ->
-                if(itemCount % 2 != 0){
-                    val selectedItem = mSelectedItems.find { it == item }
-
-                    if (selectedItem == null){
-                        mSelectedItems.add(item)
-                    }
-                }else {
-                    mSelectedItems.remove(item)
-                }
-            }
-        }
-    }
-
     open fun deselectItems() {
         mSelectedItems.clear()
     }
 
-    open fun deleteItems() {
-
-    }
+    open fun deleteItems() {}
 
     open fun openSearchBar() {
         viewModelScope.launch {
@@ -105,24 +82,21 @@ open class BaseViewModel @Inject constructor(): ViewModel() {
 
     open fun searchTextChanged(text: String) {
         viewModelScope.launch {
-            _searchText.value = text
+            mSearchText.value = text
         }
     }
 
     open fun clearSearchText() {
         viewModelScope.launch {
-            _searchText.value = ""
+            mSearchText.value = ""
         }
     }
 
     open fun closeSearchBar() {
         viewModelScope.launch {
-            _searchText.value = ""
+            mSearchText.value = ""
             _showSearchBar.emit(false)
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-    }
 }

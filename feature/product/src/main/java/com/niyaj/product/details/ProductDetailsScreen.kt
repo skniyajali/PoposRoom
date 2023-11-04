@@ -84,7 +84,6 @@ import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.TextWithCount
-import com.niyaj.ui.components.TextWithIcon
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
@@ -403,19 +402,19 @@ fun ProductDetails(
                                     .padding(SpaceSmall),
                                 verticalArrangement = Arrangement.spacedBy(SpaceSmall)
                             ) {
-                                TextWithIcon(
+                                IconWithText(
                                     modifier = Modifier.testTag(state.data.productName),
                                     text = "Name - ${state.data.productName}",
                                     icon = Icons.Default.CollectionsBookmark
                                 )
 
-                                TextWithIcon(
+                                IconWithText(
                                     modifier = Modifier.testTag(state.data.productPrice.toString()),
                                     text = "Price - ${state.data.productPrice.toString().toRupee}",
                                     icon = Icons.Default.CurrencyRupee
                                 )
 
-                                TextWithIcon(
+                                IconWithText(
                                     modifier = Modifier.testTag(state.data.productAvailability.toString()),
                                     text = "Availability : ${state.data.productAvailability}",
                                     icon = if (state.data.productAvailability)
@@ -423,14 +422,14 @@ fun ProductDetails(
                                     else Icons.Default.RadioButtonUnchecked
                                 )
 
-                                TextWithIcon(
+                                IconWithText(
                                     modifier = Modifier.testTag(state.data.createdAt.toDateString),
                                     text = "Created At : ${state.data.createdAt.toFormattedDateAndTime}",
                                     icon = Icons.Default.CalendarToday
                                 )
 
                                 state.data.updatedAt?.let {
-                                    TextWithIcon(
+                                    IconWithText(
                                         text = "Updated At : ${it.toFormattedDateAndTime}",
                                         icon = Icons.Default.Login
                                     )
@@ -560,7 +559,7 @@ fun ProductOrderDetails(
                                                 verticalAlignment = Alignment.CenterVertically,
                                                 horizontalArrangement = Arrangement.SpaceBetween
                                             ) {
-                                                TextWithIcon(
+                                                IconWithText(
                                                     text = "${order.orderId}",
                                                     icon = Icons.Default.Tag,
                                                     isTitle = true,

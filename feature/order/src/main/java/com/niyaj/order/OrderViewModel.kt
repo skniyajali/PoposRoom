@@ -29,7 +29,7 @@ class OrderViewModel @Inject constructor(
     private val _selectedDate = MutableStateFlow("")
     val selectedDate = _selectedDate.asStateFlow()
 
-    val text = snapshotFlow { _searchText.value }
+    val text = snapshotFlow { mSearchText.value }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val cartOrders = _selectedDate.combine(text) { date, text ->

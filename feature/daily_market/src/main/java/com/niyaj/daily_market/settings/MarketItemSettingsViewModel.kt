@@ -22,7 +22,7 @@ class MarketItemSettingsViewModel @Inject constructor(
     private val repository: MarketItemRepository,
 ): BaseViewModel() {
 
-    val items = snapshotFlow { _searchText.value }.flatMapLatest {
+    val items = snapshotFlow { mSearchText.value }.flatMapLatest {
         repository.getAllMarketItems(it)
     }.mapLatest { list ->
         totalItems = list.map { it.itemId }

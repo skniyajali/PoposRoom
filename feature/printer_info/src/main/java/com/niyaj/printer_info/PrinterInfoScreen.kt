@@ -72,7 +72,7 @@ import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.StandardChip
 import com.niyaj.ui.components.StandardOutlinedChip
 import com.niyaj.ui.components.StandardScaffold
-import com.niyaj.ui.components.TextWithIcon
+import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.TwoGridText
 import com.niyaj.ui.components.drawAnimatedBorder
 import com.niyaj.ui.event.UiState
@@ -259,12 +259,12 @@ fun PrinterInfoScreen(
                                                         SpaceMini
                                                     )
                                                 ) {
-                                                    TextWithIcon(
+                                                    IconWithText(
                                                         text = data.name,
                                                         icon = Icons.AutoMirrored.Filled.Notes
                                                     )
 
-                                                    TextWithIcon(
+                                                    IconWithText(
                                                         text = data.address,
                                                         icon = Icons.Default.InsertLink
                                                     )

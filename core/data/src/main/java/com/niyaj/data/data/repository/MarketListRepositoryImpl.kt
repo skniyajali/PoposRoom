@@ -17,7 +17,6 @@ import com.niyaj.model.MarketItemWithQuantity
 import com.niyaj.model.MarketList
 import com.niyaj.model.MarketListType
 import com.niyaj.model.MarketListWithItems
-import com.niyaj.model.MarketListWithItemsAndQuantity
 import com.niyaj.model.searchItems
 import com.niyaj.model.searchMarketListItem
 import kotlinx.coroutines.CoroutineDispatcher
@@ -295,16 +294,6 @@ class MarketListRepositoryImpl(
                 } else {
                     Resource.Error("Unable to find item")
                 }
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message)
-        }
-    }
-
-    override suspend fun addOrUpdateMarketListItems(listWithItems: MarketListWithItemsAndQuantity): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                Resource.Success(true)
             }
         } catch (e: Exception) {
             Resource.Error(e.message)
