@@ -34,8 +34,6 @@ class DataDeletionWorker @AssistedInject constructor(
 
 
     override suspend fun doWork(): Result = withContext(ioDispatcher) {
-        setForegroundAsync(context.deletionForegroundInfo())
-
         val result = deletionRepository.deleteData()
 
         result.message?.let {

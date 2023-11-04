@@ -34,8 +34,6 @@ class GenerateReportWorker @AssistedInject constructor(
         context.reportForegroundInfo()
 
     override suspend fun doWork(): Result = withContext(ioDispatcher) {
-        setForeground(context.reportForegroundInfo())
-
         val startDate = getStartTime
         val endDate = getEndTime
 
