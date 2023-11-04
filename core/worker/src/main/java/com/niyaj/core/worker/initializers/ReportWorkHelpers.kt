@@ -25,21 +25,6 @@ fun Context.reportForegroundInfo() = ForegroundInfo(
  * run with a foreground service
  */
 private fun Context.reportWorkNotification(): Notification {
-//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//        val channel = NotificationChannel(
-//            ReportNotificationChannelID,
-//            getString(R.string.reminder_notification_channel_name),
-//            NotificationManager.IMPORTANCE_DEFAULT,
-//        ).apply {
-//            description = getString(R.string.reminder_notification_channel_description)
-//        }
-//        // Register the channel with the system
-//        val notificationManager: NotificationManager? =
-//            getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-//
-//        notificationManager?.createNotificationChannel(channel)
-//    }
-
     return NotificationCompat.Builder(this, ReportNotificationChannelID)
         .setSmallIcon(R.drawable.generate_report_icon)
         .setContentTitle(getString(R.string.reminder_notification_title))
