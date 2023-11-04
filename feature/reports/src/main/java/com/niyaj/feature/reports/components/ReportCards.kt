@@ -32,7 +32,7 @@ import com.niyaj.model.CustomerWiseReport
 import com.niyaj.model.ProductWiseReport
 import com.niyaj.ui.components.CountBox
 import com.niyaj.ui.components.StandardExpandable
-import com.niyaj.ui.components.TextWithIcon
+import com.niyaj.ui.components.IconWithText
 
 @Composable
 fun CustomerReportCard(
@@ -54,7 +54,7 @@ fun CustomerReportCard(
                 horizontalAlignment = Alignment.Start
             ) {
                 customer.customerName?.let { it ->
-                    TextWithIcon(
+                    IconWithText(
                         text = it,
                         icon = Icons.Default.Person,
                         fontWeight = FontWeight.SemiBold,
@@ -62,7 +62,7 @@ fun CustomerReportCard(
                     Spacer(modifier = Modifier.height(SpaceMini))
                 }
 
-                TextWithIcon(
+                IconWithText(
                     text = customer.customerPhone,
                     icon = Icons.Default.PhoneAndroid,
                     fontWeight = FontWeight.SemiBold,
@@ -70,7 +70,7 @@ fun CustomerReportCard(
 
                 customer.customerEmail?.let { email ->
                     Spacer(modifier = Modifier.height(SpaceMini))
-                    TextWithIcon(
+                    IconWithText(
                         text = email,
                         icon = Icons.Default.Email,
                         fontWeight = FontWeight.SemiBold,
@@ -189,7 +189,7 @@ fun CategoryWiseReportCard(
                         onExpandChanged(category.categoryName)
                     },
                     title = {
-                        TextWithIcon(
+                        IconWithText(
                             text = category.categoryName,
                             icon = Icons.Default.Category,
                             isTitle = true

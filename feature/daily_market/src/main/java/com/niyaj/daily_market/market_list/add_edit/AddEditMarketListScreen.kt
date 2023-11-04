@@ -118,7 +118,6 @@ import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.ui.utils.rememberCaptureController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
-import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
@@ -134,7 +133,6 @@ fun AddEditMarketListScreen(
     marketId: Int = 0,
     navController: NavController,
     viewModel: AddEditMarketListViewModel = hiltViewModel(),
-    resultBackNavigator: ResultBackNavigator<String>,
 ) {
     val lazyListState = rememberLazyListState()
     val snackbarState = remember { SnackbarHostState() }
@@ -331,9 +329,9 @@ fun AddEditMarketListScreen(
     }
 
     AnimatedVisibility(
-        visible = showList
+        visible = showList && marketLists.isNotEmpty()
     ) {
-        ViewMarketList(
+        ShareableMarketList(
             captureController = captureController,
             marketDate = marketList?.marketDate ?: System.currentTimeMillis(),
             onDismiss = viewModel::onDismissList,
@@ -360,7 +358,7 @@ fun AddEditMarketListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ViewMarketList(
+fun ShareableMarketList(
     captureController: CaptureController,
     marketDate: Long,
     marketLists: List<MarketItemAndQuantity>,

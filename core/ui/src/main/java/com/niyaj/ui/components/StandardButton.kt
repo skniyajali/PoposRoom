@@ -10,15 +10,20 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.theme.ButtonSize
 import com.niyaj.designsystem.theme.SpaceMini
 
@@ -127,6 +132,55 @@ fun StandardOutlinedButton(
         Text(
             text = text.uppercase(),
             style = MaterialTheme.typography.labelLarge,
+        )
+    }
+}
+
+
+@Composable
+fun StandardFilledTonalIconButton(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    containerColor: Color = MaterialTheme.colorScheme.outlineVariant,
+    shape: Shape = RoundedCornerShape(SpaceMini)
+) {
+    FilledTonalIconButton(
+        modifier = modifier,
+        onClick = onClick,
+        shape = shape,
+        enabled = enabled,
+        colors = IconButtonDefaults.filledTonalIconButtonColors(
+            containerColor = containerColor
+        )
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = icon.name,
+        )
+    }
+}
+
+@Composable
+fun StandardOutlinedIconButton(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    borderColor: Color = MaterialTheme.colorScheme.outlineVariant,
+    shape: Shape = RoundedCornerShape(SpaceMini)
+) {
+    OutlinedIconButton(
+        modifier = modifier,
+        onClick = onClick,
+        shape = shape,
+        enabled = enabled,
+        border = BorderStroke(1.dp, borderColor)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = icon.name,
         )
     }
 }

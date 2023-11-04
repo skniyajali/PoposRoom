@@ -40,7 +40,7 @@ class ProductSettingsViewModel @Inject constructor(
         initialValue = emptyList()
     )
 
-    val products = snapshotFlow { _searchText.value }.flatMapLatest { searchText ->
+    val products = snapshotFlow { mSearchText.value }.flatMapLatest { searchText ->
         productRepository.getAllProduct(searchText)
     }.mapLatest { list ->
         totalItems = list.map { item ->

@@ -66,7 +66,7 @@ import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.StandardScaffold
 import com.niyaj.ui.components.drawAnimatedBorder
 import com.niyaj.ui.event.UiState
-import com.niyaj.ui.utils.Screens.MARKET_SCREEN
+import com.niyaj.ui.utils.Screens.MARKET_ITEM_SCREEN
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
@@ -77,7 +77,7 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
-@Destination(route = MARKET_SCREEN)
+@Destination(route = MARKET_ITEM_SCREEN)
 @Composable
 fun MarketItemScreen(
     navController: NavController,
@@ -140,6 +140,8 @@ fun MarketItemScreen(
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
+        } else {
+            navController.navigateUp()
         }
     }
 

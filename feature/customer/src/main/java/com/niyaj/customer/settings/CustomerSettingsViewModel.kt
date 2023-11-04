@@ -22,7 +22,7 @@ class CustomerSettingsViewModel @Inject constructor(
     private val customerRepository: CustomerRepository
 ): BaseViewModel() {
 
-    val customers = snapshotFlow { _searchText.value }.flatMapLatest {
+    val customers = snapshotFlow { mSearchText.value }.flatMapLatest {
         customerRepository.getAllCustomer(it)
     }.mapLatest { list ->
         totalItems = list.map { it.customerId }

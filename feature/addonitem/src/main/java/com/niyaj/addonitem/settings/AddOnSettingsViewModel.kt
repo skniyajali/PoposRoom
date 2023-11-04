@@ -22,7 +22,7 @@ class AddOnSettingsViewModel @Inject constructor(
     private val addOnItemRepository: AddOnItemRepository
 ): BaseViewModel() {
 
-    val addonItems = snapshotFlow { _searchText.value }.flatMapLatest {
+    val addonItems = snapshotFlow { mSearchText.value }.flatMapLatest {
         addOnItemRepository.getAllAddOnItem(it)
     }.mapLatest { list ->
         totalItems = list.map { it.itemId }

@@ -72,7 +72,6 @@ import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.components.StandardRoundedFilterChip
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.TextWithCount
-import com.niyaj.ui.components.TextWithIcon
 import com.niyaj.ui.components.TotalOrderDetailsCard
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
@@ -245,20 +244,20 @@ fun AddressDetailsCard(
                                     .fillMaxWidth()
                                     .padding(SpaceSmall)
                             ) {
-                                TextWithIcon(
+                                IconWithText(
                                     modifier = Modifier.testTag(state.data.addressName),
                                     text = "Name - ${state.data.addressName}",
                                     icon = Icons.Default.Business
                                 )
                                 Spacer(modifier = Modifier.height(SpaceSmall))
-                                TextWithIcon(
+                                IconWithText(
                                     modifier = Modifier.testTag(state.data.shortName),
                                     text = "Short Name - ${state.data.shortName}",
                                     icon = Icons.Default.Home
                                 )
                                 Spacer(modifier = Modifier.height(SpaceSmall))
 
-                                TextWithIcon(
+                                IconWithText(
                                     modifier = Modifier.testTag(state.data.createdAt.toFormattedDateAndTime),
                                     text = "Created At : ${state.data.createdAt.toPrettyDate()}",
                                     icon = Icons.Default.CalendarToday
@@ -266,7 +265,7 @@ fun AddressDetailsCard(
 
                                 state.data.updatedAt?.let {
                                     Spacer(modifier = Modifier.height(SpaceSmall))
-                                    TextWithIcon(
+                                    IconWithText(
                                         text = "Updated At : ${it.toFormattedDateAndTime}",
                                         icon = Icons.AutoMirrored.Filled.Login
                                     )
@@ -392,7 +391,7 @@ fun GroupedOrders(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TextWithIcon(
+            IconWithText(
                 text = customerPhone,
                 icon = Icons.Default.PhoneAndroid
             )
@@ -470,7 +469,7 @@ fun ListOfOrders(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TextWithIcon(
+            IconWithText(
                 text = "${order.orderId}",
                 icon = Icons.Default.Tag,
                 isTitle = true,

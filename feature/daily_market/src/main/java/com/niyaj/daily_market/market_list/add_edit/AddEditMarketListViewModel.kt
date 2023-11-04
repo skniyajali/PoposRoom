@@ -52,7 +52,7 @@ class AddEditMarketListViewModel @Inject constructor(
         null
     )
 
-    val marketItems = snapshotFlow { _searchText.value }.flatMapLatest { searchText ->
+    val marketItems = snapshotFlow { mSearchText.value }.flatMapLatest { searchText ->
         repository.getMarketItemsWithQuantityById(marketId, searchText)
     }.mapLatest { itemList ->
         if (itemList.isEmpty()) UiState.Empty else {

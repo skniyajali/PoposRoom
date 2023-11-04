@@ -22,7 +22,7 @@ class AddressSettingsViewModel @Inject constructor(
     private val addressRepository: AddressRepository
 ): BaseViewModel() {
 
-    val addresses = snapshotFlow { _searchText.value }.flatMapLatest {
+    val addresses = snapshotFlow { mSearchText.value }.flatMapLatest {
         addressRepository.getAllAddress(it)
     }.mapLatest { list ->
         totalItems = list.map { it.addressId }

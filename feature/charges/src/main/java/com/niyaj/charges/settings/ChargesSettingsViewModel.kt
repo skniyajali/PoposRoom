@@ -22,7 +22,7 @@ class ChargesSettingsViewModel @Inject constructor(
     private val chargesRepository: ChargesRepository
 ): BaseViewModel() {
 
-    val charges = snapshotFlow { _searchText.value }.flatMapLatest {
+    val charges = snapshotFlow { mSearchText.value }.flatMapLatest {
         chargesRepository.getAllCharges(it)
     }.mapLatest { list ->
         totalItems = list.map { it.chargesId }

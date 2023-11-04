@@ -56,7 +56,7 @@ import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.StandardSearchBar
-import com.niyaj.ui.components.TextWithIcon
+import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.niyaj.ui.utils.isScrollingUp
@@ -246,7 +246,7 @@ fun PaymentExportScreen(
                 items.forEachIndexed { _, payments ->
                     if (payments.payments.isNotEmpty()) {
                         stickyHeader {
-                            TextWithIcon(
+                            IconWithText(
                                 modifier = Modifier
                                     .background(
                                         if (lazyListState.isScrolled) MaterialTheme.colorScheme.surface else Color.Transparent

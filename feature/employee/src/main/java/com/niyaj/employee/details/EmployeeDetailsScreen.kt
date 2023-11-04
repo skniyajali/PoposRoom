@@ -89,7 +89,6 @@ import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.components.StandardOutlinedChip
 import com.niyaj.ui.components.StandardScaffold
-import com.niyaj.ui.components.TextWithIcon
 import com.niyaj.ui.event.UiState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
@@ -487,55 +486,55 @@ fun EmployeeDetails(
                                     .fillMaxWidth()
                                     .padding(SpaceSmall)
                             ) {
-                                TextWithIcon(
+                                IconWithText(
                                     modifier = Modifier.testTag(state.data.employeeName),
                                     text = "Name - ${state.data.employeeName}",
                                     icon = Icons.Default.Person
                                 )
                                 Spacer(modifier = Modifier.height(SpaceSmall))
-                                TextWithIcon(
+                                IconWithText(
                                     modifier = Modifier.testTag(state.data.employeePhone),
                                     text = "Phone - ${state.data.employeePhone}",
                                     icon = Icons.Default.PhoneAndroid
                                 )
                                 Spacer(modifier = Modifier.height(SpaceSmall))
-                                TextWithIcon(
+                                IconWithText(
                                     modifier = Modifier.testTag(state.data.employeeSalary.toRupee),
                                     text = "Salary - ${state.data.employeeSalary.toRupee}",
                                     icon = Icons.Default.CurrencyRupee
                                 )
                                 Spacer(modifier = Modifier.height(SpaceSmall))
-                                TextWithIcon(
+                                IconWithText(
                                     modifier = Modifier.testTag(state.data.employeeSalaryType.name),
                                     text = "Salary Type - ${state.data.employeeSalaryType}",
                                     icon = Icons.Default.Merge
                                 )
                                 Spacer(modifier = Modifier.height(SpaceSmall))
-                                TextWithIcon(
+                                IconWithText(
                                     modifier = Modifier.testTag(state.data.employeePosition),
                                     text = "Position - ${state.data.employeePosition}",
                                     icon = Icons.Default.Approval
                                 )
                                 Spacer(modifier = Modifier.height(SpaceSmall))
-                                TextWithIcon(
+                                IconWithText(
                                     modifier = Modifier.testTag(state.data.employeeType.name),
                                     text = "Type - ${state.data.employeeType}",
                                     icon = Icons.AutoMirrored.Filled.MergeType
                                 )
                                 Spacer(modifier = Modifier.height(SpaceSmall))
-                                TextWithIcon(
+                                IconWithText(
                                     modifier = Modifier.testTag(state.data.employeeJoinedDate.toDate),
                                     text = "Joined Date : ${state.data.employeeJoinedDate.toJoinedDate}",
                                     icon = Icons.Default.CalendarToday
                                 )
                                 Spacer(modifier = Modifier.height(SpaceSmall))
-                                TextWithIcon(
+                                IconWithText(
                                     text = "Created At : ${state.data.createdAt.toPrettyDate()}",
                                     icon = Icons.Default.AccessTime
                                 )
                                 state.data.updatedAt?.let {
                                     Spacer(modifier = Modifier.height(SpaceSmall))
-                                    TextWithIcon(
+                                    IconWithText(
                                         text = "Updated At : ${it.toPrettyDate()}",
                                         icon = Icons.AutoMirrored.Filled.Login
                                     )

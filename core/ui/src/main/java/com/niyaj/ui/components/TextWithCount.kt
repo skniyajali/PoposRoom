@@ -47,7 +47,7 @@ fun TextWithCount(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TextWithIcon(
+        IconWithText(
             text = text,
             icon = leadingIcon,
             fontWeight = FontWeight.Bold
@@ -81,7 +81,7 @@ fun TextWithCount(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TextWithIcon(
+        IconWithText(
             text = text,
             icon = leadingIcon,
             fontWeight = FontWeight.Bold
@@ -138,7 +138,7 @@ fun TextWithBorderCount(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TextWithIcon(
+        IconWithText(
             text = text,
             icon = leadingIcon,
             fontWeight = FontWeight.SemiBold,

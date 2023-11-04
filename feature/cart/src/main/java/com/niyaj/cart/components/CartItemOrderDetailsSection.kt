@@ -31,7 +31,7 @@ import com.niyaj.designsystem.theme.Pewter
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.OrderType
-import com.niyaj.ui.components.TextWithIcon
+import com.niyaj.ui.components.IconWithText
 
 @Composable
 fun CartItemOrderDetailsSection(
@@ -66,7 +66,7 @@ fun CartItemOrderDetailsSection(
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.Start
             ) {
-                TextWithIcon(
+                IconWithText(
                     text = orderId,
                     icon = Icons.Default.Tag,
                     isTitle = true,
@@ -76,7 +76,7 @@ fun CartItemOrderDetailsSection(
 
                 customerPhone?.let {
                     Spacer(modifier = Modifier.height(SpaceMini))
-                    TextWithIcon(
+                    IconWithText(
                         text = it,
                         icon = Icons.Default.PhoneAndroid,
                         isTitle = true,

@@ -3,11 +3,6 @@ package com.niyaj.model
 import com.niyaj.common.utils.toDateString
 import kotlinx.coroutines.flow.Flow
 
-data class MarketListWithItemsAndQuantity(
-    val marketList: MarketList,
-    val items: List<MarketItemWithQuantity>,
-)
-
 data class MarketListWithItems(
     val marketList: MarketList,
     val items: List<MarketListItem>,

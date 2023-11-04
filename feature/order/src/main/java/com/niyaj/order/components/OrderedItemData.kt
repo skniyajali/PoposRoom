@@ -35,7 +35,7 @@ import com.niyaj.designsystem.theme.LightColor8
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Order
-import com.niyaj.ui.components.TextWithIcon
+import com.niyaj.ui.components.IconWithText
 
 @Composable
 fun OrderedItemData(
@@ -70,7 +70,7 @@ fun OrderedItemData(
                 Column(
                     verticalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    TextWithIcon(
+                    IconWithText(
                         text = order.orderId.toString(),
                         icon = Icons.Outlined.Tag
                     )
@@ -78,7 +78,7 @@ fun OrderedItemData(
                     order.customerPhone?.let {
                         Spacer(modifier = Modifier.height(SpaceSmall))
 
-                        TextWithIcon(
+                        IconWithText(
                             text = it,
                             icon = Icons.Outlined.PhoneAndroid
                         )
@@ -86,7 +86,7 @@ fun OrderedItemData(
 
                     Spacer(modifier = Modifier.height(SpaceSmall))
 
-                    TextWithIcon(
+                    IconWithText(
                         text = order.orderDate.toTime,
                         icon = Icons.Outlined.AccessTime
                     )
@@ -96,14 +96,14 @@ fun OrderedItemData(
                     verticalArrangement = Arrangement.SpaceBetween,
                 ) {
                     order.customerAddress?.let {
-                        TextWithIcon(
+                        IconWithText(
                             text = it,
                             icon = Icons.Outlined.Place
                         )
                         Spacer(modifier = Modifier.height(SpaceSmall))
                     }
 
-                    TextWithIcon(
+                    IconWithText(
                         text = order.orderPrice.basePrice.minus(order.orderPrice.discountPrice).toString(),
                         icon = Icons.Outlined.CurrencyRupee
                     )
