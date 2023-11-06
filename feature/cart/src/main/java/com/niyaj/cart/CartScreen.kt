@@ -53,6 +53,7 @@ fun CartScreen(
             }
         },
         bottomBar = {},
+        showBackButton = true,
     ) {
         val tabs = listOf(
             CartTabItem.DineOutItem {
