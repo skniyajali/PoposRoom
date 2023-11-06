@@ -63,13 +63,13 @@ fun ProductScreen(
     resultRecipient: ResultRecipient<AddEditProductScreenDestination, String>,
 ) {
     val scope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
+    val lazyRowState = rememberLazyListState()
     val snackbarState = remember { SnackbarHostState() }
 
     val state = viewModel.products.collectAsStateWithLifecycle().value
 
     val selectedItems = viewModel.selectedItems.toList()
-
-    val lazyListState = rememberLazyListState()
 
     val selectedCategory = viewModel.selectedCategory.collectAsStateWithLifecycle().value
 
@@ -200,6 +200,7 @@ fun ProductScreen(
 
                 is UiState.Success -> {
                     CategoriesData(
+                        lazyRowState = lazyRowState,
                         categories = categories,
                         selectedCategory = selectedCategory,
                         onSelect = viewModel::selectCategory

@@ -58,6 +58,7 @@ import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
@@ -71,22 +72,25 @@ fun HomeScreen(
 ) {
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
+    val lazyRowState = rememberLazyListState()
 
     val snackbarState = remember { SnackbarHostState() }
     val state = viewModel.products.collectAsStateWithLifecycle().value
 
+    val categories = viewModel.categories.collectAsStateWithLifecycle().value
+
     val selectedId = viewModel.selectedId.collectAsStateWithLifecycle().value
     val selectedCategory = viewModel.selectedCategory.collectAsStateWithLifecycle().value
 
-    val showFab = viewModel.totalItems.isNotEmpty() && selectedCategory == 0
+    val totalItems = viewModel.totalItems
+
+    val showFab = totalItems.isNotEmpty() && selectedCategory == 0 && lazyListState.isScrollingUp()
 
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
 
-    val categories = viewModel.categories.collectAsStateWithLifecycle().value
-
     LaunchedEffect(key1 = true) {
-        viewModel.eventFlow.collectLatest { event ->
+        viewModel.eventFlow.distinctUntilChanged().collectLatest { event ->
             when (event) {
                 is UiEvent.OnError -> {
                     scope.launch {
@@ -110,16 +114,20 @@ fun HomeScreen(
     }
 
     BackHandler {
-        navController.popBackStack()
+        if (showSearchBar) {
+            viewModel.closeSearchBar()
+        }else {
+            navController.popBackStack()
+        }
     }
 
     StandardScaffoldWithBottomNavigation(
         navController = navController,
         snackbarHostState = snackbarState,
         selectedId = selectedId.toString(),
-        showFab = showFab && lazyListState.isScrollingUp(),
-        showBottomBar = showFab && lazyListState.isScrollingUp(),
-        showSearchIcon = true,
+        showFab = showFab,
+        showBottomBar = showFab,
+        showSearchIcon = totalItems.isNotEmpty(),
         showSearchBar = showSearchBar,
         searchText = searchText,
         openSearchBar = viewModel::openSearchBar,
@@ -147,12 +155,14 @@ fun HomeScreen(
                 }
 
                 is UiState.Loading -> LoadingIndicator()
+
                 is UiState.Success -> {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth(),
                     ) {
                         CategoriesData(
+                            lazyRowState = lazyRowState,
                             categories = categories,
                             selectedCategory = selectedCategory,
                             onSelect = viewModel::selectCategory

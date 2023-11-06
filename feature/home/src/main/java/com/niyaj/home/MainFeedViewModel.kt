@@ -32,7 +32,7 @@ class MainFeedViewModel @Inject constructor(
     private val _selectedCategory = MutableStateFlow(0)
     val selectedCategory = _selectedCategory.asStateFlow()
 
-    private val _text = snapshotFlow { searchText.value }
+    private val _text = snapshotFlow { mSearchText.value }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val selectedId = repository.getSelectedOrder()
@@ -50,7 +50,7 @@ class MainFeedViewModel @Inject constructor(
         repository.getAllProduct(text, category)
     }.flatMapLatest { it ->
             it.map { items ->
-                totalItems = items.map { it.productId }
+                totalItems = items.take(1).map { it.productId }
 
                 if (items.isEmpty()) {
                     UiState.Empty

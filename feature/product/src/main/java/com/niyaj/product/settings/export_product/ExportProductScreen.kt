@@ -73,6 +73,7 @@ fun ExportProductScreen(
 ) {
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
+    val lazyRowState = rememberLazyListState()
 
     val categories = viewModel.categories.collectAsStateWithLifecycle().value
     val products = viewModel.products.collectAsStateWithLifecycle().value
@@ -243,6 +244,7 @@ fun ExportProductScreen(
                     .padding(SpaceSmall),
             ) {
                 CategoriesData(
+                    lazyRowState = lazyRowState,
                     categories = categories,
                     selectedCategory = selectedCategory,
                     onSelect = {

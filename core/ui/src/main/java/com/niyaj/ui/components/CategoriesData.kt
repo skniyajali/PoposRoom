@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -32,19 +33,26 @@ const val CATEGORY_ITEM_TAG = "Category-"
 
 @Composable
 fun CategoriesData(
+    lazyRowState: LazyListState,
     categories: List<Category>,
     selectedCategory: Int,
     onSelect: (Int) -> Unit,
 ) {
     LazyRow(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        state = lazyRowState,
     ) {
-        items(categories) { category ->
+        items(
+            items = categories,
+            key = {
+                it.categoryId
+            }
+        ) { category ->
             CategoryData(
                 item = category,
                 doesSelected = {
                     selectedCategory == it
-                } ,
+                },
                 onClick = onSelect,
             )
         }
@@ -53,19 +61,26 @@ fun CategoriesData(
 
 @Composable
 fun CategoriesData(
+    lazyRowState: LazyListState,
     categories: List<Category>,
     selectedCategory: List<Int>,
     onSelect: (Int) -> Unit,
 ) {
     LazyRow(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        state = lazyRowState,
     ) {
-        items(categories) { category ->
+        items(
+            items = categories,
+            key = {
+                it.categoryId
+            }
+        ) { category ->
             CategoryData(
                 item = category,
                 doesSelected = {
                     selectedCategory.contains(it)
-                } ,
+                },
                 onClick = onSelect,
             )
         }

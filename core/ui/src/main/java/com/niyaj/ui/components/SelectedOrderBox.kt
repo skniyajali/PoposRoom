@@ -33,7 +33,7 @@ import com.niyaj.designsystem.theme.SpaceSmall
 @Composable
 fun SelectedOrderBox(
     modifier: Modifier = Modifier,
-    text: String = "",
+    text: String,
     onClick: () -> Unit,
     height: Dp = 35.dp,
     borderColor: Color = MaterialTheme.colorScheme.secondary,
