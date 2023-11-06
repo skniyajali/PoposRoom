@@ -58,12 +58,14 @@ fun StandardScaffoldWithBottomNavigation(
     showFab: Boolean = false,
     showSearchBar: Boolean = false,
     showSearchIcon: Boolean = false,
+    showBackButton: Boolean = false,
     searchText: String = "",
     searchPlaceholderText: String = "",
     openSearchBar: () -> Unit = {},
     closeSearchBar: () -> Unit = {},
     onSearchTextChanged: (String) -> Unit = {},
     onClearClick: () -> Unit = {},
+    onBackClick: () -> Unit = { navController.navigateUp() },
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     bottomBar: @Composable () -> Unit = { AnimatedBottomNavigationBar(navController = navController) },
     navActions: @Composable RowScope.() -> Unit = {},
@@ -122,8 +124,16 @@ fun StandardScaffoldWithBottomNavigation(
                             ) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.scrim
+                                    contentDescription = Constants.STANDARD_BACK_BUTTON
+                                )
+                            }
+                        } else if (showBackButton) {
+                            IconButton(
+                                onClick = onBackClick
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = Constants.STANDARD_BACK_BUTTON
                                 )
                             }
                         } else {
