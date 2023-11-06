@@ -62,9 +62,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
-@Destination(
-    route = Screens.HOME_SCREEN
-)
+@Destination(route = Screens.HOME_SCREEN)
 @Composable
 fun HomeScreen(
     navController: NavController,
