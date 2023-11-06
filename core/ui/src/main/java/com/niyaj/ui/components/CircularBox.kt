@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,9 +23,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.niyaj.common.utils.getAllCapitalizedLetters
 import com.niyaj.designsystem.theme.IconSizeMedium
 import com.niyaj.designsystem.theme.IconSizeSmall
-import com.niyaj.common.utils.getAllCapitalizedLetters
 
 @Composable
 fun CircularBox(
@@ -88,6 +89,8 @@ fun CircularBoxWithQty(
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     borderColor: Color = MaterialTheme.colorScheme.secondary,
 ) {
+    val quantity = rememberUpdatedState(newValue = qty)
+
     val textStyle = if (qty == 0) MaterialTheme.typography.labelSmall
     else MaterialTheme.typography.labelLarge
 
@@ -103,14 +106,14 @@ fun CircularBoxWithQty(
             } ?: Modifier),
         contentAlignment = Alignment.Center,
     ) {
-        if (qty == 0) {
+        if (quantity.value == 0) {
             Text(
                 text = getAllCapitalizedLetters(text).take(2),
                 style = textStyle
             )
         } else {
             Text(
-                text = qty.toString(),
+                text = quantity.value.toString(),
                 style = textStyle
             )
         }
