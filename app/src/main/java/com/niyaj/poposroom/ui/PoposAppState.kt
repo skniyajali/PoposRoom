@@ -10,6 +10,9 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.material.BottomSheetNavigator
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.niyaj.data.utils.NetworkMonitor
 import com.niyaj.ui.utils.TrackDisposableJank
 import kotlinx.coroutines.CoroutineScope
@@ -17,22 +20,26 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
+@OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
 fun rememberPoposAppState(
     windowSizeClass: WindowSizeClass,
     networkMonitor: NetworkMonitor,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     navController: NavHostController = rememberNavController(),
+    bottomSheetNavigator: BottomSheetNavigator = rememberBottomSheetNavigator()
 ): PoposAppState {
     NavigationTrackingSideEffect(navController)
     return remember(
         navController,
+        bottomSheetNavigator,
         coroutineScope,
         windowSizeClass,
         networkMonitor,
     ) {
         PoposAppState(
             navController,
+            bottomSheetNavigator,
             coroutineScope,
             windowSizeClass,
             networkMonitor,
@@ -41,8 +48,9 @@ fun rememberPoposAppState(
 }
 
 @Stable
-class PoposAppState(
+class PoposAppState @OptIn(ExperimentalMaterialNavigationApi::class) constructor(
     val navController: NavHostController,
+    val bottomSheetNavigator: BottomSheetNavigator,
     coroutineScope: CoroutineScope,
     val windowSizeClass: WindowSizeClass,
     networkMonitor: NetworkMonitor,

@@ -77,7 +77,12 @@ fun HomeScreen(
 
     val categories = viewModel.categories.collectAsStateWithLifecycle().value
 
-    val selectedId = viewModel.selectedId.collectAsStateWithLifecycle().value
+    val selectedOrder = viewModel.selectedId.collectAsStateWithLifecycle().value
+    val selectedId = if (selectedOrder.addressName.isEmpty()) {
+        selectedOrder.orderId.toString()
+    } else {
+        selectedOrder.addressName.plus(" - ").plus(selectedOrder.orderId)
+    }
     val selectedCategory = viewModel.selectedCategory.collectAsStateWithLifecycle().value
 
     val totalItems = viewModel.totalItems
@@ -111,6 +116,13 @@ fun HomeScreen(
         }
     }
 
+    LaunchedEffect(key1 = selectedOrder.orderId) {
+        scope.launch {
+            lazyListState.animateScrollToItem(0)
+            lazyRowState.animateScrollToItem(0)
+        }
+    }
+
     BackHandler {
         if (showSearchBar) {
             viewModel.closeSearchBar()
@@ -122,7 +134,7 @@ fun HomeScreen(
     StandardScaffoldWithBottomNavigation(
         navController = navController,
         snackbarHostState = snackbarState,
-        selectedId = selectedId.toString(),
+        selectedId = selectedId,
         showFab = showFab,
         showBottomBar = showFab,
         showSearchIcon = totalItems.isNotEmpty(),
@@ -170,14 +182,14 @@ fun HomeScreen(
                             lazyListState = lazyListState,
                             products = state.data,
                             onIncrease = {
-                                if (selectedId != 0) {
-                                    viewModel.addProductToCart(selectedId, it)
+                                if (selectedOrder.orderId != 0) {
+                                    viewModel.addProductToCart(selectedOrder.orderId, it)
                                 } else {
                                     navController.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
                                 }
                             },
                             onDecrease = {
-                                viewModel.removeProductFromCart(selectedId, it)
+                                viewModel.removeProductFromCart(selectedOrder.orderId, it)
                             },
                             onCreateProduct = {
                                 navController.navigate(Screens.ADD_EDIT_PRODUCT_SCREEN)

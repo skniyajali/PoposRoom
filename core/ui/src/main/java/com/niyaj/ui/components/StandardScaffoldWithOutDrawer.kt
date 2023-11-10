@@ -5,11 +5,14 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -20,6 +23,7 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -116,6 +120,69 @@ fun StandardScaffoldWithOutDrawer(
             elevation = CardDefaults.elevatedCardElevation(
                 defaultElevation = colorTransitionFraction.dp
             )
+        ) {
+            content()
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun StandardBottomSheet(
+    modifier: Modifier = Modifier,
+    title: String,
+    onBackClick: () -> Unit,
+    showBottomBar: Boolean = false,
+    bottomBar: @Composable () -> Unit = {},
+    content: @Composable () -> Unit,
+) {
+    Scaffold(
+        modifier = modifier
+            .fillMaxWidth()
+            .imePadding(),
+        topBar = {
+            TopAppBar(
+                modifier = Modifier,
+                title = {
+                    Text(text = title)
+                },
+                actions = {
+                    IconButton(
+                        onClick = onBackClick,
+                    ) {
+                        Icon(
+                            Icons.Filled.Close,
+                            contentDescription = "Close Sheet"
+                        )
+                    }
+                },
+            )
+        },
+        bottomBar = {
+            AnimatedVisibility(
+                visible = showBottomBar,
+                enter = fadeIn() + slideInVertically(
+                    initialOffsetY = { fullHeight ->
+                        fullHeight / 4
+                    }
+                ),
+                exit = fadeOut() + slideOutVertically(
+                    targetOffsetY = { fullHeight ->
+                        fullHeight / 4
+                    }
+                )
+            ) {
+                BottomAppBar {
+                    bottomBar()
+                }
+            }
+        }
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(it)
         ) {
             content()
         }

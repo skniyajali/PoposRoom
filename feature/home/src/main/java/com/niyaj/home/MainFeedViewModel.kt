@@ -37,12 +37,18 @@ class MainFeedViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val selectedId = repository.getSelectedOrder()
         .mapLatest {
-            it?.orderId ?: 0
+            if (it?.orderId != null){
+                val address = repository.getSelectedOrderAddress(it.orderId)
+                SelectedOrderState(
+                    orderId = it.orderId,
+                    addressName = address ?: ""
+                )
+            } else SelectedOrderState()
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = 0
+            initialValue = SelectedOrderState()
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)

@@ -1,6 +1,7 @@
 package com.niyaj.cartorder.add_edit
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Row
@@ -57,26 +58,23 @@ import com.niyaj.common.tags.CartOrderTestTags.CUSTOMER_PHONE_FIELD
 import com.niyaj.common.tags.CartOrderTestTags.EDIT_CART_ORDER
 import com.niyaj.common.tags.CartOrderTestTags.ORDER_ID_FIELD
 import com.niyaj.common.tags.CartOrderTestTags.ORDER_TYPE_FIELD
-import com.niyaj.common.tags.ProductTestTags
+import com.niyaj.common.tags.ProductTestTags.ADD_EDIT_PRODUCT_BUTTON
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.OrderType
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.MultiSelector
 import com.niyaj.ui.components.PhoneNoCountBox
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
+import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination(
-    route = Screens.ADD_EDIT_CART_ORDER_SCREEN
-)
+@Destination(route = Screens.ADD_EDIT_CART_ORDER_SCREEN)
 @Composable
 fun AddEditCartOrderScreen(
     cartOrderId: Int = 0,
@@ -84,7 +82,6 @@ fun AddEditCartOrderScreen(
     viewModel: AddEditCartOrderViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
-
     val lazyListState = rememberLazyListState()
 
     val customers = viewModel.customers.collectAsStateWithLifecycle().value
@@ -125,18 +122,17 @@ fun AddEditCartOrderScreen(
 
     val title = if (cartOrderId == 0) CREATE_NEW_CART_ORDER else EDIT_CART_ORDER
 
-    StandardScaffoldWithOutDrawer(
+    StandardScaffoldNew(
+        navController = navController,
         title = title,
-        onBackClick = {
-            navController.navigateUp()
-        },
-        showBottomBar = enableBtn,
+        showBackButton = true,
+        showBottomBar = true,
         bottomBar = {
             StandardButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(ProductTestTags.ADD_EDIT_PRODUCT_BUTTON)
-                    .padding(horizontal = SpaceSmallMax),
+                    .testTag(ADD_EDIT_PRODUCT_BUTTON)
+                    .padding(SpaceMedium),
                 enabled = enableBtn,
                 text = title,
                 icon = if (cartOrderId == 0) Icons.Default.Add else Icons.Default.Edit,
@@ -151,7 +147,7 @@ fun AddEditCartOrderScreen(
             modifier = Modifier
                 .testTag(ADD_EDIT_CART_ORDER_SCREEN)
                 .fillMaxWidth()
-                .padding(SpaceSmallMax),
+                .padding(SpaceMedium),
         ) {
             item(ORDER_TYPE_FIELD) {
                 val orderTypes = listOf(
@@ -194,8 +190,8 @@ fun AddEditCartOrderScreen(
 
                 AnimatedVisibility(
                     visible = viewModel.state.orderType != OrderType.DineIn,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
+                    enter = fadeIn(tween(500)),
+                    exit = fadeOut(tween(600)),
                 ) {
                     ExposedDropdownMenuBox(
                         expanded = addressToggled,
@@ -289,8 +285,8 @@ fun AddEditCartOrderScreen(
             item(CUSTOMER_PHONE_FIELD) {
                 AnimatedVisibility(
                     visible = viewModel.state.orderType != OrderType.DineIn,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
+                    enter = fadeIn(tween(500)),
+                    exit = fadeOut(tween(600)),
                 ) {
                     ExposedDropdownMenuBox(
                         expanded = customerToggled,

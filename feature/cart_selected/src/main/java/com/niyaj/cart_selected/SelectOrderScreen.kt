@@ -40,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -49,34 +48,33 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.niyaj.common.utils.toTimeSpan
 import com.niyaj.common.tags.CartOrderTestTags
-import com.niyaj.common.tags.ProductTestTags
 import com.niyaj.common.tags.SelectedTestTag.SELECTED_SCREEN_NOTE
 import com.niyaj.common.tags.SelectedTestTag.SELECTED_SCREEN_TITLE
+import com.niyaj.common.utils.toTimeSpan
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.CartOrder
 import com.niyaj.model.OrderType
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.StandardBottomSheet
 import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
-import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.result.ResultBackNavigator
+import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 import kotlinx.coroutines.flow.collectLatest
 
 @RootNavGraph(start = true)
 @Destination(
-    route = Screens.SELECT_ORDER_SCREEN
+    route = Screens.SELECT_ORDER_SCREEN,
+    style = DestinationStyleBottomSheet::class
 )
 @Composable
 fun SelectOrderScreen(
@@ -110,18 +108,17 @@ fun SelectOrderScreen(
         }
     }
 
-    StandardScaffoldWithOutDrawer(
+    StandardBottomSheet(
         title = SELECTED_SCREEN_TITLE,
         onBackClick = {
             navController.navigateUp()
         },
-        showBottomBar = !lazyListState.isScrolled && selectedOrder != 0,
+        showBottomBar = true,
         bottomBar = {
             StandardButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(ProductTestTags.ADD_EDIT_PRODUCT_BUTTON)
-                    .padding(horizontal = SpaceSmallMax),
+                    .padding(SpaceSmall),
                 enabled = true,
                 text = CartOrderTestTags.CREATE_NEW_CART_ORDER,
                 icon = Icons.Default.Add,
@@ -137,6 +134,7 @@ fun SelectOrderScreen(
         ) { state ->
             when (state) {
                 is UiState.Loading -> LoadingIndicator()
+
                 is UiState.Empty -> {
                     ItemNotAvailable(
                         text = CartOrderTestTags.CART_ORDER_NOT_AVAIlABLE,
@@ -155,8 +153,6 @@ fun SelectOrderScreen(
                         state = lazyListState,
                     ) {
                         item("Note") {
-                            Spacer(modifier = Modifier.height(SpaceSmall))
-
                             ListItem(
                                 modifier = Modifier
                                     .height(48.dp)

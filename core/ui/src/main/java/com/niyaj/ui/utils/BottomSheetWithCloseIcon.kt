@@ -29,8 +29,8 @@ import com.niyaj.designsystem.theme.SpaceSmallMax
 @Composable
 fun BottomSheetWithCloseDialog(
     modifier: Modifier = Modifier,
-    text: String,
-    onClosePressed: () -> Unit = {},
+    title: String,
+    onBackClick: () -> Unit = {},
     closeButtonColor: Color = MaterialTheme.colorScheme.error,
     content: @Composable () -> Unit,
 ) {
@@ -38,7 +38,6 @@ fun BottomSheetWithCloseDialog(
         modifier = modifier
             .fillMaxWidth()
             .padding(bottom = SpaceLarge)
-            .padding(SpaceSmall)
     ) {
         ElevatedCard(
             modifier = Modifier
@@ -56,12 +55,12 @@ fun BottomSheetWithCloseDialog(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = text,
+                    text = title,
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
                 IconButton(
-                    onClick = onClosePressed,
+                    onClick = onBackClick,
                     modifier = Modifier.size(29.dp)
                 ) {
                     Icon(
