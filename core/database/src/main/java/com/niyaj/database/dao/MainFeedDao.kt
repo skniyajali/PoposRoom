@@ -29,6 +29,15 @@ interface MainFeedDao {
     )
     fun getSelectedOrder(): Flow<SelectedEntity?>
 
+
+    @Query(
+        value = """
+        SELECT addressName FROM address INNER JOIN cartorder ON address.addressId is cartorder.addressId WHERE cartorder.orderId = :orderId
+    """
+    )
+    fun getSelectedOrderAddress(orderId: Int): String?
+
+
     @Query(value = """
         SELECT quantity FROM cart WHERE orderId = :orderId AND productId = :productId
     """

@@ -3,6 +3,7 @@ package com.niyaj.poposroom.ui
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -18,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.niyaj.data.utils.NetworkMonitor
 import com.niyaj.designsystem.components.PoposBackground
 import com.niyaj.designsystem.components.PoposGradientBackground
@@ -27,7 +29,9 @@ import com.niyaj.poposroom.navigation.PoposNavHost
 import com.niyaj.poposroom.navigation.RootNavGraph
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(
+    ExperimentalComposeUiApi::class, ExperimentalMaterialNavigationApi::class
+)
 @Composable
 fun PoposApp(
     modifier: Modifier = Modifier,
@@ -92,6 +96,7 @@ fun PoposApp(
                 contentColor = Color.Transparent
             ) {
                 PoposNavHost(
+                    modifier = Modifier.imePadding(),
                     appState = appState,
                     startRoute = RootNavGraph.startRoute,
                 )

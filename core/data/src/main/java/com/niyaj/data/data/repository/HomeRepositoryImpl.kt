@@ -66,6 +66,12 @@ class HomeRepositoryImpl(
         return mainFeedDao.getSelectedOrder().mapLatest { it?.asExternalModel() }
     }
 
+    override suspend fun getSelectedOrderAddress(orderId: Int): String? {
+        return withContext(ioDispatcher) {
+            mainFeedDao.getSelectedOrderAddress(orderId)
+        }
+    }
+
     private suspend fun getQuantity(orderId: Int?, productId: Int): Flow<Int> {
         return withContext(ioDispatcher) {
             if (orderId == null) flowOf(0) else {

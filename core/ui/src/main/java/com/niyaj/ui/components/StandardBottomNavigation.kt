@@ -29,11 +29,13 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.exyte.animatednavbar.AnimatedNavigationBar
 import com.exyte.animatednavbar.animation.balltrajectory.Teleport
 import com.exyte.animatednavbar.animation.indendshape.Height
@@ -166,7 +168,7 @@ internal fun AnimatedBottomNavigationBar(
     navController: NavController,
     windowInsets: WindowInsets = NavigationBarDefaults.windowInsets,
 ) {
-    val currentRoute = navController.currentBackStackEntry?.destination?.route.hashCode()
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route.hashCode()
 
     val navItems = listOf(
         NavigationItem(
@@ -212,12 +214,13 @@ internal fun AnimatedBottomNavigationBar(
     )
 
     val index = navItems.indexOf(navItems.find { it.index == currentRoute })
+    val currentIndex = if (index < 0) 0 else index
 
     AnimatedNavigationBar(
         modifier = Modifier
             .windowInsetsPadding(windowInsets)
             .height(80.dp),
-        selectedIndex = index,
+        selectedIndex = currentIndex,
         cornerRadius = shapeCornerRadius(0.dp),
         barColor = LightColor8,
         ballColor = MaterialTheme.colorScheme.secondary,
@@ -231,33 +234,34 @@ internal fun AnimatedBottomNavigationBar(
             )
         )
     ) {
-        navItems.forEach {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                DropletButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    isSelected = it.selected,
-                    onClick = it.onClick,
-                    icon = if (it.selected) it.selectedIcon else it.unselectedIcon,
-                    dropletColor = Purple,
-                    iconColor = MaterialTheme.colorScheme.tertiary,
-                    size = 24.dp,
-                    animationSpec = tween(durationMillis = Duration, easing = LinearEasing)
-                )
+        navItems.forEachIndexed { index, it ->
+            key(index) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    DropletButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        isSelected = it.selected,
+                        onClick = it.onClick,
+                        icon = if (it.selected) it.selectedIcon else it.unselectedIcon,
+                        dropletColor = Purple,
+                        iconColor = MaterialTheme.colorScheme.tertiary,
+                        size = 24.dp,
+                        animationSpec = tween(durationMillis = Duration, easing = LinearEasing)
+                    )
 
-                Spacer(modifier = Modifier.height(3.dp))
+                    Spacer(modifier = Modifier.height(3.dp))
 
-                Text(
-                    text = it.name,
-                    color = if (it.selected) Purple else MaterialTheme.colorScheme.tertiary,
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = if (it.selected) FontWeight.SemiBold else FontWeight.Normal,
-                )
+                    Text(
+                        text = it.name,
+                        color = if (it.selected) Purple else MaterialTheme.colorScheme.tertiary,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = if (it.selected) FontWeight.SemiBold else FontWeight.Normal,
+                    )
+                }
             }
         }
     }
-
 }
