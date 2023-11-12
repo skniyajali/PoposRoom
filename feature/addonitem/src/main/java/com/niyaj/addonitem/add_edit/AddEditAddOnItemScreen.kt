@@ -135,7 +135,8 @@ fun AddEditAddOnItemScreen(
                         "Marked as applied"
                     else
                         "Marked as not applied",
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
 

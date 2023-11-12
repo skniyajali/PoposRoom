@@ -5,11 +5,17 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -22,18 +28,24 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.utils.Constants
+import com.niyaj.designsystem.theme.SpaceLarge
+import com.niyaj.designsystem.theme.SpaceMedium
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -129,7 +141,7 @@ fun StandardScaffoldWithOutDrawer(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StandardBottomSheet(
+fun StandardBottomSheetScaffold(
     modifier: Modifier = Modifier,
     title: String,
     onBackClick: () -> Unit,
@@ -185,6 +197,70 @@ fun StandardBottomSheet(
                 .padding(it)
         ) {
             content()
+        }
+    }
+}
+
+
+@Composable
+fun StandardBottomSheet(
+    modifier: Modifier = Modifier,
+    title: String,
+    onBackClick: () -> Unit = {},
+    closeButtonColor: Color = MaterialTheme.colorScheme.error,
+    windowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
+    content: @Composable () -> Unit,
+) {
+    Surface(
+        modifier = modifier
+            .consumeWindowInsets(windowInsets)
+            .imePadding(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = SpaceLarge)
+        ) {
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                elevation = CardDefaults.elevatedCardElevation(0.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(SpaceMedium),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier.size(29.dp)
+                    ) {
+                        Icon(
+                            Icons.Filled.Close,
+                            tint = closeButtonColor,
+                            contentDescription = null
+                        )
+                    }
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .imePadding()
+            ) {
+                content()
+            }
         }
     }
 }

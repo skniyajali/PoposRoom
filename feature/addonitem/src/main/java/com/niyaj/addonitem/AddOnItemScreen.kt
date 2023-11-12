@@ -41,6 +41,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.addonitem.destinations.AddEditAddOnItemScreenDestination
+import com.niyaj.addonitem.destinations.AddOnExportScreenDestination
+import com.niyaj.addonitem.destinations.AddOnImportScreenDestination
 import com.niyaj.addonitem.destinations.AddOnSettingsScreenDestination
 import com.niyaj.common.tags.AddOnTestTags.ADDON_ITEM_TAG
 import com.niyaj.common.tags.AddOnTestTags.ADDON_NOT_AVAIlABLE
@@ -72,14 +74,14 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
-@Destination(
-    route = Screens.ADD_ON_ITEM_SCREEN
-)
+@Destination(route = Screens.ADD_ON_ITEM_SCREEN)
 @Composable
 fun AddOnItemScreen(
     navController: NavController,
     viewModel: AddOnViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditAddOnItemScreenDestination, String>,
+    exportRecipient: ResultRecipient<AddOnExportScreenDestination, String>,
+    importRecipient: ResultRecipient<AddOnImportScreenDestination, String>,
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -106,6 +108,26 @@ fun AddOnItemScreen(
 
             is NavResult.Value -> {
                 viewModel.deselectItems()
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+    exportRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+    importRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
                 scope.launch {
                     snackbarState.showSnackbar(result.value)
                 }
@@ -162,7 +184,7 @@ fun AddOnItemScreen(
                 placeholderText = ADDON_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = true,
+                showSearchIcon = showFab,
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
@@ -207,6 +229,7 @@ fun AddOnItemScreen(
                 is UiState.Success -> {
                     LazyVerticalGrid(
                         modifier = Modifier
+                            .fillMaxSize()
                             .padding(SpaceSmall),
                         columns = GridCells.Fixed(2),
                         state = lazyGridState,
@@ -307,9 +330,7 @@ fun AddOnItemData(
                     onLongClick(item.itemId)
                 },
             ),
-        elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 2.dp
-        )
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier

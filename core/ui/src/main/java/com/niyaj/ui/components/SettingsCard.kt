@@ -13,7 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.theme.SpaceMini
 
@@ -24,6 +26,7 @@ fun SettingsCard(
     subtitle: String,
     icon: ImageVector,
     onClick: () -> Unit,
+    containerColor: Color = MaterialTheme.colorScheme.background
 ) {
     ListItem(
         modifier = modifier
@@ -38,11 +41,13 @@ fun SettingsCard(
                 style = MaterialTheme.typography.labelLarge
             )
         },
-        supportingContent = if (subtitle.isEmpty()) null else (
-                {
-                    Text(text = subtitle)
-                }
-                ),
+        supportingContent = if (subtitle.isEmpty()) null else ({
+            Text(
+                text = subtitle,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }),
         leadingContent = {
             CircularBox(
                 icon = icon,
@@ -58,8 +63,6 @@ fun SettingsCard(
         },
         tonalElevation = 1.dp,
         shadowElevation = 4.dp,
-        colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.background
-        )
+        colors = ListItemDefaults.colors(containerColor = containerColor)
     )
 }
