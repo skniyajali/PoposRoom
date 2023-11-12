@@ -2,8 +2,8 @@ package com.niyaj.poposroom.ui
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -96,7 +96,8 @@ fun PoposApp(
                 contentColor = Color.Transparent
             ) {
                 PoposNavHost(
-                    modifier = Modifier.imePadding(),
+                    modifier = Modifier
+                        .consumeWindowInsets(it),
                     appState = appState,
                     startRoute = RootNavGraph.startRoute,
                 )

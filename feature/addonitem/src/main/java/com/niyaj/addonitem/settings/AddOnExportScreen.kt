@@ -76,6 +76,8 @@ fun AddOnExportScreen(
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
 
+    val showBottomBar = viewModel.totalItems.isNotEmpty()
+
     val selectedItems = viewModel.selectedItems.toList()
 
     val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
@@ -144,7 +146,7 @@ fun AddOnExportScreen(
         navController = navController,
         title = if (selectedItems.isEmpty()) EXPORT_ADDON_TITLE else "${selectedItems.size} Selected",
         showBackButton = true,
-        showBottomBar = true,
+        showBottomBar = showBottomBar,
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
@@ -189,7 +191,7 @@ fun AddOnExportScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag(EXPORT_ADDON_BTN),
-                    enabled = true,
+                    enabled = showBottomBar,
                     text = EXPORT_ADDON_BTN_TEXT,
                     icon = Icons.Default.Upload,
                     colors = ButtonDefaults.buttonColors(

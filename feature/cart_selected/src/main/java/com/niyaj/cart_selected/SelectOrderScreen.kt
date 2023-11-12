@@ -60,7 +60,7 @@ import com.niyaj.model.OrderType
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
-import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.components.StandardBottomSheetScaffold
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
@@ -108,7 +108,7 @@ fun SelectOrderScreen(
         }
     }
 
-    StandardBottomSheet(
+    StandardBottomSheetScaffold(
         title = SELECTED_SCREEN_TITLE,
         onBackClick = {
             navController.navigateUp()

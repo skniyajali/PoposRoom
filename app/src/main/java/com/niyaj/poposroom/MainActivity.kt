@@ -3,10 +3,11 @@ package com.niyaj.poposroom
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -19,13 +20,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.metrics.performance.JankStats
 import androidx.profileinstaller.ProfileVerifier
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
@@ -54,6 +53,7 @@ import javax.inject.Inject
 
 private const val TAG = "MainActivity"
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
@@ -74,7 +74,6 @@ class MainActivity : ComponentActivity() {
         .setAllowAssetPackDeletion(false)
         .build()
 
-    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
@@ -117,12 +116,10 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-
-//        enableSystemInsetsHandling()
         // Turn off the decor fitting system windows, which allows us to handle insets,
-        // including IME animations
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        // including IME animations, and go edge-to-edge
+        // This also sets up the initial system bar style based on the platform theme
+        enableEdgeToEdge()
 
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
             run {
@@ -137,16 +134,23 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            val systemUiController = rememberSystemUiController()
             val darkTheme = shouldUseDarkTheme(uiState)
 
             // Update the dark content of the system bars to match the theme
-            DisposableEffect(systemUiController, darkTheme) {
-                systemUiController.systemBarsDarkContentEnabled = !darkTheme
+            DisposableEffect(darkTheme) {
+                enableEdgeToEdge(
+                    statusBarStyle = SystemBarStyle.auto(
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT,
+                    ) { darkTheme },
+                    navigationBarStyle = SystemBarStyle.auto(
+                        lightScrim,
+                        darkScrim,
+                    ) { darkTheme },
+                )
+
                 onDispose {}
             }
-
-            val sizeClass = calculateWindowSizeClass(activity = this)
 
             PoposRoomTheme(
                 darkTheme = darkTheme,
@@ -155,7 +159,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 PoposApp(
                     viewModel = viewModel,
-                    windowSizeClass = sizeClass,
+                    windowSizeClass = calculateWindowSizeClass(activity = this),
                     networkMonitor = networkMonitor,
                     onCheckForAppUpdate = {
                         checkForAppUpdates()
@@ -301,3 +305,16 @@ private fun shouldUseDarkTheme(
         DarkThemeConfig.DARK -> true
     }
 }
+
+
+/**
+ * The default light scrim, as defined by androidx and the platform:
+ * https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:activity/activity/src/main/java/androidx/activity/EdgeToEdge.kt;l=35-38;drc=27e7d52e8604a080133e8b842db10c89b4482598
+ */
+private val lightScrim = android.graphics.Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+
+/**
+ * The default dark scrim, as defined by androidx and the platform:
+ * https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:activity/activity/src/main/java/androidx/activity/EdgeToEdge.kt;l=40-44;drc=27e7d52e8604a080133e8b842db10c89b4482598
+ */
+private val darkScrim = android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b)
