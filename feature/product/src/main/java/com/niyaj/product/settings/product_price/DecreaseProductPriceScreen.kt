@@ -42,7 +42,7 @@ import com.niyaj.product.settings.ProductSettingsEvent
 import com.niyaj.product.settings.ProductSettingsViewModel
 import com.niyaj.ui.components.CategoriesData
 import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.NoteCard
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
@@ -159,7 +159,7 @@ fun DecreaseProductPriceScreen(
                     }
                 )
 
-                NoteCard(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} products price will be decreased.")
+                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} products price will be decreased.")
 
                 StandardButton(
                     modifier = Modifier
