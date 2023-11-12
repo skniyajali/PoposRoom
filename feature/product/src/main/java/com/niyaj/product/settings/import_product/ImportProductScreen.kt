@@ -43,7 +43,7 @@ import com.niyaj.product.components.ProductCard
 import com.niyaj.product.settings.ProductSettingsEvent
 import com.niyaj.product.settings.ProductSettingsViewModel
 import com.niyaj.ui.components.EmptyImportScreen
-import com.niyaj.ui.components.NoteCard
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -128,7 +128,7 @@ fun ImportProductScreen(
                     .padding(SpaceSmallMax),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall)
             ) {
-                NoteCard(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} products will be imported.")
+                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} products will be imported.")
 
                 StandardButton(
                     modifier = Modifier

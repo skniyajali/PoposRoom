@@ -68,7 +68,7 @@ import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.printer_info.destinations.UpdatePrinterInfoScreenDestination
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
-import com.niyaj.ui.components.NoteCard
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.StandardChip
 import com.niyaj.ui.components.StandardOutlinedChip
 import com.niyaj.ui.components.StandardScaffold
@@ -216,13 +216,13 @@ fun PrinterInfoScreen(
                             ) {
                                 Spacer(modifier = Modifier.height(SpaceSmall))
 
-                                NoteCard(text = PRINTER_INFO_NOTES_ONE)
+                                InfoText(text = PRINTER_INFO_NOTES_ONE)
 
-                                NoteCard(text = PRINTER_INFO_NOTES_TWO)
+                                InfoText(text = PRINTER_INFO_NOTES_TWO)
 
-                                NoteCard(text = PRINTER_INFO_NOTES_THREE)
+                                InfoText(text = PRINTER_INFO_NOTES_THREE)
 
-                                NoteCard(text = PRINTER_INFO_NOTES_FOUR)
+                                InfoText(text = PRINTER_INFO_NOTES_FOUR)
                             }
                         }
 

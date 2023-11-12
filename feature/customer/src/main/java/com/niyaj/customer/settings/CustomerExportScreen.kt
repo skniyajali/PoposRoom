@@ -41,13 +41,12 @@ import com.niyaj.common.tags.CustomerTestTags.NO_ITEMS_IN_CUSTOMER
 import com.niyaj.common.utils.Constants
 import com.niyaj.customer.CustomerData
 import com.niyaj.customer.destinations.AddEditCustomerScreenDestination
-import com.niyaj.customer.destinations.CustomerDetailsScreenDestination
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.Customer
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.NoteCard
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -185,7 +184,7 @@ fun CustomerExportScreen(
                     .padding(SpaceSmallMax),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall)
             ) {
-                NoteCard(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} customers will be exported.")
+                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} customers will be exported.")
 
                 StandardButton(
                     modifier = Modifier

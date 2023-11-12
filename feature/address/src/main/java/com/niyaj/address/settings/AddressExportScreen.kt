@@ -35,6 +35,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.address.AddressData
 import com.niyaj.address.destinations.AddEditAddressScreenDestination
 import com.niyaj.common.tags.AddressTestTags
+import com.niyaj.common.tags.AddressTestTags.ADDRESS_ITEM_TAG
 import com.niyaj.common.tags.AddressTestTags.EXPORT_ADDRESS_BTN
 import com.niyaj.common.tags.AddressTestTags.EXPORT_ADDRESS_BTN_TEXT
 import com.niyaj.common.tags.AddressTestTags.EXPORT_ADDRESS_FILE_NAME
@@ -44,7 +45,7 @@ import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.NoteCard
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -65,7 +66,6 @@ fun AddressExportScreen(
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: AddressSettingsViewModel = hiltViewModel(),
 ) {
-
     val scope = rememberCoroutineScope()
     val lazyGridState = rememberLazyGridState()
 
@@ -143,7 +143,7 @@ fun AddressExportScreen(
         navController = navController,
         title = if (selectedItems.isEmpty()) EXPORT_ADDRESS_TITLE else "${selectedItems.size} Selected",
         showBackButton = true,
-        showBottomBar = true,
+        showBottomBar = addresses.isNotEmpty(),
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
@@ -182,13 +182,13 @@ fun AddressExportScreen(
                     .padding(SpaceSmallMax),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall)
             ) {
-                NoteCard(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} addresses will be exported.")
+                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} addresses will be exported.")
 
                 StandardButton(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag(EXPORT_ADDRESS_BTN),
-                    enabled = true,
+                    enabled = addresses.isNotEmpty(),
                     text = EXPORT_ADDRESS_BTN_TEXT,
                     icon = Icons.Default.Upload,
                     colors = ButtonDefaults.buttonColors(
@@ -220,7 +220,7 @@ fun AddressExportScreen(
     ) {
         if (addresses.isEmpty()) {
             ItemNotAvailable(
-                text = if (searchText.isEmpty()) AddressTestTags.ADDRESS_NOT_AVAIlABLE else Constants.SEARCH_ITEM_NOT_FOUND,
+                text = if (searchText.isEmpty()) AddressTestTags.ADDRESS_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND,
                 buttonText = AddressTestTags.CREATE_NEW_ADDRESS,
                 onClick = {
                     navController.navigate(AddEditAddressScreenDestination())
@@ -240,7 +240,7 @@ fun AddressExportScreen(
                     }
                 ) { address ->
                     AddressData(
-                        modifier = Modifier.testTag(AddressTestTags.ADDRESS_ITEM_TAG.plus(address.addressId)),
+                        modifier = Modifier.testTag(ADDRESS_ITEM_TAG.plus(address.addressId)),
                         item = address,
                         doesSelected = {
                             selectedItems.contains(it)

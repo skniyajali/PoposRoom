@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.common.utils.safeInt
 import com.niyaj.data.repository.AddOnItemRepository
 import com.niyaj.data.repository.validation.AddOnItemValidationRepository
@@ -112,7 +113,7 @@ class AddEditAddOnItemViewModel @Inject constructor(
             if (nameError.value == null && priceError.value == null) {
                 val addOnItem = AddOnItem(
                     itemId = addOnItemId,
-                    itemName = addEditState.itemName,
+                    itemName = addEditState.itemName.capitalizeWords.trimEnd(),
                     itemPrice = addEditState.itemPrice,
                     isApplicable = addEditState.isApplicable,
                     createdAt = System.currentTimeMillis(),
@@ -129,7 +130,8 @@ class AddEditAddOnItemViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
-                        _eventFlow.emit(UiEvent.OnSuccess("AddOn Item Created Or Updated Successfully."))
+                        val message = if (addOnItemId == 0) "Created" else "Updated"
+                        _eventFlow.emit(UiEvent.OnSuccess("AddOn Item $message Successfully."))
                     }
                 }
 

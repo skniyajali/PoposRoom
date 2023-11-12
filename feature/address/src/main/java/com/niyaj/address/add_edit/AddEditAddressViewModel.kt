@@ -7,16 +7,14 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.niyaj.common.network.Dispatcher
-import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
+import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.common.utils.getAllCapitalizedLetters
 import com.niyaj.data.repository.AddressRepository
 import com.niyaj.data.repository.validation.AddressValidationRepository
 import com.niyaj.model.Address
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -32,11 +30,10 @@ import javax.inject.Inject
 class AddEditAddressViewModel @Inject constructor(
     private val addressRepository: AddressRepository,
     private val validationRepository: AddressValidationRepository,
-    @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private var addressId = savedStateHandle.get<Int>("addressId")
+    private val addressId = savedStateHandle.get<Int>("addressId") ?: 0
 
     var state by mutableStateOf(AddEditAddressState())
 
@@ -48,7 +45,6 @@ class AddEditAddressViewModel @Inject constructor(
             getAddressById(addressId)
         }
     }
-
 
     val nameError: StateFlow<String?> = snapshotFlow { state.addressName }
         .mapLatest {
@@ -79,7 +75,6 @@ class AddEditAddressViewModel @Inject constructor(
 
             is AddEditAddressEvent.ShortNameChanged -> {
                 state = state.copy(shortName = event.shortName)
-
             }
 
             is AddEditAddressEvent.CreateOrUpdateAddress -> {
@@ -89,12 +84,12 @@ class AddEditAddressViewModel @Inject constructor(
     }
 
     private fun createOrUpdateAddress(addressId: Int = 0) {
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             if (nameError.value == null && shortNameError.value == null) {
                 val address = Address(
                     addressId = addressId,
-                    addressName = state.addressName,
-                    shortName = state.shortName,
+                    addressName = state.addressName.capitalizeWords.trimEnd(),
+                    shortName = state.shortName.trimEnd(),
                     createdAt = System.currentTimeMillis(),
                     updatedAt = if (addressId != 0) System.currentTimeMillis() else null
                 )
@@ -105,8 +100,9 @@ class AddEditAddressViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
+                        val message = if (addressId == 0) "Created" else "Updated"
                         _eventFlow.emit(
-                            UiEvent.OnSuccess("Address Created Successfully.")
+                            UiEvent.OnSuccess("Address $message Successfully.")
                         )
                     }
                 }
@@ -117,24 +113,24 @@ class AddEditAddressViewModel @Inject constructor(
     }
 
     private fun getAddressById(itemId: Int) {
-        viewModelScope.launch(ioDispatcher) {
-            when (val result = addressRepository.getAddressById(itemId)) {
-                is Resource.Error -> {
-                    _eventFlow.emit(UiEvent.OnError("Unable to find address"))
-                }
+        if (itemId != 0) {
+            viewModelScope.launch {
+                when (val result = addressRepository.getAddressById(itemId)) {
+                    is Resource.Error -> {
+                        _eventFlow.emit(UiEvent.OnError("Unable to find address"))
+                    }
 
-                is Resource.Success -> {
-                    result.data?.let { address ->
-                        addressId = address.addressId
-
-                        state = state.copy(
-                            shortName = address.shortName,
-                            addressName = address.addressName,
-                        )
+                    is Resource.Success -> {
+                        result.data?.let { address ->
+                            state = state.copy(
+                                shortName = address.shortName,
+                                addressName = address.addressName,
+                            )
+                        }
                     }
                 }
             }
         }
     }
-    
+
 }

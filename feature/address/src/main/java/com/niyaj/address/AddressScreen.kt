@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -43,9 +44,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.address.destinations.AddEditAddressScreenDestination
 import com.niyaj.address.destinations.AddressDetailsScreenDestination
+import com.niyaj.address.destinations.AddressExportScreenDestination
+import com.niyaj.address.destinations.AddressImportScreenDestination
 import com.niyaj.address.destinations.AddressSettingsScreenDestination
 import com.niyaj.common.tags.AddressTestTags.ADDRESS_ITEM_TAG
-import com.niyaj.common.tags.AddressTestTags.ADDRESS_NOT_AVAIlABLE
+import com.niyaj.common.tags.AddressTestTags.ADDRESS_NOT_AVAILABLE
+import com.niyaj.common.tags.AddressTestTags.ADDRESS_SCREEN_NOTE_TEXT
 import com.niyaj.common.tags.AddressTestTags.ADDRESS_SCREEN_TITLE
 import com.niyaj.common.tags.AddressTestTags.ADDRESS_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.AddressTestTags.CREATE_NEW_ADDRESS
@@ -57,6 +61,7 @@ import com.niyaj.model.Address
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.ScaffoldNavActions
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.StandardScaffold
@@ -72,23 +77,22 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
-@Destination(
-    route = Screens.ADDRESS_SCREEN
-)
+@Destination(route = Screens.ADDRESS_SCREEN)
 @Composable
 fun AddressScreen(
     navController: NavController,
     viewModel: AddressViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditAddressScreenDestination, String>,
+    exportRecipient: ResultRecipient<AddressExportScreenDestination, String>,
+    importRecipient: ResultRecipient<AddressImportScreenDestination, String>,
 ) {
     val scope = rememberCoroutineScope()
+    val lazyGridState = rememberLazyGridState()
     val snackbarState = remember { SnackbarHostState() }
+
     val uiState = viewModel.addOnItems.collectAsStateWithLifecycle().value
 
     val selectedItems = viewModel.selectedItems.toList()
-
-    val lazyGridState = rememberLazyGridState()
-
     val showFab = viewModel.totalItems.isNotEmpty()
 
     val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
@@ -121,6 +125,8 @@ fun AddressScreen(
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
+        } else {
+            navController.navigateUp()
         }
     }
 
@@ -133,6 +139,28 @@ fun AddressScreen(
             is NavResult.Value -> {
                 scope.launch {
                     viewModel.deselectItems()
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    exportRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    importRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
                     snackbarState.showSnackbar(result.value)
                 }
             }
@@ -162,7 +190,7 @@ fun AddressScreen(
                 placeholderText = ADDRESS_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = true,
+                showSearchIcon = showFab,
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
@@ -196,7 +224,7 @@ fun AddressScreen(
 
                 is UiState.Empty -> {
                     ItemNotAvailable(
-                        text = if (searchText.isEmpty()) ADDRESS_NOT_AVAIlABLE else SEARCH_ITEM_NOT_FOUND,
+                        text = if (searchText.isEmpty()) ADDRESS_NOT_AVAILABLE else SEARCH_ITEM_NOT_FOUND,
                         buttonText = CREATE_NEW_ADDRESS,
                         onClick = {
                             navController.navigate(AddEditAddressScreenDestination())
@@ -211,6 +239,15 @@ fun AddressScreen(
                         columns = GridCells.Fixed(2),
                         state = lazyGridState,
                     ) {
+                        item(
+                            span = { GridItemSpan(2) }
+                        ) {
+                            NoteCard(
+                                modifier = Modifier.padding(SpaceSmall),
+                                text = ADDRESS_SCREEN_NOTE_TEXT
+                            )
+                        }
+
                         items(
                             items = state.data,
                             key = {

@@ -45,7 +45,7 @@ import com.niyaj.expenses.ExpensesData
 import com.niyaj.expenses.destinations.AddEditExpenseScreenDestination
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.NoteCard
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -183,7 +183,7 @@ fun ExpensesExportScreen(
                     .padding(SpaceSmallMax),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall)
             ) {
-                NoteCard(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} expenses will be exported.")
+                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} expenses will be exported.")
 
                 StandardButton(
                     modifier = Modifier

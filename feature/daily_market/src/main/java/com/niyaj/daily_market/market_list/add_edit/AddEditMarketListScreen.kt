@@ -103,7 +103,7 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.ItemNotFound
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.NoteCard
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedAssistChip
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -251,7 +251,7 @@ fun AddEditMarketListScreen(
 
                         groupedByType.forEach { (type, marketItems) ->
                             stickyHeader {
-                                NoteCard(
+                                InfoText(
                                     text = type,
                                     icon = Icons.Default.Category,
                                     backgroundColor = MaterialTheme.colorScheme.surface,

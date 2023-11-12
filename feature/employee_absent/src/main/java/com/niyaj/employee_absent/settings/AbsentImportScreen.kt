@@ -45,7 +45,7 @@ import com.niyaj.employee_absent.AbsentData
 import com.niyaj.employee_absent.destinations.AddEditAbsentScreenDestination
 import com.niyaj.model.EmployeeWithAbsents
 import com.niyaj.ui.components.EmptyImportScreen
-import com.niyaj.ui.components.NoteCard
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -146,7 +146,7 @@ fun AbsentImportScreen(
                     .padding(SpaceSmallMax),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall)
             ) {
-                NoteCard(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} item will be imported.")
+                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} item will be imported.")
 
                 StandardButton(
                     modifier = Modifier

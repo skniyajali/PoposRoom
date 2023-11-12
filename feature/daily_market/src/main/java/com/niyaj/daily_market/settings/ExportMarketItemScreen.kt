@@ -45,7 +45,7 @@ import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.MarketItem
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.NoteCard
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -183,7 +183,7 @@ fun ExportMarketItemScreen(
                     .padding(SpaceSmallMax),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall)
             ) {
-                NoteCard(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} items will be exported.")
+                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} items will be exported.")
 
                 StandardButton(
                     modifier = Modifier

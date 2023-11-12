@@ -80,9 +80,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
 import kotlinx.coroutines.launch
 
-@Destination(
-    route = Screens.ADDRESS_DETAILS_SCREEN
-)
+@Destination(route = Screens.ADDRESS_DETAILS_SCREEN)
 @Composable
 fun AddressDetailsScreen(
     addressId: Int = 0,
@@ -231,6 +229,7 @@ fun AddressDetailsCard(
                 ) { state ->
                     when (state) {
                         is UiState.Loading -> LoadingIndicator()
+
                         is UiState.Empty -> {
                             ItemNotAvailable(
                                 text = "Address Details Not Available",
