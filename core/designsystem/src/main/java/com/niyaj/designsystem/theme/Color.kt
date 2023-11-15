@@ -79,6 +79,13 @@ val LightColor9 = Color(0xFFF9F9F9)
 val LightColor10 = Color(0xFFF9F3F3)
 val LightColor12 = Color(0xFFF9F9F9)
 
+val MintCream = Color(0xFFF5FFFA)
+val SeaShell = Color(0xFFFFF5EE)
+val Pearl = Color(0xFFE2DFD2)
+val Parchment = Color(0XFFFCF5E5)
+val Ivory = Color(0xFFFFFFF0)
+val BoneWhite = Color(0xFFF9F6EE)
+
 internal val DarkGreenGray95 = Color(0xFFF0F1EC)
 
 

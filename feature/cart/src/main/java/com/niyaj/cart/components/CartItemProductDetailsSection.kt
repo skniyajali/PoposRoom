@@ -32,7 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.niyaj.common.utils.toRupee
-import com.niyaj.designsystem.theme.LightColor10
+import com.niyaj.designsystem.theme.LightColor9
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.model.CartProductItem
 
@@ -75,7 +75,7 @@ fun CartProduct(
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .background(LightColor10, RoundedCornerShape(4.dp))
+                    .background(LightColor9, RoundedCornerShape(4.dp))
                     .weight(2f, true)
             ) {
                 Row(

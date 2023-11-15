@@ -207,11 +207,11 @@ fun DineOutScreen(
                 selectedCartItems = selectedDineOutOrder,
                 addOnItems = addOnItems,
                 showPrintBtn = true,
+                onClickEditOrder = onClickEditOrder,
+                onClickViewOrder = onClickOrderDetails,
                 onSelectCartOrder = {
                     viewModel.onEvent(DineOutEvent.SelectDineOutOrder(it))
                 },
-                onClickEditOrder = onClickEditOrder,
-                onClickViewOrder = onClickOrderDetails,
                 onClickDecreaseQty = { cartOrderId, productId ->
                     viewModel.onEvent(
                         DineOutEvent.DecreaseQuantity(cartOrderId, productId)

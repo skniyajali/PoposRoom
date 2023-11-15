@@ -57,7 +57,7 @@ fun CartItemTotalPriceSection(
     ) {
         Column(
             modifier = Modifier.fillMaxHeight(),
-            verticalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start
         ) {
             Text(
