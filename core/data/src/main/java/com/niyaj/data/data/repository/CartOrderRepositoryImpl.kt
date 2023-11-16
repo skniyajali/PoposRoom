@@ -4,9 +4,6 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
-import com.niyaj.data.mapper.toEntity
-import com.niyaj.data.repository.CartOrderRepository
-import com.niyaj.data.repository.validation.CartOrderValidationRepository
 import com.niyaj.common.tags.CartOrderTestTags.ADDRESS_NAME_LENGTH_ERROR
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_NAME_EMPTY_ERROR
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_NAME_ERROR
@@ -16,17 +13,26 @@ import com.niyaj.common.tags.CartOrderTestTags.CUSTOMER_PHONE_LENGTH_ERROR
 import com.niyaj.common.tags.CartOrderTestTags.CUSTOMER_PHONE_LETTER_ERROR
 import com.niyaj.common.tags.CartOrderTestTags.ORDER_PRICE_LESS_THAN_TWO_ERROR
 import com.niyaj.common.tags.CartOrderTestTags.ORDER_SHORT_NAME_EMPTY_ERROR
+import com.niyaj.data.mapper.toEntity
+import com.niyaj.data.repository.CartOrderRepository
+import com.niyaj.data.repository.validation.CartOrderValidationRepository
 import com.niyaj.database.dao.AddressDao
+import com.niyaj.database.dao.CartDao
 import com.niyaj.database.dao.CartOrderDao
 import com.niyaj.database.dao.CartPriceDao
 import com.niyaj.database.dao.CustomerDao
 import com.niyaj.database.dao.SelectedDao
+import com.niyaj.database.model.CartAddOnItemsEntity
+import com.niyaj.database.model.CartChargesEntity
 import com.niyaj.database.model.CartOrderEntity
 import com.niyaj.database.model.CartPriceEntity
 import com.niyaj.database.model.SelectedEntity
 import com.niyaj.database.model.asExternalModel
+import com.niyaj.model.AddOnItem
 import com.niyaj.model.Address
 import com.niyaj.model.CartOrder
+import com.niyaj.model.CartOrderWithAddOnAndCharges
+import com.niyaj.model.Charges
 import com.niyaj.model.Customer
 import com.niyaj.model.OrderStatus
 import com.niyaj.model.OrderType
@@ -42,9 +48,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 
 class CartOrderRepositoryImpl(
+    private val cartDao: CartDao,
     private val cartOrderDao: CartOrderDao,
     private val customerDao: CustomerDao,
     private val addressDao: AddressDao,
@@ -89,6 +97,18 @@ class CartOrderRepositoryImpl(
     override fun getSelectedCartOrder(): Flow<Selected?> {
         return selectedDao.getSelectedCartOrder().map {
             it?.asExternalModel()
+        }
+    }
+
+    override suspend fun getAllAddOnItem(): Flow<List<AddOnItem>> {
+        return withContext(ioDispatcher) {
+            cartOrderDao.getAllAddOnItems().mapLatest { list -> list.map { it.asExternalModel() } }
+        }
+    }
+
+    override suspend fun getAllCharges(): Flow<List<Charges>> {
+        return withContext(ioDispatcher) {
+            cartOrderDao.getAllCharges().mapLatest { list -> list.map { it.asExternalModel() } }
         }
     }
 
@@ -173,12 +193,12 @@ class CartOrderRepositoryImpl(
         }
     }
 
-    override suspend fun getCartOrderById(orderId: Int): Resource<CartOrder?> {
+    override suspend fun getCartOrderById(orderId: Int): Resource<CartOrderWithAddOnAndCharges?> {
         return withContext(ioDispatcher) {
             try {
                 val result = cartOrderDao.getCartOrderById(orderId)
 
-                val cartOrder = result?.let { cartOrder ->
+                val data = result?.cartOrder?.let { cartOrder ->
                     val address = if (cartOrder.orderType != OrderType.DineIn) {
                         withContext(ioDispatcher) {
                             addressDao.getAddressById(cartOrder.addressId)?.asExternalModel()
@@ -191,7 +211,7 @@ class CartOrderRepositoryImpl(
                         }
                     } else null
 
-                    CartOrder(
+                    val cartOrderItem = CartOrder(
                         orderId = cartOrder.orderId,
                         orderType = cartOrder.orderType,
                         orderStatus = cartOrder.orderStatus,
@@ -201,9 +221,15 @@ class CartOrderRepositoryImpl(
                         createdAt = cartOrder.createdAt,
                         updatedAt = cartOrder.updatedAt
                     )
+
+                    CartOrderWithAddOnAndCharges(
+                        cartOrder = cartOrderItem,
+                        addOnItems = result.addOnItems,
+                        charges = result.charges
+                    )
                 }
 
-                Resource.Success(cartOrder)
+                Resource.Success(data)
             } catch (e: Exception) {
                 Resource.Error(e.message ?: "Unable to get CartOrder")
             }
@@ -260,29 +286,30 @@ class CartOrderRepositoryImpl(
         }
     }
 
-    override suspend fun createOrUpdateCartOrder(newCartOrder: CartOrder): Resource<Boolean> {
+    override suspend fun createOrUpdateCartOrder(newCartOrder: CartOrderWithAddOnAndCharges): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
-                val isDineOut = newCartOrder.orderType == OrderType.DineOut
+                val cartOrder = newCartOrder.cartOrder
+                val isDineOut = cartOrder.orderType == OrderType.DineOut
 
                 val addressId = async {
                     if (isDineOut) {
-                        if (newCartOrder.address.addressId == 0) {
-                            addOrIgnoreAddress(newCartOrder.address)
-                        } else newCartOrder.address.addressId
+                        if (cartOrder.address.addressId == 0) {
+                            addOrIgnoreAddress(cartOrder.address)
+                        } else cartOrder.address.addressId
                     } else 0
                 }.await()
 
                 val customerId = async {
                     if (isDineOut) {
-                        if (newCartOrder.customer.customerId == 0) {
-                            addOrIgnoreCustomer(newCartOrder.customer)
-                        } else newCartOrder.customer.customerId
+                        if (cartOrder.customer.customerId == 0) {
+                            addOrIgnoreCustomer(cartOrder.customer)
+                        } else cartOrder.customer.customerId
                     } else 0
                 }.await()
 
-                val validatedCustomer = validateCustomerPhone(newCartOrder.orderType, customerId)
-                val validatedAddress = validateCustomerAddress(newCartOrder.orderType, addressId)
+                val validatedCustomer = validateCustomerPhone(cartOrder.orderType, customerId)
+                val validatedAddress = validateCustomerAddress(cartOrder.orderType, addressId)
 
                 val hasError = listOf(validatedCustomer, validatedAddress).any {
                     !it.successful
@@ -290,17 +317,20 @@ class CartOrderRepositoryImpl(
 
                 if (!hasError) {
                     val newOrder = CartOrderEntity(
-                        orderId = newCartOrder.orderId,
-                        orderType = newCartOrder.orderType,
-                        orderStatus = newCartOrder.orderStatus,
-                        doesChargesIncluded = newCartOrder.doesChargesIncluded,
+                        orderId = cartOrder.orderId,
+                        orderType = cartOrder.orderType,
+                        orderStatus = cartOrder.orderStatus,
+                        doesChargesIncluded = cartOrder.doesChargesIncluded,
                         addressId = addressId,
                         customerId = customerId,
-                        createdAt = newCartOrder.createdAt,
-                        updatedAt = newCartOrder.updatedAt
+                        createdAt = cartOrder.createdAt,
+                        updatedAt = cartOrder.updatedAt
                     )
 
                     val result = cartOrderDao.createOrUpdateCartOrder(newOrder)
+
+                    Timber.d("Result $result")
+
 
                     if (result > 0) {
                         async(ioDispatcher) {
@@ -315,6 +345,14 @@ class CartOrderRepositoryImpl(
                                 )
                             )
                         }.await()
+
+                        updateAddOnItems(result.toInt(), newCartOrder.addOnItems)
+
+                        updateCartCharges(result.toInt(), newCartOrder.charges)
+                    }else {
+                        updateAddOnItems(newOrder.orderId, newCartOrder.addOnItems)
+
+                        updateCartCharges(newOrder.orderId, newCartOrder.charges)
                     }
 
                     Resource.Success(result > 0)
@@ -323,6 +361,7 @@ class CartOrderRepositoryImpl(
                 }
             }
         } catch (e: Exception) {
+            Timber.e(e)
             Resource.Error(e.message)
         }
     }
@@ -551,6 +590,187 @@ class CartOrderRepositoryImpl(
                     totalPrice = basePrice.toLong()
                 )
             )
+        }
+    }
+
+    private suspend fun updateAddOnItems(orderId: Int, items: List<Int>): Resource<Boolean> {
+        return try {
+            withContext(ioDispatcher) {
+                val cartItems = cartOrderDao.getCartAddOnItems(orderId)
+
+                // Delete items not in the provided list
+                cartItems.filterNot { items.contains(it) }.forEach { item ->
+                    processAddOnItem(orderId, item, insert = false)
+                }
+
+                // Insert items not in the cart
+                items.filterNot { cartItems.contains(it) }.forEach { item ->
+                    processAddOnItem(orderId, item, insert = true)
+                }
+            }
+
+            Resource.Success(true)
+        } catch (e: Exception) {
+            Resource.Error(e.message)
+        }
+    }
+
+    private suspend fun processAddOnItem(orderId: Int, item: Int, insert: Boolean) {
+        try {
+            if (insert) {
+                cartDao.insertCartAddOnItem(CartAddOnItemsEntity(orderId, item))
+                insertAddOnItemPrice(orderId, item)
+            } else {
+                cartDao.deleteCartAddOnItem(orderId, item)
+                removeAddOnItemPrice(orderId, item)
+            }
+        }catch (e: Exception) {
+            Timber.e(e)
+        }
+    }
+
+    private suspend fun updateCartCharges(orderId: Int, items: List<Int>): Resource<Boolean> {
+        return try {
+            withContext(ioDispatcher) {
+                val cartItems = cartOrderDao.getCartCharges(orderId)
+
+                // Delete items not in the provided list
+                cartItems.filterNot { items.contains(it) }.forEach { item ->
+                    processCharges(orderId, item, insert = false)
+                }
+
+                // Insert items not in the cart
+                items.filterNot { cartItems.contains(it) }.forEach { item ->
+                    processCharges(orderId, item, insert = true)
+                }
+
+                Resource.Success(true)
+            }
+        } catch (e: Exception) {
+            // Log the exception for debugging purposes
+            Resource.Error(e.message)
+        }
+    }
+
+    private suspend fun processCharges(orderId: Int, chargesId: Int, insert: Boolean) {
+        if (insert) {
+            cartOrderDao.insertCartCharge(CartChargesEntity(orderId, chargesId)).toInt()
+            insertChargesPrice(orderId, chargesId)
+        } else {
+            cartOrderDao.deleteCartCharges(orderId, chargesId)
+            removeChargesPrice(orderId, chargesId)
+        }
+    }
+
+    private suspend fun insertAddOnItemPrice(orderId: Int, itemId: Int): Int {
+        return withContext(ioDispatcher) {
+            val addOnPrice = async(ioDispatcher) {
+                cartDao.getAddOnPrice(itemId)
+            }.await()
+
+            val cartPrice = async(ioDispatcher) {
+                cartPriceDao.getCartPriceByOrderId(orderId)
+            }.await()
+
+            val basePrice = cartPrice.basePrice + addOnPrice.itemPrice
+
+            val discountPrice = if (!addOnPrice.isApplicable) {
+                cartPrice.discountPrice + addOnPrice.itemPrice
+            } else cartPrice.discountPrice
+
+            val totalPrice = basePrice - discountPrice
+
+            val priceEntity = CartPriceEntity(
+                orderId = orderId,
+                basePrice = basePrice,
+                discountPrice = discountPrice,
+                totalPrice = totalPrice
+            )
+
+            cartPriceDao.updateCartPrice(priceEntity)
+        }
+    }
+
+    private suspend fun removeAddOnItemPrice(orderId: Int, itemId: Int): Int {
+        return withContext(ioDispatcher) {
+            val addOnPrice = async(ioDispatcher) {
+                cartDao.getAddOnPrice(itemId)
+            }.await()
+
+            val cartPrice = async(ioDispatcher) {
+                cartPriceDao.getCartPriceByOrderId(orderId)
+            }.await()
+
+            val basePrice = cartPrice.basePrice - addOnPrice.itemPrice
+
+            val discountPrice = if (!addOnPrice.isApplicable) {
+                cartPrice.discountPrice - addOnPrice.itemPrice
+            } else cartPrice.discountPrice
+
+            val totalPrice = basePrice - discountPrice
+
+            val priceEntity = CartPriceEntity(
+                orderId = orderId,
+                basePrice = basePrice,
+                discountPrice = discountPrice,
+                totalPrice = totalPrice
+            )
+
+            cartPriceDao.updateCartPrice(priceEntity)
+        }
+    }
+
+    private suspend fun insertChargesPrice(orderId: Int, chargesId: Int): Int {
+        return withContext(ioDispatcher) {
+            val chargesPrice = async(ioDispatcher) {
+                cartDao.getChargesPrice(chargesId)
+            }.await()
+
+            val cartPrice = async(ioDispatcher) {
+                cartPriceDao.getCartPriceByOrderId(orderId)
+            }.await()
+
+            val basePrice = cartPrice.basePrice + chargesPrice.chargesPrice
+
+            val discountPrice = cartPrice.discountPrice
+
+            val totalPrice = basePrice - discountPrice
+
+            val priceEntity = CartPriceEntity(
+                orderId = orderId,
+                basePrice = basePrice,
+                discountPrice = discountPrice,
+                totalPrice = totalPrice
+            )
+
+            cartPriceDao.updateCartPrice(priceEntity)
+        }
+    }
+
+    private suspend fun removeChargesPrice(orderId: Int, chargesId: Int): Int {
+        return withContext(ioDispatcher) {
+            val chargesPrice = async(ioDispatcher) {
+                cartDao.getChargesPrice(chargesId)
+            }.await()
+
+            val cartPrice = async(ioDispatcher) {
+                cartPriceDao.getCartPriceByOrderId(orderId)
+            }.await()
+
+            val basePrice = cartPrice.basePrice - chargesPrice.chargesPrice
+
+            val discountPrice = cartPrice.discountPrice
+
+            val totalPrice = basePrice - discountPrice
+
+            val priceEntity = CartPriceEntity(
+                orderId = orderId,
+                basePrice = basePrice,
+                discountPrice = discountPrice,
+                totalPrice = totalPrice
+            )
+
+            cartPriceDao.updateCartPrice(priceEntity)
         }
     }
 }

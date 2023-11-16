@@ -60,7 +60,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.cartorder.destinations.AddEditCartOrderScreenDestination
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_ITEM_TAG
-import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_NOT_AVAIlABLE
+import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_NOT_AVAILABLE
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_SCREEN_TITLE
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.CartOrderTestTags.CREATE_NEW_CART_ORDER
@@ -221,7 +221,7 @@ fun CartOrderScreen(
             is UiState.Loading -> LoadingIndicator()
             is UiState.Empty -> {
                 ItemNotAvailable(
-                    text = if (searchText.isEmpty()) CART_ORDER_NOT_AVAIlABLE else CART_ORDER_SEARCH_PLACEHOLDER,
+                    text = if (searchText.isEmpty()) CART_ORDER_NOT_AVAILABLE else CART_ORDER_SEARCH_PLACEHOLDER,
                     buttonText = CREATE_NEW_CART_ORDER,
                     onClick = {
                         navController.navigate(AddEditCartOrderScreenDestination())

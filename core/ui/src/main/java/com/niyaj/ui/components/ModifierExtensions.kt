@@ -1,5 +1,6 @@
 package com.niyaj.ui.components
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -35,6 +36,7 @@ val gradientColors = listOf(
     Color.Red
 )
 
+@SuppressLint("ModifierFactoryUnreferencedReceiver")
 fun Modifier.drawRainbowBorder(
     strokeWidth: Dp,
     durationMillis: Int,
@@ -110,8 +112,6 @@ fun Modifier.drawAnimatedBorder(
             val strokeWidthPx = strokeWidth.toPx()
 
             val outline: Outline = shape.createOutline(size, layoutDirection, this)
-
-            val pathBounds = outline.bounds
 
             onDrawWithContent {
                 // This is actual content of the Composable that this modifier is assigned to

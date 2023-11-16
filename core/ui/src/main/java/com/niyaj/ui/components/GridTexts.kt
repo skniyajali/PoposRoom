@@ -1,5 +1,6 @@
 package com.niyaj.ui.components
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,10 +10,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -179,6 +183,67 @@ fun AnimatedTextDivider(
             modifier = Modifier
                 .weight(1f, true)
                 .drawRainbowBorder(1.dp, durationMillis = 5000)
+        )
+    }
+}
+
+
+@Composable
+fun AnimatedTextDividerDashed(
+    modifier: Modifier = Modifier,
+    text: String,
+    textStyle: TextStyle = MaterialTheme.typography.bodySmall,
+    fontWeight: FontWeight = FontWeight.SemiBold,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        DashedDivider(
+            modifier = Modifier
+                .weight(1f, true),
+            gapWidth = 4.dp
+        )
+
+        Text(
+            text = text,
+            style = textStyle,
+            fontWeight = fontWeight,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.weight(1f)
+        )
+
+        DashedDivider(
+            modifier = Modifier
+                .weight(1f, true),
+            gapWidth = 4.dp
+        )
+    }
+}
+
+
+@Composable
+fun DashedDivider(
+    modifier: Modifier = Modifier,
+    dashWidth: Dp = 4.dp,
+    dashHeight: Dp = 2.dp,
+    gapWidth: Dp = 2.dp,
+    color: Color = Color.Gray,
+) {
+    Canvas(modifier) {
+
+        val pathEffect = PathEffect.dashPathEffect(
+            intervals = floatArrayOf(dashWidth.toPx(), gapWidth.toPx()),
+            phase = 0f
+        )
+
+        drawLine(
+            color = color,
+            start = Offset(0f, 0f),
+            end = Offset(size.width, 0f),
+            pathEffect = pathEffect,
+            strokeWidth = dashHeight.toPx()
         )
     }
 }

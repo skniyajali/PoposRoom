@@ -1,6 +1,7 @@
 package com.niyaj.cartorder.add_edit
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -11,12 +12,15 @@ import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.common.utils.getCapitalWord
 import com.niyaj.data.repository.CartOrderRepository
+import com.niyaj.data.repository.CartRepository
 import com.niyaj.data.repository.validation.CartOrderValidationRepository
 import com.niyaj.model.Address
 import com.niyaj.model.CartOrder
+import com.niyaj.model.CartOrderWithAddOnAndCharges
 import com.niyaj.model.Customer
 import com.niyaj.model.OrderStatus
 import com.niyaj.model.OrderType
+import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,9 +37,11 @@ import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class AddEditCartOrderViewModel @Inject constructor(
     private val cartOrderRepository: CartOrderRepository,
+    private val cartRepository: CartRepository,
     private val validationRepository: CartOrderValidationRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -75,7 +81,6 @@ class AddEditCartOrderViewModel @Inject constructor(
         initialValue = null
     )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val orderId = snapshotFlow { cartOrderId }.mapLatest {
         cartOrderRepository.getLastCreatedOrderId(it)
     }.stateIn(
@@ -84,7 +89,6 @@ class AddEditCartOrderViewModel @Inject constructor(
         initialValue = 1
     )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val addresses = _newAddress.flatMapLatest {
         cartOrderRepository.getAllAddresses(it.addressName)
     }.stateIn(
@@ -93,7 +97,6 @@ class AddEditCartOrderViewModel @Inject constructor(
         initialValue = emptyList()
     )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val customers = _newCustomer.flatMapLatest {
         cartOrderRepository.getAllCustomer(it.customerPhone)
     }.stateIn(
@@ -101,6 +104,32 @@ class AddEditCartOrderViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = emptyList()
     )
+
+    val addOnItems = snapshotFlow { cartOrderId }.flatMapLatest {
+        cartOrderRepository.getAllAddOnItem()
+    }.mapLatest {
+        if (it.isEmpty()) UiState.Empty else UiState.Success(it)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = UiState.Loading
+    )
+
+    val charges = snapshotFlow { cartOrderId }.flatMapLatest {
+        cartOrderRepository.getAllCharges()
+    }.mapLatest {
+        if (it.isEmpty()) UiState.Empty else UiState.Success(it)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = UiState.Loading
+    )
+
+    private val _selectedAddOnItems = mutableStateListOf<Int>()
+    val selectedAddOnItems = _selectedAddOnItems
+
+    private val _selectedCharges = mutableStateListOf<Int>()
+    val selectedCharges = _selectedCharges
 
     init {
         savedStateHandle.get<Int>("cartOrderId")?.let { cartOrderId ->
@@ -152,9 +181,33 @@ class AddEditCartOrderViewModel @Inject constructor(
             }
 
             is AddEditCartOrderEvent.OrderTypeChanged -> {
-                state = state.copy(
-                    orderType = event.orderType
-                )
+                state = if (event.orderType == OrderType.DineIn) {
+                    state.copy(
+                        orderType = event.orderType,
+                        doesChargesIncluded = false
+                    )
+                }else {
+                    state.copy(
+                        orderType = event.orderType,
+                        doesChargesIncluded = true
+                    )
+                }
+            }
+
+            is AddEditCartOrderEvent.SelectAddOnItem -> {
+                if (_selectedAddOnItems.contains(event.itemId)){
+                    _selectedAddOnItems.remove(event.itemId)
+                }else {
+                    _selectedAddOnItems.add(event.itemId)
+                }
+            }
+
+            is AddEditCartOrderEvent.SelectCharges -> {
+                if (_selectedCharges.contains(event.chargesId)){
+                    _selectedCharges.remove(event.chargesId)
+                }else {
+                    _selectedCharges.add(event.chargesId)
+                }
             }
 
             is AddEditCartOrderEvent.CreateOrUpdateCartOrder -> {
@@ -166,16 +219,19 @@ class AddEditCartOrderViewModel @Inject constructor(
     private fun createOrUpdateCartOrder(cartOrderId: Int = 0) {
         viewModelScope.launch {
             if (addressError.value == null && customerError.value == null) {
-                val newCartOrder = CartOrder(
-                    orderId = cartOrderId,
-                    orderType = state.orderType,
-                    orderStatus = OrderStatus.PROCESSING,
-                    doesChargesIncluded = state.doesChargesIncluded,
-                    customer = _newCustomer.value,
-                    address = _newAddress.value,
-                    createdAt = Date(),
-                    updatedAt = if (cartOrderId == 0) null else Date()
-
+                val newCartOrder = CartOrderWithAddOnAndCharges(
+                    cartOrder = CartOrder(
+                        orderId = cartOrderId,
+                        orderType = state.orderType,
+                        orderStatus = OrderStatus.PROCESSING,
+                        doesChargesIncluded = state.doesChargesIncluded,
+                        customer = _newCustomer.value,
+                        address = _newAddress.value,
+                        createdAt = Date(),
+                        updatedAt = if (cartOrderId == 0) null else Date()
+                    ),
+                    addOnItems = _selectedAddOnItems.toList(),
+                    charges = _selectedCharges.toList()
                 )
 
                 when (val result = cartOrderRepository.createOrUpdateCartOrder(newCartOrder)) {
@@ -184,10 +240,10 @@ class AddEditCartOrderViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
+                        val message = if(cartOrderId == 0) "created" else "updated"
+
                         _eventFlow.emit(
-                            UiEvent.OnSuccess(
-                                "Cart Order created or updated successfully"
-                            )
+                            UiEvent.OnSuccess("Cart Order $message successfully")
                         )
                     }
                 }
@@ -208,9 +264,16 @@ class AddEditCartOrderViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
-                        result.data?.let { cartOrder ->
+                        result.data?.let { (cartOrder, items, charges) ->
                             _newAddress.value = cartOrder.address
                             _newCustomer.value = cartOrder.customer
+
+                            _selectedAddOnItems.clear()
+                            _selectedAddOnItems.addAll(items)
+
+                            _selectedCharges.clear()
+                            _selectedCharges.addAll(charges)
+
                             state = state.copy(
                                 orderType = cartOrder.orderType,
                                 doesChargesIncluded = cartOrder.doesChargesIncluded

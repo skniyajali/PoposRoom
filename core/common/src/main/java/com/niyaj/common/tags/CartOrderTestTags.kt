@@ -5,7 +5,7 @@ object CartOrderTestTags {
     //Cart Order Screen
 
     const val CART_ORDER_SCREEN_TITLE = "Cart Orders"
-    const val CART_ORDER_NOT_AVAIlABLE = "Cart Order Not Available"
+    const val CART_ORDER_NOT_AVAILABLE = "Cart Order Not Available"
     const val CART_ORDER_SEARCH_PLACEHOLDER = "Search for Cart Orders..."
     const val ADD_EDIT_CART_ORDER_SCREEN = "AddEdit CartOrder Screen"
     const val CREATE_NEW_CART_ORDER = "Create New Order"
@@ -23,6 +23,9 @@ object CartOrderTestTags {
     const val CUSTOMER_PHONE_ERROR_FIELD = "Customer PhoneError"
 
     const val CHARGES_INCLUDED_FIELD = "Charges Included"
+
+    const val CART_ADD_ON_ITEMS = "Cart Order AddOns"
+    const val CART_CHARGES_ITEMS = "Cart Order Charges"
 
     const val CART_ORDER_ID_EMPTY_ERROR = "The order id must not be empty"
     const val CART_ORDER_ID_EXIST_ERROR = "The order id already exists"

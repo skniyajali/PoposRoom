@@ -22,6 +22,8 @@ import com.niyaj.designsystem.theme.ProfilePictureSizeSmall
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
 import com.niyaj.model.CartItem
+import com.niyaj.model.OrderType
+import com.niyaj.ui.components.CartAddOnItems
 
 
 @Composable
@@ -147,9 +149,14 @@ fun CartItem(
 
 
         if (addOnItems.isNotEmpty()) {
+            val addOnSelectedColor = if (cartItem.orderType == OrderType.DineIn) {
+                MaterialTheme.colorScheme.secondary
+            }else MaterialTheme.colorScheme.primary
+
             CartAddOnItems(
                 addOnItems = addOnItems,
                 selectedAddOnItem = cartItem.addOnItems,
+                selectedColor = addOnSelectedColor,
                 onClick = {
                     onClickAddOnItem(it, cartItem.orderId)
                 },

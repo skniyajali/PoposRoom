@@ -22,7 +22,6 @@ data class CartOrder(
     val updatedAt: Date? = null,
 )
 
-
 fun List<CartOrder>.filterCartOrder(searchText: String): List<CartOrder> {
     return if (searchText.isNotEmpty()) {
         this.filter { cartOrder ->
