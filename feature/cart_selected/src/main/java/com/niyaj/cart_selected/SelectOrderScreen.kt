@@ -137,7 +137,7 @@ fun SelectOrderScreen(
 
                 is UiState.Empty -> {
                     ItemNotAvailable(
-                        text = CartOrderTestTags.CART_ORDER_NOT_AVAIlABLE,
+                        text = CartOrderTestTags.CART_ORDER_NOT_AVAILABLE,
                         buttonText = CartOrderTestTags.CREATE_NEW_CART_ORDER,
                         onClick = {
                             navController.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)

@@ -201,12 +201,16 @@ fun StandardDrawer(
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
 
+                val doesExpanded = currentRoute in listOf(
+                    Screens.CART_ORDER_SCREEN
+                )
+
                 StandardExpandable(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = IconSizeSmall),
                     dividerModifier = Modifier.padding(end = IconSizeSmall),
-                    expanded = ordersExpanded.value,
+                    expanded = ordersExpanded.value || doesExpanded,
                     onExpandChanged = {
                         ordersExpanded.value = it
                     },

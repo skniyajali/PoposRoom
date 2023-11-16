@@ -4,10 +4,14 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Upsert
+import com.niyaj.database.model.AddOnItemEntity
 import com.niyaj.database.model.CartAddOnItemsEntity
 import com.niyaj.database.model.CartChargesEntity
 import com.niyaj.database.model.CartOrderEntity
+import com.niyaj.database.model.CartOrderWithAddOnAndChargesDto
+import com.niyaj.database.model.ChargesEntity
 import com.niyaj.model.ChargesPriceWithApplicable
 import com.niyaj.model.OrderStatus
 import kotlinx.coroutines.flow.Flow
@@ -38,6 +42,19 @@ interface CartOrderDao {
     suspend fun getOrderStatus(cartOrderId: Int): OrderStatus
 
     // --------------------------------
+    @Query(
+        value = """
+        SELECT * FROM addonitem
+    """
+    )
+    fun getAllAddOnItems(): Flow<List<AddOnItemEntity>>
+
+    @Query(
+        value = """
+        SELECT * FROM charges
+    """
+    )
+    fun getAllCharges(): Flow<List<ChargesEntity>>
 
     @Query(
         value = """
@@ -45,6 +62,22 @@ interface CartOrderDao {
     """
     )
     fun getAllChargesPrice(): List<ChargesPriceWithApplicable>
+
+    // -----------------------------------------------------------
+
+    @Query(
+        value = """
+        SELECT itemId FROM cart_addon_items WHERE orderId = :orderId
+    """
+    )
+    suspend fun getCartAddOnItems(orderId: Int): List<Int>
+
+    @Query(
+        value = """
+        SELECT chargesId FROM cart_charges WHERE orderId = :orderId
+    """
+    )
+    suspend fun getCartCharges(orderId: Int): List<Int>
 
     @Query(
         value = """
@@ -95,13 +128,13 @@ interface CartOrderDao {
     )
     fun getAllCartOrders(): Flow<List<CartOrderEntity>>
 
-
+    @Transaction
     @Query(
         value = """
         SELECT * FROM cartorder WHERE orderId = :orderId
     """
     )
-    suspend fun getCartOrderById(orderId: Int): CartOrderEntity?
+    suspend fun getCartOrderById(orderId: Int): CartOrderWithAddOnAndChargesDto?
 
     @Upsert
     suspend fun createOrUpdateCartOrder(newOrder: CartOrderEntity): Long

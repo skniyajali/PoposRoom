@@ -6,6 +6,7 @@ import com.niyaj.data.data.repository.CartOrderRepositoryImpl
 import com.niyaj.data.repository.CartOrderRepository
 import com.niyaj.data.repository.validation.CartOrderValidationRepository
 import com.niyaj.database.dao.AddressDao
+import com.niyaj.database.dao.CartDao
 import com.niyaj.database.dao.CartOrderDao
 import com.niyaj.database.dao.CartPriceDao
 import com.niyaj.database.dao.CustomerDao
@@ -22,6 +23,7 @@ object CartOrderModule {
 
     @Provides
     fun provideCartOrderRepository(
+        cartDao: CartDao,
         cartOrderDao: CartOrderDao,
         customerDao: CustomerDao,
         addressDao: AddressDao,
@@ -29,11 +31,12 @@ object CartOrderModule {
         cartPriceDao: CartPriceDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): CartOrderRepository {
-        return CartOrderRepositoryImpl(cartOrderDao, customerDao, addressDao, selectedDao, cartPriceDao, ioDispatcher)
+        return CartOrderRepositoryImpl(cartDao,cartOrderDao, customerDao, addressDao, selectedDao, cartPriceDao, ioDispatcher)
     }
 
     @Provides
     fun provideCartOrderValidationRepository(
+        cartDao: CartDao,
         cartOrderDao: CartOrderDao,
         customerDao: CustomerDao,
         addressDao: AddressDao,
@@ -41,6 +44,6 @@ object CartOrderModule {
         cartPriceDao: CartPriceDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): CartOrderValidationRepository {
-        return CartOrderRepositoryImpl(cartOrderDao, customerDao, addressDao, selectedDao, cartPriceDao, ioDispatcher)
+        return CartOrderRepositoryImpl(cartDao, cartOrderDao, customerDao, addressDao, selectedDao, cartPriceDao, ioDispatcher)
     }
 }

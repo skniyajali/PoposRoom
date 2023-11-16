@@ -1,9 +1,11 @@
 package com.niyaj.cartorder.add_edit
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -51,6 +54,8 @@ import androidx.navigation.NavController
 import com.niyaj.common.tags.CartOrderTestTags.ADDRESS_NAME_ERROR_FIELD
 import com.niyaj.common.tags.CartOrderTestTags.ADDRESS_NAME_FIELD
 import com.niyaj.common.tags.CartOrderTestTags.ADD_EDIT_CART_ORDER_SCREEN
+import com.niyaj.common.tags.CartOrderTestTags.CART_ADD_ON_ITEMS
+import com.niyaj.common.tags.CartOrderTestTags.CART_CHARGES_ITEMS
 import com.niyaj.common.tags.CartOrderTestTags.CHARGES_INCLUDED_FIELD
 import com.niyaj.common.tags.CartOrderTestTags.CREATE_NEW_CART_ORDER
 import com.niyaj.common.tags.CartOrderTestTags.CUSTOMER_PHONE_ERROR_FIELD
@@ -62,12 +67,17 @@ import com.niyaj.common.tags.ProductTestTags.ADD_EDIT_PRODUCT_BUTTON
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.OrderType
+import com.niyaj.ui.components.AnimatedTextDividerDashed
+import com.niyaj.ui.components.CartAddOnItems
+import com.niyaj.ui.components.CartChargesItem
 import com.niyaj.ui.components.CircularBox
+import com.niyaj.ui.components.LoadingIndicatorHalf
 import com.niyaj.ui.components.MultiSelector
 import com.niyaj.ui.components.PhoneNoCountBox
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
@@ -93,6 +103,12 @@ fun AddEditCartOrderScreen(
     val addressError = viewModel.addressError.collectAsStateWithLifecycle().value
     val customerError = viewModel.customerError.collectAsStateWithLifecycle().value
     val orderId = viewModel.orderId.collectAsStateWithLifecycle().value
+
+    val addOnState = viewModel.addOnItems.collectAsStateWithLifecycle().value
+    val selectedAddOns = viewModel.selectedAddOnItems.toList()
+
+    val chargesState = viewModel.charges.collectAsStateWithLifecycle().value
+    val selectedCharges = viewModel.selectedCharges.toList()
 
     val enableBtn = listOf(
         addressError,
@@ -411,6 +427,68 @@ fun AddEditCartOrderScreen(
                 }
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
+            }
+
+            item(CART_ADD_ON_ITEMS) {
+                Crossfade(
+                    targetState = addOnState,
+                    label = "AddOnState"
+                ) { items ->
+                    when(items) {
+                        is UiState.Empty -> {}
+                        is UiState.Loading -> LoadingIndicatorHalf()
+                        is UiState.Success -> {
+                            Column(
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                AnimatedTextDividerDashed(text = "AddOn Items")
+
+                                Spacer(modifier = Modifier.height(SpaceSmall))
+
+                                CartAddOnItems(
+                                    addOnItems = items.data,
+                                    selectedAddOnItem = selectedAddOns,
+                                    backgroundColor = Color.Transparent,
+                                    onClick = {
+                                        viewModel.onEvent(AddEditCartOrderEvent.SelectAddOnItem(it))
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(SpaceSmall))
+            }
+
+            item(CART_CHARGES_ITEMS) {
+                Crossfade(
+                    targetState = chargesState,
+                    label = "Charges"
+                ) { items ->
+                    when(items) {
+                        is UiState.Empty -> {}
+                        is UiState.Loading -> LoadingIndicatorHalf()
+                        is UiState.Success -> {
+                            Column(
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                AnimatedTextDividerDashed(text = "Charges")
+
+                                Spacer(modifier = Modifier.height(SpaceSmall))
+
+                                CartChargesItem(
+                                    chargesList = items.data,
+                                    selectedItem = selectedCharges,
+                                    backgroundColor = Color.Transparent,
+                                    onClick = {
+                                        viewModel.onEvent(AddEditCartOrderEvent.SelectCharges(it))
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }
