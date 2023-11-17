@@ -40,9 +40,7 @@ import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
-@Destination(
-    route = Screens.ADD_EDIT_CATEGORY_SCREEN
-)
+@Destination(route = Screens.ADD_EDIT_CATEGORY_SCREEN)
 @Composable
 fun AddEditCategoryScreen(
     categoryId: Int = 0,
@@ -75,7 +73,7 @@ fun AddEditCategoryScreen(
         navController = navController,
         title = title,
         showBackButton = true,
-        showBottomBar = enableBtn,
+        showBottomBar = true,
         bottomBar = {
             StandardButton(
                 modifier = Modifier

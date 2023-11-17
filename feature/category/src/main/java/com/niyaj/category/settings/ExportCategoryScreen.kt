@@ -36,6 +36,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.category.components.CategoryData
 import com.niyaj.category.destinations.AddEditCategoryScreenDestination
 import com.niyaj.common.tags.CategoryConstants
+import com.niyaj.common.tags.CategoryConstants.CATEGORY_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.CategoryConstants.EXPORT_CATEGORY_BTN
 import com.niyaj.common.tags.CategoryConstants.EXPORT_CATEGORY_BTN_TEXT
 import com.niyaj.common.tags.CategoryConstants.EXPORT_CATEGORY_FILE_NAME
@@ -44,9 +45,9 @@ import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.Category
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -145,12 +146,12 @@ fun ExportCategoryScreen(
         navController = navController,
         title = if (selectedItems.isEmpty()) EXPORT_CATEGORY_TITLE else "${selectedItems.size} Selected",
         showBackButton = true,
-        showBottomBar = true,
+        showBottomBar = categories.isNotEmpty(),
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
                     searchText = searchText,
-                    placeholderText = "Search for categories...",
+                    placeholderText = CATEGORY_SEARCH_PLACEHOLDER,
                     onClearClick = viewModel::clearSearchText,
                     onSearchTextChanged = viewModel::searchTextChanged
                 )
@@ -221,7 +222,7 @@ fun ExportCategoryScreen(
     ) {
         if(categories.isEmpty()) {
             ItemNotAvailable(
-                text = if (searchText.isEmpty()) CategoryConstants.CATEGORY_NOT_AVAIlABLE else Constants.SEARCH_ITEM_NOT_FOUND,
+                text = if (searchText.isEmpty()) CategoryConstants.CATEGORY_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND,
                 buttonText = CategoryConstants.CREATE_NEW_CATEGORY,
                 onClick = {
                     navController.navigate(AddEditCategoryScreenDestination())

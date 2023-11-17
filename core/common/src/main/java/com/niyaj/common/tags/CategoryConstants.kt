@@ -3,7 +3,7 @@ package com.niyaj.common.tags
 object CategoryConstants {
 
     const val CATEGORY_SCREEN_TITLE = "Categories"
-    const val CATEGORY_NOT_AVAIlABLE = "Category Not Available"
+    const val CATEGORY_NOT_AVAILABLE = "Category Not Available"
     const val CATEGORY_SEARCH_PLACEHOLDER = "Search for Categories..."
 
     const val CREATE_NEW_CATEGORY = "Create New Category"
