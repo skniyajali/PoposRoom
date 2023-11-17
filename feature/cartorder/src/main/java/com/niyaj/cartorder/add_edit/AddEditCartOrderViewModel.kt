@@ -12,7 +12,6 @@ import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.common.utils.getCapitalWord
 import com.niyaj.data.repository.CartOrderRepository
-import com.niyaj.data.repository.CartRepository
 import com.niyaj.data.repository.validation.CartOrderValidationRepository
 import com.niyaj.model.Address
 import com.niyaj.model.CartOrder
@@ -41,7 +40,6 @@ import javax.inject.Inject
 @HiltViewModel
 class AddEditCartOrderViewModel @Inject constructor(
     private val cartOrderRepository: CartOrderRepository,
-    private val cartRepository: CartRepository,
     private val validationRepository: CartOrderValidationRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {

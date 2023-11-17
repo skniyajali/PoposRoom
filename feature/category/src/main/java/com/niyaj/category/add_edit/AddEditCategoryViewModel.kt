@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.data.repository.CategoryRepository
 import com.niyaj.data.repository.validation.CategoryValidationRepository
 import com.niyaj.model.Category
@@ -21,7 +22,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -95,7 +95,7 @@ class AddEditCategoryViewModel @Inject constructor(
             if (nameError.value == null) {
                 val addOnItem = Category(
                     categoryId = categoryId,
-                    categoryName = addEditState.categoryName,
+                    categoryName = addEditState.categoryName.trimEnd().capitalizeWords,
                     isAvailable = addEditState.isAvailable,
                     createdAt = System.currentTimeMillis(),
                     updatedAt = if (categoryId != 0) System.currentTimeMillis() else null
@@ -107,7 +107,8 @@ class AddEditCategoryViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
-                        _eventFlow.emit(UiEvent.OnSuccess("Category Created Or Updated Successfully."))
+                        val message = if (categoryId == 0) "Created" else "Updated"
+                        _eventFlow.emit(UiEvent.OnSuccess("Category $message Successfully."))
                     }
                 }
                 addEditState = AddEditCategoryState()

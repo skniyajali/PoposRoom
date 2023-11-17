@@ -35,6 +35,7 @@ android {
         val debug by getting {
             applicationIdSuffix = PoposBuildType.DEBUG.applicationIdSuffix
         }
+
         val release by getting {
             isMinifyEnabled = true
             applicationIdSuffix = PoposBuildType.RELEASE.applicationIdSuffix

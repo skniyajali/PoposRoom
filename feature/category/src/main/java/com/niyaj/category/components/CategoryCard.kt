@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.niyaj.common.tags.CategoryConstants
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -58,16 +59,19 @@ fun CategoryData(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(SpaceSmall),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(SpaceSmall, Alignment.Start),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = item.categoryName)
-
             CircularBox(
                 icon = Icons.Default.Category,
                 doesSelected = doesSelected(item.categoryId),
                 showBorder = !item.isAvailable,
                 text = item.categoryName
+            )
+
+            Text(
+                text = item.categoryName,
+                fontWeight = FontWeight.SemiBold
             )
         }
     }

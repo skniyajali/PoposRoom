@@ -25,7 +25,9 @@ import androidx.navigation.NavController
 import com.niyaj.category.components.CategoryData
 import com.niyaj.category.destinations.AddEditCategoryScreenDestination
 import com.niyaj.category.destinations.CategorySettingsScreenDestination
-import com.niyaj.common.tags.CategoryConstants.CATEGORY_NOT_AVAIlABLE
+import com.niyaj.category.destinations.ExportCategoryScreenDestination
+import com.niyaj.category.destinations.ImportCategoryScreenDestination
+import com.niyaj.common.tags.CategoryConstants.CATEGORY_NOT_AVAILABLE
 import com.niyaj.common.tags.CategoryConstants.CATEGORY_SCREEN_TITLE
 import com.niyaj.common.tags.CategoryConstants.CATEGORY_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.CategoryConstants.CREATE_NEW_CATEGORY
@@ -51,14 +53,14 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
-@Destination(
-    route = Screens.CATEGORY_SCREEN
-)
+@Destination(route = Screens.CATEGORY_SCREEN)
 @Composable
 fun CategoryScreen(
     navController: NavController,
     viewModel: CategoryViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditCategoryScreenDestination, String>,
+    exportRecipient: ResultRecipient<ExportCategoryScreenDestination, String>,
+    importRecipient: ResultRecipient<ImportCategoryScreenDestination, String>,
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -100,6 +102,8 @@ fun CategoryScreen(
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
+        } else {
+            navController.navigateUp()
         }
     }
 
@@ -112,6 +116,28 @@ fun CategoryScreen(
             is NavResult.Value -> {
                 scope.launch {
                     viewModel.deselectItems()
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    exportRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    importRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
                     snackbarState.showSnackbar(result.value)
                 }
             }
@@ -142,7 +168,7 @@ fun CategoryScreen(
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
                 showSearchBar = showSearchBar,
-                showSearchIcon = true,
+                showSearchIcon = showFab,
                 searchText = searchText,
                 onEditClick = {
                     navController.navigate(AddEditCategoryScreenDestination(selectedItems.first()))
@@ -168,9 +194,10 @@ fun CategoryScreen(
     ) { _ ->
         when (state) {
             is UiState.Loading -> LoadingIndicator()
+
             is UiState.Empty -> {
                 ItemNotAvailable(
-                    text = if (searchText.isEmpty()) CATEGORY_NOT_AVAIlABLE else SEARCH_ITEM_NOT_FOUND,
+                    text = if (searchText.isEmpty()) CATEGORY_NOT_AVAILABLE else SEARCH_ITEM_NOT_FOUND,
                     buttonText = CREATE_NEW_CATEGORY,
                     onClick = {
                         navController.navigate(AddEditCategoryScreenDestination())
