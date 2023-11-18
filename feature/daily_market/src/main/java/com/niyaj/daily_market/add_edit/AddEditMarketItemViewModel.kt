@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.common.utils.safeString
 import com.niyaj.data.repository.MarketItemRepository
 import com.niyaj.data.repository.validation.MarketItemValidationRepository
@@ -149,10 +150,10 @@ class AddEditMarketItemViewModel @Inject constructor(
             if (!hasError) {
                 val newItem = MarketItem(
                     itemId = itemId,
-                    itemType = state.itemType.trim(),
-                    itemName = state.itemName.trim(),
+                    itemType = state.itemType.trim().capitalizeWords,
+                    itemName = state.itemName.trim().capitalizeWords,
                     itemPrice = state.itemPrice?.trim(),
-                    itemDescription = state.itemDesc?.trim(),
+                    itemDescription = state.itemDesc?.trim()?.capitalizeWords,
                     itemMeasureUnit = state.itemMeasureUnit,
                     createdAt = System.currentTimeMillis(),
                     updatedAt = if (itemId != 0) System.currentTimeMillis() else null
