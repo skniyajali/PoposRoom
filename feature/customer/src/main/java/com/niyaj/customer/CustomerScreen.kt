@@ -37,7 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.common.tags.CustomerTestTags.CREATE_NEW_CUSTOMER
-import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_NOT_AVAIlABLE
+import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_NOT_AVAILABLE
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_SCREEN_TITLE
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_TAG
@@ -46,6 +46,8 @@ import com.niyaj.common.tags.CustomerTestTags.DELETE_CUSTOMER_TITLE
 import com.niyaj.common.tags.CustomerTestTags.NO_ITEMS_IN_CUSTOMER
 import com.niyaj.customer.destinations.AddEditCustomerScreenDestination
 import com.niyaj.customer.destinations.CustomerDetailsScreenDestination
+import com.niyaj.customer.destinations.CustomerExportScreenDestination
+import com.niyaj.customer.destinations.CustomerImportScreenDestination
 import com.niyaj.customer.destinations.CustomerSettingsScreenDestination
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -68,18 +70,18 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
-@Destination(
-    route = Screens.CUSTOMER_SCREEN
-)
+@Destination(route = Screens.CUSTOMER_SCREEN)
 @Composable
 fun CustomerScreen(
     navController: NavController,
-    resultRecipient: ResultRecipient<AddEditCustomerScreenDestination, String>,
     viewModel: CustomerViewModel = hiltViewModel(),
+    resultRecipient: ResultRecipient<AddEditCustomerScreenDestination, String>,
+    exportRecipient: ResultRecipient<CustomerExportScreenDestination, String>,
+    importRecipient: ResultRecipient<CustomerImportScreenDestination, String>,
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
-    val uiState = viewModel.charges.collectAsStateWithLifecycle().value
+    val uiState = viewModel.customers.collectAsStateWithLifecycle().value
 
     val selectedItems = viewModel.selectedItems.toList()
 
@@ -127,11 +129,35 @@ fun CustomerScreen(
         }
     }
 
+    exportRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    importRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
     BackHandler {
         if (selectedItems.isNotEmpty()) {
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
+        } else {
+            navController.navigateUp()
         }
     }
 
@@ -158,7 +184,7 @@ fun CustomerScreen(
                 placeholderText = CUSTOMER_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = true,
+                showSearchIcon = showFab,
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
@@ -191,7 +217,7 @@ fun CustomerScreen(
                 is UiState.Loading -> LoadingIndicator()
                 is UiState.Empty -> {
                     ItemNotAvailable(
-                        text = if (searchText.isEmpty()) CUSTOMER_NOT_AVAIlABLE else NO_ITEMS_IN_CUSTOMER,
+                        text = if (searchText.isEmpty()) CUSTOMER_NOT_AVAILABLE else NO_ITEMS_IN_CUSTOMER,
                         buttonText = CREATE_NEW_CUSTOMER,
                         onClick = {
                             navController.navigate(AddEditCustomerScreenDestination())
@@ -217,7 +243,7 @@ fun CustomerScreen(
                                 onClick = {
                                     if (selectedItems.isNotEmpty()) {
                                         viewModel.selectItem(it)
-                                    }else {
+                                    } else {
                                         navController.navigate(CustomerDetailsScreenDestination(it))
                                     }
                                 },

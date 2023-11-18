@@ -7,15 +7,13 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.niyaj.common.network.Dispatcher
-import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
+import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.data.repository.CustomerRepository
 import com.niyaj.data.repository.validation.CustomerValidationRepository
 import com.niyaj.model.Customer
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,11 +29,10 @@ import javax.inject.Inject
 class AddEditCustomerViewModel @Inject constructor(
     private val customerRepository: CustomerRepository,
     private val validationRepository: CustomerValidationRepository,
-    @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle
-): ViewModel() {
+) : ViewModel() {
 
-    private var customerId = savedStateHandle.get<Int>("customerId")
+    private var customerId = savedStateHandle.get<Int>("customerId") ?: 0
 
     var addEditState by mutableStateOf(AddEditCustomerState())
 
@@ -96,21 +93,24 @@ class AddEditCustomerViewModel @Inject constructor(
         }
     }
 
-    private fun getCustomerById(itemId: Int) {
-        viewModelScope.launch(ioDispatcher) {
-            when (val result = customerRepository.getCustomerById(itemId)) {
-                is Resource.Error -> {
-                    _eventFlow.emit(UiEvent.OnError("Unable to retrieve customer"))
-                }
-                is Resource.Success -> {
-                    result.data?.let { customer ->
-                        customerId = customer.customerId
+    private fun getCustomerById(customerId: Int) {
+        if (customerId != 0) {
+            viewModelScope.launch {
+                when (val result = customerRepository.getCustomerById(customerId)) {
+                    is Resource.Error -> {
+                        _eventFlow.emit(UiEvent.OnError("Unable to retrieve customer"))
+                    }
 
-                        addEditState = addEditState.copy(
-                            customerPhone = customer.customerPhone,
-                            customerName = customer.customerName,
-                            customerEmail = customer.customerEmail
-                        )
+                    is Resource.Success -> {
+                        result.data?.let { customer ->
+                            this@AddEditCustomerViewModel.customerId = customer.customerId
+
+                            addEditState = addEditState.copy(
+                                customerPhone = customer.customerPhone,
+                                customerName = customer.customerName,
+                                customerEmail = customer.customerEmail
+                            )
+                        }
                     }
                 }
             }
@@ -118,25 +118,28 @@ class AddEditCustomerViewModel @Inject constructor(
     }
 
     private fun createOrUpdateCustomer(customerId: Int = 0) {
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             if (phoneError.value == null && nameError.value == null && emailError.value == null) {
-                val addOnItem = Customer(
+                val newCustomer = Customer(
                     customerId = customerId,
-                    customerPhone = addEditState.customerPhone,
-                    customerName = addEditState.customerName,
-                    customerEmail = addEditState.customerEmail,
+                    customerPhone = addEditState.customerPhone.trimEnd(),
+                    customerName = addEditState.customerName?.trimEnd()?.capitalizeWords,
+                    customerEmail = addEditState.customerEmail?.trimEnd(),
                     createdAt = System.currentTimeMillis(),
                     updatedAt = if (customerId != 0) System.currentTimeMillis() else null
                 )
 
-                when(customerRepository.upsertCustomer(addOnItem)) {
+                when (customerRepository.upsertCustomer(newCustomer)) {
                     is Resource.Error -> {
                         _eventFlow.emit(UiEvent.OnError("Unable To Create Customer."))
                     }
+
                     is Resource.Success -> {
-                        _eventFlow.emit(UiEvent.OnSuccess("Customer Created Successfully."))
+                        val message = if (customerId == 0) "Created" else "Updated"
+                        _eventFlow.emit(UiEvent.OnSuccess("Customer $message Successfully."))
                     }
                 }
+
                 addEditState = AddEditCustomerState()
             }
         }

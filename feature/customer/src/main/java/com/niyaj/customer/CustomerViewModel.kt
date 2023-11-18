@@ -2,15 +2,12 @@ package com.niyaj.customer
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
-import com.niyaj.common.network.Dispatcher
-import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.data.repository.CustomerRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
@@ -23,13 +20,12 @@ import javax.inject.Inject
 @HiltViewModel
 class CustomerViewModel @Inject constructor(
     private val customerRepository: CustomerRepository,
-    @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
-): BaseViewModel() {
+) : BaseViewModel() {
 
     override var totalItems: List<Int> = emptyList()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val charges = snapshotFlow { searchText.value }
+    val customers = snapshotFlow { searchText.value }
         .flatMapLatest { it ->
             customerRepository.getAllCustomer(it)
                 .onStart { UiState.Loading }
@@ -48,11 +44,12 @@ class CustomerViewModel @Inject constructor(
     override fun deleteItems() {
         super.deleteItems()
 
-        viewModelScope.launch(ioDispatcher) {
-            when(customerRepository.deleteCustomers(selectedItems.toList())){
+        viewModelScope.launch {
+            when (customerRepository.deleteCustomers(selectedItems.toList())) {
                 is Resource.Error -> {
                     mEventFlow.emit(UiEvent.OnError("Unable to delete customer"))
                 }
+
                 is Resource.Success -> {
                     mEventFlow.emit(
                         UiEvent.OnSuccess(

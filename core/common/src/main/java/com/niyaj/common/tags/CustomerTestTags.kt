@@ -3,7 +3,7 @@ package com.niyaj.common.tags
 object CustomerTestTags {
 
     const val CUSTOMER_SCREEN_TITLE = "Customers"
-    const val CUSTOMER_NOT_AVAIlABLE = "Customer Not Available"
+    const val CUSTOMER_NOT_AVAILABLE = "Customer Not Available"
     const val NO_ITEMS_IN_CUSTOMER = "Customer Items Not Found"
     const val CUSTOMER_SEARCH_PLACEHOLDER = "Search for Customer..."
 

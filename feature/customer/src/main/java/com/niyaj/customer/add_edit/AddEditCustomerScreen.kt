@@ -73,7 +73,7 @@ fun AddEditCustomerScreen(
     StandardScaffoldNew(
         navController = navController,
         title = title,
-        showBottomBar = enableBtn,
+        showBottomBar = true,
         showBackButton = true,
         onBackClick = {
             navController.navigateUp()
