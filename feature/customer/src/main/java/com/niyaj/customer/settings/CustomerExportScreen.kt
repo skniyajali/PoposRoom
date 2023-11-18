@@ -32,7 +32,8 @@ import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.common.tags.CustomerTestTags.CREATE_NEW_CUSTOMER
-import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_NOT_AVAIlABLE
+import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_NOT_AVAILABLE
+import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_BTN
 import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_BTN_TEXT
 import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_FILE_NAME
@@ -44,9 +45,9 @@ import com.niyaj.customer.destinations.AddEditCustomerScreenDestination
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.Customer
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -145,12 +146,12 @@ fun CustomerExportScreen(
         navController = navController,
         title = if (selectedItems.isEmpty()) EXPORT_CUSTOMER_TITLE else "${selectedItems.size} Selected",
         showBackButton = true,
-        showBottomBar = true,
+        showBottomBar = customers.isNotEmpty(),
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
                     searchText = searchText,
-                    placeholderText = "Search for customers...",
+                    placeholderText = CUSTOMER_SEARCH_PLACEHOLDER,
                     onClearClick = viewModel::clearSearchText,
                     onSearchTextChanged = viewModel::searchTextChanged
                 )
@@ -222,7 +223,7 @@ fun CustomerExportScreen(
     ) {
         if (customers.isEmpty()) {
             ItemNotAvailable(
-                text = if (searchText.isEmpty()) CUSTOMER_NOT_AVAIlABLE else NO_ITEMS_IN_CUSTOMER,
+                text = if (searchText.isEmpty()) CUSTOMER_NOT_AVAILABLE else NO_ITEMS_IN_CUSTOMER,
                 buttonText = CREATE_NEW_CUSTOMER,
                 onClick = {
                     navController.navigate(AddEditCustomerScreenDestination())
