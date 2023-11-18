@@ -30,8 +30,8 @@ import com.niyaj.common.tags.CategoryConstants.CATEGORY_NAME_ERROR_TAG
 import com.niyaj.common.tags.CategoryConstants.CATEGORY_NAME_FIELD
 import com.niyaj.common.tags.CategoryConstants.CREATE_NEW_CATEGORY
 import com.niyaj.common.tags.CategoryConstants.UPDATE_CATEGORY
+import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -78,7 +78,7 @@ fun AddEditCategoryScreen(
             StandardButton(
                 modifier = Modifier
                     .testTag(AddressTestTags.ADD_EDIT_ADDRESS_BTN)
-                    .padding(SpaceSmallMax),
+                    .padding(SpaceMedium),
                 text = title,
                 icon = if (categoryId == 0) Icons.Default.Add else Icons.Default.Edit,
                 enabled = enableBtn,
@@ -92,7 +92,7 @@ fun AddEditCategoryScreen(
             modifier = Modifier
                 .testTag(ADD_EDIT_CATEGORY_SCREEN)
                 .fillMaxWidth()
-                .padding(SpaceSmallMax),
+                .padding(SpaceMedium),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
             StandardOutlinedTextField(

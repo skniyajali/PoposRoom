@@ -3,7 +3,7 @@ package com.niyaj.common.tags
 object ChargesTestTags {
 
     const val CHARGES_SCREEN_TITLE = "Charges"
-    const val CHARGES_NOT_AVAIlABLE = "Charges Not Available"
+    const val CHARGES_NOT_AVAILABLE = "Charges Not Available"
     const val NO_ITEMS_IN_CHARGES = "Charges Items Not Found"
     const val CHARGES_SEARCH_PLACEHOLDER = "Search for Charges Items..."
 
