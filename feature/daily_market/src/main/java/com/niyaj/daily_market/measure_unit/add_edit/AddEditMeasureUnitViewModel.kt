@@ -76,7 +76,7 @@ class AddEditMeasureUnitViewModel @Inject constructor(
             if (listOf(nameError, valueError).all { it.value == null }) {
                 val newUnit = MeasureUnit(
                     unitId = unitId,
-                    unitName = state.unitName.lowercase(),
+                    unitName = state.unitName.trimEnd().lowercase(),
                     unitValue = state.unitValue.safeDouble()
                 )
 

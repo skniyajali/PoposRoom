@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material.icons.automirrored.filled.Note
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CurrencyRupee
@@ -20,6 +21,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -34,6 +38,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.PopupProperties
@@ -52,6 +57,7 @@ import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_TYPE_ERROR_TAG
 import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_TYPE_FIELD
 import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_ITEM_DESC
 import com.niyaj.common.tags.MarketListTestTags.UPDATE_ITEM
+import com.niyaj.daily_market.destinations.AddEditMeasureUnitScreenDestination
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.StandardButton
@@ -59,6 +65,7 @@ import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -244,44 +251,96 @@ fun AddEditMarketItemScreen(
                         },
                     )
 
-                    if (measureUnits.isNotEmpty()) {
-                        DropdownMenu(
-                            modifier = Modifier
-                                .heightIn(max = 200.dp)
-                                .width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
-                            expanded = measureExpanded,
-                            onDismissRequest = { measureExpanded = false },
-                            properties = PopupProperties(
-                                focusable = false,
-                                dismissOnBackPress = true,
-                                dismissOnClickOutside = true,
-                                excludeFromSystemGesture = true,
-                                clippingEnabled = true,
-                            ),
-                        ) {
-                            measureUnits.forEachIndexed { index, unit ->
-                                DropdownMenuItem(
-                                    modifier = Modifier
-                                        .testTag(unit.unitName)
-                                        .fillMaxWidth(),
-                                    text = { Text(unit.unitName) },
-                                    onClick = {
-                                        measureExpanded = false
-                                        viewModel.onEvent(AddEditMarketItemEvent.ItemMeasureUnitChanged(unit))
-                                    },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                )
 
-                                if (index != measureUnits.size - 1) {
-                                    HorizontalDivider(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        thickness = 0.8.dp,
-                                        color = Color.Gray
+                    DropdownMenu(
+                        modifier = Modifier
+                            .heightIn(max = 200.dp)
+                            .width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
+                        expanded = measureExpanded,
+                        onDismissRequest = { measureExpanded = false },
+                        properties = PopupProperties(
+                            focusable = false,
+                            dismissOnBackPress = true,
+                            dismissOnClickOutside = true,
+                            excludeFromSystemGesture = true,
+                            clippingEnabled = true,
+                        ),
+                    ) {
+                        measureUnits.forEachIndexed { index, unit ->
+                            DropdownMenuItem(
+                                modifier = Modifier
+                                    .testTag(unit.unitName)
+                                    .fillMaxWidth(),
+                                text = { Text(unit.unitName) },
+                                onClick = {
+                                    measureExpanded = false
+                                    viewModel.onEvent(
+                                        AddEditMarketItemEvent.ItemMeasureUnitChanged(
+                                            unit
+                                        )
                                     )
-                                }
+                                },
+                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                            )
+
+                            if (index != measureUnits.size - 1) {
+                                HorizontalDivider(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    thickness = 0.8.dp,
+                                    color = Color.Gray
+                                )
                             }
                         }
+
+                        if (measureUnits.isEmpty()) {
+                            DropdownMenuItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .align(Alignment.CenterHorizontally),
+                                enabled = false,
+                                onClick = {},
+                                text = {
+                                    Text(
+                                        text = "Measure units not available",
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .align(Alignment.CenterHorizontally)
+                                    )
+                                },
+                            )
+                        }
+
+                        HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+                        DropdownMenuItem(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            onClick = {
+                                navController.navigate(AddEditMeasureUnitScreenDestination())
+                            },
+                            text = {
+                                Text(
+                                    text = "Create New Unit",
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Create",
+                                    tint = MaterialTheme.colorScheme.secondary
+                                )
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
+                                    contentDescription = "trailing"
+                                )
+                            }
+                        )
                     }
+
                 }
             }
 

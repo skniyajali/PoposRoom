@@ -44,9 +44,9 @@ import com.niyaj.daily_market.measure_unit.MeasureUnitItem
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.MeasureUnit
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -145,7 +145,7 @@ fun ExportMeasureUnitScreen(
         navController = navController,
         title = if (selectedItems.isEmpty()) EXPORT_UNIT_TITLE else "${selectedItems.size} Selected",
         showBackButton = true,
-        showBottomBar = true,
+        showBottomBar = items.isNotEmpty(),
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(

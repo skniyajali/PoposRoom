@@ -99,11 +99,11 @@ import com.niyaj.model.MarketList
 import com.niyaj.ui.components.AnimatedTextDivider
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.IncDecBox
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.ItemNotFound
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedAssistChip
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -143,6 +143,8 @@ fun AddEditMarketListScreen(
     val marketItems = viewModel.marketItems.collectAsStateWithLifecycle().value
     val marketList = viewModel.marketList.collectAsStateWithLifecycle().value
 
+    val showFab = viewModel.totalItems.isNotEmpty()
+
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
 
@@ -177,7 +179,7 @@ fun AddEditMarketListScreen(
         navController = navController,
         title = title,
         showBackButton = true,
-        showFab = lazyListState.isScrollingUp(),
+        showFab = lazyListState.isScrollingUp() && showFab,
         snackbarHostState = snackbarState,
         fabPosition = FabPosition.EndOverlay,
         floatingActionButton = {
@@ -196,7 +198,7 @@ fun AddEditMarketListScreen(
                     onClearClick = viewModel::clearSearchText,
                     onSearchTextChanged = viewModel::searchTextChanged
                 )
-            } else {
+            } else if (showFab){
                 IconButton(
                     onClick = viewModel::openSearchBar,
                     modifier = Modifier.testTag(NAV_SEARCH_BTN)

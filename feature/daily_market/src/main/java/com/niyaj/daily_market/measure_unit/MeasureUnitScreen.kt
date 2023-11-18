@@ -51,6 +51,8 @@ import com.niyaj.common.tags.MeasureUnitTestTags.UNIT_SEARCH_PLACEHOLDER
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.safeString
 import com.niyaj.daily_market.destinations.AddEditMeasureUnitScreenDestination
+import com.niyaj.daily_market.destinations.ExportMeasureUnitScreenDestination
+import com.niyaj.daily_market.destinations.ImportMeasureUnitScreenDestination
 import com.niyaj.daily_market.destinations.MeasureUnitSettingsScreenDestination
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.MeasureUnit
@@ -75,7 +77,9 @@ import kotlinx.coroutines.launch
 fun MeasureUnitScreen(
     navController: NavController,
     viewModel: MeasureUnitViewModel = hiltViewModel(),
-    resultRecipient: ResultRecipient<AddEditMeasureUnitScreenDestination, String>
+    resultRecipient: ResultRecipient<AddEditMeasureUnitScreenDestination, String>,
+    exportRecipient: ResultRecipient<ExportMeasureUnitScreenDestination, String>,
+    importRecipient: ResultRecipient<ImportMeasureUnitScreenDestination, String>,
 ) {
 
     val scope = rememberCoroutineScope()
@@ -110,6 +114,28 @@ fun MeasureUnitScreen(
         }
     }
 
+    exportRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    importRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
     LaunchedEffect(key1 = event) {
         event?.let { data ->
             when (data) {
@@ -133,6 +159,8 @@ fun MeasureUnitScreen(
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
+        } else {
+            navController.navigateUp()
         }
     }
 
@@ -159,7 +187,7 @@ fun MeasureUnitScreen(
                 placeholderText = UNIT_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = true,
+                showSearchIcon = showFab,
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {

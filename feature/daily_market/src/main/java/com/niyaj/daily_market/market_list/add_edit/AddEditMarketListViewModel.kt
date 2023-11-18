@@ -56,6 +56,8 @@ class AddEditMarketListViewModel @Inject constructor(
         repository.getMarketItemsWithQuantityById(marketId, searchText)
     }.mapLatest { itemList ->
         if (itemList.isEmpty()) UiState.Empty else {
+            totalItems = itemList.map { it.item.itemId }
+
             val data = itemList.map { item ->
                 MarketItemWithQuantityState(
                     item = item.item,

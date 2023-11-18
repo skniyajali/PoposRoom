@@ -20,11 +20,14 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dns
+import androidx.compose.material.icons.filled.MonitorWeight
 import androidx.compose.material.icons.filled.PostAdd
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -55,6 +58,7 @@ import com.niyaj.common.utils.toRupee
 import com.niyaj.daily_market.destinations.AddEditMarketItemScreenDestination
 import com.niyaj.daily_market.destinations.MarketItemSettingsScreenDestination
 import com.niyaj.daily_market.destinations.MarketListScreenDestination
+import com.niyaj.daily_market.destinations.MeasureUnitScreenDestination
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.MarketItem
 import com.niyaj.ui.components.CircularBox
@@ -168,7 +172,7 @@ fun MarketItemScreen(
                 placeholderText = MARKET_ITEM_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = true,
+                showSearchIcon = showFab,
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
@@ -183,7 +187,19 @@ fun MarketItemScreen(
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
                 onSearchClick = viewModel::openSearchBar,
-                onSearchTextChanged = viewModel::searchTextChanged
+                onSearchTextChanged = viewModel::searchTextChanged,
+                content = {
+                    IconButton(
+                        onClick = {
+                            navController.navigate(MeasureUnitScreenDestination)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MonitorWeight,
+                            contentDescription = "Go to Measure Unit Screen"
+                        )
+                    }
+                }
             )
         },
         fabPosition = if (lazyGridState.isScrolled) FabPosition.End else FabPosition.Center,
@@ -217,10 +233,9 @@ fun MarketItemScreen(
                         columns = GridCells.Fixed(2),
                         state = lazyGridState,
                     ) {
-                        item(
-                            span = {GridItemSpan(2)}
-                        ) {
+                        item(span = { GridItemSpan(2) }) {
                             SettingsCard(
+                                modifier = Modifier.padding(SpaceSmall),
                                 title = "Create New List",
                                 subtitle = "",
                                 icon = Icons.Default.PostAdd,
