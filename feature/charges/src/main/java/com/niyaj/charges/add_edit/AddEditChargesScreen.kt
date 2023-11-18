@@ -25,7 +25,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.niyaj.common.utils.safeString
 import com.niyaj.common.tags.ChargesTestTags.ADD_EDIT_CHARGES_BUTTON
 import com.niyaj.common.tags.ChargesTestTags.ADD_EDIT_CHARGES_SCREEN
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_AMOUNT_ERROR
@@ -35,11 +34,12 @@ import com.niyaj.common.tags.ChargesTestTags.CHARGES_NAME_ERROR
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_NAME_FIELD
 import com.niyaj.common.tags.ChargesTestTags.CREATE_NEW_CHARGES
 import com.niyaj.common.tags.ChargesTestTags.EDIT_CHARGES_ITEM
+import com.niyaj.common.utils.safeString
+import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
+import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
@@ -74,17 +74,16 @@ fun AddEditChargesScreen(
         }
     }
 
-    StandardScaffoldWithOutDrawer(
+    StandardScaffoldNew(
+        navController = navController,
         title = title,
-        onBackClick = {
-            navController.navigateUp()
-        },
-        showBottomBar = enableBtn,
+        showBackButton = true,
+        showBottomBar = true,
         bottomBar = {
             StandardButton(
                 modifier = Modifier
                     .testTag(ADD_EDIT_CHARGES_BUTTON)
-                    .padding(horizontal = SpaceSmallMax),
+                    .padding(SpaceMedium),
                 text = title,
                 icon = if (chargesId == 0) Icons.Default.Add else Icons.Default.Edit,
                 enabled = enableBtn,
@@ -98,8 +97,8 @@ fun AddEditChargesScreen(
             modifier = Modifier
                 .testTag(ADD_EDIT_CHARGES_SCREEN)
                 .fillMaxWidth()
-                .padding(SpaceSmall),
-            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+                .padding(SpaceMedium),
+            verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
             StandardOutlinedTextField(
                 value = viewModel.addEditState.chargesName,

@@ -27,13 +27,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.charges.destinations.AddEditChargesScreenDestination
+import com.niyaj.charges.destinations.ChargesExportScreenDestination
+import com.niyaj.charges.destinations.ChargesImportScreenDestination
 import com.niyaj.charges.destinations.ChargesSettingsScreenDestination
-import com.niyaj.common.tags.ChargesTestTags.CHARGES_NOT_AVAIlABLE
+import com.niyaj.common.tags.ChargesTestTags.CHARGES_NOT_AVAILABLE
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_SCREEN_TITLE
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_TAG
@@ -63,14 +67,14 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
-@Destination(
-    route = Screens.CHARGES_SCREEN
-)
+@Destination(route = Screens.CHARGES_SCREEN)
 @Composable
 fun ChargesScreen(
     navController: NavController,
-    resultRecipient: ResultRecipient<AddEditChargesScreenDestination, String>,
     viewModel: ChargesViewModel = hiltViewModel(),
+    resultRecipient: ResultRecipient<AddEditChargesScreenDestination, String>,
+    exportRecipient: ResultRecipient<ChargesExportScreenDestination, String>,
+    importRecipient: ResultRecipient<ChargesImportScreenDestination, String>,
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -122,11 +126,35 @@ fun ChargesScreen(
         }
     }
 
+    exportRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    importRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
     BackHandler {
         if (selectedItems.isNotEmpty()) {
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
+        } else {
+            navController.navigateUp()
         }
     }
 
@@ -154,7 +182,7 @@ fun ChargesScreen(
                 placeholderText = CHARGES_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = true,
+                showSearchIcon = showFab,
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
@@ -181,9 +209,10 @@ fun ChargesScreen(
     ) { _ ->
         when (state) {
             is UiState.Loading -> LoadingIndicator()
+
             is UiState.Empty -> {
                 ItemNotAvailable(
-                    text = if (searchText.isEmpty()) CHARGES_NOT_AVAIlABLE else NO_ITEMS_IN_CHARGES,
+                    text = if (searchText.isEmpty()) CHARGES_NOT_AVAILABLE else NO_ITEMS_IN_CHARGES,
                     buttonText = CREATE_NEW_CHARGES,
                     onClick = {
                         navController.navigate(AddEditChargesScreenDestination())
@@ -290,7 +319,12 @@ fun ChargesData(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = item.chargesName)
+                Text(
+                    text = item.chargesName,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
                 Spacer(modifier = Modifier.height(SpaceSmall))
                 Text(text = item.chargesPrice.toRupee)
             }

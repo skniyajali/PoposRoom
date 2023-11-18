@@ -35,6 +35,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.charges.ChargesData
 import com.niyaj.charges.destinations.AddEditChargesScreenDestination
 import com.niyaj.common.tags.ChargesTestTags
+import com.niyaj.common.tags.ChargesTestTags.CHARGES_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.ChargesTestTags.EXPORT_CHARGES_BTN
 import com.niyaj.common.tags.ChargesTestTags.EXPORT_CHARGES_BTN_TEXT
 import com.niyaj.common.tags.ChargesTestTags.EXPORT_CHARGES_FILE_NAME
@@ -43,9 +44,9 @@ import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.Charges
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -144,12 +145,12 @@ fun ChargesExportScreen(
         navController = navController,
         title = if (selectedItems.isEmpty()) EXPORT_CHARGES_TITLE else "${selectedItems.size} Selected",
         showBackButton = true,
-        showBottomBar = true,
+        showBottomBar = charges.isNotEmpty(),
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
                     searchText = searchText,
-                    placeholderText = "Search for charges items...",
+                    placeholderText = CHARGES_SEARCH_PLACEHOLDER,
                     onClearClick = viewModel::clearSearchText,
                     onSearchTextChanged = viewModel::searchTextChanged
                 )
@@ -221,7 +222,7 @@ fun ChargesExportScreen(
     ) {
         if (charges.isEmpty()) {
             ItemNotAvailable(
-                text = if (searchText.isEmpty()) ChargesTestTags.CHARGES_NOT_AVAIlABLE else ChargesTestTags.NO_ITEMS_IN_CHARGES,
+                text = if (searchText.isEmpty()) ChargesTestTags.CHARGES_NOT_AVAILABLE else ChargesTestTags.NO_ITEMS_IN_CHARGES,
                 buttonText = ChargesTestTags.CREATE_NEW_CHARGES,
                 onClick = {
                     navController.navigate(AddEditChargesScreenDestination())

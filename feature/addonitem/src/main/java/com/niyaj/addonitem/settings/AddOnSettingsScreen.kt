@@ -22,9 +22,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 
-@Destination(
-    style = DestinationStyleBottomSheet::class
-)
+@Destination(style = DestinationStyleBottomSheet::class)
 @Composable
 fun AddOnSettingsScreen(
     navController: NavController,

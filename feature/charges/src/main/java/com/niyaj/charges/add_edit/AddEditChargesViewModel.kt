@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.common.utils.safeInt
 import com.niyaj.data.repository.ChargesRepository
 import com.niyaj.data.repository.validation.ChargesValidationRepository
@@ -112,7 +113,7 @@ class AddEditChargesViewModel @Inject constructor(
             if (nameError.value == null && priceError.value == null) {
                 val addOnItem = Charges(
                     chargesId = chargesId,
-                    chargesName = addEditState.chargesName,
+                    chargesName = addEditState.chargesName.trimEnd().capitalizeWords,
                     chargesPrice = addEditState.chargesPrice,
                     isApplicable = addEditState.chargesApplicable,
                     createdAt = System.currentTimeMillis(),
@@ -126,8 +127,8 @@ class AddEditChargesViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
-                        _eventFlow.emit(UiEvent.OnSuccess("Charges Created Successfully."))
-
+                        val message = if (chargesId == 0) "Created" else "Updated"
+                        _eventFlow.emit(UiEvent.OnSuccess("Charges $message Successfully."))
                     }
                 }
 
