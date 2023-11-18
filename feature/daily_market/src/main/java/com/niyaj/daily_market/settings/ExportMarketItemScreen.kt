@@ -43,9 +43,9 @@ import com.niyaj.daily_market.destinations.AddEditMarketItemScreenDestination
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.MarketItem
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -144,7 +144,7 @@ fun ExportMarketItemScreen(
         navController = navController,
         title = if (selectedItems.isEmpty()) EXPORT_MARKET_ITEM_TITLE else "${selectedItems.size} Selected",
         showBackButton = true,
-        showBottomBar = true,
+        showBottomBar = items.isNotEmpty(),
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(

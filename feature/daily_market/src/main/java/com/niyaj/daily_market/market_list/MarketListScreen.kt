@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Inbox
+import androidx.compose.material.icons.filled.Kitchen
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ShoppingBag
@@ -28,6 +29,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -56,6 +59,7 @@ import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toTimeSpan
 import com.niyaj.daily_market.destinations.AddEditMarketListScreenDestination
+import com.niyaj.daily_market.destinations.MarketItemScreenDestination
 import com.niyaj.daily_market.market_list.add_edit.ShareableMarketList
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.MarketListWithItems
@@ -152,7 +156,7 @@ fun MarketListScreen(
         navActions = {
             ScaffoldNavActions(
                 placeholderText = MARKET_ITEM_SEARCH_PLACEHOLDER,
-                showSettingsIcon = true,
+                showSettingsIcon = false,
                 selectionCount = selectedItems.size,
                 showSearchIcon = showFab,
                 showSearchBar = showSearchBar,
@@ -169,7 +173,19 @@ fun MarketListScreen(
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
                 onSearchClick = viewModel::openSearchBar,
-                onSearchTextChanged = viewModel::searchTextChanged
+                onSearchTextChanged = viewModel::searchTextChanged,
+                content = {
+                    IconButton(
+                        onClick = {
+                            navController.navigate(MarketItemScreenDestination)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Kitchen,
+                            contentDescription = "Market Items"
+                        )
+                    }
+                }
             )
         },
         fabPosition = if (lazyGridState.isScrolled) FabPosition.End else FabPosition.Center,
