@@ -1,10 +1,8 @@
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     id("popos.android.library")
     id("popos.android.library.jacoco")
     id("popos.android.hilt")
     id("popos.android.room")
-    alias(libs.plugins.ksp)
 }
 
 android {
