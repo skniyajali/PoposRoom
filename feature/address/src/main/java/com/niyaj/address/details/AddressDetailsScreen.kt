@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -51,9 +53,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
-import com.google.accompanist.flowlayout.FlowMainAxisAlignment
-import com.google.accompanist.flowlayout.FlowRow
 import com.niyaj.address.destinations.AddEditAddressScreenDestination
 import com.niyaj.common.utils.toFormattedDateAndTime
 import com.niyaj.common.utils.toPrettyDate
@@ -373,6 +372,7 @@ fun RecentOrders(
 }
 
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GroupedOrders(
     customerPhone: String,
@@ -429,9 +429,8 @@ fun GroupedOrders(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(SpaceSmall),
-            crossAxisSpacing = SpaceMini,
-            mainAxisAlignment = FlowMainAxisAlignment.Center,
-            crossAxisAlignment = FlowCrossAxisAlignment.Center
+            horizontalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Center,
         ) {
             orderDetails.forEach { order ->
                 StandardRoundedFilterChip(

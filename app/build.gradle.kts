@@ -1,10 +1,7 @@
-
 import com.niyaj.samples.apps.popos.PoposBuildType
 import io.sentry.android.gradle.extensions.InstrumentationFeature
 import io.sentry.android.gradle.instrumentation.logcat.LogcatLevel
 
-
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     id("popos.android.application")
     id("popos.android.application.compose")
@@ -15,11 +12,11 @@ plugins {
     alias(libs.plugins.appsweep)
     alias(libs.plugins.ksp)
     alias(libs.plugins.sentry)
+    alias(libs.plugins.androidx.baselineprofile)
 }
 
 android {
     namespace = libs.versions.namespace.get()
-    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = libs.versions.namespace.get()
@@ -32,22 +29,25 @@ android {
     }
 
     buildTypes {
-        val debug by getting {
+        debug {
             applicationIdSuffix = PoposBuildType.DEBUG.applicationIdSuffix
         }
-
-        val release by getting {
+        val release = getByName("release") {
             isMinifyEnabled = true
             applicationIdSuffix = PoposBuildType.RELEASE.applicationIdSuffix
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
 
             // To publish on the Play store a private signing key is required, but to allow anyone
             // who clones the code to sign and run the release variant, use the debug signing key.
             // TODO: Abstract the signing configuration to a separate file to avoid hardcoding this.
             signingConfig = signingConfigs.getByName("debug")
+            // Ensure Baseline Profile is fresh for release builds.
+            baselineProfile.automaticGenerationDuringBuild = true
         }
-
-        val benchmark by creating {
+        create("benchmark") {
             // Enable all the optimizations from release build through initWith(release).
             initWith(release)
             matchingFallbacks.add("release")
@@ -60,14 +60,6 @@ android {
         }
     }
 
-    buildFeatures {
-        compose = true
-        buildConfig = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
-    }
 
     packaging {
         resources {
@@ -162,12 +154,14 @@ android {
 
             // Specifies a set of instrumentation features that are eligible for bytecode manipulation.
             // Defaults to all available values of InstrumentationFeature enum class.
-            features.set(setOf(
-                InstrumentationFeature.DATABASE,
-                InstrumentationFeature.FILE_IO,
-                InstrumentationFeature.OKHTTP,
-                InstrumentationFeature.COMPOSE
-            ))
+            features.set(
+                setOf(
+                    InstrumentationFeature.DATABASE,
+                    InstrumentationFeature.FILE_IO,
+                    InstrumentationFeature.OKHTTP,
+                    InstrumentationFeature.COMPOSE
+                )
+            )
 
             logcat {
                 enabled = true
@@ -287,4 +281,11 @@ dependencies {
 
     // Play Service Base
     implementation(libs.play.service)
+}
+
+
+baselineProfile {
+    // Don't build on every iteration of a full assemble.
+    // Instead enable generation directly for the release build variant.
+    automaticGenerationDuringBuild = false
 }
