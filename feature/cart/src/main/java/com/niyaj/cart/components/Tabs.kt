@@ -8,7 +8,7 @@ import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LeadingIconTab
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TabRow
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -25,7 +25,7 @@ fun Tabs(tabs: List<CartTabItem>, pagerState: PagerState) {
     val scope = rememberCoroutineScope()
 
     // OR ScrollableTabRow()
-    TabRow(
+    PrimaryTabRow(
         // Our selected tab is our current page
         selectedTabIndex = pagerState.currentPage,
         // Override the indicator, using the provided pagerTabIndicatorOffset modifier

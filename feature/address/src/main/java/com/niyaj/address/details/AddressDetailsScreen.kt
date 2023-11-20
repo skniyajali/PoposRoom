@@ -429,8 +429,9 @@ fun GroupedOrders(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(SpaceSmall),
-            horizontalArrangement = Arrangement.Center,
             verticalArrangement = Arrangement.Center,
+            horizontalArrangement = Arrangement.Center,
+            maxItemsInEachRow = 2,
         ) {
             orderDetails.forEach { order ->
                 StandardRoundedFilterChip(

@@ -1,7 +1,10 @@
+
 import com.niyaj.samples.apps.popos.PoposBuildType
 import io.sentry.android.gradle.extensions.InstrumentationFeature
 import io.sentry.android.gradle.instrumentation.logcat.LogcatLevel
 
+
+@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     id("popos.android.application")
     id("popos.android.application.compose")
@@ -32,13 +35,11 @@ android {
         debug {
             applicationIdSuffix = PoposBuildType.DEBUG.applicationIdSuffix
         }
+
         val release = getByName("release") {
             isMinifyEnabled = true
             applicationIdSuffix = PoposBuildType.RELEASE.applicationIdSuffix
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
             // To publish on the Play store a private signing key is required, but to allow anyone
             // who clones the code to sign and run the release variant, use the debug signing key.
@@ -47,6 +48,7 @@ android {
             // Ensure Baseline Profile is fresh for release builds.
             baselineProfile.automaticGenerationDuringBuild = true
         }
+
         create("benchmark") {
             // Enable all the optimizations from release build through initWith(release).
             initWith(release)
@@ -60,6 +62,10 @@ android {
         }
     }
 
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
 
     packaging {
         resources {
@@ -154,14 +160,12 @@ android {
 
             // Specifies a set of instrumentation features that are eligible for bytecode manipulation.
             // Defaults to all available values of InstrumentationFeature enum class.
-            features.set(
-                setOf(
-                    InstrumentationFeature.DATABASE,
-                    InstrumentationFeature.FILE_IO,
-                    InstrumentationFeature.OKHTTP,
-                    InstrumentationFeature.COMPOSE
-                )
-            )
+            features.set(setOf(
+                InstrumentationFeature.DATABASE,
+                InstrumentationFeature.FILE_IO,
+                InstrumentationFeature.OKHTTP,
+                InstrumentationFeature.COMPOSE
+            ))
 
             logcat {
                 enabled = true
@@ -282,7 +286,6 @@ dependencies {
     // Play Service Base
     implementation(libs.play.service)
 }
-
 
 baselineProfile {
     // Don't build on every iteration of a full assemble.

@@ -3,7 +3,7 @@ package com.niyaj.common.tags
 object EmployeeTestTags {
 
     const val EMPLOYEE_SCREEN_TITLE = "Employees"
-    const val EMPLOYEE_NOT_AVAIlABLE = "Employee Not Available"
+    const val EMPLOYEE_NOT_AVAILABLE = "Employee Not Available"
     const val NO_ITEMS_IN_EMPLOYEE = "Employees Not Found"
     const val EMPLOYEE_SEARCH_PLACEHOLDER = "Search for Employee..."
 
