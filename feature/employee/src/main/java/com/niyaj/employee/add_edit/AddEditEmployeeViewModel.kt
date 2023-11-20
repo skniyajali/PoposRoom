@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.data.repository.EmployeeRepository
 import com.niyaj.data.repository.EmployeeValidationRepository
 import com.niyaj.model.Employee
@@ -148,10 +149,10 @@ class AddEditEmployeeViewModel @Inject constructor(
             if (!hasError) {
                 val addOnItem = Employee(
                     employeeId = employeeId,
-                    employeePhone = state.employeePhone,
-                    employeeName = state.employeeName,
-                    employeeSalary = state.employeeSalary,
-                    employeeEmail = state.employeeEmail,
+                    employeePhone = state.employeePhone.trim(),
+                    employeeName = state.employeeName.trim().capitalizeWords,
+                    employeeSalary = state.employeeSalary.trim(),
+                    employeeEmail = state.employeeEmail?.trim(),
                     employeePosition = state.employeePosition,
                     employeeSalaryType = state.employeeSalaryType,
                     employeeType = state.employeeType,
@@ -166,7 +167,8 @@ class AddEditEmployeeViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
-                        _eventFlow.emit(UiEvent.OnSuccess("Employee Created Successfully."))
+                        val message = if (employeeId == 0) "Created" else "Updated"
+                        _eventFlow.emit(UiEvent.OnSuccess("Employee $message Successfully."))
                     }
                 }
                 state = AddEditEmployeeState()

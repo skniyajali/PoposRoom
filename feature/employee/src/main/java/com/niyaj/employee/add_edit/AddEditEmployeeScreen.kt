@@ -9,9 +9,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Edit
@@ -21,7 +22,6 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonPin
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Radar
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedFilterChip
@@ -29,6 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -52,8 +53,6 @@ import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.niyaj.common.utils.toJoinedDate
-import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.tags.EmployeeTestTags.ADD_EDIT_EMPLOYEE_BUTTON
 import com.niyaj.common.tags.EmployeeTestTags.CREATE_NEW_EMPLOYEE
 import com.niyaj.common.tags.EmployeeTestTags.EDIT_EMPLOYEE
@@ -69,18 +68,22 @@ import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SALARY_ERROR
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SALARY_FIELD
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SALARY_TYPE_FIELD
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_TYPE_FIELD
+import com.niyaj.common.utils.toJoinedDate
+import com.niyaj.common.utils.toMilliSecond
+import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.EmployeeSalaryType
 import com.niyaj.model.EmployeeType
+import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.PhoneNoCountBox
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
-import com.niyaj.ui.components.IconWithText
+import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
+import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -90,15 +93,14 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Destination(
-    route = Screens.ADD_EDIT_EMPLOYEE_SCREEN
-)
+@Destination(route = Screens.ADD_EDIT_EMPLOYEE_SCREEN)
 fun AddEditEmployeeScreen(
     employeeId: Int = 0,
     navController: NavController,
     viewModel: AddEditEmployeeViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
+    val lazyListState = rememberLazyListState()
     val phoneError = viewModel.phoneError.collectAsStateWithLifecycle().value
     val nameError = viewModel.nameError.collectAsStateWithLifecycle().value
     val salaryError = viewModel.salaryError.collectAsStateWithLifecycle().value
@@ -132,12 +134,14 @@ fun AddEditEmployeeScreen(
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
-    StandardScaffoldWithOutDrawer(
+    StandardScaffoldNew(
+        navController = navController,
         title = title,
+        showBackButton = true,
         onBackClick = {
             navController.navigateUp()
         },
-        showBottomBar = enableBtn,
+        showBottomBar = lazyListState.isScrollingUp(),
         bottomBar = {
             StandardButton(
                 modifier = Modifier
@@ -154,10 +158,11 @@ fun AddEditEmployeeScreen(
         }
     ) {
         LazyColumn(
+            state = lazyListState,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(SpaceSmall),
-            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+                .padding(SpaceMedium),
+            verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
             item(EMPLOYEE_NAME_FIELD) {
                 StandardOutlinedTextField(
@@ -308,7 +313,10 @@ fun AddEditEmployeeScreen(
                         ) {
                             Text(text = "Click Here")
                             Spacer(modifier = Modifier.width(SpaceMini))
-                            Icon(imageVector = Icons.Default.ArrowForward, null)
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                "Click Here"
+                            )
                         }
                     }
                 )
@@ -328,7 +336,7 @@ fun AddEditEmployeeScreen(
                     Spacer(modifier = Modifier.height(SpaceMini))
 
                     Row {
-                        EmployeeType.values().forEach { type ->
+                        EmployeeType.entries.forEach { type ->
                             ElevatedFilterChip(
                                 modifier = Modifier.testTag(EMPLOYEE_TYPE_FIELD.plus(type.name)),
                                 selected = viewModel.state.employeeType == type,
@@ -360,7 +368,7 @@ fun AddEditEmployeeScreen(
                     Spacer(modifier = Modifier.height(SpaceMini))
 
                     Row {
-                        EmployeeSalaryType.values().forEach { type ->
+                        EmployeeSalaryType.entries.forEach { type ->
                             ElevatedFilterChip(
                                 modifier = Modifier.testTag(EMPLOYEE_SALARY_TYPE_FIELD.plus(type.name)),
                                 selected = viewModel.state.employeeSalaryType == type,
@@ -375,8 +383,8 @@ fun AddEditEmployeeScreen(
                                     Text(text = type.name)
                                 },
                                 colors = FilterChipDefaults.elevatedFilterChipColors(
-                                    selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                                    selectedLabelColor = MaterialTheme.colorScheme.onTertiaryContainer
+                                    selectedContainerColor = MaterialTheme.colorScheme.secondary,
+                                    selectedLabelColor = MaterialTheme.colorScheme.onSecondary
                                 )
                             )
 

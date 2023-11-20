@@ -101,9 +101,7 @@ acra-toast = { group = "ch.acra", name = "acra-toast", version.ref = "acraVersio
 # Accompanist library
 accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
 accompanist-testharness = { group = "com.google.accompanist", name = "accompanist-testharness", version.ref = "accompanist" }
-accompanist-flowlayout = { group = "com.google.accompanist", name = "accompanist-flowlayout", version.ref = "accompanist" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
-accompanist-swiperefresh = { group = "com.google.accompanist", name = "accompanist-swiperefresh", version.ref = "accompanistSwipeRefresh" }
 
 # AndroidX Libraries
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }
@@ -297,3 +295,5 @@ realm = { id = "io.realm.kotlin", version.ref = "realmVersion" }
 sentry = { id = "io.sentry.android.gradle", version.ref = "sentryVersion" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin1821" }
+
+

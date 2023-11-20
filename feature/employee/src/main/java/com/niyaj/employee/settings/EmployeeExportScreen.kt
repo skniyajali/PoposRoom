@@ -32,6 +32,7 @@ import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.common.tags.EmployeeTestTags
+import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.EmployeeTestTags.EXPORT_EMPLOYEE_BTN
 import com.niyaj.common.tags.EmployeeTestTags.EXPORT_EMPLOYEE_BTN_TEXT
 import com.niyaj.common.tags.EmployeeTestTags.EXPORT_EMPLOYEE_FILE_NAME
@@ -42,9 +43,9 @@ import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.employee.EmployeeData
 import com.niyaj.employee.destinations.AddEditEmployeeScreenDestination
 import com.niyaj.model.Employee
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -143,12 +144,12 @@ fun EmployeeExportScreen(
         navController = navController,
         title = if (selectedItems.isEmpty()) EXPORT_EMPLOYEE_TITLE else "${selectedItems.size} Selected",
         showBackButton = true,
-        showBottomBar = true,
+        showBottomBar = employees.isNotEmpty(),
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
                     searchText = searchText,
-                    placeholderText = "Search for employees...",
+                    placeholderText = EMPLOYEE_SEARCH_PLACEHOLDER,
                     onClearClick = viewModel::clearSearchText,
                     onSearchTextChanged = viewModel::searchTextChanged
                 )
@@ -223,7 +224,7 @@ fun EmployeeExportScreen(
     ) {
         if (employees.isEmpty()) {
             ItemNotAvailable(
-                text = if (searchText.isEmpty()) EmployeeTestTags.EMPLOYEE_NOT_AVAIlABLE else EmployeeTestTags.NO_ITEMS_IN_EMPLOYEE,
+                text = if (searchText.isEmpty()) EmployeeTestTags.EMPLOYEE_NOT_AVAILABLE else EmployeeTestTags.NO_ITEMS_IN_EMPLOYEE,
                 buttonText = EmployeeTestTags.CREATE_NEW_EMPLOYEE,
                 onClick = {
                     navController.navigate(AddEditEmployeeScreenDestination())

@@ -20,7 +20,8 @@ dependencies {
 
     implementation(libs.hilt.ext.work)
     implementation(libs.androidx.work.ktx)
-    kapt(libs.hilt.ext.compiler)
+    ksp(libs.hilt.ext.compiler)
+
 
     testImplementation(project(":core:testing"))
 }

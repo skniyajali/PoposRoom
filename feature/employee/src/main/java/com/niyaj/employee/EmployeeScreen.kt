@@ -38,7 +38,7 @@ import androidx.navigation.NavController
 import com.niyaj.common.tags.EmployeeTestTags.CREATE_NEW_EMPLOYEE
 import com.niyaj.common.tags.EmployeeTestTags.DELETE_EMPLOYEE_MESSAGE
 import com.niyaj.common.tags.EmployeeTestTags.DELETE_EMPLOYEE_TITLE
-import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_NOT_AVAIlABLE
+import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_NOT_AVAILABLE
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SCREEN_TITLE
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_TAG
@@ -47,6 +47,8 @@ import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.employee.destinations.AddEditEmployeeScreenDestination
 import com.niyaj.employee.destinations.EmployeeDetailsScreenDestination
+import com.niyaj.employee.destinations.EmployeeExportScreenDestination
+import com.niyaj.employee.destinations.EmployeeImportScreenDestination
 import com.niyaj.employee.destinations.EmployeeSettingsScreenDestination
 import com.niyaj.model.Employee
 import com.niyaj.ui.components.CircularBox
@@ -67,14 +69,14 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
-@Destination(
-    route = Screens.EMPLOYEE_SCREEN
-)
+@Destination(route = Screens.EMPLOYEE_SCREEN)
 @Composable
 fun EmployeeScreen(
     navController: NavController,
     viewModel: EmployeeViewModel = hiltViewModel(),
-    resultRecipient: ResultRecipient<AddEditEmployeeScreenDestination, String>
+    resultRecipient: ResultRecipient<AddEditEmployeeScreenDestination, String>,
+    exportRecipient: ResultRecipient<EmployeeExportScreenDestination, String>,
+    importRecipient: ResultRecipient<EmployeeImportScreenDestination, String>,
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -84,7 +86,7 @@ fun EmployeeScreen(
 
     val lazyListState = rememberLazyListState()
 
-    val showFab  = viewModel.totalItems.isNotEmpty()
+    val showFab = viewModel.totalItems.isNotEmpty()
 
     val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
@@ -95,12 +97,13 @@ fun EmployeeScreen(
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
-            when(data) {
+            when (data) {
                 is UiEvent.OnError -> {
                     scope.launch {
                         snackbarState.showSnackbar(data.errorMessage)
                     }
                 }
+
                 is UiEvent.OnSuccess -> {
                     scope.launch {
                         snackbarState.showSnackbar(data.successMessage)
@@ -115,10 +118,12 @@ fun EmployeeScreen(
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
+        } else {
+            navController.navigateUp()
         }
     }
 
-    resultRecipient.onNavResult {result ->
+    resultRecipient.onNavResult { result ->
         when (result) {
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
@@ -127,6 +132,28 @@ fun EmployeeScreen(
                 }
 
                 viewModel.deselectItems()
+            }
+        }
+    }
+
+    exportRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    importRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
             }
         }
     }
@@ -154,11 +181,11 @@ fun EmployeeScreen(
                 placeholderText = EMPLOYEE_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = true,
+                showSearchIcon = showFab,
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
-                  navController.navigate(AddEditEmployeeScreenDestination(selectedItems.first()))
+                    navController.navigate(AddEditEmployeeScreenDestination(selectedItems.first()))
                 },
                 onDeleteClick = {
                     openDialog.value = true
@@ -181,15 +208,17 @@ fun EmployeeScreen(
     ) { _ ->
         when (state) {
             is UiState.Loading -> LoadingIndicator()
+
             is UiState.Empty -> {
                 ItemNotAvailable(
-                    text = if (searchText.isEmpty()) EMPLOYEE_NOT_AVAIlABLE else NO_ITEMS_IN_EMPLOYEE,
+                    text = if (searchText.isEmpty()) EMPLOYEE_NOT_AVAILABLE else NO_ITEMS_IN_EMPLOYEE,
                     buttonText = CREATE_NEW_EMPLOYEE,
                     onClick = {
                         navController.navigate(AddEditEmployeeScreenDestination())
                     }
                 )
             }
+
             is UiState.Success -> {
                 LazyColumn(
                     modifier = Modifier
@@ -198,7 +227,7 @@ fun EmployeeScreen(
                 ) {
                     items(
                         items = state.data,
-                        key = { it.employeeId}
+                        key = { it.employeeId }
                     ) { item: Employee ->
                         EmployeeData(
                             item = item,
@@ -208,7 +237,7 @@ fun EmployeeScreen(
                             onClick = {
                                 if (selectedItems.isNotEmpty()) {
                                     viewModel.selectItem(it)
-                                }else {
+                                } else {
                                     navController.navigate(EmployeeDetailsScreenDestination(item.employeeId))
                                 }
                             },
