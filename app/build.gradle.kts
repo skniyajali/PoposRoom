@@ -3,7 +3,6 @@ import com.niyaj.samples.apps.popos.PoposBuildType
 import io.sentry.android.gradle.extensions.InstrumentationFeature
 import io.sentry.android.gradle.instrumentation.logcat.LogcatLevel
 
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     id("popos.android.application")
     id("popos.android.application.compose")
@@ -14,7 +13,7 @@ plugins {
     alias(libs.plugins.appsweep)
     alias(libs.plugins.ksp)
     alias(libs.plugins.sentry)
-    alias(libs.plugins.androidx.baselineprofile)
+//    alias(libs.plugins.androidx.baselineprofile)
 }
 
 android {
@@ -45,7 +44,7 @@ android {
             // TODO: Abstract the signing configuration to a separate file to avoid hardcoding this.
             signingConfig = signingConfigs.getByName("debug")
             // Ensure Baseline Profile is fresh for release builds.
-            baselineProfile.automaticGenerationDuringBuild = true
+//            baselineProfile.automaticGenerationDuringBuild = true
         }
 
         create("benchmark") {
@@ -67,8 +66,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility  = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility  = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     packaging {
@@ -291,8 +290,8 @@ dependencies {
     implementation(libs.play.service)
 }
 
-baselineProfile {
-    // Don't build on every iteration of a full assemble.
-    // Instead enable generation directly for the release build variant.
-    automaticGenerationDuringBuild = false
-}
+//baselineProfile {
+//    // Don't build on every iteration of a full assemble.
+//    // Instead enable generation directly for the release build variant.
+//    automaticGenerationDuringBuild = false
+//}
