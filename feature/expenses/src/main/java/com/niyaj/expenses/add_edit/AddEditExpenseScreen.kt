@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -72,6 +73,7 @@ import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.utils.UiEvent
+import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -88,7 +90,7 @@ fun AddEditExpenseScreen(
     viewModel: AddEditExpenseViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
-
+    val lazyListState = rememberLazyListState()
     val dateError = viewModel.dateError.collectAsStateWithLifecycle().value
     val nameError = viewModel.nameError.collectAsStateWithLifecycle().value
     val amountError = viewModel.priceError.collectAsStateWithLifecycle().value
@@ -130,7 +132,7 @@ fun AddEditExpenseScreen(
         onBackClick = {
             navController.navigateUp()
         },
-        showBottomBar = enableBtn,
+        showBottomBar = lazyListState.isScrollingUp(),
         showBackButton = true,
         bottomBar = {
             StandardButton(
@@ -151,6 +153,7 @@ fun AddEditExpenseScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(SpaceMedium),
+            state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
             item(EXPENSE_NAME_FIELD) {

@@ -2,8 +2,6 @@ package com.niyaj.expenses
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
-import com.niyaj.common.network.Dispatcher
-import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.startOfDayTime
 import com.niyaj.data.repository.ExpenseRepository
@@ -11,7 +9,6 @@ import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,9 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ExpensesViewModel @Inject constructor(
-    private val expenseRepository: ExpenseRepository,
-    @Dispatcher(PoposDispatchers.IO)
-    private val ioDispatcher: CoroutineDispatcher
+    private val expenseRepository: ExpenseRepository
 ) : BaseViewModel() {
     override var totalItems: List<Int> = emptyList()
 
@@ -67,7 +62,7 @@ class ExpensesViewModel @Inject constructor(
     override fun deleteItems() {
         super.deleteItems()
 
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             when (val result = expenseRepository.deleteExpenses(selectedItems.toList())) {
                 is Resource.Error -> {
                     mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable to delete expenses"))
