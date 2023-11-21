@@ -196,10 +196,12 @@ fun PoposNavHost(
                 composable(PaymentScreenDestination) {
                     PaymentScreen(
                         navController = navController,
-                        resultRecipient = resultRecipient(),
                         onClickEmployee = {
                             navController.navigate(EmployeeDetailsScreenDestination(it))
-                        }
+                        },
+                        resultRecipient = resultRecipient(),
+                        exportRecipient = resultRecipient(),
+                        importRecipient = resultRecipient()
                     )
                 }
             }

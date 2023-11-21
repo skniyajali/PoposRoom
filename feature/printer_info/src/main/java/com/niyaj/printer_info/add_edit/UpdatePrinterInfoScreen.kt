@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.filled.DensityMedium
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Margin
 import androidx.compose.material.icons.filled.Receipt
-import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material.icons.filled.ViewHeadline
 import androidx.compose.material.icons.filled.WidthNormal
 import androidx.compose.runtime.Composable
@@ -176,7 +176,7 @@ fun UpdatePrinterInfoScreen(
                 StandardOutlinedTextField(
                     value = viewModel.state.productWiseReportLimit.toString(),
                     label = PRODUCT_REPORT_LIMIT_FIELD,
-                    leadingIcon = Icons.Default.ReceiptLong,
+                    leadingIcon = Icons.AutoMirrored.Filled.ReceiptLong,
                     isError = productLimitError != null,
                     errorText = productLimitError,
                     message = PRODUCT_REPORT_LIMIT_MESSAGE,

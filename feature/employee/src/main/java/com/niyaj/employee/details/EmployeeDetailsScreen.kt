@@ -817,7 +817,6 @@ fun AbsentDetails(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .padding(SpaceSmall),
-                                            maxItemsInEachRow = 2,
                                         ) {
                                             absentReport.absentDates.forEach { date ->
                                                 Card(

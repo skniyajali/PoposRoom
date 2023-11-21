@@ -22,8 +22,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowRightAlt
 import androidx.compose.material.icons.filled.AutoGraph
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Category
@@ -470,7 +470,7 @@ fun ReportBarData(
                                 onClick = onClickViewMore
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.ArrowRightAlt,
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
                                     contentDescription = "View more"
                                 )
                             }
