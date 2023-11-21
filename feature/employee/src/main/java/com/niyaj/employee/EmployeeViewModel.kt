@@ -2,15 +2,12 @@ package com.niyaj.employee
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
-import com.niyaj.common.network.Dispatcher
-import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.data.repository.EmployeeRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
@@ -22,10 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EmployeeViewModel @Inject constructor(
-    private val employeeRepository: EmployeeRepository,
-    @Dispatcher(PoposDispatchers.IO)
-    private val ioDispatcher: CoroutineDispatcher
-): BaseViewModel() {
+    private val employeeRepository: EmployeeRepository
+) : BaseViewModel() {
 
     override var totalItems: List<Int> = emptyList()
 
@@ -49,11 +44,12 @@ class EmployeeViewModel @Inject constructor(
     override fun deleteItems() {
         super.deleteItems()
 
-        viewModelScope.launch(ioDispatcher) {
-            when(employeeRepository.deleteEmployees(selectedItems.toList())) {
+        viewModelScope.launch {
+            when (employeeRepository.deleteEmployees(selectedItems.toList())) {
                 is Resource.Error -> {
                     mEventFlow.emit(UiEvent.OnError("Unable to delete employee"))
                 }
+
                 is Resource.Success -> {
                     mEventFlow.emit(
                         UiEvent.OnSuccess(

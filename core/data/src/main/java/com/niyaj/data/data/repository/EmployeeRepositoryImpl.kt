@@ -1,6 +1,5 @@
 package com.niyaj.data.data.repository
 
-import android.util.Log
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
@@ -232,7 +231,7 @@ class EmployeeRepositoryImpl(
             )
         }
 
-        if (phone.any { it.isLetter() }) {
+        if (phone.any { !it.isDigit() }) {
             return ValidationResult(
                 successful = false,
                 errorMessage = EmployeeTestTags.EMPLOYEE_PHONE_LETTER_ERROR
@@ -399,13 +398,9 @@ class EmployeeRepositoryImpl(
                         )
                     )
                 } else {
-                    Log.e("EmployeeEstimation", "Unable to find employee")
-
                     send(EmployeeSalaryEstimation())
                 }
             } catch (e: Exception) {
-                Log.e("EmployeeEstimation", e.message ?: "Error")
-
                 send(EmployeeSalaryEstimation())
             }
         }
