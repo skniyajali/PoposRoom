@@ -73,7 +73,6 @@ import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.utils.UiEvent
-import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -132,7 +131,7 @@ fun AddEditExpenseScreen(
         onBackClick = {
             navController.navigateUp()
         },
-        showBottomBar = lazyListState.isScrollingUp(),
+        showBottomBar = true,
         showBackButton = true,
         bottomBar = {
             StandardButton(

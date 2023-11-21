@@ -529,12 +529,15 @@ fun GroupedExpensesData(
 ) {
     val item = items.first()
     val totalAmount = items.sumOf { it.expenseAmount.toInt() }.toString()
-    val notes = items.map { it.expenseNote }
+    val notes = items.map { it.expenseNote }.filter { it.isNotEmpty() }
 
     Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(SpaceSmall),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+        )
     ) {
         Column(
             modifier = modifier.fillMaxWidth(),
@@ -564,7 +567,10 @@ fun GroupedExpensesData(
                         text = item.expenseDate.toPrettyDate(),
                         icon = Icons.Default.CalendarMonth
                     )
-                }
+                },
+                colors = ListItemDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
 
             Spacer(modifier = Modifier.height(SpaceMini))
@@ -592,8 +598,12 @@ fun GroupedExpensesData(
                                     onLongClick(expense.expenseId)
                                 },
                             ),
+                        shape = RoundedCornerShape(SpaceMini),
                         elevation = CardDefaults.elevatedCardElevation(
                             defaultElevation = 2.dp
+                        ),
+                        colors = CardDefaults.elevatedCardColors(
+                            containerColor = MaterialTheme.colorScheme.inverseOnSurface
                         )
                     ) {
                         Row(
