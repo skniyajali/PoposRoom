@@ -108,7 +108,7 @@ class AddEditExpenseViewModel @Inject constructor(
             }
 
             is AddEditExpenseEvent.ExpensesNoteChanged -> {
-                state = state.copy(expenseNote = event.expenseNote.capitalizeWords)
+                state = state.copy(expenseNote = event.expenseNote)
             }
 
             is AddEditExpenseEvent.AddOrUpdateExpense -> {
