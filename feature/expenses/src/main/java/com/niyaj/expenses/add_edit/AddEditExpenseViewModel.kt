@@ -108,7 +108,7 @@ class AddEditExpenseViewModel @Inject constructor(
             }
 
             is AddEditExpenseEvent.ExpensesNoteChanged -> {
-                state = state.copy(expenseNote = event.expenseNote.capitalizeWords)
+                state = state.copy(expenseNote = event.expenseNote)
             }
 
             is AddEditExpenseEvent.AddOrUpdateExpense -> {
@@ -145,10 +145,10 @@ class AddEditExpenseViewModel @Inject constructor(
             if (!hasError) {
                 val newExpense = Expense(
                     expenseId = expenseId,
-                    expenseName = state.expenseName,
+                    expenseName = state.expenseName.trim().capitalizeWords,
                     expenseAmount = state.expenseAmount,
                     expenseDate = state.expenseDate,
-                    expenseNote = state.expenseNote,
+                    expenseNote = state.expenseNote.trim().capitalizeWords,
                     createdAt = System.currentTimeMillis(),
                     updatedAt = if (expenseId != 0) System.currentTimeMillis() else null
                 )
@@ -163,7 +163,8 @@ class AddEditExpenseViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
-                        _eventFlow.emit(UiEvent.OnSuccess("Expense added successfully"))
+                        val message = if (expenseId == 0) "added" else "updated"
+                        _eventFlow.emit(UiEvent.OnSuccess("Expense $message successfully"))
                     }
                 }
 

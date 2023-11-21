@@ -70,6 +70,8 @@ import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.expenses.destinations.AddEditExpenseScreenDestination
+import com.niyaj.expenses.destinations.ExpensesExportScreenDestination
+import com.niyaj.expenses.destinations.ExpensesImportScreenDestination
 import com.niyaj.expenses.destinations.ExpensesSettingsScreenDestination
 import com.niyaj.model.Expense
 import com.niyaj.ui.components.CircularBox
@@ -96,14 +98,14 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @RootNavGraph(start = true)
-@Destination(
-    route = Screens.EXPENSES_SCREEN
-)
+@Destination(route = Screens.EXPENSES_SCREEN)
 @Composable
 fun ExpensesScreen(
     navController: NavController,
     viewModel: ExpensesViewModel = hiltViewModel(),
-    resultRecipient: ResultRecipient<AddEditExpenseScreenDestination, String>
+    resultRecipient: ResultRecipient<AddEditExpenseScreenDestination, String>,
+    exportRecipient: ResultRecipient<ExpensesExportScreenDestination, String>,
+    importRecipient: ResultRecipient<ExpensesImportScreenDestination, String>,
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -159,11 +161,35 @@ fun ExpensesScreen(
         }
     }
 
+    exportRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    importRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
     BackHandler {
         if (selectedItems.isNotEmpty()) {
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
+        } else {
+            navController.navigateUp()
         }
     }
 
@@ -190,7 +216,7 @@ fun ExpensesScreen(
                 placeholderText = EXPENSE_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = true,
+                showSearchIcon = showFab,
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
@@ -503,12 +529,15 @@ fun GroupedExpensesData(
 ) {
     val item = items.first()
     val totalAmount = items.sumOf { it.expenseAmount.toInt() }.toString()
-    val notes = items.map { it.expenseNote }
+    val notes = items.map { it.expenseNote }.filter { it.isNotEmpty() }
 
     Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(SpaceSmall),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+        )
     ) {
         Column(
             modifier = modifier.fillMaxWidth(),
@@ -538,7 +567,10 @@ fun GroupedExpensesData(
                         text = item.expenseDate.toPrettyDate(),
                         icon = Icons.Default.CalendarMonth
                     )
-                }
+                },
+                colors = ListItemDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
 
             Spacer(modifier = Modifier.height(SpaceMini))
@@ -566,8 +598,12 @@ fun GroupedExpensesData(
                                     onLongClick(expense.expenseId)
                                 },
                             ),
+                        shape = RoundedCornerShape(SpaceMini),
                         elevation = CardDefaults.elevatedCardElevation(
                             defaultElevation = 2.dp
+                        ),
+                        colors = CardDefaults.elevatedCardColors(
+                            containerColor = MaterialTheme.colorScheme.inverseOnSurface
                         )
                     ) {
                         Row(

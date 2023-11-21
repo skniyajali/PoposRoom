@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -88,7 +89,7 @@ fun AddEditExpenseScreen(
     viewModel: AddEditExpenseViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
-
+    val lazyListState = rememberLazyListState()
     val dateError = viewModel.dateError.collectAsStateWithLifecycle().value
     val nameError = viewModel.nameError.collectAsStateWithLifecycle().value
     val amountError = viewModel.priceError.collectAsStateWithLifecycle().value
@@ -130,7 +131,7 @@ fun AddEditExpenseScreen(
         onBackClick = {
             navController.navigateUp()
         },
-        showBottomBar = enableBtn,
+        showBottomBar = true,
         showBackButton = true,
         bottomBar = {
             StandardButton(
@@ -151,6 +152,7 @@ fun AddEditExpenseScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(SpaceMedium),
+            state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
             item(EXPENSE_NAME_FIELD) {
