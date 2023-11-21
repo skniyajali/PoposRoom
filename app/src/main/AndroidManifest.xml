@@ -28,7 +28,7 @@
         android:theme="@style/Theme.MySplash"
         android:enableOnBackInvokedCallback="true"
         android:windowSoftInputMode="adjustResize"
-        >
+        tools:targetApi="tiramisu">
         <activity
             android:name=".MainActivity"
             android:exported="true"

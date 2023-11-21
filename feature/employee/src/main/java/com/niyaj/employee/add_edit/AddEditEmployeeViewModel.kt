@@ -149,8 +149,8 @@ class AddEditEmployeeViewModel @Inject constructor(
             if (!hasError) {
                 val addOnItem = Employee(
                     employeeId = employeeId,
-                    employeePhone = state.employeePhone.trim(),
                     employeeName = state.employeeName.trim().capitalizeWords,
+                    employeePhone = state.employeePhone.trim(),
                     employeeSalary = state.employeeSalary.trim(),
                     employeeEmail = state.employeeEmail?.trim(),
                     employeePosition = state.employeePosition,

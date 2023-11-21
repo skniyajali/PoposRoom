@@ -51,10 +51,13 @@ import com.niyaj.common.utils.toDate
 import com.niyaj.common.utils.toMonthAndYear
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.employee_absent.destinations.AbsentExportScreenDestination
+import com.niyaj.employee_absent.destinations.AbsentImportScreenDestination
 import com.niyaj.employee_absent.destinations.AbsentSettingsScreenDestination
 import com.niyaj.employee_absent.destinations.AddEditAbsentScreenDestination
 import com.niyaj.model.Absent
 import com.niyaj.model.EmployeeWithAbsents
+import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
@@ -64,7 +67,6 @@ import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.StandardScaffold
 import com.niyaj.ui.components.TextWithBorderCount
-import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
@@ -77,14 +79,14 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
-@Destination(
-    route = Screens.ABSENT_SCREEN
-)
+@Destination(route = Screens.ABSENT_SCREEN)
 @Composable
 fun AbsentScreen(
     navController: NavController,
     viewModel: AbsentViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditAbsentScreenDestination, String>,
+    exportRecipient: ResultRecipient<AbsentExportScreenDestination, String>,
+    importRecipient: ResultRecipient<AbsentImportScreenDestination, String>,
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -128,18 +130,44 @@ fun AbsentScreen(
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
+        } else {
+            navController.navigateUp()
         }
     }
 
     resultRecipient.onNavResult { result ->
         when (result) {
-            is NavResult.Canceled -> {}
+            is NavResult.Canceled -> {
+                viewModel.deselectItems()
+            }
             is NavResult.Value -> {
                 scope.launch {
                     snackbarState.showSnackbar(result.value)
                 }
 
                 viewModel.deselectItems()
+            }
+        }
+    }
+
+    exportRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    importRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
             }
         }
     }
@@ -168,7 +196,7 @@ fun AbsentScreen(
                 placeholderText = ABSENT_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = true,
+                showSearchIcon = showFab,
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {

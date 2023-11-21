@@ -2,15 +2,12 @@ package com.niyaj.employee_absent
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
-import com.niyaj.common.network.Dispatcher
-import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.data.repository.AbsentRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,9 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AbsentViewModel @Inject constructor(
-    private val absentRepository: AbsentRepository,
-    @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
-): BaseViewModel() {
+    private val absentRepository: AbsentRepository
+) : BaseViewModel() {
 
     override var totalItems: List<Int> = emptyList()
 
@@ -55,7 +51,7 @@ class AbsentViewModel @Inject constructor(
         viewModelScope.launch {
             if (_selectedEmployee.value == employeeId) {
                 _selectedEmployee.value = 0
-            }else {
+            } else {
                 _selectedEmployee.value = employeeId
             }
         }
@@ -64,13 +60,14 @@ class AbsentViewModel @Inject constructor(
     override fun deleteItems() {
         super.deleteItems()
 
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             when (val result = absentRepository.deleteAbsents(selectedItems.toList())) {
                 is Resource.Error -> {
                     mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
                 }
+
                 is Resource.Success -> {
-                    mEventFlow.emit(UiEvent.OnSuccess("${selectedItems.size} absents has been deleted"))
+                    mEventFlow.emit(UiEvent.OnSuccess("${selectedItems.size} absentees has been deleted"))
                 }
             }
 

@@ -44,9 +44,9 @@ import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.employee_absent.AbsentData
 import com.niyaj.employee_absent.destinations.AddEditAbsentScreenDestination
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -133,7 +133,7 @@ fun AbsentExportScreen(
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
-        }else {
+        } else {
             navController.navigateUp()
         }
     }
@@ -146,7 +146,7 @@ fun AbsentExportScreen(
         navController = navController,
         title = if (selectedItems.isEmpty()) EXPORT_ABSENT_TITLE else "${selectedItems.size} Selected",
         showBackButton = true,
-        showBottomBar = true,
+        showBottomBar = items.isNotEmpty(),
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
@@ -155,7 +155,7 @@ fun AbsentExportScreen(
                     onClearClick = viewModel::clearSearchText,
                     onSearchTextChanged = viewModel::searchTextChanged
                 )
-            }else {
+            } else {
                 if (items.isNotEmpty()) {
                     IconButton(
                         onClick = viewModel::selectAllItems
@@ -200,7 +200,10 @@ fun AbsentExportScreen(
                     onClick = {
                         scope.launch {
                             askForPermissions()
-                            val result = ImportExport.createFile(context = context, fileName = EXPORT_ABSENT_FILE_NAME)
+                            val result = ImportExport.createFile(
+                                context = context,
+                                fileName = EXPORT_ABSENT_FILE_NAME
+                            )
                             exportLauncher.launch(result)
                             viewModel.onEvent(AbsentSettingsEvent.GetExportedItems)
                         }
@@ -229,7 +232,7 @@ fun AbsentExportScreen(
                     navController.navigate(AddEditAbsentScreenDestination())
                 }
             )
-        }else {
+        } else {
             LazyColumn(
                 modifier = Modifier
                     .padding(SpaceSmall),

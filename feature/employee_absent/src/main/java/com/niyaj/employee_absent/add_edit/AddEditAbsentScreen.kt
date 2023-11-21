@@ -57,9 +57,9 @@ import com.niyaj.common.tags.AbsentScreenTags.CREATE_NEW_ABSENT
 import com.niyaj.common.tags.AbsentScreenTags.EDIT_ABSENT_ITEM
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
@@ -124,14 +124,14 @@ fun AddEditAbsentScreen(
         onBackClick = {
             navController.navigateUp()
         },
-        showBottomBar = enableBtn,
+        showBottomBar = true,
         showBackButton = true,
         bottomBar = {
             StandardButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag(ADD_EDIT_ABSENT_ENTRY_BUTTON)
-                    .padding(horizontal = SpaceSmallMax),
+                    .padding(SpaceMedium),
                 enabled = enableBtn,
                 text = title,
                 icon = if (absentId == 0) Icons.Default.Add else Icons.Default.EditCalendar,
@@ -146,7 +146,7 @@ fun AddEditAbsentScreen(
             modifier = Modifier
                 .testTag(ADD_EDIT_ABSENT_SCREEN)
                 .fillMaxWidth()
-                .padding(SpaceSmall),
+                .padding(SpaceMedium),
         ) {
             item(ABSENT_EMPLOYEE_NAME_FIELD) {
                 ExposedDropdownMenuBox(
