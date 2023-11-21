@@ -68,18 +68,19 @@ import com.niyaj.common.tags.PaymentScreenTags.PAYMENT_NOTE_FIELD
 import com.niyaj.common.tags.PaymentScreenTags.PAYMENT_TYPE_FIELD
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.PaymentMode
 import com.niyaj.model.PaymentType
 import com.niyaj.ui.components.CircularBox
+import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldNew
-import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
+import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -88,9 +89,7 @@ import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination(
-    route = Screens.ADD_EDIT_PAYMENT_SCREEN
-)
+@Destination(route = Screens.ADD_EDIT_PAYMENT_SCREEN)
 @Composable
 fun AddEditPaymentScreen(
     paymentId: Int = 0,
@@ -151,13 +150,13 @@ fun AddEditPaymentScreen(
             navController.navigateUp()
         },
         showBackButton = true,
-        showBottomBar = enableBtn,
+        showBottomBar = lazyListState.isScrollingUp(),
         bottomBar = {
             StandardButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag(ADD_EDIT_PAYMENT_ENTRY_BUTTON)
-                    .padding(horizontal = SpaceSmallMax),
+                    .padding(SpaceMedium),
                 enabled = enableBtn,
                 text = title,
                 icon = if (paymentId == 0) Icons.Default.Add else Icons.Default.Edit,
@@ -172,7 +171,7 @@ fun AddEditPaymentScreen(
             modifier = Modifier
                 .testTag(ADD_EDIT_PAYMENT_SCREEN)
                 .fillMaxWidth()
-                .padding(SpaceSmall),
+                .padding(SpaceMedium),
         ) {
             item(PAYMENT_EMPLOYEE_NAME_FIELD) {
                 ExposedDropdownMenuBox(

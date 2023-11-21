@@ -2,15 +2,12 @@ package com.niyaj.employee_payment
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
-import com.niyaj.common.network.Dispatcher
-import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.data.repository.PaymentRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
@@ -22,10 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PaymentViewModel @Inject constructor(
-    private val paymentRepository: PaymentRepository,
-    @Dispatcher(PoposDispatchers.IO)
-    private val ioDispatcher: CoroutineDispatcher
-): BaseViewModel() {
+    private val paymentRepository: PaymentRepository
+) : BaseViewModel() {
 
     override var totalItems: List<Int> = emptyList()
 
@@ -50,11 +45,12 @@ class PaymentViewModel @Inject constructor(
     override fun deleteItems() {
         super.deleteItems()
 
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             when (val result = paymentRepository.deletePayments(selectedItems.toList())) {
                 is Resource.Error -> {
                     mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
                 }
+
                 is Resource.Success -> {
                     mEventFlow.emit(UiEvent.OnSuccess("${selectedItems.size} payments has been deleted"))
                 }

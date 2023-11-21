@@ -152,10 +152,11 @@ class AddEditPaymentViewModel @Inject constructor(
 
     private fun getPaymentById(itemId: Int) {
         viewModelScope.launch {
-            when(val result = paymentRepository.getPaymentById(itemId)) {
+            when (val result = paymentRepository.getPaymentById(itemId)) {
                 is Resource.Error -> {
                     _eventFlow.emit(UiEvent.OnError("Unable to find payment"))
                 }
+
                 is Resource.Success -> {
                     result.data?.let { payment ->
                         getEmployeeById(payment.employeeId)
@@ -205,12 +206,14 @@ class AddEditPaymentViewModel @Inject constructor(
                     updatedAt = if (paymentId != 0) System.currentTimeMillis() else null
                 )
 
-                when(paymentRepository.upsertPayment(newPayment)) {
+                when (paymentRepository.upsertPayment(newPayment)) {
                     is Resource.Error -> {
                         _eventFlow.emit(UiEvent.OnError("Unable To Add Payment."))
                     }
+
                     is Resource.Success -> {
-                        _eventFlow.emit(UiEvent.OnSuccess("Payment Added Successfully."))
+                        val message = if (paymentId == 0) "Added" else "Updated"
+                        _eventFlow.emit(UiEvent.OnSuccess("Payment $message Successfully."))
                     }
                 }
 

@@ -297,7 +297,7 @@ class PaymentRepositoryImpl(
             )
         }
 
-        if (salary.any { it.isLetter() }) {
+        if (salary.any { !it.isDigit() }) {
             return ValidationResult(
                 successful = false,
                 errorMessage = PaymentScreenTags.GIVEN_AMOUNT_LETTER_ERROR,

@@ -78,6 +78,8 @@ import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.employee_payment.destinations.AddEditPaymentScreenDestination
+import com.niyaj.employee_payment.destinations.PaymentExportScreenDestination
+import com.niyaj.employee_payment.destinations.PaymentImportScreenDestination
 import com.niyaj.employee_payment.destinations.PaymentSettingsScreenDestination
 import com.niyaj.model.Employee
 import com.niyaj.model.Payment
@@ -102,15 +104,15 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
-@Destination(
-    route = Screens.PAYMENT_SCREEN
-)
+@Destination(route = Screens.PAYMENT_SCREEN)
 @Composable
 fun PaymentScreen(
     navController: NavController,
     viewModel: PaymentViewModel = hiltViewModel(),
-    resultRecipient: ResultRecipient<AddEditPaymentScreenDestination, String>,
     onClickEmployee: (employeeId: Int) -> Unit,
+    resultRecipient: ResultRecipient<AddEditPaymentScreenDestination, String>,
+    exportRecipient: ResultRecipient<PaymentExportScreenDestination, String>,
+    importRecipient: ResultRecipient<PaymentImportScreenDestination, String>,
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -120,7 +122,7 @@ fun PaymentScreen(
 
     val lazyListState = rememberLazyListState()
 
-    val showFab = viewModel.totalItems.toList()
+    val showFab = viewModel.totalItems.toList().isNotEmpty()
 
     val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
@@ -152,18 +154,45 @@ fun PaymentScreen(
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
+        } else {
+            navController.navigateUp()
         }
     }
 
     resultRecipient.onNavResult { result ->
         when (result) {
-            is NavResult.Canceled -> {}
+            is NavResult.Canceled -> {
+                viewModel.deselectItems()
+            }
+
             is NavResult.Value -> {
                 scope.launch {
                     snackbarState.showSnackbar(result.value)
                 }
 
                 viewModel.deselectItems()
+            }
+        }
+    }
+
+    exportRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    importRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
             }
         }
     }
@@ -179,7 +208,7 @@ fun PaymentScreen(
             StandardFAB(
                 showScrollToTop = lazyListState.isScrolled,
                 fabText = CREATE_NEW_PAYMENT,
-                fabVisible = (showFab.isNotEmpty() && selectedItems.isEmpty() && !showSearchBar),
+                fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
                 containerColor = MaterialTheme.colorScheme.surface,
                 onFabClick = {
                     navController.navigate(AddEditPaymentScreenDestination())
@@ -196,7 +225,7 @@ fun PaymentScreen(
                 placeholderText = PAYMENT_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = true,
+                showSearchIcon = showFab,
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
@@ -213,16 +242,18 @@ fun PaymentScreen(
                 onSearchClick = viewModel::openSearchBar,
                 onSearchTextChanged = viewModel::searchTextChanged,
                 content = {
-                    IconButton(
-                        onClick = {
-                            listView = !listView
+                    if (showFab) {
+                        IconButton(
+                            onClick = {
+                                listView = !listView
+                            }
+                        ) {
+                            Icon(
+                                imageVector = if (listView) Icons.Default.ViewAgenda
+                                else Icons.Default.CalendarViewDay,
+                                contentDescription = "Change View"
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = if (listView) Icons.Default.ViewAgenda
-                            else Icons.Default.CalendarViewDay,
-                            contentDescription = "Change View"
-                        )
                     }
                 }
             )
