@@ -35,6 +35,10 @@ import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.product.components.ProductCard
 import com.niyaj.product.destinations.AddEditProductScreenDestination
+import com.niyaj.product.destinations.DecreaseProductPriceScreenDestination
+import com.niyaj.product.destinations.ExportProductScreenDestination
+import com.niyaj.product.destinations.ImportProductScreenDestination
+import com.niyaj.product.destinations.IncreaseProductPriceScreenDestination
 import com.niyaj.product.destinations.ProductDetailsScreenDestination
 import com.niyaj.product.destinations.ProductSettingScreenDestination
 import com.niyaj.ui.components.CategoriesData
@@ -61,6 +65,10 @@ fun ProductScreen(
     navController: NavController,
     viewModel: ProductViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditProductScreenDestination, String>,
+    exportRecipient: ResultRecipient<ExportProductScreenDestination, String>,
+    importRecipient: ResultRecipient<ImportProductScreenDestination, String>,
+    increaseRecipient: ResultRecipient<IncreaseProductPriceScreenDestination, String>,
+    decreaseRecipient: ResultRecipient<DecreaseProductPriceScreenDestination, String>,
 ) {
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
@@ -118,6 +126,46 @@ fun ProductScreen(
             }
         }
     }
+    exportRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+    importRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+    increaseRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+    decreaseRecipient.onNavResult { result ->
+        when(result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
 
     LaunchedEffect(key1 = selectedCategory) {
         scope.launch {
@@ -130,6 +178,8 @@ fun ProductScreen(
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
+        } else {
+            navController.navigateUp()
         }
     }
 
@@ -156,7 +206,7 @@ fun ProductScreen(
                 placeholderText = PRODUCT_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = true,
+                showSearchIcon = showFab,
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {

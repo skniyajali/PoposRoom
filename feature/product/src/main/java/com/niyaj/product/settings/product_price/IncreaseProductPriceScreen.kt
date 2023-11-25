@@ -1,6 +1,11 @@
 package com.niyaj.product.settings.product_price
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,8 +16,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
@@ -23,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -32,7 +40,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.common.tags.ProductTestTags
-import com.niyaj.common.tags.ProductTestTags.INCREASE_PRODUCTS_TEXT_FIELD
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.safeString
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -41,13 +48,13 @@ import com.niyaj.product.components.ProductCard
 import com.niyaj.product.settings.ProductSettingsEvent
 import com.niyaj.product.settings.ProductSettingsViewModel
 import com.niyaj.ui.components.CategoriesData
-import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.InfoText
+import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.components.StandardTextField
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
@@ -61,7 +68,6 @@ fun IncreaseProductPriceScreen(
     viewModel: ProductSettingsViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
-
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
     val lazyRowState = rememberLazyListState()
@@ -74,6 +80,8 @@ fun IncreaseProductPriceScreen(
 
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
+
+    val selectionCount = rememberUpdatedState(newValue = selectedItems.size)
 
     val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
@@ -94,11 +102,11 @@ fun IncreaseProductPriceScreen(
     }
 
     fun onBackClick() {
-        if (selectedItems.isNotEmpty()) {
-            viewModel.deselectItems()
-        } else if (showSearchBar) {
+        if (showSearchBar) {
             viewModel.closeSearchBar()
-        } else {
+        } else if (selectedItems.isNotEmpty()) {
+            viewModel.deselectItems()
+        }  else {
             navController.navigateUp()
         }
     }
@@ -110,8 +118,43 @@ fun IncreaseProductPriceScreen(
     StandardScaffoldNew(
         navController = navController,
         title = if (selectedItems.isEmpty()) ProductTestTags.INCREASE_PRODUCTS_TITLE else "${selectedItems.size} Selected",
-        showBackButton = true,
-        showBottomBar = true,
+        navigationIcon = {
+            AnimatedContent(
+                targetState = selectionCount,
+                transitionSpec = {
+                    (fadeIn()).togetherWith(
+                        fadeOut(animationSpec = tween(200))
+                    )
+                },
+                label = "navigationIcon",
+                contentKey = {
+                    it
+                }
+            ) { intState ->
+                if (intState.value != 0 && !showSearchBar) {
+                    IconButton(
+                        onClick = viewModel::deselectItems
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = Constants.CLEAR_ICON
+                        )
+                    }
+                } else {
+                    IconButton(
+                        onClick = { onBackClick() },
+                        modifier = Modifier.testTag(Constants.STANDARD_BACK_BUTTON)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null,
+                        )
+                    }
+                }
+            }
+        },
+        showDrawer = false,
+        showBottomBar = products.isNotEmpty() && lazyListState.isScrollingUp(),
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
@@ -150,17 +193,12 @@ fun IncreaseProductPriceScreen(
                     .padding(SpaceSmallMax),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall)
             ) {
-                StandardOutlinedTextField(
-                    value = productPrice,
-                    label = INCREASE_PRODUCTS_TEXT_FIELD,
-                    leadingIcon = Icons.Default.CurrencyRupee,
-                    keyboardType = KeyboardType.Number,
-                    onValueChange = {
-                        viewModel.onEvent(ProductSettingsEvent.OnChangeProductPrice(it))
-                    }
+                InfoText(
+                    text = "${
+                        if (selectedItems.isEmpty())
+                            "All" else "${selectedItems.size}"
+                    } products price will be increased."
                 )
-
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} products price will be increased.")
 
                 StandardButton(
                     modifier = Modifier
@@ -196,6 +234,17 @@ fun IncreaseProductPriceScreen(
                 .fillMaxSize()
                 .padding(SpaceSmall),
         ) {
+            StandardTextField(
+                modifier = Modifier.padding(horizontal = SpaceSmall),
+                value = productPrice,
+                label = ProductTestTags.INCREASE_PRODUCTS_TEXT_FIELD,
+                leadingIcon = Icons.Default.CurrencyRupee,
+                keyboardType = KeyboardType.Number,
+                onValueChange = {
+                    viewModel.onEvent(ProductSettingsEvent.OnChangeProductPrice(it))
+                }
+            )
+
             CategoriesData(
                 lazyRowState = lazyRowState,
                 categories = categories,
