@@ -8,5 +8,7 @@ sealed class OrderEvent {
 
     data class SelectDate(val date: String): OrderEvent()
 
-    object PrintDeliveryReport : OrderEvent()
+    data class GetShareableDetails(val orderId: Int): OrderEvent()
+
+    data object PrintDeliveryReport : OrderEvent()
 }

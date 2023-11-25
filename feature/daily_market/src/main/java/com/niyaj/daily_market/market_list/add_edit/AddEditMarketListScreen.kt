@@ -336,8 +336,8 @@ fun AddEditMarketListScreen(
         ShareableMarketList(
             captureController = captureController,
             marketDate = marketList?.marketDate ?: System.currentTimeMillis(),
-            onDismiss = viewModel::onDismissList,
             marketLists = marketLists,
+            onDismiss = viewModel::onDismissList,
             onClickShare = {
                 captureController.captureLongScreenshot()
             },

@@ -36,7 +36,7 @@ fun CartAddOnItems(
             StandardRoundedFilterChip(
                 modifier = Modifier
                     .padding(SpaceMini),
-                label = addOnItem.itemName,
+                text = addOnItem.itemName,
 //                    secondaryText = if(addOnItem.itemName.startsWith("Cold")) addOnItem.itemPrice.toString() else null,
                 selected = selectedAddOnItem.contains(addOnItem.itemId),
                 selectedColor = selectedColor,

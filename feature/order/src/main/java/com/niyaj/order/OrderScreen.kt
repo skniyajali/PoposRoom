@@ -5,9 +5,11 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +23,6 @@ import androidx.compose.material.icons.outlined.DeliveryDining
 import androidx.compose.material.icons.outlined.Today
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -31,6 +32,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,22 +42,25 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.niyaj.common.utils.toMilliSecond
-import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.tags.OrderTestTags.DELETE_ORDER
 import com.niyaj.common.tags.OrderTestTags.DELETE_ORDER_MESSAGE
+import com.niyaj.common.utils.toMilliSecond
+import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.model.OrderType
 import com.niyaj.order.components.OrderTab
 import com.niyaj.order.components.OrderTabs
 import com.niyaj.order.components.OrderTabsContent
 import com.niyaj.order.components.OrderedItemLayout
+import com.niyaj.order.components.ShareableOrderDetails
 import com.niyaj.order.destinations.OrderDetailsScreenDestination
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.StandardOutlinedAssistChip
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
+import com.niyaj.ui.utils.rememberCaptureController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.navigate
@@ -64,20 +69,19 @@ import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.message
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
-import de.charlex.compose.RevealSwipe
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class)
 @RootNavGraph(start = true)
-@Destination(
-    route = Screens.ORDER_SCREEN
-)
+@Destination(route = Screens.ORDER_SCREEN)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class)
 @Composable
 fun OrderScreen(
     navController: NavController,
     onClickEditOrder: (Int) -> Unit,
     viewModel: OrderViewModel = hiltViewModel(),
+    shareViewModel: ShareViewModel = hiltViewModel()
 ) {
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -86,6 +90,8 @@ fun OrderScreen(
     )
 
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val captureController = rememberCaptureController()
     val snackbarHostState = remember { SnackbarHostState() }
 
     val bluetoothPermissions =
@@ -161,6 +167,11 @@ fun OrderScreen(
 
     val orders = viewModel.cartOrders.collectAsStateWithLifecycle().value.orders
     val isLoading: Boolean = viewModel.cartOrders.collectAsStateWithLifecycle().value.isLoading
+
+    val orderDetails = viewModel.orderDetails.collectAsStateWithLifecycle().value
+    val charges = viewModel.charges.collectAsStateWithLifecycle().value
+
+    val showShareDialog = shareViewModel.showList.collectAsStateWithLifecycle().value
 
     val dineInOrders by remember(orders) {
         derivedStateOf {
@@ -279,45 +290,6 @@ fun OrderScreen(
             }
         }
     ) {
-        MaterialDialog(
-            dialogState = deleteOrderState,
-            buttons = {
-                positiveButton(
-                    text = "Delete",
-                    onClick = {
-                        viewModel.onOrderEvent(OrderEvent.DeleteOrder(deletableOrder))
-                        deletableOrder = 0
-                    }
-                )
-                negativeButton(
-                    text = "Cancel",
-                    onClick = {
-                        deleteOrderState.hide()
-                        deletableOrder = 0
-                    },
-                )
-            }
-        ) {
-            title(text = DELETE_ORDER)
-            message(text = DELETE_ORDER_MESSAGE)
-        }
-
-        MaterialDialog(
-            dialogState = dialogState,
-            buttons = {
-                positiveButton("Ok")
-                negativeButton("Cancel")
-            }
-        ) {
-            datepicker(
-                allowedDateValidator = { date ->
-                    date <= LocalDate.now()
-                }
-            ) { date ->
-                viewModel.onOrderEvent(OrderEvent.SelectDate(date.toMilliSecond))
-            }
-        }
-
         val tabs = listOf(
             OrderTab.DineOutOrder {
                 OrderedItemLayout(
@@ -340,7 +312,11 @@ fun OrderScreen(
                     onClickOrderDetails = {
                         navController.navigate(OrderDetailsScreenDestination(it))
                     },
-                    onClickEditOrder = onClickEditOrder
+                    onClickEditOrder = onClickEditOrder,
+                    onClickShareOrder = {
+                        shareViewModel.onShowList()
+                        viewModel.onOrderEvent(OrderEvent.GetShareableDetails(it))
+                    }
                 )
             },
             OrderTab.DineInOrder {
@@ -364,7 +340,11 @@ fun OrderScreen(
                     onClickOrderDetails = {
                         navController.navigate(OrderDetailsScreenDestination(it))
                     },
-                    onClickEditOrder = onClickEditOrder
+                    onClickEditOrder = onClickEditOrder,
+                    onClickShareOrder = {
+                        shareViewModel.onShowList()
+                        viewModel.onOrderEvent(OrderEvent.GetShareableDetails(it))
+                    }
                 )
             }
         )
@@ -378,5 +358,76 @@ fun OrderScreen(
             OrderTabs(tabs = tabs, pagerState = pagerState)
             OrderTabsContent(tabs = tabs, pagerState = pagerState)
         }
+    }
+
+    MaterialDialog(
+        dialogState = deleteOrderState,
+        buttons = {
+            positiveButton(
+                text = "Delete",
+                onClick = {
+                    viewModel.onOrderEvent(OrderEvent.DeleteOrder(deletableOrder))
+                    deletableOrder = 0
+                }
+            )
+            negativeButton(
+                text = "Cancel",
+                onClick = {
+                    deleteOrderState.hide()
+                    deletableOrder = 0
+                },
+            )
+        }
+    ) {
+        title(text = DELETE_ORDER)
+        message(text = DELETE_ORDER_MESSAGE)
+    }
+
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            positiveButton("Ok")
+            negativeButton("Cancel")
+        }
+    ) {
+        datepicker(
+            allowedDateValidator = { date ->
+                date <= LocalDate.now()
+            }
+        ) { date ->
+            viewModel.onOrderEvent(OrderEvent.SelectDate(date.toMilliSecond))
+        }
+    }
+
+    AnimatedVisibility(
+        visible = showShareDialog
+    ) {
+        ShareableOrderDetails(
+            captureController = captureController,
+            orderDetails = orderDetails,
+            charges = charges,
+            onDismiss = shareViewModel::onDismissList,
+            onClickShare = {
+                captureController.captureLongScreenshot()
+            },
+            onCaptured = { bitmap, error ->
+                bitmap?.let {
+                    scope.launch {
+                        val uri = shareViewModel.saveImage(it, context)
+                        uri?.let {
+                            shareViewModel.shareContent(context, "Share Image", uri)
+                        }
+                    }
+                }
+                error?.let {
+                    Log.d("Capturable", "Error: ${it.message}\n${it.stackTrace.joinToString()}")
+                }
+            },
+            onClickPrintOrder = {
+                shareViewModel.onDismissList()
+
+                // Todo:: Add Printing functionalities
+            }
+        )
     }
 }
