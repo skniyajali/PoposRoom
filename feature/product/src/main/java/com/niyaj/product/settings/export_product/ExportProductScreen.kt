@@ -56,7 +56,7 @@ import com.niyaj.product.settings.ProductSettingsEvent
 import com.niyaj.product.settings.ProductSettingsViewModel
 import com.niyaj.ui.components.CategoriesData
 import com.niyaj.ui.components.InfoText
-import com.niyaj.ui.components.ItemNotAvailable
+import com.niyaj.ui.components.ItemNotAvailableHalf
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
@@ -144,10 +144,10 @@ fun ExportProductScreen(
         }
 
     fun onBackClick() {
-        if (selectedItems.isNotEmpty()) {
-            viewModel.deselectItems()
-        } else if (showSearchBar) {
+        if (showSearchBar) {
             viewModel.closeSearchBar()
+        } else if (selectedItems.isNotEmpty()) {
+            viewModel.deselectItems()
         } else {
             navController.navigateUp()
         }
@@ -160,7 +160,7 @@ fun ExportProductScreen(
     StandardScaffoldNew(
         navController = navController,
         title = if (selectedItems.isEmpty()) EXPORT_PRODUCTS_TITLE else "${selectedItems.size} Selected",
-        showBottomBar = products.isNotEmpty(),
+        showBottomBar = products.isNotEmpty() && lazyListState.isScrollingUp(),
         showDrawer = false,
         navActions = {
             if (showSearchBar) {
@@ -251,7 +251,7 @@ fun ExportProductScreen(
                     it
                 }
             ) { intState ->
-                if (intState.value != 0) {
+                if (intState.value != 0 && !showSearchBar) {
                     IconButton(
                         onClick = viewModel::deselectItems
                     ) {
@@ -274,29 +274,30 @@ fun ExportProductScreen(
             }
         },
     ) {
-        if (products.isEmpty()) {
-            ItemNotAvailable(
-                text = if (searchText.isEmpty()) ProductTestTags.PRODUCT_NOT_AVAIlABLE else ProductTestTags.NO_ITEMS_IN_PRODUCT,
-                buttonText = ProductTestTags.CREATE_NEW_PRODUCT,
-                onClick = {
-                    navController.navigate(AddEditProductScreenDestination())
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(SpaceSmall),
+        ) {
+            CategoriesData(
+                lazyRowState = lazyRowState,
+                categories = categories,
+                selectedCategory = selectedCategory,
+                onSelect = {
+                    viewModel.onEvent(ProductSettingsEvent.OnSelectCategory(it))
                 }
             )
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(SpaceSmall),
-            ) {
-                CategoriesData(
-                    lazyRowState = lazyRowState,
-                    categories = categories,
-                    selectedCategory = selectedCategory,
-                    onSelect = {
-                        viewModel.onEvent(ProductSettingsEvent.OnSelectCategory(it))
+
+            if (products.isEmpty()) {
+                ItemNotAvailableHalf(
+                    modifier = Modifier.weight(2f),
+                    text = if (searchText.isEmpty()) ProductTestTags.PRODUCT_NOT_AVAIlABLE else ProductTestTags.NO_ITEMS_IN_PRODUCT,
+                    buttonText = ProductTestTags.CREATE_NEW_PRODUCT,
+                    onClick = {
+                        navController.navigate(AddEditProductScreenDestination())
                     }
                 )
-
+            } else {
                 LazyColumn(
                     state = lazyListState,
                 ) {

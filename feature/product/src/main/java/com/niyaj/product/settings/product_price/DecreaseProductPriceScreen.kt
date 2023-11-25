@@ -46,19 +46,22 @@ import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.product.components.ProductCard
+import com.niyaj.product.destinations.AddEditProductScreenDestination
 import com.niyaj.product.settings.ProductSettingsEvent
 import com.niyaj.product.settings.ProductSettingsViewModel
 import com.niyaj.ui.components.CategoriesData
 import com.niyaj.ui.components.InfoText
+import com.niyaj.ui.components.ItemNotAvailableHalf
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.components.StandardTextField
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import kotlinx.coroutines.launch
 
@@ -103,11 +106,11 @@ fun DecreaseProductPriceScreen(
     }
 
     fun onBackClick() {
-        if (selectedItems.isNotEmpty()) {
-            viewModel.deselectItems()
-        } else if (showSearchBar) {
+        if (showSearchBar) {
             viewModel.closeSearchBar()
-        }else {
+        } else if (selectedItems.isNotEmpty()) {
+            viewModel.deselectItems()
+        }  else {
             navController.navigateUp()
         }
     }
@@ -132,7 +135,7 @@ fun DecreaseProductPriceScreen(
                     it
                 }
             ) { intState ->
-                if (intState.value != 0) {
+                if (intState.value != 0 && !showSearchBar) {
                     IconButton(
                         onClick = viewModel::deselectItems
                     ) {
@@ -154,7 +157,7 @@ fun DecreaseProductPriceScreen(
                 }
             }
         },
-        showBottomBar = products.isNotEmpty(),
+        showBottomBar = products.isNotEmpty() && lazyListState.isScrollingUp(),
         showDrawer = false,
         navActions = {
             if (showSearchBar) {
@@ -194,16 +197,6 @@ fun DecreaseProductPriceScreen(
                     .padding(SpaceSmallMax),
                 verticalArrangement = Arrangement.spacedBy(SpaceMedium)
             ) {
-                StandardOutlinedTextField(
-                    value = productPrice,
-                    label = ProductTestTags.DECREASE_PRODUCTS_TEXT_FIELD,
-                    leadingIcon = Icons.Default.CurrencyRupee,
-                    keyboardType = KeyboardType.Number,
-                    onValueChange = {
-                        viewModel.onEvent(ProductSettingsEvent.OnChangeProductPrice(it))
-                    }
-                )
-
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} products price will be decreased.")
 
                 StandardButton(
@@ -240,6 +233,17 @@ fun DecreaseProductPriceScreen(
                 .fillMaxSize()
                 .padding(SpaceSmall),
         ) {
+            StandardTextField(
+                modifier = Modifier.padding(horizontal = SpaceSmall),
+                value = productPrice,
+                label = ProductTestTags.DECREASE_PRODUCTS_TEXT_FIELD,
+                leadingIcon = Icons.Default.CurrencyRupee,
+                keyboardType = KeyboardType.Number,
+                onValueChange = {
+                    viewModel.onEvent(ProductSettingsEvent.OnChangeProductPrice(it))
+                }
+            )
+
             CategoriesData(
                 lazyRowState = lazyRowState,
                 categories = categories,
@@ -252,6 +256,18 @@ fun DecreaseProductPriceScreen(
             LazyColumn(
                 state = lazyListState,
             ) {
+                item {
+                    if (products.isEmpty()) {
+                        ItemNotAvailableHalf(
+                            modifier = Modifier.weight(2f),
+                            text = if (searchText.isEmpty()) ProductTestTags.PRODUCT_NOT_AVAIlABLE else ProductTestTags.NO_ITEMS_IN_PRODUCT,
+                            buttonText = ProductTestTags.CREATE_NEW_PRODUCT,
+                            onClick = {
+                                navController.navigate(AddEditProductScreenDestination())
+                            }
+                        )
+                    }
+                }
                 itemsIndexed(
                     items = products,
                     key = { index, item ->

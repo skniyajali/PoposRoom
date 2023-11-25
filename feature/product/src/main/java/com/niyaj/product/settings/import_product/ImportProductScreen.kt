@@ -117,7 +117,7 @@ fun ImportProductScreen(
     fun onBackClick() {
         if (selectedItems.isNotEmpty()) {
             viewModel.deselectItems()
-        } else {
+        }  else {
             navController.navigateUp()
         }
     }
@@ -163,7 +163,7 @@ fun ImportProductScreen(
             }
         },
         showDrawer = false,
-        showBottomBar = importedProducts.isNotEmpty(),
+        showBottomBar = importedProducts.isNotEmpty() && lazyListState.isScrollingUp(),
         navActions = {
             AnimatedVisibility(
                 visible = importedProducts.isNotEmpty()

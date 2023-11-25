@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CutCornerShape
@@ -44,6 +45,58 @@ fun ItemNotAvailable(
     Column(
         modifier = modifier
             .fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        if (showImage) {
+            Image(
+                painter = image,
+                contentDescription = "No data available",
+            )
+            Spacer(modifier = Modifier.height(SpaceMedium))
+        }
+
+        Text(
+            text = text,
+            fontWeight = FontWeight.Normal,
+            style = MaterialTheme.typography.bodySmall,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.error
+        )
+
+        if (buttonText.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(SpaceMedium))
+            StandardElevatedButton(
+                modifier = btnModifier,
+                text = buttonText,
+                icon = icon,
+                onClick = onClick,
+                colors = ButtonDefaults.elevatedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary
+                ),
+                shape = CutCornerShape(4.dp),
+            )
+        }
+    }
+}
+
+@Composable
+fun ItemNotAvailableHalf(
+    modifier: Modifier = Modifier,
+    btnModifier: Modifier = Modifier,
+    text: String = "",
+    buttonText: String = "",
+    showImage: Boolean = true,
+    icon: ImageVector = if (buttonText.contains("CREATE", true)
+        || buttonText.contains("ADD", true)
+    ) Icons.Default.Add else Icons.Default.Edit,
+    image: Painter = painterResource(id = R.drawable.emptystate),
+    onClick: () -> Unit = {},
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
