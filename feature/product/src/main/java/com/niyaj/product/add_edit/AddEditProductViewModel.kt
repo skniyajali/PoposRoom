@@ -7,9 +7,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.niyaj.common.network.Dispatcher
-import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
+import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.common.utils.safeInt
 import com.niyaj.common.utils.safeString
 import com.niyaj.data.repository.ProductRepository
@@ -18,7 +17,6 @@ import com.niyaj.model.Category
 import com.niyaj.model.Product
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,8 +33,6 @@ import javax.inject.Inject
 class AddEditProductViewModel @Inject constructor(
     private val productRepository: ProductRepository,
     private val validationRepository: ProductValidationRepository,
-    @Dispatcher(PoposDispatchers.IO)
-    private val ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -139,18 +135,19 @@ class AddEditProductViewModel @Inject constructor(
     }
 
     private fun createOrUpdateProduct(productId: Int = 0) {
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             val hasError = listOf(nameError, priceError, categoryError).all {
                 it.value != null
             }
+            val message = if (productId == 0) "created" else "updated"
 
             if (!hasError) {
                 val newProduct = Product(
                     productId = productId,
                     categoryId = _selectedCategory.value.categoryId,
-                    productName = state.productName,
+                    productName = state.productName.trim().capitalizeWords,
                     productPrice = state.productPrice.safeInt(),
-                    productDescription = state.productDesc,
+                    productDescription = state.productDesc.trim().capitalizeWords,
                     productAvailability = state.productAvailability,
                     createdAt = System.currentTimeMillis(),
                     updatedAt = if (productId == 0) null else System.currentTimeMillis()
@@ -158,10 +155,10 @@ class AddEditProductViewModel @Inject constructor(
 
                 when (productRepository.upsertProduct(newProduct)) {
                     is Resource.Error -> {
-                        _eventFlow.emit(UiEvent.OnError("Unable to update or create product"))
+                        _eventFlow.emit(UiEvent.OnError("Unable to $message product"))
                     }
                     is Resource.Success -> {
-                        _eventFlow.emit(UiEvent.OnSuccess("Product created or updated successfully"))
+                        _eventFlow.emit(UiEvent.OnSuccess("Product $message successfully"))
                     }
                 }
             }

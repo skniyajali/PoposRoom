@@ -218,7 +218,8 @@ fun ExportCategoryScreen(
                     }
                 }
             )
-        }
+        },
+        onBackClick = { onBackClick() }
     ) {
         if(categories.isEmpty()) {
             ItemNotAvailable(

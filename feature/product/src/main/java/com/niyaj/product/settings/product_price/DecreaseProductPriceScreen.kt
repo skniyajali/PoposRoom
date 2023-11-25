@@ -1,6 +1,11 @@
 package com.niyaj.product.settings.product_price
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +16,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.RemoveCircleOutline
 import androidx.compose.material.icons.filled.Search
@@ -23,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -41,8 +49,8 @@ import com.niyaj.product.components.ProductCard
 import com.niyaj.product.settings.ProductSettingsEvent
 import com.niyaj.product.settings.ProductSettingsViewModel
 import com.niyaj.ui.components.CategoriesData
-import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.InfoText
+import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
@@ -70,6 +78,8 @@ fun DecreaseProductPriceScreen(
 
     val selectedItems = viewModel.selectedItems.toList()
     val selectedCategory = viewModel.selectedCategory.toList()
+
+    val selectionCount = rememberUpdatedState(newValue = selectedItems.size)
 
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
@@ -109,8 +119,43 @@ fun DecreaseProductPriceScreen(
     StandardScaffoldNew(
         navController = navController,
         title = if (selectedItems.isEmpty()) ProductTestTags.DECREASE_PRODUCTS_TITLE else "${selectedItems.size} Selected",
-        showBackButton = true,
-        showBottomBar = true,
+        navigationIcon = {
+            AnimatedContent(
+                targetState = selectionCount,
+                transitionSpec = {
+                    (fadeIn()).togetherWith(
+                        fadeOut(animationSpec = tween(200))
+                    )
+                },
+                label = "navigationIcon",
+                contentKey = {
+                    it
+                }
+            ) { intState ->
+                if (intState.value != 0) {
+                    IconButton(
+                        onClick = viewModel::deselectItems
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = Constants.CLEAR_ICON
+                        )
+                    }
+                } else {
+                    IconButton(
+                        onClick = { onBackClick() },
+                        modifier = Modifier.testTag(Constants.STANDARD_BACK_BUTTON)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null,
+                        )
+                    }
+                }
+            }
+        },
+        showBottomBar = products.isNotEmpty(),
+        showDrawer = false,
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(

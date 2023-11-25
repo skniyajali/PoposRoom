@@ -48,11 +48,11 @@ object ProductTestTags {
     const val IMPORT_PRODUCTS_OPN_FILE = "Open File"
     const val IMPORT_PRODUCTS_NOTE_TEXT = "Make sure to open products.json file."
 
-    const val INCREASE_PRODUCTS_TITLE = "Increase Products Price"
+    const val INCREASE_PRODUCTS_TITLE = "Increase Price"
     const val INCREASE_PRODUCTS_TEXT_FIELD = "Product Price"
     const val INCREASE_PRODUCTS_BTN_TEXT = "Increase Price"
 
-    const val DECREASE_PRODUCTS_TITLE = "Decrease Products Price"
+    const val DECREASE_PRODUCTS_TITLE = "Decrease Price"
     const val DECREASE_PRODUCTS_TEXT_FIELD = "Product Price"
     const val DECREASE_PRODUCTS_BTN_TEXT = "Decrease Price"
 

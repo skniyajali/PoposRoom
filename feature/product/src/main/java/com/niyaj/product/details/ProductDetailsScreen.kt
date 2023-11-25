@@ -18,18 +18,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
+import androidx.compose.material.icons.automirrored.filled.Feed
+import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.AllInbox
-import androidx.compose.material.icons.filled.ArrowRightAlt
 import androidx.compose.material.icons.filled.AutoGraph
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CollectionsBookmark
 import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.DeliveryDining
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Feed
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.RadioButtonChecked
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.RamenDining
@@ -248,7 +248,7 @@ fun ProductTotalOrdersDetails(
                                 if (!details.datePeriod.isSameDay()) {
                                     Spacer(modifier = Modifier.width(SpaceMini))
                                     Icon(
-                                        imageVector = Icons.Default.ArrowRightAlt,
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
                                         contentDescription = "DatePeriod"
                                     )
                                     Spacer(modifier = Modifier.width(SpaceMini))
@@ -354,7 +354,7 @@ fun ProductDetails(
             title = {
                 IconWithText(
                     text = "Product Details",
-                    icon = Icons.Default.Feed,
+                    icon = Icons.AutoMirrored.Filled.Feed,
                 )
             },
             trailing = {
@@ -431,7 +431,7 @@ fun ProductDetails(
                                 state.data.updatedAt?.let {
                                     IconWithText(
                                         text = "Updated At : ${it.toFormattedDateAndTime}",
-                                        icon = Icons.Default.Login
+                                        icon = Icons.AutoMirrored.Filled.Login
                                     )
                                 }
                             }
