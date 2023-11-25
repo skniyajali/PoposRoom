@@ -42,7 +42,8 @@ import com.niyaj.product.destinations.IncreaseProductPriceScreenDestination
 import com.niyaj.product.destinations.ProductDetailsScreenDestination
 import com.niyaj.product.destinations.ProductSettingScreenDestination
 import com.niyaj.ui.components.CategoriesData
-import com.niyaj.ui.components.ItemNotAvailable
+import com.niyaj.ui.components.ItemNotAvailableHalf
+import com.niyaj.ui.components.ItemNotFound
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
 import com.niyaj.ui.components.StandardFAB
@@ -126,6 +127,7 @@ fun ProductScreen(
             }
         }
     }
+
     exportRecipient.onNavResult { result ->
         when(result) {
             is NavResult.Canceled -> {}
@@ -136,6 +138,7 @@ fun ProductScreen(
             }
         }
     }
+
     importRecipient.onNavResult { result ->
         when(result) {
             is NavResult.Canceled -> {}
@@ -146,6 +149,7 @@ fun ProductScreen(
             }
         }
     }
+
     increaseRecipient.onNavResult { result ->
         when(result) {
             is NavResult.Canceled -> {}
@@ -156,6 +160,7 @@ fun ProductScreen(
             }
         }
     }
+
     decreaseRecipient.onNavResult { result ->
         when(result) {
             is NavResult.Canceled -> {}
@@ -178,6 +183,8 @@ fun ProductScreen(
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
+        } else if (selectedCategory != 0) {
+            viewModel.selectCategory(selectedCategory)
         } else {
             navController.navigateUp()
         }
@@ -235,11 +242,19 @@ fun ProductScreen(
             modifier = Modifier
                 .padding(SpaceSmall),
         ) {
+            CategoriesData(
+                lazyRowState = lazyRowState,
+                categories = categories,
+                selectedCategory = selectedCategory,
+                onSelect = viewModel::selectCategory
+            )
+
             when (state) {
                 is UiState.Loading -> LoadingIndicator()
 
                 is UiState.Empty -> {
-                    ItemNotAvailable(
+                    ItemNotAvailableHalf(
+                        modifier = Modifier.weight(2f),
                         text = if (searchText.isEmpty()) PRODUCT_NOT_AVAIlABLE else NO_ITEMS_IN_PRODUCT,
                         buttonText = CREATE_NEW_PRODUCT,
                         onClick = {
@@ -249,13 +264,6 @@ fun ProductScreen(
                 }
 
                 is UiState.Success -> {
-                    CategoriesData(
-                        lazyRowState = lazyRowState,
-                        categories = categories,
-                        selectedCategory = selectedCategory,
-                        onSelect = viewModel::selectCategory
-                    )
-
                     LazyColumn(
                         state = lazyListState,
                     ) {
@@ -284,6 +292,15 @@ fun ProductScreen(
                                 Spacer(modifier = Modifier.height(SpaceLarge))
                                 Spacer(modifier = Modifier.height(SpaceLarge))
                             }
+                        }
+
+                        item {
+                            ItemNotFound(
+                                btnText = CREATE_NEW_PRODUCT,
+                                onBtnClick = {
+                                    navController.navigate(AddEditProductScreenDestination())
+                                }
+                            )
                         }
                     }
                 }

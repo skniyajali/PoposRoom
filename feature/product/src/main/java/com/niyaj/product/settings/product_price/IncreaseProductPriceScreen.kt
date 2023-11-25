@@ -45,10 +45,12 @@ import com.niyaj.common.utils.safeString
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.product.components.ProductCard
+import com.niyaj.product.destinations.AddEditProductScreenDestination
 import com.niyaj.product.settings.ProductSettingsEvent
 import com.niyaj.product.settings.ProductSettingsViewModel
 import com.niyaj.ui.components.CategoriesData
 import com.niyaj.ui.components.InfoText
+import com.niyaj.ui.components.ItemNotAvailableHalf
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
@@ -58,6 +60,7 @@ import com.niyaj.ui.components.StandardTextField
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import kotlinx.coroutines.launch
 
@@ -257,6 +260,18 @@ fun IncreaseProductPriceScreen(
             LazyColumn(
                 state = lazyListState,
             ) {
+                item {
+                    if (products.isEmpty()) {
+                        ItemNotAvailableHalf(
+                            modifier = Modifier.weight(2f),
+                            text = if (searchText.isEmpty()) ProductTestTags.PRODUCT_NOT_AVAIlABLE else ProductTestTags.NO_ITEMS_IN_PRODUCT,
+                            buttonText = ProductTestTags.CREATE_NEW_PRODUCT,
+                            onClick = {
+                                navController.navigate(AddEditProductScreenDestination())
+                            }
+                        )
+                    }
+                }
                 itemsIndexed(
                     items = products,
                     key = { index, item ->

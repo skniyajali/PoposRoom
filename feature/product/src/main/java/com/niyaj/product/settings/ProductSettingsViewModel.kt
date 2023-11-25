@@ -66,8 +66,6 @@ class ProductSettingsViewModel @Inject constructor(
         return products.value.filter { it.categoryId == categoryId }.map { it.productId }
     }
 
-    private var categoryCount = 0
-
     /**
      *
      */
@@ -77,34 +75,16 @@ class ProductSettingsViewModel @Inject constructor(
             is ProductSettingsEvent.OnSelectCategory -> {
                 viewModelScope.launch {
                     val products = getProducts(event.categoryId)
-                    categoryCount += 1
 
-                    if (!_selectedCategory.contains(event.categoryId)) {
+                    if (_selectedCategory.contains(event.categoryId)) {
+                        mSelectedItems.removeAll(products)
+                        _selectedCategory.remove(event.categoryId)
+                    }else {
                         _selectedCategory.add(event.categoryId)
 
-                        if (products.isNotEmpty()) {
-                            products.forEach { itemId ->
-                                if (categoryCount % 2 != 0) {
-                                    val selectedProduct = mSelectedItems.find { it == itemId }
-
-                                    if (selectedProduct == null) {
-                                        mSelectedItems.add(itemId)
-                                    }
-                                } else {
-                                    mSelectedItems.remove(itemId)
-                                }
-                            }
-                        }
-                    } else {
-                        _selectedCategory.remove(event.categoryId)
-
-                        if (products.isNotEmpty()) {
-                            products.forEach { productId ->
-                                val selectedProduct = mSelectedItems.find { it == productId }
-
-                                if (selectedProduct != null) {
-                                    mSelectedItems.remove(productId)
-                                }
+                        products.forEach {
+                            if (!mSelectedItems.contains(it)){
+                                mSelectedItems.add(it)
                             }
                         }
                     }
@@ -119,7 +99,7 @@ class ProductSettingsViewModel @Inject constructor(
                         val newProducts = mutableListOf<Product>()
 
                         mSelectedItems.forEach { id ->
-                            val product = products.value.find { it.productId == id }
+                            val product = products.value.distinct().find { it.productId == id }
 
                             if (product != null) {
                                 newProducts.add(product)
@@ -237,7 +217,18 @@ class ProductSettingsViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
 
+    override fun deselectItems() {
+        super.deselectItems()
+
+        deselectCategories()
+    }
+
+    private fun deselectCategories() {
+        viewModelScope.launch {
+            _selectedCategory.clear()
         }
     }
 }
