@@ -435,7 +435,7 @@ fun GroupedOrders(
         ) {
             orderDetails.forEach { order ->
                 StandardRoundedFilterChip(
-                    label = order.totalPrice.toRupee,
+                    text = order.totalPrice.toRupee,
                     icon = Icons.Default.Tag,
                     onClick = {
                         onClickOrder(order.orderId)

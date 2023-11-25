@@ -134,6 +134,14 @@ class AddEditMarketListViewModel @Inject constructor(
         }
     }
 
+    private fun getListItems() {
+        viewModelScope.launch {
+            repository.getMarketItemsAndQuantity(marketId).collectLatest {
+                _listItems.value = it
+            }
+        }
+    }
+
     fun onDismissList() {
         viewModelScope.launch {
             _showList.value = false
@@ -144,14 +152,6 @@ class AddEditMarketListViewModel @Inject constructor(
         viewModelScope.launch {
             getListItems()
             _showList.value = true
-        }
-    }
-
-    private fun getListItems() {
-        viewModelScope.launch {
-            repository.getMarketItemsAndQuantity(marketId).collectLatest {
-                _listItems.value = it
-            }
         }
     }
 

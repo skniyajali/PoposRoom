@@ -35,7 +35,7 @@ fun CartChargesItem(
             StandardRoundedFilterChip(
                 modifier = Modifier
                     .padding(SpaceMini),
-                label = charges.chargesName,
+                text = charges.chargesName,
                 selected = selectedItem.contains(charges.chargesId),
                 onClick = {
                     onClick(charges.chargesId)

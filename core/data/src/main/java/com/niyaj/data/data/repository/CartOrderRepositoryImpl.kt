@@ -329,9 +329,6 @@ class CartOrderRepositoryImpl(
 
                     val result = cartOrderDao.createOrUpdateCartOrder(newOrder)
 
-                    Timber.d("Result $result")
-
-
                     if (result > 0) {
                         async(ioDispatcher) {
                             insertOrIgnoreCartPrice(result.toInt(), newOrder.orderType, newOrder.doesChargesIncluded)

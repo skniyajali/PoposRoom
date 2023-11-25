@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccessTime
@@ -15,6 +14,7 @@ import androidx.compose.material.icons.outlined.CurrencyRupee
 import androidx.compose.material.icons.outlined.PhoneAndroid
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Print
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Tag
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.CardDefaults
@@ -43,6 +43,7 @@ fun OrderedItemData(
     order: Order,
     onClickViewDetails: (Int) -> Unit,
     onClickPrintOrder: (Int) -> Unit,
+    onClickShareOrder: (Int) -> Unit,
 ) {
     ElevatedCard(
         modifier = Modifier
@@ -110,7 +111,8 @@ fun OrderedItemData(
                 }
 
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(SpaceMini)
                 ){
                     FilledTonalIconButton(
                         onClick = {
@@ -118,7 +120,8 @@ fun OrderedItemData(
                         },
                         shape = RoundedCornerShape(SpaceMini),
                         colors = IconButtonDefaults.filledTonalIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.outlineVariant
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.secondary
                         )
                     ) {
                         Icon(
@@ -127,7 +130,21 @@ fun OrderedItemData(
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(SpaceMini))
+                    FilledTonalIconButton(
+                        onClick = {
+                            onClickShareOrder(order.orderId)
+                        },
+                        shape = RoundedCornerShape(SpaceMini),
+                        colors = IconButtonDefaults.filledTonalIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.tertiary
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Share,
+                            contentDescription = "Share Details"
+                        )
+                    }
 
                     FilledTonalIconButton(
                         onClick = {
@@ -135,7 +152,8 @@ fun OrderedItemData(
                         },
                         shape = RoundedCornerShape(SpaceMini),
                         colors = IconButtonDefaults.filledTonalIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.primary
                         )
                     ) {
                         Icon(

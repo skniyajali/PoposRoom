@@ -32,6 +32,7 @@ import com.niyaj.feature.reports.destinations.ReportScreenDestination
 import com.niyaj.order.OrderScreen
 import com.niyaj.order.destinations.OrderDetailsScreenDestination
 import com.niyaj.order.destinations.OrderScreenDestination
+import com.niyaj.order.details.OrderDetailsScreen
 import com.niyaj.poposroom.ui.PoposAppState
 import com.niyaj.product.destinations.ProductDetailsScreenDestination
 import com.niyaj.product.details.ProductDetailsScreen
@@ -202,6 +203,19 @@ fun PoposNavHost(
                         resultRecipient = resultRecipient(),
                         exportRecipient = resultRecipient(),
                         importRecipient = resultRecipient()
+                    )
+                }
+
+                composable(OrderDetailsScreenDestination) {
+                    OrderDetailsScreen(
+                        orderId = this.navBackStackEntry.arguments?.getInt("orderId") ?: 0,
+                        navController = navController,
+                        onClickCustomer = {
+                            navController.navigate(CustomerDetailsScreenDestination(it))
+                        },
+                        onClickAddress = {
+                            navController.navigate(AddressDetailsScreenDestination(it))
+                        }
                     )
                 }
             }

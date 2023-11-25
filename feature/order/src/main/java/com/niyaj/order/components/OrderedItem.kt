@@ -32,6 +32,7 @@ fun OrderedItem(
     onClickDelete: (Int) -> Unit,
     onClickViewDetails: (Int) -> Unit,
     onClickEdit: (Int) -> Unit,
+    onClickShareOrder: (Int) -> Unit,
 ) {
     RevealSwipe(
         modifier = Modifier
@@ -101,7 +102,8 @@ fun OrderedItem(
             shape = it,
             order = order,
             onClickViewDetails = onClickViewDetails,
-            onClickPrintOrder = onClickPrintOrder
+            onClickPrintOrder = onClickPrintOrder,
+            onClickShareOrder = onClickShareOrder,
         )
     }
 }

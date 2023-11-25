@@ -12,6 +12,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -169,6 +170,9 @@ fun StandardOutlinedIconButton(
     onClick: () -> Unit,
     enabled: Boolean = true,
     borderColor: Color = MaterialTheme.colorScheme.outlineVariant,
+    colors: IconButtonColors = IconButtonDefaults.outlinedIconButtonColors(
+        contentColor = borderColor
+    ),
     shape: Shape = RoundedCornerShape(SpaceMini)
 ) {
     OutlinedIconButton(
@@ -176,6 +180,7 @@ fun StandardOutlinedIconButton(
         onClick = onClick,
         shape = shape,
         enabled = enabled,
+        colors = colors,
         border = BorderStroke(1.dp, borderColor)
     ) {
         Icon(

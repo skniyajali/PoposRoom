@@ -2,11 +2,14 @@ package com.niyaj.order.details
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.niyaj.common.network.Dispatcher
+import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.data.repository.OrderRepository
+import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.event.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
@@ -19,7 +22,9 @@ import javax.inject.Inject
 class OrderDetailsViewModel @Inject constructor(
     private val orderRepository: OrderRepository,
     savedStateHandle: SavedStateHandle,
-) : ViewModel() {
+    @Dispatcher(PoposDispatchers.IO)
+    private val ioDispatcher: CoroutineDispatcher,
+) : ShareViewModel(ioDispatcher) {
 
     private val orderId = savedStateHandle.get<Int>("orderId") ?: 0
 

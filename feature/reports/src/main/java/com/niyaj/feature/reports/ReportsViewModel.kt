@@ -14,7 +14,6 @@ import com.niyaj.domain.utils.BluetoothPrinter
 import com.niyaj.feature.chart.horizontalbar.model.HorizontalBarData
 import com.niyaj.model.Reports
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -226,7 +225,7 @@ class ReportsViewModel @Inject constructor(
     }
 
     private fun generateReport() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             reportsRepository.generateReport(getStartTime, getEndTime)
         }
     }

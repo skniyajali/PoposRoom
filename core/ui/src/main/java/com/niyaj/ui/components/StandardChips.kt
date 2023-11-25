@@ -6,11 +6,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.ChipBorder
+import androidx.compose.material3.ChipColors
 import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -58,8 +62,8 @@ fun StandardFilterChip(
     text: String,
     icon: ImageVector? = null,
     selected: Boolean = false,
-    containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
-    selectedColor: Color = MaterialTheme.colorScheme.secondaryContainer,
+    containerColor: Color = MaterialTheme.colorScheme.surface,
+    selectedColor: Color = MaterialTheme.colorScheme.secondary,
     onClick: () -> Unit = {},
 ) {
     ElevatedFilterChip(
@@ -91,7 +95,7 @@ fun StandardFilterChip(
 @Composable
 fun StandardRoundedFilterChip(
     modifier: Modifier = Modifier,
-    label: String,
+    text: String,
     icon: ImageVector? = null,
     selected: Boolean = false,
     containerColor: Color = MaterialTheme.colorScheme.surface,
@@ -104,7 +108,7 @@ fun StandardRoundedFilterChip(
         selected = selected,
         label = {
             Text(
-                text = label,
+                text = text,
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
             )
@@ -119,7 +123,7 @@ fun StandardRoundedFilterChip(
                 ) {
                     Icon(
                         imageVector = icon,
-                        contentDescription = label.plus("icon"),
+                        contentDescription = text.plus("icon"),
                         modifier = Modifier
                             .size(IconSizeMini)
                             .align(Alignment.Center)
@@ -165,5 +169,38 @@ fun StandardOutlinedAssistChip(
                 Icon(imageVector = it, contentDescription = "chip icon")
             }
         }
+    )
+}
+
+@Composable
+fun StandardSuggestionChip(
+    modifier: Modifier = Modifier,
+    text: String,
+    icon: ImageVector,
+    borderColor: Color = MaterialTheme.colorScheme.tertiary,
+    labelColor: Color = borderColor,
+    chipBorder: ChipBorder = SuggestionChipDefaults.suggestionChipBorder(
+        borderColor = borderColor,
+    ),
+    colors: ChipColors = SuggestionChipDefaults.suggestionChipColors(
+        labelColor = labelColor,
+        iconContentColor = labelColor
+    ),
+    onClick: () -> Unit = {},
+) {
+    SuggestionChip(
+        modifier = modifier,
+        onClick = onClick,
+        border = chipBorder,
+        colors = colors,
+        icon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = "Order Type"
+            )
+        },
+        label = {
+            Text(text = text)
+        },
     )
 }

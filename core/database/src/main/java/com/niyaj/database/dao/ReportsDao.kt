@@ -9,7 +9,6 @@ import com.niyaj.database.model.AddressEntity
 import com.niyaj.database.model.CategoryEntity
 import com.niyaj.database.model.CustomerEntity
 import com.niyaj.database.model.OrderDto
-import com.niyaj.database.model.ProductEntity
 import com.niyaj.database.model.ProductWiseOrderDto
 import com.niyaj.database.model.ReportsEntity
 import com.niyaj.model.OrderStatus

@@ -29,6 +29,7 @@ import com.niyaj.designsystem.theme.IconSizeSmall
 
 @Composable
 fun CircularBox(
+    modifier: Modifier = Modifier,
     icon: ImageVector,
     doesSelected: Boolean,
     text: String? = null,
@@ -38,15 +39,16 @@ fun CircularBox(
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
     selectedTint: Color = MaterialTheme.colorScheme.primary,
     unselectedTint: Color = MaterialTheme.colorScheme.secondary,
+    borderStroke: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
 ) {
-    val availBorder = if (showBorder) BorderStroke(1.dp, MaterialTheme.colorScheme.error) else null
+    val availBorder = if (showBorder) borderStroke  else null
 
     val textStyle =
         if (size < 40.dp) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelMedium
     val iconSize = if (size < 40.dp) IconSizeSmall else IconSizeMedium
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(size)
             .clip(CircleShape)
             .background(backgroundColor)
