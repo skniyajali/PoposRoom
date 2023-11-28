@@ -9,7 +9,6 @@ import com.niyaj.database.model.ReportsEntity
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.database.model.toExternalModel
 import com.niyaj.model.AddressWiseReport
-import com.niyaj.model.CartOrder
 import com.niyaj.model.CategoryWiseReport
 import com.niyaj.model.CustomerWiseReport
 import com.niyaj.model.ProductAndQuantity
@@ -141,13 +140,6 @@ class ReportsRepositoryImpl(
                         }.sortedByDescending { it -> it.productWithQuantity.sumOf { it.quantity } }
                 }
         }
-    }
-
-    override suspend fun getDineOutOrders(
-        startDate: String,
-        endDate: String,
-    ): Flow<List<CartOrder>> {
-        TODO("Not yet implemented")
     }
 
     override suspend fun deleteLastSevenDaysBeforeData(): Resource<Boolean> {

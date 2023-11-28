@@ -30,7 +30,7 @@ object RootNavGraph : NavGraphSpec {
 
     override val destinationsByRoute = emptyMap<String, DestinationSpec<*>>()
 
-    override val startRoute = ProductNavGraph
+    override val startRoute = HomeNavGraph
 
     override val nestedNavGraphs = listOf(
         AddonitemNavGraph,

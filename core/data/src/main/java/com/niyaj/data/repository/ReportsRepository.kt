@@ -2,7 +2,6 @@ package com.niyaj.data.repository
 
 import com.niyaj.common.result.Resource
 import com.niyaj.model.AddressWiseReport
-import com.niyaj.model.CartOrder
 import com.niyaj.model.CategoryWiseReport
 import com.niyaj.model.CustomerWiseReport
 import com.niyaj.model.ProductWiseReport
@@ -28,8 +27,6 @@ interface ReportsRepository {
         endDate: String,
         orderType: String,
     ): Flow<List<CategoryWiseReport>>
-
-    suspend fun getDineOutOrders(startDate: String, endDate: String): Flow<List<CartOrder>>
 
     suspend fun deleteLastSevenDaysBeforeData(): Resource<Boolean>
 
