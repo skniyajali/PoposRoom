@@ -57,6 +57,7 @@ interface ReportsDao {
     @Query(
         value = """
             SELECT * FROM cartorder WHERE createdAt BETWEEN :startDate 
+            AND :endDate OR updatedAt BETWEEN :startDate 
             AND :endDate AND orderStatus = :orderStatus AND orderType = :orderType
         """
     )
@@ -72,6 +73,7 @@ interface ReportsDao {
     @Query(
         value = """
             SELECT * FROM cartorder WHERE createdAt BETWEEN :startDate 
+            AND :endDate  OR updatedAt BETWEEN :startDate 
             AND :endDate AND orderStatus = :orderStatus AND orderType = :orderType
         """
     )
@@ -88,6 +90,7 @@ interface ReportsDao {
     @Query(
         value = """
             SELECT * FROM cartorder WHERE createdAt BETWEEN :startDate 
+            AND :endDate  OR updatedAt BETWEEN :startDate 
             AND :endDate AND orderStatus = :orderStatus
         """
     )
@@ -101,6 +104,7 @@ interface ReportsDao {
     @Query(
         value = """
             SELECT addressId FROM cartorder WHERE createdAt BETWEEN :startDate 
+            AND :endDate  OR updatedAt BETWEEN :startDate 
             AND :endDate AND orderStatus = :orderStatus AND orderType = :orderType
         """
     )
@@ -116,6 +120,7 @@ interface ReportsDao {
     @Query(
         value = """
             SELECT customerId FROM cartorder WHERE createdAt BETWEEN :startDate 
+            AND :endDate  OR updatedAt BETWEEN :startDate 
             AND :endDate AND orderStatus = :orderStatus AND orderType = :orderType
         """
     )
