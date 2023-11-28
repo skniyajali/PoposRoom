@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.CurrencyRupee
@@ -19,26 +18,23 @@ import androidx.compose.material.icons.outlined.Tag
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.niyaj.common.utils.toTime
-import com.niyaj.core.ui.R
 import com.niyaj.designsystem.theme.LightColor8
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Order
 import com.niyaj.ui.components.IconWithText
+import com.niyaj.ui.components.StandardFilledTonalIconButton
 
 @Composable
 fun OrderedItemData(
+    modifier: Modifier = Modifier,
     shape : Shape,
     order: Order,
     onClickViewDetails: (Int) -> Unit,
@@ -46,7 +42,7 @@ fun OrderedItemData(
     onClickShareOrder: (Int) -> Unit,
 ) {
     ElevatedCard(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         shape = shape,
         colors = CardDefaults.elevatedCardColors(
@@ -114,53 +110,26 @@ fun OrderedItemData(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(SpaceMini)
                 ){
-                    FilledTonalIconButton(
-                        onClick = {
-                            onClickViewDetails(order.orderId)
-                        },
-                        shape = RoundedCornerShape(SpaceMini),
-                        colors = IconButtonDefaults.filledTonalIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer,
-                            contentColor = MaterialTheme.colorScheme.secondary
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Visibility,
-                            contentDescription = stringResource(id = R.string.order_details),
-                        )
-                    }
+                    StandardFilledTonalIconButton(
+                        icon = Icons.Outlined.Visibility,
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.secondary,
+                        onClick = { onClickViewDetails(order.orderId) },
+                    )
 
-                    FilledTonalIconButton(
-                        onClick = {
-                            onClickShareOrder(order.orderId)
-                        },
-                        shape = RoundedCornerShape(SpaceMini),
-                        colors = IconButtonDefaults.filledTonalIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.tertiary
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Share,
-                            contentDescription = "Share Details"
-                        )
-                    }
+                    StandardFilledTonalIconButton(
+                        icon = Icons.Outlined.Share,
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.tertiary,
+                        onClick = { onClickShareOrder(order.orderId) },
+                    )
 
-                    FilledTonalIconButton(
-                        onClick = {
-                            onClickPrintOrder(order.orderId)
-                        },
-                        shape = RoundedCornerShape(SpaceMini),
-                        colors = IconButtonDefaults.filledTonalIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Print,
-                            contentDescription = stringResource(id = R.string.print_order)
-                        )
-                    }
+                    StandardFilledTonalIconButton(
+                        icon = Icons.Outlined.Print,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.primary,
+                        onClick = { onClickPrintOrder(order.orderId) },
+                    )
                 }
             }
         }

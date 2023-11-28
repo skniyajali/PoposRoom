@@ -12,6 +12,7 @@ import com.niyaj.database.model.CategoryWithProductCrossRef
 import com.niyaj.database.model.CategoryWithProductsDto
 import com.niyaj.database.model.ProductEntity
 import com.niyaj.database.model.ProductWiseOrderDetailsDto
+import com.niyaj.model.OrderStatus
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -122,10 +123,10 @@ interface ProductDao {
     @Transaction
     @Query(
         value = """
-            SELECT * FROM cartorder WHERE orderId IN (:orderIds) ORDER BY updatedAt DESC
+            SELECT * FROM cartorder WHERE orderId IN (:orderIds) AND orderStatus = :orderStatus ORDER BY updatedAt DESC
         """
     )
-    fun getProductWiseOrders(orderIds: List<Int>): Flow<List<ProductWiseOrderDetailsDto>>
+    fun getProductWiseOrders(orderIds: List<Int>, orderStatus: OrderStatus = OrderStatus.PLACED ): Flow<List<ProductWiseOrderDetailsDto>>
 
 
     @Query(

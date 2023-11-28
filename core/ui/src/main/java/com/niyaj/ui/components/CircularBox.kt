@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.niyaj.common.utils.getAllCapitalizedLetters
 import com.niyaj.designsystem.theme.IconSizeMedium
 import com.niyaj.designsystem.theme.IconSizeSmall
+import com.niyaj.designsystem.theme.SpaceMini
 
 @Composable
 fun CircularBox(
@@ -138,8 +139,8 @@ fun CircularBoxWithIcon(
     val availBorder = if (showBorder) BorderStroke(1.dp, MaterialTheme.colorScheme.error) else null
 
     val textStyle =
-        if (size < 40.dp) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelMedium
-    val iconSize = if (size < 40.dp) IconSizeSmall else IconSizeMedium
+        if (size <= 40.dp) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelMedium
+    val iconSize = if (size <= 40.dp) IconSizeSmall else IconSizeMedium
 
     Box(
         modifier = Modifier
@@ -154,7 +155,7 @@ fun CircularBoxWithIcon(
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(SpaceMini, Alignment.CenterHorizontally),
         ) {
             if (doesSelected) {
                 Icon(

@@ -2,14 +2,17 @@ package com.niyaj.product.details
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.niyaj.common.network.Dispatcher
+import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.utils.toMillis
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.data.repository.ProductRepository
 import com.niyaj.model.OrderType
+import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.event.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +25,9 @@ import javax.inject.Inject
 class ProductDetailsViewModel @Inject constructor(
     private val productRepository : ProductRepository,
     savedStateHandle : SavedStateHandle,
-): ViewModel() {
+    @Dispatcher(PoposDispatchers.IO)
+    private val ioDispatcher: CoroutineDispatcher,
+): ShareViewModel(ioDispatcher) {
 
     private val productId = savedStateHandle.get<Int>("productId") ?: 0
 

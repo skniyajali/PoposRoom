@@ -1,4 +1,4 @@
-package com.niyaj.order.components
+package com.niyaj.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,19 +15,27 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.theme.SpaceMini
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OrderTabs(tabs: List<OrderTab>, pagerState: PagerState) {
+fun OrderTabs(
+    tabs: List<OrderTab>,
+    pagerState: PagerState,
+    containerColor: Color = TabRowDefaults.primaryContainerColor,
+    contentColor: Color = TabRowDefaults.primaryContentColor
+) {
     val scope = rememberCoroutineScope()
 
     // OR ScrollableTabRow()
     PrimaryTabRow(
         // Our selected tab is our current page
         selectedTabIndex = pagerState.currentPage,
+        containerColor = containerColor,
+        contentColor = contentColor,
         // Override the indicator, using the provided pagerTabIndicatorOffset modifier
         indicator = { tabPositions ->
             if (pagerState.currentPage < tabPositions.size) {
@@ -43,7 +51,7 @@ fun OrderTabs(tabs: List<OrderTab>, pagerState: PagerState) {
         // Add tabs for all of our pages
         tabs.forEachIndexed { index, tab ->
             LeadingIconTab(
-                icon = { Icon(imageVector = tab.icon, contentDescription = "") },
+                icon = { Icon(imageVector = tab.icon, contentDescription = tab.title) },
                 text = { Text(tab.title) },
                 selected = pagerState.currentPage == index,
                 onClick = {
@@ -60,8 +68,13 @@ fun OrderTabs(tabs: List<OrderTab>, pagerState: PagerState) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OrderTabsContent(tabs: List<OrderTab>, pagerState: PagerState) {
+fun OrderTabsContent(
+    modifier: Modifier = Modifier,
+    tabs: List<OrderTab>,
+    pagerState: PagerState
+) {
     HorizontalPager(
+        modifier = modifier,
         state = pagerState,
     ) { page ->
         tabs[page].screen()

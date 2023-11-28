@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -65,6 +66,52 @@ fun StandardFAB(
                 expanded = !showScrollToTop,
                 icon = { Icon(fabIcon, fabText) },
                 text = { Text(text = fabText.uppercase()) },
+            )
+        }
+    }
+}
+
+
+@Composable
+fun StandardFAB(
+    fabVisible: Boolean,
+    showScrollToTop: Boolean = false,
+    fabIcon: ImageVector = Icons.Filled.Add,
+    containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
+    onFabClick: () -> Unit,
+    onClickScroll: () -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        AnimatedVisibility(
+            visible = showScrollToTop,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            ScrollToTop(onClick = onClickScroll, containerColor = containerColor)
+        }
+
+        Spacer(modifier = Modifier.height(SpaceSmall))
+
+        AnimatedVisibility(
+            visible = fabVisible,
+            enter = fadeIn() + slideInVertically(
+                initialOffsetY = { fullHeight ->
+                    fullHeight / 4
+                }
+            ),
+            exit = fadeOut() + slideOutVertically(
+                targetOffsetY = { fullHeight ->
+                    fullHeight / 4
+                }
+            ),
+            label = "FloatingActionButton"
+        ) {
+            FloatingActionButton(
+                containerColor = MaterialTheme.colorScheme.primary,
+                onClick = onFabClick,
+                content = { Icon(fabIcon, "Fab Icon") }
             )
         }
     }

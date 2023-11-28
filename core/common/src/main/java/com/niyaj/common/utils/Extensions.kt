@@ -134,6 +134,12 @@ val String.toBarDate
         Locale.getDefault()
     ).format(this.toLong()).toString()
 
+val Date.toBarDate
+    get() = SimpleDateFormat(
+        "dd MMM",
+        Locale.getDefault()
+    ).format(this).toString()
+
 val String.toFormattedDate
     get() = SimpleDateFormat(
         "dd MMM yy",
@@ -641,12 +647,8 @@ fun String.toDailySalaryAmount(): String {
     return dailyAmount.toString().toRupee
 }
 
-fun Pair<String, String>.isSameDay(): Boolean {
-    val checkFirst = DateUtils.isToday(this.first.toLong())
-    val checkSecond = DateUtils.isToday(this.second.toLong())
-
-    return checkFirst && checkSecond
-}
+val Pair<String, String>.isSameDay: Boolean
+    get() = this.first.toBarDate == this.second.toBarDate
 
 val String.isToday: Boolean
     get() = DateUtils.isToday(this.toLong())

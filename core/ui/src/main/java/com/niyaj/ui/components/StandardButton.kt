@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -145,6 +146,7 @@ fun StandardFilledTonalIconButton(
     onClick: () -> Unit,
     enabled: Boolean = true,
     containerColor: Color = MaterialTheme.colorScheme.outlineVariant,
+    contentColor: Color = contentColorFor(backgroundColor = containerColor),
     shape: Shape = RoundedCornerShape(SpaceMini)
 ) {
     FilledTonalIconButton(
@@ -153,7 +155,8 @@ fun StandardFilledTonalIconButton(
         shape = shape,
         enabled = enabled,
         colors = IconButtonDefaults.filledTonalIconButtonColors(
-            containerColor = containerColor
+            containerColor = containerColor,
+            contentColor = contentColor,
         )
     ) {
         Icon(

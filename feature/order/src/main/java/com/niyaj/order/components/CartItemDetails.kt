@@ -45,6 +45,7 @@ import com.niyaj.ui.components.TwoGridTexts
  */
 @Composable
 fun CartItemDetails(
+    modifier: Modifier = Modifier,
     orderType: OrderType,
     doesChargesIncluded: Boolean,
     cartProducts: List<CartProductItem>,
@@ -56,7 +57,7 @@ fun CartItemDetails(
     onExpandChanged : () -> Unit,
 ) {
     ElevatedCard(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(SpaceSmall)
             .clickable {

@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.theme.LightColor2
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Customer
@@ -38,13 +39,14 @@ import com.niyaj.ui.components.StandardExpandable
  */
 @Composable
 fun CustomerDetails(
+    modifier: Modifier = Modifier,
     customer: Customer,
     doesExpanded : Boolean,
     onExpandChanged : () -> Unit,
     onClickViewDetails : (Int) -> Unit
 ) {
     ElevatedCard(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(SpaceSmall)
             .clickable {
@@ -52,7 +54,7 @@ fun CustomerDetails(
             },
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            containerColor = LightColor2,
         )
     ) {
         StandardExpandable(

@@ -1,4 +1,4 @@
-package com.niyaj.order.components
+package com.niyaj.ui.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeliveryDining

@@ -1,7 +1,9 @@
-package com.niyaj.ui.components
+package com.niyaj.product.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +13,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
+import androidx.compose.material.icons.filled.AutoGraph
+import androidx.compose.material.icons.filled.DeliveryDining
+import androidx.compose.material.icons.filled.Inventory2
+import androidx.compose.material.icons.filled.RamenDining
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -21,24 +27,32 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.niyaj.common.utils.isSameDay
 import com.niyaj.common.utils.toBarDate
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.theme.LightColor1
+import com.niyaj.designsystem.theme.LightColor2
+import com.niyaj.designsystem.theme.LightColor3
+import com.niyaj.designsystem.theme.LightColor4
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.model.TotalOrderDetails
+import com.niyaj.product.details.ProductTotalOrderDetails
+import com.niyaj.ui.components.ReportCardBox
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun TotalOrderDetailsCard(
-    details: TotalOrderDetails,
+fun ProductTotalOrdersDetails(
+    modifier: Modifier = Modifier,
+    details: ProductTotalOrderDetails,
 ) {
     ElevatedCard(
-        modifier = Modifier
-            .testTag("CalculateSalary")
+        modifier = modifier
+            .testTag("Calculate TotalOrder")
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.elevatedCardColors(
@@ -49,19 +63,27 @@ fun TotalOrderDetailsCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(SpaceMedium),
-            verticalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             horizontalAlignment = Alignment.Start,
         ) {
-            Text(
-                text = "Total Orders",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.SemiBold
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Total Orders",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
 
-            Spacer(modifier = Modifier.height(SpaceSmall))
-            Spacer(modifier = Modifier.height(SpaceSmall))
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-            Spacer(modifier = Modifier.height(SpaceSmall))
+                Text(
+                    text = (details.dineInQty + details.dineOutQty).toString(),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
             Row(
                 modifier = Modifier
@@ -73,7 +95,7 @@ fun TotalOrderDetailsCard(
                     text = details.totalAmount.toRupee,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.testTag(REMAINING_AMOUNT_TEXT)
+                    modifier = Modifier.testTag("ProductTotalAmount")
                 )
 
                 val startDate = details.datePeriod.first
@@ -82,7 +104,7 @@ fun TotalOrderDetailsCard(
                 if (startDate.isNotEmpty()) {
                     Card(
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer
                         ),
                         modifier = Modifier.testTag("DatePeriod")
                     ) {
@@ -115,41 +137,64 @@ fun TotalOrderDetailsCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(SpaceSmall))
+            Spacer(modifier = Modifier.height(SpaceMini))
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
-            Spacer(modifier = Modifier.height(SpaceSmall))
+            Spacer(modifier = Modifier.height(SpaceMini))
 
-            Row(
+
+            FlowRow(
                 modifier = Modifier
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalArrangement = Arrangement.spacedBy(SpaceMedium),
+                maxItemsInEachRow = 2,
             ) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
-                    ),
-                    modifier = Modifier.testTag("TotalOrders")
-                ) {
-                    Text(
-                        text = "Total ${details.totalOrder} Order",
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.padding(SpaceSmall)
+                ReportCardBox(
+                    modifier = Modifier,
+                    title = "DineIn Sales",
+                    subtitle = details.dineInAmount.toRupee,
+                    icon = Icons.Default.RamenDining,
+                    minusWidth = 30.dp,
+                    iconTint = MaterialTheme.colorScheme.error,
+                    containerColor = LightColor1,
+                    onClick = {},
+                )
+
+                ReportCardBox(
+                    modifier = Modifier,
+                    title = "DineOut Sales",
+                    subtitle = details.dineOutAmount.toRupee,
+                    icon = Icons.Default.DeliveryDining,
+                    iconTint = MaterialTheme.colorScheme.tertiary,
+                    containerColor = LightColor2,
+                    minusWidth = 30.dp,
+                    onClick = {}
+                )
+
+                if (details.mostOrderQtyDate.isNotEmpty()) {
+                    ReportCardBox(
+                        modifier = Modifier,
+                        title = "Most Sales",
+                        subtitle = details.mostOrderQtyDate,
+                        icon = Icons.Default.AutoGraph,
+                        minusWidth = 30.dp,
+                        iconTint = MaterialTheme.colorScheme.secondary,
+                        containerColor = LightColor3,
+                        onClick = {}
                     )
                 }
 
-                Spacer(modifier = Modifier.width(SpaceSmall))
-
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer
-                    ),
-                    modifier = Modifier.testTag("RepeatedCustomer")
-                ) {
-                    Text(
-                        text = "${details.repeatedOrder} Repeated Customer",
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.padding(SpaceSmall)
+                if (details.mostOrderItemDate.isNotEmpty()) {
+                    ReportCardBox(
+                        modifier = Modifier,
+                        title = "Most Orders",
+                        subtitle = details.mostOrderQtyDate,
+                        icon = Icons.Default.Inventory2,
+                        minusWidth = 30.dp,
+                        iconTint = MaterialTheme.colorScheme.primary,
+                        containerColor = LightColor4,
+                        boxColor = Color.White,
+                        onClick = {}
                     )
                 }
             }
@@ -158,5 +203,3 @@ fun TotalOrderDetailsCard(
         }
     }
 }
-
-const val REMAINING_AMOUNT_TEXT = "Remaining Amount"

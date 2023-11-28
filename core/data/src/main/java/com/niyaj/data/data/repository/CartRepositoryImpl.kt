@@ -324,7 +324,8 @@ class CartRepositoryImpl(
                 orderId = orderId,
                 basePrice = cartBasePrice,
                 discountPrice = cartPrice.discountPrice,
-                totalPrice = cartTotalPrice
+                totalPrice = cartTotalPrice,
+                createdAt = System.currentTimeMillis().toString()
             )
 
             cartPriceDao.updateCartPrice(updateCartPrice)
@@ -348,7 +349,8 @@ class CartRepositoryImpl(
                 orderId = orderId,
                 basePrice = cartBasePrice,
                 discountPrice = cartPrice.discountPrice,
-                totalPrice = cartTotalPrice
+                totalPrice = cartTotalPrice,
+                createdAt = System.currentTimeMillis().toString()
             )
 
             cartPriceDao.updateCartPrice(updateCartPrice)
@@ -377,7 +379,8 @@ class CartRepositoryImpl(
                 orderId = orderId,
                 basePrice = basePrice,
                 discountPrice = discountPrice,
-                totalPrice = totalPrice
+                totalPrice = totalPrice,
+                createdAt = System.currentTimeMillis().toString()
             )
 
             cartPriceDao.updateCartPrice(priceEntity)
@@ -406,7 +409,8 @@ class CartRepositoryImpl(
                 orderId = orderId,
                 basePrice = basePrice,
                 discountPrice = discountPrice,
-                totalPrice = totalPrice
+                totalPrice = totalPrice,
+                createdAt = System.currentTimeMillis().toString()
             )
 
             cartPriceDao.updateCartPrice(priceEntity)
