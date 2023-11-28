@@ -28,18 +28,18 @@ open class ShareViewModel @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher,
 ): ViewModel() {
 
-    private val _showList = MutableStateFlow(false)
-    val showList = _showList.asStateFlow()
+    private val _showDialog = MutableStateFlow(false)
+    val showDialog = _showDialog.asStateFlow()
 
-    open fun onDismissList() {
+    open fun onDismissDialog() {
         viewModelScope.launch {
-            _showList.value = false
+            _showDialog.value = false
         }
     }
 
-    open fun onShowList() {
+    open fun onShowDialog() {
         viewModelScope.launch {
-            _showList.value = true
+            _showDialog.value = true
         }
     }
 

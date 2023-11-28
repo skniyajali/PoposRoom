@@ -227,7 +227,7 @@ fun AnimatedTextDividerDashed(
 fun DashedDivider(
     modifier: Modifier = Modifier,
     dashWidth: Dp = 4.dp,
-    dashHeight: Dp = 2.dp,
+    dashHeight: Dp = 1.dp,
     gapWidth: Dp = 2.dp,
     color: Color = Color.Gray,
 ) {

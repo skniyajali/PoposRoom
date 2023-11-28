@@ -21,6 +21,7 @@ import com.niyaj.ui.components.LoadingIndicator
 
 @Composable
 fun OrderedItemLayout(
+    modifier: Modifier = Modifier,
     orders: List<Order>,
     isLoading: Boolean = false,
     showSearchBar: Boolean = false,
@@ -45,7 +46,7 @@ fun OrderedItemLayout(
         LoadingIndicator()
     } else {
         LazyColumn(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(SpaceSmall),
             horizontalAlignment = Alignment.Start,

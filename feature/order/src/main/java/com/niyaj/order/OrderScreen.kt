@@ -47,13 +47,13 @@ import com.niyaj.common.tags.OrderTestTags.DELETE_ORDER_MESSAGE
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.model.OrderType
-import com.niyaj.order.components.OrderTab
-import com.niyaj.order.components.OrderTabs
-import com.niyaj.order.components.OrderTabsContent
 import com.niyaj.order.components.OrderedItemLayout
 import com.niyaj.order.components.ShareableOrderDetails
 import com.niyaj.order.destinations.OrderDetailsScreenDestination
 import com.niyaj.ui.components.NAV_SEARCH_BTN
+import com.niyaj.ui.components.OrderTab
+import com.niyaj.ui.components.OrderTabs
+import com.niyaj.ui.components.OrderTabsContent
 import com.niyaj.ui.components.StandardOutlinedAssistChip
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.StandardSearchBar
@@ -171,7 +171,7 @@ fun OrderScreen(
     val orderDetails = viewModel.orderDetails.collectAsStateWithLifecycle().value
     val charges = viewModel.charges.collectAsStateWithLifecycle().value
 
-    val showShareDialog = shareViewModel.showList.collectAsStateWithLifecycle().value
+    val showShareDialog = shareViewModel.showDialog.collectAsStateWithLifecycle().value
 
     val dineInOrders by remember(orders) {
         derivedStateOf {
@@ -314,7 +314,7 @@ fun OrderScreen(
                     },
                     onClickEditOrder = onClickEditOrder,
                     onClickShareOrder = {
-                        shareViewModel.onShowList()
+                        shareViewModel.onShowDialog()
                         viewModel.onOrderEvent(OrderEvent.GetShareableDetails(it))
                     }
                 )
@@ -342,7 +342,7 @@ fun OrderScreen(
                     },
                     onClickEditOrder = onClickEditOrder,
                     onClickShareOrder = {
-                        shareViewModel.onShowList()
+                        shareViewModel.onShowDialog()
                         viewModel.onOrderEvent(OrderEvent.GetShareableDetails(it))
                     }
                 )
@@ -406,7 +406,7 @@ fun OrderScreen(
             captureController = captureController,
             orderDetails = orderDetails,
             charges = charges,
-            onDismiss = shareViewModel::onDismissList,
+            onDismiss = shareViewModel::onDismissDialog,
             onClickShare = {
                 captureController.captureLongScreenshot()
             },
@@ -424,7 +424,7 @@ fun OrderScreen(
                 }
             },
             onClickPrintOrder = {
-                shareViewModel.onDismissList()
+                shareViewModel.onDismissDialog()
 
                 // Todo:: Add Printing functionalities
             }

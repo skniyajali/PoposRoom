@@ -93,7 +93,10 @@ fun TextWithCount(
                 Spacer(modifier = Modifier.width(SpaceMini))
             }
 
-            CountBox(count = count.toString())
+            CountBox(
+                count = count.toString(),
+                backgroundColor = MaterialTheme.colorScheme.secondary
+            )
         }
     }
 }

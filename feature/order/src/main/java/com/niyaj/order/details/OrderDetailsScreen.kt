@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Print
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -36,6 +37,7 @@ import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.model.OrderType
 import com.niyaj.order.components.AddressDetails
 import com.niyaj.order.components.CartItemDetails
 import com.niyaj.order.components.CartOrderDetails
@@ -69,7 +71,7 @@ fun OrderDetailsScreen(
     val state = viewModel.orderDetails.collectAsStateWithLifecycle().value
     val charges = viewModel.charges.collectAsStateWithLifecycle().value
 
-    val showShareDialog = viewModel.showList.collectAsStateWithLifecycle().value
+    val showShareDialog = viewModel.showDialog.collectAsStateWithLifecycle().value
 
     val bluetoothPermissions =
         // Checks if the device has Android 12 or above
@@ -144,6 +146,15 @@ fun OrderDetailsScreen(
         showBottomBar = false,
         navActions = {
             IconButton(
+                onClick = viewModel::onShowDialog
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Share,
+                    contentDescription = "Share Order Details"
+                )
+            }
+
+            IconButton(
                 onClick = {
                     printOrder(orderId)
                 }
@@ -158,7 +169,7 @@ fun OrderDetailsScreen(
         fabPosition = FabPosition.EndOverlay,
         floatingActionButton = {
             FloatingActionButton(
-                onClick = viewModel::onShowList,
+                onClick = viewModel::onShowDialog,
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
                 Icon(imageVector = Icons.Default.Share, contentDescription = "Share List")
@@ -169,10 +180,11 @@ fun OrderDetailsScreen(
             targetState = state,
             label = "Order Details.."
         ) { newState ->
-            when (newState){
+            when (newState) {
                 is UiState.Empty -> {
                     ItemNotAvailable(text = "Order Details not available")
                 }
+
                 is UiState.Loading -> LoadingIndicator()
                 is UiState.Success -> {
                     val orderDetails = newState.data
@@ -182,7 +194,7 @@ fun OrderDetailsScreen(
                             .fillMaxSize()
                             .padding(SpaceSmall),
                         state = lazyListState,
-                    ){
+                    ) {
                         item("Order Details") {
                             CartOrderDetails(
                                 cartOrder = orderDetails.cartOrder,
@@ -244,8 +256,10 @@ fun OrderDetailsScreen(
                         ShareableOrderDetails(
                             captureController = captureController,
                             orderDetails = orderDetails,
-                            charges = charges,
-                            onDismiss = viewModel::onDismissList,
+                            charges = if (orderDetails.cartOrder.orderType == OrderType.DineOut) {
+                                charges.filterNot { !it.isApplicable }
+                            } else emptyList(),
+                            onDismiss = viewModel::onDismissDialog,
                             onClickShare = {
                                 captureController.captureLongScreenshot()
                             },
@@ -259,11 +273,14 @@ fun OrderDetailsScreen(
                                     }
                                 }
                                 error?.let {
-                                    Log.d("Capturable", "Error: ${it.message}\n${it.stackTrace.joinToString()}")
+                                    Log.d(
+                                        "Capturable",
+                                        "Error: ${it.message}\n${it.stackTrace.joinToString()}"
+                                    )
                                 }
                             },
                             onClickPrintOrder = {
-                                viewModel.onDismissList()
+                                viewModel.onDismissDialog()
 
                                 // Todo:: Add Printing functionalities
                             }

@@ -71,6 +71,9 @@ import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.designsystem.theme.gradient6
+import com.niyaj.designsystem.theme.gradient7
+import com.niyaj.designsystem.theme.rainbowColorsBrush
 import com.niyaj.model.AddOnItem
 import com.niyaj.model.CartOrder
 import com.niyaj.model.CartProductItem
@@ -93,6 +96,7 @@ import com.niyaj.ui.utils.ScrollableCapturable
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShareableOrderDetails(
+    modifier: Modifier = Modifier,
     captureController: CaptureController,
     orderDetails: OrderDetails,
     charges: List<Charges>,
@@ -111,7 +115,7 @@ fun ShareableOrderDetails(
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = false
         ),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
     ) {
         Card(
@@ -133,16 +137,9 @@ fun ShareableOrderDetails(
                     MaterialTheme.colorScheme.tertiary
                 } else MaterialTheme.colorScheme.primary
 
-                val dineOutGradient = remember {
-                    Brush.linearGradient(listOf(Color(0xFF0575E6), Color(0xFFA7BFE8)))
-                }
-                val dineInGradient = remember {
-                    Brush.linearGradient(listOf(Color(0xFFfe8c00), Color(0xFFf9bc2c)))
-                }
-
                 val backgroundColor = if (orderDetails.cartOrder.orderType == OrderType.DineIn) {
-                    dineInGradient
-                } else dineOutGradient
+                    gradient6
+                } else gradient7
 
                 CapturableCard(
                     modifier = Modifier.weight(2.5f),
@@ -174,6 +171,7 @@ fun ShareableOrderDetails(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShareableOrderDetails(
+    modifier: Modifier = Modifier,
     captureController: CaptureController,
     orderDetails: UiState<OrderDetails>,
     charges: List<Charges>,
@@ -192,7 +190,7 @@ fun ShareableOrderDetails(
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = false
         ),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
     ) {
         Card(
@@ -206,7 +204,7 @@ fun ShareableOrderDetails(
                 targetState = orderDetails,
                 label = "OrderDetails"
             ) { state ->
-                when(state) {
+                when (state) {
                     UiState.Empty -> LoadingIndicator()
                     UiState.Loading -> LoadingIndicator()
                     is UiState.Success -> {
@@ -218,20 +216,15 @@ fun ShareableOrderDetails(
                             val icon = if (state.data.cartOrder.orderType == OrderType.DineIn) {
                                 Icons.Default.DinnerDining
                             } else Icons.Default.DeliveryDining
-                            val containerColor = if (state.data.cartOrder.orderType == OrderType.DineIn) {
-                                MaterialTheme.colorScheme.tertiary
-                            } else MaterialTheme.colorScheme.primary
+                            val containerColor =
+                                if (state.data.cartOrder.orderType == OrderType.DineIn) {
+                                    MaterialTheme.colorScheme.tertiary
+                                } else MaterialTheme.colorScheme.primary
 
-                            val dineOutGradient = remember {
-                                Brush.linearGradient(listOf(Color(0xFF0575E6), Color(0xFFA7BFE8)))
-                            }
-                            val dineInGradient = remember {
-                                Brush.linearGradient(listOf(Color(0xFFfe8c00), Color(0xFFf9bc2c)))
-                            }
-
-                            val backgroundColor = if (state.data.cartOrder.orderType == OrderType.DineIn) {
-                                dineInGradient
-                            } else dineOutGradient
+                            val backgroundColor =
+                                if (state.data.cartOrder.orderType == OrderType.DineIn) {
+                                    gradient6
+                                } else gradient7
 
                             CapturableCard(
                                 modifier = Modifier.weight(2.5f),
@@ -300,7 +293,7 @@ fun CapturableCard(
                         icon = icon,
                         containerColor = containerColor
                     )
-                }else {
+                } else {
                     CartItemOrderDetailsCard(
                         orderDetails = orderDetails,
                         charges = charges,
@@ -364,22 +357,6 @@ fun CartItemOrderDetailsCard(
     containerColor: Color,
     backgroundColor: Brush,
 ) {
-    val rainbowColorsBrush = remember {
-        Brush.sweepGradient(
-            listOf(
-                Color(0xFF9575CD),
-                Color(0xFFBA68C8),
-                Color(0xFFE57373),
-                Color(0xFFFFB74D),
-                Color(0xFFFFF176),
-                Color(0xFFAED581),
-                Color(0xFF4DD0E1),
-                Color(0xFF9575CD)
-            )
-        )
-    }
-    val borderStroke = BorderStroke(3.dp, rainbowColorsBrush)
-
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
@@ -414,7 +391,7 @@ fun CartItemOrderDetailsCard(
                     icon = icon,
                     showBorder = true,
                     doesSelected = false,
-                    borderStroke = borderStroke,
+                    borderStroke = BorderStroke(3.dp, rainbowColorsBrush),
                     unselectedTint = containerColor,
                     size = 80.dp,
                 )
@@ -529,12 +506,13 @@ fun ShareableCartOrderDetailsCard(
 
 @Composable
 fun ShareableCartOrderDetails(
+    modifier: Modifier = Modifier,
     cartOrder: CartOrder,
     icon: ImageVector,
     color: Color,
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(SpaceMini),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -805,11 +783,12 @@ fun ShareableCartProductsDetails(
 
 @Composable
 fun CartProduct(
+    modifier: Modifier = Modifier,
     cartProduct: CartProductItem
 ) {
     key(cartProduct.productId) {
         Row(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .height(40.dp)
                 .padding(SpaceMini),
@@ -865,6 +844,7 @@ fun CartProduct(
 
 @Composable
 fun DialogButtons(
+    modifier: Modifier = Modifier,
     layoutChanged: Boolean,
     shareButtonColor: Color,
     onDismiss: () -> Unit,
@@ -873,7 +853,7 @@ fun DialogButtons(
     onClickPrintOrder: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
             .padding(vertical = SpaceMedium, horizontal = SpaceSmall),

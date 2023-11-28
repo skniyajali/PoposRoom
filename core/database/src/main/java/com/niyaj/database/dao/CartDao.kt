@@ -16,6 +16,7 @@ import com.niyaj.model.ChargesPriceWithApplicable
 import com.niyaj.model.OrderStatus
 import com.niyaj.model.OrderType
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 @Dao
 interface CartDao {
@@ -43,10 +44,10 @@ interface CartDao {
     suspend fun getCartOrderById(orderId: Int, productId: Int): CartEntity?
 
     @Query(value = """
-        UPDATE cart SET quantity = :quantity WHERE orderId = :orderId AND productId = :productId
+        UPDATE cart SET quantity = :quantity, updatedAt = :updatedAt WHERE orderId = :orderId AND productId = :productId
     """
     )
-    suspend fun updateQuantity(orderId: Int, productId: Int, quantity: Int): Int
+    suspend fun updateQuantity(orderId: Int, productId: Int, quantity: Int, updatedAt: Date = Date()): Int
 
     @Upsert
     suspend fun addOrRemoveCartProduct(cartEntity: CartEntity): Long

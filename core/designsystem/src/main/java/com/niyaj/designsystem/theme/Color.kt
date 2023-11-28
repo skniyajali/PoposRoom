@@ -1,4 +1,6 @@
 package com.niyaj.designsystem.theme
+
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 val light_primary = Color(0xFF7533DC)
@@ -73,6 +75,10 @@ val Primary = Color(0xFF0752ad)
 val PrimaryVariant = Color(0xFF186fd9)
 val Pewter = Color(0xffEBEBE8)
 val Olive = Color(0xff778A35)
+val LightColor1 = Color(0xFFF8E8EE)
+val LightColor2 = Color(0xFFF3EEEA)
+val LightColor3 = Color(0xFFEEEEEE)
+val LightColor4 = Color(0xFFFAF0E6)
 val LightColor6 = Color(0xFFF7F7F7)
 val LightColor8 = Color(0xFFFDEFEF)
 val LightColor9 = Color(0xFFF9F9F9)
@@ -96,3 +102,31 @@ val RoyalPurple = Color(0xFF64419F)
 val LightGrey = Color(0xFFB1B1B1)
 val KellyGreen = Color(0xffB1D8B7)
 val PurpleHaze = Color(0xFFEFDCF9)
+
+val rainbowColorsBrush = Brush.sweepGradient(
+    listOf(
+        Color(0xFF9575CD),
+        Color(0xFFBA68C8),
+        Color(0xFFE57373),
+        Color(0xFFFFB74D),
+        Color(0xFFFFF176),
+        Color(0xFFAED581),
+        Color(0xFF4DD0E1),
+        Color(0xFF9575CD)
+    )
+)
+
+val gradient1 = Brush.linearGradient(listOf(Color(0xFF00ff87), Color(0xFF60efff)))
+
+val gradient2 = Brush.linearGradient(listOf(Color(0xFF9CECFB), Color(0xFF65C7F7)))
+
+val gradient3 = Brush.horizontalGradient(listOf(Color(0xFFC9FFBF), Color(0xFFFFAFBD)))
+
+val gradient4 = Brush.linearGradient(listOf(Color(0xFF1FA2FF), Color(0xFFA6FFCB)))
+
+val gradient5 = Brush.linearGradient(listOf(Color(0xFF0575E6), Color(0xFFA7BFE8)))
+
+val gradient6 = Brush.linearGradient(listOf(Color(0xFF4e54c8), Color(0xFF8f94fb)))
+
+val gradient7 = Brush.linearGradient(listOf(Color(0xFFfe8c00), Color(0xFFf9bc2c)))
+
