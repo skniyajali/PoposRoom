@@ -53,7 +53,7 @@ import com.niyaj.database.model.ReportsEntity
 import com.niyaj.database.model.SelectedEntity
 import com.niyaj.database.util.ListConverter
 import com.niyaj.database.util.TimestampConverters
-import com.niyaj.poposroom.features.charges.data.dao.ChargesDao
+import com.niyaj.database.dao.ChargesDao
 
 
 @Database(

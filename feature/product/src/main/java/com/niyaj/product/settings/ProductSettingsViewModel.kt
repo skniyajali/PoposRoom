@@ -14,12 +14,7 @@ import com.niyaj.model.ProductIdWithPrice
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -43,9 +38,7 @@ class ProductSettingsViewModel @Inject constructor(
     val products = snapshotFlow { mSearchText.value }.flatMapLatest { searchText ->
         productRepository.getAllProduct(searchText)
     }.mapLatest { list ->
-        totalItems = list.map { item ->
-            item.productId
-        }
+        totalItems = list.map { item -> item.productId }
         list
     }.stateIn(
         viewModelScope,
@@ -79,11 +72,11 @@ class ProductSettingsViewModel @Inject constructor(
                     if (_selectedCategory.contains(event.categoryId)) {
                         mSelectedItems.removeAll(products)
                         _selectedCategory.remove(event.categoryId)
-                    }else {
+                    } else {
                         _selectedCategory.add(event.categoryId)
 
                         products.forEach {
-                            if (!mSelectedItems.contains(it)){
+                            if (!mSelectedItems.contains(it)) {
                                 mSelectedItems.add(it)
                             }
                         }
@@ -176,10 +169,11 @@ class ProductSettingsViewModel @Inject constructor(
                         }
                     }
 
-                    when(val result = productRepository.increaseProductsPrice(data)) {
+                    when (val result = productRepository.increaseProductsPrice(data)) {
                         is Resource.Error -> {
                             mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
                         }
+
                         is Resource.Success -> {
                             mEventFlow.emit(UiEvent.OnSuccess("${data.size} products price has been increased"))
                         }
@@ -207,10 +201,11 @@ class ProductSettingsViewModel @Inject constructor(
                         }
                     }
 
-                    when(val result = productRepository.decreaseProductsPrice(data)) {
+                    when (val result = productRepository.decreaseProductsPrice(data)) {
                         is Resource.Error -> {
                             mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
                         }
+
                         is Resource.Success -> {
                             mEventFlow.emit(UiEvent.OnSuccess("${data.size} products price has been decreased"))
                         }

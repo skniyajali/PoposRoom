@@ -4,18 +4,18 @@ sealed interface ItemEvents {
 
     data class SelectItem(val itemId: Int): ItemEvents
 
-    object SelectAllItems: ItemEvents
+    data object SelectAllItems: ItemEvents
 
-    object DeselectAllItems: ItemEvents
+    data object DeselectAllItems: ItemEvents
 
-    object DeleteItems: ItemEvents
+    data object DeleteItems: ItemEvents
 
-    object OnSearchClick: ItemEvents
+    data object OnSearchClick: ItemEvents
 
     data class OnSearchTextChanged(val text: String): ItemEvents
 
-    object OnSearchTextClearClick: ItemEvents
+    data object OnSearchTextClearClick: ItemEvents
 
-    object OnSearchBarCloseClick: ItemEvents
+    data object OnSearchBarCloseClick: ItemEvents
 
 }
