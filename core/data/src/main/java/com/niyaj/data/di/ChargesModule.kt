@@ -5,7 +5,7 @@ import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.data.data.repository.ChargesRepositoryImpl
 import com.niyaj.data.repository.ChargesRepository
 import com.niyaj.data.repository.validation.ChargesValidationRepository
-import com.niyaj.poposroom.features.charges.data.dao.ChargesDao
+import com.niyaj.database.dao.ChargesDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

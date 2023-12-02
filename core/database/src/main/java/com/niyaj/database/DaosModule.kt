@@ -22,7 +22,7 @@ import com.niyaj.database.dao.ProductDao
 import com.niyaj.database.dao.ProfileDao
 import com.niyaj.database.dao.ReportsDao
 import com.niyaj.database.dao.SelectedDao
-import com.niyaj.poposroom.features.charges.data.dao.ChargesDao
+import com.niyaj.database.dao.ChargesDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

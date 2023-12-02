@@ -31,11 +31,7 @@ fun CartScreen(
     onClickOrderDetails: (Int) -> Unit,
     onNavigateToOrderScreen: () -> Unit,
 ) {
-    val pagerState = rememberPagerState(
-        initialPage = 0,
-        initialPageOffsetFraction = 0f,
-        pageCount = { 2 }
-    )
+    val pagerState = rememberPagerState{ 2 }
 
     StandardScaffoldWithBottomNavigation(
         navController = navController,
