@@ -82,7 +82,7 @@ class ReportsRepositoryImpl(
         return withContext(ioDispatcher) {
             reportsDao.getProductWiseOrder(startDate.toLong(), endDate.toLong())
                 .mapLatest { it ->
-                    it.filter {
+                    it.asSequence().filter {
                         if (orderType.isNotEmpty()) {
                             it.cartOrderEntity.orderType.name == orderType
                         } else true
@@ -101,7 +101,7 @@ class ReportsRepositoryImpl(
                             },
                             quantity = groupedProducts.value.sumOf { it.quantity }
                         )
-                    }.sortedByDescending { it.quantity }
+                    }.sortedByDescending { it.quantity }.toList()
                 }
         }
     }
@@ -114,7 +114,7 @@ class ReportsRepositoryImpl(
         return withContext(ioDispatcher) {
             reportsDao.getProductWiseOrder(startDate.toLong(), endDate.toLong())
                 .mapLatest { orders ->
-                    orders.filter {
+                    orders.asSequence().filter {
                         orderType.isEmpty() || it.cartOrderEntity.orderType.name == orderType
                     }.flatMap { order ->
                         order.cartItems.map { cartItem -> cartItem.productId to cartItem.quantity }
@@ -137,7 +137,7 @@ class ReportsRepositoryImpl(
                                         )
                                     }.sortedByDescending { it.quantity }
                             )
-                        }.sortedByDescending { it -> it.productWithQuantity.sumOf { it.quantity } }
+                        }.sortedByDescending { it -> it.productWithQuantity.sumOf { it.quantity } }.toList()
                 }
         }
     }

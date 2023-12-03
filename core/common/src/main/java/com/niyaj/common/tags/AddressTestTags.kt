@@ -30,7 +30,7 @@ object AddressTestTags {
     const val ADDRESS_PRICE_LESS_THAN_TWO_ERROR = "Address short name must be more than 2 characters long"
 
     const val DELETE_ADDRESS_ITEM_TITLE = "Delete Address?"
-    const val DELETE_ADDRESS_ITEM_MESSAGE = "Are you sure to delete these addresses?"
+    const val DELETE_ADDRESS_ITEM_MESSAGE = "Are you sure to delete these addresses, all orders will be deleted of this address."
 
     const val ADDRESS_ITEM_TAG = "Tag-"
 
