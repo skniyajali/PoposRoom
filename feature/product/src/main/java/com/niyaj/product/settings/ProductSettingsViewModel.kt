@@ -70,7 +70,7 @@ class ProductSettingsViewModel @Inject constructor(
                     val products = getProducts(event.categoryId)
 
                     if (_selectedCategory.contains(event.categoryId)) {
-                        mSelectedItems.removeAll(products)
+                        mSelectedItems.removeAll(products.toSet())
                         _selectedCategory.remove(event.categoryId)
                     } else {
                         _selectedCategory.add(event.categoryId)
