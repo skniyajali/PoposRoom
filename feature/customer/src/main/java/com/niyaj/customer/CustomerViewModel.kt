@@ -4,6 +4,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.data.repository.CustomerRepository
+import com.niyaj.domain.use_cases.DeleteCustomersUseCase
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
@@ -20,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CustomerViewModel @Inject constructor(
     private val customerRepository: CustomerRepository,
+    private val deleteCustomersUseCase: DeleteCustomersUseCase,
 ) : BaseViewModel() {
 
     override var totalItems: List<Int> = emptyList()
@@ -45,7 +47,7 @@ class CustomerViewModel @Inject constructor(
         super.deleteItems()
 
         viewModelScope.launch {
-            when (customerRepository.deleteCustomers(selectedItems.toList())) {
+            when (deleteCustomersUseCase(selectedItems.toList())) {
                 is Resource.Error -> {
                     mEventFlow.emit(UiEvent.OnError("Unable to delete customer"))
                 }

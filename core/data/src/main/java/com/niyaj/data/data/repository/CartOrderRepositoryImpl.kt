@@ -16,9 +16,31 @@ import com.niyaj.common.tags.CartOrderTestTags.ORDER_SHORT_NAME_EMPTY_ERROR
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.CartOrderRepository
 import com.niyaj.data.repository.validation.CartOrderValidationRepository
-import com.niyaj.database.dao.*
-import com.niyaj.database.model.*
-import com.niyaj.model.*
+import com.niyaj.database.dao.AddressDao
+import com.niyaj.database.dao.CartDao
+import com.niyaj.database.dao.CartOrderDao
+import com.niyaj.database.dao.CartPriceDao
+import com.niyaj.database.dao.CustomerDao
+import com.niyaj.database.dao.SelectedDao
+import com.niyaj.database.model.CartAddOnItemsEntity
+import com.niyaj.database.model.CartChargesEntity
+import com.niyaj.database.model.CartOrderEntity
+import com.niyaj.database.model.CartPriceEntity
+import com.niyaj.database.model.SelectedEntity
+import com.niyaj.database.model.asExternalModel
+import com.niyaj.model.AddOnItem
+import com.niyaj.model.Address
+import com.niyaj.model.CartOrder
+import com.niyaj.model.CartOrderWithAddOnAndCharges
+import com.niyaj.model.Charges
+import com.niyaj.model.Customer
+import com.niyaj.model.OrderStatus
+import com.niyaj.model.OrderType
+import com.niyaj.model.SELECTED_ID
+import com.niyaj.model.Selected
+import com.niyaj.model.filterCartOrder
+import com.niyaj.model.searchAddress
+import com.niyaj.model.searchCustomer
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -384,6 +406,12 @@ class CartOrderRepositoryImpl(
     override suspend fun getCartOrderIdsByAddressId(addressId: Int): List<Int> {
         return withContext(ioDispatcher) {
             cartOrderDao.getCartOrdersByAddressId(addressId)
+        }
+    }
+
+    override suspend fun getCartOrderIdsByCustomerId(customerId: Int): List<Int> {
+        return withContext(ioDispatcher) {
+            cartOrderDao.getCartOrdersByCustomerId(customerId)
         }
     }
 

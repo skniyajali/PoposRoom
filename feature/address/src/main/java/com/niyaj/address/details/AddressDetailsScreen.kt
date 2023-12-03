@@ -333,7 +333,9 @@ fun RecentOrders(
                         }
 
                         is UiState.Success -> {
-                            val groupedByDate = orders.data.groupBy { it.updatedAt.toPrettyDate() }
+                            val groupedByDate = remember {
+                                orders.data.groupBy { it.updatedAt.toPrettyDate() }
+                            }
 
                             Column {
                                 groupedByDate.forEach { (date, orders) ->

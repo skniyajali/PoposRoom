@@ -1,11 +1,21 @@
 package com.niyaj.database.dao
 
-import androidx.room.*
-import com.niyaj.database.model.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Upsert
+import com.niyaj.database.model.AddOnItemEntity
+import com.niyaj.database.model.CartAddOnItemsEntity
+import com.niyaj.database.model.CartChargesEntity
+import com.niyaj.database.model.CartOrderEntity
+import com.niyaj.database.model.CartOrderWithAddOnAndChargesDto
+import com.niyaj.database.model.ChargesEntity
 import com.niyaj.model.ChargesPriceWithApplicable
 import com.niyaj.model.OrderStatus
 import kotlinx.coroutines.flow.Flow
-import java.util.*
+import java.util.Date
 
 @Dao
 interface CartOrderDao {
@@ -185,4 +195,11 @@ interface CartOrderDao {
         """
     )
     fun getCartOrdersByAddressId(addressId: Int): List<Int>
+
+    @Query(
+        value = """
+            SELECT orderId FROM cartorder WHERE customerId = :customerId
+        """
+    )
+    fun getCartOrdersByCustomerId(customerId: Int): List<Int>
 }

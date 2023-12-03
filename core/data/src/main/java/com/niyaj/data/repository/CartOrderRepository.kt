@@ -1,7 +1,13 @@
 package com.niyaj.data.repository
 
 import com.niyaj.common.result.Resource
-import com.niyaj.model.*
+import com.niyaj.model.AddOnItem
+import com.niyaj.model.Address
+import com.niyaj.model.CartOrder
+import com.niyaj.model.CartOrderWithAddOnAndCharges
+import com.niyaj.model.Charges
+import com.niyaj.model.Customer
+import com.niyaj.model.Selected
 import kotlinx.coroutines.flow.Flow
 
 interface CartOrderRepository {
@@ -37,4 +43,7 @@ interface CartOrderRepository {
     suspend fun deleteCartOrders(orderIds: List<Int>): Resource<Boolean>
 
     suspend fun getCartOrderIdsByAddressId(addressId: Int): List<Int>
+
+    suspend fun getCartOrderIdsByCustomerId(customerId: Int): List<Int>
+
 }
