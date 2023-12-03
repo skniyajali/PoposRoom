@@ -33,7 +33,8 @@ object CustomerTestTags {
     const val CUSTOMER_PHONE_ALREADY_EXIST_ERROR = "Customer phone already exists."
 
     const val DELETE_CUSTOMER_TITLE = "Delete Customer?"
-    const val DELETE_CUSTOMER_MESSAGE = "Are you sure to delete these customers?"
+    const val DELETE_CUSTOMER_MESSAGE =
+        "Are you sure to delete these customers, all corresponding orders will be deleted."
 
     const val CUSTOMER_TAG = "Customer-"
 

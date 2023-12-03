@@ -337,14 +337,16 @@ fun RecentOrders(
                 ) { state ->
                     when (state) {
                         is UiState.Loading -> LoadingIndicator()
+
                         is UiState.Empty -> {
                             ItemNotAvailable(text = "No orders made using this customer.")
                         }
 
                         is UiState.Success -> {
                             Column {
-                                val groupedByDate =
+                                val groupedByDate = remember(state.data) {
                                     state.data.groupBy { it.updatedAt.toPrettyDate() }
+                                }
 
                                 groupedByDate.forEach { (date, orders) ->
                                     TextWithCount(
@@ -394,8 +396,6 @@ fun RecentOrders(
                                             Spacer(modifier = Modifier.height(SpaceMini))
                                         }
                                     }
-
-                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
                                 }
                             }
                         }
