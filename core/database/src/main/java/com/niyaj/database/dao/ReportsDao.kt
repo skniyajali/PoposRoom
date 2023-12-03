@@ -56,9 +56,9 @@ interface ReportsDao {
     @Transaction
     @Query(
         value = """
-            SELECT * FROM cartorder WHERE createdAt BETWEEN :startDate 
+            SELECT * FROM cartorder WHERE (createdAt BETWEEN :startDate 
             AND :endDate OR updatedAt BETWEEN :startDate 
-            AND :endDate AND orderStatus = :orderStatus AND orderType = :orderType
+            AND :endDate) AND orderStatus = :orderStatus AND orderType = :orderType
         """
     )
     suspend fun getTotalDineInOrders(
@@ -72,9 +72,9 @@ interface ReportsDao {
     @Transaction
     @Query(
         value = """
-            SELECT * FROM cartorder WHERE createdAt BETWEEN :startDate 
+            SELECT * FROM cartorder WHERE (createdAt BETWEEN :startDate 
             AND :endDate  OR updatedAt BETWEEN :startDate 
-            AND :endDate AND orderStatus = :orderStatus AND orderType = :orderType
+            AND :endDate) AND orderStatus = :orderStatus AND orderType = :orderType
         """
     )
     suspend fun getTotalDineOutOrders(
@@ -103,9 +103,8 @@ interface ReportsDao {
     @Transaction
     @Query(
         value = """
-            SELECT addressId FROM cartorder WHERE createdAt BETWEEN :startDate 
-            AND :endDate  OR updatedAt BETWEEN :startDate 
-            AND :endDate AND orderStatus = :orderStatus AND orderType = :orderType
+            SELECT addressId FROM cartorder WHERE orderStatus = :orderStatus AND orderType = :orderType 
+            AND (createdAt BETWEEN :startDate AND :endDate OR updatedAt BETWEEN :startDate AND :endDate)
         """
     )
     fun getAddressWiseOrder(
@@ -119,9 +118,9 @@ interface ReportsDao {
     @Transaction
     @Query(
         value = """
-            SELECT customerId FROM cartorder WHERE createdAt BETWEEN :startDate 
-            AND :endDate  OR updatedAt BETWEEN :startDate 
-            AND :endDate AND orderStatus = :orderStatus AND orderType = :orderType
+            SELECT customerId FROM cartorder WHERE 
+            (createdAt BETWEEN :startDate AND :endDate OR updatedAt BETWEEN :startDate AND :endDate)
+            AND orderStatus = :orderStatus AND orderType = :orderType
         """
     )
     fun getCustomerWiseOrder(
