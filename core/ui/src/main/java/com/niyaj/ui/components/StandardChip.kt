@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,7 +31,6 @@ import com.niyaj.common.utils.Constants.PAID
 import com.niyaj.designsystem.theme.IconSizeSmall
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.ui.utils.PaymentStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,6 +48,7 @@ fun StandardOutlinedChip(
         if (isSelected) BorderStroke(1.dp, selectedColor) else BorderStroke(0.dp, Color.Transparent)
 
     OutlinedCard(
+        enabled = isToggleable,
         onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(SpaceMini),
@@ -142,7 +141,7 @@ fun PaymentStatusChip(
 @Composable
 fun StandardChip(
     modifier: Modifier = Modifier,
-    text: String = "",
+    text: String,
     icon: ImageVector? = null,
     isPrimary: Boolean = false,
     isClickable: Boolean = false,

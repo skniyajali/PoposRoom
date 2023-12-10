@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,16 +13,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.TaskAlt
@@ -34,6 +38,8 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -60,25 +66,34 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.niyaj.cartorder.destinations.AddEditCartOrderScreenDestination
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_ITEM_TAG
+import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_NOTE
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_NOT_AVAILABLE
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_SCREEN_TITLE
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.CartOrderTestTags.CREATE_NEW_CART_ORDER
 import com.niyaj.common.tags.CartOrderTestTags.DELETE_CART_ORDER_ITEM_MESSAGE
 import com.niyaj.common.tags.CartOrderTestTags.DELETE_CART_ORDER_ITEM_TITLE
+import com.niyaj.designsystem.theme.LightColor3
+import com.niyaj.designsystem.theme.SpaceMedium
+import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.CartOrder
+import com.niyaj.model.OrderStatus
 import com.niyaj.model.OrderType
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
+import com.niyaj.ui.components.StandardChip
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.StandardScaffold
+import com.niyaj.ui.components.TextWithCount
+import com.niyaj.ui.components.stickyHeader
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
+import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.navigate
@@ -88,9 +103,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
-@Destination(
-    route = Screens.CART_ORDER_SCREEN
-)
+@Destination(route = Screens.CART_ORDER_SCREEN)
 @Composable
 fun CartOrderScreen(
     navController: NavController,
@@ -219,6 +232,7 @@ fun CartOrderScreen(
     ) { _ ->
         when (state) {
             is UiState.Loading -> LoadingIndicator()
+
             is UiState.Empty -> {
                 ItemNotAvailable(
                     text = if (searchText.isEmpty()) CART_ORDER_NOT_AVAILABLE else CART_ORDER_SEARCH_PLACEHOLDER,
@@ -235,30 +249,77 @@ fun CartOrderScreen(
                         .padding(SpaceSmall),
                     columns = GridCells.Fixed(2),
                     state = lazyGridState,
+                    horizontalArrangement = Arrangement.spacedBy(SpaceSmall)
                 ) {
-                    items(
-                        items = state.data,
-                        key = {
-                            it.orderId
-                        }
-                    ) { cartOrder ->
-                        CartOrderData(
-                            item = cartOrder,
-                            orderSelected = {
-                                selectedOrder == it
+                    item("Note", span = { GridItemSpan(2) }) {
+                        ListItem(
+                            modifier = Modifier
+                                .height(48.dp)
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(SpaceMini)),
+                            headlineContent = {
+                                Text(
+                                    text = CART_ORDER_NOTE,
+                                    style = MaterialTheme.typography.labelMedium
+                                )
                             },
-                            doesSelected = {
-                                selectedItems.contains(it)
+                            leadingContent = {
+                                Icon(
+                                    imageVector = Icons.Default.Info,
+                                    contentDescription = "info"
+                                )
                             },
-                            onClick = {
-                                if (selectedItems.isNotEmpty()) {
-                                    viewModel.selectItem(it)
-                                }else {
-                                    onClickOrderDetails(it)
-                                }
-                            },
-                            onLongClick = viewModel::selectItem
+                            colors = ListItemDefaults.colors(
+                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            )
                         )
+
+                        Spacer(modifier = Modifier.height(SpaceMedium))
+                    }
+
+                    state.data.forEach { (date, orders) ->
+                        stickyHeader {
+                            TextWithCount(
+                                modifier = Modifier
+                                    .background(
+                                        if (lazyGridState.isScrollingUp())
+                                            MaterialTheme.colorScheme.background
+                                        else Color.Transparent
+                                    )
+                                    .clip(
+                                        RoundedCornerShape(if (lazyGridState.isScrollingUp()) 4.dp else 0.dp)
+                                    ),
+                                text = date,
+                                leadingIcon = Icons.Default.CalendarMonth,
+                                count = orders.count(),
+                                onClick = {}
+                            )
+                        }
+
+                        items(
+                            items = orders,
+                            key = {
+                                it.orderId
+                            }
+                        ) { cartOrder ->
+                            CartOrderData(
+                                item = cartOrder,
+                                orderSelected = {
+                                    selectedOrder == it
+                                },
+                                doesSelected = {
+                                    selectedItems.contains(it)
+                                },
+                                onClick = {
+                                    if (selectedItems.isNotEmpty()) {
+                                        viewModel.selectItem(it)
+                                    } else {
+                                        onClickOrderDetails(it)
+                                    }
+                                },
+                                onLongClick = viewModel::selectItem
+                            )
+                        }
                     }
                 }
             }
@@ -423,7 +484,7 @@ fun CartOrderData(
     ElevatedCard(
         modifier = modifier
             .testTag(CART_ORDER_ITEM_TAG.plus(item.orderId))
-            .padding(SpaceSmall)
+            .padding(vertical = SpaceSmall)
             .then(borderStroke?.let {
                 Modifier.border(it, CardDefaults.elevatedShape)
             } ?: Modifier)
@@ -436,52 +497,70 @@ fun CartOrderData(
                     onLongClick(item.orderId)
                 },
             ),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = LightColor3
+        ),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 2.dp
+        )
     ) {
         Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(SpaceSmall),
+                .fillMaxSize(),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
             CircularBox(
+                modifier = Modifier.padding(SpaceSmall),
                 icon = Icons.Default.Tag,
                 doesSelected = doesSelected(item.orderId),
                 showBorder = orderSelected(item.orderId)
             )
 
-            Spacer(modifier = Modifier.width(SpaceSmall))
-
-            Column(
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.SpaceBetween
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    buildAnnotatedString {
-                        if (item.orderType == OrderType.DineOut) {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = Color.Red,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            ) {
-                                append(item.address.shortName.uppercase())
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        buildAnnotatedString {
+                            if (item.orderType == OrderType.DineOut) {
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = Color.Red,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                ) {
+                                    append(item.address.shortName.uppercase())
 
-                                append(" - ")
+                                    append(" - ")
+                                }
                             }
-                        }
 
-                        append(item.orderId.toString())
-                    },
-                    style = MaterialTheme.typography.labelMedium
-                )
+                            append(item.orderId.toString())
+                        },
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
 
-                Spacer(modifier = Modifier.height(SpaceSmall))
+                    Spacer(modifier = Modifier.height(SpaceSmall))
 
-                Text(
-                    text = item.orderType.name,
-                    style = MaterialTheme.typography.labelSmall
-                )
+                    Text(
+                        text = item.orderType.name,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+
+                if (item.orderStatus == OrderStatus.PLACED) {
+                    StandardChip(
+                        text = item.orderStatus.name,
+                        isClickable = false,
+                    )
+                }
             }
         }
     }

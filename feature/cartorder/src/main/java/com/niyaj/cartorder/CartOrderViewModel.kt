@@ -3,6 +3,7 @@ package com.niyaj.cartorder
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.data.repository.CartOrderRepository
 import com.niyaj.model.Selected
 import com.niyaj.ui.event.BaseViewModel
@@ -40,24 +41,21 @@ class CartOrderViewModel @Inject constructor(
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val cartOrders = snapshotFlow { mSearchText.value }
-        .combine(_viewAll) { text, viewAll ->
-            cartOrderRepository.getAllCartOrders(text, viewAll)
-        }.flatMapLatest { listFlow ->
-            listFlow.mapLatest { list ->
-                val data = list.sortedByDescending { it.orderId == selectedId.value }
-
-                totalItems = data.map { it.orderId }
-                if (data.isEmpty()) {
-                    UiState.Empty
-                } else UiState.Success(data)
-
-            }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = UiState.Loading
-        )
+    val cartOrders = snapshotFlow { mSearchText.value }.combine(_viewAll) { text, viewAll ->
+        cartOrderRepository.getAllCartOrders(text, viewAll)
+    }.flatMapLatest { listFlow ->
+        listFlow.mapLatest { list ->
+            val data = list.sortedByDescending { it.orderId == selectedId.value }
+            totalItems = data.map { it.orderId }
+            data.groupBy { (it.updatedAt ?: it.createdAt).toPrettyDate() }
+        }
+    }.mapLatest { data ->
+        if (data.isEmpty()) UiState.Empty else UiState.Success(data)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = UiState.Loading
+    )
 
 
     fun selectCartOrder() {
