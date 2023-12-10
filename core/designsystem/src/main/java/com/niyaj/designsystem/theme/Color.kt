@@ -75,6 +75,7 @@ val Primary = Color(0xFF0752ad)
 val PrimaryVariant = Color(0xFF186fd9)
 val Pewter = Color(0xffEBEBE8)
 val Olive = Color(0xff778A35)
+
 val LightColor1 = Color(0xFFF8E8EE)
 val LightColor2 = Color(0xFFF3EEEA)
 val LightColor3 = Color(0xFFEEEEEE)

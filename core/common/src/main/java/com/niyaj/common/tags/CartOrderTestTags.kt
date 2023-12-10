@@ -46,4 +46,6 @@ object CartOrderTestTags {
     const val DELETE_CART_ORDER_ITEM_MESSAGE = "Are you sure to delete these orders?"
 
     const val CART_ORDER_ITEM_TAG = "CartOrder-"
+
+    const val CART_ORDER_NOTE = "Click an item to view details, long click to select."
 }

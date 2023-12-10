@@ -115,9 +115,16 @@ class CartOrderRepositoryImpl(
     override suspend fun insertOrUpdateSelectedOrder(selected: Selected): Resource<Boolean> {
         return withContext(ioDispatcher) {
             try {
-                val result = selectedDao.insertOrUpdateSelectedOrder(selected.toEntity())
+                val checkStatus = cartOrderDao.getOrderStatus(selected.orderId)
 
-                Resource.Success(result > 0)
+                if (checkStatus == OrderStatus.PROCESSING) {
+
+                    val result = selectedDao.insertOrUpdateSelectedOrder(selected.toEntity())
+
+                    Resource.Success(result > 0)
+                } else {
+                    Resource.Error("Unable to select placed order.")
+                }
             } catch (e: Exception) {
                 Resource.Error(e.message)
             }
@@ -331,7 +338,11 @@ class CartOrderRepositoryImpl(
 
                     if (result > 0) {
                         async(ioDispatcher) {
-                            insertOrIgnoreCartPrice(result.toInt(), newOrder.orderType, newOrder.doesChargesIncluded)
+                            insertOrIgnoreCartPrice(
+                                result.toInt(),
+                                newOrder.orderType,
+                                newOrder.doesChargesIncluded
+                            )
                         }.await()
 
                         async(ioDispatcher) {
@@ -346,7 +357,7 @@ class CartOrderRepositoryImpl(
                         updateAddOnItems(result.toInt(), newCartOrder.addOnItems)
 
                         updateCartCharges(result.toInt(), newCartOrder.charges)
-                    }else {
+                    } else {
                         updateAddOnItems(newOrder.orderId, newCartOrder.addOnItems)
 
                         updateCartCharges(newOrder.orderId, newCartOrder.charges)
@@ -580,7 +591,11 @@ class CartOrderRepositoryImpl(
         }
     }
 
-    private suspend fun insertOrIgnoreCartPrice(orderId: Int, orderType: OrderType, included: Boolean) {
+    private suspend fun insertOrIgnoreCartPrice(
+        orderId: Int,
+        orderType: OrderType,
+        included: Boolean
+    ) {
         return withContext(ioDispatcher) {
             var basePrice = 0
 
@@ -633,7 +648,7 @@ class CartOrderRepositoryImpl(
                 cartDao.deleteCartAddOnItem(orderId, item)
                 removeAddOnItemPrice(orderId, item)
             }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             Timber.e(e)
         }
     }
