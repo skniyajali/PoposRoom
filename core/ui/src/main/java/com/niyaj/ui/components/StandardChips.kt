@@ -1,20 +1,20 @@
 package com.niyaj.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
-import androidx.compose.material3.ChipBorder
+import androidx.compose.material3.AssistChipDefaults.assistChipBorder
 import androidx.compose.material3.ChipColors
 import androidx.compose.material3.ElevatedFilterChip
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
+import androidx.compose.material3.SuggestionChipDefaults.suggestionChipBorder
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -49,13 +49,13 @@ fun StandardAssistChip(
                 tint = borderColor
             )
         },
-        border = AssistChipDefaults.assistChipBorder(
-            borderColor = borderColor
+        border = assistChipBorder(
+            enabled = true,
+            borderColor
         )
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StandardFilterChip(
     modifier: Modifier = Modifier,
@@ -91,7 +91,6 @@ fun StandardFilterChip(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StandardRoundedFilterChip(
     modifier: Modifier = Modifier,
@@ -179,7 +178,8 @@ fun StandardSuggestionChip(
     icon: ImageVector,
     borderColor: Color = MaterialTheme.colorScheme.tertiary,
     labelColor: Color = borderColor,
-    chipBorder: ChipBorder = SuggestionChipDefaults.suggestionChipBorder(
+    chipBorder: BorderStroke = suggestionChipBorder(
+        enabled = true,
         borderColor = borderColor,
     ),
     colors: ChipColors = SuggestionChipDefaults.suggestionChipColors(
