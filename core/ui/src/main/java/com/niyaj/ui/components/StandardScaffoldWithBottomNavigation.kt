@@ -9,10 +9,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -46,6 +46,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -86,10 +87,11 @@ fun StandardScaffoldWithBottomNavigation(
     // Remember a SystemUiController
     val systemUiController = rememberSystemUiController()
 
-    val colorTransitionFraction = scrollBehavior.state.collapsedFraction
+    val colorTransitionFraction = remember { scrollBehavior.state.collapsedFraction }
 
     val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
     val statusColor = MaterialTheme.colorScheme.surface
+    val layoutDirection = LocalLayoutDirection.current
 
     SideEffect {
         systemUiController.setStatusBarColor(color = statusColor, darkIcons = true)
@@ -238,14 +240,18 @@ fun StandardScaffoldWithBottomNavigation(
             modifier = modifier
                 .testTag(title)
                 .fillMaxSize()
-                .navigationBarsPadding()
+//                .navigationBarsPadding()
                 .imePadding(),
         ) { padding ->
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding)
-                    .consumeWindowInsets(padding)
+                    .padding(
+                        start = padding.calculateStartPadding(layoutDirection),
+                        top = padding.calculateTopPadding(),
+                        end = padding.calculateEndPadding(layoutDirection)
+                    )
+//                    .consumeWindowInsets(padding)
                     .windowInsetsPadding(
                         WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
                     )

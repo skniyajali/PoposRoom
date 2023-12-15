@@ -5,11 +5,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LeadingIconTab
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -21,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.theme.SpaceMini
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OrderTabs(
     tabs: List<OrderTab>,
@@ -32,7 +31,7 @@ fun OrderTabs(
     val scope = rememberCoroutineScope()
 
     // OR ScrollableTabRow()
-    PrimaryTabRow(
+    TabRow(
         // Our selected tab is our current page
         selectedTabIndex = pagerState.currentPage,
         containerColor = containerColor,

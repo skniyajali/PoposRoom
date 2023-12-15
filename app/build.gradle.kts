@@ -73,9 +73,6 @@ android {
 
     packaging {
         resources {
-            excludes.add("META-INF/**")
-            excludes.add("META-INF/*.version")
-            excludes.add("/META-INF/{AL2.0,LGPL2.1}")
             excludes.add("META-INF/LICENSE.md")
             excludes.add("META-INF/LICENSE-notice.md")
             excludes.add("DebugProbesKt.bin")
@@ -98,7 +95,7 @@ android {
         debug.set(false)
 
         // The slug of the Sentry organization to use for uploading proguard mappings/source contexts.
-        org.set("pos-application")
+        org.set("skniyajali")
 
         // The slug of the Sentry project to use for uploading proguard mappings/source contexts.
 //        project.set("android")
@@ -240,6 +237,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:model"))
     implementation(project(":core:worker"))
+    implementation(project(":core:analytics"))
 
     androidTestImplementation(project(":core:testing"))
     androidTestImplementation(libs.androidx.navigation.testing)

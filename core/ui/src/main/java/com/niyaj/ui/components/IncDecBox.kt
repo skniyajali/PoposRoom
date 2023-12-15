@@ -16,7 +16,6 @@ import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -29,10 +28,9 @@ import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IncDecBox(
-    enableDecreasing: Boolean = false,
+    enableDecreasing: () -> Boolean = { false },
     onDecrease: () -> Unit,
     onIncrease: () -> Unit,
 ) {
@@ -54,7 +52,7 @@ fun IncDecBox(
                 modifier = Modifier
                     .fillMaxHeight(),
                 onClick = onDecrease,
-                enabled = enableDecreasing,
+                enabled = enableDecreasing(),
                 shape = RoundedCornerShape(
                     topStart = SpaceMini,
                     topEnd = 0.dp,
@@ -95,11 +93,9 @@ fun IncDecBox(
             }
         }
     }
-
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IncDecBox(
     quantity: String,

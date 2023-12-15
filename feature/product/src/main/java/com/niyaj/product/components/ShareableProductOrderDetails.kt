@@ -34,7 +34,7 @@ import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Tag
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -97,16 +97,16 @@ fun ShareableProductOrderDetails(
     onCaptured: (Bitmap?, Throwable?) -> Unit,
     onClickPrintOrder: () -> Unit,
 ) {
-    AlertDialog(
+    BasicAlertDialog(
         onDismissRequest = onDismiss,
+        modifier = modifier
+            .fillMaxSize(),
         properties = DialogProperties(
             dismissOnClickOutside = true,
             dismissOnBackPress = true,
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = false
-        ),
-        modifier = modifier
-            .fillMaxSize(),
+        )
     ) {
         Card(
             modifier = Modifier

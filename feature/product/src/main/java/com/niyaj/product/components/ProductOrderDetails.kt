@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.dp
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
 import com.niyaj.common.utils.toTime
-import com.niyaj.designsystem.theme.Pewter
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.OrderType
@@ -166,7 +165,7 @@ fun DineInProductOrders(
     val groupedByDate = orderList.groupBy { it.orderedDate.toPrettyDate() }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(top = SpaceSmall),
         horizontalAlignment = Alignment.Start,
@@ -214,7 +213,7 @@ fun DineOutProductOrders(
     val groupedByDate = orderList.groupBy { it.orderedDate.toPrettyDate() }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(top = SpaceSmall),
         horizontalAlignment = Alignment.Start,

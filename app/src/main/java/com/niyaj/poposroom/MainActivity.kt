@@ -14,6 +14,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +42,8 @@ import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.model.DarkThemeConfig
 import com.niyaj.model.ThemeBrand
 import com.niyaj.poposroom.ui.PoposApp
+import com.samples.apps.core.analytics.AnalyticsHelper
+import com.samples.apps.core.analytics.LocalAnalyticsHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -65,6 +68,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var networkMonitor: NetworkMonitor
+
+    @Inject
+    lateinit var analyticsHelper: AnalyticsHelper
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -152,19 +158,21 @@ class MainActivity : ComponentActivity() {
                 onDispose {}
             }
 
-            PoposRoomTheme(
-                darkTheme = darkTheme,
-                androidTheme = shouldUseAndroidTheme(uiState),
-                disableDynamicTheming = shouldDisableDynamicTheming(uiState),
-            ) {
-                PoposApp(
-                    viewModel = viewModel,
-                    windowSizeClass = calculateWindowSizeClass(activity = this),
-                    networkMonitor = networkMonitor,
-                    onCheckForAppUpdate = {
-                        checkForAppUpdates()
-                    }
-                )
+            CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
+                PoposRoomTheme(
+                    darkTheme = darkTheme,
+                    androidTheme = shouldUseAndroidTheme(uiState),
+                    disableDynamicTheming = shouldDisableDynamicTheming(uiState),
+                ) {
+                    PoposApp(
+                        viewModel = viewModel,
+                        windowSizeClass = calculateWindowSizeClass(activity = this),
+                        networkMonitor = networkMonitor,
+                        onCheckForAppUpdate = {
+                            checkForAppUpdates()
+                        }
+                    )
+                }
             }
         }
     }
