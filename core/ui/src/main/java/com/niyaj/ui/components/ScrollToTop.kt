@@ -43,6 +43,7 @@ fun ScrollToTop(
     containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
 ) {
     AnimatedVisibility(
+        modifier = modifier,
         visible = visible,
         enter = fadeIn() + slideInVertically(
             initialOffsetY = { fullHeight ->
@@ -56,8 +57,6 @@ fun ScrollToTop(
         ),
         label = "FloatingActionButton"
     ) {
-        ScrollToTop(
-            onClick = onClick
-        )
+        ScrollToTop(onClick = onClick, containerColor = containerColor)
     }
 }

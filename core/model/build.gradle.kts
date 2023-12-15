@@ -1,7 +1,5 @@
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     id("popos.android.library")
-//    id("kotlin")
     alias(libs.plugins.ksp)
 }
 
@@ -16,6 +14,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.collections.immutable)
 
     api(libs.moshi)
     ksp(libs.moshi.kotlin.codegen)

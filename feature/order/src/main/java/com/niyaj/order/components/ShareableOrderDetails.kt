@@ -33,7 +33,7 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.ViewAgenda
 import androidx.compose.material.icons.filled.ViewDay
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -107,16 +107,16 @@ fun ShareableOrderDetails(
 ) {
     var changeLayout by remember { mutableStateOf(false) }
 
-    AlertDialog(
+    BasicAlertDialog(
         onDismissRequest = onDismiss,
+        modifier = modifier
+            .fillMaxSize(),
         properties = DialogProperties(
             dismissOnClickOutside = true,
             dismissOnBackPress = true,
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = false
-        ),
-        modifier = modifier
-            .fillMaxSize(),
+        )
     ) {
         Card(
             modifier = Modifier
@@ -182,16 +182,16 @@ fun ShareableOrderDetails(
 ) {
     var changeLayout by remember { mutableStateOf(false) }
 
-    AlertDialog(
+    BasicAlertDialog(
         onDismissRequest = onDismiss,
+        modifier = modifier
+            .fillMaxSize(),
         properties = DialogProperties(
             dismissOnClickOutside = true,
             dismissOnBackPress = true,
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = false
-        ),
-        modifier = modifier
-            .fillMaxSize(),
+        )
     ) {
         Card(
             modifier = Modifier

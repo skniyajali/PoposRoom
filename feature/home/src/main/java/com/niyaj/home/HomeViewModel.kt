@@ -9,6 +9,7 @@ import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,7 +26,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val repository: HomeRepository,
     private val cartRepository: CartRepository,
-): BaseViewModel() {
+) : BaseViewModel() {
 
     override var totalItems: List<Int> = emptyList()
 
@@ -37,7 +38,7 @@ class HomeViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val selectedId = repository.getSelectedOrder()
         .mapLatest {
-            if (it?.orderId != null){
+            if (it?.orderId != null) {
                 val address = repository.getSelectedOrderAddress(it.orderId)
                 SelectedOrderState(
                     orderId = it.orderId,
@@ -55,18 +56,25 @@ class HomeViewModel @Inject constructor(
     val products = _text.combine(_selectedCategory) { text, category ->
         repository.getAllProduct(text, category)
     }.flatMapLatest { it ->
-            it.map { items ->
-                totalItems = items.take(1).map { it.productId }
-
-                if (items.isEmpty()) {
-                    UiState.Empty
-                } else UiState.Success(items)
+        it.map { items ->
+            totalItems = items.take(1).map { it.productId }
+            items.map {
+                ProductWithQuantity(
+                    categoryId = it.categoryId,
+                    productId = it.productId,
+                    productName = it.productName,
+                    productPrice = it.productPrice,
+                    quantity = it.quantity.stateIn(viewModelScope).value
+                )
             }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = UiState.Loading
-        )
+        }
+    }.mapLatest {
+        if (it.isEmpty()) UiState.Empty else UiState.Success(it.toImmutableList())
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = UiState.Loading
+    )
 
     val categories = repository.getAllCategory().stateIn(
         scope = viewModelScope,
@@ -79,7 +87,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             if (_selectedCategory.value == categoryId) {
                 _selectedCategory.value = 0
-            }else {
+            } else {
                 _selectedCategory.value = categoryId
             }
         }
@@ -91,6 +99,7 @@ class HomeViewModel @Inject constructor(
                 is Resource.Error -> {
                     mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable to add product"))
                 }
+
                 is Resource.Success -> {
                     mEventFlow.emit(UiEvent.OnSuccess("Product added to cart"))
                 }
@@ -104,6 +113,7 @@ class HomeViewModel @Inject constructor(
                 is Resource.Error -> {
                     mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable to add product"))
                 }
+
                 is Resource.Success -> {
                     mEventFlow.emit(UiEvent.OnSuccess("Product removed from cart"))
                 }

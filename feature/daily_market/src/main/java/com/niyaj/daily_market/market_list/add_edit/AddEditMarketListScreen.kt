@@ -35,7 +35,7 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.twotone.Add
 import androidx.compose.material.icons.twotone.Delete
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -368,15 +368,15 @@ fun ShareableMarketList(
     onClickShare: () -> Unit,
     onCaptured: (Bitmap?, Throwable?) -> Unit
 ) {
-    AlertDialog(
+    BasicAlertDialog(
         onDismissRequest = onDismiss,
+        modifier = Modifier
+            .fillMaxSize(),
         properties = DialogProperties(
             dismissOnClickOutside = true,
             dismissOnBackPress = true,
             usePlatformDefaultWidth = false,
-        ),
-        modifier = Modifier
-            .fillMaxSize(),
+        )
     ) {
         Card(
             modifier = Modifier

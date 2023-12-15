@@ -8,12 +8,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
+import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowRightAlt
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Mail
-import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.QrCode
@@ -198,7 +198,7 @@ fun AddEditProfileScreen(
                 StandardOutlinedTextField(
                     value = state.description,
                     label = DESC_FIELD,
-                    leadingIcon = Icons.Default.Notes,
+                    leadingIcon = Icons.AutoMirrored.Filled.Notes,
                     isError = state.descriptionError != null,
                     errorText = state.descriptionError,
                     errorTextTag = DESC_ERROR_FIELD,
@@ -253,7 +253,7 @@ fun AddEditProfileScreen(
                     suffix = {
                         TextWithTitle(
                             text = "Scan Code",
-                            icon = Icons.Default.ArrowRightAlt
+                            icon = Icons.AutoMirrored.Filled.ArrowRightAlt
                         )
                     }
                 )

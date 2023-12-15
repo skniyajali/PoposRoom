@@ -19,6 +19,7 @@ rootProject.name = "PoposRoom"
 include(":app")
 include(":benchmark")
 include(":core:data")
+include(":core:analytics")
 include(":core:domain")
 include(":core:model")
 include(":core:database")
