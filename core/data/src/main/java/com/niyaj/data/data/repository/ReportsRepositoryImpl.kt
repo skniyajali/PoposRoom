@@ -16,6 +16,7 @@ import com.niyaj.model.ProductWiseReport
 import com.niyaj.model.Reports
 import com.niyaj.model.TotalOrders
 import com.niyaj.model.TotalSales
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -135,7 +136,7 @@ class ReportsRepositoryImpl(
                                             },
                                             quantity = productAndQuantityList.sumOf { (_, quantity) -> quantity }
                                         )
-                                    }.sortedByDescending { it.quantity }
+                                    }.sortedByDescending { it.quantity }.toImmutableList()
                             )
                         }.sortedByDescending { it -> it.productWithQuantity.sumOf { it.quantity } }.toList()
                 }

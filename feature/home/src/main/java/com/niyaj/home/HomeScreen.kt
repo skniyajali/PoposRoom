@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -53,6 +54,7 @@ import com.niyaj.common.utils.toRupee
 import com.niyaj.core.ui.R
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.model.ProductWithQuantity
 import com.niyaj.ui.components.CategoriesData
 import com.niyaj.ui.components.CircularBoxWithQty
 import com.niyaj.ui.components.ItemNotAvailable
@@ -193,7 +195,7 @@ fun HomeScreen(
                             onSelect = viewModel::selectCategory
                         )
 
-                        MainFeedProducts(
+                        MainFeedFlowProducts(
                             lazyListState = lazyListState,
                             products = state.data,
                             onIncrease = {
@@ -210,6 +212,73 @@ fun HomeScreen(
                                 navController.navigate(Screens.ADD_EDIT_PRODUCT_SCREEN)
                             }
                         )
+
+//                        TrackScrollJank(
+//                            scrollableState = lazyListState,
+//                            stateName = "products:list"
+//                        )
+//
+//                        Column(
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(SpaceSmall),
+//                            verticalArrangement = Arrangement.spacedBy(SpaceSmall)
+//                        ) {
+//                            TitleWithIcon(
+//                                text = "Products",
+//                                icon = Icons.Default.Dns,
+//                                showScrollToTop = lazyListState.isScrolled,
+//                                onClickScrollToTop = {
+//                                    scope.launch {
+//                                        lazyListState.animateScrollToItem(0)
+//                                    }
+//                                }
+//                            )
+//
+//                            LazyColumn(
+//                                state = lazyListState,
+//                            ) {
+//                                items(
+//                                    items = state.data,
+//                                    key = {
+//                                        it.productId
+//                                    }
+//                                ) { product ->
+//                                    MainFeedProductData(
+//                                        product = ProductWithQuantity(
+//                                            categoryId = product.categoryId,
+//                                            productId = product.productId,
+//                                            productName = product.productName,
+//                                            productPrice = product.productPrice,
+//                                            quantity = product.quantity.collectAsStateWithLifecycle().value
+//                                        ),
+//                                        onIncrease = {
+//                                            if (selectedOrder.orderId != 0) {
+//                                                viewModel.addProductToCart(selectedOrder.orderId, it)
+//                                            } else {
+//                                                navController.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
+//                                            }
+//                                        },
+//                                        onDecrease = {
+//                                            viewModel.removeProductFromCart(selectedOrder.orderId, it)
+//                                        },
+//                                    )
+//
+//                                    Spacer(modifier = Modifier.height(SpaceSmall))
+//                                }
+//
+//                                item {
+//                                    ItemNotFound(
+//                                        btnText = MainFeedTestTags.CREATE_NEW_PRODUCT,
+//                                        onBtnClick = {
+//                                            navController.navigate(Screens.ADD_EDIT_PRODUCT_SCREEN)
+//                                        }
+//                                    )
+//
+//                                    Spacer(modifier = Modifier.height(SpaceSmall))
+//                                }
+//                            }
+//                        }
                     }
                 }
             }
@@ -225,7 +294,7 @@ fun MainFeedProducts(
     onIncrease: (Int) -> Unit,
     onDecrease: (Int) -> Unit,
     onCreateProduct: () -> Unit,
-) {
+) = trace("MainFeedProducts") {
     val scope = rememberCoroutineScope()
     TrackScrollJank(scrollableState = lazyListState, stateName = "products:list")
 
@@ -277,12 +346,77 @@ fun MainFeedProducts(
 }
 
 @Composable
+fun MainFeedFlowProducts(
+    modifier: Modifier = Modifier,
+    lazyListState: LazyListState,
+    products: ImmutableList<ProductWithFlowQuantity>,
+    onIncrease: (Int) -> Unit,
+    onDecrease: (Int) -> Unit,
+    onCreateProduct: () -> Unit,
+) = trace("MainFeedProducts") {
+    val scope = rememberCoroutineScope()
+    TrackScrollJank(scrollableState = lazyListState, stateName = "products:list")
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(SpaceSmall),
+        verticalArrangement = Arrangement.spacedBy(SpaceSmall)
+    ) {
+        TitleWithIcon(
+            text = "Products",
+            icon = Icons.Default.Dns,
+            showScrollToTop = lazyListState.isScrolled,
+            onClickScrollToTop = {
+                scope.launch {
+                    lazyListState.animateScrollToItem(0)
+                }
+            }
+        )
+
+        LazyColumn(
+            state = lazyListState,
+        ) {
+            items(
+                items = products,
+                key = {
+                    it.productId
+                }
+            ) { product ->
+                MainFeedProductData(
+                    product = ProductWithQuantity(
+                        categoryId = product.categoryId,
+                        productId = product.productId,
+                        productName = product.productName,
+                        productPrice = product.productPrice,
+                        quantity = product.quantity.collectAsStateWithLifecycle().value
+                    ),
+                    onIncrease = onIncrease,
+                    onDecrease = onDecrease
+                )
+
+                Spacer(modifier = Modifier.height(SpaceSmall))
+            }
+
+            item {
+                ItemNotFound(
+                    btnText = MainFeedTestTags.CREATE_NEW_PRODUCT,
+                    onBtnClick = onCreateProduct
+                )
+
+                Spacer(modifier = Modifier.height(SpaceSmall))
+            }
+        }
+    }
+}
+
+@Composable
 fun MainFeedProductData(
     modifier: Modifier = Modifier,
     product: ProductWithQuantity,
     onIncrease: (Int) -> Unit,
     onDecrease: (Int) -> Unit,
-) {
+) = trace("MainFeedProductData") {
     ListItem(
         modifier = modifier
             .testTag(ProductTestTags.PRODUCT_TAG.plus(product.productId))
@@ -327,9 +461,7 @@ fun MainFeedProductData(
                         modifier = Modifier
                             .fillMaxHeight(),
                         onClick = { onDecrease(product.productId) },
-                        enabled = remember {
-                            product.quantity > 0
-                        },
+                        enabled = product.quantity > 0,
                         shape = RoundedCornerShape(
                             topStart = SpaceMini,
                             topEnd = 0.dp,

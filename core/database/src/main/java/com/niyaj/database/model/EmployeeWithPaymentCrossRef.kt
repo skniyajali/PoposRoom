@@ -7,6 +7,7 @@ import androidx.room.ForeignKey
 import androidx.room.Junction
 import androidx.room.Relation
 import com.niyaj.model.EmployeeWithPayments
+import kotlinx.collections.immutable.toImmutableList
 
 @Entity(
     primaryKeys = ["employeeId", "paymentId"],
@@ -51,6 +52,6 @@ data class EmployeeWithPaymentsDto(
 fun EmployeeWithPaymentsDto.asExternalModel(): EmployeeWithPayments {
     return EmployeeWithPayments(
         employee = this.employee.asExternalModel(),
-        payments = this.payments.map { it.asExternalModel() }
+        payments = this.payments.map { it.asExternalModel() }.toImmutableList()
     )
 }

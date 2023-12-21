@@ -1,5 +1,8 @@
 package com.niyaj.model
 
+import androidx.compose.runtime.Stable
+
+@Stable
 data class Printer(
     val printerId: String = "",
 

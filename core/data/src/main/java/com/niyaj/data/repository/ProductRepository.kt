@@ -6,11 +6,12 @@ import com.niyaj.model.CategoryWithProducts
 import com.niyaj.model.Product
 import com.niyaj.model.ProductIdWithPrice
 import com.niyaj.model.ProductWiseOrder
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
 interface ProductRepository {
 
-    fun getAllCategory(): Flow<List<Category>>
+    fun getAllCategory(): Flow<ImmutableList<Category>>
 
     suspend fun getCategoryById(categoryId: Int) : Category?
 

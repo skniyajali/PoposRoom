@@ -10,6 +10,7 @@ import com.niyaj.model.ItemQuantityAndType
 import com.niyaj.model.MarketListItem
 import com.niyaj.model.MarketListType
 import com.niyaj.model.MarketListWithItems
+import kotlinx.collections.immutable.toImmutableList
 
 @Entity(
     tableName = "market_list_with_item",
@@ -84,6 +85,6 @@ fun MarketListWithItemEntity.asExternalModel(): MarketListItem {
 fun MarketListWithItemsDto.asExternalModel(): MarketListWithItems {
     return MarketListWithItems(
         marketList = marketList.asExternalModel(),
-        items = marketItems.map { it.asExternalModel() }
+        items = marketItems.map { it.asExternalModel() }.toImmutableList()
     )
 }

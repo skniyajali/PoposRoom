@@ -1,8 +1,10 @@
 package com.niyaj.model
 
+import androidx.compose.runtime.Stable
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
+@Stable
 data class MeasureUnit(
     val unitId: Int = 0,
 

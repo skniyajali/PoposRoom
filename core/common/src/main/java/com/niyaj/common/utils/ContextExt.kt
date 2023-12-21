@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import java.io.File
 
@@ -94,4 +95,8 @@ fun onUninstall(context: Context) {
         )
         files.copyRecursively(safeLocation)
     }
+}
+
+fun Context.showToast(message: String) {
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }

@@ -1,8 +1,10 @@
 package com.niyaj.model
 
+import androidx.compose.runtime.Stable
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
+@Stable
 data class AddOnItem(
     val itemId: Int,
 
@@ -17,6 +19,7 @@ data class AddOnItem(
     val updatedAt: Long? = null,
 )
 
+@Stable
 data class AddOnPriceWithApplicable(val itemPrice: Int, val isApplicable: Boolean)
 
 

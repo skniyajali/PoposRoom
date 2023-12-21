@@ -3,12 +3,14 @@ package com.niyaj.database.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.niyaj.model.Cart
 import java.util.Date
 
 @Entity(
     tableName = "cart",
+    indices = [Index(value = ["orderId", "productId"])],
     foreignKeys = [
         ForeignKey(
             entity = CartOrderEntity::class,

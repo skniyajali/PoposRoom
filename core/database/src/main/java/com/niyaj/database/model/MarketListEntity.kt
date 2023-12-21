@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.niyaj.database.util.ListConverter
 import com.niyaj.model.MarketList
+import kotlinx.collections.immutable.toImmutableList
 
 @Entity(tableName = "market_list")
 data class MarketListEntity(
@@ -29,6 +30,6 @@ fun MarketListEntity.asExternalModel(): MarketList {
         marketDate = marketDate,
         createdAt = createdAt,
         updatedAt = updatedAt,
-        whitelistItems = whitelistItems,
+        whitelistItems = whitelistItems.toImmutableList(),
     )
 }

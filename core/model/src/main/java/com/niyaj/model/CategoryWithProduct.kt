@@ -1,15 +1,12 @@
 package com.niyaj.model
 
+import androidx.compose.runtime.Stable
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
-data class CategoryWithProduct(
-    val categoryId: Int,
-
-    val productId: Int
-)
-
-
+@Stable
 data class CategoryWithProducts(
     val category: Category,
 
-    val products: List<Product> = emptyList()
+    val products: ImmutableList<Product> = persistentListOf()
 )

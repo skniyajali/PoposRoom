@@ -40,6 +40,7 @@ import com.niyaj.ui.components.StandardBottomSheet
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
@@ -78,6 +79,8 @@ fun AddEditAddOnItemScreen(
     }
 
     val title = if (itemId == 0) CREATE_NEW_ADD_ON else EDIT_ADD_ON_ITEM
+
+    TrackScreenViewEvent(screenName = Screens.ADD_EDIT_ADD_ON_ITEM_SCREEN)
 
     StandardBottomSheet(
         modifier = Modifier,

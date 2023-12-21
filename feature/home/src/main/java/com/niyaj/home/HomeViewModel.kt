@@ -9,8 +9,8 @@ import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,7 +35,6 @@ class HomeViewModel @Inject constructor(
 
     private val _text = snapshotFlow { mSearchText.value }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val selectedId = repository.getSelectedOrder()
         .mapLatest {
             if (it?.orderId != null) {
@@ -52,19 +51,18 @@ class HomeViewModel @Inject constructor(
             initialValue = SelectedOrderState()
         )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val products = _text.combine(_selectedCategory) { text, category ->
         repository.getAllProduct(text, category)
     }.flatMapLatest { it ->
         it.map { items ->
             totalItems = items.take(1).map { it.productId }
             items.map {
-                ProductWithQuantity(
+                ProductWithFlowQuantity(
                     categoryId = it.categoryId,
                     productId = it.productId,
                     productName = it.productName,
                     productPrice = it.productPrice,
-                    quantity = it.quantity.stateIn(viewModelScope).value
+                    quantity = it.quantity.stateIn(viewModelScope)
                 )
             }
         }
@@ -76,10 +74,24 @@ class HomeViewModel @Inject constructor(
         initialValue = UiState.Loading
     )
 
+
+    val productsWithQuantity = _text.combine(_selectedCategory) { text, category ->
+        repository.getProductsWithQuantities(text, category)
+    }.flatMapLatest { it ->
+        it.map { items ->
+            totalItems = items.take(1).map { it.productId }
+            if (items.isEmpty()) UiState.Empty else UiState.Success(items.toImmutableList())
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = UiState.Loading
+    )
+
     val categories = repository.getAllCategory().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
+        initialValue = persistentListOf()
     )
 
 

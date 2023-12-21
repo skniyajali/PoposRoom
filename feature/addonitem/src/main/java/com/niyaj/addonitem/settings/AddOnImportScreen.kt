@@ -47,6 +47,8 @@ import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.utils.ImportExport
@@ -115,6 +117,8 @@ fun AddOnImportScreen(
             }
         }
     }
+
+    TrackScreenViewEvent(screenName = "AddOnImportScreen")
 
     StandardScaffoldNew(
         navController = navController,
@@ -192,6 +196,8 @@ fun AddOnImportScreen(
                     }
                 )
             }else {
+                TrackScrollJank(scrollableState = lazyGridState, stateName = "addon-import:list")
+
                 LazyVerticalGrid(
                     modifier = Modifier
                         .padding(SpaceSmall),

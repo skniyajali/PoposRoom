@@ -1,9 +1,11 @@
 package com.niyaj.home
 
-data class ProductWithQuantity(
+import kotlinx.coroutines.flow.StateFlow
+
+data class ProductWithFlowQuantity(
     val categoryId: Int,
     val productId: Int,
     val productName: String,
     val productPrice: Int,
-    val quantity: Int = 0,
+    val quantity: StateFlow<Int>
 )
