@@ -3,12 +3,14 @@ package com.niyaj.database.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.niyaj.model.Product
 import java.util.Date
 
 @Entity(
     tableName = "product",
+    indices = [Index(value = ["productId"])],
     foreignKeys = [ForeignKey(
         entity = CategoryEntity::class,
         parentColumns = arrayOf("categoryId"),

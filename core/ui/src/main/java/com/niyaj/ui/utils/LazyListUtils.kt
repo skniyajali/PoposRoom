@@ -10,7 +10,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
 val LazyListState.isScrolled: Boolean
-    get() = derivedStateOf { firstVisibleItemIndex > 0 || firstVisibleItemScrollOffset > 0 }.value
+    @Composable
+    get() = remember(this) {
+        derivedStateOf { firstVisibleItemIndex > 0 || firstVisibleItemScrollOffset > 0 }.value
+    }
 
 @Composable
 fun LazyListState.isScrollingUp(): Boolean {

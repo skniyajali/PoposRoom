@@ -2,11 +2,12 @@ package com.niyaj.database.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.niyaj.model.Category
 import java.util.Date
 
-@Entity(tableName = "category")
+@Entity(tableName = "category", indices = [Index(value = ["categoryId"])])
 data class CategoryEntity(
     @PrimaryKey(autoGenerate = true)
     val categoryId: Int = 0,

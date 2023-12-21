@@ -7,6 +7,7 @@ import androidx.room.ForeignKey
 import androidx.room.Junction
 import androidx.room.Relation
 import com.niyaj.model.EmployeeWithAbsents
+import kotlinx.collections.immutable.toImmutableList
 
 @Entity(
     primaryKeys = ["employeeId", "absentId"],
@@ -52,6 +53,6 @@ data class EmployeeWithAbsentsDto(
 fun EmployeeWithAbsentsDto.asExternalModel(): EmployeeWithAbsents {
     return EmployeeWithAbsents(
         employee = this.employee.asExternalModel(),
-        absents = this.absents.map { it.asExternalModel() }
+        absents = this.absents.map { it.asExternalModel() }.toImmutableList()
     )
 }

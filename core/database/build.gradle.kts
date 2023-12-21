@@ -19,6 +19,7 @@ dependencies {
     implementation(project(":core:common"))
 
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.collections.immutable)
 
     androidTestImplementation(project(":core:testing"))
 

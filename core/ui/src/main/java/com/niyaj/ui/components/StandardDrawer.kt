@@ -685,7 +685,6 @@ fun DrawerItem(
     selected: Boolean,
     onClick: () -> Unit,
     iconColor: Color = MaterialTheme.colorScheme.onSurface,
-//    selectedColor: Color = MaterialTheme.colorScheme.secondary,
 ) {
     NavigationDrawerItem(
         icon = {

@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.Category
+import com.niyaj.ui.utils.TrackScrollJank
+import kotlinx.collections.immutable.ImmutableList
 
 
 const val CATEGORY_ITEM_TAG = "Category-"
@@ -34,10 +35,12 @@ const val CATEGORY_ITEM_TAG = "Category-"
 @Composable
 fun CategoriesData(
     lazyRowState: LazyListState,
-    categories: List<Category>,
+    categories: ImmutableList<Category>,
     selectedCategory: Int,
     onSelect: (Int) -> Unit,
 ) {
+    TrackScrollJank(scrollableState = lazyRowState, stateName = "category:list")
+
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         state = lazyRowState,
@@ -62,10 +65,12 @@ fun CategoriesData(
 @Composable
 fun CategoriesData(
     lazyRowState: LazyListState,
-    categories: List<Category>,
+    categories: ImmutableList<Category>,
     selectedCategory: List<Int>,
     onSelect: (Int) -> Unit,
 ) {
+    TrackScrollJank(scrollableState = lazyRowState, stateName = "category:list")
+
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         state = lazyRowState,
@@ -87,7 +92,6 @@ fun CategoriesData(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryData(
     modifier: Modifier = Modifier,

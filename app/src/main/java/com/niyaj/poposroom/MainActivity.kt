@@ -37,6 +37,7 @@ import com.niyaj.common.utils.Constants.NOTIFICATION_PERMISSION_REQUEST_CODE
 import com.niyaj.common.utils.Constants.UPDATE_MANAGER_REQUEST_CODE
 import com.niyaj.common.utils.hasNetworkPermission
 import com.niyaj.common.utils.hasNotificationPermission
+import com.niyaj.common.utils.showToast
 import com.niyaj.data.utils.NetworkMonitor
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.model.DarkThemeConfig
@@ -130,11 +131,7 @@ class MainActivity : ComponentActivity() {
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
             run {
                 if (result.resultCode != RESULT_OK) {
-                    Toast.makeText(
-                        this,
-                        "Something Went Wrong!",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    this.showToast("Something Went Wrong!")
                 }
             }
         }

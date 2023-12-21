@@ -23,6 +23,7 @@ import com.niyaj.model.CartProductItem
 import com.niyaj.model.OrderType
 import com.niyaj.model.OrderWithCartItems
 import com.niyaj.model.SELECTED_ID
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -279,9 +280,9 @@ class CartRepositoryImpl(
                 CartItem(
                     orderId = order.cartOrder.orderId,
                     orderType = order.cartOrder.orderType,
-                    cartProducts = cartProducts.await(),
-                    addOnItems = order.addOnItems,
-                    charges = order.charges,
+                    cartProducts = cartProducts.await().toImmutableList(),
+                    addOnItems = order.addOnItems.toImmutableList(),
+                    charges = order.charges.toImmutableList(),
                     customerPhone = customerPhone.await(),
                     customerAddress = addressName.await(),
                     updatedAt = (order.cartOrder.updatedAt ?: order.cartOrder.createdAt).toTimeSpan,

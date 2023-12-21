@@ -10,10 +10,11 @@ import com.niyaj.database.dao.CartDao
 import com.niyaj.database.dao.CartOrderDao
 import com.niyaj.database.dao.CartPriceDao
 import com.niyaj.database.dao.CategoryDao
+import com.niyaj.database.dao.ChargesDao
 import com.niyaj.database.dao.CustomerDao
 import com.niyaj.database.dao.EmployeeDao
 import com.niyaj.database.dao.ExpenseDao
-import com.niyaj.database.dao.MainFeedDao
+import com.niyaj.database.dao.HomeDao
 import com.niyaj.database.dao.MarketItemDao
 import com.niyaj.database.dao.MarketListDao
 import com.niyaj.database.dao.MeasureUnitDao
@@ -53,7 +54,6 @@ import com.niyaj.database.model.ReportsEntity
 import com.niyaj.database.model.SelectedEntity
 import com.niyaj.database.util.ListConverter
 import com.niyaj.database.util.TimestampConverters
-import com.niyaj.database.dao.ChargesDao
 
 
 @Database(
@@ -85,7 +85,7 @@ import com.niyaj.database.dao.ChargesDao
         MarketListWithItemEntity::class,
         MeasureUnitEntity::class,
     ],
-    version = 11,
+    version = 12,
     autoMigrations = [],
     exportSchema = true,
 )
@@ -104,7 +104,7 @@ abstract class PoposDatabase : RoomDatabase() {
     abstract fun cartOrderDao(): CartOrderDao
     abstract fun cartPriceDao(): CartPriceDao
     abstract fun selectedDao(): SelectedDao
-    abstract fun mainFeedDao(): MainFeedDao
+    abstract fun mainFeedDao(): HomeDao
     abstract fun cartDao(): CartDao
     abstract fun orderDao(): OrderDao
     abstract fun printDao(): PrintDao

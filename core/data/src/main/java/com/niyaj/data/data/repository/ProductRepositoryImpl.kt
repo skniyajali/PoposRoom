@@ -23,6 +23,8 @@ import com.niyaj.model.ProductIdWithPrice
 import com.niyaj.model.ProductWiseOrder
 import com.niyaj.model.filterCategory
 import com.niyaj.model.filterProducts
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -36,11 +38,11 @@ class ProductRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher,
 ) : ProductRepository, ProductValidationRepository {
 
-    override fun getAllCategory(): Flow<List<Category>> {
+    override fun getAllCategory(): Flow<ImmutableList<Category>> {
         return productDao.getAllCategory().mapLatest { list ->
             list.map {
                 it.asExternalModel()
-            }
+            }.toImmutableList()
         }
     }
 

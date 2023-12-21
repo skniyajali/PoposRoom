@@ -22,6 +22,7 @@ import com.niyaj.model.OrderType
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -228,8 +229,8 @@ class AddEditCartOrderViewModel @Inject constructor(
                         createdAt = Date(),
                         updatedAt = if (cartOrderId == 0) null else Date()
                     ),
-                    addOnItems = _selectedAddOnItems.toList(),
-                    charges = _selectedCharges.toList()
+                    addOnItems = _selectedAddOnItems.toImmutableList(),
+                    charges = _selectedCharges.toImmutableList()
                 )
 
                 when (val result = cartOrderRepository.createOrUpdateCartOrder(newCartOrder)) {

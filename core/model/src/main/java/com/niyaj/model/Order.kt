@@ -1,8 +1,10 @@
 package com.niyaj.model
 
+import androidx.compose.runtime.Stable
 import com.niyaj.common.utils.toTime
 import java.util.Date
 
+@Stable
 data class Order(
     val orderId: Int = 0,
     val orderType: OrderType = OrderType.DineIn,

@@ -4,7 +4,7 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.data.data.repository.HomeRepositoryImpl
 import com.niyaj.data.repository.HomeRepository
-import com.niyaj.database.dao.MainFeedDao
+import com.niyaj.database.dao.HomeDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,10 +17,10 @@ object MainFeedModule {
 
     @Provides
     fun provideMainFeedRepository(
-        mainFeedDao: MainFeedDao,
+        homeDao: HomeDao,
         @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): HomeRepository {
-        return HomeRepositoryImpl(mainFeedDao, ioDispatcher)
+        return HomeRepositoryImpl(homeDao, ioDispatcher)
     }
 
 }

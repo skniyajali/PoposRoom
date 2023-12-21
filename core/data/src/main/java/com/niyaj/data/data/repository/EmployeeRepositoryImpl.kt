@@ -23,6 +23,7 @@ import com.niyaj.model.EmployeePayments
 import com.niyaj.model.EmployeeSalaryEstimation
 import com.niyaj.model.Payment
 import com.niyaj.model.searchEmployee
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -429,7 +430,7 @@ class EmployeeRepositoryImpl(
                                 EmployeeAbsentDates(
                                     startDate = date.first,
                                     endDate = date.second,
-                                    absentDates = absentDates
+                                    absentDates = absentDates.toImmutableList()
                                 )
                             )
                         }
@@ -470,7 +471,7 @@ class EmployeeRepositoryImpl(
                                 EmployeePayments(
                                     startDate = date.first,
                                     endDate = date.second,
-                                    payments = result
+                                    payments = result.toImmutableList()
                                 )
                             )
                         }

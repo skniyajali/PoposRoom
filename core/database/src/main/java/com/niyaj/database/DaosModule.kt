@@ -10,7 +10,7 @@ import com.niyaj.database.dao.CategoryDao
 import com.niyaj.database.dao.CustomerDao
 import com.niyaj.database.dao.EmployeeDao
 import com.niyaj.database.dao.ExpenseDao
-import com.niyaj.database.dao.MainFeedDao
+import com.niyaj.database.dao.HomeDao
 import com.niyaj.database.dao.MarketItemDao
 import com.niyaj.database.dao.MarketListDao
 import com.niyaj.database.dao.MeasureUnitDao
@@ -66,7 +66,7 @@ object DaosModule {
     fun providesExpenseDao(database: PoposDatabase): ExpenseDao = database.expenseDao()
 
     @Provides
-    fun providesMainFeedDao(database: PoposDatabase): MainFeedDao = database.mainFeedDao()
+    fun providesMainFeedDao(database: PoposDatabase): HomeDao = database.mainFeedDao()
 
     @Provides
     fun providesOrderDao(database: PoposDatabase): OrderDao = database.orderDao()

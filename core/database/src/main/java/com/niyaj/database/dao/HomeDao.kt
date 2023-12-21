@@ -5,21 +5,37 @@ import androidx.room.Query
 import com.niyaj.database.model.CategoryEntity
 import com.niyaj.database.model.ProductEntity
 import com.niyaj.database.model.SelectedEntity
+import com.niyaj.model.ProductWithQuantity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface MainFeedDao {
+interface HomeDao {
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM category WHERE isAvailable = :isAvailable ORDER BY categoryId ASC
-    """)
+    """
+    )
     fun getAllCategories(isAvailable: Boolean = true): Flow<List<CategoryEntity>>
 
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM product WHERE productAvailability = :isAvailable ORDER BY categoryId ASC, productPrice ASC
-    """)
+    """
+    )
     fun getAllProducts(isAvailable: Boolean = true): Flow<List<ProductEntity>>
+
+    @Query(
+        """
+        SELECT product.categoryId, product.productId, productName, productPrice,
+        COALESCE(cart.quantity, 0) as quantity
+        FROM product
+        LEFT JOIN cart ON product.productId = cart.productId AND cart.orderId = :orderId
+        WHERE cart.orderId IS NULL OR cart.orderId = :orderId
+        """
+    )
+    fun getProductWithQty(orderId: Int?): Flow<List<ProductWithQuantity>>
 
 
     @Query(
@@ -38,7 +54,8 @@ interface MainFeedDao {
     fun getSelectedOrderAddress(orderId: Int): String?
 
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT quantity FROM cart WHERE orderId = :orderId AND productId = :productId
     """
     )

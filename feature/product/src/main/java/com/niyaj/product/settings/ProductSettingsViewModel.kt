@@ -14,7 +14,13 @@ import com.niyaj.model.ProductIdWithPrice
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,7 +38,7 @@ class ProductSettingsViewModel @Inject constructor(
     val categories = productRepository.getAllCategory().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
+        initialValue = persistentListOf()
     )
 
     val products = snapshotFlow { mSearchText.value }.flatMapLatest { searchText ->

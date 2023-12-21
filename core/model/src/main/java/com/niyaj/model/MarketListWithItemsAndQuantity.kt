@@ -1,25 +1,30 @@
 package com.niyaj.model
 
+import androidx.compose.runtime.Stable
 import com.niyaj.common.utils.toDateString
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
+@Stable
 data class MarketListWithItems(
     val marketList: MarketList,
-    val items: List<MarketListItem>,
+    val items: ImmutableList<MarketListItem>,
 )
 
+@Stable
 data class MarketItemWithQuantity(
     val item: MarketItem,
     val doesExist: Flow<Boolean>,
     val quantity: Flow<ItemQuantityAndType?>
 )
 
-
+@Stable
 data class MarketItemAndQuantity(
     val item: MarketItem,
     val quantityAndType: ItemQuantityAndType
 )
 
+@Stable
 data class ItemQuantityAndType(
     val itemQuantity: Double = 0.0,
     val marketListType: MarketListType = MarketListType.Needed

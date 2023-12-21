@@ -1,10 +1,11 @@
 package com.niyaj.model
 
+import androidx.compose.runtime.Stable
 import com.niyaj.common.utils.getAllCapitalizedLetters
 import com.squareup.moshi.JsonClass
-import java.util.Date
 
 @JsonClass(generateAdapter = true)
+@Stable
 data class Product(
     val productId: Int = 0,
 

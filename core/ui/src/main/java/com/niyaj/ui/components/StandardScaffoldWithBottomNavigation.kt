@@ -102,9 +102,7 @@ fun StandardScaffoldWithBottomNavigation(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            StandardDrawer(
-                navController = navController
-            )
+            StandardDrawer(navController = navController)
         },
         gesturesEnabled = true
     ) {

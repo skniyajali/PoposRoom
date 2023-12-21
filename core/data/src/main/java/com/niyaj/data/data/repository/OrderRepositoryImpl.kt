@@ -26,6 +26,7 @@ import com.niyaj.model.OrderDetails
 import com.niyaj.model.OrderType
 import com.niyaj.model.SELECTED_ID
 import com.niyaj.model.searchOrder
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -187,9 +188,9 @@ class OrderRepositoryImpl(
 
             OrderDetails(
                 cartOrder = cartOrder,
-                cartProducts = cartProducts.await(),
-                addOnItems = addOnItems.await(),
-                charges = charges.await(),
+                cartProducts = cartProducts.await().toImmutableList(),
+                addOnItems = addOnItems.await().toImmutableList(),
+                charges = charges.await().toImmutableList(),
                 orderPrice = order.orderPrice.toExternalModel()
             )
         }

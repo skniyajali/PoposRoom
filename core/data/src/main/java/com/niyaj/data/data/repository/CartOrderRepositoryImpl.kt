@@ -41,6 +41,7 @@ import com.niyaj.model.Selected
 import com.niyaj.model.filterCartOrder
 import com.niyaj.model.searchAddress
 import com.niyaj.model.searchCustomer
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -231,8 +232,8 @@ class CartOrderRepositoryImpl(
 
                     CartOrderWithAddOnAndCharges(
                         cartOrder = cartOrderItem,
-                        addOnItems = result.addOnItems,
-                        charges = result.charges
+                        addOnItems = result.addOnItems.toImmutableList(),
+                        charges = result.charges.toImmutableList()
                     )
                 }
 

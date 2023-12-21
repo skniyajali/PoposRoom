@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -64,6 +65,8 @@ import com.niyaj.ui.components.StandardScaffold
 import com.niyaj.ui.components.drawAnimatedBorder
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
@@ -161,6 +164,8 @@ fun AddOnItemScreen(
         }
     }
 
+    TrackScreenViewEvent(screenName = Screens.ADD_ON_ITEM_SCREEN)
+
     StandardScaffold(
         navController = navController,
         title = if (selectedItems.isEmpty()) ADDON_SCREEN_TITLE else "${selectedItems.size} Selected",
@@ -227,6 +232,8 @@ fun AddOnItemScreen(
                 }
 
                 is UiState.Success -> {
+                    TrackScrollJank(scrollableState = lazyGridState, stateName = "addons:list")
+
                     LazyVerticalGrid(
                         modifier = Modifier
                             .fillMaxSize()
@@ -306,7 +313,7 @@ fun AddOnItemData(
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-) {
+) = trace("AddOnItemData"){
     val borderStroke = if (doesSelected(item.itemId)) border else null
 
     ElevatedCard(

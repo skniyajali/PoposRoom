@@ -1,24 +1,13 @@
 package com.niyaj.model
 
+import androidx.compose.runtime.Stable
 import java.util.Date
 
-
+@Stable
 data class CartCharges(
     val orderId: Int,
 
     val chargesId: Int,
 
     val createdAt: Date = Date(),
-)
-
-data class CartOrderWithChargesId(
-    val cartOrderEntity: CartOrder,
-
-    val items: List<Int> = emptyList()
-)
-
-data class CartOrderWithChargesPrice(
-    val cartOrderEntity: CartOrder,
-
-    val items: List<Int> = emptyList()
 )
