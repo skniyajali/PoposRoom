@@ -386,6 +386,168 @@ fun StandardScaffoldNew(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun StandardScaffoldNew(
+    currentRoute: String,
+    modifier: Modifier = Modifier,
+    title: String,
+    showDrawer: Boolean = true,
+    showBackButton: Boolean = false,
+    showBottomBar: Boolean = false,
+    showFab: Boolean = false,
+    fabPosition: FabPosition = FabPosition.Center,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    onBackClick: () -> Unit,
+    navigationIcon: @Composable () -> Unit = {},
+    navActions: @Composable RowScope.() -> Unit = {},
+    floatingActionButton: @Composable () -> Unit = {},
+    onNavigateToDestination: (String) -> Unit,
+    bottomBar: @Composable () -> Unit = {
+        AnimatedBottomNavigationBar(
+            currentRoute = currentRoute,
+            onNavigateToDestination = onNavigateToDestination
+        )
+    },
+    content: @Composable (PaddingValues) -> Unit = {},
+) {
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    // Remember a SystemUiController
+    val systemUiController = rememberSystemUiController()
+
+    val colorTransitionFraction = scrollBehavior.state.collapsedFraction
+
+    val color = rememberUpdatedState(newValue = containerColor(colorTransitionFraction))
+    val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
+    val navColor = MaterialTheme.colorScheme.surface
+
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = color.value,
+            darkIcons = true,
+        )
+
+        systemUiController.setNavigationBarColor(color = navColor)
+    }
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            StandardDrawer(
+                currentRoute = currentRoute,
+                onNavigateToScreen = onNavigateToDestination
+            )
+        },
+        gesturesEnabled = true
+    ) {
+        Scaffold(
+            topBar = {
+                LargeTopAppBar(
+                    title = {
+                        Text(text = title)
+                    },
+                    navigationIcon = {
+                        if (showBackButton) {
+                            IconButton(
+                                onClick = onBackClick,
+                                modifier = Modifier.testTag(STANDARD_BACK_BUTTON)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.scrim
+                                )
+                            }
+                        } else if (showDrawer) {
+                            IconButton(
+                                onClick = {
+                                    scope.launch {
+                                        drawerState.open()
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Apps,
+                                    contentDescription = null
+                                )
+                            }
+                        } else navigationIcon()
+                    },
+                    actions = {
+                        navActions()
+                    },
+                    scrollBehavior = scrollBehavior,
+                    colors = TopAppBarDefaults.largeTopAppBarColors(
+                        containerColor = color.value
+                    )
+                )
+            },
+            bottomBar = {
+                AnimatedVisibility(
+                    visible = showBottomBar,
+                    label = "BottomBar",
+                    enter = fadeIn() + slideInVertically(
+                        initialOffsetY = { fullHeight ->
+                            fullHeight / 4
+                        }
+                    ),
+                    exit = fadeOut() + slideOutVertically(
+                        targetOffsetY = { fullHeight ->
+                            fullHeight / 4
+                        }
+                    )
+                ) {
+                    bottomBar()
+                }
+            },
+            floatingActionButton = {
+                AnimatedVisibility(
+                    visible = showFab,
+                    label = "BottomBar",
+                    enter = fadeIn() + slideInVertically(
+                        initialOffsetY = { fullHeight ->
+                            fullHeight / 4
+                        }
+                    ),
+                    exit = fadeOut() + slideOutVertically(
+                        targetOffsetY = { fullHeight ->
+                            fullHeight / 4
+                        }
+                    )
+                ) {
+                    floatingActionButton()
+                }
+            },
+            floatingActionButtonPosition = fabPosition,
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            modifier = modifier
+                .testTag(title)
+                .fillMaxSize()
+                .navigationBarsPadding()
+                .imePadding(),
+            containerColor = MaterialTheme.colorScheme.background
+        ) { padding ->
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .consumeWindowInsets(padding)
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+                    )
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
+                shape = shape.value,
+                elevation = CardDefaults.cardElevation(),
+            ) {
+                content(padding)
+            }
+        }
+    }
+}
+
 @Composable
 internal fun containerColorForPrimary(colorTransitionFraction: Float): Color {
     return lerp(

@@ -1,16 +1,16 @@
 package com.niyaj.poposroom.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.niyaj.common.utils.showToast
 import com.niyaj.data.utils.NetworkMonitor
 import com.niyaj.designsystem.components.PoposBackground
 import com.niyaj.designsystem.components.PoposGradientBackground
@@ -20,9 +20,7 @@ import com.niyaj.poposroom.navigation.PoposNavHost
 import com.niyaj.poposroom.navigation.RootNavGraph
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(
-    ExperimentalComposeUiApi::class, ExperimentalMaterialNavigationApi::class
-)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialNavigationApi::class)
 @Composable
 fun PoposApp(
     modifier: Modifier = Modifier,
@@ -39,7 +37,10 @@ fun PoposApp(
         PoposGradientBackground(
             gradientColors = LocalGradientColors.current,
         ) {
-            val context = LocalContext.current
+//            val scope = rememberCoroutineScope()
+//            val drawerState = rememberDrawerState(DrawerValue.Closed)
+            val snackbarHostState = remember { SnackbarHostState() }
+//            val layoutDirection = LocalLayoutDirection.current
 
             val isOffline by appState.isOffline.collectAsStateWithLifecycle()
             val reportState = viewModel.reportState.collectAsStateWithLifecycle().value
@@ -47,22 +48,68 @@ fun PoposApp(
 
             LaunchedEffect(key1 = deleteState, key2 = reportState) {
                 if (deleteState) {
-                    context.showToast("Data Deletion Running")
+                    snackbarHostState.showSnackbar("Data Deletion Running")
                 }
 
                 if (reportState) {
-                    context.showToast("Generating Reports")
+                    snackbarHostState.showSnackbar("Generating Reports")
                 }
             }
 
             // If user is not connected to the internet show a snack bar to inform them.
             LaunchedEffect(isOffline) {
                 if (isOffline) {
-                    context.showToast(message = "You are not connected to the internet")
+                    snackbarHostState.showSnackbar(message = "You are not connected to the internet")
                 } else {
                     onCheckForAppUpdate()
                 }
             }
+
+            /*
+            ModalNavigationDrawer(
+                drawerState = drawerState,
+                drawerContent = {
+                    StandardDrawer(
+                        currentRoute = appState.currentRouteOrDefault,
+                        onNavigateToScreen = {
+                            appState.navigateToScreen(it)
+
+                            scope.launch {
+                                drawerState.close()
+                            }
+                        }
+                    )
+                },
+                gesturesEnabled = true
+            ) {
+                Scaffold(
+                    modifier = Modifier.semantics {
+                        testTagsAsResourceId = true
+                    },
+                    containerColor = Color.Transparent,
+                    contentColor = MaterialTheme.colorScheme.onBackground,
+                    contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                    snackbarHost = { SnackbarHost(snackbarHostState) },
+                    bottomBar = {
+                        if (appState.shouldShowBottomBar) {
+                            StandardBottomNavigation(
+                                destinations = appState.topLevelDestinations,
+                                onNavigateToDestination = appState::navigateToTopLevelDestination,
+                                currentDestination = appState.currentDestination,
+                                modifier = Modifier.testTag("PoposBottomBar"),
+                            )
+                        }
+                    },
+                ) {
+                    PoposNavHost(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        appState = appState,
+                        startRoute = RootNavGraph.startRoute,
+                    )
+                }
+            }
+            */
 
             PoposNavHost(
                 modifier = Modifier,

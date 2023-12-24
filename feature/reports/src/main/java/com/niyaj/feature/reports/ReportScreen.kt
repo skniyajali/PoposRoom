@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.common.utils.calculateStartOfDayTime
@@ -115,6 +116,9 @@ fun ReportScreen(
     onClickProduct: (Int) -> Unit,
     reportsViewModel: ReportsViewModel = hiltViewModel(),
 ) {
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+        ?: Screens.REPORT_SCREEN
+
     val context = LocalContext.current
 
     val bluetoothPermissions =
@@ -210,7 +214,7 @@ fun ReportScreen(
     }
 
     StandardScaffoldNew(
-        navController = navController,
+        currentRoute = currentRoute,
         showBottomBar = lazyListState.isScrollingUp(),
         showBackButton = true,
         title = "Reports",
@@ -250,6 +254,10 @@ fun ReportScreen(
                 }
             )
         },
+        onBackClick = { navController.navigateUp() },
+        onNavigateToDestination = {
+            navController.navigate(it)
+        }
     ) {
         MaterialDialog(
             dialogState = dialogState,

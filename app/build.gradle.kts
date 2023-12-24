@@ -271,6 +271,8 @@ dependencies {
     implementation(libs.raamcosta.animation.core)
     ksp(libs.raamcosta.ksp)
 
+    implementation(libs.navigation.bar)
+
     // Timber
     implementation(libs.timber)
 

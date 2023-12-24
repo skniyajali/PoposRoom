@@ -41,6 +41,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -50,12 +51,14 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.ui.utils.Screens
 import kotlinx.coroutines.launch
 
+@Stable
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StandardScaffoldWithBottomNavigation(
@@ -80,6 +83,9 @@ fun StandardScaffoldWithBottomNavigation(
     navActions: @Composable RowScope.() -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+        ?: Screens.HOME_SCREEN
+
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -102,7 +108,10 @@ fun StandardScaffoldWithBottomNavigation(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            StandardDrawer(navController = navController)
+            StandardDrawer(
+                currentRoute = currentRoute,
+                onNavigateToScreen = { navController.navigate(it) }
+            )
         },
         gesturesEnabled = true
     ) {
@@ -261,6 +270,222 @@ fun StandardScaffoldWithBottomNavigation(
                 )
             ) {
                 content(padding)
+            }
+        }
+    }
+}
+
+
+@Stable
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun StandardScaffoldWithBottomNavigation(
+    modifier: Modifier = Modifier,
+    title: String = "",
+    currentRoute: String,
+    selectedId: String = "0",
+    showFab: Boolean,
+    showBottomBar: Boolean,
+    showSearchBar: Boolean,
+    showSearchIcon: Boolean,
+    showBackButton: Boolean,
+    searchText: String = "",
+    searchPlaceholderText: String = "",
+    openSearchBar: () -> Unit,
+    closeSearchBar: () -> Unit,
+    onSearchTextChanged: (String) -> Unit,
+    onClearClick: () -> Unit,
+    onBackClick: () -> Unit,
+    onNavigateToScreen: (String) -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    navActions: @Composable RowScope.() -> Unit = {},
+    content: @Composable () -> Unit,
+) {
+    val scope = rememberCoroutineScope()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val layoutDirection = LocalLayoutDirection.current
+
+    // Remember a SystemUiController
+    val systemUiController = rememberSystemUiController()
+
+    val colorTransitionFraction = remember { scrollBehavior.state.collapsedFraction }
+
+    val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
+    val statusColor = MaterialTheme.colorScheme.surface
+
+    SideEffect {
+        systemUiController.setStatusBarColor(color = statusColor, darkIcons = true)
+
+        systemUiController.setNavigationBarColor(color = statusColor)
+    }
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            StandardDrawer(
+                currentRoute = currentRoute,
+                onNavigateToScreen = onNavigateToScreen
+            )
+        },
+        gesturesEnabled = true
+    ) {
+        Scaffold(
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = {
+                        if (title.isNotEmpty()) {
+                            Text(text = title)
+                        } else if (selectedId != "0") {
+                            SelectedOrderBox(
+                                modifier = Modifier
+                                    .padding(horizontal = SpaceMedium),
+                                text = selectedId,
+                                height = 40.dp,
+                                onClick = {
+                                    onNavigateToScreen(Screens.SELECT_ORDER_SCREEN)
+                                }
+                            )
+                        }
+                    },
+                    navigationIcon = {
+                        if (showSearchBar) {
+                            IconButton(
+                                onClick = closeSearchBar,
+                                modifier = Modifier.testTag(Constants.STANDARD_BACK_BUTTON)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = Constants.STANDARD_BACK_BUTTON
+                                )
+                            }
+                        } else if (showBackButton) {
+                            IconButton(
+                                onClick = onBackClick
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = Constants.STANDARD_BACK_BUTTON
+                                )
+                            }
+                        } else {
+                            IconButton(
+                                onClick = {
+                                    scope.launch {
+                                        drawerState.open()
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Apps,
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    },
+                    actions = {
+                        if (showSearchBar) {
+                            StandardSearchBar(
+                                searchText = searchText,
+                                placeholderText = searchPlaceholderText,
+                                onClearClick = onClearClick,
+                                onSearchTextChanged = onSearchTextChanged
+                            )
+                        } else if (showSearchIcon) {
+                            IconButton(
+                                onClick = openSearchBar
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Search,
+                                    contentDescription = Constants.SEARCH_ICON
+                                )
+                            }
+                        } else {
+                            navActions()
+                        }
+                    },
+                    scrollBehavior = scrollBehavior,
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        scrolledContainerColor = MaterialTheme.colorScheme.surface
+                    )
+                )
+            },
+            bottomBar = {
+                AnimatedVisibility(
+                    visible = showBottomBar,
+                    label = "BottomBar",
+                    enter = fadeIn() + slideInVertically(
+                        initialOffsetY = { fullHeight ->
+                            fullHeight / 4
+                        }
+                    ),
+                    exit = fadeOut() + slideOutVertically(
+                        targetOffsetY = { fullHeight ->
+                            fullHeight / 4
+                        }
+                    )
+                ) {
+                    AnimatedBottomNavigationBar(
+                        currentRoute = currentRoute,
+                        onNavigateToDestination = onNavigateToScreen,
+                    )
+                }
+            },
+            floatingActionButton = {
+                AnimatedVisibility(
+                    visible = showFab,
+                    label = "FloatingActionButton",
+                    enter = fadeIn() + slideInVertically(
+                        initialOffsetY = { fullHeight ->
+                            fullHeight / 4
+                        }
+                    ),
+                    exit = fadeOut() + slideOutVertically(
+                        targetOffsetY = { fullHeight ->
+                            fullHeight / 4
+                        }
+                    )
+                ) {
+                    FloatingActionButton(
+                        onClick = {
+                            onNavigateToScreen(Screens.ADD_EDIT_CART_ORDER_SCREEN)
+                        },
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Create new order"
+                        )
+                    }
+                }
+            },
+            floatingActionButtonPosition = FabPosition.End,
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            modifier = modifier
+                .testTag(title)
+                .fillMaxSize(),
+        ) { padding ->
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        start = padding.calculateStartPadding(layoutDirection),
+                        top = padding.calculateTopPadding(),
+                        end = padding.calculateEndPadding(layoutDirection)
+                    )
+//                    .consumeWindowInsets(padding)
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+                    )
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
+                elevation = CardDefaults.cardElevation(),
+                shape = shape.value,
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                content()
             }
         }
     }
