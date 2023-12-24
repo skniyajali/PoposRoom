@@ -1,13 +1,13 @@
 package com.niyaj.common.tags
 
-object MainFeedTestTags {
+object HomeScreenTestTags {
 
     //Address Screen
 
     const val CATEGORY_NOT_AVAILABLE = "Categories not available"
-    const val PRODUCT_NOT_AVAIlABLE = "Products not available.."
+    const val PRODUCT_NOT_AVAILABLE = "Products not available.."
     const val CREATE_NEW_PRODUCT = "Create New Product"
-    const val MAIN_SEARCH_PLACEHOLDER = "Search for products..."
+    const val HOME_SEARCH_PLACEHOLDER = "Search for products..."
 
     const val CREATE_NEW_ORDER = "Create New Order"
 

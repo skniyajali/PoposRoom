@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import com.niyaj.common.utils.Constants.LOADING_INDICATION
 
+@Stable
 @Composable
 fun LoadingIndicator() {
     Column(
@@ -25,6 +27,7 @@ fun LoadingIndicator() {
     }
 }
 
+@Stable
 @Composable
 fun LoadingIndicatorHalf() {
     Box(
