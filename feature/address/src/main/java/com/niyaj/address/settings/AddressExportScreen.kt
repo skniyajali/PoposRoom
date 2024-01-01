@@ -43,13 +43,15 @@ import com.niyaj.common.tags.AddressTestTags.EXPORT_ADDRESS_TITLE
 import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.utils.ImportExport
@@ -139,6 +141,8 @@ fun AddressExportScreen(
         onBackClick()
     }
 
+    TrackScreenViewEvent(screenName = "Address Export Screen")
+
     StandardScaffoldNew(
         navController = navController,
         title = if (selectedItems.isEmpty()) EXPORT_ADDRESS_TITLE else "${selectedItems.size} Selected",
@@ -227,6 +231,8 @@ fun AddressExportScreen(
                 }
             )
         }else {
+            TrackScrollJank(scrollableState = lazyGridState, stateName = "Exported Address::List")
+
             LazyVerticalGrid(
                 modifier = Modifier
                     .padding(SpaceSmall),

@@ -18,6 +18,8 @@ import com.niyaj.common.tags.AddressTestTags.ADDRESS_SETTINGS_TITLE
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
@@ -27,6 +29,8 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 fun AddressSettingsScreen(
     navController: NavController
 ) {
+    TrackScreenViewEvent(screenName = "AddressSettingsScreen")
+    
     val lazyListState = rememberLazyListState()
 
     StandardBottomSheet(
@@ -35,6 +39,8 @@ fun AddressSettingsScreen(
             navController.navigateUp()
         }
     ) {
+        TrackScrollJank(scrollableState = lazyListState, stateName = "Address Settings")
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()

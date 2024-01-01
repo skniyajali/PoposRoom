@@ -6,12 +6,29 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Business
-import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -22,10 +39,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.niyaj.address.destinations.*
+import com.niyaj.address.destinations.AddEditAddressScreenDestination
+import com.niyaj.address.destinations.AddressDetailsScreenDestination
+import com.niyaj.address.destinations.AddressExportScreenDestination
+import com.niyaj.address.destinations.AddressImportScreenDestination
+import com.niyaj.address.destinations.AddressSettingsScreenDestination
 import com.niyaj.common.tags.AddressTestTags.ADDRESS_ITEM_TAG
 import com.niyaj.common.tags.AddressTestTags.ADDRESS_NOT_AVAILABLE
 import com.niyaj.common.tags.AddressTestTags.ADDRESS_SCREEN_NOTE_TEXT
@@ -37,9 +59,17 @@ import com.niyaj.common.tags.AddressTestTags.DELETE_ADDRESS_ITEM_TITLE
 import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Address
-import com.niyaj.ui.components.*
+import com.niyaj.ui.components.CircularBox
+import com.niyaj.ui.components.ItemNotAvailable
+import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.NoteCard
+import com.niyaj.ui.components.ScaffoldNavActions
+import com.niyaj.ui.components.StandardFAB
+import com.niyaj.ui.components.StandardScaffold
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
@@ -139,6 +169,8 @@ fun AddressScreen(
             }
         }
     }
+    
+    TrackScreenViewEvent(screenName = Screens.ADDRESS_SCREEN)
 
     StandardScaffold(
         navController = navController,
@@ -206,6 +238,8 @@ fun AddressScreen(
                 }
 
                 is UiState.Success -> {
+                    TrackScrollJank(scrollableState = lazyGridState, stateName = "address:list")
+
                     LazyVerticalGrid(
                         modifier = Modifier
                             .padding(SpaceSmall),
@@ -297,7 +331,7 @@ fun AddressData(
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-) {
+) = trace("Address::Data"){
     val borderStroke = if (doesSelected(item.addressId)) border else null
 
     ElevatedCard(
