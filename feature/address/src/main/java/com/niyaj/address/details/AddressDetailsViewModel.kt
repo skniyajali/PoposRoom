@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.niyaj.data.repository.AddressRepository
 import com.niyaj.model.TotalOrderDetails
 import com.niyaj.ui.event.UiState
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddressDetailsViewModel @Inject constructor(
     private val addressRepository: AddressRepository,
+    analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -59,5 +62,21 @@ class AddressDetailsViewModel @Inject constructor(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = UiState.Loading
+    )
+
+    init {
+        analyticsHelper.logAddressDetailsViewed(addressId)
+    }
+}
+
+
+internal fun AnalyticsHelper.logAddressDetailsViewed(addressId: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "address_details_viewed",
+            extras = listOf(
+                AnalyticsEvent.Param("opened_address_details", addressId.toString()),
+            ),
+        ),
     )
 }

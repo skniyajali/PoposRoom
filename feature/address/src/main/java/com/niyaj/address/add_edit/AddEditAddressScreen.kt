@@ -30,6 +30,7 @@ import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.StandardBottomSheet
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
+import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
@@ -65,6 +66,8 @@ fun AddEditAddressScreen(
     }
 
     val title = if (addressId == 0) CREATE_ADDRESS_SCREEN else UPDATE_ADDRESS_SCREEN
+    
+    TrackScreenViewEvent(screenName = "Add/Edit Address Screen")
 
     StandardBottomSheet(
         title = title,

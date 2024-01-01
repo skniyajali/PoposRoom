@@ -29,7 +29,6 @@ import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -49,6 +48,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -74,6 +74,8 @@ import com.niyaj.ui.components.TextWithCount
 import com.niyaj.ui.components.TotalOrderDetailsCard
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
@@ -105,7 +107,9 @@ fun AddressDetailsScreen(
     var orderExpanded by remember {
         mutableStateOf(true)
     }
-
+    
+    TrackScreenViewEvent(screenName = Screens.ADDRESS_DETAILS_SCREEN + currentId)
+    
     StandardScaffoldNew(
         navController = navController,
         title = "Address Details",
@@ -124,6 +128,8 @@ fun AddressDetailsScreen(
             )
         },
     ) {
+        TrackScrollJank(scrollableState = lazyListState, stateName = "Address Details::List")
+
         LazyColumn(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),
@@ -164,14 +170,13 @@ fun AddressDetailsScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddressDetailsCard(
     addressState: UiState<Address>,
     onExpanded: () -> Unit,
     doesExpanded: Boolean,
     onClickEdit: () -> Unit,
-) {
+) = trace("AddressDetailsCard"){
     ElevatedCard(
         onClick = onExpanded,
         modifier = Modifier
@@ -276,14 +281,13 @@ fun AddressDetailsCard(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecentOrders(
     orderDetailsState: UiState<List<AddressWiseOrder>>,
     onExpanded: () -> Unit,
     doesExpanded: Boolean,
     onClickOrder: (Int) -> Unit,
-) {
+) = trace("Address::RecentOrders") {
     ElevatedCard(
         onClick = onExpanded,
         modifier = Modifier
@@ -379,7 +383,7 @@ fun GroupedOrders(
     customerPhone: String,
     orderDetails: List<AddressWiseOrder>,
     onClickOrder: (Int) -> Unit,
-) {
+) = trace("Address::GroupedOrders"){
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -457,7 +461,7 @@ fun ListOfOrders(
     orderSize: Int,
     orderDetails: List<AddressWiseOrder>,
     onClickOrder: (Int) -> Unit,
-) {
+) = trace("Address::ListOfOrder") {
     orderDetails.forEachIndexed { index, order ->
         Row(
             modifier = Modifier

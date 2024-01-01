@@ -18,7 +18,7 @@ object JankStatsModule {
             // Make sure to only log janky frames.
             if (frameData.isJank) {
                 // We're currently logging this but would better report it to a backend.
-                Timber.tag("NiA Jank").v(frameData.toString())
+                Timber.tag("Popos Jank").v(frameData.toString())
             }
         }
     }
