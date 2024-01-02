@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import com.niyaj.designsystem.theme.LightColor8
 import com.niyaj.designsystem.theme.Pewter
 import com.niyaj.designsystem.theme.SpaceMini
@@ -43,7 +44,7 @@ fun CartItemOrderDetailsSection(
     onClick: () -> Unit,
     onEditClick: () -> Unit,
     onViewClick: () -> Unit,
-) {
+) = trace("CartItemOrderDetailsSection") {
     val height = if (orderType == OrderType.DineIn) 56.dp else 64.dp
 
     val containerColor = if (orderType == OrderType.DineIn)
@@ -106,7 +107,7 @@ fun CartOrderDetailsButtons(
     onClick: () -> Unit,
     onEditClick: () -> Unit,
     onViewClick: () -> Unit,
-) {
+) = trace("CartOrderDetailsButtons") {
     Row(modifier) {
         IconButton(
             onClick = onEditClick

@@ -29,6 +29,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import com.niyaj.designsystem.theme.LightColor10
 import com.niyaj.designsystem.theme.SpaceSmall
 
@@ -41,7 +42,7 @@ fun CartFooterPlaceOrder(
     onClickSelectAll: () -> Unit = {},
     onClickPlaceAllOrder: () -> Unit = {},
     onClickPrintAllOrder: () -> Unit = {},
-) {
+) = trace("CartFooterPlaceOrder") {
     Surface(
         modifier = modifier
             .fillMaxWidth(),

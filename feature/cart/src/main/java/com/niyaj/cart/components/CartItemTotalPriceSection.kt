@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import com.niyaj.designsystem.theme.LightColor8
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.OrderType
@@ -40,7 +41,7 @@ fun CartItemTotalPriceSection(
     showPrintBtn: Boolean = true,
     onClickPlaceOrder: () -> Unit = {},
     onClickPrintOrder: () -> Unit = {},
-) {
+) = trace("CartItemTotalPriceSection") {
     val shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
     val containerColor = LightColor8
     val color = if (orderType == OrderType.DineOut) MaterialTheme.colorScheme.primary

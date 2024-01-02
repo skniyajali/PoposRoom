@@ -35,6 +35,8 @@ import com.niyaj.core.ui.R
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import kotlinx.coroutines.flow.collectLatest
@@ -153,6 +155,8 @@ fun DineOutScreen(
             }
         }
     }
+    
+    TrackScreenViewEvent(screenName = "DineOut Tab::Cart")
 
     Scaffold(
         bottomBar = {
@@ -201,6 +205,8 @@ fun DineOutScreen(
                 }
             )
         } else {
+            TrackScrollJank(scrollableState = listState, stateName = "DineOut Orders::Cart")
+
             CartItems(
                 listState = listState,
                 cartItems = dineOutOrders,

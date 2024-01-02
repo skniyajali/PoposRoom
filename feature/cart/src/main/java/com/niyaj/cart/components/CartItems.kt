@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import com.niyaj.designsystem.theme.ProfilePictureSizeSmall
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
@@ -42,7 +43,7 @@ fun CartItems(
     onClickAddOnItem: (addOnItemId: Int, orderId: Int) -> Unit,
     onClickPlaceOrder: (orderId: Int) -> Unit,
     onClickPrintOrder: (orderId: Int) -> Unit = {},
-) {
+) = trace("CartItems") {
     LazyColumn(
         modifier = modifier
             .fillMaxWidth()
@@ -97,7 +98,7 @@ fun CartItem(
     onClickAddOnItem: (addOnItemId: Int, orderId: Int) -> Unit,
     onClickPlaceOrder: (orderId: Int) -> Unit,
     onClickPrintOrder: (orderId: Int) -> Unit = {},
-) {
+) = trace("CartItem") {
     val interactionSource = remember {
         MutableInteractionSource()
     }

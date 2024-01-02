@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.theme.LightColor9
 import com.niyaj.designsystem.theme.SpaceMini
@@ -41,7 +42,7 @@ fun CartItemProductDetailsSection(
     cartProducts: List<CartProductItem>,
     decreaseQuantity: (Int) -> Unit = {},
     increaseQuantity: (Int) -> Unit = {},
-) {
+) = trace("CartItemProductDetailsSection") {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -62,7 +63,7 @@ fun CartProduct(
     cartProduct: CartProductItem,
     decreaseQuantity: (Int) -> Unit,
     increaseQuantity: (Int) -> Unit,
-) {
+) = trace("CartProduct") {
     key(cartProduct.productId) {
         Row(
             modifier = Modifier

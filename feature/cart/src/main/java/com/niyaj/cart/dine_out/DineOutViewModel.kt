@@ -5,6 +5,8 @@ import com.niyaj.common.result.Resource
 import com.niyaj.data.repository.CartRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DineOutViewModel @Inject constructor(
-    private val cartRepository: CartRepository
+    private val cartRepository: CartRepository,
+    private val analyticsHelper: AnalyticsHelper
 ): BaseViewModel() {
 
     override var totalItems: List<Int> = emptyList()
@@ -76,6 +79,7 @@ class DineOutViewModel @Inject constructor(
                             mEventFlow.emit(
                                 UiEvent.OnSuccess("${selectedItems.size} orders placed successfully")
                             )
+                            analyticsHelper.logPlacedDineOutOrder(selectedItems.toList())
                             mSelectedItems.clear()
                         }
                     }
@@ -92,6 +96,7 @@ class DineOutViewModel @Inject constructor(
                             mEventFlow.emit(
                                 UiEvent.OnSuccess("order placed successfully")
                             )
+                            analyticsHelper.logPlacedDineOutOrder(event.orderId)
                         }
                     }
                 }
@@ -132,4 +137,26 @@ class DineOutViewModel @Inject constructor(
             }
         }
     }
+}
+
+internal fun AnalyticsHelper.logPlacedDineOutOrder(orderId: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "dine_out_order_placed",
+            extras = listOf(
+                AnalyticsEvent.Param("dine_out_order_placed", orderId.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logPlacedDineOutOrder(orderId: List<Int>) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "dine_out_order_placed",
+            extras = listOf(
+                AnalyticsEvent.Param("dine_out_order_placed", orderId.toString()),
+            ),
+        ),
+    )
 }
