@@ -13,7 +13,6 @@ sealed class CartTabItem(
     val title: String,
     val screen: ComposableFunction,
 ) {
-
     data class DineInItem(
         val content: @Composable () -> Unit = {},
     ) : CartTabItem(
