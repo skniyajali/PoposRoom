@@ -21,6 +21,8 @@ import com.niyaj.product.destinations.ImportProductScreenDestination
 import com.niyaj.product.destinations.IncreaseProductPriceScreenDestination
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
@@ -30,7 +32,11 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 fun ProductSettingScreen(
     navController: NavController
 ) {
+    TrackScreenViewEvent(screenName = "Product Setting Screen")
+
     val lazyListState = rememberLazyListState()
+
+    TrackScrollJank(scrollableState = lazyListState, stateName = "Product Settings::List")
 
     StandardBottomSheet(
         title = "Product Settings",

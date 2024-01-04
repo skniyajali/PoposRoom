@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import com.niyaj.designsystem.theme.LightColor9
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Order
@@ -34,7 +35,7 @@ fun OrderedItem(
     onClickViewDetails: (Int) -> Unit,
     onClickEdit: (Int) -> Unit,
     onClickShareOrder: (Int) -> Unit,
-) {
+) = trace("OrderedItem") {
     RevealSwipe(
         modifier = modifier
             .fillMaxWidth(),

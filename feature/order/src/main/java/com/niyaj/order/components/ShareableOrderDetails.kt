@@ -1,5 +1,6 @@
 package com.niyaj.order.components
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.BorderStroke
@@ -60,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import androidx.compose.ui.window.DialogProperties
 import com.niyaj.common.utils.toFormattedDateAndTime
 import com.niyaj.common.utils.toRupee
@@ -104,7 +106,7 @@ fun ShareableOrderDetails(
     onClickShare: () -> Unit,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
     onClickPrintOrder: () -> Unit,
-) {
+) = trace("ShareableOrderDetails") {
     var changeLayout by remember { mutableStateOf(false) }
 
     BasicAlertDialog(
@@ -179,7 +181,7 @@ fun ShareableOrderDetails(
     onClickShare: () -> Unit,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
     onClickPrintOrder: () -> Unit,
-) {
+) = trace("ShareableOrderDetails") {
     var changeLayout by remember { mutableStateOf(false) }
 
     BasicAlertDialog(
@@ -268,7 +270,7 @@ fun CapturableCard(
     icon: ImageVector,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
     layoutChanged: Boolean,
-) {
+) = trace("CapturableCard") {
     ScrollableCapturable(
         controller = captureController,
         onCaptured = onCaptured,
@@ -314,7 +316,7 @@ fun CartItemOrderDetails(
     charges: List<Charges>,
     icon: ImageVector,
     containerColor: Color,
-) {
+) = trace("CartItemOrderDetails") {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -348,6 +350,7 @@ fun CartItemOrderDetails(
 }
 
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun CartItemOrderDetailsCard(
     modifier: Modifier = Modifier,
@@ -356,7 +359,7 @@ fun CartItemOrderDetailsCard(
     icon: ImageVector,
     containerColor: Color,
     backgroundColor: Brush,
-) {
+) = trace("CartItemOrderDetailsCard") {
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
@@ -421,7 +424,7 @@ fun ShareableCartOrderDetailsCard(
     cartOrder: CartOrder,
     icon: ImageVector,
     color: Color,
-) {
+) = trace("ShareableCartOrderDetailsCard") {
     Column(
         modifier = modifier
             .fillMaxWidth(),
@@ -510,7 +513,7 @@ fun ShareableCartOrderDetails(
     cartOrder: CartOrder,
     icon: ImageVector,
     color: Color,
-) {
+) = trace("ShareableCartOrderDetails") {
     Column(
         modifier = modifier
             .fillMaxWidth(),
@@ -618,7 +621,7 @@ fun ShareableCartProductsDetails(
     additionalCharges: List<Charges>,
     addOnItems: List<AddOnItem>,
     orderPrice: OrderPrice,
-) {
+) = trace("ShareableCartProductsDetails") {
     Card(
         modifier = modifier
             .fillMaxWidth(),
@@ -785,7 +788,7 @@ fun ShareableCartProductsDetails(
 fun CartProduct(
     modifier: Modifier = Modifier,
     cartProduct: CartProductItem
-) {
+) = trace("CartProduct") {
     key(cartProduct.productId) {
         Row(
             modifier = modifier
@@ -851,7 +854,7 @@ fun DialogButtons(
     onClickShare: () -> Unit,
     onClickChangeLayout: () -> Unit,
     onClickPrintOrder: () -> Unit,
-) {
+) = trace("DialogButtons") {
     Row(
         modifier = modifier
             .fillMaxWidth()

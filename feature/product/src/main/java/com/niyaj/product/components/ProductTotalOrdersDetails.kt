@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.isSameDay
 import com.niyaj.common.utils.toBarDate
 import com.niyaj.common.utils.toRupee
@@ -49,7 +50,7 @@ import com.niyaj.ui.components.ReportCardBox
 fun ProductTotalOrdersDetails(
     modifier: Modifier = Modifier,
     details: ProductTotalOrderDetails,
-) {
+) = trace("ProductTotalOrdersDetails") {
     ElevatedCard(
         modifier = modifier
             .testTag("Calculate TotalOrder")

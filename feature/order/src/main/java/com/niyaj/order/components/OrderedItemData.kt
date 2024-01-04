@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toTime
 import com.niyaj.designsystem.theme.LightColor8
 import com.niyaj.designsystem.theme.SpaceMini
@@ -40,7 +41,7 @@ fun OrderedItemData(
     onClickViewDetails: (Int) -> Unit,
     onClickPrintOrder: (Int) -> Unit,
     onClickShareOrder: (Int) -> Unit,
-) {
+) = trace("OrderedItemData") {
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth(),

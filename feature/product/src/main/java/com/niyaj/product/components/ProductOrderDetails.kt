@@ -40,6 +40,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
 import com.niyaj.common.utils.toTime
@@ -64,7 +65,7 @@ fun ProductOrderDetails(
     orderState: UiState<List<ProductWiseOrder>>,
     productPrice: Int,
     onClickOrder: (Int) -> Unit,
-) {
+) = trace("ProductOrderDetails") {
     ElevatedCard(
         modifier = modifier
             .testTag("RecentOrders")
@@ -124,7 +125,7 @@ fun RecentOrdersTabbed(
     dineOutOrders: List<ProductWiseOrder>,
     productPrice: Int,
     onClickOrder: (Int) -> Unit,
-) {
+) = trace("RecentOrdersTabbed") {
     val tabs = listOf(
         OrderTab.DineOutOrder {
             DineOutProductOrders(
@@ -161,7 +162,7 @@ fun DineInProductOrders(
     orderList: List<ProductWiseOrder>,
     productPrice: Int,
     onClickOrder: (Int) -> Unit,
-) {
+) = trace("DineInProductOrders") {
     val groupedByDate = orderList.groupBy { it.orderedDate.toPrettyDate() }
 
     Column(
@@ -209,7 +210,7 @@ fun DineOutProductOrders(
     orderList: List<ProductWiseOrder>,
     productPrice: Int,
     onClickOrder: (Int) -> Unit,
-) {
+) = trace("DineOutProductOrders") {
     val groupedByDate = orderList.groupBy { it.orderedDate.toPrettyDate() }
 
     Column(
@@ -255,7 +256,7 @@ fun OrderDetailsCard(
     modifier: Modifier = Modifier,
     order: ProductWiseOrder,
     onClickOrder: (Int) -> Unit,
-) {
+) = trace("OrderDetailsCard") {
     Row(
         modifier = modifier
             .fillMaxWidth()

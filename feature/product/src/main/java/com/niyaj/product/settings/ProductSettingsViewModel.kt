@@ -13,6 +13,8 @@ import com.niyaj.model.Product
 import com.niyaj.model.ProductIdWithPrice
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +32,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductSettingsViewModel @Inject constructor(
     private val productRepository: ProductRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel() {
 
     private val _selectedCategory = mutableStateListOf<Int>()
@@ -107,6 +110,8 @@ class ProductSettingsViewModel @Inject constructor(
 
                         _exportedProducts.emit(newProducts.toList())
                     }
+
+                    analyticsHelper.logExportedProductToFile(_exportedProducts.value.size)
                 }
             }
 
@@ -118,6 +123,8 @@ class ProductSettingsViewModel @Inject constructor(
                         totalItems = event.data.map { it.productId }
                         _importedProducts.value = event.data
                     }
+
+                    analyticsHelper.logImportedProductFromFile(event.data.size)
                 }
             }
 
@@ -146,6 +153,8 @@ class ProductSettingsViewModel @Inject constructor(
                                     "${data.size} Products has been imported."
                                 )
                             )
+
+                            analyticsHelper.logImportedProductToDatabase(data.size)
                         }
                     }
                 }
@@ -182,6 +191,7 @@ class ProductSettingsViewModel @Inject constructor(
 
                         is Resource.Success -> {
                             mEventFlow.emit(UiEvent.OnSuccess("${data.size} products price has been increased"))
+                            analyticsHelper.logProductPriceIncreased(data.size)
                         }
                     }
                 }
@@ -214,6 +224,7 @@ class ProductSettingsViewModel @Inject constructor(
 
                         is Resource.Success -> {
                             mEventFlow.emit(UiEvent.OnSuccess("${data.size} products price has been decreased"))
+                            analyticsHelper.logProductPriceDecreased(data.size)
                         }
                     }
                 }
@@ -232,4 +243,60 @@ class ProductSettingsViewModel @Inject constructor(
             _selectedCategory.clear()
         }
     }
+}
+
+
+internal fun AnalyticsHelper.logImportedProductFromFile(totalProduct: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "products_imported_from_file",
+            extras = listOf(
+                AnalyticsEvent.Param("products_imported_from_file", totalProduct.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logImportedProductToDatabase(totalProduct: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "products_imported_to_database",
+            extras = listOf(
+                AnalyticsEvent.Param("products_imported_to_database", totalProduct.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logExportedProductToFile(totalProduct: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "products_exported_to_file",
+            extras = listOf(
+                AnalyticsEvent.Param("products_exported_to_file", totalProduct.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logProductPriceIncreased(totalProduct: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "products_price_increased",
+            extras = listOf(
+                AnalyticsEvent.Param("products_price_increased", totalProduct.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logProductPriceDecreased(totalProduct: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "products_price_decreased",
+            extras = listOf(
+                AnalyticsEvent.Param("products_price_decreased", totalProduct.toString()),
+            ),
+        ),
+    )
 }

@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import com.niyaj.common.tags.ProductTestTags
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.theme.SpaceMini
@@ -42,7 +43,7 @@ fun ProductCard(
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-) {
+) = trace("ProductCard") {
     val borderStroke = if (doesSelected(item.productId)) border else null
 
     ElevatedCard(

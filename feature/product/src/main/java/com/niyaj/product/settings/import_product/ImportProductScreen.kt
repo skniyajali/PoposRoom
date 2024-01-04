@@ -57,6 +57,8 @@ import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.utils.ImportExport
@@ -126,6 +128,8 @@ fun ImportProductScreen(
         onBackClick()
     }
 
+    TrackScreenViewEvent(screenName = "Product Import Screen")
+    
     StandardScaffoldNew(
         navController = navController,
         title = if (selectedItems.isEmpty()) ProductTestTags.IMPORT_PRODUCTS_TITLE else "${selectedItems.size} Selected",
@@ -234,6 +238,8 @@ fun ImportProductScreen(
                     }
                 )
             }else {
+                TrackScrollJank(scrollableState = lazyListState, stateName = "Imported Products::List")
+
                 LazyColumn(
                     state = lazyListState,
                     modifier = Modifier
