@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.util.trace
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddressWiseReport
@@ -31,15 +32,15 @@ import com.niyaj.model.CategoryWiseReport
 import com.niyaj.model.CustomerWiseReport
 import com.niyaj.model.ProductWiseReport
 import com.niyaj.ui.components.CountBox
-import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.components.IconWithText
+import com.niyaj.ui.components.StandardExpandable
 
 @Composable
 fun CustomerReportCard(
     modifier: Modifier = Modifier,
     customerReport: CustomerWiseReport,
     onClickCustomer: (Int) -> Unit,
-) {
+) = trace("CustomerReportCard") {
     customerReport.customer.let { customer ->
         Row(
             modifier = modifier
@@ -53,7 +54,7 @@ fun CustomerReportCard(
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.Start
             ) {
-                customer.customerName?.let { it ->
+                customer.customerName?.let {
                     IconWithText(
                         text = it,
                         icon = Icons.Default.Person,
@@ -94,7 +95,7 @@ fun CustomerReportCard(
 fun AddressReportCard(
     report: AddressWiseReport,
     onAddressClick: (Int) -> Unit,
-) {
+) = trace("AddressReportCard") {
     report.address.let { address ->
         Row(
             modifier = Modifier
@@ -136,7 +137,7 @@ fun AddressReportCard(
 fun ProductReportCard(
     report: ProductWiseReport,
     onProductClick: (Int) -> Unit,
-) {
+) = trace("ProductReportCard") {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -165,14 +166,13 @@ fun ProductReportCard(
     }
 }
 
-
 @Composable
 fun CategoryWiseReportCard(
     report: List<CategoryWiseReport>,
     selectedCategory: String,
     onExpandChanged: (String) -> Unit,
     onProductClick: (Int) -> Unit,
-) {
+) = trace("CategoryWiseReportCard") {
     Column(
         modifier = Modifier
             .fillMaxWidth()

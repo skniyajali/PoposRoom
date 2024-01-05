@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
@@ -32,6 +33,8 @@ import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
 
 @Destination
@@ -40,10 +43,13 @@ fun ViewLastSevenDaysReports(
     navController: NavController,
     reportsViewModel: ReportsViewModel = hiltViewModel(),
 ) {
+    val lazyListState = rememberLazyListState()
     val reportBarData = reportsViewModel.reportsBarData.collectAsState().value.reportBarData
     val reportBarIsLoading = reportsViewModel.reportsBarData.collectAsState().value.isLoading
     val reportBarError = reportsViewModel.reportsBarData.collectAsState().value.error
 
+    TrackScreenViewEvent(screenName = "ViewLastSevenDaysReports")
+    
     StandardScaffoldNew(
         navController = navController,
         title = "Last 7 Days Reports",
@@ -57,10 +63,13 @@ fun ViewLastSevenDaysReports(
         } else if(reportBarError != null){
             ItemNotAvailable(text = reportBarError)
         } else {
+            TrackScrollJank(scrollableState = lazyListState, stateName = "Previous Day Reports::List")
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(SpaceSmall)
+                    .padding(SpaceSmall),
+                state = lazyListState,
             ) {
                 items(reportBarData){ report ->
                     Card(
