@@ -9,6 +9,8 @@ import com.niyaj.model.Selected
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CartOrderViewModel @Inject constructor(
     private val cartOrderRepository: CartOrderRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel() {
 
     override var totalItems: List<Int> = emptyList()
@@ -70,6 +73,8 @@ class CartOrderViewModel @Inject constructor(
                 }
 
                 is Resource.Success -> {
+                    analyticsHelper.logSelectedCartOrder(selectedItems.first())
+
                     deselectItems()
                 }
             }
@@ -103,4 +108,16 @@ class CartOrderViewModel @Inject constructor(
             mSelectedItems.clear()
         }
     }
+}
+
+
+internal fun AnalyticsHelper.logSelectedCartOrder(cartOrderId: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "cart_order_selected",
+            extras = listOf(
+                AnalyticsEvent.Param("cart_order_selected", cartOrderId.toString()),
+            ),
+        ),
+    )
 }

@@ -79,6 +79,8 @@ import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
@@ -137,6 +139,8 @@ fun AddEditCartOrderScreen(
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
     val title = if (cartOrderId == 0) CREATE_NEW_CART_ORDER else EDIT_CART_ORDER
+    
+    TrackScreenViewEvent(screenName = Screens.ADD_EDIT_CART_ORDER_SCREEN)
 
     StandardScaffoldNew(
         navController = navController,
@@ -158,6 +162,8 @@ fun AddEditCartOrderScreen(
             )
         }
     ) {
+        TrackScrollJank(scrollableState = lazyListState, stateName = "CreateOrUpdate Cart Order")
+
         LazyColumn(
             state = lazyListState,
             modifier = Modifier

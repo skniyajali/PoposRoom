@@ -45,6 +45,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -64,6 +65,8 @@ import com.niyaj.ui.components.StandardBottomSheetScaffold
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -107,6 +110,8 @@ fun SelectOrderScreen(
             }
         }
     }
+    
+    TrackScreenViewEvent(screenName = Screens.SELECT_ORDER_SCREEN)
 
     StandardBottomSheetScaffold(
         title = SELECTED_SCREEN_TITLE,
@@ -146,6 +151,7 @@ fun SelectOrderScreen(
                 }
 
                 is UiState.Success -> {
+                    TrackScrollJank(scrollableState = lazyListState, stateName = "Cart Orders::List")
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -251,7 +257,7 @@ fun SelectedData(
     onSelectOrder: (Int) -> Unit,
     onDeleteClick: (Int) -> Unit,
     onEditClick: (Int) -> Unit,
-) {
+) = trace("CartOrders") {
     Row(
         modifier = Modifier
             .fillMaxWidth()
