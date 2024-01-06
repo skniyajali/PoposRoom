@@ -9,6 +9,8 @@ import com.niyaj.model.SELECTED_ID
 import com.niyaj.model.Selected
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -24,7 +26,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SelectedViewModel @Inject constructor(
-    private val cartOrderRepository: CartOrderRepository
+    private val cartOrderRepository: CartOrderRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
@@ -77,6 +80,7 @@ class SelectedViewModel @Inject constructor(
                 }
 
                 is Resource.Success -> {
+                    analyticsHelper.logSelectedCartOrder(orderId)
                     _eventFlow.emit(UiEvent.OnSuccess("Cart Order Selected Successfully"))
                 }
             }
@@ -95,4 +99,15 @@ class SelectedViewModel @Inject constructor(
         }
     }
 
+}
+
+internal fun AnalyticsHelper.logSelectedCartOrder(cartOrderId: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "cart_order_selected",
+            extras = listOf(
+                AnalyticsEvent.Param("cart_order_selected", cartOrderId.toString()),
+            ),
+        ),
+    )
 }

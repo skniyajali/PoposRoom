@@ -61,6 +61,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -91,6 +92,8 @@ import com.niyaj.ui.components.TextWithCount
 import com.niyaj.ui.components.stickyHeader
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.niyaj.ui.utils.isScrollingUp
@@ -174,6 +177,8 @@ fun CartOrderScreen(
             }
         }
     }
+    
+    TrackScreenViewEvent(screenName = Screens.CART_ORDER_SCREEN)
 
     StandardScaffold(
         navController = navController,
@@ -244,6 +249,8 @@ fun CartOrderScreen(
             }
 
             is UiState.Success -> {
+                TrackScrollJank(scrollableState = lazyGridState, stateName = "All Cart Orders::List")
+
                 LazyVerticalGrid(
                     modifier = Modifier
                         .padding(SpaceSmall),
@@ -389,7 +396,7 @@ fun CartOrderScaffoldNavActions(
     onSelectOrderClick: () -> Unit,
     onClickViewDetails: () -> Unit,
     onSelectAllClick: () -> Unit,
-) {
+) = trace("CartOrderScaffoldNavActions"){
     ScaffoldNavActions(
         selectionCount = selectionCount,
         showSearchIcon = showSearchIcon,
@@ -478,7 +485,7 @@ fun CartOrderData(
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-) {
+) = trace("CartOrderData") {
     val borderStroke = if (doesSelected(item.orderId)) border else null
 
     ElevatedCard(
