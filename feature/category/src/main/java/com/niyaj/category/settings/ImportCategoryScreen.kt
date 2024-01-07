@@ -47,6 +47,8 @@ import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.utils.ImportExport
@@ -116,6 +118,8 @@ fun ImportCategoryScreen(
         }
     }
 
+    TrackScreenViewEvent(screenName = "Category Import Screen")
+
     StandardScaffoldNew(
         navController = navController,
         title = if (selectedItems.isEmpty()) IMPORT_CATEGORY_TITLE else "${selectedItems.size} Selected",
@@ -176,9 +180,9 @@ fun ImportCategoryScreen(
     ) {
         Crossfade(
             targetState = importedCategories.isEmpty(),
-            label = "Imported Products"
-        ) { categoriesAvailable ->
-            if (categoriesAvailable) {
+            label = "Imported Categories"
+        ) { categories ->
+            if (categories) {
                 EmptyImportScreen(
                     text = IMPORT_CATEGORY_NOTE_TEXT,
                     buttonText = IMPORT_CATEGORY_OPN_FILE,
@@ -192,6 +196,8 @@ fun ImportCategoryScreen(
                     }
                 )
             }else {
+                TrackScrollJank(scrollableState = lazyGridState, stateName = "Imported Category::List")
+
                 LazyVerticalGrid(
                     modifier = Modifier
                         .padding(SpaceSmall),

@@ -43,6 +43,8 @@ import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.StandardScaffold
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
@@ -143,6 +145,8 @@ fun CategoryScreen(
             }
         }
     }
+    
+    TrackScreenViewEvent(screenName = Screens.CATEGORY_SCREEN)
 
     StandardScaffold(
         navController = navController,
@@ -206,6 +210,8 @@ fun CategoryScreen(
             }
 
             is UiState.Success -> {
+                TrackScrollJank(scrollableState = lazyGridState, stateName = "Category::List")
+
                 LazyVerticalGrid(
                     modifier = Modifier
                         .padding(SpaceSmall),
