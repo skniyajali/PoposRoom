@@ -52,6 +52,8 @@ import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.utils.ImportExport
@@ -68,6 +70,7 @@ fun ExportCategoryScreen(
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: CategorySettingsViewModel = hiltViewModel(),
 ) {
+    TrackScreenViewEvent(screenName = "Category Export Screen")
 
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyGridState()
@@ -230,6 +233,8 @@ fun ExportCategoryScreen(
                 }
             )
         }else {
+            TrackScrollJank(scrollableState = lazyListState, stateName = "Exported Category::List")
+
             LazyVerticalGrid(
                 modifier = Modifier
                     .fillMaxSize()

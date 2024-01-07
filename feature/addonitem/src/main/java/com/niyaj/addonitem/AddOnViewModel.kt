@@ -2,15 +2,12 @@ package com.niyaj.addonitem
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
-import com.niyaj.common.network.Dispatcher
-import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.data.repository.AddOnItemRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
@@ -23,7 +20,6 @@ import javax.inject.Inject
 @HiltViewModel
 class AddOnViewModel @Inject constructor(
     private val itemRepository: AddOnItemRepository,
-    @Dispatcher(PoposDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : BaseViewModel() {
 
     override var totalItems: List<Int> = emptyList()
@@ -48,7 +44,7 @@ class AddOnViewModel @Inject constructor(
     override fun deleteItems() {
         super.deleteItems()
 
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             when (val result = itemRepository.deleteAddOnItems(selectedItems.toList())) {
                 is Resource.Success -> {
                     mEventFlow.emit(

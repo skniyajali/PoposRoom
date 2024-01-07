@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import com.niyaj.common.tags.CategoryConstants
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Category
@@ -35,7 +36,7 @@ fun CategoryData(
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-) {
+) = trace("CategoryData") {
     val borderStroke = if (doesSelected(item.categoryId)) border else null
 
     ElevatedCard(

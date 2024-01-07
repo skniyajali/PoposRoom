@@ -18,6 +18,8 @@ import com.niyaj.common.tags.CategoryConstants.CATEGORY_SETTINGS_TITLE
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
@@ -27,7 +29,11 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 fun CategorySettingsScreen(
     navController: NavController
 ) {
+    TrackScreenViewEvent(screenName = "Category Setting Screen")
+
     val lazyListState = rememberLazyListState()
+
+    TrackScrollJank(scrollableState = lazyListState, stateName = "Category Setting::Options")
 
     StandardBottomSheet(
         title = CATEGORY_SETTINGS_TITLE,
