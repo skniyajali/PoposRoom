@@ -7,6 +7,8 @@ import com.niyaj.data.repository.ChargesRepository
 import com.niyaj.model.Charges
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChargesSettingsViewModel @Inject constructor(
-    private val chargesRepository: ChargesRepository
+    private val chargesRepository: ChargesRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ): BaseViewModel() {
 
     val charges = snapshotFlow { mSearchText.value }.flatMapLatest {
@@ -49,15 +52,17 @@ class ChargesSettingsViewModel @Inject constructor(
                         val list = mutableListOf<Charges>()
 
                         mSelectedItems.forEach { id ->
-                            val category = charges.value.find { it.chargesId == id }
+                            val charges = charges.value.find { it.chargesId == id }
 
-                            if (category != null) {
-                                list.add(category)
+                            if (charges != null) {
+                                list.add(charges)
                             }
                         }
 
                         _exportedItems.emit(list.toList())
                     }
+
+                    analyticsHelper.logExportedChargesToFile(_exportedItems.value.size)
                 }
             }
 
@@ -68,6 +73,8 @@ class ChargesSettingsViewModel @Inject constructor(
                     if (event.data.isNotEmpty()) {
                         totalItems = event.data.map { it.chargesId }
                         _importedItems.value = event.data
+
+                        analyticsHelper.logImportedChargesFromFile(event.data.size)
                     }
                 }
             }
@@ -88,10 +95,45 @@ class ChargesSettingsViewModel @Inject constructor(
                         }
                         is Resource.Success -> {
                             mEventFlow.emit(UiEvent.OnSuccess("${data.size} items has been imported successfully"))
+                            analyticsHelper.logImportedChargesToDatabase(data.size)
                         }
                     }
                 }
             }
         }
     }
+}
+
+
+internal fun AnalyticsHelper.logImportedChargesFromFile(totalCharges: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "charges_imported_from_file",
+            extras = listOf(
+                AnalyticsEvent.Param("charges_imported_from_file", totalCharges.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logImportedChargesToDatabase(totalCharges: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "charges_imported_to_database",
+            extras = listOf(
+                AnalyticsEvent.Param("charges_imported_to_database", totalCharges.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logExportedChargesToFile(totalCharges: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "charges_exported_to_file",
+            extras = listOf(
+                AnalyticsEvent.Param("charges_exported_to_file", totalCharges.toString()),
+            ),
+        ),
+    )
 }

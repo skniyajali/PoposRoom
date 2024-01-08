@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -57,6 +58,8 @@ import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.StandardScaffold
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
@@ -157,6 +160,8 @@ fun ChargesScreen(
             navController.navigateUp()
         }
     }
+    
+    TrackScreenViewEvent(screenName = Screens.CHARGES_SCREEN)
 
     StandardScaffold(
         navController = navController,
@@ -221,6 +226,8 @@ fun ChargesScreen(
             }
 
             is UiState.Success -> {
+                TrackScrollJank(scrollableState = lazyGridState, stateName = "Charges::List")
+
                 LazyVerticalGrid(
                     modifier = Modifier
                         .padding(SpaceSmall),
@@ -296,7 +303,7 @@ fun ChargesData(
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
-) {
+) = trace("ChargesData") {
     StandardElevatedCard(
         modifier = modifier,
         testTag = CHARGES_TAG.plus(item.chargesId),
