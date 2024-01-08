@@ -51,6 +51,8 @@ import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.utils.ImportExport
@@ -141,6 +143,9 @@ fun ChargesExportScreen(
         onBackClick()
     }
 
+    TrackScreenViewEvent(screenName = "Charges Export Screen")
+
+
     StandardScaffoldNew(
         navController = navController,
         title = if (selectedItems.isEmpty()) EXPORT_CHARGES_TITLE else "${selectedItems.size} Selected",
@@ -229,6 +234,8 @@ fun ChargesExportScreen(
                 }
             )
         }else {
+            TrackScrollJank(scrollableState = lazyGridState, stateName = "Exported Charges::List")
+
             LazyVerticalGrid(
                 modifier = Modifier
                     .padding(SpaceSmall),

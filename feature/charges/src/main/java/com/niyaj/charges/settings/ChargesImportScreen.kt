@@ -47,6 +47,8 @@ import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.utils.ImportExport
@@ -116,6 +118,8 @@ fun ChargesImportScreen(
         }
     }
 
+    TrackScreenViewEvent(screenName = "Charges Import Screen")
+
     StandardScaffoldNew(
         navController = navController,
         title = if (selectedItems.isEmpty()) IMPORT_CHARGES_TITLE else "${selectedItems.size} Selected",
@@ -177,8 +181,8 @@ fun ChargesImportScreen(
         Crossfade(
             targetState = importedItems.isEmpty(),
             label = "Imported Items"
-        ) { itemAvailable ->
-            if (itemAvailable) {
+        ) { itemNotAvailable ->
+            if (itemNotAvailable) {
                 EmptyImportScreen(
                     text = IMPORT_CHARGES_NOTE_TEXT,
                     buttonText = IMPORT_CHARGES_OPN_FILE,
@@ -192,6 +196,8 @@ fun ChargesImportScreen(
                     }
                 )
             }else {
+                TrackScrollJank(scrollableState = lazyGridState, stateName = "Imported Charges::List")
+
                 LazyVerticalGrid(
                     modifier = Modifier
                         .padding(SpaceSmall),

@@ -40,6 +40,7 @@ import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
@@ -73,7 +74,9 @@ fun AddEditChargesScreen(
             }
         }
     }
-
+    
+    TrackScreenViewEvent(screenName = "Add Edit Charges Screen")
+    
     StandardScaffoldNew(
         navController = navController,
         title = title,
