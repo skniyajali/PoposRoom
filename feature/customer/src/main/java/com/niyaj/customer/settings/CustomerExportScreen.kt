@@ -52,6 +52,8 @@ import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.utils.ImportExport
@@ -142,6 +144,8 @@ fun CustomerExportScreen(
         onBackClick()
     }
 
+    TrackScreenViewEvent(screenName = "Customer Export Screen")
+
     StandardScaffoldNew(
         navController = navController,
         title = if (selectedItems.isEmpty()) EXPORT_CUSTOMER_TITLE else "${selectedItems.size} Selected",
@@ -230,6 +234,8 @@ fun CustomerExportScreen(
                 }
             )
         }else {
+            TrackScrollJank(scrollableState = lazyListState, stateName = "Exported Customer::List")
+
             LazyColumn(
                 modifier = Modifier
                     .padding(SpaceSmall),

@@ -18,6 +18,8 @@ import com.niyaj.customer.destinations.CustomerImportScreenDestination
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
@@ -27,7 +29,11 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 fun CustomerSettingsScreen(
     navController: NavController
 ) {
+    TrackScreenViewEvent(screenName = "Customer Settings Screen")
+    
     val lazyListState = rememberLazyListState()
+
+    TrackScrollJank(scrollableState = lazyListState, stateName = "Customer Settings::List")
 
     StandardBottomSheet(
         title = CUSTOMER_SETTINGS_TITLE,
