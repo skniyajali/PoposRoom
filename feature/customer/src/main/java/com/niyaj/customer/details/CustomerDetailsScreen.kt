@@ -26,7 +26,6 @@ import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -46,6 +45,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -70,6 +70,8 @@ import com.niyaj.ui.components.TextWithCount
 import com.niyaj.ui.components.TotalOrderDetailsCard
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
@@ -101,6 +103,8 @@ fun CustomerDetailsScreen(
     var orderExpanded by remember {
         mutableStateOf(true)
     }
+    
+    TrackScreenViewEvent(screenName = Screens.CUSTOMER_DETAILS_SCREEN)
 
     StandardScaffoldNew(
         navController = navController,
@@ -120,6 +124,8 @@ fun CustomerDetailsScreen(
             )
         },
     ) {
+        TrackScrollJank(scrollableState = lazyListState, stateName = "Customer Details::List")
+
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
@@ -161,14 +167,13 @@ fun CustomerDetailsScreen(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomerDetailsCard(
     customerState: UiState<Customer>,
     onExpanded: () -> Unit,
     doesExpanded: Boolean,
     onClickEdit: () -> Unit,
-) {
+) = trace("CustomerDetailsCard") {
     ElevatedCard(
         onClick = onExpanded,
         modifier = Modifier
@@ -285,14 +290,13 @@ fun CustomerDetailsCard(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecentOrders(
     customerWiseOrders: UiState<List<CustomerWiseOrder>>,
     onExpanded: () -> Unit,
     doesExpanded: Boolean,
     onClickOrder: (Int) -> Unit,
-) {
+) = trace("RecentOrders") {
     ElevatedCard(
         onClick = onExpanded,
         modifier = Modifier

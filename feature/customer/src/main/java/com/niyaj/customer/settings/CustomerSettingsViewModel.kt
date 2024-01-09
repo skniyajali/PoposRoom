@@ -7,6 +7,8 @@ import com.niyaj.data.repository.CustomerRepository
 import com.niyaj.model.Customer
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,8 +21,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CustomerSettingsViewModel @Inject constructor(
-    private val customerRepository: CustomerRepository
-): BaseViewModel() {
+    private val customerRepository: CustomerRepository,
+    private val analyticsHelper: AnalyticsHelper,
+) : BaseViewModel() {
 
     val customers = snapshotFlow { mSearchText.value }.flatMapLatest {
         customerRepository.getAllCustomer(it)
@@ -40,7 +43,7 @@ class CustomerSettingsViewModel @Inject constructor(
     val importedItems = _importedItems.asStateFlow()
 
     fun onEvent(event: CustomerSettingsEvent) {
-        when(event) {
+        when (event) {
             is CustomerSettingsEvent.GetExportedItems -> {
                 viewModelScope.launch {
                     if (mSelectedItems.isEmpty()) {
@@ -58,6 +61,8 @@ class CustomerSettingsViewModel @Inject constructor(
 
                         _exportedItems.emit(list.toList())
                     }
+
+                    analyticsHelper.logExportedCustomersToFile(_exportedItems.value.size)
                 }
             }
 
@@ -69,29 +74,67 @@ class CustomerSettingsViewModel @Inject constructor(
                         totalItems = event.data.map { it.customerId }
                         _importedItems.value = event.data
                     }
+
+                    analyticsHelper.logImportedCustomersFromFile(event.data.size)
                 }
             }
 
             is CustomerSettingsEvent.ImportCustomerItemsToDatabase -> {
                 viewModelScope.launch {
                     val data = if (mSelectedItems.isNotEmpty()) {
-                        mSelectedItems.flatMap {customerId ->
+                        mSelectedItems.flatMap { customerId ->
                             _importedItems.value.filter { it.customerId == customerId }
                         }
-                    }else {
+                    } else {
                         _importedItems.value
                     }
 
-                    when(val result = customerRepository.importCustomerToDatabase(data)) {
+                    when (val result = customerRepository.importCustomerToDatabase(data)) {
                         is Resource.Error -> {
                             mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
                         }
+
                         is Resource.Success -> {
                             mEventFlow.emit(UiEvent.OnSuccess("${data.size} customers has been imported successfully"))
+                            analyticsHelper.logImportedCustomersToDatabase(data.size)
                         }
                     }
                 }
             }
         }
     }
+}
+
+
+internal fun AnalyticsHelper.logImportedCustomersFromFile(totalCustomers: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "customer_imported_from_file",
+            extras = listOf(
+                AnalyticsEvent.Param("customer_imported_from_file", totalCustomers.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logImportedCustomersToDatabase(totalCustomers: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "customer_imported_to_database",
+            extras = listOf(
+                AnalyticsEvent.Param("customer_imported_to_database", totalCustomers.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logExportedCustomersToFile(totalCustomers: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "customer_exported_to_file",
+            extras = listOf(
+                AnalyticsEvent.Param("customer_exported_to_file", totalCustomers.toString()),
+            ),
+        ),
+    )
 }

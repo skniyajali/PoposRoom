@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.niyaj.data.repository.CustomerRepository
 import com.niyaj.model.TotalOrderDetails
 import com.niyaj.ui.event.UiState
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,10 +21,17 @@ import javax.inject.Inject
 @HiltViewModel
 class CustomerDetailsViewModel @Inject constructor(
     private val customerRepository: CustomerRepository,
+    private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val customerId = savedStateHandle.get<Int>("customerId") ?: 0
+
+    init {
+        savedStateHandle.get<Int>("customerId")?.let {
+            analyticsHelper.logViewCustomerDetails(it)
+        }
+    }
 
     private val _totalOrders = MutableStateFlow(TotalOrderDetails())
     val totalOrders = _totalOrders.asStateFlow()
@@ -60,5 +69,16 @@ class CustomerDetailsViewModel @Inject constructor(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = UiState.Loading
+    )
+}
+
+internal fun AnalyticsHelper.logViewCustomerDetails(customerId: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "customer_details_viewed",
+            extras = listOf(
+                AnalyticsEvent.Param("customer_details_viewed", customerId.toString()),
+            ),
+        ),
     )
 }
