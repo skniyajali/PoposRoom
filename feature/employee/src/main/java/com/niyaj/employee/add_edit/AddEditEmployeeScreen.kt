@@ -82,6 +82,8 @@ import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
@@ -133,6 +135,8 @@ fun AddEditEmployeeScreen(
     val dialogState = rememberMaterialDialogState()
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
+    
+    TrackScreenViewEvent(screenName = Screens.ADD_EDIT_EMPLOYEE_SCREEN)
 
     StandardScaffoldNew(
         navController = navController,
@@ -157,6 +161,8 @@ fun AddEditEmployeeScreen(
             )
         }
     ) {
+        TrackScrollJank(scrollableState = lazyListState, stateName = "Add/Edit Employee::Fields")
+
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
