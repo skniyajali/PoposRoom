@@ -46,6 +46,8 @@ import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.utils.ImportExport
@@ -115,6 +117,8 @@ fun EmployeeImportScreen(
         }
     }
 
+    TrackScreenViewEvent(screenName = "Employee Import Screen")
+    
     StandardScaffoldNew(
         navController = navController,
         title = if (selectedItems.isEmpty()) IMPORT_EMPLOYEE_TITLE else "${selectedItems.size} Selected",
@@ -191,6 +195,8 @@ fun EmployeeImportScreen(
                     }
                 )
             } else {
+                TrackScrollJank(scrollableState = lazyListState, stateName = "Imported Employee::List")
+
                 LazyColumn(
                     modifier = Modifier
                         .padding(SpaceSmall),

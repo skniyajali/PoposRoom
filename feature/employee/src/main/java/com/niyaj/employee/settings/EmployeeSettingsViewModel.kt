@@ -7,6 +7,8 @@ import com.niyaj.data.repository.EmployeeRepository
 import com.niyaj.model.Employee
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EmployeeSettingsViewModel @Inject constructor(
     private val repository: EmployeeRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel() {
 
     val employees = snapshotFlow { mSearchText.value }.flatMapLatest {
@@ -58,6 +61,8 @@ class EmployeeSettingsViewModel @Inject constructor(
 
                         _exportedItems.emit(list.toList())
                     }
+
+                    analyticsHelper.logExportedEmployeeToFile(_exportedItems.value.size)
                 }
             }
 
@@ -69,6 +74,8 @@ class EmployeeSettingsViewModel @Inject constructor(
                         totalItems = event.data.map { it.employeeId }
                         _importedItems.value = event.data
                     }
+
+                    analyticsHelper.logImportedEmployeeFromFile(event.data.size)
                 }
             }
 
@@ -89,10 +96,45 @@ class EmployeeSettingsViewModel @Inject constructor(
 
                         is Resource.Success -> {
                             mEventFlow.emit(UiEvent.OnSuccess("${data.size} employees has been imported successfully"))
+                            analyticsHelper.logImportedEmployeeToDatabase(data.size)
                         }
                     }
                 }
             }
         }
     }
+}
+
+
+internal fun AnalyticsHelper.logImportedEmployeeFromFile(totalEmployee: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "employee_imported_from_file",
+            extras = listOf(
+                AnalyticsEvent.Param("employee_imported_from_file", totalEmployee.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logImportedEmployeeToDatabase(totalEmployee: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "employee_imported_to_database",
+            extras = listOf(
+                AnalyticsEvent.Param("employee_imported_to_database", totalEmployee.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logExportedEmployeeToFile(totalEmployee: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "employee_exported_to_file",
+            extras = listOf(
+                AnalyticsEvent.Param("employee_exported_to_file", totalEmployee.toString()),
+            ),
+        ),
+    )
 }

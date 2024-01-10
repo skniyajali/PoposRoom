@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toYearAndMonth
 import com.niyaj.model.EmployeeMonthlyDate
 import com.niyaj.ui.components.StandardOutlinedAssistChip
@@ -22,7 +23,7 @@ fun SalaryDateDropdown(
     text: String,
     salaryDates: List<EmployeeMonthlyDate> = emptyList(),
     onDateClick: (Pair<String, String>) -> Unit = {},
-) {
+) = trace("SalaryDateDropdown") {
     var menuExpanded by remember { mutableStateOf(false) }
 
     Column {

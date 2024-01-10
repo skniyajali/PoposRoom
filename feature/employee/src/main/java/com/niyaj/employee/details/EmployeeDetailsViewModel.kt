@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.data.repository.EmployeeRepository
 import com.niyaj.ui.event.UiState
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
@@ -23,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class EmployeeDetailsViewModel @Inject constructor(
     private val employeeRepository: EmployeeRepository,
-    private val savedStateHandle: SavedStateHandle,
+    private val analyticsHelper: AnalyticsHelper,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val _employeeId = savedStateHandle.get<Int>("employeeId") ?: 0
@@ -79,6 +82,12 @@ class EmployeeDetailsViewModel @Inject constructor(
         initialValue = UiState.Loading,
     )
 
+    init {
+        savedStateHandle.get<Int>("employeeId")?.let {
+            analyticsHelper.logEmployeeDetailsViewed(it)
+        }
+    }
+
 
     /**
      *
@@ -90,4 +99,15 @@ class EmployeeDetailsViewModel @Inject constructor(
             }
         }
     }
+}
+
+internal fun AnalyticsHelper.logEmployeeDetailsViewed(employeeId: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "employee_details_viewed",
+            extras = listOf(
+                AnalyticsEvent.Param("employee_details_viewed", employeeId.toString()),
+            ),
+        ),
+    )
 }

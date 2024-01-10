@@ -18,6 +18,8 @@ import com.niyaj.employee.destinations.EmployeeExportScreenDestination
 import com.niyaj.employee.destinations.EmployeeImportScreenDestination
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
@@ -27,7 +29,11 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 fun EmployeeSettingsScreen(
     navController: NavController
 ) {
+    TrackScreenViewEvent(screenName = "Employee Settings Screen")
+
     val lazyListState = rememberLazyListState()
+
+    TrackScrollJank(scrollableState = lazyListState, stateName = "Employee Setting::List")
 
     StandardBottomSheet(
         title = EMPLOYEE_SETTINGS_TITLE,
