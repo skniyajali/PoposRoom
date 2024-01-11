@@ -21,7 +21,7 @@ enum class PoposFlavor(val dimension: FlavorDimension, val applicationIdSuffix: 
 }
 
 fun Project.configureFlavors(
-    commonExtension: CommonExtension<*, *, *, *, *>,
+    commonExtension: CommonExtension<*, *, *, *, *, *>,
     flavorConfigurationBlock: ProductFlavor.(flavor: PoposFlavor) -> Unit = {}
 ) {
     commonExtension.apply {
