@@ -65,6 +65,8 @@ import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
@@ -118,6 +120,8 @@ fun AddEditAbsentScreen(
 
     val title = if (absentId == 0) CREATE_NEW_ABSENT else EDIT_ABSENT_ITEM
 
+    TrackScreenViewEvent(screenName = "Add/Edit Absent Screen")
+    
     StandardScaffoldNew(
         navController = navController,
         title = title,
@@ -141,6 +145,8 @@ fun AddEditAbsentScreen(
             )
         }
     ) {
+        TrackScrollJank(scrollableState = lazyListState, stateName = "Add/Edit Absent Screen Field")
+
         LazyColumn(
             state = lazyListState,
             modifier = Modifier

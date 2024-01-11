@@ -7,6 +7,8 @@ import com.niyaj.data.repository.AbsentRepository
 import com.niyaj.model.EmployeeWithAbsents
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AbsentSettingsViewModel @Inject constructor(
-    private val repository: AbsentRepository
+    private val repository: AbsentRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ): BaseViewModel() {
 
     val items = snapshotFlow { mSearchText.value }.flatMapLatest {
@@ -71,6 +74,8 @@ class AbsentSettingsViewModel @Inject constructor(
 
                         _exportedItems.emit(list.toList())
                     }
+
+                    analyticsHelper.logExportedAbsentToFile(_exportedItems.value.size)
                 }
             }
 
@@ -82,6 +87,8 @@ class AbsentSettingsViewModel @Inject constructor(
                         totalItems = event.data.flatMap { item -> item.absents.map { it.absentId } }
                         _importedItems.value = event.data
                     }
+
+                    analyticsHelper.logImportedAbsentFromFile(_importedItems.value.size)
                 }
             }
 
@@ -103,10 +110,45 @@ class AbsentSettingsViewModel @Inject constructor(
                         }
                         is Resource.Success -> {
                             mEventFlow.emit(UiEvent.OnSuccess("${data.sumOf { it.absents.size }} items has been imported successfully"))
+                            analyticsHelper.logImportedAbsentToDatabase(data.sumOf { it.absents.size })
                         }
                     }
                 }
             }
         }
     }
+}
+
+
+internal fun AnalyticsHelper.logImportedAbsentFromFile(totalAbsent: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "absent_imported_from_file",
+            extras = listOf(
+                AnalyticsEvent.Param("absent_imported_from_file", totalAbsent.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logImportedAbsentToDatabase(totalAbsent: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "absent_imported_to_database",
+            extras = listOf(
+                AnalyticsEvent.Param("absent_imported_to_database", totalAbsent.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logExportedAbsentToFile(totalAbsent: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "absent_exported_to_file",
+            extras = listOf(
+                AnalyticsEvent.Param("absent_exported_to_file", totalAbsent.toString()),
+            ),
+        ),
+    )
 }

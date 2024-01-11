@@ -18,6 +18,8 @@ import com.niyaj.employee_absent.destinations.AbsentExportScreenDestination
 import com.niyaj.employee_absent.destinations.AbsentImportScreenDestination
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
@@ -27,7 +29,11 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 fun AbsentSettingsScreen(
     navController: NavController
 ) {
+    TrackScreenViewEvent(screenName = "Absent Settings Screen")
+
     val lazyListState = rememberLazyListState()
+
+    TrackScrollJank(scrollableState = lazyListState, stateName = "Absent Settings::List")
 
     StandardBottomSheet(
         title = ABSENT_SETTINGS_TITLE,

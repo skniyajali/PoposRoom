@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -69,6 +70,8 @@ import com.niyaj.ui.components.StandardScaffold
 import com.niyaj.ui.components.TextWithBorderCount
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
@@ -171,6 +174,8 @@ fun AbsentScreen(
             }
         }
     }
+    
+    TrackScreenViewEvent(screenName = Screens.ABSENT_SCREEN)
 
     StandardScaffold(
         navController = navController,
@@ -227,6 +232,7 @@ fun AbsentScreen(
         ) { state ->
             when (state) {
                 is UiState.Loading -> LoadingIndicator()
+
                 is UiState.Empty -> {
                     ItemNotAvailable(
                         text = if (searchText.isEmpty()) ABSENT_NOT_AVAIlABLE else NO_ITEMS_IN_ABSENT,
@@ -238,6 +244,8 @@ fun AbsentScreen(
                 }
 
                 is UiState.Success -> {
+                    TrackScrollJank(scrollableState = lazyListState, stateName = "Absent::List")
+
                     LazyColumn(
                         modifier = Modifier
                             .padding(SpaceSmall),
@@ -326,7 +334,7 @@ fun AbsentData(
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     onChipClick: (Int) -> Unit = {},
-) {
+) = trace("AbsentData") {
     val groupByMonth = item.absents.groupBy { toMonthAndYear(it.absentDate) }
 
     ElevatedCard(
@@ -381,7 +389,7 @@ fun EmployeeAbsentData(
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
-) {
+) = trace("EmployeeAbsentData") {
     Column(
         modifier = Modifier
             .fillMaxWidth(),

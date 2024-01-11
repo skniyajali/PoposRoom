@@ -49,6 +49,8 @@ import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.utils.ImportExport
@@ -120,6 +122,8 @@ fun AbsentImportScreen(
         }
     }
 
+    TrackScreenViewEvent(screenName = "Absent Import Screen")
+    
     StandardScaffoldNew(
         navController = navController,
         title = if (selectedItems.isEmpty()) IMPORT_ABSENT_TITLE else "${selectedItems.size} Selected",
@@ -196,6 +200,8 @@ fun AbsentImportScreen(
                     }
                 )
             }else {
+                TrackScrollJank(scrollableState = lazyListState, stateName = "Imported Absentees::List")
+
                 LazyColumn(
                     modifier = Modifier
                         .padding(SpaceSmall),
