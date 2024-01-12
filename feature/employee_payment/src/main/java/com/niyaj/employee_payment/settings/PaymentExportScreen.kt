@@ -57,6 +57,8 @@ import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.niyaj.ui.utils.isScrollingUp
@@ -146,6 +148,8 @@ fun PaymentExportScreen(
     BackHandler {
         onBackClick()
     }
+    
+    TrackScreenViewEvent(screenName = "Payment Export Screen")
 
     StandardScaffoldNew(
         navController = navController,
@@ -238,6 +242,8 @@ fun PaymentExportScreen(
                 }
             )
         } else {
+            TrackScrollJank(scrollableState = lazyListState, stateName = "Exported Payment::List")
+
             LazyColumn(
                 modifier = Modifier
                     .padding(SpaceSmall),

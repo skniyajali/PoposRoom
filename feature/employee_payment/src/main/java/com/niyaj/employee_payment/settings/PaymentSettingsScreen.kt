@@ -17,6 +17,8 @@ import com.niyaj.employee_payment.destinations.PaymentExportScreenDestination
 import com.niyaj.employee_payment.destinations.PaymentImportScreenDestination
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
@@ -26,7 +28,11 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 fun PaymentSettingsScreen(
     navController: NavController
 ) {
+    TrackScreenViewEvent(screenName = "Payment Setting Screen")
+
     val lazyListState = rememberLazyListState()
+
+    TrackScrollJank(scrollableState = lazyListState, stateName = "Payment Settings::List")
 
     StandardBottomSheet(
         title = PAYMENT_SETTINGS_TITLE,

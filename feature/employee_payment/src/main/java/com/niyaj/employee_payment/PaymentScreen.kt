@@ -59,6 +59,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -94,6 +95,8 @@ import com.niyaj.ui.components.StandardFilterChip
 import com.niyaj.ui.components.StandardScaffold
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
@@ -200,6 +203,8 @@ fun PaymentScreen(
     var listView by remember {
         mutableStateOf(false)
     }
+    
+    TrackScreenViewEvent(screenName = Screens.PAYMENT_SCREEN)
 
     StandardScaffold(
         navController = navController,
@@ -279,6 +284,8 @@ fun PaymentScreen(
             }
 
             is UiState.Success -> {
+                TrackScrollJank(scrollableState = lazyListState, stateName = "Payment::List")
+
                 LazyColumn(
                     modifier = Modifier
                         .padding(SpaceSmall),
@@ -369,7 +376,7 @@ fun PaymentData(
     onClickEmployee: (employeeId: Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-) {
+) = trace("PaymentData") {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -474,7 +481,7 @@ fun EmployeePayment(
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-) {
+)= trace("EmployeePayment") {
     val borderStroke = if (doesSelected(payment.paymentId)) border else null
 
     Box(
@@ -547,7 +554,7 @@ fun EmployeePaymentCardView(
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
-) {
+) = trace("EmployeePaymentCardView") {
     ListItem(
         colors = ListItemDefaults.colors(),
         modifier = modifier
@@ -617,7 +624,7 @@ fun PaymentData(
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-) {
+) = trace("PaymentData") {
     val borderStroke = if (doesSelected(item.paymentId)) border else null
 
     ListItem(
