@@ -49,11 +49,13 @@ import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.employee_payment.PaymentData
 import com.niyaj.model.EmployeeWithPayments
 import com.niyaj.ui.components.EmptyImportScreen
+import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
-import com.niyaj.ui.components.IconWithText
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.niyaj.ui.utils.isScrollingUp
@@ -71,6 +73,9 @@ fun PaymentImportScreen(
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: PaymentSettingsViewModel = hiltViewModel(),
 ) {
+    
+    TrackScreenViewEvent(screenName = "Payment Import Screen")
+    
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
@@ -199,6 +204,8 @@ fun PaymentImportScreen(
                     }
                 )
             }else {
+                TrackScrollJank(scrollableState = lazyListState, stateName = "Imported Payment::List")
+
                 LazyColumn(
                     modifier = Modifier
                         .padding(SpaceSmall),

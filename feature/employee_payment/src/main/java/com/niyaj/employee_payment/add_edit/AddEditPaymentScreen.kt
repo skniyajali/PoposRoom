@@ -79,6 +79,8 @@ import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
@@ -98,6 +100,8 @@ fun AddEditPaymentScreen(
     viewModel: AddEditPaymentViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>
 ) {
+    TrackScreenViewEvent(screenName = "Add/Edit Payment Screen-${employeeId}")
+    
     val lazyListState = rememberLazyListState()
 
     val employees = viewModel.employees.collectAsStateWithLifecycle().value
@@ -166,6 +170,8 @@ fun AddEditPaymentScreen(
             )
         }
     ) {
+        TrackScrollJank(scrollableState = lazyListState, stateName = "Add/Edit Payment::Fields")
+
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
