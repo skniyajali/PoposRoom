@@ -72,6 +72,8 @@ import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
@@ -89,6 +91,8 @@ fun AddEditExpenseScreen(
     viewModel: AddEditExpenseViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
+    TrackScreenViewEvent(screenName = "Add/Edit Expenses Screen")
+    
     val lazyListState = rememberLazyListState()
     val dateError = viewModel.dateError.collectAsStateWithLifecycle().value
     val nameError = viewModel.nameError.collectAsStateWithLifecycle().value
@@ -148,6 +152,8 @@ fun AddEditExpenseScreen(
             )
         }
     ) {
+        TrackScrollJank(scrollableState = lazyListState, stateName = "Add/Edit Expenses Screen::Field")
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()

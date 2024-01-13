@@ -50,6 +50,8 @@ import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.utils.ImportExport
@@ -66,7 +68,8 @@ fun ExpensesExportScreen(
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: ExpensesSettingsViewModel = hiltViewModel(),
 ) {
-
+    TrackScreenViewEvent(screenName = "Expenses Export Screen")
+    
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
 
@@ -231,6 +234,8 @@ fun ExpensesExportScreen(
                 }
             )
         } else {
+            TrackScrollJank(scrollableState = lazyListState, stateName = "Exported Expenses::List")
+
             LazyColumn(
                 state = lazyListState
             ) {

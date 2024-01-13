@@ -51,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -84,6 +85,8 @@ import com.niyaj.ui.components.StandardOutlinedAssistChip
 import com.niyaj.ui.components.StandardScaffold
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
@@ -192,6 +195,8 @@ fun ExpensesScreen(
             navController.navigateUp()
         }
     }
+    
+    TrackScreenViewEvent(screenName = Screens.EXPENSES_SCREEN)
 
     StandardScaffold(
         navController = navController,
@@ -266,6 +271,8 @@ fun ExpensesScreen(
                 }
                 is UiState.Loading -> LoadingIndicator()
                 is UiState.Success -> {
+                    TrackScrollJank(scrollableState = lazyListState, stateName = "Expenses::List")
+
                     LazyColumn(
                         state = lazyListState
                     ) {
@@ -372,7 +379,7 @@ fun TotalExpenses(
     totalItem: String,
     selectedDate: String,
     onDateClick: () -> Unit,
-) {
+) = trace("TotalExpenses") {
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -445,7 +452,7 @@ fun ExpensesData(
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
-) {
+) = trace("ExpensesData") {
     val borderStroke = if (doesSelected(item.expenseId)) border else null
 
     Card(
@@ -526,7 +533,7 @@ fun GroupedExpensesData(
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
-) {
+) = trace("GroupedExpensesData") {
     val item = items.first()
     val totalAmount = items.sumOf { it.expenseAmount.toInt() }.toString()
     val notes = items.map { it.expenseNote }.filter { it.isNotEmpty() }

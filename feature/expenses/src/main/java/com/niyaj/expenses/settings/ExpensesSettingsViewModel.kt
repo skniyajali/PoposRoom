@@ -7,6 +7,8 @@ import com.niyaj.data.repository.ExpenseRepository
 import com.niyaj.model.Expense
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ExpensesSettingsViewModel @Inject constructor(
     private val expenseRepository: ExpenseRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel() {
 
     val expenses = snapshotFlow { mSearchText.value }.flatMapLatest {
@@ -58,6 +61,8 @@ class ExpensesSettingsViewModel @Inject constructor(
 
                         _exportedItems.emit(list.toList())
                     }
+
+                    analyticsHelper.logExportedExpensesToFile(_exportedItems.value.size)
                 }
             }
 
@@ -69,6 +74,8 @@ class ExpensesSettingsViewModel @Inject constructor(
                         totalItems = event.data.map { it.expenseId }
                         _importedItems.value = event.data
                     }
+
+                    analyticsHelper.logImportedExpensesFromFile(event.data.size)
                 }
             }
 
@@ -89,10 +96,45 @@ class ExpensesSettingsViewModel @Inject constructor(
 
                         is Resource.Success -> {
                             mEventFlow.emit(UiEvent.OnSuccess("${data.size} expenses has been imported successfully"))
+
+                            analyticsHelper.logImportedExpensesToDatabase(data.size)
                         }
                     }
                 }
             }
         }
     }
+}
+
+internal fun AnalyticsHelper.logImportedExpensesFromFile(totalExpenses: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "expenses_imported_from_file",
+            extras = listOf(
+                AnalyticsEvent.Param("expenses_imported_from_file", totalExpenses.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logImportedExpensesToDatabase(totalExpenses: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "expenses_imported_to_database",
+            extras = listOf(
+                AnalyticsEvent.Param("expenses_imported_to_database", totalExpenses.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logExportedExpensesToFile(totalExpenses: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "expenses_exported_to_file",
+            extras = listOf(
+                AnalyticsEvent.Param("expenses_exported_to_file", totalExpenses.toString()),
+            ),
+        ),
+    )
 }
