@@ -17,6 +17,8 @@ import com.niyaj.expenses.destinations.ExpensesExportScreenDestination
 import com.niyaj.expenses.destinations.ExpensesImportScreenDestination
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
@@ -26,7 +28,11 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 fun ExpensesSettingsScreen(
     navController: NavController
 ) {
+    TrackScreenViewEvent(screenName = "Expenses Settings Screen")
+    
     val lazyListState = rememberLazyListState()
+
+    TrackScrollJank(scrollableState = lazyListState, stateName = "Expenses Settings::List")
 
     StandardBottomSheet(
         title = EXPENSE_SETTINGS_TITLE,
