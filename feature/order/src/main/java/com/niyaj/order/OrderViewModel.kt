@@ -10,6 +10,8 @@ import com.niyaj.model.OrderDetails
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +29,7 @@ import javax.inject.Inject
 @HiltViewModel
 class OrderViewModel @Inject constructor(
     private val orderRepository: OrderRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel() {
 
     private lateinit var escposPrinter: EscPosPrinter
@@ -60,6 +63,7 @@ class OrderViewModel @Inject constructor(
                         }
 
                         is Resource.Success -> {
+                            analyticsHelper.logDeletedOrder(event.orderId)
                             mEventFlow.emit(UiEvent.OnSuccess("Order deleted successfully"))
                         }
                     }
@@ -74,6 +78,7 @@ class OrderViewModel @Inject constructor(
                         }
 
                         is Resource.Success -> {
+                            analyticsHelper.logOrderMarkedAsProcessing(event.orderId)
                             mEventFlow.emit(UiEvent.OnSuccess("Order marked as processing"))
                         }
                     }
@@ -125,4 +130,26 @@ class OrderViewModel @Inject constructor(
         }
     }
 
+}
+
+internal fun AnalyticsHelper.logDeletedOrder(orderId: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "order_has_been_deleted",
+            extras = listOf(
+                AnalyticsEvent.Param("order_has_been_deleted", orderId.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logOrderMarkedAsProcessing(orderId: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "order_marked_as_processing",
+            extras = listOf(
+                AnalyticsEvent.Param("order_marked_as_processing", orderId.toString()),
+            ),
+        ),
+    )
 }

@@ -59,11 +59,13 @@ import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.rememberCaptureController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.navigate
+import com.samples.apps.core.analytics.AnalyticsHelper
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.message
@@ -224,6 +226,8 @@ fun OrderScreen(
             navController.navigateUp()
         }
     }
+    
+    TrackScreenViewEvent(screenName = Screens.ORDER_SCREEN)
 
     StandardScaffoldNew(
         navController = navController,
@@ -319,6 +323,7 @@ fun OrderScreen(
                     }
                 )
             },
+
             OrderTab.DineInOrder {
                 OrderedItemLayout(
                     orders = dineInOrders,

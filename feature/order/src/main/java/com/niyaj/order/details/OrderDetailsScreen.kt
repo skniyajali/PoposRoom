@@ -48,6 +48,8 @@ import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.ui.utils.rememberCaptureController
 import com.ramcosta.composedestinations.annotation.Destination
@@ -138,6 +140,8 @@ fun OrderDetailsScreen(
     var cartExpended by remember {
         mutableStateOf(true)
     }
+    
+    TrackScreenViewEvent(screenName = Screens.ORDER_DETAILS_SCREEN)
 
     StandardScaffoldNew(
         navController = navController,
@@ -181,12 +185,15 @@ fun OrderDetailsScreen(
             label = "Order Details.."
         ) { newState ->
             when (newState) {
+                is UiState.Loading -> LoadingIndicator()
+
                 is UiState.Empty -> {
                     ItemNotAvailable(text = "Order Details not available")
                 }
 
-                is UiState.Loading -> LoadingIndicator()
                 is UiState.Success -> {
+                    TrackScrollJank(scrollableState = lazyListState, stateName = "Order Details::List")
+
                     val orderDetails = newState.data
 
                     LazyColumn(

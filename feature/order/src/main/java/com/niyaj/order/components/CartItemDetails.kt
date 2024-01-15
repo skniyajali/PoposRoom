@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.theme.Pewter
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -55,7 +56,7 @@ fun CartItemDetails(
     orderPrice: OrderPrice,
     doesExpanded : Boolean,
     onExpandChanged : () -> Unit,
-) {
+) = trace("CartItemDetails") {
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
@@ -126,7 +127,7 @@ fun CartItemOrderProductDetails(
     charges: List<Charges>,
     additionalCharges: List<Charges> = emptyList(),
     orderPrice: OrderPrice,
-) {
+) = trace("CartItemOrderProductDetails") {
     Column(
         modifier = modifier
             .fillMaxWidth()

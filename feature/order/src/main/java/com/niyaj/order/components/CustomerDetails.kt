@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.theme.LightColor2
 import com.niyaj.designsystem.theme.SpaceMedium
@@ -44,7 +45,7 @@ fun CustomerDetails(
     doesExpanded : Boolean,
     onExpandChanged : () -> Unit,
     onClickViewDetails : (Int) -> Unit
-) {
+) = trace("CustomerDetails") {
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
