@@ -8,6 +8,8 @@ import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.data.repository.OrderRepository
 import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.event.UiState
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,6 +26,7 @@ class OrderDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
+    private val analyticsHelper: AnalyticsHelper,
 ) : ShareViewModel(ioDispatcher) {
 
     private val orderId = savedStateHandle.get<Int>("orderId") ?: 0
@@ -49,5 +52,23 @@ class OrderDetailsViewModel @Inject constructor(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = emptyList()
+    )
+
+    init {
+        savedStateHandle.get<Int>("orderId")?.let {
+            analyticsHelper.logOrderDetailsViewed(it)
+        }
+    }
+}
+
+
+internal fun AnalyticsHelper.logOrderDetailsViewed(orderId: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "order_details_viewed",
+            extras = listOf(
+                AnalyticsEvent.Param("order_details_viewed", orderId.toString()),
+            ),
+        ),
     )
 }
