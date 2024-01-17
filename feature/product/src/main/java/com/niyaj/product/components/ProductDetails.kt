@@ -18,7 +18,6 @@ import androidx.compose.material.icons.filled.RadioButtonChecked
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toDateString
 import com.niyaj.common.utils.toFormattedDateAndTime
 import com.niyaj.common.utils.toRupee
@@ -37,14 +37,13 @@ import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.event.UiState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetails(
     productState: UiState<Product>,
     onExpanded: () -> Unit,
     doesExpanded: Boolean,
     onClickEdit: () -> Unit,
-) {
+) = trace("ProductDetails") {
     ElevatedCard(
         onClick = onExpanded,
         modifier = Modifier

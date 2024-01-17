@@ -50,6 +50,8 @@ import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.StandardScaffold
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
@@ -189,6 +191,8 @@ fun ProductScreen(
             navController.navigateUp()
         }
     }
+    
+    TrackScreenViewEvent(screenName = Screens.PRODUCT_SCREEN)
 
     StandardScaffold(
         navController = navController,
@@ -264,6 +268,8 @@ fun ProductScreen(
                 }
 
                 is UiState.Success -> {
+                    TrackScrollJank(scrollableState = lazyListState, stateName = "Product::List")
+
                     LazyColumn(
                         state = lazyListState,
                     ) {

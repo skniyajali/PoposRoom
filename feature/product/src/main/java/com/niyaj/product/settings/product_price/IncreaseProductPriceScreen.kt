@@ -57,6 +57,8 @@ import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.components.StandardTextField
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
@@ -118,6 +120,8 @@ fun IncreaseProductPriceScreen(
         onBackClick()
     }
 
+    TrackScreenViewEvent(screenName = "Increase Product Price::Screen")
+    
     StandardScaffoldNew(
         navController = navController,
         title = if (selectedItems.isEmpty()) ProductTestTags.INCREASE_PRODUCTS_TITLE else "${selectedItems.size} Selected",
@@ -237,6 +241,8 @@ fun IncreaseProductPriceScreen(
                 .fillMaxSize()
                 .padding(SpaceSmall),
         ) {
+            TrackScrollJank(scrollableState = lazyListState, stateName = "Increased Products::List")
+
             StandardTextField(
                 modifier = Modifier.padding(horizontal = SpaceSmall),
                 value = productPrice,

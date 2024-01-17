@@ -11,6 +11,8 @@ import com.niyaj.data.repository.ProductRepository
 import com.niyaj.model.OrderType
 import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.event.UiState
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +29,7 @@ class ProductDetailsViewModel @Inject constructor(
     savedStateHandle : SavedStateHandle,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
+    private val analyticsHelper: AnalyticsHelper,
 ): ShareViewModel(ioDispatcher) {
 
     private val productId = savedStateHandle.get<Int>("productId") ?: 0
@@ -92,5 +95,23 @@ class ProductDetailsViewModel @Inject constructor(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = UiState.Loading
+    )
+
+    init {
+        savedStateHandle.get<Int>("productId")?.let {
+            analyticsHelper.logProductDetailsViewed(it)
+        }
+    }
+}
+
+
+internal fun AnalyticsHelper.logProductDetailsViewed(productId: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "product_details_viewed",
+            extras = listOf(
+                AnalyticsEvent.Param("product_details_viewed", productId.toString()),
+            ),
+        ),
     )
 }

@@ -59,6 +59,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import androidx.compose.ui.window.DialogProperties
 import com.niyaj.common.utils.toFormattedDateAndTime
 import com.niyaj.common.utils.toPrettyDate
@@ -96,7 +97,7 @@ fun ShareableProductOrderDetails(
     onClickShare: () -> Unit,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
     onClickPrintOrder: () -> Unit,
-) {
+) = trace("ShareableProductOrderDetails") {
     BasicAlertDialog(
         onDismissRequest = onDismiss,
         modifier = modifier
@@ -166,7 +167,7 @@ fun CapturableOrderDetailsCard(
     orders: List<ProductWiseOrder>,
     captureController: CaptureController,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
-) {
+) = trace("CapturableOrderDetailsCard") {
     ScrollableCapturable(
         controller = captureController,
         onCaptured = onCaptured,
@@ -239,7 +240,7 @@ fun ShareableOrderDetails(
     modifier: Modifier = Modifier,
     orders: List<ProductWiseOrder>,
     productPrice: Int,
-) {
+) = trace("ShareableOrderDetails") {
     val groupedOrders = remember { orders.groupBy { it.orderedDate.toPrettyDate() } }
     // Track the currently loaded dates
     var loadedDates by remember { mutableStateOf(groupedOrders.keys.take(1)) }
@@ -282,7 +283,7 @@ fun ShareableProductOrderDetailsCard(
     date: String,
     orders: List<ProductWiseOrder>,
     productPrice: Int,
-) {
+) = trace("ShareableProductOrderDetailsCard") {
     val grpByOrderType = remember { orders.groupBy { it.orderType } }
     val totalSales = remember { orders.sumOf { it.quantity }.times(productPrice) }.toString()
 
@@ -380,7 +381,7 @@ fun PaginationButtons(
     showViewLessBtn: Boolean,
     onClickViewLess: () -> Unit,
     onClickViewMore: () -> Unit,
-) {
+) = trace("PaginationButtons") {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(SpaceSmall, Alignment.CenterHorizontally),
@@ -418,7 +419,7 @@ fun PaginationButtons(
 fun ShareableProductDetails(
     modifier: Modifier = Modifier,
     product: Product,
-) {
+) = trace("ShareableProductDetails") {
     Column(
         modifier = modifier
             .fillMaxWidth(),
@@ -467,7 +468,7 @@ fun DialogButtons(
     onDismiss: () -> Unit,
     onClickShare: () -> Unit,
     onClickPrintOrder: () -> Unit,
-) {
+) = trace("DialogButtons") {
     Surface(
         modifier = modifier
             .fillMaxWidth(),

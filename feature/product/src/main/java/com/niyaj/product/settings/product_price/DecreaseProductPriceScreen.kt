@@ -58,6 +58,8 @@ import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.components.StandardTextField
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
@@ -118,6 +120,8 @@ fun DecreaseProductPriceScreen(
     BackHandler {
         onBackClick()
     }
+    
+    TrackScreenViewEvent(screenName = "Decreased Product Price::Screen")
 
     StandardScaffoldNew(
         navController = navController,
@@ -233,6 +237,8 @@ fun DecreaseProductPriceScreen(
                 .fillMaxSize()
                 .padding(SpaceSmall),
         ) {
+            TrackScrollJank(scrollableState = lazyListState, stateName = "Decreased Products::List")
+
             StandardTextField(
                 modifier = Modifier.padding(horizontal = SpaceSmall),
                 value = productPrice,

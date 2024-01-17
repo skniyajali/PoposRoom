@@ -66,14 +66,14 @@ import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination(
-    route = Screens.ADD_EDIT_PRODUCT_SCREEN
-)
+@Destination(route = Screens.ADD_EDIT_PRODUCT_SCREEN)
 @Composable
 fun AddEditProductScreen(
     productId: Int = 0,
@@ -81,7 +81,8 @@ fun AddEditProductScreen(
     viewModel: AddEditProductViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>
 ) {
-
+    TrackScreenViewEvent(screenName = Screens.ADD_EDIT_PRODUCT_SCREEN)
+    
     val lazyListState = rememberLazyListState()
 
     val categories = viewModel.categories.collectAsStateWithLifecycle().value
@@ -119,6 +120,8 @@ fun AddEditProductScreen(
     val selectedCategory = viewModel.selectedCategory.collectAsStateWithLifecycle().value
 
     val title = if (productId == 0) CREATE_NEW_PRODUCT else EDIT_PRODUCT
+
+    TrackScrollJank(scrollableState = lazyListState, stateName = "Add/Edit Product::Fields")
 
     StandardScaffoldNew(
         navController = navController,

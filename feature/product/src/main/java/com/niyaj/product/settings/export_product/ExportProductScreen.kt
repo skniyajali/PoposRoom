@@ -62,6 +62,8 @@ import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldNew
 import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.utils.ImportExport.createFile
@@ -156,6 +158,8 @@ fun ExportProductScreen(
     BackHandler {
         onBackClick()
     }
+    
+    TrackScreenViewEvent(screenName = "Product Export Screen")
 
     StandardScaffoldNew(
         navController = navController,
@@ -298,6 +302,8 @@ fun ExportProductScreen(
                     }
                 )
             } else {
+                TrackScrollJank(scrollableState = lazyListState, stateName = "Exported Products::List")
+
                 LazyColumn(
                     state = lazyListState,
                 ) {

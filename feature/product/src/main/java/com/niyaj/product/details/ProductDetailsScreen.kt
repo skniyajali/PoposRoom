@@ -47,6 +47,8 @@ import com.niyaj.product.components.ShareableProductOrderDetails
 import com.niyaj.product.destinations.AddEditProductScreenDestination
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.ui.utils.rememberCaptureController
 import com.ramcosta.composedestinations.annotation.Destination
@@ -134,6 +136,8 @@ fun ProductDetailsScreen(
         }
     }
 
+    TrackScreenViewEvent(screenName = "Product Details Screen::$productId")
+
     StandardScaffoldNew(
         navController = navController,
         title = "Product Details",
@@ -168,6 +172,8 @@ fun ProductDetailsScreen(
             }
         }
     ) {
+        TrackScrollJank(scrollableState = lazyListState, stateName = "Product Details::List")
+
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
