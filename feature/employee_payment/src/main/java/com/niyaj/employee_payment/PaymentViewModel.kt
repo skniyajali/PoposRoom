@@ -59,5 +59,4 @@ class PaymentViewModel @Inject constructor(
             mSelectedItems.clear()
         }
     }
-
 }

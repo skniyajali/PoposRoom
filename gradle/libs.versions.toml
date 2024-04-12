@@ -1,70 +1,71 @@
 [versions]
-accompanist = "0.32.0"
+accompanist = "0.34.0"
 accompanistSwipeRefresh = '0.27.0'
 acraVersion = '5.9.7'
 appsweep = 'latest.release'
 androidDesugarJdkLibs = "2.0.4"
-androidGradlePlugin = "8.4.0-alpha04"
-androidTools = "31.2.1"
+androidGradlePlugin = "8.3.2"
+androidTools = "31.3.2"
 androidxActivity = "1.8.2"
 androidxAppCompat = "1.6.1"
 androidxArchCore = '2.2.0'
-androidxComposeBom = "2023.10.01"
-androidxComposeCompiler = "1.5.6"
-androidxComposeUi = "1.6.0-rc01"
-androidxComposeRuntime = "1.6.0-rc01"
+androidxComposeBom = "2024.04.00"
+androidxComposeCompiler = "1.5.10"
+androidxComposeUi = "1.6.5"
+androidxComposeRuntime = "1.6.5"
 androidxComposeRuntimeTracing = "1.0.0-beta01"
-androidxComposeMaterial3 = "1.2.0-beta02"
+androidxComposeMaterial3 = "1.2.1"
 androidxCore = "1.12.0"
 androidxCoreSplashscreen = "1.0.1"
 androidxEspresso = "3.5.1"
-androidxHiltNavigationCompose = "1.1.0"
+androidxHiltNavigationCompose = "1.2.0"
 androidxLifecycle = "2.7.0"
 androidxLivedata = "1.4.3"
-androidxMacroBenchmark = "1.2.2"
-androidxBaselineProfile = "1.2.2"
-androidxBenchmark = "1.2.2"
+androidxMacroBenchmark = "1.2.3"
+androidxBaselineProfile = "1.2.3"
+androidxBenchmark = "1.2.3"
 androidxBenchmarkJunit4 = "1.1.1"
 androidxMetrics = "1.0.0-beta01"
-androidxNavigation = "2.7.6"
+androidxNavigation = "2.7.7"
 androidxProfileinstaller = "1.3.1"
+androidxPaging = "3.3.0-beta01"
 androidxStartup = "1.1.1"
 androidxTestCore = "1.5.0"
 androidxTestExt = "1.1.5"
 androidxTestRules = "1.5.0"
 androidxTestRunner = "1.5.2"
 androidxTracing = "1.2.0"
-androidxUiAutomator = "2.2.0"
+androidxUiAutomator = "2.3.0"
 androidxWindowManager = "1.2.0"
 androidxWork = "2.9.0"
-coil = "2.5.0"
+coil = "2.6.0"
 detektVersion = "1.23.3"
 dependencyGuard = "0.4.3"
 exyte-navigation = '1.0.0'
-firebaseBom = "32.7.0"
+firebaseBom = "32.8.1"
 firebaseCrashlyticsPlugin = "2.9.9"
 firebasePerfPlugin = "1.4.2"
-gmsPlugin = "4.4.0"
+gmsPlugin = "4.4.1"
 googleOss = "17.0.1"
 googleOssPlugin = "0.10.6"
-hilt = "2.50"
-hiltExt = "1.1.0"
+hilt = "2.51"
+hiltExt = "1.2.0"
 jacoco = "0.8.7"
 junit4 = "4.13.2"
 junit = "1.1.5"
-kotlin = "1.9.21"
-kotlinxCoroutines = "1.7.3"
+kotlin = "1.9.22"
+kotlinxCoroutines = "1.8.0"
 kotlinxDatetime = "0.5.0"
-kotlinxSerializationJson = "1.6.0"
+kotlinxSerializationJson = "1.6.3"
 kotlinxImmutable = "0.3.6"
-ksp = "1.9.21-1.0.16" # "1.9.10-1.0.13"
-lint = "31.2.1"
+ksp = "1.9.22-1.0.18" # "1.9.10-1.0.13"
+lint = "31.3.2"
 leakcanaryVersion = '2.10'
 moshiVersion = '1.15.0'
 mockkVersion = "1.13.5"
 okhttp = "4.10.0"
 posPrinterVersion = '3.4.0'
-protobuf = "3.24.4"
+protobuf = "3.25.2"
 protobufPlugin = "0.9.4"
 playIntegrity = '1.3.0'
 playUpdate = "2.1.0"
@@ -72,14 +73,14 @@ playScanner = "16.1.0"
 playService = "18.3.0"
 revealswipeVersion = '1.1.0'
 raamcostaVersion = "1.9.56"
-realmVersion = "1.11.0"
+realmVersion = "1.13.0"
 room = "2.6.1"
 secrets = "2.0.1"
 sentryVersion = '3.14.0'
 sentryAndroidVersion = '6.33.0'
-turbine = "1.0.0"
+turbine = "1.1.0"
 timberVersion = '5.0.1'
-truthVersion = '1.1.5'
+truthVersion = '1.4.2'
 vanpraComposeVersion = '0.9.0'
 zxing = "3.5.1"
 saketSwipe = "1.2.0"
@@ -98,7 +99,7 @@ targetCompatibility = "VERSION_11"
 jvmTarget = "19"
 kotlin1821 = "1.8.21"
 androidx-test-ext-junit = "1.1.5"
-material = "1.6.0-rc01"
+material = "1.6.5"
 
 [libraries]
 # ACRA Logger
@@ -162,6 +163,12 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "androidxNavigation" }
 
 androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "androidxProfileinstaller" }
+
+# AndroidX Paging 3
+androidx-paging-runtime = {group = "androidx.paging", name="paging-runtime", version.ref= "androidxPaging" }
+androidx-paging-common = {group = "androidx.paging", name="paging-common", version.ref= "androidxPaging" }
+androidx-paging-compose = {group = "androidx.paging", name="paging-compose", version.ref= "androidxPaging" }
+
 androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspresso" }
 androidx-test-ext = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidxTestExt" }
@@ -189,7 +196,6 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 firebase-cloud-messaging = { group = "com.google.firebase", name = "firebase-messaging-ktx" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
 firebase-performance = { group = "com.google.firebase", name = "firebase-perf-ktx" }
-firebase-performance-gradle = { group = "com.google.firebase", name = "perf-plugin", version.ref = "firebasePerfPlugin" }
 
 # Google OSS Plugins
 google-oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-licenses", version.ref = "googleOss" }

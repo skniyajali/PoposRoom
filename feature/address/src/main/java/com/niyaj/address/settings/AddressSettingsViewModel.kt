@@ -49,10 +49,10 @@ class AddressSettingsViewModel @Inject constructor(
                         val list = mutableListOf<Address>()
 
                         mSelectedItems.forEach { id ->
-                            val category = addresses.value.find { it.addressId == id }
+                            val address = addresses.value.find { it.addressId == id }
 
-                            if (category != null) {
-                                list.add(category)
+                            if (address != null) {
+                                list.add(address)
                             }
                         }
 
