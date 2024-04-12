@@ -10,7 +10,11 @@ import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,7 +26,7 @@ class AddressViewModel @Inject constructor(
     override var totalItems: List<Int> = emptyList()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val addOnItems = snapshotFlow { searchText.value }
+    val addresses = snapshotFlow { searchText.value }
         .flatMapLatest { it ->
             addressRepository.getAllAddress(it)
                 .onStart { UiState.Loading }
@@ -60,5 +64,4 @@ class AddressViewModel @Inject constructor(
             mSelectedItems.clear()
         }
     }
-
 }

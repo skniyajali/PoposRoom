@@ -27,9 +27,6 @@ object CartOrderTestTags {
     const val CART_ADD_ON_ITEMS = "Cart Order AddOns"
     const val CART_CHARGES_ITEMS = "Cart Order Charges"
 
-    const val CART_ORDER_ID_EMPTY_ERROR = "The order id must not be empty"
-    const val CART_ORDER_ID_EXIST_ERROR = "The order id already exists"
-
     const val CART_ORDER_NAME_EMPTY_ERROR = "Address name must not be empty."
     const val ADDRESS_NAME_LENGTH_ERROR = "The address name must be more than 2 characters long."
     const val CART_ORDER_NAME_ERROR = "Unable to create or get address."

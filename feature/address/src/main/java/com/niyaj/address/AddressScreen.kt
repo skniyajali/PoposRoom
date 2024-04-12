@@ -93,7 +93,7 @@ fun AddressScreen(
     val lazyGridState = rememberLazyGridState()
     val snackbarState = remember { SnackbarHostState() }
 
-    val uiState = viewModel.addOnItems.collectAsStateWithLifecycle().value
+    val uiState = viewModel.addresses.collectAsStateWithLifecycle().value
 
     val selectedItems = viewModel.selectedItems.toList()
     val showFab = viewModel.totalItems.isNotEmpty()
