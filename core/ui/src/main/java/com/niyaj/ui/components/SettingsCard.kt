@@ -26,12 +26,8 @@ fun SettingsCard(
     subtitle: String,
     icon: ImageVector,
     onClick: () -> Unit,
-    containerColor: Color = MaterialTheme.colorScheme.background
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow
 ) {
-    val color = if (title.startsWith("Import")) MaterialTheme.colorScheme.inverseOnSurface
-    else if (title.startsWith("Export")) MaterialTheme.colorScheme.tertiaryContainer else containerColor
-
-
     ListItem(
         modifier = modifier
             .fillMaxWidth()
@@ -57,6 +53,8 @@ fun SettingsCard(
                 icon = icon,
                 doesSelected = false,
                 showBorder = false,
+                backgroundColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                unselectedTint = MaterialTheme.colorScheme.tertiary
             )
         },
         trailingContent = {
@@ -67,6 +65,6 @@ fun SettingsCard(
         },
         tonalElevation = 1.dp,
         shadowElevation = 4.dp,
-        colors = ListItemDefaults.colors(containerColor = color)
+        colors = ListItemDefaults.colors(containerColor = containerColor)
     )
 }

@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.filled.Upload
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
@@ -51,7 +50,6 @@ fun EmployeeSettingsScreen(
                     title = "Import Employees",
                     subtitle = "Click here to import data from file.",
                     icon = Icons.Default.SaveAlt,
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     onClick = {
                         navController.navigate(EmployeeImportScreenDestination())
                     }
@@ -62,7 +60,6 @@ fun EmployeeSettingsScreen(
                 SettingsCard(
                     title = "Export Employees",
                     subtitle = "Click here to export data to file.",
-                    containerColor = MaterialTheme.colorScheme.inverseOnSurface,
                     icon = Icons.Default.Upload,
                     onClick = {
                         navController.navigate(EmployeeExportScreenDestination())

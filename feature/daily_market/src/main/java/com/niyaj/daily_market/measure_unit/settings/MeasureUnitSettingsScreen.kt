@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.filled.Upload
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
@@ -45,7 +44,6 @@ fun MeasureUnitSettingsScreen(
                     title = "Import Measure Unit",
                     subtitle = "Click here to import data from file.",
                     icon = Icons.Default.SaveAlt,
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     onClick = {
                         navController.navigate(ImportMeasureUnitScreenDestination())
                     }
@@ -57,7 +55,6 @@ fun MeasureUnitSettingsScreen(
                     title = "Export Measure Unit",
                     subtitle = "Click here to export data to file.",
                     icon = Icons.Default.Upload,
-                    containerColor = MaterialTheme.colorScheme.inverseOnSurface,
                     onClick = {
                         navController.navigate(ExportMeasureUnitScreenDestination())
                     }

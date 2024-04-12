@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.filled.Upload
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
@@ -50,7 +49,6 @@ fun ChargesSettingsScreen(
                 SettingsCard(
                     title = "Import Charges",
                     subtitle = "Click here to import charges from file.",
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     icon = Icons.Default.SaveAlt,
                     onClick = {
                         navController.navigate(ChargesImportScreenDestination())
@@ -62,7 +60,6 @@ fun ChargesSettingsScreen(
                 SettingsCard(
                     title = "Export Charges",
                     subtitle = "Click here to export charges to file.",
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     icon = Icons.Default.Upload,
                     onClick = {
                         navController.navigate(ChargesExportScreenDestination())
