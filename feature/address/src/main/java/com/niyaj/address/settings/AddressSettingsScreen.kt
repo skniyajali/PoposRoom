@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.filled.Upload
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
@@ -53,7 +52,6 @@ fun AddressSettingsScreen(
                     title = "Import Address",
                     subtitle = "Click here to import data from file.",
                     icon = Icons.Default.SaveAlt,
-                    containerColor = MaterialTheme.colorScheme.inverseOnSurface,
                     onClick = {
                         navController.navigate(AddressImportScreenDestination())
                     }
@@ -65,7 +63,6 @@ fun AddressSettingsScreen(
                     title = "Export Address",
                     subtitle = "Click here to export address to file.",
                     icon = Icons.Default.Upload,
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     onClick = {
                         navController.navigate(AddressExportScreenDestination())
                     }

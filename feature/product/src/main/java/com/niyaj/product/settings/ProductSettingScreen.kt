@@ -10,7 +10,6 @@ import androidx.compose.material.icons.filled.ControlPoint
 import androidx.compose.material.icons.filled.RemoveCircleOutline
 import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.filled.Upload
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
@@ -54,7 +53,6 @@ fun ProductSettingScreen(
                     title = "Increase Product Price",
                     subtitle = "Click here to increase product price.",
                     icon = Icons.Default.ControlPoint,
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
                     onClick = {
                         navController.navigate(IncreaseProductPriceScreenDestination)
                     }
@@ -66,7 +64,6 @@ fun ProductSettingScreen(
                     title = "Decrease Product Price",
                     subtitle = "Click here to decrease product price.",
                     icon = Icons.Default.RemoveCircleOutline,
-                    containerColor = MaterialTheme.colorScheme.errorContainer,
                     onClick = {
                         navController.navigate(DecreaseProductPriceScreenDestination)
                     }
