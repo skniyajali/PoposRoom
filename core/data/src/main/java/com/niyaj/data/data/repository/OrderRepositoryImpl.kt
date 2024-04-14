@@ -61,6 +61,28 @@ class OrderRepositoryImpl(
         }
     }
 
+    override suspend fun getAllOrders(
+        date: String,
+        orderType: OrderType,
+        searchText: String
+    ): Flow<List<Order>> {
+        return withContext(ioDispatcher) {
+            val startDate = if (date.isNotEmpty()) {
+                calculateStartDate(date)
+            } else getStartDateLong
+
+            val endDate = if (date.isNotEmpty()) {
+                calculateEndDate(date)
+            } else getEndDateLong
+
+            orderDao.getAllOrders(startDate, endDate, orderType).mapLatest { list ->
+                mapCartItemToOrder(list)
+            }.mapLatest {
+                it.searchOrder(searchText)
+            }
+        }
+    }
+
     override suspend fun getAllCharges(): Flow<List<Charges>> {
         return withContext(ioDispatcher) {
             orderDao.getAllCharges().mapLatest { it ->

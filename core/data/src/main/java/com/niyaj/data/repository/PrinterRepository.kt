@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface PrinterRepository {
 
-    suspend fun getPrinter(printerId : String = PRINTER_ID): Printer
+    fun getPrinter(printerId : String = PRINTER_ID): Flow<Printer>
 
     suspend fun getPrinterInfo(printerId: String = PRINTER_ID): Flow<Printer>
 

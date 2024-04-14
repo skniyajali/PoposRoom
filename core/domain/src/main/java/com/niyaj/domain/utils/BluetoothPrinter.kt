@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -30,11 +31,10 @@ class BluetoothPrinter @Inject constructor(
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
 ) {
-
-    private val _info = MutableStateFlow(Printer())
+    private val _info = MutableStateFlow(Printer.defaultPrinterInfo)
     val info = _info.asStateFlow()
 
-    private val _printer = MutableStateFlow<EscPosPrinter?>(null)
+    private val _printer = MutableStateFlow(defaultPrinter())
     val printer = _printer.asStateFlow()
 
     private val _bluetoothConnection = MutableStateFlow<BluetoothConnection?>(null)
@@ -115,7 +115,25 @@ class BluetoothPrinter @Inject constructor(
 
     private suspend fun getPrinterInfo() {
         withContext(ioDispatcher) {
-            _info.value = printerRepository.getPrinter()
+            printerRepository.getPrinter().collectLatest {
+                _info.value = it
+            }
+        }
+    }
+
+    companion object {
+        fun defaultPrinter(): EscPosPrinter {
+            val data = BluetoothPrintersConnections.selectFirstPaired()
+            if (data?.isConnected == false) {
+                data.connect()
+            }
+
+            return EscPosPrinter(
+                data,
+                Printer.defaultPrinterInfo.printerDpi,
+                Printer.defaultPrinterInfo.printerWidth,
+                Printer.defaultPrinterInfo.printerNbrLines
+            )
         }
     }
 }

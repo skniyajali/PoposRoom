@@ -50,6 +50,8 @@ import com.niyaj.model.OrderType
 import com.niyaj.order.components.OrderedItemLayout
 import com.niyaj.order.components.ShareableOrderDetails
 import com.niyaj.order.destinations.OrderDetailsScreenDestination
+import com.niyaj.print.OrderPrintViewModel
+import com.niyaj.print.PrintEvent
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.OrderTab
 import com.niyaj.ui.components.OrderTabs
@@ -65,7 +67,6 @@ import com.niyaj.ui.utils.rememberCaptureController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.navigate
-import com.samples.apps.core.analytics.AnalyticsHelper
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.message
@@ -83,7 +84,8 @@ fun OrderScreen(
     navController: NavController,
     onClickEditOrder: (Int) -> Unit,
     viewModel: OrderViewModel = hiltViewModel(),
-    shareViewModel: ShareViewModel = hiltViewModel()
+    shareViewModel: ShareViewModel = hiltViewModel(),
+    printViewModel: OrderPrintViewModel = hiltViewModel(),
 ) {
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -149,13 +151,12 @@ fun OrderScreen(
     val printOrder: (Int) -> Unit = {
         if (bluetoothPermissions.allPermissionsGranted) {
             if (bluetoothAdapter?.isEnabled == true) {
-//                Todo: link print feature to print order
                 // Bluetooth is on print the receipt
-//                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
+                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
             } else {
                 // Bluetooth is off, ask user to turn it on
                 enableBluetoothContract.launch(enableBluetoothIntent)
-//                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
+                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
             }
         } else {
             bluetoothPermissions.launchMultiplePermissionRequest()
@@ -300,9 +301,7 @@ fun OrderScreen(
                     orders = dineOutOrders,
                     isLoading = isLoading,
                     showSearchBar = showSearchBar,
-                    onClickPrintOrder = {
-                        printOrder(it)
-                    },
+                    onClickPrintOrder = printOrder,
                     onClickDelete = {
                         deleteOrderState.show()
                         deletableOrder = it
@@ -329,9 +328,7 @@ fun OrderScreen(
                     orders = dineInOrders,
                     isLoading = isLoading,
                     showSearchBar = showSearchBar,
-                    onClickPrintOrder = {
-                        printOrder(it)
-                    },
+                    onClickPrintOrder = printOrder,
                     onClickDelete = {
                         deleteOrderState.show()
                         deletableOrder = it

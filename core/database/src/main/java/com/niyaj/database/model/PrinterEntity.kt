@@ -3,14 +3,6 @@ package com.niyaj.database.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.niyaj.common.utils.Constants.PRINTER_DPI
-import com.niyaj.common.utils.Constants.PRINTER_ID
-import com.niyaj.common.utils.Constants.PRINTER_NBR_LINE
-import com.niyaj.common.utils.Constants.PRINTER_WIDTH_MM
-import com.niyaj.common.utils.Constants.PRINT_ADDRESS_WISE_REPORT_LIMIT
-import com.niyaj.common.utils.Constants.PRINT_CUSTOMER_WISE_REPORT_LIMIT
-import com.niyaj.common.utils.Constants.PRINT_PRODUCT_WISE_REPORT_LIMIT
-import com.niyaj.common.utils.Constants.PRODUCT_NAME_LENGTH
 import com.niyaj.model.Printer
 
 @Entity(
@@ -19,29 +11,29 @@ import com.niyaj.model.Printer
 data class PrinterEntity(
     @PrimaryKey
     @ColumnInfo(index = true)
-    val printerId: String = PRINTER_ID,
+    val printerId: String,
 
-    val printerDpi: Int = PRINTER_DPI,
+    val printerDpi: Int,
 
-    val printerWidth: Float = PRINTER_WIDTH_MM,
+    val printerWidth: Float,
 
-    val printerNbrLines: Int = PRINTER_NBR_LINE,
+    val printerNbrLines: Int,
 
-    val productNameLength: Int = PRODUCT_NAME_LENGTH,
+    val productNameLength: Int,
 
-    val productWiseReportLimit: Int = PRINT_PRODUCT_WISE_REPORT_LIMIT,
+    val productWiseReportLimit: Int,
 
-    val addressWiseReportLimit: Int = PRINT_ADDRESS_WISE_REPORT_LIMIT,
+    val addressWiseReportLimit: Int,
 
-    val customerWiseReportLimit: Int = PRINT_CUSTOMER_WISE_REPORT_LIMIT,
+    val customerWiseReportLimit: Int,
 
-    val printQRCode: Boolean = true,
+    val printQRCode: Boolean,
 
-    val printResLogo: Boolean = true,
+    val printResLogo: Boolean,
 
-    val printWelcomeText: Boolean = true,
+    val printWelcomeText: Boolean,
 
-    val createdAt: String = System.currentTimeMillis().toString(),
+    val createdAt: String,
 
     val updatedAt: String? = null,
 )

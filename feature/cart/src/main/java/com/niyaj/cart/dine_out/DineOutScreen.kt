@@ -32,6 +32,8 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.cart.components.CartFooterPlaceOrder
 import com.niyaj.cart.components.CartItems
 import com.niyaj.core.ui.R
+import com.niyaj.print.OrderPrintViewModel
+import com.niyaj.print.PrintEvent
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.utils.Screens
@@ -50,6 +52,7 @@ fun DineOutScreen(
     onClickOrderDetails: (Int) -> Unit,
     onNavigateToOrderScreen: () -> Unit,
     viewModel: DineOutViewModel = hiltViewModel(),
+    printViewModel: OrderPrintViewModel = hiltViewModel(),
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -95,11 +98,11 @@ fun DineOutScreen(
             if (bluetoothAdapter?.isEnabled == true) {
 //                Todo: use print view model to print data
                 // Bluetooth is on print the receipt
-//                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
+                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
             } else {
                 // Bluetooth is off, ask user to turn it on
                 enableBluetoothContract.launch(enableBluetoothIntent)
-//                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
+                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
             }
         } else {
             bluetoothPermissions.launchMultiplePermissionRequest()
@@ -110,11 +113,11 @@ fun DineOutScreen(
         if (bluetoothPermissions.allPermissionsGranted) {
             if (bluetoothAdapter?.isEnabled == true) {
                 // Bluetooth is on print the receipt
-//                printViewModel.onPrintEvent(PrintEvent.PrintOrders(it))
+                printViewModel.onPrintEvent(PrintEvent.PrintOrders(it))
             } else {
                 // Bluetooth is off, ask user to turn it on
                 enableBluetoothContract.launch(enableBluetoothIntent)
-//                printViewModel.onPrintEvent(PrintEvent.PrintOrders(it))
+                printViewModel.onPrintEvent(PrintEvent.PrintOrders(it))
             }
         } else {
             bluetoothPermissions.launchMultiplePermissionRequest()

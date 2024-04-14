@@ -66,13 +66,13 @@ import com.niyaj.designsystem.theme.ProfilePictureSizeSmall
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.printer_info.destinations.UpdatePrinterInfoScreenDestination
+import com.niyaj.ui.components.IconWithText
+import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
-import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.StandardChip
 import com.niyaj.ui.components.StandardOutlinedChip
 import com.niyaj.ui.components.StandardScaffold
-import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.TwoGridText
 import com.niyaj.ui.components.drawAnimatedBorder
 import com.niyaj.ui.event.UiState
@@ -87,9 +87,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 @RootNavGraph(start = true)
-@Destination(
-    route = Screens.PRINTER_INFO_SCREEN
-)
+@Destination(route = Screens.PRINTER_INFO_SCREEN)
 fun PrinterInfoScreen(
     navController: NavController,
     viewModel: PrinterInfoViewModel = hiltViewModel(),
