@@ -14,6 +14,8 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+val API_KEY = "WQBvKOC4PBQ8EZUqOrVpslYSavvudON84Q5RyZavmPMHhZ00VvgfeIpXL2C5jFyM"
+
 val Int.safeString: String
     get() = if (this == 0) "" else this.toString()
 

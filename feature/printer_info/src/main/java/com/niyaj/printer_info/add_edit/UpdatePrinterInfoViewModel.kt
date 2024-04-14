@@ -16,6 +16,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -29,7 +30,7 @@ class UpdatePrinterInfoViewModel @Inject constructor(
     private val validationRepository: PrinterValidationRepository,
 ) : ViewModel() {
 
-    private val _state = mutableStateOf(Printer())
+    private val _state = mutableStateOf(Printer.defaultPrinterInfo)
     val state: Printer
         get() = _state.value
 
@@ -191,7 +192,7 @@ class UpdatePrinterInfoViewModel @Inject constructor(
 
     private fun getPrinterInfo() {
         viewModelScope.launch {
-            repository.getPrinter().let {
+            repository.getPrinter().collectLatest {
                 _state.value = _state.value.copy(
                     printerId = it.printerId,
                     printerDpi = it.printerDpi,

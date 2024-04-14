@@ -27,7 +27,6 @@ class DineInViewModel @Inject constructor(
     private val _state = MutableStateFlow(DineInState())
     val state = _state.asStateFlow()
 
-
     init {
         getAllDineInOrders()
     }
@@ -37,7 +36,6 @@ class DineInViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = emptyList()
     )
-
 
     fun onEvent(event: DineInEvent) {
         when(event) {

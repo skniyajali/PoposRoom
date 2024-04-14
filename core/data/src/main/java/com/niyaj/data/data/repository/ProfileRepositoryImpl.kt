@@ -5,11 +5,11 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
+import com.niyaj.common.tags.ProfileTestTags
 import com.niyaj.common.utils.Constants.RESTAURANT_ID
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.ProfileRepository
 import com.niyaj.data.repository.validation.ProfileValidationRepository
-import com.niyaj.common.tags.ProfileTestTags
 import com.niyaj.database.dao.ProfileDao
 import com.niyaj.database.model.ProfileEntity
 import com.niyaj.database.model.asExternalModel
@@ -25,9 +25,9 @@ class ProfileRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher,
 ) : ProfileRepository, ProfileValidationRepository {
 
-    override fun getProfileInfo(): Flow<Profile?> {
+    override fun getProfileInfo(): Flow<Profile> {
         return profileDao.getProfileInfo().mapLatest {
-            it?.asExternalModel()
+            it?.asExternalModel() ?: Profile.defaultProfileInfo
         }
     }
 

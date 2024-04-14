@@ -21,6 +21,8 @@ dependencies {
     implementation(libs.dialog.datetime)
     implementation(libs.pos.printer)
 
+    implementation(project(":feature:print_order"))
+
     //RaamCosta Library
     implementation(libs.raamcosta.animation.core)
     ksp(libs.raamcosta.ksp)

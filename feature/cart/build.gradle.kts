@@ -16,6 +16,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":feature:print_order"))
+
     implementation(libs.accompanist.permissions)
 
     //RaamCosta Library

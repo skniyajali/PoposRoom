@@ -14,7 +14,7 @@ interface PrinterDao {
             SELECT * FROM printerInfo WHERE printerId = :printerId
         """
     )
-    suspend fun printerInfo(printerId: String): PrinterEntity?
+    fun printerInfo(printerId: String): Flow<PrinterEntity?>
 
 
     /**

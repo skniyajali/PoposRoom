@@ -21,17 +21,14 @@ class DineOutViewModel @Inject constructor(
     private val cartRepository: CartRepository,
     private val analyticsHelper: AnalyticsHelper
 ): BaseViewModel() {
-
     override var totalItems: List<Int> = emptyList()
 
     private val _state = MutableStateFlow(DineOutState())
     val state = _state.asStateFlow()
 
-
     init {
         getAllDineOutOrders()
     }
-
 
     val addOnItems = cartRepository.getAllAddOnItems().stateIn(
         scope = viewModelScope,

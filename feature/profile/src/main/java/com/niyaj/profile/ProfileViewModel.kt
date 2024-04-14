@@ -18,7 +18,7 @@ class ProfileViewModel @Inject constructor(
     val profile = profileRepository
         .getProfileInfo()
         .map {
-            if (it == null || it.restaurantId == 0) {
+            if (it.restaurantId == 0) {
                 UiState.Empty
             } else {
                 UiState.Success(it)

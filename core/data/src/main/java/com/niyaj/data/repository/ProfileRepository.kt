@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ProfileRepository {
 
-    fun getProfileInfo(): Flow<Profile?>
+    fun getProfileInfo(): Flow<Profile>
 
     suspend fun updateRestaurantLogo(imageName: String): Resource<Boolean>
 
