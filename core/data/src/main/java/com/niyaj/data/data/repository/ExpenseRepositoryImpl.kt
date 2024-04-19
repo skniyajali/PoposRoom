@@ -224,10 +224,17 @@ class ExpenseRepositoryImpl(
             )
         }
 
-        if (expenseAmount.toInt() < 10) {
+        try {
+            if (expenseAmount.toInt() < 10) {
+                return ValidationResult(
+                    successful = false,
+                    errorMessage = EXPENSE_PRICE_LESS_THAN_TEN_ERROR
+                )
+            }
+        }catch (e: NumberFormatException) {
             return ValidationResult(
                 successful = false,
-                errorMessage = EXPENSE_PRICE_LESS_THAN_TEN_ERROR
+                errorMessage = "Expenses amount is not valid."
             )
         }
 
