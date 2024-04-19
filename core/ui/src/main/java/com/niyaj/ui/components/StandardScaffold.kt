@@ -238,6 +238,174 @@ fun StandardScaffold(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun StandardScaffoldRoute(
+    modifier: Modifier = Modifier,
+    currentRoute: String,
+    title: String,
+    floatingActionButton: @Composable () -> Unit,
+    navActions: @Composable RowScope.() -> Unit,
+    bottomBar: @Composable () -> Unit = {},
+    fabPosition: FabPosition = FabPosition.Center,
+    selectionCount: Int,
+    showBottomBar: Boolean = false,
+    showBackButton: Boolean = false,
+    onDeselect: () -> Unit = {},
+    onBackClick: () -> Unit,
+    onNavigateToScreen: (String) -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    content: @Composable () -> Unit,
+) {
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    // Remember a SystemUiController
+    val systemUiController = rememberSystemUiController()
+
+    val colorTransitionFraction = scrollBehavior.state.collapsedFraction
+
+    val color = rememberUpdatedState(newValue = containerColorForPrimary(colorTransitionFraction))
+    val navColor = MaterialTheme.colorScheme.surface
+    val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
+
+    val selectedState = updateTransition(targetState = selectionCount, label = "selection count")
+
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = color.value,
+            darkIcons = false,
+        )
+
+        systemUiController.setNavigationBarColor(
+            color = navColor
+        )
+    }
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            StandardDrawer(
+                currentRoute = currentRoute,
+                onNavigateToScreen = onNavigateToScreen
+            )
+        },
+        gesturesEnabled = true
+    ) {
+        Scaffold(
+            topBar = {
+                LargeTopAppBar(
+                    title = {
+                        Text(text = title)
+                    },
+                    navigationIcon = {
+                        if (showBackButton) {
+                            IconButton(
+                                onClick = onBackClick,
+                                modifier = Modifier.testTag(STANDARD_BACK_BUTTON)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = null,
+                                )
+                            }
+                        } else {
+                            AnimatedContent(
+                                targetState = selectedState,
+                                transitionSpec = {
+                                    (fadeIn()).togetherWith(
+                                        fadeOut(animationSpec = tween(200))
+                                    )
+                                },
+                                label = "navigationIcon",
+                                contentKey = {
+                                    it
+                                }
+                            ) { state ->
+                                if (state.currentState != 0) {
+                                    IconButton(
+                                        onClick = onDeselect
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = Constants.CLEAR_ICON
+                                        )
+                                    }
+                                } else {
+                                    IconButton(
+                                        onClick = {
+                                            scope.launch {
+                                                drawerState.open()
+                                            }
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Apps,
+                                            contentDescription = DRAWER_ICON
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    actions = navActions,
+                    scrollBehavior = scrollBehavior,
+                    colors = TopAppBarDefaults.largeTopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        scrolledContainerColor = RoyalPurple,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                        actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                )
+            },
+            bottomBar = {
+                AnimatedVisibility(
+                    visible = showBottomBar,
+                    label = "BottomBar",
+                    enter = fadeIn() + slideInVertically(
+                        initialOffsetY = { fullHeight ->
+                            fullHeight / 4
+                        }
+                    ),
+                    exit = fadeOut() + slideOutVertically(
+                        targetOffsetY = { fullHeight ->
+                            fullHeight / 4
+                        }
+                    )
+                ) {
+                    bottomBar()
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.primary,
+            floatingActionButton = floatingActionButton,
+            floatingActionButtonPosition = fabPosition,
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            modifier = modifier
+                .testTag(title)
+                .fillMaxSize()
+                .navigationBarsPadding()
+                .imePadding(),
+        ) { padding ->
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .consumeWindowInsets(padding)
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+                    )
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
+                shape = shape.value,
+                elevation = CardDefaults.cardElevation(),
+            ) {
+                content()
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun StandardScaffoldNew(
     navController: NavController,
     modifier: Modifier = Modifier,
@@ -399,11 +567,9 @@ fun StandardScaffoldNew(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StandardScaffoldRoute(
-    currentRoute: String,
+fun StandardScaffoldRouteNew(
     modifier: Modifier = Modifier,
     title: String,
-    showDrawer: Boolean = true,
     showBackButton: Boolean = false,
     showBottomBar: Boolean = false,
     showFab: Boolean = false,
@@ -413,17 +579,9 @@ fun StandardScaffoldRoute(
     navigationIcon: @Composable () -> Unit = {},
     navActions: @Composable RowScope.() -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
-    onNavigateToDestination: (String) -> Unit,
-    bottomBar: @Composable () -> Unit = {
-        AnimatedBottomNavigationBar(
-            currentRoute = currentRoute,
-            onNavigateToDestination = onNavigateToDestination
-        )
-    },
-    content: @Composable (PaddingValues) -> Unit = {},
+    bottomBar: @Composable () -> Unit = {},
+    content: @Composable () -> Unit = {},
 ) {
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val layoutDirection = LocalLayoutDirection.current
 
@@ -446,24 +604,23 @@ fun StandardScaffoldRoute(
         systemUiController.setNavigationBarColor(color = navColor)
     }
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            StandardDrawer(
-                currentRoute = currentRoute,
-                onNavigateToScreen = onNavigateToDestination
-            )
-        },
-        gesturesEnabled = false
-    ) {
-        Scaffold(
-            topBar = {
-                LargeTopAppBar(
-                    title = {
-                        Text(text = title)
-                    },
-                    navigationIcon = {
-                        if (showBackButton) {
+    Scaffold(
+        topBar = {
+            LargeTopAppBar(
+                title = {
+                    Text(text = title)
+                },
+                navigationIcon = {
+                    AnimatedContent(
+                        targetState = showBackButton,
+                        label = "Show Navigation Icon",
+                        transitionSpec = {
+                            (fadeIn()).togetherWith(
+                                fadeOut(animationSpec = tween(200))
+                            )
+                        }
+                    ) {
+                        if (it) {
                             IconButton(
                                 onClick = onBackClick,
                                 modifier = Modifier.testTag(STANDARD_BACK_BUTTON)
@@ -474,95 +631,83 @@ fun StandardScaffoldRoute(
                                     tint = MaterialTheme.colorScheme.scrim
                                 )
                             }
-                        } else if (showDrawer) {
-                            IconButton(
-                                onClick = {
-                                    scope.launch {
-                                        drawerState.open()
-                                    }
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Apps,
-                                    contentDescription = null
-                                )
-                            }
                         } else navigationIcon()
-                    },
-                    actions = {
-                        navActions()
-                    },
-                    scrollBehavior = scrollBehavior,
-                    colors = TopAppBarDefaults.largeTopAppBarColors(
-                        containerColor = color.value,
-                        scrolledContainerColor = color.value,
-                    )
+                    }
+
+                },
+                actions = {
+                    navActions()
+                },
+                scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = color.value,
+                    scrolledContainerColor = color.value,
                 )
-            },
-            bottomBar = {
-                AnimatedVisibility(
-                    visible = showBottomBar,
-                    label = "BottomBar",
-                    enter = fadeIn() + slideInVertically(
-                        initialOffsetY = { fullHeight ->
-                            fullHeight / 4
-                        }
-                    ),
-                    exit = fadeOut() + slideOutVertically(
-                        targetOffsetY = { fullHeight ->
-                            fullHeight / 4
-                        }
-                    )
-                ) {
-                    bottomBar()
-                }
-            },
-            floatingActionButton = {
-                AnimatedVisibility(
-                    visible = showFab,
-                    label = "BottomBar",
-                    enter = fadeIn() + slideInVertically(
-                        initialOffsetY = { fullHeight ->
-                            fullHeight / 4
-                        }
-                    ),
-                    exit = fadeOut() + slideOutVertically(
-                        targetOffsetY = { fullHeight ->
-                            fullHeight / 4
-                        }
-                    )
-                ) {
-                    floatingActionButton()
-                }
-            },
-            floatingActionButtonPosition = fabPosition,
-            snackbarHost = { SnackbarHost(snackbarHostState) },
-            modifier = modifier
-                .testTag(title)
-                .fillMaxSize()
-                .imePadding(),
-            containerColor = MaterialTheme.colorScheme.background
-        ) { padding ->
-            ElevatedCard(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        start = padding.calculateStartPadding(layoutDirection),
-                        top = padding.calculateTopPadding(),
-                        end = padding.calculateEndPadding(layoutDirection)
-                    )
-                    .windowInsetsPadding(
-                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
-                    )
-                    .nestedScroll(scrollBehavior.nestedScrollConnection),
-                shape = shape.value,
-                elevation = CardDefaults.cardElevation(),
-                colors = CardDefaults.elevatedCardColors(
-                    containerColor = boxColor.value
+            )
+        },
+        bottomBar = {
+            AnimatedVisibility(
+                visible = showBottomBar,
+                label = "BottomBar",
+                enter = fadeIn() + slideInVertically(
+                    initialOffsetY = { fullHeight ->
+                        fullHeight / 4
+                    }
+                ),
+                exit = fadeOut() + slideOutVertically(
+                    targetOffsetY = { fullHeight ->
+                        fullHeight / 4
+                    }
                 )
             ) {
-                content(padding)
+                bottomBar()
             }
+        },
+        floatingActionButton = {
+            AnimatedVisibility(
+                visible = showFab,
+                label = "BottomBar",
+                enter = fadeIn() + slideInVertically(
+                    initialOffsetY = { fullHeight ->
+                        fullHeight / 4
+                    }
+                ),
+                exit = fadeOut() + slideOutVertically(
+                    targetOffsetY = { fullHeight ->
+                        fullHeight / 4
+                    }
+                )
+            ) {
+                floatingActionButton()
+            }
+        },
+        floatingActionButtonPosition = fabPosition,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        modifier = modifier
+            .testTag(title)
+            .fillMaxSize()
+            .imePadding(),
+        containerColor = MaterialTheme.colorScheme.background
+    ) { padding ->
+        ElevatedCard(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    start = padding.calculateStartPadding(layoutDirection),
+                    top = padding.calculateTopPadding(),
+                    end = padding.calculateEndPadding(layoutDirection)
+                )
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+                )
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            shape = shape.value,
+            elevation = CardDefaults.cardElevation(),
+            colors = CardDefaults.elevatedCardColors(
+                containerColor = boxColor.value
+            )
+        ) {
+            content()
         }
     }
 }

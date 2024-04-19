@@ -2,6 +2,7 @@ package com.niyaj.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,41 +43,48 @@ fun ItemNotAvailable(
     image: Painter = painterResource(id = R.drawable.emptystate),
     onClick: () -> Unit = {},
 ) {
-    Column(
+    Box(
         modifier = modifier
             .fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+        contentAlignment = Alignment.Center
     ) {
-        if (showImage) {
-            Image(
-                painter = image,
-                contentDescription = "No data available",
-            )
-            Spacer(modifier = Modifier.height(SpaceMedium))
-        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .align(Alignment.Center),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            if (showImage) {
+                Image(
+                    painter = image,
+                    contentDescription = "No data available",
+                )
+                Spacer(modifier = Modifier.height(SpaceMedium))
+            }
 
-        Text(
-            text = text,
-            fontWeight = FontWeight.Normal,
-            style = MaterialTheme.typography.bodySmall,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.error
-        )
-
-        if (buttonText.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(SpaceMedium))
-            StandardElevatedButton(
-                modifier = btnModifier,
-                text = buttonText,
-                icon = icon,
-                onClick = onClick,
-                colors = ButtonDefaults.elevatedButtonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = MaterialTheme.colorScheme.onSecondary
-                ),
-                shape = CutCornerShape(4.dp),
+            Text(
+                text = text,
+                fontWeight = FontWeight.Normal,
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.error
             )
+
+            if (buttonText.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(SpaceMedium))
+                StandardElevatedButton(
+                    modifier = btnModifier,
+                    text = buttonText,
+                    icon = icon,
+                    onClick = onClick,
+                    colors = ButtonDefaults.elevatedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
+                    ),
+                    shape = CutCornerShape(4.dp),
+                )
+            }
         }
     }
 }
@@ -145,43 +153,50 @@ fun EmptyImportScreen(
     image: Painter = painterResource(id = R.drawable.openfile),
     onClick: () -> Unit = {},
 ) {
-    Column(
+    Box(
         modifier = modifier
             .fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+        contentAlignment = Alignment.Center
     ) {
-        if (showImage) {
-            Image(
-                painter = image,
-                contentDescription = "No data available",
-                contentScale = ContentScale.FillHeight,
-                modifier = Modifier.size(300.dp),
-            )
-            Spacer(modifier = Modifier.height(SpaceMedium))
-        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .align(Alignment.Center),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            if (showImage) {
+                Image(
+                    painter = image,
+                    contentDescription = "No data available",
+                    contentScale = ContentScale.FillHeight,
+                    modifier = Modifier.size(300.dp),
+                )
+                Spacer(modifier = Modifier.height(SpaceMedium))
+            }
 
-        Text(
-            text = text,
-            fontWeight = FontWeight.Normal,
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.error
-        )
-
-        if (buttonText.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(SpaceMedium))
-            StandardElevatedButton(
-                modifier = btnModifier,
-                text = buttonText,
-                icon = icon,
-                onClick = onClick,
-                colors = ButtonDefaults.elevatedButtonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = MaterialTheme.colorScheme.onSecondary
-                ),
-                shape = CutCornerShape(4.dp),
+            Text(
+                text = text,
+                fontWeight = FontWeight.Normal,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.error
             )
+
+            if (buttonText.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(SpaceMedium))
+                StandardElevatedButton(
+                    modifier = btnModifier,
+                    text = buttonText,
+                    icon = icon,
+                    onClick = onClick,
+                    colors = ButtonDefaults.elevatedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
+                    ),
+                    shape = CutCornerShape(4.dp),
+                )
+            }
         }
     }
 }

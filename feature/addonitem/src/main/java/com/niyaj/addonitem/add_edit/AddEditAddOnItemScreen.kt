@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.AddOnTestTags
 import com.niyaj.common.tags.AddOnTestTags.ADDON_APPLIED_SWITCH
 import com.niyaj.common.tags.AddOnTestTags.ADDON_NAME_ERROR_TAG
@@ -40,20 +39,20 @@ import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldRoute
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
-import com.niyaj.ui.utils.currentRoute
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
 @Destination(route = Screens.ADD_EDIT_ADD_ON_ITEM_SCREEN)
 @Composable
 fun AddEditAddOnItemScreen(
     itemId: Int = 0,
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: AddEditAddOnItemViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>
 ) {
@@ -84,13 +83,11 @@ fun AddEditAddOnItemScreen(
 
     TrackScreenViewEvent(screenName = Screens.ADD_EDIT_ADD_ON_ITEM_SCREEN)
 
-    StandardScaffoldRoute(
+    StandardScaffoldRouteNew(
         modifier = Modifier,
-        currentRoute = navController.currentRoute(),
         title = title,
         showBackButton = true,
-        onBackClick = navController::navigateUp,
-        onNavigateToDestination = navController::navigate,
+        onBackClick = navigator::navigateUp,
         showBottomBar = true,
         bottomBar = {
             StandardButton(
@@ -107,7 +104,7 @@ fun AddEditAddOnItemScreen(
         }
     ) {
         TrackScrollJank(scrollableState = lazyListState, stateName = "Create New Addon::Fields")
-        
+
         LazyColumn(
             modifier = Modifier
                 .testTag(ADD_EDIT_ADDON_SCREEN)
