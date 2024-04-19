@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,12 +22,16 @@ import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.AllInbox
 import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Tag
+import androidx.compose.material.icons.outlined.Print
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
@@ -43,7 +48,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -51,8 +55,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.niyaj.address.destinations.AddEditAddressScreenDestination
 import com.niyaj.common.utils.toFormattedDateAndTime
 import com.niyaj.common.utils.toPrettyDate
@@ -66,10 +68,10 @@ import com.niyaj.model.AddressWiseOrder
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
-import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardExpandable
+import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.StandardRoundedFilterChip
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.components.TextWithCount
 import com.niyaj.ui.components.TotalOrderDetailsCard
 import com.niyaj.ui.event.UiState
@@ -78,20 +80,17 @@ import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
 @Destination(route = Screens.ADDRESS_DETAILS_SCREEN)
 @Composable
 fun AddressDetailsScreen(
     addressId: Int = 0,
-    navController: NavController,
+    navigator: DestinationsNavigator,
     onClickOrder: (Int) -> Unit,
     viewModel: AddressDetailsViewModel = hiltViewModel(),
 ) {
-    val currentId = navController.currentBackStackEntryAsState()
-        .value?.arguments?.getInt("addressId") ?: addressId
-
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
 
@@ -107,26 +106,46 @@ fun AddressDetailsScreen(
     var orderExpanded by remember {
         mutableStateOf(true)
     }
-    
-    TrackScreenViewEvent(screenName = Screens.ADDRESS_DETAILS_SCREEN + currentId)
-    
-    StandardScaffoldNew(
-        navController = navController,
+
+    TrackScreenViewEvent(screenName = Screens.ADDRESS_DETAILS_SCREEN + addressId)
+
+    StandardScaffoldRouteNew(
         title = "Address Details",
-        showBackButton = true,
-        navActions = {},
-        showBottomBar = false,
+        onBackClick = navigator::navigateUp,
+        showFab = true,
         fabPosition = FabPosition.End,
         floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyListState.isScrollingUp(),
-                onClick = {
+            StandardFAB(
+                showScrollToTop = !lazyListState.isScrollingUp(),
+                fabVisible = lazyListState.isScrollingUp(),
+                fabIcon = Icons.Default.Share,
+                onFabClick = { /*TODO: Add Share functionality*/ },
+                onClickScroll = {
                     scope.launch {
                         lazyListState.animateScrollToItem(index = 0)
                     }
                 }
             )
         },
+        navActions = {
+            IconButton(
+                onClick = { /*TODO*/ }
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Share,
+                    contentDescription = "Share Address Details"
+                )
+            }
+
+            IconButton(
+                onClick = { /*TODO: Add Print functionality*/ }
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Print,
+                    contentDescription = "Print Address Details"
+                )
+            }
+        }
     ) {
         TrackScrollJank(scrollableState = lazyListState, stateName = "Address Details::List")
 
@@ -134,7 +153,7 @@ fun AddressDetailsScreen(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(SpaceSmall)
         ) {
             item(key = "TotalOrder Details") {
@@ -149,7 +168,7 @@ fun AddressDetailsScreen(
                     },
                     doesExpanded = detailsExpanded,
                     onClickEdit = {
-                        navController.navigate(AddEditAddressScreenDestination(currentId))
+                        navigator.navigate(AddEditAddressScreenDestination(addressId))
                     }
                 )
             }
@@ -176,7 +195,7 @@ fun AddressDetailsCard(
     onExpanded: () -> Unit,
     doesExpanded: Boolean,
     onClickEdit: () -> Unit,
-) = trace("AddressDetailsCard"){
+) = trace("AddressDetailsCard") {
     ElevatedCard(
         onClick = onExpanded,
         modifier = Modifier
@@ -337,15 +356,16 @@ fun RecentOrders(
                         }
 
                         is UiState.Success -> {
-                            val groupedByDate = remember {
+                            val groupedByDate = remember(orders.data) {
                                 orders.data.groupBy { it.updatedAt.toPrettyDate() }
                             }
 
                             Column {
                                 groupedByDate.forEach { (date, orders) ->
                                     TextWithCount(
-                                        modifier = Modifier.background(Color.Transparent),
+                                        modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLow),
                                         text = date,
+                                        leadingIcon = Icons.Default.CalendarMonth,
                                         count = orders.size,
                                     )
 
@@ -376,14 +396,13 @@ fun RecentOrders(
     }
 }
 
-
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GroupedOrders(
     customerPhone: String,
     orderDetails: List<AddressWiseOrder>,
     onClickOrder: (Int) -> Unit,
-) = trace("Address::GroupedOrders"){
+) = trace("Address::GroupedOrders") {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -476,6 +495,7 @@ fun ListOfOrders(
             IconWithText(
                 text = "${order.orderId}",
                 icon = Icons.Default.Tag,
+                tintColor = MaterialTheme.colorScheme.tertiary,
                 isTitle = true,
             )
 

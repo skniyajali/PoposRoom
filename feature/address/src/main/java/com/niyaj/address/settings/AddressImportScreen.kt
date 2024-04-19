@@ -1,12 +1,14 @@
 package com.niyaj.address.settings
 
 import android.Manifest
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -15,6 +17,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.material3.ButtonDefaults
@@ -30,7 +33,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.address.AddressData
@@ -47,13 +49,14 @@ import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.utils.ImportExport
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -62,7 +65,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AddressImportScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: AddressSettingsViewModel = hiltViewModel(),
 ) {
@@ -73,7 +76,7 @@ fun AddressImportScreen(
     val importedItems = viewModel.importedItems.collectAsStateWithLifecycle().value
 
     val selectedItems = viewModel.selectedItems.toList()
-    var importJob : Job? = null
+    var importJob: Job? = null
 
     val hasStoragePermission = rememberMultiplePermissionsState(
         permissions = listOf(
@@ -119,12 +122,19 @@ fun AddressImportScreen(
         }
     }
 
+    BackHandler {
+        if (selectedItems.isNotEmpty()) {
+            viewModel.deselectItems()
+        } else {
+            navigator.navigateUp()
+        }
+    }
+
     TrackScreenViewEvent(screenName = "Address Import Screen")
 
-    StandardScaffoldNew(
-        navController = navController,
+    StandardScaffoldRouteNew(
         title = if (selectedItems.isEmpty()) IMPORT_ADDRESS_TITLE else "${selectedItems.size} Selected",
-        showBackButton = true,
+        showBackButton = selectedItems.isEmpty(),
         showBottomBar = importedItems.isNotEmpty(),
         navActions = {
             AnimatedVisibility(
@@ -177,6 +187,17 @@ fun AddressImportScreen(
                     }
                 }
             )
+        },
+        onBackClick = navigator::navigateUp,
+        navigationIcon = {
+            IconButton(
+                onClick = viewModel::deselectItems
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Clear,
+                    contentDescription = "Deselect All"
+                )
+            }
         }
     ) {
         Crossfade(
@@ -196,11 +217,15 @@ fun AddressImportScreen(
                         }
                     }
                 )
-            }else {
-                TrackScrollJank(scrollableState = lazyGridState, stateName = "Imported Address::List")
+            } else {
+                TrackScrollJank(
+                    scrollableState = lazyGridState,
+                    stateName = "Imported Address::List"
+                )
 
                 LazyVerticalGrid(
                     modifier = Modifier
+                        .fillMaxSize()
                         .padding(SpaceSmall),
                     columns = GridCells.Fixed(2),
                     state = lazyGridState,
@@ -212,7 +237,11 @@ fun AddressImportScreen(
                         }
                     ) { address ->
                         AddressData(
-                            modifier = Modifier.testTag(AddressTestTags.ADDRESS_ITEM_TAG.plus(address.addressId)),
+                            modifier = Modifier.testTag(
+                                AddressTestTags.ADDRESS_ITEM_TAG.plus(
+                                    address.addressId
+                                )
+                            ),
                             item = address,
                             doesSelected = {
                                 selectedItems.contains(it)

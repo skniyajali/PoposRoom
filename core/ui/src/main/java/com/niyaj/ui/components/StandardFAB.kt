@@ -86,8 +86,16 @@ fun StandardFAB(
     ) {
         AnimatedVisibility(
             visible = showScrollToTop,
-            enter = fadeIn(),
-            exit = fadeOut(),
+            enter = slideInVertically(
+                initialOffsetY = { fullHeight ->
+                    fullHeight
+                }
+            ),
+            exit = slideOutVertically(
+                targetOffsetY = { fullHeight ->
+                    fullHeight
+                }
+            ),
         ) {
             ScrollToTop(onClick = onClickScroll, containerColor = containerColor)
         }

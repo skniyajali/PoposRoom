@@ -570,9 +570,9 @@ fun StandardScaffoldNew(
 fun StandardScaffoldRouteNew(
     modifier: Modifier = Modifier,
     title: String,
-    showBackButton: Boolean = false,
+    showBackButton: Boolean = true,
     showBottomBar: Boolean = false,
-    showFab: Boolean = false,
+    showFab: Boolean = true,
     fabPosition: FabPosition = FabPosition.Center,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onBackClick: () -> Unit,

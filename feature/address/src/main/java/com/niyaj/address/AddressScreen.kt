@@ -65,7 +65,7 @@ import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.ScaffoldNavActions
 import com.niyaj.ui.components.StandardFAB
-import com.niyaj.ui.components.StandardScaffold
+import com.niyaj.ui.components.StandardScaffoldRoute
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -149,7 +149,7 @@ fun AddressScreen(
     }
 
     exportRecipient.onNavResult { result ->
-        when(result) {
+        when (result) {
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
                 scope.launch {
@@ -160,7 +160,7 @@ fun AddressScreen(
     }
 
     importRecipient.onNavResult { result ->
-        when(result) {
+        when (result) {
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
                 scope.launch {
@@ -169,11 +169,11 @@ fun AddressScreen(
             }
         }
     }
-    
+
     TrackScreenViewEvent(screenName = Screens.ADDRESS_SCREEN)
 
-    StandardScaffold(
-        navController = navController,
+    StandardScaffoldRoute(
+        currentRoute = Screens.ADDRESS_SCREEN,
         title = if (selectedItems.isEmpty()) ADDRESS_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
@@ -219,7 +219,8 @@ fun AddressScreen(
         onDeselect = viewModel::deselectItems,
         onBackClick = viewModel::closeSearchBar,
         snackbarHostState = snackbarState,
-    ) { _ ->
+        onNavigateToScreen = navController::navigate,
+    ) {
         Crossfade(
             targetState = uiState,
             label = "Address State"
@@ -331,7 +332,7 @@ fun AddressData(
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-) = trace("Address::Data"){
+) = trace("Address::Data") {
     val borderStroke = if (doesSelected(item.addressId)) border else null
 
     ElevatedCard(
