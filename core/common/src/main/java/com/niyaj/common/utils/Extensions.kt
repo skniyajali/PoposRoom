@@ -536,6 +536,23 @@ fun createDottedString(name: String, limit: Int): String {
     } else return name
 }
 
+fun createLineString(name: String, limit: Int): String {
+    var text = ""
+
+    val remainingSpace = limit.minus(name.length + 2).div(2)
+
+    for (i in 0 until remainingSpace) {
+        text += "--"
+    }
+
+    text += " $name "
+
+    for (i in 0 until remainingSpace) {
+        text += "--"
+    }
+
+    return text
+}
 
 fun getSalaryDates(joinedDate: String): List<Pair<String, String>> {
 

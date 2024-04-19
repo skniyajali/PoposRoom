@@ -4,7 +4,7 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.data.data.repository.PrintRepositoryImpl
 import com.niyaj.data.repository.PrintRepository
-import com.niyaj.database.dao.CartOrderDao
+import com.niyaj.database.dao.OrderDao
 import com.niyaj.database.dao.PrintDao
 import dagger.Module
 import dagger.Provides
@@ -18,10 +18,11 @@ object PrintModule {
 
     @Provides
     fun providePrintRepository(
-        orderDao: PrintDao,
-        cartOrderDao: CartOrderDao,
-        @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
+        printDao: PrintDao,
+        orderDao: OrderDao,
+        @Dispatcher(PoposDispatchers.IO)
+        ioDispatcher: CoroutineDispatcher,
     ): PrintRepository {
-        return PrintRepositoryImpl(orderDao, cartOrderDao, ioDispatcher)
+        return PrintRepositoryImpl(printDao, orderDao, ioDispatcher)
     }
 }

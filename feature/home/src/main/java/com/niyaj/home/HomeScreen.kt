@@ -17,7 +17,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.niyaj.common.tags.HomeScreenTestTags
 import com.niyaj.common.tags.HomeScreenTestTags.HOME_SEARCH_PLACEHOLDER
 import com.niyaj.core.ui.R
@@ -31,6 +30,7 @@ import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
+import com.niyaj.ui.utils.currentRoute
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -45,8 +45,6 @@ fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-        ?: Screens.HOME_SCREEN
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
     val lazyRowState = rememberLazyListState()
@@ -113,7 +111,7 @@ fun HomeScreen(
     }
 
     StandardScaffoldWithBottomNavigation(
-        currentRoute = currentRoute,
+        currentRoute = navController.currentRoute(),
         snackbarHostState = snackbarState,
         selectedId = selectedId,
         showFab = showFab,

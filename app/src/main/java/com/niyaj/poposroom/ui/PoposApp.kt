@@ -27,7 +27,6 @@ fun PoposApp(
     viewModel: MainActivityViewModel,
     windowSizeClass: WindowSizeClass,
     networkMonitor: NetworkMonitor,
-    onCheckForAppUpdate: () -> Unit,
     appState: PoposAppState = rememberPoposAppState(
         networkMonitor = networkMonitor,
         windowSizeClass = windowSizeClass,
@@ -60,8 +59,6 @@ fun PoposApp(
             LaunchedEffect(isOffline) {
                 if (isOffline) {
                     snackbarHostState.showSnackbar(message = "You are not connected to the internet")
-                } else {
-                    onCheckForAppUpdate()
                 }
             }
 

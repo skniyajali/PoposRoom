@@ -96,7 +96,6 @@ fun DineOutScreen(
     val printOrder: (Int) -> Unit = {
         if (bluetoothPermissions.allPermissionsGranted) {
             if (bluetoothAdapter?.isEnabled == true) {
-//                Todo: use print view model to print data
                 // Bluetooth is on print the receipt
                 printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
             } else {
@@ -158,7 +157,7 @@ fun DineOutScreen(
             }
         }
     }
-    
+
     TrackScreenViewEvent(screenName = "DineOut Tab::Cart")
 
     Scaffold(

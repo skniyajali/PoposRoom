@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
@@ -55,13 +57,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.Constants.DRAWER_ICON
 import com.niyaj.common.utils.Constants.STANDARD_BACK_BUTTON
+import com.niyaj.designsystem.theme.LightColor6
+import com.niyaj.designsystem.theme.Parchment
 import com.niyaj.designsystem.theme.RoyalPurple
+import com.niyaj.designsystem.theme.SeaShell
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -258,7 +264,8 @@ fun StandardScaffoldNew(
 
     val colorTransitionFraction = scrollBehavior.state.collapsedFraction
 
-    val color = rememberUpdatedState(newValue = containerColor(colorTransitionFraction))
+    val color = rememberUpdatedState(newValue = containerColorForSecondary(colorTransitionFraction))
+    val boxColor = rememberUpdatedState(newValue = containerColor(colorTransitionFraction))
     val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
     val navColor = MaterialTheme.colorScheme.surface
 
@@ -318,7 +325,8 @@ fun StandardScaffoldNew(
                     },
                     scrollBehavior = scrollBehavior,
                     colors = TopAppBarDefaults.largeTopAppBarColors(
-                        containerColor = color.value
+                        containerColor = color.value,
+                        scrolledContainerColor = color.value
                     )
                 )
             },
@@ -378,6 +386,9 @@ fun StandardScaffoldNew(
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
                 shape = shape.value,
                 elevation = CardDefaults.cardElevation(),
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = boxColor.value
+                )
             ) {
                 content(padding)
             }
@@ -414,13 +425,15 @@ fun StandardScaffoldNew(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val layoutDirection = LocalLayoutDirection.current
 
     // Remember a SystemUiController
     val systemUiController = rememberSystemUiController()
 
     val colorTransitionFraction = scrollBehavior.state.collapsedFraction
 
-    val color = rememberUpdatedState(newValue = containerColor(colorTransitionFraction))
+    val color = rememberUpdatedState(newValue = containerColorForSecondary(colorTransitionFraction))
+    val boxColor = rememberUpdatedState(newValue = containerColor(colorTransitionFraction))
     val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
     val navColor = MaterialTheme.colorScheme.surface
 
@@ -481,7 +494,8 @@ fun StandardScaffoldNew(
                     },
                     scrollBehavior = scrollBehavior,
                     colors = TopAppBarDefaults.largeTopAppBarColors(
-                        containerColor = color.value
+                        containerColor = color.value,
+                        scrolledContainerColor = color.value,
                     )
                 )
             },
@@ -526,21 +540,26 @@ fun StandardScaffoldNew(
             modifier = modifier
                 .testTag(title)
                 .fillMaxSize()
-                .navigationBarsPadding()
                 .imePadding(),
             containerColor = MaterialTheme.colorScheme.background
         ) { padding ->
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding)
-                    .consumeWindowInsets(padding)
+                    .padding(
+                        start = padding.calculateStartPadding(layoutDirection),
+                        top = padding.calculateTopPadding(),
+                        end = padding.calculateEndPadding(layoutDirection)
+                    )
                     .windowInsetsPadding(
                         WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
                     )
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
                 shape = shape.value,
                 elevation = CardDefaults.cardElevation(),
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = boxColor.value
+                )
             ) {
                 content(padding)
             }
@@ -558,13 +577,23 @@ internal fun containerColorForPrimary(colorTransitionFraction: Float): Color {
 }
 
 @Composable
-internal fun containerColor(colorTransitionFraction: Float): Color {
+internal fun containerColorForSecondary(colorTransitionFraction: Float): Color {
     return lerp(
-        MaterialTheme.colorScheme.background,
-        MaterialTheme.colorScheme.tertiaryContainer,
+        SeaShell,
+        Parchment,
         FastOutLinearInEasing.transform(colorTransitionFraction)
     )
 }
+
+@Composable
+internal fun containerColor(colorTransitionFraction: Float): Color {
+    return lerp(
+        LightColor6,
+        MaterialTheme.colorScheme.surfaceContainerLowest,
+        FastOutLinearInEasing.transform(colorTransitionFraction)
+    )
+}
+
 
 @Composable
 internal fun containerShape(colorTransitionFraction: Float): Shape {

@@ -133,21 +133,6 @@ fun OrderScreen(
         bluetoothManager.adapter
     }
 
-    val printDeliveryReport: () -> Unit = {
-        if (bluetoothPermissions.allPermissionsGranted) {
-            if (bluetoothAdapter?.isEnabled == true) {
-                // Bluetooth is on print the receipt
-                viewModel.onOrderEvent(OrderEvent.PrintDeliveryReport)
-            } else {
-                // Bluetooth is off, ask user to turn it on
-                enableBluetoothContract.launch(enableBluetoothIntent)
-                viewModel.onOrderEvent(OrderEvent.PrintDeliveryReport)
-            }
-        } else {
-            bluetoothPermissions.launchMultiplePermissionRequest()
-        }
-    }
-
     val printOrder: (Int) -> Unit = {
         if (bluetoothPermissions.allPermissionsGranted) {
             if (bluetoothAdapter?.isEnabled == true) {
@@ -194,6 +179,21 @@ fun OrderScreen(
 
     val selectedDate = viewModel.selectedDate.collectAsStateWithLifecycle().value
 
+    val printDeliveryReport: () -> Unit = {
+        if (bluetoothPermissions.allPermissionsGranted) {
+            if (bluetoothAdapter?.isEnabled == true) {
+                // Bluetooth is on print the receipt
+                printViewModel.onPrintEvent(PrintEvent.PrintDeliveryReport(selectedDate))
+            } else {
+                // Bluetooth is off, ask user to turn it on
+                enableBluetoothContract.launch(enableBluetoothIntent)
+                printViewModel.onPrintEvent(PrintEvent.PrintDeliveryReport(selectedDate))
+            }
+        } else {
+            bluetoothPermissions.launchMultiplePermissionRequest()
+        }
+    }
+
     var deletableOrder by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(key1 = true) {
@@ -227,7 +227,7 @@ fun OrderScreen(
             navController.navigateUp()
         }
     }
-    
+
     TrackScreenViewEvent(screenName = Screens.ORDER_SCREEN)
 
     StandardScaffoldNew(

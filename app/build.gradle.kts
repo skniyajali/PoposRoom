@@ -279,10 +279,6 @@ dependencies {
     //Google Play Play Integrity API
     implementation(libs.play.integrity)
 
-    // Google Play In-App Updates API
-    implementation(libs.play.app.update)
-    implementation(libs.play.app.update.ktx)
-
     // zxing QR code library
     implementation(libs.zxing.core)
 

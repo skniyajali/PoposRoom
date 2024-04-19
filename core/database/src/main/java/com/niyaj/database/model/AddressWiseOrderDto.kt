@@ -28,7 +28,6 @@ data class AddressWiseOrderDto(
     val orderPrice: OrderTotalPrice,
 )
 
-
 data class CustomerPhoneAndName(
     val customerPhone: String,
     val customerName: String? = null,

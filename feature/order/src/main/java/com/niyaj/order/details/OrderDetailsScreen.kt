@@ -43,6 +43,8 @@ import com.niyaj.order.components.CartItemDetails
 import com.niyaj.order.components.CartOrderDetails
 import com.niyaj.order.components.CustomerDetails
 import com.niyaj.order.components.ShareableOrderDetails
+import com.niyaj.print.OrderPrintViewModel
+import com.niyaj.print.PrintEvent
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.StandardScaffoldNew
@@ -64,6 +66,7 @@ fun OrderDetailsScreen(
     onClickCustomer: (customerId: Int) -> Unit,
     onClickAddress: (addressId: Int) -> Unit,
     viewModel: OrderDetailsViewModel = hiltViewModel(),
+    printViewModel: OrderPrintViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -99,9 +102,6 @@ fun OrderDetailsScreen(
         ActivityResultContracts.StartActivityForResult()
     ) {}
 
-    // This intent will open the enable bluetooth dialog
-    val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-
     val bluetoothManager = remember {
         context.getSystemService(BluetoothManager::class.java)
     }
@@ -114,11 +114,14 @@ fun OrderDetailsScreen(
         if (bluetoothPermissions.allPermissionsGranted) {
             if (bluetoothAdapter?.isEnabled == true) {
                 // Bluetooth is on print the receipt
-//                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
+                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
             } else {
+                // This intent will open the enable bluetooth dialog
+                val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+
                 // Bluetooth is off, ask user to turn it on
                 enableBluetoothContract.launch(enableBluetoothIntent)
-//                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
+                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
             }
         } else {
             bluetoothPermissions.launchMultiplePermissionRequest()
@@ -140,7 +143,7 @@ fun OrderDetailsScreen(
     var cartExpended by remember {
         mutableStateOf(true)
     }
-    
+
     TrackScreenViewEvent(screenName = Screens.ORDER_DETAILS_SCREEN)
 
     StandardScaffoldNew(
@@ -192,7 +195,10 @@ fun OrderDetailsScreen(
                 }
 
                 is UiState.Success -> {
-                    TrackScrollJank(scrollableState = lazyListState, stateName = "Order Details::List")
+                    TrackScrollJank(
+                        scrollableState = lazyListState,
+                        stateName = "Order Details::List"
+                    )
 
                     val orderDetails = newState.data
 

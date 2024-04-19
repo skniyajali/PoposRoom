@@ -15,6 +15,8 @@ android {
 }
 
 dependencies {
+    api(project(":feature:printer"))
+
     implementation(libs.pos.printer)
 
     //RaamCosta Library

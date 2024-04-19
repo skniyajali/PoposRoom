@@ -10,8 +10,8 @@ import com.niyaj.common.utils.getStartTime
 import com.niyaj.common.utils.toBarDate
 import com.niyaj.common.utils.toFormattedDate
 import com.niyaj.data.repository.ReportsRepository
-import com.niyaj.domain.utils.BluetoothPrinter
 import com.niyaj.feature.chart.horizontalbar.model.HorizontalBarData
+import com.niyaj.feature.printer.bluetooth_printer.BluetoothPrinter
 import com.niyaj.model.Reports
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,8 +30,8 @@ class ReportsViewModel @Inject constructor(
     bluetoothPrinter: BluetoothPrinter,
 ) : ViewModel() {
 
-    private val escposPrinter = bluetoothPrinter.printer.value
-    private val info = bluetoothPrinter.info.value
+    private val escposPrinter = bluetoothPrinter.printer
+    private val info = bluetoothPrinter.printerInfo.value
 
     private val _reportState = MutableStateFlow(ReportState())
     val reportState = _reportState.asStateFlow()
@@ -59,7 +59,6 @@ class ReportsViewModel @Inject constructor(
 
     private val date = _selectedDate.value.ifEmpty { getStartTime }
     private val endTime = calculateEndOfDayTime(date = date)
-
 
     init {
         generateReport()
@@ -251,7 +250,7 @@ class ReportsViewModel @Inject constructor(
             printItems += getPrintableAddressWiseReport()
             printItems += getPrintableCustomerWiseReport()
 
-            escposPrinter?.printFormattedText(printItems, info.printerWidth)
+            escposPrinter.printFormattedText(printItems, info.printerWidth)
         } catch (e: Exception) {
             Log.d("Printer", e.message ?: "Error printing")
         }
@@ -348,7 +347,7 @@ class ReportsViewModel @Inject constructor(
                     val totalQuantity = products.sumOf { it.quantity }.toString()
 
                     report += "[L]-------------------------------\n"
-                    report += "[L]${category} [R]${totalQuantity}\n"
+                    report += "[L]${category.categoryName} [R]${totalQuantity}\n"
                     report += "[L]-------------------------------\n"
 
                     products.forEachIndexed { _, product ->

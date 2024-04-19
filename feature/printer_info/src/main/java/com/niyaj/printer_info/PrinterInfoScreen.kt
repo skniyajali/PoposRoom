@@ -24,8 +24,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Notes
+import androidx.compose.material.icons.filled.BluetoothConnected
+import androidx.compose.material.icons.filled.BluetoothDisabled
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.InsertLink
+import androidx.compose.material.icons.filled.NearbyOff
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Card
@@ -43,21 +46,28 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_INFO_NOTES_FOUR
 import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_INFO_NOTES_ONE
 import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_INFO_NOTES_THREE
 import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_INFO_NOTES_TWO
-import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_NOT_AVAIlABLE
+import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_NOT_AVAILABLE
 import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_SCREEN_TITLE
 import com.niyaj.common.tags.PrinterInfoTestTags.UPDATE_PRINTER_INFO
+import com.niyaj.common.utils.Constants.BLUETOOTH_PER_DENY_TEXT
+import com.niyaj.common.utils.Constants.BLUETOOTH_PER_RATIONAL_TEXT
+import com.niyaj.common.utils.findActivity
+import com.niyaj.common.utils.openAppSettings
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toSafeString
 import com.niyaj.designsystem.theme.LightColor9
@@ -66,6 +76,7 @@ import com.niyaj.designsystem.theme.ProfilePictureSizeSmall
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.printer_info.destinations.UpdatePrinterInfoScreenDestination
+import com.niyaj.ui.components.CustomPermissionDialog
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
@@ -77,6 +88,8 @@ import com.niyaj.ui.components.TwoGridText
 import com.niyaj.ui.components.drawAnimatedBorder
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.navigate
@@ -95,8 +108,22 @@ fun PrinterInfoScreen(
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
+    val lazyListState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
 
-    val bluetoothPermissions =
+    val enableBluetoothContract = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {}
+
+    val bluetoothManager = remember {
+        context.getSystemService(BluetoothManager::class.java)
+    }
+
+    val bluetoothAdapter: BluetoothAdapter? = remember {
+        bluetoothManager.adapter
+    }
+
+    val bluetoothPermissionsState =
         // Checks if the device has Android 12 or above
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             rememberMultiplePermissionsState(
@@ -116,321 +143,363 @@ fun PrinterInfoScreen(
             )
         }
 
-    val enableBluetoothContract = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {}
+    HandleBluetoothPermissionState(
+        multiplePermissionsState = bluetoothPermissionsState,
+        onSuccessful = {
+            LaunchedEffect(key1 = bluetoothPermissionsState, key2 = true) {
+                if (bluetoothPermissionsState.allPermissionsGranted) {
+                    if (bluetoothAdapter?.isEnabled == false) {
+                        // This intent will open the enable bluetooth dialog
+                        val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
 
-    // This intent will open the enable bluetooth dialog
-    val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-
-    val bluetoothManager = remember {
-        context.getSystemService(BluetoothManager::class.java)
-    }
-
-    val bluetoothAdapter: BluetoothAdapter? = remember {
-        bluetoothManager.adapter
-    }
-
-    LaunchedEffect(key1 = Unit) {
-        if (bluetoothAdapter?.isEnabled == false) {
-            enableBluetoothContract.launch(enableBluetoothIntent)
-        }
-
-        if (!bluetoothPermissions.allPermissionsGranted) {
-            bluetoothPermissions.launchMultiplePermissionRequest()
-        }
-    }
-
-
-    val lazyListState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
-
-    val uiState = viewModel.info.collectAsStateWithLifecycle().value
-    val printers = viewModel.printers.collectAsStateWithLifecycle().value
-
-    resultRecipient.onNavResult { result ->
-        when (result) {
-            is NavResult.Canceled -> {}
-            is NavResult.Value -> {
-                scope.launch {
-                    snackbarHostState.showSnackbar(
-                        result.value
-                    )
+                        enableBluetoothContract.launch(enableBluetoothIntent)
+                    }
                 }
             }
-        }
-    }
 
-    StandardScaffold(
-        navController = navController,
-        snackbarHostState = snackbarHostState,
-        title = PRINTER_SCREEN_TITLE,
-        showBottomBar = false,
-        navActions = {
-            IconButton(
-                onClick = {
-                    navController.navigate(UpdatePrinterInfoScreenDestination())
+            val uiState = viewModel.info.collectAsStateWithLifecycle().value
+            val printers = viewModel.printers.collectAsStateWithLifecycle().value
+
+            resultRecipient.onNavResult { result ->
+                when (result) {
+                    is NavResult.Canceled -> {}
+                    is NavResult.Value -> {
+                        scope.launch {
+                            snackbarHostState.showSnackbar(result.value)
+                        }
+                    }
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Edit,
-                    contentDescription = "Edit Printer Information"
-                )
             }
-        },
-        floatingActionButton = {},
-        selectionCount = 0,
-    ) {
-        Crossfade(
-            targetState = uiState,
-            label = "Printer Information State"
-        ) { state ->
-            when (state) {
-                is UiState.Loading -> LoadingIndicator()
 
-                is UiState.Empty -> {
-                    ItemNotAvailable(
-                        text = PRINTER_NOT_AVAIlABLE,
-                        buttonText = UPDATE_PRINTER_INFO,
-                        icon = Icons.Default.Edit,
+            TrackScreenViewEvent(screenName = Screens.PRINTER_INFO_SCREEN)
+
+            StandardScaffold(
+                navController = navController,
+                snackbarHostState = snackbarHostState,
+                title = PRINTER_SCREEN_TITLE,
+                showBottomBar = false,
+                navActions = {
+                    IconButton(
                         onClick = {
-//                            navController.navigate(UpdatePrinterInfoDestination())
+                            navController.navigate(UpdatePrinterInfoScreenDestination())
                         }
-                    )
-                }
-
-                is UiState.Success -> {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(SpaceSmall),
-                        state = lazyListState,
-                        verticalArrangement = Arrangement.spacedBy(SpaceSmall)
                     ) {
-                        item("Notes") {
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalArrangement = Arrangement.spacedBy(SpaceSmall)
-                            ) {
-                                Spacer(modifier = Modifier.height(SpaceSmall))
+                        Icon(
+                            imageVector = Icons.Outlined.Edit,
+                            contentDescription = "Edit Printer Information"
+                        )
+                    }
+                },
+                floatingActionButton = {},
+                selectionCount = 0,
+            ) {
+                Crossfade(
+                    targetState = uiState,
+                    label = "Printer Information State"
+                ) { state ->
+                    when (state) {
+                        is UiState.Loading -> LoadingIndicator()
 
-                                InfoText(text = PRINTER_INFO_NOTES_ONE)
-
-                                InfoText(text = PRINTER_INFO_NOTES_TWO)
-
-                                InfoText(text = PRINTER_INFO_NOTES_THREE)
-
-                                InfoText(text = PRINTER_INFO_NOTES_FOUR)
-                            }
+                        is UiState.Empty -> {
+                            ItemNotAvailable(
+                                text = PRINTER_NOT_AVAILABLE,
+                                buttonText = UPDATE_PRINTER_INFO,
+                                icon = Icons.Default.Edit,
+                                onClick = {}
+                            )
                         }
 
-                        item("Printers") {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-                            ) {
-                                Text(
-                                    text = "Printers",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                )
+                        is UiState.Success -> {
+                            TrackScrollJank(
+                                scrollableState = lazyListState,
+                                stateName = "Printer Info::State"
+                            )
 
-                                if (printers.isNotEmpty()) {
-                                    printers.forEach { data ->
-                                        Card(
-                                            modifier = Modifier
-                                                .fillMaxWidth(),
-                                            shape = RoundedCornerShape(SpaceMini),
-//                                            backgroundColor = LightColor7
-                                        ) {
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(SpaceSmall),
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.SpaceBetween
-                                            ) {
-                                                Column(
-                                                    horizontalAlignment = Alignment.Start,
-                                                    verticalArrangement = Arrangement.spacedBy(
-                                                        SpaceMini
-                                                    )
-                                                ) {
-                                                    IconWithText(
-                                                        text = data.name,
-                                                        icon = Icons.AutoMirrored.Filled.Notes
-                                                    )
-
-                                                    IconWithText(
-                                                        text = data.address,
-                                                        icon = Icons.Default.InsertLink
-                                                    )
-                                                }
-
-                                                Row(
-                                                    verticalAlignment = Alignment.CenterVertically,
-                                                    horizontalArrangement = Arrangement.spacedBy(
-                                                        SpaceSmall
-                                                    )
-                                                ) {
-                                                    StandardOutlinedChip(
-                                                        text = "Test Print",
-                                                        onClick = viewModel::testPrint
-                                                    )
-
-                                                    StandardChip(
-                                                        text = if (data.connected) "Connected" else "Connect",
-//                                                        icon = if (!data.connected) Icons.Default.BluetoothConnected else Icons.Default.BluetoothDisabled,
-                                                        isPrimary = data.connected,
-                                                        isClickable = !data.connected,
-                                                        onClick = {
-                                                            viewModel.connectPrinter(data.address)
-                                                        }
-                                                    )
-                                                }
-
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    Text(
-                                        text = "Bluetooth printer is not available on this device",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.error,
-                                    )
-                                }
-                            }
-                        }
-
-                        item("Printer Information") {
-                            ElevatedCard(
+                            LazyColumn(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = SpaceSmall),
-                                shape = RoundedCornerShape(SpaceSmall),
-//                                backgroundColor = LightColor7
+                                    .padding(SpaceSmall),
+                                state = lazyListState,
+                                verticalArrangement = Arrangement.spacedBy(SpaceSmall)
                             ) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(SpaceSmall),
-                                    verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Spacer(modifier = Modifier.height(SpaceSmall))
-
-                                    Box(
-                                        modifier = Modifier
-                                            .size(ProfilePictureSizeMedium)
-                                            .background(LightColor9, CircleShape)
-                                            .clip(CircleShape)
-                                            .drawAnimatedBorder(
-                                                1.dp,
-                                                CircleShape,
-                                                durationMillis = 2000
-                                            ),
-                                        contentAlignment = Alignment.Center
+                                item("Notes") {
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalArrangement = Arrangement.spacedBy(SpaceSmall)
                                     ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Print,
-                                            contentDescription = "Printer Info",
-                                            tint = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier
-                                                .size(ProfilePictureSizeSmall)
-                                                .align(Alignment.Center)
-                                        )
+                                        Spacer(modifier = Modifier.height(SpaceSmall))
+
+                                        InfoText(text = PRINTER_INFO_NOTES_ONE)
+
+                                        InfoText(text = PRINTER_INFO_NOTES_TWO)
+
+                                        InfoText(text = PRINTER_INFO_NOTES_THREE)
+
+                                        InfoText(text = PRINTER_INFO_NOTES_FOUR)
                                     }
+                                }
 
-                                    Text(
-                                        text = "Printer Information",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.SemiBold,
-                                    )
+                                item("Printers") {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+                                    ) {
+                                        Text(
+                                            text = "Printers",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.SemiBold,
+                                        )
 
-                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                                        if (printers.isNotEmpty()) {
+                                            printers.forEach { data ->
+                                                Card(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth(),
+                                                    shape = RoundedCornerShape(SpaceMini),
+//                                            backgroundColor = LightColor7
+                                                ) {
+                                                    Row(
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .padding(SpaceSmall),
+                                                        verticalAlignment = Alignment.CenterVertically,
+                                                        horizontalArrangement = Arrangement.SpaceBetween
+                                                    ) {
+                                                        Column(
+                                                            horizontalAlignment = Alignment.Start,
+                                                            verticalArrangement = Arrangement.spacedBy(
+                                                                SpaceMini
+                                                            )
+                                                        ) {
+                                                            IconWithText(
+                                                                text = data.name,
+                                                                icon = Icons.AutoMirrored.Filled.Notes
+                                                            )
 
-                                    TwoGridText(
-                                        textOne = "Printer DPI",
-                                        textTwo = state.data.printerDpi.toString()
-                                    )
+                                                            IconWithText(
+                                                                text = data.address,
+                                                                icon = Icons.Default.InsertLink
+                                                            )
+                                                        }
 
-                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                                                        Row(
+                                                            verticalAlignment = Alignment.CenterVertically,
+                                                            horizontalArrangement = Arrangement.spacedBy(
+                                                                SpaceSmall
+                                                            )
+                                                        ) {
+                                                            StandardOutlinedChip(
+                                                                text = "Test Print",
+                                                                onClick = viewModel::printTestData
+                                                            )
 
-                                    TwoGridText(
-                                        textOne = "Printer Width",
-                                        textTwo = "${state.data.printerWidth} mm"
-                                    )
+                                                            StandardChip(
+                                                                text = if (data.connected) "Connected" else "Connect",
+                                                                icon = if (data.connected) Icons.Default.BluetoothConnected else Icons.Default.BluetoothDisabled,
+                                                                isPrimary = data.connected,
+                                                                isClickable = !data.connected,
+                                                                onClick = {
+                                                                    viewModel.connectBluetoothPrinter(
+                                                                        data.address
+                                                                    )
+                                                                }
+                                                            )
+                                                        }
 
-                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            Text(
+                                                text = "Bluetooth printer is not available on this device",
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = MaterialTheme.colorScheme.error,
+                                            )
+                                        }
+                                    }
+                                }
 
-                                    TwoGridText(
-                                        textOne = "Printer NBR Lines",
-                                        textTwo = state.data.printerNbrLines.toString()
-                                    )
+                                item("Printer Information") {
+                                    ElevatedCard(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = SpaceSmall),
+                                        shape = RoundedCornerShape(SpaceSmall),
+                                    ) {
+                                        Column(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(SpaceSmall),
+                                            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Spacer(modifier = Modifier.height(SpaceSmall))
 
-                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(ProfilePictureSizeMedium)
+                                                    .background(LightColor9, CircleShape)
+                                                    .clip(CircleShape)
+                                                    .drawAnimatedBorder(
+                                                        1.dp,
+                                                        CircleShape,
+                                                        durationMillis = 2000
+                                                    ),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Print,
+                                                    contentDescription = "Printer Info",
+                                                    tint = MaterialTheme.colorScheme.primary,
+                                                    modifier = Modifier
+                                                        .size(ProfilePictureSizeSmall)
+                                                        .align(Alignment.Center)
+                                                )
+                                            }
 
-                                    TwoGridText(
-                                        textOne = "Product Name Length",
-                                        textTwo = state.data.productNameLength.toString()
-                                    )
+                                            Text(
+                                                text = "Printer Information",
+                                                style = MaterialTheme.typography.titleMedium,
+                                                fontWeight = FontWeight.SemiBold,
+                                            )
 
-                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
-                                    TwoGridText(
-                                        textOne = "Product Report Limit",
-                                        textTwo = state.data.productWiseReportLimit.toString()
-                                    )
+                                            TwoGridText(
+                                                textOne = "Printer DPI",
+                                                textTwo = state.data.printerDpi.toString()
+                                            )
 
-                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
-                                    TwoGridText(
-                                        textOne = "Address Report Limit",
-                                        textTwo = state.data.addressWiseReportLimit.toString()
-                                    )
+                                            TwoGridText(
+                                                textOne = "Printer Width",
+                                                textTwo = "${state.data.printerWidth} mm"
+                                            )
 
-                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
-                                    TwoGridText(
-                                        textOne = "Customer Report Limit",
-                                        textTwo = state.data.customerWiseReportLimit.toString()
-                                    )
+                                            TwoGridText(
+                                                textOne = "Printer NBR Lines",
+                                                textTwo = state.data.printerNbrLines.toString()
+                                            )
 
-                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
-                                    TwoGridText(
-                                        textOne = "Print QR Code",
-                                        textTwo = state.data.printQRCode.toSafeString
-                                    )
+                                            TwoGridText(
+                                                textOne = "Product Name Length",
+                                                textTwo = state.data.productNameLength.toString()
+                                            )
 
-                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
-                                    TwoGridText(
-                                        textOne = "Print Restaurant Logo",
-                                        textTwo = state.data.printResLogo.toSafeString
-                                    )
+                                            TwoGridText(
+                                                textOne = "Product Report Limit",
+                                                textTwo = state.data.productWiseReportLimit.toString()
+                                            )
 
-                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
-                                    TwoGridText(
-                                        textOne = "Print Welcome Text",
-                                        textTwo = state.data.printWelcomeText.toSafeString
-                                    )
+                                            TwoGridText(
+                                                textOne = "Address Report Limit",
+                                                textTwo = state.data.addressWiseReportLimit.toString()
+                                            )
 
-                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
-                                    TwoGridText(
-                                        textOne = "Last Updated",
-                                        textTwo = (state.data.updatedAt
-                                            ?: state.data.createdAt).toPrettyDate()
-                                    )
+                                            TwoGridText(
+                                                textOne = "Customer Report Limit",
+                                                textTwo = state.data.customerWiseReportLimit.toString()
+                                            )
+
+                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+                                            TwoGridText(
+                                                textOne = "Print QR Code",
+                                                textTwo = state.data.printQRCode.toSafeString
+                                            )
+
+                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+                                            TwoGridText(
+                                                textOne = "Print Restaurant Logo",
+                                                textTwo = state.data.printResLogo.toSafeString
+                                            )
+
+                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+                                            TwoGridText(
+                                                textOne = "Print Welcome Text",
+                                                textTwo = state.data.printWelcomeText.toSafeString
+                                            )
+
+                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+                                            TwoGridText(
+                                                textOne = "Last Updated",
+                                                textTwo = (state.data.updatedAt
+                                                    ?: state.data.createdAt).toPrettyDate()
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+        },
+        onError = { shouldShowRationale ->
+            BluetoothPermissionDialog(
+                onClickRequestPermission = {
+                    bluetoothPermissionsState.launchMultiplePermissionRequest()
+                },
+                onDismissRequest = {
+                    navController.navigateUp()
+                },
+                shouldShowRationale = shouldShowRationale,
+                onClickOpenSettings = {
+                    context.findActivity().openAppSettings()
+                }
+            )
         }
+    )
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun HandleBluetoothPermissionState(
+    multiplePermissionsState: MultiplePermissionsState,
+    onSuccessful: @Composable () -> Unit,
+    onError: @Composable (Boolean) -> Unit,
+) {
+    if (multiplePermissionsState.allPermissionsGranted) {
+        onSuccessful.invoke()
+    } else {
+        onError.invoke(multiplePermissionsState.shouldShowRationale)
     }
+}
+
+@Composable
+private fun BluetoothPermissionDialog(
+    modifier: Modifier = Modifier,
+    shouldShowRationale: Boolean,
+    onClickRequestPermission: () -> Unit,
+    onClickOpenSettings: () -> Unit,
+    onDismissRequest: () -> Unit,
+) {
+    val text = if (shouldShowRationale) BLUETOOTH_PER_RATIONAL_TEXT else BLUETOOTH_PER_DENY_TEXT
+
+    CustomPermissionDialog(
+        modifier = modifier,
+        title = "Nearby Devices",
+        text = text,
+        icon = Icons.Default.NearbyOff,
+        image = ImageVector.vectorResource(com.niyaj.core.ui.R.drawable.bluetooth_icon),
+        shouldShowRationale = shouldShowRationale,
+        onClickRequestPermission = onClickRequestPermission,
+        onClickOpenSettings = onClickOpenSettings,
+        onDismissRequest = onDismissRequest
+    )
 }

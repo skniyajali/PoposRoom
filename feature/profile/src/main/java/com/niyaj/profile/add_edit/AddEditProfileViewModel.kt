@@ -190,5 +190,4 @@ class AddEditProfileViewModel @Inject constructor(
             }
         }
     }
-
 }

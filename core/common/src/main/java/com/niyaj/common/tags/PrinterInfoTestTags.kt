@@ -3,7 +3,7 @@ package com.niyaj.common.tags
 object PrinterInfoTestTags {
 
     const val PRINTER_SCREEN_TITLE = "Printer Information"
-    const val PRINTER_NOT_AVAIlABLE = "Printer Info Not Available"
+    const val PRINTER_NOT_AVAILABLE = "Printer Info Not Available"
 
     const val UPDATE_PRINTER_BUTTON = "Update Printer Button"
     const val UPDATE_PRINTER_INFO = "Update Printer Info"

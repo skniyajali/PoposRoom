@@ -1,4 +1,4 @@
-package com.niyaj.domain.utils
+package com.niyaj.feature.printer.bluetooth_printer
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -11,64 +11,48 @@ import com.niyaj.data.repository.PrinterRepository
 import com.niyaj.model.BluetoothDeviceState
 import com.niyaj.model.Printer
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * BluetoothPrinter is a class that provides functionality for connecting to and interacting with a Bluetooth printer.
- * It allows retrieving available printers, connecting to specific printers, and printing data.
- *
- * @param printerRepository The repository for retrieving printer information.
- */
 class BluetoothPrinter @Inject constructor(
-    private val printerRepository: PrinterRepository,
+    private val repository: PrinterRepository,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
 ) {
-    private val _info = MutableStateFlow(Printer.defaultPrinterInfo)
-    val info = _info.asStateFlow()
-
-    private val _printer = MutableStateFlow(defaultPrinter())
-    val printer = _printer.asStateFlow()
-
-    private val _bluetoothConnection = MutableStateFlow<BluetoothConnection?>(null)
-
-    private val bluetoothConnection: BluetoothConnection?
-        get() = _bluetoothConnection.value
+    private val _printerInfo = MutableStateFlow(Printer.defaultPrinterInfo)
+    val printerInfo = _printerInfo.asStateFlow()
 
     private val connections = BluetoothPrintersConnections()
 
-    init {
-        runBlocking(ioDispatcher) {
-            getPrinterInfo()
-        }
+    private var bluetoothConnection: BluetoothConnection? = null
 
+    var printer: EscPosPrinter = defaultPrinter()
+
+    init {
+        fetchPrinterInfo()
         connectBluetoothPrinter()
     }
 
     @SuppressLint("MissingPermission")
-    fun getBluetoothPrinters(): Flow<List<BluetoothDeviceState>> {
+    fun getBluetoothPrintersAsFlow(): Flow<List<BluetoothDeviceState>> {
         return channelFlow {
             try {
-                val list = connections.list?.map {
+                val data = connections.list?.map {
                     BluetoothDeviceState(
                         name = it.device.name,
                         address = it.device.address,
                         bondState = it.device.bondState,
                         type = it.device.type,
-                        connected = it.isConnected,
+                        connected = it.isConnected
                     )
                 }
 
-                list?.let {
-                    send(it)
-                }
+                data?.let { send(it) }
             } catch (e: Exception) {
                 send(emptyList())
             }
@@ -80,15 +64,15 @@ class BluetoothPrinter @Inject constructor(
             val device = connections.list?.find { it.device.address == address }
             device?.connect()
 
-            _bluetoothConnection.value = device
-            _printer.value = EscPosPrinter(
+            bluetoothConnection = device
+            printer = EscPosPrinter(
                 device,
-                _info.value.printerDpi,
-                _info.value.printerWidth,
-                _info.value.printerNbrLines
+                _printerInfo.value.printerDpi,
+                _printerInfo.value.printerWidth,
+                _printerInfo.value.printerNbrLines
             )
         } catch (e: Exception) {
-            Log.e("Bluetooth", "Failed to connect")
+            Log.e("Bluetooth", "Failed to connect", e)
         }
     }
 
@@ -97,27 +81,32 @@ class BluetoothPrinter @Inject constructor(
             val data = BluetoothPrintersConnections.selectFirstPaired()
             data?.connect()
 
-            _bluetoothConnection.value = data
-            _printer.value = EscPosPrinter(
+            bluetoothConnection = data
+            printer = EscPosPrinter(
                 data,
-                _info.value.printerDpi,
-                _info.value.printerWidth,
-                _info.value.printerNbrLines
+                _printerInfo.value.printerDpi,
+                _printerInfo.value.printerWidth,
+                _printerInfo.value.printerNbrLines
             )
         } catch (e: Exception) {
-            Log.e("Bluetooth", "Failed to connect")
+            Log.e("Bluetooth", "Failed to connect", e)
         }
     }
 
     fun printTestData() {
-        _printer.value?.printFormattedText("[C]<b><font size='big'>Testing</font></b> \n")
+        try {
+            printer.printFormattedText("[C]<b><font size='big'>Testing</font></b> \n")
+        } catch (e: Exception) {
+            Log.e("Bluetooth", "Failed to print", e)
+        }
     }
 
-    private suspend fun getPrinterInfo() {
-        withContext(ioDispatcher) {
-            printerRepository.getPrinter().collectLatest {
-                _info.value = it
-            }
+    private fun fetchPrinterInfo() {
+        CoroutineScope(ioDispatcher).launch {
+            repository.getPrinter(Printer.defaultPrinterInfo.printerId)
+                .collect { printer ->
+                    _printerInfo.value = printer
+                }
         }
     }
 

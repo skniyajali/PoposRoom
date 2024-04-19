@@ -15,6 +15,8 @@ android {
 
 dependencies {
     implementation(project(":feature:chart"))
+    api(project(":feature:printer"))
+
     implementation(libs.accompanist.permissions)
     implementation(libs.dialog.core)
     implementation(libs.dialog.datetime)

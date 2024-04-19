@@ -5,14 +5,15 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import com.niyaj.common.utils.Constants.JSON_FILE_EXTENSION
-import com.niyaj.common.utils.Constants.JSON_FILE_TYPE
-import com.niyaj.common.utils.Constants.SAVEABLE_FILE_NAME
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
 import kotlinx.coroutines.delay
 import java.io.FileNotFoundException
 import java.io.IOException
+
+private const val JSON_FILE_TYPE = "application/json"
+private const val JSON_FILE_EXTENSION = ".json"
+private const val SAVABLE_FILE_NAME = "popos"
 
 object ImportExport {
 
@@ -35,7 +36,7 @@ object ImportExport {
     }
 
 
-    fun createFile(context: Context, fileName: String = SAVEABLE_FILE_NAME): Intent {
+    fun createFile(context: Context, fileName: String = SAVABLE_FILE_NAME): Intent {
         val intent = Intent(
             Intent.ACTION_CREATE_DOCUMENT,
             getUri(context)
