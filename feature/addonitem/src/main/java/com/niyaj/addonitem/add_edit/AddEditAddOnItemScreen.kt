@@ -1,12 +1,14 @@
 package com.niyaj.addonitem.add_edit
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Category
@@ -36,20 +38,18 @@ import com.niyaj.common.tags.AddOnTestTags.EDIT_ADD_ON_ITEM
 import com.niyaj.common.utils.safeString
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.ui.components.StandardBottomSheet
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
+import com.niyaj.ui.components.StandardScaffoldRoute
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
+import com.niyaj.ui.utils.currentRoute
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
-import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 
-@Destination(
-    route = Screens.ADD_EDIT_ADD_ON_ITEM_SCREEN,
-    style = DestinationStyleBottomSheet::class
-)
+@Destination(route = Screens.ADD_EDIT_ADD_ON_ITEM_SCREEN)
 @Composable
 fun AddEditAddOnItemScreen(
     itemId: Int = 0,
@@ -57,6 +57,8 @@ fun AddEditAddOnItemScreen(
     viewModel: AddEditAddOnItemViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>
 ) {
+    val lazyListState = rememberLazyListState()
+
     val nameError = viewModel.nameError.collectAsStateWithLifecycle().value
     val priceError = viewModel.priceError.collectAsStateWithLifecycle().value
 
@@ -82,70 +84,19 @@ fun AddEditAddOnItemScreen(
 
     TrackScreenViewEvent(screenName = Screens.ADD_EDIT_ADD_ON_ITEM_SCREEN)
 
-    StandardBottomSheet(
+    StandardScaffoldRoute(
         modifier = Modifier,
+        currentRoute = navController.currentRoute(),
         title = title,
-        onBackClick = {
-            navController.navigateUp()
-        },
-    ) {
-        Column(
-            modifier = Modifier
-                .testTag(ADD_EDIT_ADDON_SCREEN)
-                .fillMaxWidth()
-                .padding(SpaceMedium),
-            verticalArrangement = Arrangement.spacedBy(SpaceSmall, Alignment.CenterVertically),
-        ) {
-            StandardOutlinedTextField(
-                value = viewModel.addEditState.itemName,
-                label = ADDON_NAME_FIELD,
-                leadingIcon = Icons.Default.Category,
-                isError = nameError != null,
-                errorText = nameError,
-                errorTextTag = ADDON_NAME_ERROR_TAG,
-                onValueChange = {
-                    viewModel.onEvent(AddEditAddOnItemEvent.ItemNameChanged(it))
-                }
-            )
-
-            StandardOutlinedTextField(
-                value = viewModel.addEditState.itemPrice.safeString,
-                label = ADDON_PRICE_FIELD,
-                leadingIcon = Icons.Default.CurrencyRupee,
-                isError = priceError != null,
-                errorText = priceError,
-                keyboardType = KeyboardType.Number,
-                errorTextTag = ADDON_PRICE_ERROR_TAG,
-                onValueChange = {
-                    viewModel.onEvent(AddEditAddOnItemEvent.ItemPriceChanged(it))
-                }
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Checkbox(
-                    modifier = Modifier.testTag(ADDON_APPLIED_SWITCH),
-                    checked = viewModel.addEditState.isApplicable,
-                    onCheckedChange = {
-                        viewModel.onEvent(AddEditAddOnItemEvent.ItemApplicableChanged)
-                    }
-                )
-                Spacer(modifier = Modifier.width(SpaceSmall))
-                Text(
-                    text = if (viewModel.addEditState.isApplicable)
-                        "Marked as applied"
-                    else
-                        "Marked as not applied",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-
+        showBackButton = true,
+        onBackClick = navController::navigateUp,
+        onNavigateToDestination = navController::navigate,
+        showBottomBar = true,
+        bottomBar = {
             StandardButton(
                 modifier = Modifier
-                    .testTag(AddOnTestTags.ADD_EDIT_ADDON_BUTTON),
+                    .testTag(AddOnTestTags.ADD_EDIT_ADDON_BUTTON)
+                    .padding(SpaceMedium),
                 text = title,
                 enabled = enableBtn,
                 icon = if (itemId == 0) Icons.Default.Add else Icons.Default.Edit,
@@ -153,6 +104,70 @@ fun AddEditAddOnItemScreen(
                     viewModel.onEvent(AddEditAddOnItemEvent.CreateUpdateAddOnItem(itemId))
                 }
             )
+        }
+    ) {
+        TrackScrollJank(scrollableState = lazyListState, stateName = "Create New Addon::Fields")
+        
+        LazyColumn(
+            modifier = Modifier
+                .testTag(ADD_EDIT_ADDON_SCREEN)
+                .fillMaxSize()
+                .padding(SpaceMedium),
+            state = lazyListState,
+            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+        ) {
+            item(ADDON_NAME_FIELD) {
+                StandardOutlinedTextField(
+                    value = viewModel.addEditState.itemName,
+                    label = ADDON_NAME_FIELD,
+                    leadingIcon = Icons.Default.Category,
+                    isError = nameError != null,
+                    errorText = nameError,
+                    errorTextTag = ADDON_NAME_ERROR_TAG,
+                    onValueChange = {
+                        viewModel.onEvent(AddEditAddOnItemEvent.ItemNameChanged(it))
+                    }
+                )
+            }
+
+            item(ADDON_PRICE_FIELD) {
+                StandardOutlinedTextField(
+                    value = viewModel.addEditState.itemPrice.safeString,
+                    label = ADDON_PRICE_FIELD,
+                    leadingIcon = Icons.Default.CurrencyRupee,
+                    isError = priceError != null,
+                    errorText = priceError,
+                    keyboardType = KeyboardType.Number,
+                    errorTextTag = ADDON_PRICE_ERROR_TAG,
+                    onValueChange = {
+                        viewModel.onEvent(AddEditAddOnItemEvent.ItemPriceChanged(it))
+                    }
+                )
+            }
+
+            item(ADDON_APPLIED_SWITCH) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Checkbox(
+                        modifier = Modifier.testTag(ADDON_APPLIED_SWITCH),
+                        checked = viewModel.addEditState.isApplicable,
+                        onCheckedChange = {
+                            viewModel.onEvent(AddEditAddOnItemEvent.ItemApplicableChanged)
+                        }
+                    )
+                    Spacer(modifier = Modifier.width(SpaceSmall))
+                    Text(
+                        text = if (viewModel.addEditState.isApplicable)
+                            "Marked as applied"
+                        else
+                            "Marked as not applied",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            }
         }
     }
 }

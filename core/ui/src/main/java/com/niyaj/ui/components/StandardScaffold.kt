@@ -399,7 +399,7 @@ fun StandardScaffoldNew(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StandardScaffoldNew(
+fun StandardScaffoldRoute(
     currentRoute: String,
     modifier: Modifier = Modifier,
     title: String,
@@ -454,7 +454,7 @@ fun StandardScaffoldNew(
                 onNavigateToScreen = onNavigateToDestination
             )
         },
-        gesturesEnabled = true
+        gesturesEnabled = false
     ) {
         Scaffold(
             topBar = {

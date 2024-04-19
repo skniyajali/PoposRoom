@@ -51,7 +51,7 @@ import com.niyaj.feature.reports.components.TotalReports
 import com.niyaj.feature.reports.destinations.ViewLastSevenDaysReportsDestination
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardOutlinedAssistChip
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRoute
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -179,7 +179,7 @@ fun ReportScreen(
 
     TrackScreenViewEvent(screenName = Screens.REPORT_SCREEN)
 
-    StandardScaffoldNew(
+    StandardScaffoldRoute(
         currentRoute = currentRoute,
         showBottomBar = lazyListState.isScrollingUp(),
         showBackButton = true,
@@ -220,10 +220,8 @@ fun ReportScreen(
                 }
             )
         },
-        onBackClick = { navController.navigateUp() },
-        onNavigateToDestination = {
-            navController.navigate(it)
-        }
+        onBackClick = navController::navigateUp,
+        onNavigateToDestination = navController::navigate,
     ) {
         TrackScrollJank(scrollableState = lazyListState, stateName = "Reports::List")
 
