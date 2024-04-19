@@ -28,7 +28,6 @@ import com.niyaj.model.SELECTED_ID
 import com.niyaj.model.searchOrder
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
@@ -42,7 +41,6 @@ class OrderRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher,
 ) : OrderRepository {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getAllOrders(date: String, searchText: String): Flow<List<Order>> {
         return withContext(ioDispatcher) {
             val startDate = if (date.isNotEmpty()) {
@@ -91,7 +89,6 @@ class OrderRepositoryImpl(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getOrderDetails(orderId: Int): Flow<OrderDetails> {
         return withContext(ioDispatcher) {
             orderDao.getOrderDetails(orderId).mapLatest {

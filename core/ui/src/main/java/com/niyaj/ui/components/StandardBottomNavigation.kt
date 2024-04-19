@@ -12,20 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Assessment
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Inventory2
-import androidx.compose.material.icons.outlined.ShoppingCart
-import androidx.compose.material.icons.rounded.Assessment
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Inventory2
-import androidx.compose.material.icons.rounded.ShoppingCart
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -59,112 +47,6 @@ internal data class NavigationItem(
     val unselectedIcon: Int,
     val onClick: () -> Unit,
 )
-
-@Composable
-private fun BottomNavigationBar(
-    navController: NavController,
-) {
-    val currentRoute = navController.currentBackStackEntry?.destination?.route
-
-    NavigationBar {
-        NavigationBarItem(
-            selected = currentRoute == Screens.HOME_SCREEN,
-            label = {
-                val fontWeight = if (currentRoute == Screens.HOME_SCREEN)
-                    FontWeight.SemiBold else FontWeight.Normal
-
-                Text(
-                    text = "Home",
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = fontWeight,
-                )
-            },
-            onClick = {
-                navController.navigate(Screens.HOME_SCREEN)
-            },
-            icon = {
-                val icon = if (currentRoute == Screens.HOME_SCREEN) {
-                    Icons.Rounded.Home
-                } else Icons.Outlined.Home
-
-                Icon(imageVector = icon, contentDescription = "Home")
-            }
-        )
-
-        NavigationBarItem(
-            selected = currentRoute == Screens.CART_SCREEN,
-            label = {
-                val fontWeight = if (currentRoute == Screens.CART_SCREEN)
-                    FontWeight.SemiBold else FontWeight.Normal
-
-                Text(
-                    text = "Cart",
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = fontWeight,
-                )
-            },
-            onClick = {
-                navController.navigate(Screens.CART_SCREEN)
-            },
-            icon = {
-                val icon = if (currentRoute == Screens.CART_SCREEN) {
-                    Icons.Rounded.ShoppingCart
-                } else Icons.Outlined.ShoppingCart
-
-                Icon(imageVector = icon, contentDescription = "Cart")
-            }
-        )
-
-        NavigationBarItem(
-            selected = currentRoute == Screens.ORDER_SCREEN,
-            label = {
-                val fontWeight = if (currentRoute == Screens.ORDER_SCREEN)
-                    FontWeight.SemiBold else FontWeight.Normal
-
-                Text(
-                    text = "Orders",
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = fontWeight,
-                )
-            },
-            onClick = {
-                navController.navigate(Screens.ORDER_SCREEN)
-            },
-            icon = {
-                val icon = if (currentRoute == Screens.ORDER_SCREEN) {
-                    Icons.Rounded.Inventory2
-                } else Icons.Outlined.Inventory2
-
-                Icon(imageVector = icon, contentDescription = "Orders")
-            }
-        )
-
-        NavigationBarItem(
-            selected = currentRoute == Screens.REPORT_SCREEN,
-            label = {
-                val fontWeight = if (currentRoute == Screens.REPORT_SCREEN)
-                    FontWeight.SemiBold else FontWeight.Normal
-
-                Text(
-                    text = "Reports",
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = fontWeight,
-                )
-            },
-            onClick = {
-                navController.navigate(Screens.REPORT_SCREEN)
-            },
-            icon = {
-                val icon = if (currentRoute == Screens.ORDER_SCREEN) {
-                    Icons.Rounded.Assessment
-                } else Icons.Outlined.Assessment
-
-                Icon(imageVector = icon, contentDescription = "Reports")
-            }
-        )
-    }
-}
-
 
 @Composable
 internal fun AnimatedBottomNavigationBar(

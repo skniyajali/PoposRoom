@@ -96,9 +96,11 @@ interface MarketItemDao {
     @Upsert(entity = MeasureUnitEntity::class)
     suspend fun upsertMeasureUnit(measureUnit: MeasureUnitEntity): Long
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM measure_unit WHERE unitId = :unitId
-    """)
+    """
+    )
     fun getMeasureUnitById(unitId: Int): MeasureUnitEntity?
 
     @Query(
@@ -109,17 +111,17 @@ interface MarketItemDao {
     fun findMeasureUnitByIdOrName(unitId: Int, unitName: String): MeasureUnitEntity?
 
 
-    @Query("""
+    @Query(
+        """
         SELECT whitelistItems FROM market_list WHERE marketId = :marketId
-    """)
+    """
+    )
     suspend fun getWhitelistItems(marketId: Int): String
 
-    @Query("""
+    @Query(
+        """
         UPDATE market_list SET whitelistItems = :whitelistItems  WHERE marketId = :marketId
-    """)
+    """
+    )
     suspend fun updateWhiteListItems(marketId: Int, whitelistItems: String): Int
 }
-
-data class WhiteListItems(
-    val whitelistItems: List<Int>,
-)

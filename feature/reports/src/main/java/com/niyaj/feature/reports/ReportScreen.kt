@@ -176,7 +176,7 @@ fun ReportScreen(
         selectedBarData = ""
         selectedProductData = ""
     }
-    
+
     TrackScreenViewEvent(screenName = Screens.REPORT_SCREEN)
 
     StandardScaffoldNew(

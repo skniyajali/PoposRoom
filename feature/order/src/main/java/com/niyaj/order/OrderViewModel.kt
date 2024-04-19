@@ -85,10 +85,6 @@ class OrderViewModel @Inject constructor(
                 }
             }
 
-            is OrderEvent.PrintDeliveryReport -> {
-
-            }
-
             is OrderEvent.SelectDate -> {
                 viewModelScope.launch {
                     _selectedDate.value = event.date
@@ -113,7 +109,7 @@ class OrderViewModel @Inject constructor(
             orderRepository.getOrderDetails(orderId).collectLatest { data ->
                 if (data.cartOrder.orderId == 0) {
                     _orderDetails.update { UiState.Empty }
-                }else {
+                } else {
                     _orderDetails.update { UiState.Success(data) }
                 }
             }

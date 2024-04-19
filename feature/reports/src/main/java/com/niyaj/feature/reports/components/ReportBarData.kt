@@ -45,6 +45,7 @@ fun ReportBarData(
         modifier = Modifier
             .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(2.dp),
+        colors = CardDefaults.cardColors()
     ) {
         Crossfade(
             targetState = reportBarState,

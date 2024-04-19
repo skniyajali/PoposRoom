@@ -100,6 +100,8 @@ jvmTarget = "19"
 kotlin1821 = "1.8.21"
 androidx-test-ext-junit = "1.1.5"
 material = "1.6.5"
+kotlinVersion = "1.9.22"
+materialVersion = "1.11.0"
 
 [libraries]
 # ACRA Logger
@@ -301,6 +303,7 @@ realm-gradlePlugin = { group = "io.realm.kotlin", name = "gradle-plugin", versio
 detekt-gradlePlugin = { group = "io.gitlab.arturbosch.detekt", name = "detekt-gradle-plugin", version.ref = "detektVersion" }
 junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 material = { group = "androidx.compose.material", name = "material", version.ref = "material" }
+google-material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
 
 
 [plugins]
@@ -341,3 +344,4 @@ popos-android-lint = { id = "popos.android.lint", version = "unspecified" }
 popos-android-room = { id = "popos.android.room", version = "unspecified" }
 popos-android-test = { id = "popos.android.test", version = "unspecified" }
 popos-jvm-library = { id = "popos.jvm.library", version = "unspecified" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }

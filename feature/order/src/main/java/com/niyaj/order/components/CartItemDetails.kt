@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toRupee
-import com.niyaj.designsystem.theme.Pewter
+import com.niyaj.designsystem.theme.LightColor6
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
 import com.niyaj.model.CartProductItem
@@ -65,8 +65,8 @@ fun CartItemDetails(
                 onExpandChanged()
             },
         shape = RoundedCornerShape(4.dp),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = Pewter,
+        colors = CardDefaults.cardColors(
+            containerColor = LightColor6,
         )
     ){
         StandardExpandable(

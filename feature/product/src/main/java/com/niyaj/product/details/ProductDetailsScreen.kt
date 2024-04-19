@@ -199,17 +199,6 @@ fun ProductDetailsScreen(
             }
 
             item("OrderDetails") {
-//                ProductOrderDetails(
-//                    orderState = orderDetailsState,
-//                    pagerState = pagerState,
-//                    productPrice = productPrice,
-//                    onExpanded = {
-//                        orderDetailsExpanded = !orderDetailsExpanded
-//                    },
-//                    doesExpanded = orderDetailsExpanded,
-//                    onClickOrder = onClickOrder,
-//                )
-
                 ProductOrderDetails(
                     orderState = orderDetailsState,
                     pagerState = pagerState,

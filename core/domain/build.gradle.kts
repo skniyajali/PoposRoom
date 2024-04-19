@@ -16,7 +16,6 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.datetime)
-    implementation(libs.pos.printer)
 
     testImplementation(project(":core:testing"))
 }

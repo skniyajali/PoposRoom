@@ -19,6 +19,7 @@ import com.niyaj.cart.dine_out.DineOutScreen
 import com.niyaj.ui.components.StandardScaffoldWithBottomNavigation
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.currentRoute
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 
@@ -32,13 +33,13 @@ fun CartScreen(
     onClickOrderDetails: (Int) -> Unit,
     onNavigateToOrderScreen: () -> Unit,
 ) {
-    
+
     TrackScreenViewEvent(screenName = Screens.CART_SCREEN)
-    
-    val pagerState = rememberPagerState{ 2 }
+
+    val pagerState = rememberPagerState { 2 }
 
     StandardScaffoldWithBottomNavigation(
-        navController = navController,
+        currentRoute = navController.currentRoute(),
         title = "My Cart",
         navActions = {
             IconButton(
@@ -52,6 +53,8 @@ fun CartScreen(
         },
         bottomBar = {},
         showBackButton = true,
+        onBackClick = navController::navigateUp,
+        onNavigateToScreen = navController::navigate
     ) {
         val tabs = listOf(
             CartTabItem.DineOutItem {

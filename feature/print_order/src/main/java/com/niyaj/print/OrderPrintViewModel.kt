@@ -2,38 +2,30 @@ package com.niyaj.print
 
 import android.app.Application
 import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dantsu.escposprinter.EscPosPrinter
-import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections
 import com.dantsu.escposprinter.textparser.PrinterTextParserImg
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.utils.createDottedString
 import com.niyaj.common.utils.toFormattedDate
 import com.niyaj.common.utils.toFormattedTime
-import com.niyaj.common.utils.toRupee
 import com.niyaj.common.utils.toTime
-import com.niyaj.data.repository.ChargesRepository
-import com.niyaj.data.repository.OrderRepository
-import com.niyaj.data.repository.PrinterRepository
-import com.niyaj.data.repository.ProfileRepository
+import com.niyaj.data.repository.PrintRepository
+import com.niyaj.feature.printer.bluetooth_printer.BluetoothPrinter
 import com.niyaj.model.AddOnItem
 import com.niyaj.model.CartOrder
 import com.niyaj.model.CartProductItem
 import com.niyaj.model.Charges
+import com.niyaj.model.ChargesNameAndPrice
+import com.niyaj.model.DeliveryReport
 import com.niyaj.model.OrderPrice
 import com.niyaj.model.OrderType
-import com.niyaj.model.Printer
 import com.niyaj.model.Profile
 import com.niyaj.print.utils.FileExtension.getImageFromDeviceOrDefault
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -42,65 +34,29 @@ import javax.inject.Inject
 /**
  * A ViewModel that handles printing orders and delivery reports.
  *
- * @param orderUseCases The use cases for accessing order data.
- * @param chargesRepository The repository for accessing charges data.
- * @param repository The repository for accessing profile data.
- * @param printerRepository The repository for accessing printer information.
+ * @param printRepository The repository for accessing data.
  * @param application The application context.
  * @param ioDispatcher The coroutine dispatcher for IO operations.
  */
 @HiltViewModel
 class OrderPrintViewModel @Inject constructor(
-    private val orderUseCases: OrderRepository,
-    private val chargesRepository: ChargesRepository,
-    repository: ProfileRepository,
-    private val printerRepository: PrinterRepository,
+    private val printRepository: PrintRepository,
     private val application: Application,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
+    bluetoothPrinter: BluetoothPrinter,
 ) : ViewModel() {
 
-    /**
-     * The profile information.
-     */
-    private val resInfo = repository.getProfileInfo().flowOn(ioDispatcher).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = Profile.defaultProfileInfo
-    )
+    private val resInfo = printRepository.getProfileInfo(Profile.RESTAURANT_ID)
+        .flowOn(ioDispatcher).stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = Profile.defaultProfileInfo
+        )
 
-    /**
-     * The printer information.
-     */
-    private val info = printerRepository.getPrinter(Printer.defaultPrinterInfo.printerId).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = Printer.defaultPrinterInfo
-    )
+    private val printerInfo = bluetoothPrinter.printerInfo.value
+    private val printer = bluetoothPrinter.printer
 
-    /**
-     * The ESC/POS printer.
-     */
-    private var escposPrinter = mutableStateOf(defaultPrinter())
-
-    /**
-     * The list of charges.
-     */
-    private var chargesList = mutableStateListOf<Charges>()
-
-    /**
-     * Initializes the ViewModel and fetches all charges.
-     */
-    init {
-        connectBluetoothPrinter()
-        getAllCharges()
-    }
-
-    /**
-     * Handles a print event.
-     *
-     * @param event The print event.
-     */
     fun onPrintEvent(event: PrintEvent) {
         when (event) {
             is PrintEvent.PrintOrder -> {
@@ -121,11 +77,6 @@ class OrderPrintViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Prints multiple orders.
-     *
-     * @param cartOrders The list of order IDs.
-     */
     private fun printOrders(cartOrders: List<Int>) {
         try {
             if (cartOrders.isNotEmpty()) {
@@ -138,66 +89,61 @@ class OrderPrintViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Prints a single order.
-     *
-     * @param cartOrderId The order ID.
-     */
-    private fun printOrder(cartOrderId: Int) {
+    private fun printOrder(orderId: Int) {
         viewModelScope.launch(ioDispatcher) {
             var printItems = ""
 
-            orderUseCases.getOrderDetails(cartOrderId).collectLatest { itemDetails ->
-                printItems += printRestaurantDetails()
-                printItems += printOrderDetails(itemDetails.cartOrder)
-                printItems += printProductDetails(itemDetails.cartProducts.toList())
+            val orderDetails = printRepository.getOrderDetails(orderId)
 
-                if (itemDetails.addOnItems.isNotEmpty()) {
-                    printItems += printAddOnItems(itemDetails.addOnItems.toList())
-                }
+            printItems += printRestaurantDetails()
+            printItems += printOrderDetails(orderDetails.cartOrder)
+            printItems += printProductDetails(orderDetails.cartProducts.toList())
 
-                if (itemDetails.cartOrder.doesChargesIncluded && itemDetails.cartOrder.orderType != OrderType.DineIn) {
-                    printItems += printCharges()
-                }
+            if (orderDetails.addOnItems.isNotEmpty()) {
+                printItems += printAddOnItems(orderDetails.addOnItems.toList())
+            }
 
-                printItems += printSubTotalAndDiscount(itemDetails.orderPrice)
-                printItems += printTotalPrice(itemDetails.orderPrice.totalPrice)
-                printItems += printFooterInfo()
-                printItems += printQrCode()
+            if (orderDetails.cartOrder.doesChargesIncluded && orderDetails.cartOrder.orderType != OrderType.DineIn) {
+                val chargesList = printRepository.getCharges()
 
-                try {
-                    escposPrinter.value.printFormattedTextAndCut(
-                        printItems,
-                        info.value.printerWidth
-                    )
-                } catch (e: Exception) {
-                    Log.d("Printer", e.message ?: "Error printing order details")
-                }
+                printItems += printCharges(chargesList)
+            }
+
+            if (orderDetails.charges.isNotEmpty()) {
+                printItems += printAdditionalCharges(orderDetails.charges.toList())
+            }
+
+            printItems += printSubTotalAndDiscount(orderDetails.orderPrice)
+            printItems += printTotalPrice(orderDetails.orderPrice.totalPrice)
+            printItems += printFooterInfo()
+            printItems += printQrCode()
+
+            try {
+                printer.printFormattedText(printItems)
+            } catch (e: Exception) {
+                Log.d("Printer", e.message ?: "Error printing order details")
             }
         }
     }
 
-    /**
-     * Prints the restaurant details.
-     *
-     * @return The formatted restaurant details string
-     */
     private fun printRestaurantDetails(): String {
         var details = ""
 
-        viewModelScope.launch {
-            val logo = application.applicationContext.getImageFromDeviceOrDefault(
-                resInfo.value.printLogo,
-                ioDispatcher
-            )
+        val logo = application.getImageFromDeviceOrDefault(resInfo.value.printLogo)
 
-            logo?.let {
-                val imagePrint = PrinterTextParserImg.bitmapToHexadecimalString(escposPrinter.value, it)
+        logo?.let {
+            Log.d("logo", "Image found- ${it.byteCount}")
+            Log.d("logo", "Print Image- ${printerInfo.printResLogo}")
 
-                details = if (info.value.printResLogo) {
-                    "[C]<img>$imagePrint</img>\n\n"
-                } else " \n"
-            }
+
+            val imagePrint =
+                PrinterTextParserImg.bitmapToHexadecimalString(printer, it)
+
+            Log.d("logo", "Print Image String- $imagePrint")
+
+            details += if (printerInfo.printResLogo) {
+                "[C]<img>$imagePrint</img>\n\n"
+            } else " \n"
         }
 
         details += "[C]--------- ORDER BILL ---------\n\n"
@@ -236,9 +182,10 @@ class OrderPrintViewModel @Inject constructor(
 
 
         orderedProduct.forEach {
-            Log.d("product", "${it.productName} - ${info.value.productNameLength}")
+            Log.d("product", "${it.productName} - ${printerInfo.productNameLength}")
 
-            val productName = createDottedString(it.productName, info.value.productNameLength)
+            val productName =
+                createDottedString(it.productName, printerInfo.productNameLength)
 
             products += "[L]${productName}[R]${it.productQuantity}[R]${it.productPrice}\n"
         }
@@ -253,7 +200,7 @@ class OrderPrintViewModel @Inject constructor(
     }
 
     private fun printQrCode(): String {
-        return if (info.value.printQRCode) {
+        return if (printerInfo.printQRCode) {
             "[C]Pay by scanning this QR code\n\n" +
                     "[L]\n" +
                     "[C]<qrcode size ='40'>${resInfo.value.paymentQrCode}</qrcode>\n\n\n" +
@@ -263,7 +210,7 @@ class OrderPrintViewModel @Inject constructor(
     }
 
     private fun printFooterInfo(): String {
-        return if (info.value.printWelcomeText) {
+        return if (printerInfo.printWelcomeText) {
             "[C]Thank you for ordering!\n" +
                     "[C]For order and inquiry, Call.\n" +
                     "[C]${resInfo.value.primaryPhone} / ${resInfo.value.secondaryPhone}\n\n"
@@ -275,22 +222,44 @@ class OrderPrintViewModel @Inject constructor(
 
         if (addOnItemList.isNotEmpty()) {
             addOnItems += "[L]-------------------------------\n"
+            addOnItems += "[C]AddOn Items\n"
+            addOnItems += "[L]-------------------------------\n"
+
             for (addOnItem in addOnItemList) {
                 addOnItems += "[L]${addOnItem.itemName}[R]${addOnItem.itemPrice}\n"
             }
-
         }
 
         return addOnItems
     }
 
-    private fun printCharges(): String {
+    private fun printCharges(chargesLists: List<ChargesNameAndPrice>): String {
         var charges = ""
 
-        if (chargesList.isNotEmpty()) {
+        if (chargesLists.isNotEmpty()) {
             charges += "[L]-------------------------------\n"
-            for (charge in chargesList) {
-                charges += "[L]${charge.chargesName}[R]${charge.chargesPrice.toString().toRupee}\n"
+            charges += "[C]Charges \n"
+            charges += "[L]-------------------------------\n"
+
+            for (charge in chargesLists) {
+                charges += "[L]${charge.chargesName}[R]${charge.chargesPrice}\n"
+            }
+        }
+
+        return charges
+    }
+
+    private fun printAdditionalCharges(additionalCharges: List<Charges>): String {
+        var charges = ""
+
+        if (additionalCharges.isNotEmpty()) {
+            charges += "[L]-------------------------------\n"
+            charges += "[C] Additional Charges \n"
+            charges += "[L]-------------------------------\n"
+
+
+            for (charge in additionalCharges) {
+                charges += "[L]${charge.chargesName}[R]${charge.chargesPrice}\n"
             }
         }
 
@@ -303,24 +272,19 @@ class OrderPrintViewModel @Inject constructor(
                 "[L]Discount[R]${orderPrice.discountPrice}\n"
     }
 
-    private fun getAllCharges() {
-        viewModelScope.launch(ioDispatcher) {
-            chargesRepository.getAllCharges("").collect { result ->
-                chargesList = result.toMutableStateList()
-            }
-        }
-    }
-
     private fun printDeliveryReport(date: String) {
-        try {
-            var printItems = ""
+        viewModelScope.launch {
+            val deliveryReports = printRepository.getDeliveryReports(date)
 
-            printItems += getPrintableHeader(date)
-            printItems += getPrintableOrders(date)
+            try {
+                var printItems = ""
+                printItems += getPrintableHeader(date)
+                printItems += getPrintableOrders(deliveryReports)
 
-            escposPrinter.value.printFormattedText(printItems, 50)
-        } catch (e: Exception) {
-            Log.e("Print Exception", e.message ?: "Unable to print")
+                printer.printFormattedText(printItems, 50)
+            } catch (e: Exception) {
+                Log.e("Print Exception", e.message ?: "Unable to print")
+            }
         }
     }
 
@@ -338,59 +302,25 @@ class OrderPrintViewModel @Inject constructor(
         return header
     }
 
-    private fun getPrintableOrders(date: String): String {
+    private fun getPrintableOrders(deliveryReports: List<DeliveryReport>): String {
         var order = ""
 
-        viewModelScope.launch(ioDispatcher) {
-            orderUseCases.getAllOrders(date, OrderType.DineOut, "").collectLatest { dineOutOrders ->
-                if (dineOutOrders.isNotEmpty()) {
-                    order += "[L]ID[C]Address[R]Time[R]Price\n"
-                    order += "[L]-------------------------------\n"
+        if (deliveryReports.isNotEmpty()) {
+            order += "[L]ID[C]Address[R]Time[R]Price\n"
+            order += "[L]-------------------------------\n"
 
-                    dineOutOrders.forEach { cart ->
-                        order += "[L]${cart.orderId}[C]${cart.customerAddress}[R]${cart.orderDate.toTime}[R]${cart.orderPrice.totalPrice}\n"
-                        order += "[L]-------------------------------\n"
-                    }
-                } else {
-                    order += "[C]You have not place any order.\n"
-                }
+            deliveryReports.forEach { cart ->
+                val orderDate = (cart.updatedAt ?: cart.createdAt).toTime
+
+                order += "[L]${cart.orderId}[C]${cart.addressName}[R]${orderDate}[R]${cart.orderPrice}\n"
+                order += "[L]-------------------------------\n"
             }
+        } else {
+            order += "[C]You have not place any order.\n"
         }
 
         order += "[L]\n"
 
         return order
-    }
-
-    private fun connectBluetoothPrinter() {
-        viewModelScope.launch {
-            val data = BluetoothPrintersConnections.selectFirstPaired()
-            if (data?.isConnected == false) {
-                data.connect()
-            }
-
-            escposPrinter.value = EscPosPrinter(
-                data,
-                info.value.printerDpi,
-                info.value.printerWidth,
-                info.value.printerNbrLines
-            )
-        }
-    }
-
-    companion object {
-        fun defaultPrinter(): EscPosPrinter {
-            val data = BluetoothPrintersConnections.selectFirstPaired()
-            if (data?.isConnected == false) {
-                data.connect()
-            }
-
-            return EscPosPrinter(
-                data,
-                Printer.defaultPrinterInfo.printerDpi,
-                Printer.defaultPrinterInfo.printerWidth,
-                Printer.defaultPrinterInfo.printerNbrLines
-            )
-        }
     }
 }

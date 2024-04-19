@@ -30,7 +30,7 @@ class ProductDetailsViewModel @Inject constructor(
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
     private val analyticsHelper: AnalyticsHelper,
-): ShareViewModel(ioDispatcher) {
+): ShareViewModel(ioDispatcher, analyticsHelper) {
 
     private val productId = savedStateHandle.get<Int>("productId") ?: 0
 

@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.designsystem.theme.LightColor4
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.feature.reports.AddressWiseReportState
@@ -37,7 +38,9 @@ fun AddressWiseReport(
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
-        colors = CardDefaults.cardColors()
+        colors = CardDefaults.cardColors(
+            containerColor = LightColor4,
+        )
     ) {
         StandardExpandable(
             modifier = Modifier

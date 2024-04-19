@@ -27,7 +27,7 @@ class OrderDetailsViewModel @Inject constructor(
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
     private val analyticsHelper: AnalyticsHelper,
-) : ShareViewModel(ioDispatcher) {
+) : ShareViewModel(ioDispatcher, analyticsHelper) {
 
     private val orderId = savedStateHandle.get<Int>("orderId") ?: 0
 

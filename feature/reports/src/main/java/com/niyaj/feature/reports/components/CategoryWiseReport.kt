@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.designsystem.theme.LightColor2
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.feature.reports.CategoryWiseReportState
 import com.niyaj.ui.components.IconWithText
@@ -33,7 +34,9 @@ fun CategoryWiseReport(
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
-        colors = CardDefaults.cardColors()
+        colors = CardDefaults.cardColors(
+            containerColor = LightColor2,
+        )
     ) {
         StandardExpandable(
             modifier = Modifier

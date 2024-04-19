@@ -11,6 +11,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +28,7 @@ import javax.inject.Inject
 open class ShareViewModel @Inject constructor(
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
+    private val analyticsHelper: AnalyticsHelper,
 ): ViewModel() {
 
     private val _showDialog = MutableStateFlow(false)
@@ -80,4 +83,15 @@ open class ShareViewModel @Inject constructor(
             }
         }
     }
+}
+
+internal fun AnalyticsHelper.logProductDetailsViewed(productId: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "product_details_viewed",
+            extras = listOf(
+                AnalyticsEvent.Param("product_details_viewed", productId.toString()),
+            ),
+        ),
+    )
 }

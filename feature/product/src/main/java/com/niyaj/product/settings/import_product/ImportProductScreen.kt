@@ -177,7 +177,7 @@ fun ImportProductScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Checklist,
-                        contentDescription = Constants.SELECTALL_ICON
+                        contentDescription = Constants.SELECT_ALL_ICON
                     )
                 }
             }
