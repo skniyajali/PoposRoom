@@ -12,6 +12,7 @@ import com.niyaj.database.dao.MarketListDao
 import com.niyaj.database.model.MarketItemEntity
 import com.niyaj.database.model.MarketListWithItemEntity
 import com.niyaj.database.model.asExternalModel
+import com.niyaj.model.ItemQuantityAndType
 import com.niyaj.model.MarketItemAndQuantity
 import com.niyaj.model.MarketItemWithQuantity
 import com.niyaj.model.MarketList
@@ -326,10 +327,12 @@ class MarketListRepositoryImpl(
                         .distinctUntilChanged()
                 }
 
+                // TODO:: Fix this
+
                 MarketItemWithQuantity(
                     item = entity.asExternalModel(),
-                    doesExist = doesExist.await().map { it != null },
-                    quantity = quantity.await()
+                    doesExist = false,
+                    quantity = ItemQuantityAndType()
                 )
             }
         }

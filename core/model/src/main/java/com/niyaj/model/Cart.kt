@@ -1,9 +1,7 @@
 package com.niyaj.model
 
-import androidx.compose.runtime.Stable
 import java.util.Date
 
-@Stable
 data class Cart(
     val cartId: Int = 0,
 
@@ -18,10 +16,9 @@ data class Cart(
     val updatedAt: Date? = null,
 )
 
-@Stable
 data class ProductPriceWithQuantity(
 
     val productPrice: Int,
 
-    val quantity: Int
+    val quantity: Int,
 )

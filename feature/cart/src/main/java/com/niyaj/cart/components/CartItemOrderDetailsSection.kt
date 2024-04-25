@@ -98,7 +98,6 @@ fun CartItemOrderDetailsSection(
     }
 }
 
-
 @Composable
 fun CartOrderDetailsButtons(
     modifier: Modifier = Modifier,

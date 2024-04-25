@@ -1,9 +1,24 @@
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
+/*
+ * Copyright 2024 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @Author Sk Niyaj Ali
+ */
 plugins {
-    id("popos.android.library")
-    id("popos.android.library.compose")
-    id("popos.android.library.jacoco")
-    id("popos.android.hilt")
+    alias(libs.plugins.popos.android.library)
+    alias(libs.plugins.popos.android.library.compose)
+    alias(libs.plugins.popos.android.library.jacoco)
 }
 
 android {
@@ -15,34 +30,20 @@ android {
 }
 
 dependencies {
-    api(libs.androidx.compose.foundation)
-    api(libs.androidx.compose.foundation.layout)
-    api(libs.androidx.compose.material.iconsExtended)
-    api(libs.androidx.compose.material3)
-    api(libs.androidx.compose.runtime)
-    api(libs.androidx.compose.runtime.livedata)
-    api(libs.androidx.compose.ui.tooling.preview)
-    api(libs.androidx.compose.ui.util)
-    api(libs.androidx.compose.ui)
-    api(libs.androidx.compose.ui.graphics)
     api(libs.androidx.metrics)
+    api(projects.core.analytics)
+    api(projects.core.designsystem)
+    api(projects.core.model)
+    api(projects.core.common)
     api(libs.androidx.tracing.ktx)
 
-    debugApi(libs.androidx.compose.ui.tooling)
+    androidTestImplementation(projects.core.testing)
 
-    implementation(project(":core:designsystem"))
-    implementation(project(":core:domain"))
-    implementation(project(":core:model"))
-    implementation(project(":core:common"))
-    implementation(project(":core:analytics"))
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.androidx.core.ktx)
     implementation(libs.coil.kt)
     implementation(libs.coil.kt.compose)
-    implementation(libs.kotlinx.datetime)
     implementation(libs.navigation.bar)
-
-    androidTestImplementation(project(":core:testing"))
 }

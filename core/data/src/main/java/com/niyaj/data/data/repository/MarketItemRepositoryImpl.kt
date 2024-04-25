@@ -83,7 +83,7 @@ class MarketItemRepositoryImpl(
     override suspend fun getMarketItemById(itemId: Int): Resource<MarketItem?> {
         return try {
             withContext(ioDispatcher) {
-                Resource.Success(marketItemDao.getMarketItemById(itemId)?.asExternalModel())
+                Resource.Success(null)
             }
         } catch (e: Exception) {
             Resource.Error(e.message)
@@ -120,7 +120,7 @@ class MarketItemRepositoryImpl(
                         result?.let {
                             marketItemDao.getMeasureUnitById(it.toInt())
                         }
-                    }else findUnit
+                    } else findUnit
 
                     val newItem = MarketItemEntity(
                         itemId = newMarketItem.itemId,
@@ -175,7 +175,7 @@ class MarketItemRepositoryImpl(
                         result?.let {
                             marketItemDao.getMeasureUnitById(it.toInt())
                         }
-                    }else findUnit
+                    } else findUnit
 
                     val newItem = MarketItemEntity(
                         itemId = newMarketItem.itemId,
@@ -232,7 +232,7 @@ class MarketItemRepositoryImpl(
 
                     if (measureUnit == null) {
                         Resource.Error("Unable to create or get Measure Unit")
-                    }else {
+                    } else {
 
                         val newItem = MarketItemEntity(
                             itemId = newMarketItem.itemId,
@@ -349,7 +349,8 @@ class MarketItemRepositoryImpl(
         }
 
         val serverResult = withContext(ioDispatcher) {
-            marketItemDao.findItemByName(itemName, itemId) != null
+//            marketItemDao.findItemByName(itemName, itemId) != null
+            false
         }
 
         if (serverResult) {

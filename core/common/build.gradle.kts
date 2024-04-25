@@ -1,7 +1,7 @@
 plugins {
-    id("popos.android.library")
-    id("popos.android.library.jacoco")
-    id("popos.android.hilt")
+    alias(libs.plugins.popos.android.library)
+    alias(libs.plugins.popos.android.library.jacoco)
+    alias(libs.plugins.popos.android.hilt)
 }
 
 android {
@@ -9,6 +9,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.kotlinx.coroutines.android)
-    testImplementation(project(":core:testing"))
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
 }

@@ -1,10 +1,8 @@
 package com.niyaj.model
 
-import androidx.compose.runtime.Stable
-import com.niyaj.common.utils.toTime
+import com.niyaj.model.utils.toTime
 import java.util.Date
 
-@Stable
 data class CartOrder(
     val orderId: Int = 0,
 

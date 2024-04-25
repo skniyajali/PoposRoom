@@ -6,7 +6,6 @@ import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
 import com.niyaj.common.tags.ProfileTestTags
-import com.niyaj.common.utils.Constants.RESTAURANT_ID
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.ProfileRepository
 import com.niyaj.data.repository.validation.ProfileValidationRepository
@@ -14,10 +13,12 @@ import com.niyaj.database.dao.ProfileDao
 import com.niyaj.database.model.ProfileEntity
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Profile
+import com.niyaj.model.Profile.Companion.RESTAURANT_ID
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+
 
 class ProfileRepositoryImpl(
     private val profileDao: ProfileDao,

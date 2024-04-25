@@ -1,8 +1,24 @@
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
+/*
+ * Copyright 2024 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @Author Sk Niyaj Ali
+ */
 plugins {
-    id("popos.android.library")
-    id("popos.android.library.compose")
-    id("popos.android.hilt")
+    alias(libs.plugins.popos.android.library)
+    alias(libs.plugins.popos.android.library.compose)
+    alias(libs.plugins.popos.android.hilt)
 }
 
 android {
@@ -10,20 +26,19 @@ android {
 }
 
 dependencies {
+    api(kotlin("test"))
     api(libs.androidx.compose.ui.test)
-    api(libs.androidx.test.core)
-    api(libs.androidx.test.espresso.core)
-    api(libs.androidx.test.rules)
-    api(libs.androidx.test.runner)
-    api(libs.hilt.android.testing)
-    api(libs.junit4)
-    api(libs.kotlinx.coroutines.test)
-    api(libs.turbine)
+    api(projects.core.analytics)
+    api(projects.core.data)
+    api(projects.core.model)
+    api(projects.core.notifications)
 
     debugApi(libs.androidx.compose.ui.testManifest)
 
-    implementation(project(":core:common"))
-    implementation(project(":core:data"))
-    implementation(project(":core:domain"))
-    implementation(project(":core:model"))
+    implementation(libs.androidx.test.rules)
+    implementation(libs.hilt.android.testing)
+    implementation(libs.kotlinx.coroutines.test)
+    implementation(libs.kotlinx.datetime)
+    implementation(projects.core.common)
+    implementation(projects.core.designsystem)
 }

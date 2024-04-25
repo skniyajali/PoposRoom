@@ -20,6 +20,7 @@ import com.niyaj.model.ChargesNameAndPrice
 import com.niyaj.model.Customer
 import com.niyaj.model.DeliveryReport
 import com.niyaj.model.OrderDetails
+import com.niyaj.model.OrderPrice
 import com.niyaj.model.OrderType
 import com.niyaj.model.Profile
 import kotlinx.collections.immutable.toImmutableList
@@ -28,6 +29,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+
 
 class PrintRepositoryImpl(
     private val printDao: PrintDao,
@@ -70,6 +72,8 @@ class PrintRepositoryImpl(
 
     private suspend fun mapCartItemToOrderDetails(order: CartItemDto): OrderDetails {
         return withContext(ioDispatcher) {
+            // TODO:: change it to OrderDetailsDto
+
             val addOnItems = async(ioDispatcher) {
                 order.addOnItems.map {
                     orderDao.getAddOnItemById(it).asExternalModel()
@@ -122,7 +126,7 @@ class PrintRepositoryImpl(
                 cartProducts = cartProducts.await().toImmutableList(),
                 addOnItems = addOnItems.await().toImmutableList(),
                 charges = charges.await().toImmutableList(),
-                orderPrice = order.orderPrice.toExternalModel()
+                orderPrice = OrderPrice(totalPrice = order.orderPrice.totalPrice)
             )
         }
     }

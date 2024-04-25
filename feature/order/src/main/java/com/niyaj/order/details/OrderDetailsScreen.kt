@@ -128,21 +128,13 @@ fun OrderDetailsScreen(
         }
     }
 
-    var cartOrderExpended by remember {
-        mutableStateOf(true)
-    }
+    var cartOrderExpended by remember { mutableStateOf(true) }
 
-    var customerExpended by remember {
-        mutableStateOf(false)
-    }
+    var customerExpended by remember { mutableStateOf(false) }
 
-    var addressExpended by remember {
-        mutableStateOf(false)
-    }
+    var addressExpended by remember { mutableStateOf(false) }
 
-    var cartExpended by remember {
-        mutableStateOf(true)
-    }
+    var cartExpended by remember { mutableStateOf(true) }
 
     TrackScreenViewEvent(screenName = Screens.ORDER_DETAILS_SCREEN)
 

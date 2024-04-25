@@ -16,7 +16,6 @@ import com.niyaj.database.model.CartItemDto
 import com.niyaj.database.model.CartPriceEntity
 import com.niyaj.database.model.SelectedEntity
 import com.niyaj.database.model.asExternalModel
-import com.niyaj.database.model.toExternalModel
 import com.niyaj.model.AddOnItem
 import com.niyaj.model.CartItem
 import com.niyaj.model.CartProductItem
@@ -33,6 +32,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+
 
 class CartRepositoryImpl(
     private val cartDao: CartDao,
@@ -265,28 +265,16 @@ class CartRepositoryImpl(
                     }
                 }
 
-                val addressName = async(ioDispatcher) {
-                    if (order.cartOrder.orderType != OrderType.DineIn) {
-                        cartDao.getAddressById(order.cartOrder.addressId)
-                    } else null
-                }
-
-                val customerPhone = async(ioDispatcher) {
-                    if (order.cartOrder.orderType != OrderType.DineIn) {
-                        cartDao.getCustomerById(order.cartOrder.customerId)
-                    } else null
-                }
-
                 CartItem(
                     orderId = order.cartOrder.orderId,
                     orderType = order.cartOrder.orderType,
                     cartProducts = cartProducts.await().toImmutableList(),
                     addOnItems = order.addOnItems.toImmutableList(),
                     charges = order.charges.toImmutableList(),
-                    customerPhone = customerPhone.await(),
-                    customerAddress = addressName.await(),
+                    customerPhone = order.customerPhone,
+                    customerAddress = order.customerAddress,
                     updatedAt = (order.cartOrder.updatedAt ?: order.cartOrder.createdAt).toTimeSpan,
-                    orderPrice = order.orderPrice.toExternalModel()
+                    orderPrice = order.orderPrice.totalPrice
                 )
             }
         }

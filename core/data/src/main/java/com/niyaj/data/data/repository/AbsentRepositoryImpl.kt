@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class AbsentRepositoryImpl(
     private val absentDao: AbsentDao,
@@ -223,23 +224,26 @@ class AbsentRepositoryImpl(
         try {
             absentees.forEach { empWithAbsents ->
                 val findEmployee = withContext(ioDispatcher) {
-                    absentDao.findEmployeeByName(empWithAbsents.employee.employeeName, empWithAbsents.employee.employeeId)
+                    absentDao.findEmployeeByName(
+                        empWithAbsents.employee.employeeName,
+                        empWithAbsents.employee.employeeId
+                    )
                 }
 
                 if (findEmployee != null) {
                     empWithAbsents.absents.forEach { newAbsent ->
                         upsertAbsent(newAbsent)
                     }
-                }else {
+                } else {
                     val result = withContext(ioDispatcher) {
                         absentDao.upsertEmployee(empWithAbsents.employee.toEntity())
                     }
 
-                    if (result > 0){
+                    if (result > 0) {
                         empWithAbsents.absents.forEach { newAbsent ->
                             upsertAbsent(newAbsent)
                         }
-                    }else {
+                    } else {
                         return Resource.Error("Something went wrong inserting employee!")
                     }
                 }

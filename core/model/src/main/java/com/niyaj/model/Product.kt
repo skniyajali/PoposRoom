@@ -1,11 +1,9 @@
 package com.niyaj.model
 
-import androidx.compose.runtime.Stable
-import com.niyaj.common.utils.getAllCapitalizedLetters
+import com.niyaj.model.utils.getCapitalWord
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-@Stable
 data class Product(
     val productId: Int = 0,
 
@@ -17,25 +15,25 @@ data class Product(
 
     val productDescription: String = "",
 
-    val productAvailability : Boolean = true,
+    val productAvailability: Boolean = true,
 
     val createdAt: Long,
 
-    val updatedAt: Long? = null
+    val updatedAt: Long? = null,
 
-)
+    )
 
 
 /**
  * Filter products
  */
-fun List<Product>.filterProducts(searchText : String) : List<Product> {
+fun List<Product>.filterProducts(searchText: String): List<Product> {
     return if (searchText.isNotEmpty()) {
         this.filter {
             it.productName.contains(searchText, true) ||
                     it.productPrice.toString().contains(searchText, true) ||
                     it.productAvailability.toString().contains(searchText, true) ||
-                    getAllCapitalizedLetters(it.productName).contains(searchText, true)
+                    it.productName.getCapitalWord().contains(searchText, true)
         }
     } else this
 
@@ -44,8 +42,8 @@ fun List<Product>.filterProducts(searchText : String) : List<Product> {
 /**
  * Filter product by category
  */
-fun Product.filterByCategory(categoryId : String) : Boolean {
+fun Product.filterByCategory(categoryId: String): Boolean {
     return if (categoryId.isNotEmpty()) {
         this.categoryId == categoryId.toInt()
-    }else true
+    } else true
 }

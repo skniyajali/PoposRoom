@@ -54,8 +54,8 @@ fun CartItemDetails(
     charges: List<Charges>,
     additionalCharges: List<Charges> = emptyList(),
     orderPrice: OrderPrice,
-    doesExpanded : Boolean,
-    onExpandChanged : () -> Unit,
+    doesExpanded: Boolean,
+    onExpandChanged: () -> Unit,
 ) = trace("CartItemDetails") {
     ElevatedCard(
         modifier = modifier
@@ -68,7 +68,7 @@ fun CartItemDetails(
         colors = CardDefaults.cardColors(
             containerColor = LightColor6,
         )
-    ){
+    ) {
         StandardExpandable(
             modifier = Modifier
                 .fillMaxWidth()
@@ -154,7 +154,7 @@ fun CartItemOrderProductDetails(
             Spacer(modifier = Modifier.height(SpaceSmall))
         }
 
-        if(addOnItems.isNotEmpty()){
+        if (addOnItems.isNotEmpty()) {
             Spacer(modifier = Modifier.height(SpaceSmall))
 
             TextDivider(
@@ -163,7 +163,7 @@ fun CartItemOrderProductDetails(
 
             Spacer(modifier = Modifier.height(SpaceSmall))
 
-            for(addOnItem in addOnItems){
+            for (addOnItem in addOnItems) {
                 TwoGridTexts(
                     textOne = addOnItem.itemName,
                     textTwo = addOnItem.itemPrice.toString().toRupee,
@@ -173,7 +173,7 @@ fun CartItemOrderProductDetails(
         }
 
         if (charges.isNotEmpty()) {
-            if (doesChargesIncluded && orderType != OrderType.DineIn) {
+            if (doesChargesIncluded) {
 
                 val showText = charges.any { it.isApplicable }
 
