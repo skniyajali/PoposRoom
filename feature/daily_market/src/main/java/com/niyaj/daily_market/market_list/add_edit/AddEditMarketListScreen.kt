@@ -271,10 +271,10 @@ fun AddEditMarketListScreen(
                                 }
                             ) { itemWithQuantity ->
                                 val quantity =
-                                    itemWithQuantity.quantity.collectAsStateWithLifecycle().value
+                                    itemWithQuantity.quantity
 
                                 val doesExist =
-                                    itemWithQuantity.doesExist.collectAsStateWithLifecycle().value
+                                    itemWithQuantity.doesExist
 
                                 MarketItemCard(
                                     item = itemWithQuantity.item,

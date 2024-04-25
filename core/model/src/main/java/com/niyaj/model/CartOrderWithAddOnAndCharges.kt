@@ -6,5 +6,5 @@ import kotlinx.collections.immutable.persistentListOf
 data class CartOrderWithAddOnAndCharges(
     val cartOrder: CartOrder,
     val addOnItems: ImmutableList<Int> = persistentListOf(),
-    val charges: ImmutableList<Int> = persistentListOf()
+    val charges: ImmutableList<Int> = persistentListOf(),
 )

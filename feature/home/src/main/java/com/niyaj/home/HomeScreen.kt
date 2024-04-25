@@ -21,7 +21,7 @@ import com.niyaj.common.tags.HomeScreenTestTags
 import com.niyaj.common.tags.HomeScreenTestTags.HOME_SEARCH_PLACEHOLDER
 import com.niyaj.core.ui.R
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.home.components.HomeScreenFlowProducts
+import com.niyaj.home.components.HomeScreenProducts
 import com.niyaj.ui.components.CategoriesData
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
@@ -50,7 +50,7 @@ fun HomeScreen(
     val lazyRowState = rememberLazyListState()
 
     val snackbarState = remember { SnackbarHostState() }
-    val state = viewModel.products.collectAsStateWithLifecycle().value
+    val state = viewModel.productsWithQuantity.collectAsStateWithLifecycle().value
 
     val categories = viewModel.categories.collectAsStateWithLifecycle().value
 
@@ -143,7 +143,7 @@ fun HomeScreen(
                         buttonText = HomeScreenTestTags.CREATE_NEW_PRODUCT,
                         onClick = {
                             navController.navigate(Screens.ADD_EDIT_PRODUCT_SCREEN)
-                        }
+                        },
                     )
                 }
 
@@ -158,10 +158,10 @@ fun HomeScreen(
                             lazyRowState = lazyRowState,
                             categories = categories,
                             selectedCategory = selectedCategory,
-                            onSelect = viewModel::selectCategory
+                            onSelect = viewModel::selectCategory,
                         )
 
-                        HomeScreenFlowProducts(
+                        HomeScreenProducts(
                             lazyListState = lazyListState,
                             products = state.data,
                             onIncrease = {
@@ -176,7 +176,7 @@ fun HomeScreen(
                             },
                             onCreateProduct = {
                                 navController.navigate(Screens.ADD_EDIT_PRODUCT_SCREEN)
-                            }
+                            },
                         )
                     }
                 }

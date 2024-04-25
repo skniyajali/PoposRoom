@@ -341,7 +341,6 @@ class CartOrderRepositoryImpl(
                         async(ioDispatcher) {
                             insertOrIgnoreCartPrice(
                                 result.toInt(),
-                                newOrder.orderType,
                                 newOrder.doesChargesIncluded
                             )
                         }.await()
@@ -594,16 +593,17 @@ class CartOrderRepositoryImpl(
 
     private suspend fun insertOrIgnoreCartPrice(
         orderId: Int,
-        orderType: OrderType,
         included: Boolean
     ) {
         return withContext(ioDispatcher) {
             var basePrice = 0
+            var discountPrice = 0
 
             if (included) {
                 cartOrderDao.getAllChargesPrice().forEach {
-                    if (it.isApplicable && orderType == OrderType.DineOut) {
+                    if (it.isApplicable) {
                         basePrice += it.chargesPrice
+                        discountPrice += it.chargesPrice
                     }
                 }
             }
@@ -612,7 +612,8 @@ class CartOrderRepositoryImpl(
                 CartPriceEntity(
                     orderId = orderId,
                     basePrice = basePrice.toLong(),
-                    totalPrice = basePrice.toLong()
+                    discountPrice = discountPrice.toLong(),
+                    totalPrice = (basePrice - discountPrice).toLong()
                 )
             )
         }

@@ -1,8 +1,8 @@
 plugins {
-    id("popos.android.library")
-    id("popos.android.library.jacoco")
-    id("popos.android.hilt")
-    id("popos.android.room")
+    alias(libs.plugins.popos.android.library)
+    alias(libs.plugins.popos.android.library.jacoco)
+    alias(libs.plugins.popos.android.hilt)
+    alias(libs.plugins.popos.android.room)
 }
 
 android {
@@ -15,15 +15,11 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:model"))
-    implementation(project(":core:common"))
+    api(project(":core:model"))
+    api(project(":core:common"))
 
-    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.collections.immutable)
 
     androidTestImplementation(project(":core:testing"))
-
-    //Moshi
-    ksp(libs.moshi.kotlin.codegen)
-    implementation(libs.moshi)
 }

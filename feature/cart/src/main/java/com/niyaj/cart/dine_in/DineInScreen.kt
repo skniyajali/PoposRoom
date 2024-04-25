@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -15,6 +16,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -75,10 +77,11 @@ fun DineInScreen(
             }
         }
     }
-    
+
     TrackScreenViewEvent(screenName = "DineIn Tab::Cart")
 
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         bottomBar = {
             AnimatedVisibility(
                 visible = dineInOrders.isNotEmpty() && lazyListState.isScrollingUp(),

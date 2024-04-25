@@ -83,7 +83,6 @@ fun CartItems(
     }
 }
 
-
 @Composable
 fun CartItem(
     cartItem: CartItem,
@@ -104,7 +103,7 @@ fun CartItem(
     }
 
     val newOrderId = if (!cartItem.customerAddress.isNullOrEmpty()) {
-        cartItem.customerAddress!!.uppercase().plus(" -")
+        cartItem.customerAddress!!.uppercase().plus(" - ")
             .plus(cartItem.orderId)
     } else {
         cartItem.orderId.toString()
@@ -113,7 +112,7 @@ fun CartItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(interactionSource, indication = null){
+            .clickable(interactionSource, indication = null) {
                 onSelectCartOrder(cartItem.orderId)
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
@@ -152,7 +151,7 @@ fun CartItem(
         if (addOnItems.isNotEmpty()) {
             val addOnSelectedColor = if (cartItem.orderType == OrderType.DineIn) {
                 MaterialTheme.colorScheme.secondary
-            }else MaterialTheme.colorScheme.primary
+            } else MaterialTheme.colorScheme.primary
 
             CartAddOnItems(
                 addOnItems = addOnItems,
@@ -167,9 +166,8 @@ fun CartItem(
         CartItemTotalPriceSection(
             itemCount = cartItem.cartProducts.size,
             orderType = cartItem.orderType,
-            basePrice = cartItem.orderPrice.basePrice,
-            discountPrice = cartItem.orderPrice.discountPrice,
             showPrintBtn = showPrintBtn,
+            totalPrice = cartItem.orderPrice,
             onClickPlaceOrder = {
                 onClickPlaceOrder(cartItem.orderId)
             },

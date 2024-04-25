@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 
+
 class ReportsRepositoryImpl(
     private val reportsDao: ReportsDao,
     @Dispatcher(PoposDispatchers.IO)
@@ -138,7 +139,8 @@ class ReportsRepositoryImpl(
                                         )
                                     }.sortedByDescending { it.quantity }.toImmutableList()
                             )
-                        }.sortedByDescending { it -> it.productWithQuantity.sumOf { it.quantity } }.toList()
+                        }.sortedByDescending { it -> it.productWithQuantity.sumOf { it.quantity } }
+                        .toList()
                 }
         }
     }

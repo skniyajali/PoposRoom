@@ -212,7 +212,7 @@ class AddOnItemRepositoryImpl(
             }
 
             return Resource.Success(true)
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             return Resource.Error(e.message)
         }
     }

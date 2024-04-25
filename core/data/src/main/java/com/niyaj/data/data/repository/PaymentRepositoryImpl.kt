@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class PaymentRepositoryImpl(
     private val paymentDao: PaymentDao,
@@ -337,23 +338,26 @@ class PaymentRepositoryImpl(
         try {
             payments.forEach { empWithPayment ->
                 val findEmployee = withContext(ioDispatcher) {
-                    paymentDao.findEmployeeByName(empWithPayment.employee.employeeName, empWithPayment.employee.employeeId)
+                    paymentDao.findEmployeeByName(
+                        empWithPayment.employee.employeeName,
+                        empWithPayment.employee.employeeId
+                    )
                 }
 
                 if (findEmployee != null) {
                     empWithPayment.payments.forEach { payment ->
                         upsertPayment(payment)
                     }
-                }else {
+                } else {
                     val result = withContext(ioDispatcher) {
                         paymentDao.upsertEmployee(empWithPayment.employee.toEntity())
                     }
 
-                    if (result > 0){
+                    if (result > 0) {
                         empWithPayment.payments.forEach { payment ->
                             upsertPayment(payment)
                         }
-                    }else {
+                    } else {
                         return Resource.Error("Something went wrong inserting employee!")
                     }
                 }

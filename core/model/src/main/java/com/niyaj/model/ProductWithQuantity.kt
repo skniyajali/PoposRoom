@@ -1,9 +1,7 @@
 package com.niyaj.model
 
-import androidx.compose.runtime.Stable
-import com.niyaj.common.utils.getAllCapitalizedLetters
+import com.niyaj.model.utils.getCapitalWord
 
-@Stable
 data class ProductWithQuantity(
     val categoryId: Int,
     val productId: Int,
@@ -25,7 +23,7 @@ fun List<ProductWithQuantity>.filterBySearch(searchText: String): List<ProductWi
         if (searchText.isNotEmpty()) {
             it.productName.contains(searchText, true) ||
                     it.productPrice.toString().contains(searchText, true) ||
-                    getAllCapitalizedLetters(it.productName).contains(searchText, true)
+                    it.productName.getCapitalWord().contains(searchText, true)
         } else true
     }
 }

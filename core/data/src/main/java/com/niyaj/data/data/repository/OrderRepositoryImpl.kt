@@ -23,6 +23,7 @@ import com.niyaj.model.Charges
 import com.niyaj.model.Customer
 import com.niyaj.model.Order
 import com.niyaj.model.OrderDetails
+import com.niyaj.model.OrderPrice
 import com.niyaj.model.OrderType
 import com.niyaj.model.SELECTED_ID
 import com.niyaj.model.searchOrder
@@ -32,6 +33,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+
 
 class OrderRepositoryImpl(
     private val orderDao: OrderDao,
@@ -210,7 +212,7 @@ class OrderRepositoryImpl(
                 cartProducts = cartProducts.await().toImmutableList(),
                 addOnItems = addOnItems.await().toImmutableList(),
                 charges = charges.await().toImmutableList(),
-                orderPrice = order.orderPrice.toExternalModel()
+                orderPrice = OrderPrice(totalPrice = order.orderPrice.totalPrice)
             )
         }
     }

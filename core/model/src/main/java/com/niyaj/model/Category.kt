@@ -1,10 +1,8 @@
 package com.niyaj.model
 
-import androidx.compose.runtime.Stable
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-@Stable
 data class Category(
     val categoryId: Int = 0,
 
@@ -23,11 +21,11 @@ fun List<Category>.searchCategory(searchText: String): List<Category> {
         this.filter {
             it.categoryName.contains(searchText, true)
         }
-    }else this
+    } else this
 }
 
 fun Category.filterCategory(searchText: String): Boolean {
     return if (searchText.isNotEmpty()) {
         this.categoryName.contains(searchText, true)
-    }else true
+    } else true
 }

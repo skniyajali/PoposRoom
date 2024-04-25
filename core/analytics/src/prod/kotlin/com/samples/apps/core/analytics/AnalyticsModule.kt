@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * @Author Sk Niyaj Ali
  */
 
 package com.samples.apps.core.analytics
@@ -35,6 +36,8 @@ abstract class AnalyticsModule {
     companion object {
         @Provides
         @Singleton
-        fun provideFirebaseAnalytics(): FirebaseAnalytics { return Firebase.analytics }
+        fun provideFirebaseAnalytics(): FirebaseAnalytics {
+            return Firebase.analytics
+        }
     }
 }

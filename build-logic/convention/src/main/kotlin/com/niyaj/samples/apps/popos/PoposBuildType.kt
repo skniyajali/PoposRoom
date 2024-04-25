@@ -7,6 +7,5 @@ package com.niyaj.samples.apps.popos
 @Suppress("unused")
 enum class PoposBuildType(val applicationIdSuffix: String? = null) {
     DEBUG(".debug"),
-    RELEASE,
-    BENCHMARK(".benchmark")
+    RELEASE
 }

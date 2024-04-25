@@ -124,7 +124,8 @@ class EmployeeRepositoryImpl(
     override suspend fun upsertEmployee(newEmployee: Employee): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
-                val validateEmployeeName = validateEmployeeName(newEmployee.employeeName, newEmployee.employeeId)
+                val validateEmployeeName =
+                    validateEmployeeName(newEmployee.employeeName, newEmployee.employeeId)
                 val validateEmployeePhone =
                     validateEmployeePhone(newEmployee.employeePhone, newEmployee.employeeId)
                 val validateEmployeePosition =

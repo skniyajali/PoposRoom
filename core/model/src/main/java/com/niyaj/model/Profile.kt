@@ -1,11 +1,8 @@
 package com.niyaj.model
 
-import androidx.compose.runtime.Stable
-
 const val RESTAURANT_LOGO_NAME = "reslogo"
 const val RESTAURANT_PRINT_LOGO_NAME = "printlogo"
 
-@Stable
 data class Profile(
     val restaurantId: Int,
 

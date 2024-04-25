@@ -29,7 +29,10 @@ class ExpenseRepositoryImpl(
 ) : ExpenseRepository, ExpenseValidationRepository {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun getAllExpensesOnSpecificDate(searchText: String, givenDate: String): Flow<List<Expense>> {
+    override suspend fun getAllExpensesOnSpecificDate(
+        searchText: String,
+        givenDate: String
+    ): Flow<List<Expense>> {
         return withContext(ioDispatcher) {
             expenseDao.getAllExpenseOnGivenDate(givenDate).mapLatest { it ->
                 it.map {
@@ -231,7 +234,7 @@ class ExpenseRepositoryImpl(
                     errorMessage = EXPENSE_PRICE_LESS_THAN_TEN_ERROR
                 )
             }
-        }catch (e: NumberFormatException) {
+        } catch (e: NumberFormatException) {
             return ValidationResult(
                 successful = false,
                 errorMessage = "Expenses amount is not valid."

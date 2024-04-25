@@ -1,6 +1,9 @@
 package com.niyaj.cart.components
 
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,16 +26,22 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.theme.LightColor8
 import com.niyaj.designsystem.theme.LightColor9
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.model.CartProductItem
@@ -90,6 +99,7 @@ fun CartProduct(
                         modifier = Modifier.weight(2.2f, true),
                         text = cartProduct.productName,
                         style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -102,11 +112,12 @@ fun CartProduct(
                 }
             }
 
+
             key(cartProduct.productQuantity) {
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .background(Color.Transparent)
+                        .background(LightColor8)
                         .weight(1f, true),
                     contentAlignment = Alignment.CenterEnd
                 ) {
@@ -127,15 +138,7 @@ fun CartProduct(
                             )
                         }
 
-                        Crossfade(
-                            targetState = cartProduct.productQuantity,
-                            label = "Product quantity"
-                        ) {
-                            Text(
-                                text = it.toString(),
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                        }
+                        AnimatedCounter(count = cartProduct.productQuantity)
 
                         IconButton(
                             onClick = { increaseQuantity(cartProduct.productId) },
@@ -148,6 +151,47 @@ fun CartProduct(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun AnimatedCounter(
+    count: Int,
+    modifier: Modifier = Modifier,
+    style: TextStyle = MaterialTheme.typography.labelLarge
+) = trace("AnimatedCounter") {
+    var oldCount by remember {
+        mutableIntStateOf(count)
+    }
+    SideEffect {
+        oldCount = count
+    }
+    Row(modifier = modifier) {
+        val countString = count.toString()
+        val oldCountString = oldCount.toString()
+
+        for (i in countString.indices) {
+            val oldChar = oldCountString.getOrNull(i)
+            val newChar = countString[i]
+            val char = if (oldChar == newChar) {
+                oldCountString[i]
+            } else {
+                countString[i]
+            }
+            AnimatedContent(
+                targetState = char,
+                transitionSpec = {
+                    slideInVertically { it } togetherWith slideOutVertically { -it }
+                }, label = "Animated Counter::State"
+            ) { newCount ->
+                Text(
+                    text = newCount.toString(),
+                    style = style,
+                    softWrap = false,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
     }

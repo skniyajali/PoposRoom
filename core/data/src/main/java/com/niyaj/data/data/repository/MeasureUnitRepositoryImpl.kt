@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 
+
 class MeasureUnitRepositoryImpl(
     private val measureUnitDao: MeasureUnitDao,
     @Dispatcher(PoposDispatchers.IO)
@@ -64,7 +65,7 @@ class MeasureUnitRepositoryImpl(
                 }
 
                 Resource.Success(result > 0)
-            }else {
+            } else {
                 Resource.Error("Unable to validate items")
             }
         } catch (e: Exception) {
@@ -91,7 +92,7 @@ class MeasureUnitRepositoryImpl(
             }
 
             Resource.Success(true)
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             Resource.Error(e.message)
         }
     }
@@ -105,7 +106,7 @@ class MeasureUnitRepositoryImpl(
             return ValidationResult(false, UNIT_NAME_DIGIT_ERROR)
         }
 
-        if (unitName.length < 2){
+        if (unitName.length < 2) {
             return ValidationResult(false, UNIT_NAME_LENGTH_ERROR)
         }
 
@@ -126,10 +127,10 @@ class MeasureUnitRepositoryImpl(
         }
 
         try {
-            if (unitValue.safeDouble() <= 0){
+            if (unitValue.safeDouble() <= 0) {
                 return ValidationResult(false, MeasureUnitTestTags.UNIT_VALUE_LESS_THAN_FIVE_ERROR)
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             return ValidationResult(false, UNIT_VALUE_INVALID)
         }
 

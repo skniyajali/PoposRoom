@@ -16,8 +16,9 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "PoposRoom"
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":app")
-include(":benchmark")
 include(":core:data")
 include(":core:analytics")
 include(":core:domain")
@@ -27,6 +28,11 @@ include(":core:ui")
 include(":core:common")
 include(":core:designsystem")
 include(":core:testing")
+include(":core:screenshot-testing")
+include(":benchmarks")
+include(":ui-test-hilt-manifest")
+
+include(":lint")
 include(":feature:addonitem")
 include(":feature:address")
 include(":feature:cart")

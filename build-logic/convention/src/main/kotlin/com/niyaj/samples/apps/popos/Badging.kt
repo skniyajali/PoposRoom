@@ -14,12 +14,12 @@
  *   limitations under the License.
  */
 
-package com.google.samples.apps.nowinandroid
+package com.niyaj.samples.apps.popos
 
+import com.android.SdkConstants
 import com.android.build.api.artifact.SingleArtifact
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.gradle.BaseExtension
-import com.android.SdkConstants
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project

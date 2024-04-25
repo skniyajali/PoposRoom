@@ -1,10 +1,8 @@
 package com.niyaj.model
 
-import androidx.compose.runtime.Stable
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-@Stable
 data class Address(
     val addressId: Int = 0,
 

@@ -10,6 +10,22 @@ data class CartItemDto(
     val cartOrder: CartOrderEntity,
 
     @Relation(
+        parentColumn = "addressId",
+        entityColumn = "addressId",
+        entity = AddressEntity::class,
+        projection = ["shortName"]
+    )
+    val customerAddress: String?,
+
+    @Relation(
+        parentColumn = "customerId",
+        entityColumn = "customerId",
+        entity = CustomerEntity::class,
+        projection = ["customerPhone"]
+    )
+    val customerPhone: String?,
+
+    @Relation(
         parentColumn = "orderId",
         entityColumn = "orderId",
         entity = CartEntity::class,
@@ -21,9 +37,9 @@ data class CartItemDto(
         parentColumn = "orderId",
         entityColumn = "orderId",
         entity = CartPriceEntity::class,
-        associateBy = Junction(CartPriceEntity::class)
+        projection = ["totalPrice"]
     )
-    val orderPrice: CartPriceEntity,
+    val orderPrice: OrderTotalPrice,
 
     @Relation(
         parentColumn = "orderId",

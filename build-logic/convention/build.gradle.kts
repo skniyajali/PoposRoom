@@ -27,7 +27,15 @@ dependencies {
     compileOnly(libs.firebase.performance.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.ksp.gradlePlugin)
+    compileOnly(libs.room.gradlePlugin)
     compileOnly(libs.hilt.gradlePlugin)
+}
+
+tasks {
+    validatePlugins {
+        enableStricterValidation = true
+        failOnWarning = true
+    }
 }
 
 gradlePlugin {
@@ -79,6 +87,10 @@ gradlePlugin {
         register("androidFirebase") {
             id = "popos.android.application.firebase"
             implementationClass = "AndroidApplicationFirebaseConventionPlugin"
+        }
+        register("androidLint") {
+            id = "popos.android.lint"
+            implementationClass = "AndroidLintConventionPlugin"
         }
         register("jvmLibrary") {
             id = "popos.jvm.library"

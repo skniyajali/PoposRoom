@@ -12,7 +12,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.data.repository.MarketListRepository
-import com.niyaj.model.ItemQuantityAndType
 import com.niyaj.model.MarketItemAndQuantity
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
@@ -49,7 +48,7 @@ class AddEditMarketListViewModel @Inject constructor(
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
-        null
+        null,
     )
 
     val marketItems = snapshotFlow { mSearchText.value }.flatMapLatest { searchText ->
@@ -58,22 +57,14 @@ class AddEditMarketListViewModel @Inject constructor(
         if (itemList.isEmpty()) UiState.Empty else {
             totalItems = itemList.map { it.item.itemId }
 
-            val data = itemList.map { item ->
-                MarketItemWithQuantityState(
-                    item = item.item,
-                    doesExist = item.doesExist.stateIn(viewModelScope),
-                    quantity = item.quantity.mapLatest { it ?: ItemQuantityAndType() }
-                        .stateIn(viewModelScope)
-                )
-            }
-            UiState.Success(data)
+            UiState.Success(itemList)
         }
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
-        UiState.Loading
+        UiState.Loading,
     )
-    
+
     private val _showList = MutableStateFlow(false)
     val showList = _showList.asStateFlow()
 

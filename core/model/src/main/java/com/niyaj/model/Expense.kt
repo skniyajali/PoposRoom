@@ -1,11 +1,9 @@
 package com.niyaj.model
 
-import androidx.compose.runtime.Stable
-import com.niyaj.common.utils.toJoinedDate
+import com.niyaj.model.utils.toJoinedDate
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-@Stable
 data class Expense(
     val expenseId: Int = 0,
 

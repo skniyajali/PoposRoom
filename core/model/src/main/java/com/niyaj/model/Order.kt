@@ -1,17 +1,15 @@
 package com.niyaj.model
 
-import androidx.compose.runtime.Stable
-import com.niyaj.common.utils.toTime
+import com.niyaj.model.utils.toTime
 import java.util.Date
 
-@Stable
 data class Order(
     val orderId: Int = 0,
     val orderType: OrderType = OrderType.DineIn,
     val customerPhone: String? = null,
     val customerAddress: String? = null,
     val orderDate: Date = Date(),
-    val orderPrice: OrderPrice = OrderPrice()
+    val orderPrice: OrderPrice = OrderPrice(),
 )
 
 
