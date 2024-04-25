@@ -61,7 +61,7 @@ class DesignSystemDetector : Detector(), Detector.UastScanner {
             id = "DesignSystem",
             briefDescription = "Design system",
             explanation = "This check highlights calls in code that use Compose Material " +
-                "composables instead of equivalents from the Now in Android design system " +
+                "composables instead of equivalents from the Popos design system " +
                 "module.",
             category = Category.CUSTOM_LINT_CHECKS,
             priority = 7,

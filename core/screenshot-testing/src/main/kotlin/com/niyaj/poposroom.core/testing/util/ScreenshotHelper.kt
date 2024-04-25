@@ -1,4 +1,4 @@
-package com.google.samples.apps.nowinandroid.core.testing.util
+package com.niyaj.poposroom.core.testing.util
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,13 +14,15 @@ import androidx.compose.ui.test.DeviceConfigurationOverride
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.RoborazziOptions.CompareOptions
 import com.github.takahirom.roborazzi.RoborazziOptions.RecordOptions
 import com.github.takahirom.roborazzi.captureRoboImage
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import org.robolectric.RuntimeEnvironment
 
+@OptIn(ExperimentalRoborazziApi::class)
 val DefaultRoborazziOptions =
     RoborazziOptions(
         // Pixel-perfect matching
@@ -98,7 +100,7 @@ fun <A : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<A>, A>.c
         CompositionLocalProvider(
             LocalInspectionMode provides true,
         ) {
-            NiaTheme(
+            PoposRoomTheme(
                 androidTheme = androidTheme,
                 darkTheme = darkMode,
                 disableDynamicTheming = !dynamicTheming,
