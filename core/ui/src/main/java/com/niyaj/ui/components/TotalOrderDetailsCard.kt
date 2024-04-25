@@ -22,7 +22,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.niyaj.common.utils.isSameDay
 import com.niyaj.common.utils.toBarDate
@@ -131,8 +134,18 @@ fun TotalOrderDetailsCard(
                     ),
                     modifier = Modifier.testTag("TotalOrders")
                 ) {
+                    val string = AnnotatedString.Builder()
+                    string.append("Total ")
+                    string.withStyle(
+                        SpanStyle(fontWeight = FontWeight.SemiBold)
+                    ) {
+                        append("${details.totalOrder}")
+                    }
+                    string.append(" Order")
+
+
                     Text(
-                        text = "Total ${details.totalOrder} Order",
+                        text = string.toAnnotatedString(),
                         style = MaterialTheme.typography.labelMedium,
                         modifier = Modifier.padding(SpaceSmall)
                     )
@@ -142,15 +155,24 @@ fun TotalOrderDetailsCard(
 
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
                     ),
                     modifier = Modifier.testTag("RepeatedCustomer")
                 ) {
+                    val string = AnnotatedString.Builder()
+                    string.withStyle(
+                        SpanStyle(fontWeight = FontWeight.SemiBold)
+                    ) {
+                        append("${details.repeatedOrder}")
+                    }
+                    string.append(" Repeated Customer")
+
                     Text(
-                        text = "${details.repeatedOrder} Repeated Customer",
+                        text = string.toAnnotatedString(),
                         style = MaterialTheme.typography.labelMedium,
                         modifier = Modifier.padding(SpaceSmall)
                     )
+
                 }
             }
 

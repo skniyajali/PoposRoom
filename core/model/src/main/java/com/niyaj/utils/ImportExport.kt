@@ -7,7 +7,9 @@ import android.os.Build
 import android.provider.MediaStore
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
 import java.io.IOException
 
@@ -81,16 +83,18 @@ object ImportExport {
 
             val moshi = Moshi.Builder().build().adapter<List<T>>().nullSafe()
 
-            context.applicationContext.contentResolver.openInputStream(uri)?.use {
-                it.bufferedReader().use { reader ->
+            withContext(Dispatchers.IO) {
+                context.applicationContext.contentResolver.openInputStream(uri)?.use {
+                    it.bufferedReader().use { reader ->
+                        delay(50L)
+
+                        moshi.fromJson(reader.readText())?.let { it1 -> container.addAll(it1) }
+                    }
+
                     delay(50L)
 
-                    moshi.fromJson(reader.readText())?.let { it1 -> container.addAll(it1) }
+                    it.close()
                 }
-
-                delay(50L)
-
-                it.close()
             }
 
             return container.toList()

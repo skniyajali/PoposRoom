@@ -2,7 +2,7 @@ package com.niyaj.address.add_edit
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.AddressTestTags
 import com.niyaj.common.tags.AddressTestTags.ADDRESS_FULL_NAME_ERROR
 import com.niyaj.common.tags.AddressTestTags.ADDRESS_FULL_NAME_FIELD
@@ -27,20 +26,20 @@ import com.niyaj.common.tags.AddressTestTags.EDIT_ADDRESS
 import com.niyaj.common.tags.AddressTestTags.UPDATE_ADDRESS_SCREEN
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.ui.components.StandardBottomSheet
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
-import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 
-@Destination(style = DestinationStyleBottomSheet::class)
+@Destination
 @Composable
 fun AddEditAddressScreen(
     addressId: Int = 0,
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: AddEditAddressViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
@@ -66,19 +65,32 @@ fun AddEditAddressScreen(
     }
 
     val title = if (addressId == 0) CREATE_ADDRESS_SCREEN else UPDATE_ADDRESS_SCREEN
-    
+
     TrackScreenViewEvent(screenName = "Add/Edit Address Screen")
 
-    StandardBottomSheet(
+    StandardScaffoldRouteNew(
         title = title,
-        onBackClick = {
-            navController.navigateUp()
+        showBackButton = true,
+        showBottomBar = true,
+        onBackClick = navigator::navigateUp,
+        bottomBar = {
+            StandardButton(
+                modifier = Modifier
+                    .testTag(AddressTestTags.ADD_EDIT_ADDRESS_BTN)
+                    .padding(SpaceMedium),
+                text = if (addressId == 0) CREATE_NEW_ADDRESS else EDIT_ADDRESS,
+                enabled = enableBtn,
+                icon = if (addressId == 0) Icons.Default.Add else Icons.Default.EditLocationAlt,
+                onClick = {
+                    viewModel.onEvent(AddEditAddressEvent.CreateOrUpdateAddress(addressId))
+                }
+            )
         }
     ) {
         Column(
             modifier = Modifier
                 .testTag(title)
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(SpaceMedium),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
@@ -103,17 +115,6 @@ fun AddEditAddressScreen(
                 errorTextTag = ADDRESS_SHORT_NAME_ERROR,
                 onValueChange = {
                     viewModel.onEvent(AddEditAddressEvent.ShortNameChanged(it))
-                }
-            )
-
-            StandardButton(
-                modifier = Modifier
-                    .testTag(AddressTestTags.ADD_EDIT_ADDRESS_BTN),
-                text = if (addressId == 0) CREATE_NEW_ADDRESS else EDIT_ADDRESS,
-                enabled = enableBtn,
-                icon = if (addressId == 0) Icons.Default.Add else Icons.Default.EditLocationAlt,
-                onClick = {
-                    viewModel.onEvent(AddEditAddressEvent.CreateOrUpdateAddress(addressId))
                 }
             )
         }

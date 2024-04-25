@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.addonitem.destinations.AddEditAddOnItemScreenDestination
 import com.niyaj.addonitem.destinations.AddOnExportScreenDestination
 import com.niyaj.addonitem.destinations.AddOnImportScreenDestination
@@ -61,7 +60,7 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
 import com.niyaj.ui.components.StandardFAB
-import com.niyaj.ui.components.StandardScaffold
+import com.niyaj.ui.components.StandardScaffoldRoute
 import com.niyaj.ui.components.drawAnimatedBorder
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
@@ -71,7 +70,7 @@ import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
@@ -80,7 +79,7 @@ import kotlinx.coroutines.launch
 @Destination(route = Screens.ADD_ON_ITEM_SCREEN)
 @Composable
 fun AddOnItemScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: AddOnViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditAddOnItemScreenDestination, String>,
     exportRecipient: ResultRecipient<AddOnExportScreenDestination, String>,
@@ -118,7 +117,7 @@ fun AddOnItemScreen(
         }
     }
     exportRecipient.onNavResult { result ->
-        when(result) {
+        when (result) {
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
                 scope.launch {
@@ -128,7 +127,7 @@ fun AddOnItemScreen(
         }
     }
     importRecipient.onNavResult { result ->
-        when(result) {
+        when (result) {
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
                 scope.launch {
@@ -166,8 +165,8 @@ fun AddOnItemScreen(
 
     TrackScreenViewEvent(screenName = Screens.ADD_ON_ITEM_SCREEN)
 
-    StandardScaffold(
-        navController = navController,
+    StandardScaffoldRoute(
+        currentRoute = Screens.ADD_ON_ITEM_SCREEN,
         title = if (selectedItems.isEmpty()) ADDON_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
@@ -175,7 +174,7 @@ fun AddOnItemScreen(
                 fabText = CREATE_NEW_ADD_ON,
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
                 onFabClick = {
-                    navController.navigate(AddEditAddOnItemScreenDestination())
+                    navigator.navigate(AddEditAddOnItemScreenDestination())
                 },
                 onClickScroll = {
                     scope.launch {
@@ -193,13 +192,13 @@ fun AddOnItemScreen(
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
-                    navController.navigate(AddEditAddOnItemScreenDestination(selectedItems.first()))
+                    navigator.navigate(AddEditAddOnItemScreenDestination(selectedItems.first()))
                 },
                 onDeleteClick = {
                     openDialog.value = true
                 },
                 onSettingsClick = {
-                    navController.navigate(AddOnSettingsScreenDestination)
+                    navigator.navigate(AddOnSettingsScreenDestination)
                 },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
@@ -213,7 +212,8 @@ fun AddOnItemScreen(
         onDeselect = viewModel::deselectItems,
         onBackClick = viewModel::closeSearchBar,
         snackbarHostState = snackbarState,
-    ) { _ ->
+        onNavigateToScreen = navigator::navigate,
+    ) {
         Crossfade(
             targetState = state,
             label = "AddOn State"
@@ -226,7 +226,7 @@ fun AddOnItemScreen(
                         text = if (searchText.isEmpty()) ADDON_NOT_AVAIlABLE else SEARCH_ITEM_NOT_FOUND,
                         buttonText = CREATE_NEW_ADD_ON,
                         onClick = {
-                            navController.navigate(AddEditAddOnItemScreenDestination())
+                            navigator.navigate(AddEditAddOnItemScreenDestination())
                         }
                     )
                 }
@@ -313,7 +313,7 @@ fun AddOnItemData(
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-) = trace("AddOnItemData"){
+) = trace("AddOnItemData") {
     val borderStroke = if (doesSelected(item.itemId)) border else null
 
     ElevatedCard(

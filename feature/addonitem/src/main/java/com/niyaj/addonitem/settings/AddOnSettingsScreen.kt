@@ -10,7 +10,6 @@ import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import com.niyaj.addonitem.destinations.AddOnExportScreenDestination
 import com.niyaj.addonitem.destinations.AddOnImportScreenDestination
 import com.niyaj.common.tags.AddOnTestTags.ADDON_SETTINGS_TITLE
@@ -20,13 +19,13 @@ import com.niyaj.ui.components.StandardBottomSheet
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 
 @Destination(style = DestinationStyleBottomSheet::class)
 @Composable
 fun AddOnSettingsScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
 ) {
     TrackScreenViewEvent(screenName = "AddOnSettingsScreen")
 
@@ -34,9 +33,7 @@ fun AddOnSettingsScreen(
 
     StandardBottomSheet(
         title = ADDON_SETTINGS_TITLE,
-        onBackClick = {
-            navController.navigateUp()
-        }
+        onBackClick = navigator::navigateUp
     ) {
         TrackScrollJank(scrollableState = lazyListState, stateName = "addon:settings")
 
@@ -53,7 +50,7 @@ fun AddOnSettingsScreen(
                     subtitle = "Click here to import addon from file.",
                     icon = Icons.Default.SaveAlt,
                     onClick = {
-                        navController.navigate(AddOnImportScreenDestination())
+                        navigator.navigate(AddOnImportScreenDestination())
                     }
                 )
             }
@@ -64,7 +61,7 @@ fun AddOnSettingsScreen(
                     subtitle = "Click here to export addon to file.",
                     icon = Icons.Default.Upload,
                     onClick = {
-                        navController.navigate(AddOnExportScreenDestination())
+                        navigator.navigate(AddOnExportScreenDestination())
                     }
                 )
             }

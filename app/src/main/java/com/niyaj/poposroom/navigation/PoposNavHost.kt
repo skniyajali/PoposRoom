@@ -154,7 +154,8 @@ fun PoposNavHost(
 
                 composable(AddressDetailsScreenDestination) {
                     AddressDetailsScreen(
-                        navController = navController,
+                        addressId = this.navBackStackEntry.arguments?.getInt("addressId") ?: 0,
+                        navigator = this.destinationsNavigator,
                         onClickOrder = {
                             navController.navigate(OrderDetailsScreenDestination(it))
                         }

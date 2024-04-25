@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.ButtonDefaults
@@ -29,7 +31,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.address.AddressData
@@ -48,7 +49,7 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -56,7 +57,7 @@ import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.utils.ImportExport
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import kotlinx.coroutines.launch
 
@@ -64,7 +65,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AddressExportScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: AddressSettingsViewModel = hiltViewModel(),
 ) {
@@ -132,8 +133,8 @@ fun AddressExportScreen(
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
-        }else {
-            navController.navigateUp()
+        } else {
+            navigator.navigateUp()
         }
     }
 
@@ -143,10 +144,9 @@ fun AddressExportScreen(
 
     TrackScreenViewEvent(screenName = "Address Export Screen")
 
-    StandardScaffoldNew(
-        navController = navController,
+    StandardScaffoldRouteNew(
         title = if (selectedItems.isEmpty()) EXPORT_ADDRESS_TITLE else "${selectedItems.size} Selected",
-        showBackButton = true,
+        showBackButton = selectedItems.isEmpty() || showSearchBar,
         showBottomBar = addresses.isNotEmpty(),
         navActions = {
             if (showSearchBar) {
@@ -156,7 +156,7 @@ fun AddressExportScreen(
                     onClearClick = viewModel::clearSearchText,
                     onSearchTextChanged = viewModel::searchTextChanged
                 )
-            }else {
+            } else {
                 if (addresses.isNotEmpty()) {
                     IconButton(
                         onClick = viewModel::selectAllItems
@@ -201,7 +201,10 @@ fun AddressExportScreen(
                     onClick = {
                         scope.launch {
                             askForPermissions()
-                            val result = ImportExport.createFile(context = context, fileName = EXPORT_ADDRESS_FILE_NAME)
+                            val result = ImportExport.createFile(
+                                context = context,
+                                fileName = EXPORT_ADDRESS_FILE_NAME
+                            )
                             exportLauncher.launch(result)
                             viewModel.onEvent(AddressSettingsEvent.GetExportedItems)
                         }
@@ -220,6 +223,16 @@ fun AddressExportScreen(
                     }
                 }
             )
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = viewModel::deselectItems
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Clear,
+                    contentDescription = "Deselect All"
+                )
+            }
         }
     ) {
         if (addresses.isEmpty()) {
@@ -227,14 +240,15 @@ fun AddressExportScreen(
                 text = if (searchText.isEmpty()) AddressTestTags.ADDRESS_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND,
                 buttonText = AddressTestTags.CREATE_NEW_ADDRESS,
                 onClick = {
-                    navController.navigate(AddEditAddressScreenDestination())
+                    navigator.navigate(AddEditAddressScreenDestination())
                 }
             )
-        }else {
+        } else {
             TrackScrollJank(scrollableState = lazyGridState, stateName = "Exported Address::List")
 
             LazyVerticalGrid(
                 modifier = Modifier
+                    .fillMaxSize()
                     .padding(SpaceSmall),
                 columns = GridCells.Fixed(2),
                 state = lazyGridState,
