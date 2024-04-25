@@ -92,7 +92,7 @@ android {
     }
 
     appsweep {
-        apiKey = "gs_appsweep_9LOhFix_p6bow4wYcoXwSfLLe6U7ZPDT5HDoGHxw"
+        apiKey = "gs_appsweep_yj39WiQ_eZrOIfJnUYYf1KkUkC97yiIO0npd0q6f"
     }
 
     sentry {

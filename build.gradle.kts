@@ -30,6 +30,7 @@ plugins {
     alias(libs.plugins.room) apply false
     alias(libs.plugins.module.graph) apply true // Plugin applied to allow module graph generation
 }
+val APPSWEEP_API_KEY by extra("gs_appsweep_yj39WiQ_eZrOIfJnUYYf1KkUkC97yiIO0npd0q6f")
 
 // Task to print all the module paths in the project e.g. :core:data
 // Used by module graph generator script
