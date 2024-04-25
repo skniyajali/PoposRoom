@@ -1,0 +1,22 @@
+name: AppSweep mobile application security testing
+on: [ push ]
+jobs:
+  upload-app-to-appsweep:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Running AppSweep security testing"
+        name: Check out repository code
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: release-candidate
+          
+      - name: Upload app to AppSweep with Gradle
+        env:
+          APPSWEEP_API_KEY: ${{ secrets.APPSWEEP_API_KEY }}
+        run: ./gradlew uploadToAppSweepProdRelease

@@ -91,10 +91,6 @@ android {
         }
     }
 
-    appsweep {
-        apiKey = "gs_appsweep_9LOhFix_p6bow4wYcoXwSfLLe6U7ZPDT5HDoGHxw"
-    }
-
     sentry {
         // Disables or enables debug log output, e.g. for for sentry-cli.
         // Default is disabled.
