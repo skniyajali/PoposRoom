@@ -88,7 +88,7 @@ truthVersion = '1.4.2'
 vanpraComposeVersion = '0.9.0'
 zxing = "3.5.1"
 saketSwipe = "1.2.0"
-capturable = "1.0.3"
+capturable = "2.1.0"
 fragula-compose = "2.10"
 
 # App Version
