@@ -12,7 +12,6 @@ import com.niyaj.ui.utils.UiEvent
 import com.samples.apps.core.analytics.AnalyticsEvent
 import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -32,7 +31,6 @@ class CartOrderViewModel @Inject constructor(
 
     private val _viewAll = MutableStateFlow(false)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val selectedId = cartOrderRepository.getSelectedCartOrder()
         .mapLatest {
             it?.orderId ?: 0
@@ -40,31 +38,33 @@ class CartOrderViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = 0
+            initialValue = 0,
         )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val cartOrders = snapshotFlow { mSearchText.value }.combine(_viewAll) { text, viewAll ->
         cartOrderRepository.getAllCartOrders(text, viewAll)
-    }.flatMapLatest { listFlow ->
-        listFlow.mapLatest { list ->
-            val data = list.sortedByDescending { it.orderId == selectedId.value }
-            totalItems = data.map { it.orderId }
-            data.groupBy { (it.updatedAt ?: it.createdAt).toPrettyDate() }
+    }
+        .flatMapLatest { listFlow ->
+            listFlow.mapLatest { list ->
+                val data = list.sortedByDescending { it.orderId == selectedId.value }
+                totalItems = data.map { it.orderId }
+                data.groupBy { (it.updatedAt ?: it.createdAt).toPrettyDate() }
+            }
         }
-    }.mapLatest { data ->
-        if (data.isEmpty()) UiState.Empty else UiState.Success(data)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = UiState.Loading
-    )
+        .mapLatest { data ->
+            if (data.isEmpty()) UiState.Empty else UiState.Success(data)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = UiState.Loading,
+        )
 
 
     fun selectCartOrder() {
         viewModelScope.launch {
             val result = cartOrderRepository.insertOrUpdateSelectedOrder(
-                Selected(orderId = selectedItems.first())
+                Selected(orderId = selectedItems.first()),
             )
 
             when (result) {
@@ -99,9 +99,10 @@ class CartOrderViewModel @Inject constructor(
                 is Resource.Success -> {
                     mEventFlow.emit(
                         UiEvent.OnSuccess(
-                            "${selectedItems.size} cart orders has been deleted"
-                        )
+                            "${selectedItems.size} cart orders has been deleted",
+                        ),
                     )
+                    analyticsHelper.logDeletedCartOrder(selectedItems.toList())
                 }
             }
 
@@ -117,6 +118,17 @@ internal fun AnalyticsHelper.logSelectedCartOrder(cartOrderId: Int) {
             type = "cart_order_selected",
             extras = listOf(
                 AnalyticsEvent.Param("cart_order_selected", cartOrderId.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logDeletedCartOrder(cartOrderId: List<Int>) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "cart_order_deleted",
+            extras = listOf(
+                AnalyticsEvent.Param("cart_order_deleted", cartOrderId.toString()),
             ),
         ),
     )

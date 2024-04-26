@@ -57,7 +57,7 @@ import com.ramcosta.composedestinations.spec.Route
  */
 @OptIn(
     ExperimentalComposeUiApi::class, ExperimentalMaterialNavigationApi::class,
-    ExperimentalAnimationApi::class
+    ExperimentalAnimationApi::class,
 )
 @Composable
 fun PoposNavHost(
@@ -76,8 +76,8 @@ fun PoposNavHost(
         // all other nav graphs not specified in this map,
         // will get their animations from the `rootDefaultAnimations` above.
         defaultAnimationsForNestedNavGraph = mapOf(
-            RootNavGraph to NestedNavGraphDefaultAnimations.ACCOMPANIST_FADING
-        )
+            RootNavGraph to NestedNavGraphDefaultAnimations.ACCOMPANIST_FADING,
+        ),
     )
 
     ModalBottomSheetLayout(
@@ -98,7 +98,7 @@ fun PoposNavHost(
             manualComposableCallsBuilder = {
                 composable(CartOrderScreenDestination) {
                     CartOrderScreen(
-                        navController = navController,
+                        navigator = this.destinationsNavigator,
                         onClickOrderDetails = {
                             navController.navigate(OrderDetailsScreenDestination(it))
                         },
@@ -117,7 +117,7 @@ fun PoposNavHost(
                         },
                         onNavigateToOrderScreen = {
                             navController.navigate(OrderScreenDestination())
-                        }
+                        },
                     )
                 }
 
@@ -126,17 +126,17 @@ fun PoposNavHost(
                         navController = navController,
                         onClickEditOrder = {
                             navController.navigate(AddEditCartOrderScreenDestination(it))
-                        }
+                        },
                     )
                 }
 
                 bottomSheetComposable(SelectOrderScreenDestination) {
                     SelectOrderScreen(
-                        navController = navController,
+                        navigator = this.destinationsNavigator,
                         onEditClick = {
                             navController.navigate(AddEditCartOrderScreenDestination(it))
                         },
-                        resultBackNavigator = resultBackNavigator()
+                        resultBackNavigator = resultBackNavigator(),
                     )
                 }
 
@@ -148,7 +148,7 @@ fun PoposNavHost(
                         },
                         onClickAddAbsent = {
                             navController.navigate(AddEditAbsentScreenDestination(employeeId = it))
-                        }
+                        },
                     )
                 }
 
@@ -158,7 +158,7 @@ fun PoposNavHost(
                         navigator = this.destinationsNavigator,
                         onClickOrder = {
                             navController.navigate(OrderDetailsScreenDestination(it))
-                        }
+                        },
                     )
                 }
 
@@ -167,7 +167,7 @@ fun PoposNavHost(
                         navController = navController,
                         onClickOrder = {
                             navController.navigate(OrderDetailsScreenDestination(it))
-                        }
+                        },
                     )
                 }
 
@@ -176,7 +176,7 @@ fun PoposNavHost(
                         navController = navController,
                         onClickOrder = {
                             navController.navigate(OrderDetailsScreenDestination(it))
-                        }
+                        },
                     )
                 }
 
@@ -191,7 +191,7 @@ fun PoposNavHost(
                         },
                         onClickProduct = {
                             navController.navigate(ProductDetailsScreenDestination(it))
-                        }
+                        },
                     )
                 }
 
@@ -203,7 +203,7 @@ fun PoposNavHost(
                         },
                         resultRecipient = resultRecipient(),
                         exportRecipient = resultRecipient(),
-                        importRecipient = resultRecipient()
+                        importRecipient = resultRecipient(),
                     )
                 }
 
@@ -216,10 +216,10 @@ fun PoposNavHost(
                         },
                         onClickAddress = {
                             navController.navigate(AddressDetailsScreenDestination(it))
-                        }
+                        },
                     )
                 }
-            }
+            },
         )
     }
 }

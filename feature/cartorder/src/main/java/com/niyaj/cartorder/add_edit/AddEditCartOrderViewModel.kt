@@ -21,6 +21,8 @@ import com.niyaj.model.OrderStatus
 import com.niyaj.model.OrderType
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,7 +44,8 @@ import javax.inject.Inject
 class AddEditCartOrderViewModel @Inject constructor(
     private val cartOrderRepository: CartOrderRepository,
     private val validationRepository: CartOrderValidationRepository,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
     private val cartOrderId = savedStateHandle.get<Int>("cartOrderId") ?: 0
@@ -67,7 +70,7 @@ class AddEditCartOrderViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = null
+        initialValue = null,
     )
 
     val addressError = orderType.combine(_newAddress) { orderType, address ->
@@ -77,7 +80,7 @@ class AddEditCartOrderViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = null
+        initialValue = null,
     )
 
     val orderId = snapshotFlow { cartOrderId }.mapLatest {
@@ -85,7 +88,7 @@ class AddEditCartOrderViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = 1
+        initialValue = 1,
     )
 
     val addresses = _newAddress.flatMapLatest {
@@ -93,7 +96,7 @@ class AddEditCartOrderViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
+        initialValue = emptyList(),
     )
 
     val customers = _newCustomer.flatMapLatest {
@@ -101,7 +104,7 @@ class AddEditCartOrderViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
+        initialValue = emptyList(),
     )
 
     val addOnItems = snapshotFlow { cartOrderId }.flatMapLatest {
@@ -111,7 +114,7 @@ class AddEditCartOrderViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = UiState.Loading
+        initialValue = UiState.Loading,
     )
 
     val charges = snapshotFlow { cartOrderId }.flatMapLatest {
@@ -121,7 +124,7 @@ class AddEditCartOrderViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = UiState.Loading
+        initialValue = UiState.Loading,
     )
 
     private val _selectedAddOnItems = mutableStateListOf<Int>()
@@ -160,7 +163,7 @@ class AddEditCartOrderViewModel @Inject constructor(
                 viewModelScope.launch {
                     val newCustomer = Customer(
                         customerId = 0,
-                        customerPhone = event.customerPhone
+                        customerPhone = event.customerPhone,
                     )
 
                     _newCustomer.value = newCustomer
@@ -175,7 +178,7 @@ class AddEditCartOrderViewModel @Inject constructor(
 
             is AddEditCartOrderEvent.DoesChargesIncluded -> {
                 state = state.copy(
-                    doesChargesIncluded = !state.doesChargesIncluded
+                    doesChargesIncluded = !state.doesChargesIncluded,
                 )
             }
 
@@ -183,28 +186,28 @@ class AddEditCartOrderViewModel @Inject constructor(
                 state = if (event.orderType == OrderType.DineIn) {
                     state.copy(
                         orderType = event.orderType,
-                        doesChargesIncluded = false
+                        doesChargesIncluded = false,
                     )
-                }else {
+                } else {
                     state.copy(
                         orderType = event.orderType,
-                        doesChargesIncluded = true
+                        doesChargesIncluded = true,
                     )
                 }
             }
 
             is AddEditCartOrderEvent.SelectAddOnItem -> {
-                if (_selectedAddOnItems.contains(event.itemId)){
+                if (_selectedAddOnItems.contains(event.itemId)) {
                     _selectedAddOnItems.remove(event.itemId)
-                }else {
+                } else {
                     _selectedAddOnItems.add(event.itemId)
                 }
             }
 
             is AddEditCartOrderEvent.SelectCharges -> {
-                if (_selectedCharges.contains(event.chargesId)){
+                if (_selectedCharges.contains(event.chargesId)) {
                     _selectedCharges.remove(event.chargesId)
-                }else {
+                } else {
                     _selectedCharges.add(event.chargesId)
                 }
             }
@@ -227,10 +230,10 @@ class AddEditCartOrderViewModel @Inject constructor(
                         customer = _newCustomer.value,
                         address = _newAddress.value,
                         createdAt = Date(),
-                        updatedAt = if (cartOrderId == 0) null else Date()
+                        updatedAt = if (cartOrderId == 0) null else Date(),
                     ),
                     addOnItems = _selectedAddOnItems.toImmutableList(),
-                    charges = _selectedCharges.toImmutableList()
+                    charges = _selectedCharges.toImmutableList(),
                 )
 
                 when (val result = cartOrderRepository.createOrUpdateCartOrder(newCartOrder)) {
@@ -239,11 +242,13 @@ class AddEditCartOrderViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
-                        val message = if(cartOrderId == 0) "created" else "updated"
+                        val message = if (cartOrderId == 0) "created" else "updated"
 
                         _eventFlow.emit(
-                            UiEvent.OnSuccess("Cart Order $message successfully")
+                            UiEvent.OnSuccess("Cart Order $message successfully"),
                         )
+
+                        analyticsHelper.logOnCreateOrUpdateOrder(cartOrderId, message)
                     }
                 }
 
@@ -275,7 +280,7 @@ class AddEditCartOrderViewModel @Inject constructor(
 
                             state = state.copy(
                                 orderType = cartOrder.orderType,
-                                doesChargesIncluded = cartOrder.doesChargesIncluded
+                                doesChargesIncluded = cartOrder.doesChargesIncluded,
                             )
                         }
                     }
@@ -283,4 +288,15 @@ class AddEditCartOrderViewModel @Inject constructor(
             }
         }
     }
+}
+
+private fun AnalyticsHelper.logOnCreateOrUpdateOrder(cartOrderId: Int, message: String) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "cart_order_$message",
+            extras = listOf(
+                AnalyticsEvent.Param("cart_order_$message", cartOrderId.toString()),
+            ),
+        ),
+    )
 }

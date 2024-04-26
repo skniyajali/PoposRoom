@@ -22,14 +22,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.OpenInNew
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Tag
-import androidx.compose.material.icons.filled.TaskAlt
-import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -43,7 +35,6 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -64,7 +55,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.cartorder.destinations.AddEditCartOrderScreenDestination
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_ITEM_TAG
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_NOTE
@@ -74,7 +64,8 @@ import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.CartOrderTestTags.CREATE_NEW_CART_ORDER
 import com.niyaj.common.tags.CartOrderTestTags.DELETE_CART_ORDER_ITEM_MESSAGE
 import com.niyaj.common.tags.CartOrderTestTags.DELETE_CART_ORDER_ITEM_TITLE
-import com.niyaj.designsystem.theme.LightColor3
+import com.niyaj.designsystem.components.PoposTextButton
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -87,7 +78,7 @@ import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
 import com.niyaj.ui.components.StandardChip
 import com.niyaj.ui.components.StandardFAB
-import com.niyaj.ui.components.StandardScaffold
+import com.niyaj.ui.components.StandardScaffoldRoute
 import com.niyaj.ui.components.TextWithCount
 import com.niyaj.ui.components.stickyHeader
 import com.niyaj.ui.event.UiState
@@ -99,7 +90,7 @@ import com.niyaj.ui.utils.isScrolled
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.flow.collectLatest
@@ -109,7 +100,7 @@ import kotlinx.coroutines.launch
 @Destination(route = Screens.CART_ORDER_SCREEN)
 @Composable
 fun CartOrderScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     onClickOrderDetails: (Int) -> Unit,
     resultRecipient: ResultRecipient<AddEditCartOrderScreenDestination, String>,
     viewModel: CartOrderViewModel = hiltViewModel(),
@@ -160,6 +151,8 @@ fun CartOrderScreen(
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
+        } else {
+            navigator.navigateUp()
         }
     }
 
@@ -177,11 +170,11 @@ fun CartOrderScreen(
             }
         }
     }
-    
+
     TrackScreenViewEvent(screenName = Screens.CART_ORDER_SCREEN)
 
-    StandardScaffold(
-        navController = navController,
+    StandardScaffoldRoute(
+        currentRoute = Screens.CART_ORDER_SCREEN,
         title = if (selectedItems.isEmpty()) CART_ORDER_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
@@ -189,13 +182,13 @@ fun CartOrderScreen(
                 fabText = CREATE_NEW_CART_ORDER,
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
                 onFabClick = {
-                    navController.navigate(AddEditCartOrderScreenDestination())
+                    navigator.navigate(AddEditCartOrderScreenDestination())
                 },
                 onClickScroll = {
                     scope.launch {
                         lazyGridState.animateScrollToItem(0)
                     }
-                }
+                },
             )
         },
         navActions = {
@@ -209,7 +202,7 @@ fun CartOrderScreen(
                     openDialog.value = true
                 },
                 onEditClick = {
-                    navController.navigate(AddEditCartOrderScreenDestination(selectedItems.first()))
+                    navigator.navigate(AddEditCartOrderScreenDestination(selectedItems.first()))
                 },
                 onToggleMenu = { showMenu = !showMenu },
                 onDismissDropdown = { showMenu = false },
@@ -225,7 +218,7 @@ fun CartOrderScreen(
                 onSettingsClick = { /*TODO*/ },
                 onClickViewDetails = {
                     onClickOrderDetails(selectedItems.first())
-                }
+                },
             )
         },
         fabPosition = if (lazyGridState.isScrolled) FabPosition.End else FabPosition.Center,
@@ -234,7 +227,8 @@ fun CartOrderScreen(
         onDeselect = viewModel::deselectItems,
         onBackClick = viewModel::closeSearchBar,
         snackbarHostState = snackbarState,
-    ) { _ ->
+        onNavigateToScreen = navigator::navigate,
+    ) {
         when (state) {
             is UiState.Loading -> LoadingIndicator()
 
@@ -243,20 +237,24 @@ fun CartOrderScreen(
                     text = if (searchText.isEmpty()) CART_ORDER_NOT_AVAILABLE else CART_ORDER_SEARCH_PLACEHOLDER,
                     buttonText = CREATE_NEW_CART_ORDER,
                     onClick = {
-                        navController.navigate(AddEditCartOrderScreenDestination())
-                    }
+                        navigator.navigate(AddEditCartOrderScreenDestination())
+                    },
                 )
             }
 
             is UiState.Success -> {
-                TrackScrollJank(scrollableState = lazyGridState, stateName = "All Cart Orders::List")
+                TrackScrollJank(
+                    scrollableState = lazyGridState,
+                    stateName = "All Cart Orders::List",
+                )
 
                 LazyVerticalGrid(
                     modifier = Modifier
+                        .fillMaxSize()
                         .padding(SpaceSmall),
                     columns = GridCells.Fixed(2),
                     state = lazyGridState,
-                    horizontalArrangement = Arrangement.spacedBy(SpaceSmall)
+                    horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
                 ) {
                     item("Note", span = { GridItemSpan(2) }) {
                         ListItem(
@@ -267,18 +265,18 @@ fun CartOrderScreen(
                             headlineContent = {
                                 Text(
                                     text = CART_ORDER_NOTE,
-                                    style = MaterialTheme.typography.labelMedium
+                                    style = MaterialTheme.typography.labelMedium,
                                 )
                             },
                             leadingContent = {
                                 Icon(
-                                    imageVector = Icons.Default.Info,
-                                    contentDescription = "info"
+                                    imageVector = PoposIcons.Info,
+                                    contentDescription = "info",
                                 )
                             },
                             colors = ListItemDefaults.colors(
                                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            )
+                            ),
                         )
 
                         Spacer(modifier = Modifier.height(SpaceMedium))
@@ -291,15 +289,15 @@ fun CartOrderScreen(
                                     .background(
                                         if (lazyGridState.isScrollingUp())
                                             MaterialTheme.colorScheme.background
-                                        else Color.Transparent
+                                        else Color.Transparent,
                                     )
                                     .clip(
-                                        RoundedCornerShape(if (lazyGridState.isScrollingUp()) 4.dp else 0.dp)
+                                        RoundedCornerShape(if (lazyGridState.isScrollingUp()) 4.dp else 0.dp),
                                     ),
                                 text = date,
-                                leadingIcon = Icons.Default.CalendarMonth,
+                                leadingIcon = PoposIcons.CalenderMonth,
                                 count = orders.count(),
-                                onClick = {}
+                                onClick = {},
                             )
                         }
 
@@ -307,7 +305,7 @@ fun CartOrderScreen(
                             items = orders,
                             key = {
                                 it.orderId
-                            }
+                            },
                         ) { cartOrder ->
                             CartOrderData(
                                 item = cartOrder,
@@ -324,7 +322,7 @@ fun CartOrderScreen(
                                         onClickOrderDetails(it)
                                     }
                                 },
-                                onLongClick = viewModel::selectItem
+                                onLongClick = viewModel::selectItem,
                             )
                         }
                     }
@@ -345,30 +343,28 @@ fun CartOrderScreen(
             },
             text = {
                 Text(
-                    text = DELETE_CART_ORDER_ITEM_MESSAGE
+                    text = DELETE_CART_ORDER_ITEM_MESSAGE,
                 )
             },
             confirmButton = {
-                TextButton(
+                PoposTextButton(
+                    text = "Delete",
                     onClick = {
                         openDialog.value = false
                         viewModel.deleteItems()
                     },
-                ) {
-                    Text("Delete")
-                }
+                )
             },
             dismissButton = {
-                TextButton(
+                PoposTextButton(
+                    text = "Cancel",
                     onClick = {
                         openDialog.value = false
                         viewModel.deselectItems()
                     },
-                ) {
-                    Text("Cancel")
-                }
+                )
             },
-            shape = RoundedCornerShape(28.dp)
+            shape = RoundedCornerShape(28.dp),
         )
     }
 }
@@ -396,7 +392,7 @@ fun CartOrderScaffoldNavActions(
     onSelectOrderClick: () -> Unit,
     onClickViewDetails: () -> Unit,
     onSelectAllClick: () -> Unit,
-) = trace("CartOrderScaffoldNavActions"){
+) = trace("CartOrderScaffoldNavActions") {
     ScaffoldNavActions(
         selectionCount = selectionCount,
         showSearchIcon = showSearchIcon,
@@ -417,7 +413,7 @@ fun CartOrderScaffoldNavActions(
                     onClick = onToggleMenu,
                 ) {
                     Icon(
-                        imageVector = Icons.Default.MoreVert,
+                        imageVector = PoposIcons.MoreVert,
                         contentDescription = "View More Settings",
                     )
                 }
@@ -431,28 +427,28 @@ fun CartOrderScaffoldNavActions(
                         text = {
                             Text(
                                 text = "View All",
-                                style = MaterialTheme.typography.labelSmall
+                                style = MaterialTheme.typography.labelSmall,
                             )
                         },
                         trailingIcon = {
                             Icon(
-                                imageVector = Icons.Default.Visibility,
+                                imageVector = PoposIcons.Visibility,
                                 contentDescription = "View All",
                             )
-                        }
+                        },
                     )
                 }
             }
         },
         preActionContent = {
             AnimatedVisibility(
-                visible = selectionCount == 1
+                visible = selectionCount == 1,
             ) {
                 IconButton(
-                    onClick = onSelectOrderClick
+                    onClick = onSelectOrderClick,
                 ) {
                     Icon(
-                        imageVector = Icons.Default.TaskAlt,
+                        imageVector = PoposIcons.TaskAlt,
                         contentDescription = "Select Order",
                     )
                 }
@@ -460,18 +456,18 @@ fun CartOrderScaffoldNavActions(
         },
         postActionContent = {
             AnimatedVisibility(
-                visible = selectionCount == 1
+                visible = selectionCount == 1,
             ) {
                 IconButton(
-                    onClick = onClickViewDetails
+                    onClick = onClickViewDetails,
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                        imageVector = PoposIcons.OpenInNew,
                         contentDescription = "View Details",
                     )
                 }
             }
-        }
+        },
     )
 }
 
@@ -492,9 +488,11 @@ fun CartOrderData(
         modifier = modifier
             .testTag(CART_ORDER_ITEM_TAG.plus(item.orderId))
             .padding(vertical = SpaceSmall)
-            .then(borderStroke?.let {
-                Modifier.border(it, CardDefaults.elevatedShape)
-            } ?: Modifier)
+            .then(
+                borderStroke?.let {
+                    Modifier.border(it, CardDefaults.elevatedShape)
+                } ?: Modifier,
+            )
             .clip(CardDefaults.elevatedShape)
             .combinedClickable(
                 onClick = {
@@ -504,24 +502,22 @@ fun CartOrderData(
                     onLongClick(item.orderId)
                 },
             ),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = LightColor3
-        ),
+        colors = CardDefaults.elevatedCardColors(),
         elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 2.dp
-        )
+            defaultElevation = 2.dp,
+        ),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize(),
             horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             CircularBox(
                 modifier = Modifier.padding(SpaceSmall),
-                icon = Icons.Default.Tag,
+                icon = PoposIcons.Tag,
                 doesSelected = doesSelected(item.orderId),
-                showBorder = orderSelected(item.orderId)
+                showBorder = orderSelected(item.orderId),
             )
 
             Row(
@@ -531,7 +527,7 @@ fun CartOrderData(
             ) {
                 Column(
                     horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.SpaceBetween
+                    verticalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
                         buildAnnotatedString {
@@ -539,8 +535,8 @@ fun CartOrderData(
                                 withStyle(
                                     style = SpanStyle(
                                         color = Color.Red,
-                                        fontWeight = FontWeight.SemiBold
-                                    )
+                                        fontWeight = FontWeight.SemiBold,
+                                    ),
                                 ) {
                                     append(item.address.shortName.uppercase())
 
@@ -551,14 +547,14 @@ fun CartOrderData(
                             append(item.orderId.toString())
                         },
                         style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
 
                     Spacer(modifier = Modifier.height(SpaceSmall))
 
                     Text(
                         text = item.orderType.name,
-                        style = MaterialTheme.typography.labelSmall
+                        style = MaterialTheme.typography.labelSmall,
                     )
                 }
 

@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.CartOrderTestTags
 import com.niyaj.common.tags.SelectedTestTag.SELECTED_SCREEN_NOTE
 import com.niyaj.common.tags.SelectedTestTag.SELECTED_SCREEN_TITLE
@@ -65,6 +64,7 @@ import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 import kotlinx.coroutines.flow.collectLatest
@@ -76,7 +76,7 @@ import kotlinx.coroutines.flow.collectLatest
 )
 @Composable
 fun SelectOrderScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     onEditClick: (Int) -> Unit,
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: SelectedViewModel = hiltViewModel(),
@@ -110,9 +110,7 @@ fun SelectOrderScreen(
 
     StandardBottomSheetScaffold(
         title = SELECTED_SCREEN_TITLE,
-        onBackClick = {
-            navController.navigateUp()
-        },
+        onBackClick = navigator::navigateUp,
         showBottomBar = true,
         bottomBar = {
             StandardButton(
@@ -123,7 +121,7 @@ fun SelectOrderScreen(
                 text = CartOrderTestTags.CREATE_NEW_CART_ORDER,
                 icon = PoposIcons.Add,
                 onClick = {
-                    navController.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
+                    navigator.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
                 },
             )
         },
@@ -140,7 +138,7 @@ fun SelectOrderScreen(
                         text = CartOrderTestTags.CART_ORDER_NOT_AVAILABLE,
                         buttonText = CartOrderTestTags.CREATE_NEW_CART_ORDER,
                         onClick = {
-                            navController.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
+                            navigator.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
                         },
                     )
                 }
@@ -248,6 +246,7 @@ fun SelectOrderScreen(
 
 @Composable
 fun SelectedData(
+    modifier: Modifier = Modifier,
     cartOrder: CartOrder,
     doesSelected: (Int) -> Boolean,
     onSelectOrder: (Int) -> Unit,
@@ -255,7 +254,7 @@ fun SelectedData(
     onEditClick: (Int) -> Unit,
 ) = trace("CartOrders") {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(48.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -292,7 +291,7 @@ fun SelectedData(
             },
             leadingContent = {
                 CircularBox(
-                    icon = PoposIcons.Tags,
+                    icon = PoposIcons.Tag,
                     doesSelected = doesSelected(cartOrder.orderId),
                     size = 30.dp,
                 )

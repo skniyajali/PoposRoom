@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.utils.Constants
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceMedium
 
@@ -164,7 +165,7 @@ fun StandardBottomSheetScaffold(
                         onClick = onBackClick,
                     ) {
                         Icon(
-                            Icons.Filled.Close,
+                            imageVector = PoposIcons.Close,
                             contentDescription = "Close Sheet"
                         )
                     }

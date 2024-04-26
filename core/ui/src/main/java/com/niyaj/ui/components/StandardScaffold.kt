@@ -250,7 +250,7 @@ fun StandardScaffoldRoute(
     onBackClick: () -> Unit,
     onNavigateToScreen: (String) -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    content: @Composable () -> Unit,
+    content: @Composable (Shape) -> Unit,
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -395,7 +395,7 @@ fun StandardScaffoldRoute(
                 shape = shape.value,
                 elevation = CardDefaults.cardElevation(),
             ) {
-                content()
+                content(shape.value)
             }
         }
     }
@@ -630,7 +630,6 @@ fun StandardScaffoldRouteNew(
                             }
                         } else navigationIcon()
                     }
-
                 },
                 actions = {
                     navActions()
