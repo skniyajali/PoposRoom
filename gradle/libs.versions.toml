@@ -191,11 +191,11 @@ dialog-core = { group = "io.github.vanpra.compose-material-dialogs", name = "cor
 dialog-datetime = { group = "io.github.vanpra.compose-material-dialogs", name = "datetime", version.ref = "vanpraComposeVersion" }
 
 # Firebase Analytics & Bom
-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
-firebase-cloud-messaging = { group = "com.google.firebase", name = "firebase-messaging-ktx" }
-firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
-firebase-performance = { group = "com.google.firebase", name = "firebase-perf-ktx" }
+firebase-cloud-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+firebase-performance = { group = "com.google.firebase", name = "firebase-perf" }
 
 # Google OSS Plugins
 google-oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-licenses", version.ref = "googleOss" }
