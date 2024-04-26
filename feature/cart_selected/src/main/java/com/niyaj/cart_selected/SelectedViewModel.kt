@@ -12,7 +12,6 @@ import com.niyaj.ui.utils.UiEvent
 import com.samples.apps.core.analytics.AnalyticsEvent
 import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -33,7 +32,6 @@ class SelectedViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val selectedId = cartOrderRepository.getSelectedCartOrder()
         .mapLatest {
             it?.orderId ?: 0
@@ -41,7 +39,7 @@ class SelectedViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = 0
+            initialValue = 0,
         )
 
 
@@ -52,12 +50,13 @@ class SelectedViewModel @Inject constructor(
         getAllCartOrders()
     }
 
-    internal fun deleteCartOrder(cartOrderId: Int){
+    internal fun deleteCartOrder(cartOrderId: Int) {
         viewModelScope.launch {
-            when(val result = cartOrderRepository.deleteCartOrder(cartOrderId)) {
+            when (val result = cartOrderRepository.deleteCartOrder(cartOrderId)) {
                 is Resource.Error -> {
                     _eventFlow.emit(UiEvent.OnError(result.message ?: "Unable to delete"))
                 }
+
                 is Resource.Success -> {
                     _eventFlow.emit(UiEvent.OnSuccess("Cart Order deleted successfully"))
                 }
@@ -70,8 +69,8 @@ class SelectedViewModel @Inject constructor(
             val result = cartOrderRepository.insertOrUpdateSelectedOrder(
                 Selected(
                     selectedId = SELECTED_ID,
-                    orderId = orderId
-                )
+                    orderId = orderId,
+                ),
             )
 
             when (result) {
@@ -92,7 +91,7 @@ class SelectedViewModel @Inject constructor(
             cartOrderRepository.getAllProcessingCartOrders().collectLatest { list ->
                 if (list.isEmpty()) {
                     _cartOrders.value = UiState.Empty
-                }else {
+                } else {
                     _cartOrders.value = UiState.Success(list)
                 }
             }
