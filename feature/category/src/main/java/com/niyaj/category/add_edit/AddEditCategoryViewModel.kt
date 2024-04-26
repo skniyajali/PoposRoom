@@ -13,6 +13,8 @@ import com.niyaj.data.repository.CategoryRepository
 import com.niyaj.data.repository.validation.CategoryValidationRepository
 import com.niyaj.model.Category
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -30,6 +32,7 @@ class AddEditCategoryViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val validationRepository: CategoryValidationRepository,
     savedStateHandle: SavedStateHandle,
+    private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
     private var categoryId = savedStateHandle.get<Int>("categoryId")
@@ -51,7 +54,7 @@ class AddEditCategoryViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
 
@@ -82,7 +85,7 @@ class AddEditCategoryViewModel @Inject constructor(
                     result.data?.let { category ->
                         addEditState = addEditState.copy(
                             categoryName = category.categoryName,
-                            isAvailable = category.isAvailable
+                            isAvailable = category.isAvailable,
                         )
                     }
                 }
@@ -98,7 +101,7 @@ class AddEditCategoryViewModel @Inject constructor(
                     categoryName = addEditState.categoryName.trimEnd().capitalizeWords,
                     isAvailable = addEditState.isAvailable,
                     createdAt = System.currentTimeMillis(),
-                    updatedAt = if (categoryId != 0) System.currentTimeMillis() else null
+                    updatedAt = if (categoryId != 0) System.currentTimeMillis() else null,
                 )
 
                 when (categoryRepository.upsertCategory(addOnItem)) {
@@ -109,10 +112,23 @@ class AddEditCategoryViewModel @Inject constructor(
                     is Resource.Success -> {
                         val message = if (categoryId == 0) "Created" else "Updated"
                         _eventFlow.emit(UiEvent.OnSuccess("Category $message Successfully."))
+                        analyticsHelper.logOnCreateOrUpdateCategory(categoryId, message)
                     }
                 }
                 addEditState = AddEditCategoryState()
             }
         }
     }
+}
+
+
+private fun AnalyticsHelper.logOnCreateOrUpdateCategory(categoryId: Int, message: String) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "category_$message",
+            extras = listOf(
+                AnalyticsEvent.Param("category_$message", categoryId.toString()),
+            ),
+        ),
+    )
 }

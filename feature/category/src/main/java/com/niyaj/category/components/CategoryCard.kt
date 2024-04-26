@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Category
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.tags.CategoryConstants
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Category
 import com.niyaj.ui.components.CircularBox
@@ -43,9 +42,11 @@ fun CategoryData(
         modifier = modifier
             .testTag(CategoryConstants.CATEGORY_ITEM_TAG.plus(item.categoryId))
             .padding(SpaceSmall)
-            .then(borderStroke?.let {
-                Modifier.border(it, CardDefaults.elevatedShape)
-            } ?: Modifier)
+            .then(
+                borderStroke?.let {
+                    Modifier.border(it, CardDefaults.elevatedShape)
+                } ?: Modifier,
+            )
             .clip(CardDefaults.elevatedShape)
             .combinedClickable(
                 onClick = {
@@ -61,18 +62,18 @@ fun CategoryData(
                 .fillMaxWidth()
                 .padding(SpaceSmall),
             horizontalArrangement = Arrangement.spacedBy(SpaceSmall, Alignment.Start),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             CircularBox(
-                icon = Icons.Default.Category,
+                icon = PoposIcons.Category,
                 doesSelected = doesSelected(item.categoryId),
                 showBorder = !item.isAvailable,
-                text = item.categoryName
+                text = item.categoryName,
             )
 
             Text(
                 text = item.categoryName,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
             )
         }
     }

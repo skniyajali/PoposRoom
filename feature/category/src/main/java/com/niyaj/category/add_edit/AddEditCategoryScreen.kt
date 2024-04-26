@@ -8,10 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.AddressTestTags
 import com.niyaj.common.tags.CategoryConstants.ADD_EDIT_CATEGORY_SCREEN
 import com.niyaj.common.tags.CategoryConstants.CATEGORY_AVAILABLE_SWITCH
@@ -30,22 +25,24 @@ import com.niyaj.common.tags.CategoryConstants.CATEGORY_NAME_ERROR_TAG
 import com.niyaj.common.tags.CategoryConstants.CATEGORY_NAME_FIELD
 import com.niyaj.common.tags.CategoryConstants.CREATE_NEW_CATEGORY
 import com.niyaj.common.tags.CategoryConstants.UPDATE_CATEGORY
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
 @Destination(route = Screens.ADD_EDIT_CATEGORY_SCREEN)
 @Composable
 fun AddEditCategoryScreen(
     categoryId: Int = 0,
-    navController: NavController,
+    navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: AddEditCategoryViewModel = hiltViewModel(),
 ) {
@@ -69,11 +66,10 @@ fun AddEditCategoryScreen(
             }
         }
     }
-    
+
     TrackScreenViewEvent(screenName = Screens.ADD_EDIT_CATEGORY_SCREEN)
-    
-    StandardScaffoldNew(
-        navController = navController,
+
+    StandardScaffoldRouteNew(
         title = title,
         showBackButton = true,
         showBottomBar = true,
@@ -83,13 +79,14 @@ fun AddEditCategoryScreen(
                     .testTag(AddressTestTags.ADD_EDIT_ADDRESS_BTN)
                     .padding(SpaceMedium),
                 text = title,
-                icon = if (categoryId == 0) Icons.Default.Add else Icons.Default.Edit,
+                icon = if (categoryId == 0) PoposIcons.Add else PoposIcons.Edit,
                 enabled = enableBtn,
                 onClick = {
                     viewModel.onEvent(AddEditCategoryEvent.CreateUpdateAddEditCategory(categoryId))
-                }
+                },
             )
-        }
+        },
+        onBackClick = navigator::navigateUp,
     ) {
         Column(
             modifier = Modifier
@@ -101,13 +98,13 @@ fun AddEditCategoryScreen(
             StandardOutlinedTextField(
                 value = viewModel.addEditState.categoryName,
                 label = CATEGORY_NAME_FIELD,
-                leadingIcon = Icons.Default.Category,
+                leadingIcon = PoposIcons.Category,
                 isError = nameError != null,
                 errorText = nameError,
                 errorTextTag = CATEGORY_NAME_ERROR_TAG,
                 onValueChange = {
                     viewModel.onEvent(AddEditCategoryEvent.CategoryNameChanged(it))
-                }
+                },
             )
 
             Row(
@@ -119,7 +116,7 @@ fun AddEditCategoryScreen(
                     checked = viewModel.addEditState.isAvailable,
                     onCheckedChange = {
                         viewModel.onEvent(AddEditCategoryEvent.CategoryAvailabilityChanged)
-                    }
+                    },
                 )
                 Spacer(modifier = Modifier.width(SpaceSmall))
                 Text(
@@ -127,7 +124,7 @@ fun AddEditCategoryScreen(
                         "Marked as available"
                     else
                         "Marked as not available",
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelMedium,
                 )
             }
 

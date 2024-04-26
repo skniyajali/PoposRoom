@@ -1,6 +1,7 @@
 package com.niyaj.category
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -11,7 +12,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.category.components.CategoryData
 import com.niyaj.category.destinations.AddEditCategoryScreenDestination
 import com.niyaj.category.destinations.CategorySettingsScreenDestination
@@ -34,13 +33,16 @@ import com.niyaj.common.tags.CategoryConstants.CREATE_NEW_CATEGORY
 import com.niyaj.common.tags.CategoryConstants.DELETE_CATEGORY_ITEM_MESSAGE
 import com.niyaj.common.tags.CategoryConstants.DELETE_CATEGORY_ITEM_TITLE
 import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
+import com.niyaj.designsystem.components.PoposTextButton
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Category
+import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
 import com.niyaj.ui.components.StandardFAB
-import com.niyaj.ui.components.StandardScaffold
+import com.niyaj.ui.components.StandardScaffoldRoute
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -49,7 +51,7 @@ import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
@@ -58,7 +60,7 @@ import kotlinx.coroutines.launch
 @Destination(route = Screens.CATEGORY_SCREEN)
 @Composable
 fun CategoryScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: CategoryViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditCategoryScreenDestination, String>,
     exportRecipient: ResultRecipient<ExportCategoryScreenDestination, String>,
@@ -105,7 +107,7 @@ fun CategoryScreen(
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
         } else {
-            navController.navigateUp()
+            navigator.navigateUp()
         }
     }
 
@@ -125,7 +127,7 @@ fun CategoryScreen(
     }
 
     exportRecipient.onNavResult { result ->
-        when(result) {
+        when (result) {
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
                 scope.launch {
@@ -136,7 +138,7 @@ fun CategoryScreen(
     }
 
     importRecipient.onNavResult { result ->
-        when(result) {
+        when (result) {
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
                 scope.launch {
@@ -145,11 +147,11 @@ fun CategoryScreen(
             }
         }
     }
-    
+
     TrackScreenViewEvent(screenName = Screens.CATEGORY_SCREEN)
 
-    StandardScaffold(
-        navController = navController,
+    StandardScaffoldRoute(
+        currentRoute = Screens.CATEGORY_SCREEN,
         title = if (selectedItems.isEmpty()) CATEGORY_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
@@ -157,13 +159,13 @@ fun CategoryScreen(
                 fabText = CREATE_NEW_CATEGORY,
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
                 onFabClick = {
-                    navController.navigate(AddEditCategoryScreenDestination())
+                    navigator.navigate(AddEditCategoryScreenDestination())
                 },
                 onClickScroll = {
                     scope.launch {
                         lazyGridState.animateScrollToItem(0)
                     }
-                }
+                },
             )
         },
         navActions = {
@@ -175,18 +177,18 @@ fun CategoryScreen(
                 showSearchIcon = showFab,
                 searchText = searchText,
                 onEditClick = {
-                    navController.navigate(AddEditCategoryScreenDestination(selectedItems.first()))
+                    navigator.navigate(AddEditCategoryScreenDestination(selectedItems.first()))
                 },
                 onDeleteClick = {
                     openDialog.value = true
                 },
                 onSettingsClick = {
-                    navController.navigate(CategorySettingsScreenDestination)
+                    navigator.navigate(CategorySettingsScreenDestination)
                 },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
                 onSearchClick = viewModel::openSearchBar,
-                onSearchTextChanged = viewModel::searchTextChanged
+                onSearchTextChanged = viewModel::searchTextChanged,
             )
         },
         fabPosition = if (lazyGridState.isScrolled) FabPosition.End else FabPosition.Center,
@@ -195,6 +197,7 @@ fun CategoryScreen(
         onDeselect = viewModel::deselectItems,
         onBackClick = viewModel::closeSearchBar,
         snackbarHostState = snackbarState,
+        onNavigateToScreen = navigator::navigate,
     ) { _ ->
         when (state) {
             is UiState.Loading -> LoadingIndicator()
@@ -204,8 +207,8 @@ fun CategoryScreen(
                     text = if (searchText.isEmpty()) CATEGORY_NOT_AVAILABLE else SEARCH_ITEM_NOT_FOUND,
                     buttonText = CREATE_NEW_CATEGORY,
                     onClick = {
-                        navController.navigate(AddEditCategoryScreenDestination())
-                    }
+                        navigator.navigate(AddEditCategoryScreenDestination())
+                    },
                 )
             }
 
@@ -214,13 +217,14 @@ fun CategoryScreen(
 
                 LazyVerticalGrid(
                     modifier = Modifier
+                        .fillMaxSize()
                         .padding(SpaceSmall),
                     columns = GridCells.Fixed(2),
                     state = lazyGridState,
                 ) {
                     items(
                         items = state.data,
-                        key = { it.categoryId }
+                        key = { it.categoryId },
                     ) { item: Category ->
                         CategoryData(
                             item = item,
@@ -232,7 +236,7 @@ fun CategoryScreen(
                                     viewModel.selectItem(it)
                                 }
                             },
-                            onLongClick = viewModel::selectItem
+                            onLongClick = viewModel::selectItem,
                         )
                     }
                 }
@@ -246,35 +250,40 @@ fun CategoryScreen(
                 openDialog.value = false
                 viewModel.deselectItems()
             },
+            icon = {
+                CircularBox(
+                    icon = PoposIcons.Info,
+                    doesSelected = false,
+                    size = 80.dp,
+                )
+            },
             title = {
                 Text(text = DELETE_CATEGORY_ITEM_TITLE)
             },
             text = {
                 Text(
-                    text = DELETE_CATEGORY_ITEM_MESSAGE
+                    text = DELETE_CATEGORY_ITEM_MESSAGE,
                 )
             },
             confirmButton = {
-                TextButton(
+                PoposTextButton(
+                    text = "Delete",
                     onClick = {
                         openDialog.value = false
                         viewModel.deleteItems()
                     },
-                ) {
-                    Text("Delete")
-                }
+                )
             },
             dismissButton = {
-                TextButton(
+                PoposTextButton(
+                    text = "Cancel",
                     onClick = {
                         openDialog.value = false
                         viewModel.deselectItems()
                     },
-                ) {
-                    Text("Cancel")
-                }
+                )
             },
-            shape = RoundedCornerShape(28.dp)
+            shape = RoundedCornerShape(28.dp),
         )
     }
 }

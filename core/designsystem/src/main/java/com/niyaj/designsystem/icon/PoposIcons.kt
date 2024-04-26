@@ -10,23 +10,28 @@ import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeliveryDining
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.DinnerDining
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.EditLocationAlt
+import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person4
 import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.TaskAlt
+import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -35,6 +40,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
  * Popos icons. Material icons are [ImageVector]s, custom icons are drawable resource IDs.
  */
 object PoposIcons {
+    val FileOpen: ImageVector = Icons.Default.FileOpen
+    val Download: ImageVector = Icons.Default.Download
+    val Import: ImageVector = Icons.Default.SaveAlt
+    val Upload: ImageVector = Icons.Default.Upload
+    val Checklist: ImageVector = Icons.Default.Checklist
     val PhoneAndroid: ImageVector = Icons.Default.PhoneAndroid
     val DeliveryDining: ImageVector = Icons.Default.DeliveryDining
     val DinnerDining: ImageVector = Icons.Default.DinnerDining

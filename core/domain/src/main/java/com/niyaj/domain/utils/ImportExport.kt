@@ -8,10 +8,17 @@ import android.provider.MediaStore
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 private const val JSON_FILE_TYPE = "application/json"
 private const val JSON_FILE_EXTENSION = ".json"
@@ -26,7 +33,7 @@ object ImportExport {
     ): Intent {
         val intent = Intent(
             Intent.ACTION_OPEN_DOCUMENT,
-            pickerInitialUri
+            pickerInitialUri,
         ).apply {
             type = mimeType
             addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
@@ -41,7 +48,7 @@ object ImportExport {
     fun createFile(context: Context, fileName: String = SAVABLE_FILE_NAME): Intent {
         val intent = Intent(
             Intent.ACTION_CREATE_DOCUMENT,
-            getUri(context)
+            getUri(context),
         ).apply {
             type = JSON_FILE_TYPE
             addCategory(Intent.CATEGORY_OPENABLE)
@@ -77,6 +84,74 @@ object ImportExport {
     }
 
     @OptIn(ExperimentalStdlibApi::class)
+    suspend inline fun <reified T> writeDataAsync(
+        context: Context,
+        uri: Uri,
+        data: List<T>,
+    ): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val moshi = Moshi.Builder().build().adapter<List<T>>()
+                val jsonData = moshi.toJson(data)
+                val lock = ReentrantLock()
+
+                context.applicationContext.contentResolver.openOutputStream(uri, "rwt")
+                    ?.use { outputStream ->
+                        val bufferedWriter = outputStream.bufferedWriter()
+
+                        lock.withLock {
+                            bufferedWriter.write(jsonData)
+                            bufferedWriter.flush()
+                        }
+
+                        outputStream.close()
+                    }
+
+                Result.success("Data written successfully")
+            } catch (e: FileNotFoundException) {
+                Result.failure(e)
+            } catch (e: IOException) {
+                Result.failure(e)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    suspend inline fun <reified T> writeDataFlow(
+        context: Context,
+        uri: Uri,
+        data: List<T>,
+    ): Flow<Result<Unit>> = callbackFlow {
+        withContext(Dispatchers.IO) {
+            try {
+                val moshi = Moshi.Builder().build().adapter<List<T>>()
+                val jsonData = moshi.toJson(data)
+
+                val contentResolver = context.applicationContext.contentResolver
+                val outputStream = contentResolver.openOutputStream(uri, "rwt")?.let { stream ->
+                    stream.bufferedWriter().apply {
+                        write(jsonData)
+                        flush()
+                        close()
+                    }
+
+                    awaitClose {
+                        stream.close()
+                    }
+
+                    trySendBlocking(Result.success(Unit))
+                }
+            } catch (e: IOException) {
+                trySendBlocking(Result.failure(e))
+            } catch (e: Exception) {
+                trySendBlocking(Result.failure(e))
+            }
+        }
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
     suspend inline fun <reified T> readData(context: Context, uri: Uri): List<T> {
         try {
             val container = mutableListOf<T>()
@@ -104,6 +179,34 @@ object ImportExport {
             return emptyList()
         } catch (e: Exception) {
             return emptyList()
+        }
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    suspend inline fun <reified T> readDataAsync(context: Context, uri: Uri): List<T> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val container = mutableListOf<T>()
+                val moshi = Moshi.Builder().build().adapter<List<T>>().nullSafe()
+
+                context.applicationContext.contentResolver.openInputStream(uri)
+                    ?.use { inputStream ->
+                        val reader = inputStream.bufferedReader()
+                        val jsonData = async { reader.readText() }
+                        jsonData.await().let { data ->
+                            moshi.fromJson(data)?.let { container.addAll(it) }
+                        }
+                        reader.close()
+                    }
+
+                container.toList()
+            } catch (e: FileNotFoundException) {
+                emptyList()
+            } catch (e: IOException) {
+                emptyList()
+            } catch (e: Exception) {
+                emptyList()
+            }
         }
     }
 
