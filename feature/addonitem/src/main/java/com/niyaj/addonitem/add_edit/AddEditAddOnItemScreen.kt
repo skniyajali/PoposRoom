@@ -9,11 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.CurrencyRupee
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,6 +30,7 @@ import com.niyaj.common.tags.AddOnTestTags.ADD_EDIT_ADDON_SCREEN
 import com.niyaj.common.tags.AddOnTestTags.CREATE_NEW_ADD_ON
 import com.niyaj.common.tags.AddOnTestTags.EDIT_ADD_ON_ITEM
 import com.niyaj.common.utils.safeString
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.StandardButton
@@ -54,7 +50,7 @@ fun AddEditAddOnItemScreen(
     itemId: Int = 0,
     navigator: DestinationsNavigator,
     viewModel: AddEditAddOnItemViewModel = hiltViewModel(),
-    resultBackNavigator: ResultBackNavigator<String>
+    resultBackNavigator: ResultBackNavigator<String>,
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -96,12 +92,12 @@ fun AddEditAddOnItemScreen(
                     .padding(SpaceMedium),
                 text = title,
                 enabled = enableBtn,
-                icon = if (itemId == 0) Icons.Default.Add else Icons.Default.Edit,
+                icon = if (itemId == 0) PoposIcons.Add else PoposIcons.Edit,
                 onClick = {
                     viewModel.onEvent(AddEditAddOnItemEvent.CreateUpdateAddOnItem(itemId))
-                }
+                },
             )
-        }
+        },
     ) {
         TrackScrollJank(scrollableState = lazyListState, stateName = "Create New Addon::Fields")
 
@@ -117,13 +113,13 @@ fun AddEditAddOnItemScreen(
                 StandardOutlinedTextField(
                     value = viewModel.addEditState.itemName,
                     label = ADDON_NAME_FIELD,
-                    leadingIcon = Icons.Default.Category,
+                    leadingIcon = PoposIcons.Category,
                     isError = nameError != null,
                     errorText = nameError,
                     errorTextTag = ADDON_NAME_ERROR_TAG,
                     onValueChange = {
                         viewModel.onEvent(AddEditAddOnItemEvent.ItemNameChanged(it))
-                    }
+                    },
                 )
             }
 
@@ -131,14 +127,14 @@ fun AddEditAddOnItemScreen(
                 StandardOutlinedTextField(
                     value = viewModel.addEditState.itemPrice.safeString,
                     label = ADDON_PRICE_FIELD,
-                    leadingIcon = Icons.Default.CurrencyRupee,
+                    leadingIcon = PoposIcons.Rupee,
                     isError = priceError != null,
                     errorText = priceError,
                     keyboardType = KeyboardType.Number,
                     errorTextTag = ADDON_PRICE_ERROR_TAG,
                     onValueChange = {
                         viewModel.onEvent(AddEditAddOnItemEvent.ItemPriceChanged(it))
-                    }
+                    },
                 )
             }
 
@@ -152,7 +148,7 @@ fun AddEditAddOnItemScreen(
                         checked = viewModel.addEditState.isApplicable,
                         onCheckedChange = {
                             viewModel.onEvent(AddEditAddOnItemEvent.ItemApplicableChanged)
-                        }
+                        },
                     )
                     Spacer(modifier = Modifier.width(SpaceSmall))
                     Text(
@@ -161,7 +157,7 @@ fun AddEditAddOnItemScreen(
                         else
                             "Marked as not applied",
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = MaterialTheme.colorScheme.onBackground,
                     )
                 }
             }

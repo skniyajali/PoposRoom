@@ -25,10 +25,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Apps
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedCard
@@ -64,6 +60,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.Constants.DRAWER_ICON
 import com.niyaj.common.utils.Constants.STANDARD_BACK_BUTTON
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor6
 import com.niyaj.designsystem.theme.Parchment
 import com.niyaj.designsystem.theme.RoyalPurple
@@ -110,7 +107,7 @@ fun StandardScaffold(
         )
 
         systemUiController.setNavigationBarColor(
-            color = navColor
+            color = navColor,
         )
     }
 
@@ -118,10 +115,10 @@ fun StandardScaffold(
         drawerState = drawerState,
         drawerContent = {
             StandardDrawer(
-                navController = navController
+                navController = navController,
             )
         },
-        gesturesEnabled = true
+        gesturesEnabled = true,
     ) {
         Scaffold(
             topBar = {
@@ -133,10 +130,10 @@ fun StandardScaffold(
                         if (showBackButton) {
                             IconButton(
                                 onClick = onBackClick,
-                                modifier = Modifier.testTag(STANDARD_BACK_BUTTON)
+                                modifier = Modifier.testTag(STANDARD_BACK_BUTTON),
                             ) {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    imageVector = PoposIcons.Back,
                                     contentDescription = null,
                                 )
                             }
@@ -145,21 +142,21 @@ fun StandardScaffold(
                                 targetState = selectedState,
                                 transitionSpec = {
                                     (fadeIn()).togetherWith(
-                                        fadeOut(animationSpec = tween(200))
+                                        fadeOut(animationSpec = tween(200)),
                                     )
                                 },
                                 label = "navigationIcon",
                                 contentKey = {
                                     it
-                                }
+                                },
                             ) { state ->
                                 if (state.currentState != 0) {
                                     IconButton(
-                                        onClick = onDeselect
+                                        onClick = onDeselect,
                                     ) {
                                         Icon(
-                                            imageVector = Icons.Default.Close,
-                                            contentDescription = Constants.CLEAR_ICON
+                                            imageVector = PoposIcons.Close,
+                                            contentDescription = Constants.CLEAR_ICON,
                                         )
                                     }
                                 } else {
@@ -168,11 +165,11 @@ fun StandardScaffold(
                                             scope.launch {
                                                 drawerState.open()
                                             }
-                                        }
+                                        },
                                     ) {
                                         Icon(
-                                            imageVector = Icons.Default.Apps,
-                                            contentDescription = DRAWER_ICON
+                                            imageVector = PoposIcons.App,
+                                            contentDescription = DRAWER_ICON,
                                         )
                                     }
                                 }
@@ -186,8 +183,8 @@ fun StandardScaffold(
                         scrolledContainerColor = RoyalPurple,
                         navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
                         titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                        actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                        actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
                 )
             },
             bottomBar = {
@@ -197,13 +194,13 @@ fun StandardScaffold(
                     enter = fadeIn() + slideInVertically(
                         initialOffsetY = { fullHeight ->
                             fullHeight / 4
-                        }
+                        },
                     ),
                     exit = fadeOut() + slideOutVertically(
                         targetOffsetY = { fullHeight ->
                             fullHeight / 4
-                        }
-                    )
+                        },
+                    ),
                 ) {
                     bottomBar()
                 }
@@ -277,7 +274,7 @@ fun StandardScaffoldRoute(
         )
 
         systemUiController.setNavigationBarColor(
-            color = navColor
+            color = navColor,
         )
     }
 
@@ -286,10 +283,10 @@ fun StandardScaffoldRoute(
         drawerContent = {
             StandardDrawer(
                 currentRoute = currentRoute,
-                onNavigateToScreen = onNavigateToScreen
+                onNavigateToScreen = onNavigateToScreen,
             )
         },
-        gesturesEnabled = true
+        gesturesEnabled = true,
     ) {
         Scaffold(
             topBar = {
@@ -301,10 +298,10 @@ fun StandardScaffoldRoute(
                         if (showBackButton) {
                             IconButton(
                                 onClick = onBackClick,
-                                modifier = Modifier.testTag(STANDARD_BACK_BUTTON)
+                                modifier = Modifier.testTag(STANDARD_BACK_BUTTON),
                             ) {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    imageVector = PoposIcons.Back,
                                     contentDescription = null,
                                 )
                             }
@@ -313,21 +310,21 @@ fun StandardScaffoldRoute(
                                 targetState = selectedState,
                                 transitionSpec = {
                                     (fadeIn()).togetherWith(
-                                        fadeOut(animationSpec = tween(200))
+                                        fadeOut(animationSpec = tween(200)),
                                     )
                                 },
                                 label = "navigationIcon",
                                 contentKey = {
                                     it
-                                }
+                                },
                             ) { state ->
                                 if (state.currentState != 0) {
                                     IconButton(
-                                        onClick = onDeselect
+                                        onClick = onDeselect,
                                     ) {
                                         Icon(
-                                            imageVector = Icons.Default.Close,
-                                            contentDescription = Constants.CLEAR_ICON
+                                            imageVector = PoposIcons.Close,
+                                            contentDescription = Constants.CLEAR_ICON,
                                         )
                                     }
                                 } else {
@@ -336,11 +333,11 @@ fun StandardScaffoldRoute(
                                             scope.launch {
                                                 drawerState.open()
                                             }
-                                        }
+                                        },
                                     ) {
                                         Icon(
-                                            imageVector = Icons.Default.Apps,
-                                            contentDescription = DRAWER_ICON
+                                            imageVector = PoposIcons.App,
+                                            contentDescription = DRAWER_ICON,
                                         )
                                     }
                                 }
@@ -354,8 +351,8 @@ fun StandardScaffoldRoute(
                         scrolledContainerColor = RoyalPurple,
                         navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
                         titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                        actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                        actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
                 )
             },
             bottomBar = {
@@ -365,13 +362,13 @@ fun StandardScaffoldRoute(
                     enter = fadeIn() + slideInVertically(
                         initialOffsetY = { fullHeight ->
                             fullHeight / 4
-                        }
+                        },
                     ),
                     exit = fadeOut() + slideOutVertically(
                         targetOffsetY = { fullHeight ->
                             fullHeight / 4
-                        }
-                    )
+                        },
+                    ),
                 ) {
                     bottomBar()
                 }
@@ -450,10 +447,10 @@ fun StandardScaffoldNew(
         drawerState = drawerState,
         drawerContent = {
             StandardDrawer(
-                navController = navController
+                navController = navController,
             )
         },
-        gesturesEnabled = true
+        gesturesEnabled = true,
     ) {
         Scaffold(
             topBar = {
@@ -465,12 +462,12 @@ fun StandardScaffoldNew(
                         if (showBackButton) {
                             IconButton(
                                 onClick = onBackClick,
-                                modifier = Modifier.testTag(STANDARD_BACK_BUTTON)
+                                modifier = Modifier.testTag(STANDARD_BACK_BUTTON),
                             ) {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    imageVector = PoposIcons.Back,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.scrim
+                                    tint = MaterialTheme.colorScheme.scrim,
                                 )
                             }
                         } else if (showDrawer) {
@@ -479,11 +476,11 @@ fun StandardScaffoldNew(
                                     scope.launch {
                                         drawerState.open()
                                     }
-                                }
+                                },
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Apps,
-                                    contentDescription = null
+                                    imageVector = PoposIcons.App,
+                                    contentDescription = null,
                                 )
                             }
                         } else navigationIcon()
@@ -494,8 +491,8 @@ fun StandardScaffoldNew(
                     scrollBehavior = scrollBehavior,
                     colors = TopAppBarDefaults.largeTopAppBarColors(
                         containerColor = color.value,
-                        scrolledContainerColor = color.value
-                    )
+                        scrolledContainerColor = color.value,
+                    ),
                 )
             },
             bottomBar = {
@@ -505,13 +502,13 @@ fun StandardScaffoldNew(
                     enter = fadeIn() + slideInVertically(
                         initialOffsetY = { fullHeight ->
                             fullHeight / 4
-                        }
+                        },
                     ),
                     exit = fadeOut() + slideOutVertically(
                         targetOffsetY = { fullHeight ->
                             fullHeight / 4
-                        }
-                    )
+                        },
+                    ),
                 ) {
                     bottomBar()
                 }
@@ -523,13 +520,13 @@ fun StandardScaffoldNew(
                     enter = fadeIn() + slideInVertically(
                         initialOffsetY = { fullHeight ->
                             fullHeight / 4
-                        }
+                        },
                     ),
                     exit = fadeOut() + slideOutVertically(
                         targetOffsetY = { fullHeight ->
                             fullHeight / 4
-                        }
-                    )
+                        },
+                    ),
                 ) {
                     floatingActionButton()
                 }
@@ -541,7 +538,7 @@ fun StandardScaffoldNew(
                 .fillMaxSize()
                 .navigationBarsPadding()
                 .imePadding(),
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = MaterialTheme.colorScheme.background,
         ) { padding ->
             ElevatedCard(
                 modifier = Modifier
@@ -555,8 +552,8 @@ fun StandardScaffoldNew(
                 shape = shape.value,
                 elevation = CardDefaults.cardElevation(),
                 colors = CardDefaults.elevatedCardColors(
-                    containerColor = boxColor.value
-                )
+                    containerColor = boxColor.value,
+                ),
             ) {
                 content(padding)
             }
@@ -616,19 +613,19 @@ fun StandardScaffoldRouteNew(
                         label = "Show Navigation Icon",
                         transitionSpec = {
                             (fadeIn()).togetherWith(
-                                fadeOut(animationSpec = tween(200))
+                                fadeOut(animationSpec = tween(200)),
                             )
-                        }
+                        },
                     ) {
                         if (it) {
                             IconButton(
                                 onClick = onBackClick,
-                                modifier = Modifier.testTag(STANDARD_BACK_BUTTON)
+                                modifier = Modifier.testTag(STANDARD_BACK_BUTTON),
                             ) {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    imageVector = PoposIcons.Back,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.scrim
+                                    tint = MaterialTheme.colorScheme.scrim,
                                 )
                             }
                         } else navigationIcon()
@@ -642,7 +639,7 @@ fun StandardScaffoldRouteNew(
                 colors = TopAppBarDefaults.largeTopAppBarColors(
                     containerColor = color.value,
                     scrolledContainerColor = color.value,
-                )
+                ),
             )
         },
         bottomBar = {
@@ -652,13 +649,13 @@ fun StandardScaffoldRouteNew(
                 enter = fadeIn() + slideInVertically(
                     initialOffsetY = { fullHeight ->
                         fullHeight / 4
-                    }
+                    },
                 ),
                 exit = fadeOut() + slideOutVertically(
                     targetOffsetY = { fullHeight ->
                         fullHeight / 4
-                    }
-                )
+                    },
+                ),
             ) {
                 bottomBar()
             }
@@ -670,13 +667,13 @@ fun StandardScaffoldRouteNew(
                 enter = fadeIn() + slideInVertically(
                     initialOffsetY = { fullHeight ->
                         fullHeight / 4
-                    }
+                    },
                 ),
                 exit = fadeOut() + slideOutVertically(
                     targetOffsetY = { fullHeight ->
                         fullHeight / 4
-                    }
-                )
+                    },
+                ),
             ) {
                 floatingActionButton()
             }
@@ -687,7 +684,7 @@ fun StandardScaffoldRouteNew(
             .testTag(title)
             .fillMaxSize()
             .imePadding(),
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
         ElevatedCard(
             modifier = Modifier
@@ -695,7 +692,7 @@ fun StandardScaffoldRouteNew(
                 .padding(
                     start = padding.calculateStartPadding(layoutDirection),
                     top = padding.calculateTopPadding(),
-                    end = padding.calculateEndPadding(layoutDirection)
+                    end = padding.calculateEndPadding(layoutDirection),
                 )
                 .windowInsetsPadding(
                     WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
@@ -704,8 +701,8 @@ fun StandardScaffoldRouteNew(
             shape = shape.value,
             elevation = CardDefaults.cardElevation(),
             colors = CardDefaults.elevatedCardColors(
-                containerColor = boxColor.value
-            )
+                containerColor = boxColor.value,
+            ),
         ) {
             content()
         }
@@ -717,7 +714,7 @@ internal fun containerColorForPrimary(colorTransitionFraction: Float): Color {
     return lerp(
         MaterialTheme.colorScheme.primary,
         RoyalPurple,
-        FastOutLinearInEasing.transform(colorTransitionFraction)
+        FastOutLinearInEasing.transform(colorTransitionFraction),
     )
 }
 
@@ -726,7 +723,7 @@ internal fun containerColorForSecondary(colorTransitionFraction: Float): Color {
     return lerp(
         SeaShell,
         Parchment,
-        FastOutLinearInEasing.transform(colorTransitionFraction)
+        FastOutLinearInEasing.transform(colorTransitionFraction),
     )
 }
 
@@ -735,7 +732,7 @@ internal fun containerColor(colorTransitionFraction: Float): Color {
     return lerp(
         LightColor6,
         MaterialTheme.colorScheme.surfaceContainerLowest,
-        FastOutLinearInEasing.transform(colorTransitionFraction)
+        FastOutLinearInEasing.transform(colorTransitionFraction),
     )
 }
 
@@ -745,7 +742,7 @@ internal fun containerShape(colorTransitionFraction: Float): Shape {
     val data = lerp(
         CornerRadius(48f, 48f),
         CornerRadius(0f, 0f),
-        FastOutLinearInEasing.transform(colorTransitionFraction)
+        FastOutLinearInEasing.transform(colorTransitionFraction),
     )
 
     return RoundedCornerShape(data.x, data.y)

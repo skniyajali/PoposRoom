@@ -61,7 +61,7 @@ fun DineInScreen(
                     val result = snackbarHostState.showSnackbar(
                         message = event.successMessage,
                         actionLabel = "View",
-                        duration = SnackbarDuration.Short
+                        duration = SnackbarDuration.Short,
                     )
                     if (result == SnackbarResult.ActionPerformed) {
                         onNavigateToOrderScreen()
@@ -71,7 +71,7 @@ fun DineInScreen(
                 is UiEvent.OnError -> {
                     snackbarHostState.showSnackbar(
                         message = event.errorMessage,
-                        duration = SnackbarDuration.Short
+                        duration = SnackbarDuration.Short,
                     )
                 }
             }
@@ -89,13 +89,13 @@ fun DineInScreen(
                 enter = fadeIn() + slideInVertically(
                     initialOffsetY = { fullHeight ->
                         fullHeight / 4
-                    }
+                    },
                 ),
                 exit = fadeOut() + slideOutVertically(
                     targetOffsetY = { fullHeight ->
                         fullHeight / 4
-                    }
-                )
+                    },
+                ),
             ) {
                 CartFooterPlaceOrder(
                     countTotalItems = countTotalDineInItems,
@@ -107,7 +107,7 @@ fun DineInScreen(
                     onClickPlaceAllOrder = {
                         viewModel.onEvent(DineInEvent.PlaceAllDineInOrder)
                     },
-                    onClickPrintAllOrder = {}
+                    onClickPrintAllOrder = {},
                 )
             }
         },
@@ -122,7 +122,7 @@ fun DineInScreen(
                 image = painterResource(R.drawable.emptycart),
                 onClick = {
                     navController.navigate(Screens.HOME_SCREEN)
-                }
+                },
             )
         } else {
             TrackScrollJank(scrollableState = lazyListState, stateName = "DineIn Orders::Cart")

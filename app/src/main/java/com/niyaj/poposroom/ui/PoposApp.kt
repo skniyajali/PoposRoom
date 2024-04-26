@@ -1,6 +1,8 @@
 package com.niyaj.poposroom.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -109,7 +111,9 @@ fun PoposApp(
             */
 
             PoposNavHost(
-                modifier = Modifier,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .navigationBarsPadding(),
                 appState = appState,
                 startRoute = RootNavGraph.startRoute,
             )

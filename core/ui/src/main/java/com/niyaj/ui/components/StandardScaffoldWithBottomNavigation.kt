@@ -1,5 +1,6 @@
 package com.niyaj.ui.components
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -15,11 +16,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Apps
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerValue
@@ -50,10 +46,12 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.utils.Constants
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.ui.utils.Screens
 import kotlinx.coroutines.launch
 
+@SuppressLint("DesignSystem")
 @Stable
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -139,7 +137,7 @@ fun StandardScaffoldWithBottomNavigation(
                                 modifier = Modifier.testTag(Constants.STANDARD_BACK_BUTTON)
                             ) {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    imageVector = PoposIcons.Back,
                                     contentDescription = Constants.STANDARD_BACK_BUTTON
                                 )
                             }
@@ -148,7 +146,7 @@ fun StandardScaffoldWithBottomNavigation(
                                 onClick = onBackClick
                             ) {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    imageVector = PoposIcons.Back,
                                     contentDescription = Constants.STANDARD_BACK_BUTTON
                                 )
                             }
@@ -161,7 +159,7 @@ fun StandardScaffoldWithBottomNavigation(
                                 }
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Apps,
+                                    imageVector = PoposIcons.App,
                                     contentDescription = null
                                 )
                             }
@@ -180,7 +178,7 @@ fun StandardScaffoldWithBottomNavigation(
                                 onClick = openSearchBar
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Search,
+                                    imageVector = PoposIcons.Search,
                                     contentDescription = Constants.SEARCH_ICON
                                 )
                             }
@@ -235,7 +233,7 @@ fun StandardScaffoldWithBottomNavigation(
                         containerColor = MaterialTheme.colorScheme.secondary
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Add,
+                            imageVector = PoposIcons.Add,
                             contentDescription = "Create new order"
                         )
                     }

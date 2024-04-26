@@ -4,8 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -16,6 +14,7 @@ import com.niyaj.cart.components.Tabs
 import com.niyaj.cart.components.TabsContent
 import com.niyaj.cart.dine_in.DineInScreen
 import com.niyaj.cart.dine_out.DineOutScreen
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.ui.components.StandardScaffoldWithBottomNavigation
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -46,7 +45,7 @@ fun CartScreen(
                 onClick = onNavigateToOrderScreen,
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Inventory2,
+                    imageVector = PoposIcons.Order,
                     contentDescription = "go to order screen",
                 )
             }
@@ -54,7 +53,7 @@ fun CartScreen(
         bottomBar = {},
         showBackButton = true,
         onBackClick = navController::navigateUp,
-        onNavigateToScreen = navController::navigate
+        onNavigateToScreen = navController::navigate,
     ) {
         val tabs = listOf(
             CartTabItem.DineOutItem {

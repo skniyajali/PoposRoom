@@ -17,8 +17,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -26,7 +24,6 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -53,6 +50,8 @@ import com.niyaj.common.tags.AddOnTestTags.DELETE_ADD_ON_ITEM_MESSAGE
 import com.niyaj.common.tags.AddOnTestTags.DELETE_ADD_ON_ITEM_TITLE
 import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.components.PoposTextButton
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
 import com.niyaj.ui.components.CircularBox
@@ -160,6 +159,8 @@ fun AddOnItemScreen(
             viewModel.deselectItems()
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
+        } else {
+            navigator.navigateUp()
         }
     }
 
@@ -180,7 +181,7 @@ fun AddOnItemScreen(
                     scope.launch {
                         lazyGridState.animateScrollToItem(0)
                     }
-                }
+                },
             )
         },
         navActions = {
@@ -203,7 +204,7 @@ fun AddOnItemScreen(
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
                 onSearchClick = viewModel::openSearchBar,
-                onSearchTextChanged = viewModel::searchTextChanged
+                onSearchTextChanged = viewModel::searchTextChanged,
             )
         },
         fabPosition = if (lazyGridState.isScrolled) FabPosition.End else FabPosition.Center,
@@ -216,7 +217,7 @@ fun AddOnItemScreen(
     ) {
         Crossfade(
             targetState = state,
-            label = "AddOn State"
+            label = "AddOn State",
         ) { state ->
             when (state) {
                 is UiState.Loading -> LoadingIndicator()
@@ -227,7 +228,7 @@ fun AddOnItemScreen(
                         buttonText = CREATE_NEW_ADD_ON,
                         onClick = {
                             navigator.navigate(AddEditAddOnItemScreenDestination())
-                        }
+                        },
                     )
                 }
 
@@ -243,7 +244,7 @@ fun AddOnItemScreen(
                     ) {
                         items(
                             items = state.data,
-                            key = { it.itemId }
+                            key = { it.itemId },
                         ) { item: AddOnItem ->
                             AddOnItemData(
                                 item = item,
@@ -255,7 +256,7 @@ fun AddOnItemScreen(
                                         viewModel.selectItem(it)
                                     }
                                 },
-                                onLongClick = viewModel::selectItem
+                                onLongClick = viewModel::selectItem,
                             )
                         }
                     }
@@ -275,30 +276,28 @@ fun AddOnItemScreen(
             },
             text = {
                 Text(
-                    text = DELETE_ADD_ON_ITEM_MESSAGE
+                    text = DELETE_ADD_ON_ITEM_MESSAGE,
                 )
             },
             confirmButton = {
-                TextButton(
+                PoposTextButton(
+                    text = "Delete",
                     onClick = {
                         openDialog.value = false
                         viewModel.deleteItems()
                     },
-                ) {
-                    Text("Delete")
-                }
+                )
             },
             dismissButton = {
-                TextButton(
+                PoposTextButton(
+                    text = "Cancel",
                     onClick = {
                         openDialog.value = false
                         viewModel.deselectItems()
                     },
-                ) {
-                    Text("Cancel")
-                }
+                )
             },
-            shape = RoundedCornerShape(28.dp)
+            shape = RoundedCornerShape(28.dp),
         )
     }
 }
@@ -320,14 +319,16 @@ fun AddOnItemData(
         modifier = modifier
             .testTag(ADDON_ITEM_TAG.plus(item.itemId))
             .padding(SpaceSmall)
-            .then(borderStroke?.let {
-                Modifier
-                    .drawAnimatedBorder(
-                        strokeWidth = 1.dp,
-                        durationMillis = 2000,
-                        shape = CardDefaults.elevatedShape
-                    )
-            } ?: Modifier)
+            .then(
+                borderStroke?.let {
+                    Modifier
+                        .drawAnimatedBorder(
+                            strokeWidth = 1.dp,
+                            durationMillis = 2000,
+                            shape = CardDefaults.elevatedShape,
+                        )
+                } ?: Modifier,
+            )
             .clip(CardDefaults.elevatedShape)
             .combinedClickable(
                 onClick = {
@@ -337,18 +338,18 @@ fun AddOnItemData(
                     onLongClick(item.itemId)
                 },
             ),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(SpaceSmall),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(
                 horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(text = item.itemName)
                 Spacer(modifier = Modifier.height(SpaceSmall))
@@ -356,9 +357,9 @@ fun AddOnItemData(
             }
 
             CircularBox(
-                icon = Icons.Default.Link,
+                icon = PoposIcons.Link,
                 doesSelected = doesSelected(item.itemId),
-                showBorder = !item.isApplicable
+                showBorder = !item.isApplicable,
             )
         }
     }
