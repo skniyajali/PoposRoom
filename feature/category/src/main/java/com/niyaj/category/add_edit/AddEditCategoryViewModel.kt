@@ -121,7 +121,6 @@ class AddEditCategoryViewModel @Inject constructor(
     }
 }
 
-
 private fun AnalyticsHelper.logOnCreateOrUpdateCategory(categoryId: Int, message: String) {
     logEvent(
         event = AnalyticsEvent(

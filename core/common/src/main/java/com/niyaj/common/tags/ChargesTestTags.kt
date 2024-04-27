@@ -29,8 +29,8 @@ object ChargesTestTags {
     const val CHARGES_PRICE_EMPTY_ERROR = "Charges price must not be empty."
     const val CHARGES_PRICE_LESS_THAN_TEN_ERROR = "Charges price must greater than 10 rupees."
 
-    const val DELETE_CHARGES_TITLE = "Delete Charges?"
-    const val DELETE_CHARGES_MESSAGE = "Are you sure to delete these charges?"
+    const val DELETE_CHARGES_TITLE = "Delete Charges!"
+    const val DELETE_CHARGES_MESSAGE = "Are you sure to delete these charges?. This action can't be undone."
 
     const val CHARGES_TAG = "Charges-"
 

@@ -18,17 +18,14 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Business
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -42,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.address.destinations.AddEditAddressScreenDestination
 import com.niyaj.address.destinations.AddressDetailsScreenDestination
 import com.niyaj.address.destinations.AddressExportScreenDestination
@@ -64,6 +60,7 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.ScaffoldNavActions
+import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.StandardScaffoldRoute
 import com.niyaj.ui.event.UiState
@@ -74,7 +71,7 @@ import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
@@ -83,7 +80,7 @@ import kotlinx.coroutines.launch
 @Destination(route = Screens.ADDRESS_SCREEN)
 @Composable
 fun AddressScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: AddressViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditAddressScreenDestination, String>,
     exportRecipient: ResultRecipient<AddressExportScreenDestination, String>,
@@ -129,7 +126,7 @@ fun AddressScreen(
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
         } else {
-            navController.navigateUp()
+            navigator.navigateUp()
         }
     }
 
@@ -181,13 +178,13 @@ fun AddressScreen(
                 fabText = CREATE_NEW_ADDRESS,
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
                 onFabClick = {
-                    navController.navigate(AddEditAddressScreenDestination())
+                    navigator.navigate(AddEditAddressScreenDestination())
                 },
                 onClickScroll = {
                     scope.launch {
                         lazyGridState.animateScrollToItem(0)
                     }
-                }
+                },
             )
         },
         navActions = {
@@ -199,18 +196,18 @@ fun AddressScreen(
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
-                    navController.navigate(AddEditAddressScreenDestination(selectedItems.first()))
+                    navigator.navigate(AddEditAddressScreenDestination(selectedItems.first()))
                 },
                 onDeleteClick = {
                     openDialog.value = true
                 },
                 onSettingsClick = {
-                    navController.navigate(AddressSettingsScreenDestination)
+                    navigator.navigate(AddressSettingsScreenDestination)
                 },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
                 onSearchClick = viewModel::openSearchBar,
-                onSearchTextChanged = viewModel::searchTextChanged
+                onSearchTextChanged = viewModel::searchTextChanged,
             )
         },
         fabPosition = if (lazyGridState.isScrolled) FabPosition.End else FabPosition.Center,
@@ -219,11 +216,11 @@ fun AddressScreen(
         onDeselect = viewModel::deselectItems,
         onBackClick = viewModel::closeSearchBar,
         snackbarHostState = snackbarState,
-        onNavigateToScreen = navController::navigate,
+        onNavigateToScreen = navigator::navigate,
     ) {
         Crossfade(
             targetState = uiState,
-            label = "Address State"
+            label = "Address State",
         ) { state ->
             when (state) {
                 is UiState.Loading -> LoadingIndicator()
@@ -233,8 +230,8 @@ fun AddressScreen(
                         text = if (searchText.isEmpty()) ADDRESS_NOT_AVAILABLE else SEARCH_ITEM_NOT_FOUND,
                         buttonText = CREATE_NEW_ADDRESS,
                         onClick = {
-                            navController.navigate(AddEditAddressScreenDestination())
-                        }
+                            navigator.navigate(AddEditAddressScreenDestination())
+                        },
                     )
                 }
 
@@ -248,11 +245,11 @@ fun AddressScreen(
                         state = lazyGridState,
                     ) {
                         item(
-                            span = { GridItemSpan(2) }
+                            span = { GridItemSpan(2) },
                         ) {
                             NoteCard(
                                 modifier = Modifier.padding(SpaceSmall),
-                                text = ADDRESS_SCREEN_NOTE_TEXT
+                                text = ADDRESS_SCREEN_NOTE_TEXT,
                             )
                         }
 
@@ -260,7 +257,7 @@ fun AddressScreen(
                             items = state.data,
                             key = {
                                 it.addressName.plus(it.addressId)
-                            }
+                            },
                         ) { address ->
                             AddressData(
                                 modifier = Modifier.testTag(ADDRESS_ITEM_TAG.plus(address.addressId)),
@@ -272,10 +269,10 @@ fun AddressScreen(
                                     if (selectedItems.isNotEmpty()) {
                                         viewModel.selectItem(it)
                                     } else {
-                                        navController.navigate(AddressDetailsScreenDestination(it))
+                                        navigator.navigate(AddressDetailsScreenDestination(it))
                                     }
                                 },
-                                onLongClick = viewModel::selectItem
+                                onLongClick = viewModel::selectItem,
                             )
                         }
                     }
@@ -286,38 +283,17 @@ fun AddressScreen(
 
 
     if (openDialog.value) {
-        AlertDialog(
-            onDismissRequest = {
+        StandardDialog(
+            title = DELETE_ADDRESS_ITEM_TITLE,
+            message = DELETE_ADDRESS_ITEM_MESSAGE,
+            onConfirm = {
+                openDialog.value = false
+                viewModel.deleteItems()
+            },
+            onDismiss = {
                 openDialog.value = false
                 viewModel.deselectItems()
             },
-            title = {
-                Text(text = DELETE_ADDRESS_ITEM_TITLE)
-            },
-            text = {
-                Text(text = DELETE_ADDRESS_ITEM_MESSAGE)
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deleteItems()
-                    },
-                ) {
-                    Text("Delete")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deselectItems()
-                    },
-                ) {
-                    Text("Cancel")
-                }
-            },
-            shape = RoundedCornerShape(28.dp)
         )
     }
 }
@@ -338,9 +314,11 @@ fun AddressData(
     ElevatedCard(
         modifier = modifier
             .padding(SpaceSmall)
-            .then(borderStroke?.let {
-                Modifier.border(it, CardDefaults.elevatedShape)
-            } ?: Modifier)
+            .then(
+                borderStroke?.let {
+                    Modifier.border(it, CardDefaults.elevatedShape)
+                } ?: Modifier,
+            )
             .clip(CardDefaults.elevatedShape)
             .combinedClickable(
                 onClick = {
@@ -356,11 +334,11 @@ fun AddressData(
                 .fillMaxSize()
                 .padding(SpaceSmall),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(
                 horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(text = item.addressName)
                 Spacer(modifier = Modifier.height(SpaceSmall))

@@ -14,6 +14,8 @@ import com.niyaj.data.repository.ChargesRepository
 import com.niyaj.data.repository.validation.ChargesValidationRepository
 import com.niyaj.model.Charges
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -30,6 +32,7 @@ import javax.inject.Inject
 class AddEditChargesViewModel @Inject constructor(
     private val chargesRepository: ChargesRepository,
     private val validationRepository: ChargesValidationRepository,
+    private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -129,6 +132,7 @@ class AddEditChargesViewModel @Inject constructor(
                     is Resource.Success -> {
                         val message = if (chargesId == 0) "Created" else "Updated"
                         _eventFlow.emit(UiEvent.OnSuccess("Charges $message Successfully."))
+                        analyticsHelper.logOnCreateOrUpdateCharges(chargesId, message)
                     }
                 }
 
@@ -136,4 +140,15 @@ class AddEditChargesViewModel @Inject constructor(
             }
         }
     }
+}
+
+private fun AnalyticsHelper.logOnCreateOrUpdateCharges(chargesId: Int, message: String) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "charges_$message",
+            extras = listOf(
+                AnalyticsEvent.Param("charges_$message", chargesId.toString()),
+            ),
+        ),
+    )
 }

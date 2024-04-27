@@ -13,11 +13,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Checklist
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -42,8 +37,10 @@ import com.niyaj.common.tags.AddressTestTags.EXPORT_ADDRESS_BTN_TEXT
 import com.niyaj.common.tags.AddressTestTags.EXPORT_ADDRESS_FILE_NAME
 import com.niyaj.common.tags.AddressTestTags.EXPORT_ADDRESS_TITLE
 import com.niyaj.common.utils.Constants
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
+import com.niyaj.domain.utils.ImportExport
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
@@ -55,7 +52,6 @@ import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
-import com.niyaj.domain.utils.ImportExport
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
@@ -102,7 +98,7 @@ fun AddressExportScreen(
         permissions = listOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        )
+        ),
     )
 
     val askForPermissions = {
@@ -113,13 +109,13 @@ fun AddressExportScreen(
 
     val exportLauncher =
         rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
+            ActivityResultContracts.StartActivityForResult(),
         ) {
             it.data?.data?.let {
                 scope.launch {
-                    val result = ImportExport.writeData(context, it, exportedItems)
+                    val result = ImportExport.writeDataAsync(context, it, exportedItems)
 
-                    if (result) {
+                    if (result.isSuccess) {
                         resultBackNavigator.navigateBack("${exportedItems.size} Items has been exported.")
                     } else {
                         resultBackNavigator.navigateBack("Unable to export addresses.")
@@ -154,25 +150,25 @@ fun AddressExportScreen(
                     searchText = searchText,
                     placeholderText = "Search for Addresses...",
                     onClearClick = viewModel::clearSearchText,
-                    onSearchTextChanged = viewModel::searchTextChanged
+                    onSearchTextChanged = viewModel::searchTextChanged,
                 )
             } else {
                 if (addresses.isNotEmpty()) {
                     IconButton(
-                        onClick = viewModel::selectAllItems
+                        onClick = viewModel::selectAllItems,
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Checklist,
-                            contentDescription = Constants.SELECT_ALL_ICON
+                            imageVector = PoposIcons.Checklist,
+                            contentDescription = Constants.SELECT_ALL_ICON,
                         )
                     }
 
                     IconButton(
                         onClick = viewModel::openSearchBar,
-                        modifier = Modifier.testTag(NAV_SEARCH_BTN)
+                        modifier = Modifier.testTag(NAV_SEARCH_BTN),
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Search,
+                            imageVector = PoposIcons.Search,
                             contentDescription = "Search Icon",
                         )
                     }
@@ -184,7 +180,7 @@ fun AddressExportScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(SpaceSmallMax),
-                verticalArrangement = Arrangement.spacedBy(SpaceSmall)
+                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} addresses will be exported.")
 
@@ -194,21 +190,21 @@ fun AddressExportScreen(
                         .testTag(EXPORT_ADDRESS_BTN),
                     enabled = addresses.isNotEmpty(),
                     text = EXPORT_ADDRESS_BTN_TEXT,
-                    icon = Icons.Default.Upload,
+                    icon = PoposIcons.Upload,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
+                        containerColor = MaterialTheme.colorScheme.secondary,
                     ),
                     onClick = {
                         scope.launch {
                             askForPermissions()
                             val result = ImportExport.createFile(
                                 context = context,
-                                fileName = EXPORT_ADDRESS_FILE_NAME
+                                fileName = EXPORT_ADDRESS_FILE_NAME,
                             )
                             exportLauncher.launch(result)
                             viewModel.onEvent(AddressSettingsEvent.GetExportedItems)
                         }
-                    }
+                    },
                 )
             }
         },
@@ -221,19 +217,19 @@ fun AddressExportScreen(
                     scope.launch {
                         lazyGridState.animateScrollToItem(index = 0)
                     }
-                }
+                },
             )
         },
         navigationIcon = {
             IconButton(
-                onClick = viewModel::deselectItems
+                onClick = viewModel::deselectItems,
             ) {
                 Icon(
-                    imageVector = Icons.Default.Clear,
-                    contentDescription = "Deselect All"
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Deselect All",
                 )
             }
-        }
+        },
     ) {
         if (addresses.isEmpty()) {
             ItemNotAvailable(
@@ -241,7 +237,7 @@ fun AddressExportScreen(
                 buttonText = AddressTestTags.CREATE_NEW_ADDRESS,
                 onClick = {
                     navigator.navigate(AddEditAddressScreenDestination())
-                }
+                },
             )
         } else {
             TrackScrollJank(scrollableState = lazyGridState, stateName = "Exported Address::List")
@@ -257,7 +253,7 @@ fun AddressExportScreen(
                     items = addresses,
                     key = {
                         it.addressName.plus(it.addressId)
-                    }
+                    },
                 ) { address ->
                     AddressData(
                         modifier = Modifier.testTag(ADDRESS_ITEM_TAG.plus(address.addressId)),
@@ -266,7 +262,7 @@ fun AddressExportScreen(
                             selectedItems.contains(it)
                         },
                         onClick = viewModel::selectItem,
-                        onLongClick = viewModel::selectItem
+                        onLongClick = viewModel::selectItem,
                     )
                 }
             }

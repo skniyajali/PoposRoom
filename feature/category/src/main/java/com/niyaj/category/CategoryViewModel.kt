@@ -66,7 +66,6 @@ class CategoryViewModel @Inject constructor(
     }
 }
 
-
 internal fun AnalyticsHelper.logDeletedCategories(categories: List<Int>) {
     logEvent(
         event = AnalyticsEvent(

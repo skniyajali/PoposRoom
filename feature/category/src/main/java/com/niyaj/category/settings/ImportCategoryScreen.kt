@@ -1,6 +1,7 @@
 package com.niyaj.category.settings
 
 import android.Manifest
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -26,7 +27,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.category.components.CategoryData
@@ -44,12 +44,13 @@ import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -58,7 +59,7 @@ import kotlinx.coroutines.launch
 @Composable
 @Destination
 fun ImportCategoryScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: CategorySettingsViewModel = hiltViewModel(),
 ) {
@@ -117,10 +118,17 @@ fun ImportCategoryScreen(
 
     TrackScreenViewEvent(screenName = "Category Import Screen")
 
-    StandardScaffoldNew(
-        navController = navController,
+    BackHandler {
+        if (selectedItems.isNotEmpty()) {
+            viewModel.deselectItems()
+        } else {
+            navigator.navigateUp()
+        }
+    }
+
+    StandardScaffoldRouteNew(
         title = if (selectedItems.isEmpty()) IMPORT_CATEGORY_TITLE else "${selectedItems.size} Selected",
-        showBackButton = true,
+        showBackButton = selectedItems.isEmpty(),
         showBottomBar = importedCategories.isNotEmpty(),
         navActions = {
             AnimatedVisibility(
@@ -174,6 +182,17 @@ fun ImportCategoryScreen(
                 },
             )
         },
+        navigationIcon = {
+            IconButton(
+                onClick = viewModel::deselectItems,
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Deselect All",
+                )
+            }
+        },
+        onBackClick = navigator::navigateUp,
     ) {
         Crossfade(
             targetState = importedCategories.isEmpty(),

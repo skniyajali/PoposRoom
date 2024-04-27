@@ -7,6 +7,8 @@ import com.niyaj.data.repository.AddOnItemRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddOnViewModel @Inject constructor(
     private val itemRepository: AddOnItemRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel() {
 
     override var totalItems: List<Int> = emptyList()
@@ -38,7 +41,7 @@ class AddOnViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = UiState.Loading
+            initialValue = UiState.Loading,
         )
 
     override fun deleteItems() {
@@ -49,15 +52,16 @@ class AddOnViewModel @Inject constructor(
                 is Resource.Success -> {
                     mEventFlow.emit(
                         UiEvent.OnSuccess(
-                            "${selectedItems.size} item deleted successfully"
-                        )
+                            "${selectedItems.size} item deleted successfully",
+                        ),
                     )
                 }
 
                 is Resource.Error -> {
                     mEventFlow.emit(
-                        UiEvent.OnError(result.message ?: "Unable to delete items")
+                        UiEvent.OnError(result.message ?: "Unable to delete items"),
                     )
+                    analyticsHelper.logDeletedAddOnItem(selectedItems.toList())
                 }
             }
 
@@ -65,4 +69,15 @@ class AddOnViewModel @Inject constructor(
         }
     }
 
+}
+
+internal fun AnalyticsHelper.logDeletedAddOnItem(data: List<Int>) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "addon_deleted",
+            extras = listOf(
+                AnalyticsEvent.Param("addon_deleted", data.toString()),
+            ),
+        ),
+    )
 }

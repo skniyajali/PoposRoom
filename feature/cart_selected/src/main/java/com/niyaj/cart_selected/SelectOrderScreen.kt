@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -45,7 +44,6 @@ import com.niyaj.common.tags.CartOrderTestTags
 import com.niyaj.common.tags.SelectedTestTag.SELECTED_SCREEN_NOTE
 import com.niyaj.common.tags.SelectedTestTag.SELECTED_SCREEN_TITLE
 import com.niyaj.common.utils.toTimeSpan
-import com.niyaj.designsystem.components.PoposTextButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
@@ -57,6 +55,7 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.StandardBottomSheetScaffold
 import com.niyaj.ui.components.StandardButton
+import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -209,37 +208,17 @@ fun SelectOrderScreen(
 
 
     if (openDialog.value) {
-        AlertDialog(
-            onDismissRequest = {
+        StandardDialog(
+            title = CartOrderTestTags.DELETE_CART_ORDER_ITEM_TITLE,
+            message = CartOrderTestTags.DELETE_CART_ORDER_ITEM_MESSAGE,
+            onConfirm = {
                 openDialog.value = false
+                viewModel.deleteCartOrder(selectedId)
             },
-            title = {
-                Text(text = CartOrderTestTags.DELETE_CART_ORDER_ITEM_TITLE)
+            onDismiss = {
+                openDialog.value = false
+                selectedId = 0
             },
-            text = {
-                Text(
-                    text = CartOrderTestTags.DELETE_CART_ORDER_ITEM_MESSAGE,
-                )
-            },
-            confirmButton = {
-                PoposTextButton(
-                    text = "Delete",
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deleteCartOrder(selectedId)
-                    },
-                )
-            },
-            dismissButton = {
-                PoposTextButton(
-                    text = "Cancel",
-                    onClick = {
-                        openDialog.value = false
-                        selectedId = 0
-                    },
-                )
-            },
-            shape = RoundedCornerShape(28.dp),
         )
     }
 }

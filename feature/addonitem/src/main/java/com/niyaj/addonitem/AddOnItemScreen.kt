@@ -16,8 +16,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
@@ -50,7 +48,6 @@ import com.niyaj.common.tags.AddOnTestTags.DELETE_ADD_ON_ITEM_MESSAGE
 import com.niyaj.common.tags.AddOnTestTags.DELETE_ADD_ON_ITEM_TITLE
 import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
 import com.niyaj.common.utils.toRupee
-import com.niyaj.designsystem.components.PoposTextButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
@@ -58,6 +55,7 @@ import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
+import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.StandardScaffoldRoute
 import com.niyaj.ui.components.drawAnimatedBorder
@@ -266,38 +264,17 @@ fun AddOnItemScreen(
     }
 
     if (openDialog.value) {
-        AlertDialog(
-            onDismissRequest = {
+        StandardDialog(
+            title =  DELETE_ADD_ON_ITEM_TITLE,
+            message = DELETE_ADD_ON_ITEM_MESSAGE,
+            onConfirm = {
+                openDialog.value = false
+                viewModel.deleteItems()
+            },
+            onDismiss = {
                 openDialog.value = false
                 viewModel.deselectItems()
-            },
-            title = {
-                Text(text = DELETE_ADD_ON_ITEM_TITLE)
-            },
-            text = {
-                Text(
-                    text = DELETE_ADD_ON_ITEM_MESSAGE,
-                )
-            },
-            confirmButton = {
-                PoposTextButton(
-                    text = "Delete",
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deleteItems()
-                    },
-                )
-            },
-            dismissButton = {
-                PoposTextButton(
-                    text = "Cancel",
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deselectItems()
-                    },
-                )
-            },
-            shape = RoundedCornerShape(28.dp),
+            }
         )
     }
 }

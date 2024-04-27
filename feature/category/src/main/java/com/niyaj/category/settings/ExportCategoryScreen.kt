@@ -26,7 +26,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.category.components.CategoryData
@@ -48,14 +47,14 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import kotlinx.coroutines.launch
 
@@ -63,7 +62,7 @@ import kotlinx.coroutines.launch
 @Destination
 @Composable
 fun ExportCategoryScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: CategorySettingsViewModel = hiltViewModel(),
 ) {
@@ -134,7 +133,7 @@ fun ExportCategoryScreen(
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
         } else {
-            navController.navigateUp()
+            navigator.navigateUp()
         }
     }
 
@@ -142,10 +141,9 @@ fun ExportCategoryScreen(
         onBackClick()
     }
 
-    StandardScaffoldNew(
-        navController = navController,
+    StandardScaffoldRouteNew(
         title = if (selectedItems.isEmpty()) EXPORT_CATEGORY_TITLE else "${selectedItems.size} Selected",
-        showBackButton = true,
+        showBackButton = selectedItems.isEmpty() || showSearchBar,
         showBottomBar = categories.isNotEmpty(),
         navActions = {
             if (showSearchBar) {
@@ -222,6 +220,16 @@ fun ExportCategoryScreen(
                 },
             )
         },
+        navigationIcon = {
+            IconButton(
+                onClick = viewModel::deselectItems,
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Deselect All",
+                )
+            }
+        },
         onBackClick = { onBackClick() },
     ) {
         if (categories.isEmpty()) {
@@ -229,7 +237,7 @@ fun ExportCategoryScreen(
                 text = if (searchText.isEmpty()) CategoryConstants.CATEGORY_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND,
                 buttonText = CategoryConstants.CREATE_NEW_CATEGORY,
                 onClick = {
-                    navController.navigate(AddEditCategoryScreenDestination())
+                    navigator.navigate(AddEditCategoryScreenDestination())
                 },
             )
         } else {

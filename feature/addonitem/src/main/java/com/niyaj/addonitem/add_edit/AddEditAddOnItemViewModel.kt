@@ -14,6 +14,8 @@ import com.niyaj.data.repository.AddOnItemRepository
 import com.niyaj.data.repository.validation.AddOnItemValidationRepository
 import com.niyaj.model.AddOnItem
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -30,6 +32,7 @@ import javax.inject.Inject
 class AddEditAddOnItemViewModel @Inject constructor(
     private val repository: AddOnItemRepository,
     private val validationRepository: AddOnItemValidationRepository,
+    private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -52,7 +55,7 @@ class AddEditAddOnItemViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     val priceError: StateFlow<String?> = snapshotFlow { addEditState.itemPrice }
@@ -61,7 +64,7 @@ class AddEditAddOnItemViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     fun onEvent(event: AddEditAddOnItemEvent) {
@@ -93,14 +96,14 @@ class AddEditAddOnItemViewModel @Inject constructor(
                             addEditState = addEditState.copy(
                                 itemName = addOnItem.itemName,
                                 itemPrice = addOnItem.itemPrice,
-                                isApplicable = addOnItem.isApplicable
+                                isApplicable = addOnItem.isApplicable,
                             )
                         }
                     }
 
                     is Resource.Error -> {
                         _eventFlow.emit(
-                            UiEvent.OnError(result.message ?: "Unable to get addon item")
+                            UiEvent.OnError(result.message ?: "Unable to get addon item"),
                         )
                     }
                 }
@@ -117,21 +120,22 @@ class AddEditAddOnItemViewModel @Inject constructor(
                     itemPrice = addEditState.itemPrice,
                     isApplicable = addEditState.isApplicable,
                     createdAt = System.currentTimeMillis(),
-                    updatedAt = if (addOnItemId != 0) System.currentTimeMillis() else null
+                    updatedAt = if (addOnItemId != 0) System.currentTimeMillis() else null,
                 )
 
                 when (val result = repository.upsertAddOnItem(addOnItem)) {
                     is Resource.Error -> {
                         _eventFlow.emit(
                             UiEvent.OnError(
-                                result.message ?: "Unable To Create AddOn Item."
-                            )
+                                result.message ?: "Unable To Create AddOn Item.",
+                            ),
                         )
                     }
 
                     is Resource.Success -> {
                         val message = if (addOnItemId == 0) "Created" else "Updated"
                         _eventFlow.emit(UiEvent.OnSuccess("AddOn Item $message Successfully."))
+                        analyticsHelper.logOnCreateOrUpdateAddon(addOnItemId, message)
                     }
                 }
 
@@ -139,4 +143,15 @@ class AddEditAddOnItemViewModel @Inject constructor(
             }
         }
     }
+}
+
+private fun AnalyticsHelper.logOnCreateOrUpdateAddon(data: Int, message: String) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "addon_$message",
+            extras = listOf(
+                AnalyticsEvent.Param("addon_$message", data.toString()),
+            ),
+        ),
+    )
 }

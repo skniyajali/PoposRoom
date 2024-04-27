@@ -15,11 +15,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Checklist
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -42,8 +37,10 @@ import com.niyaj.common.tags.AddressTestTags.IMPORT_ADDRESS_NOTE_TEXT
 import com.niyaj.common.tags.AddressTestTags.IMPORT_ADDRESS_OPN_FILE
 import com.niyaj.common.tags.AddressTestTags.IMPORT_ADDRESS_TITLE
 import com.niyaj.common.utils.Constants
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
+import com.niyaj.domain.utils.ImportExport
 import com.niyaj.model.Address
 import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.InfoText
@@ -54,7 +51,6 @@ import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
-import com.niyaj.domain.utils.ImportExport
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
@@ -82,7 +78,7 @@ fun AddressImportScreen(
         permissions = listOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        )
+        ),
     )
 
     val askForPermissions = {
@@ -93,13 +89,13 @@ fun AddressImportScreen(
 
     val importLauncher =
         rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
+            ActivityResultContracts.StartActivityForResult(),
         ) {
             it.data?.data?.let {
                 importJob?.cancel()
 
                 importJob = scope.launch {
-                    val data = ImportExport.readData<Address>(context, it)
+                    val data = ImportExport.readDataAsync<Address>(context, it)
 
                     viewModel.onEvent(AddressSettingsEvent.OnImportAddressItemsFromFile(data))
                 }
@@ -138,14 +134,14 @@ fun AddressImportScreen(
         showBottomBar = importedItems.isNotEmpty(),
         navActions = {
             AnimatedVisibility(
-                visible = importedItems.isNotEmpty()
+                visible = importedItems.isNotEmpty(),
             ) {
                 IconButton(
-                    onClick = viewModel::selectAllItems
+                    onClick = viewModel::selectAllItems,
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Checklist,
-                        contentDescription = Constants.SELECT_ALL_ICON
+                        imageVector = PoposIcons.Checklist,
+                        contentDescription = Constants.SELECT_ALL_ICON,
                     )
                 }
             }
@@ -155,7 +151,7 @@ fun AddressImportScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(SpaceSmallMax),
-                verticalArrangement = Arrangement.spacedBy(SpaceSmall)
+                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} addon item will be imported.")
 
@@ -165,15 +161,15 @@ fun AddressImportScreen(
                         .testTag(IMPORT_ADDRESS_BTN_TEXT),
                     enabled = true,
                     text = IMPORT_ADDRESS_BTN_TEXT,
-                    icon = Icons.Default.Download,
+                    icon = PoposIcons.Download,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
+                        containerColor = MaterialTheme.colorScheme.primary,
                     ),
                     onClick = {
                         scope.launch {
                             viewModel.onEvent(AddressSettingsEvent.ImportAddressItemsToDatabase)
                         }
-                    }
+                    },
                 )
             }
         },
@@ -185,42 +181,42 @@ fun AddressImportScreen(
                     scope.launch {
                         lazyGridState.animateScrollToItem(index = 0)
                     }
-                }
+                },
             )
         },
         onBackClick = navigator::navigateUp,
         navigationIcon = {
             IconButton(
-                onClick = viewModel::deselectItems
+                onClick = viewModel::deselectItems,
             ) {
                 Icon(
-                    imageVector = Icons.Default.Clear,
-                    contentDescription = "Deselect All"
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Deselect All",
                 )
             }
-        }
+        },
     ) {
         Crossfade(
             targetState = importedItems.isEmpty(),
-            label = "Imported Items"
+            label = "Imported Items",
         ) { itemAvailable ->
             if (itemAvailable) {
                 EmptyImportScreen(
                     text = IMPORT_ADDRESS_NOTE_TEXT,
                     buttonText = IMPORT_ADDRESS_OPN_FILE,
-                    icon = Icons.Default.FileOpen,
+                    icon = PoposIcons.FileOpen,
                     onClick = {
                         scope.launch {
                             askForPermissions()
                             val result = ImportExport.openFile(context)
                             importLauncher.launch(result)
                         }
-                    }
+                    },
                 )
             } else {
                 TrackScrollJank(
                     scrollableState = lazyGridState,
-                    stateName = "Imported Address::List"
+                    stateName = "Imported Address::List",
                 )
 
                 LazyVerticalGrid(
@@ -234,20 +230,20 @@ fun AddressImportScreen(
                         items = importedItems,
                         key = {
                             it.addressName.plus(it.addressId)
-                        }
+                        },
                     ) { address ->
                         AddressData(
                             modifier = Modifier.testTag(
                                 AddressTestTags.ADDRESS_ITEM_TAG.plus(
-                                    address.addressId
-                                )
+                                    address.addressId,
+                                ),
                             ),
                             item = address,
                             doesSelected = {
                                 selectedItems.contains(it)
                             },
                             onClick = viewModel::selectItem,
-                            onLongClick = viewModel::selectItem
+                            onLongClick = viewModel::selectItem,
                         )
                     }
                 }

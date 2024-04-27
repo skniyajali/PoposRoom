@@ -117,6 +117,7 @@ val rainbowColorsBrush = Brush.sweepGradient(
     )
 )
 
+
 val gradient1 = Brush.linearGradient(listOf(Color(0xFF00ff87), Color(0xFF60efff)))
 
 val gradient2 = Brush.linearGradient(listOf(Color(0xFF9CECFB), Color(0xFF65C7F7)))
@@ -130,4 +131,7 @@ val gradient5 = Brush.linearGradient(listOf(Color(0xFF0575E6), Color(0xFFA7BFE8)
 val gradient6 = Brush.linearGradient(listOf(Color(0xFF4e54c8), Color(0xFF8f94fb)))
 
 val gradient7 = Brush.linearGradient(listOf(Color(0xFFfe8c00), Color(0xFFf9bc2c)))
+
+//    background: linear-gradient(90deg, #FC466B 0%, #3F5EFB 100%);
+val gradient8 = Brush.linearGradient(listOf(Color(0xFFFC466B), Color(0xFF3F5EFB)))
 

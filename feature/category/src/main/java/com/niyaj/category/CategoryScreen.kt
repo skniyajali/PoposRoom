@@ -7,18 +7,14 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.category.components.CategoryData
@@ -33,14 +29,12 @@ import com.niyaj.common.tags.CategoryConstants.CREATE_NEW_CATEGORY
 import com.niyaj.common.tags.CategoryConstants.DELETE_CATEGORY_ITEM_MESSAGE
 import com.niyaj.common.tags.CategoryConstants.DELETE_CATEGORY_ITEM_TITLE
 import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
-import com.niyaj.designsystem.components.PoposTextButton
-import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Category
-import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
+import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.StandardScaffoldRoute
 import com.niyaj.ui.event.UiState
@@ -245,45 +239,17 @@ fun CategoryScreen(
     }
 
     if (openDialog.value) {
-        AlertDialog(
-            onDismissRequest = {
+        StandardDialog(
+            title = DELETE_CATEGORY_ITEM_TITLE,
+            message = DELETE_CATEGORY_ITEM_MESSAGE,
+            onConfirm = {
+                openDialog.value = false
+                viewModel.deleteItems()
+            },
+            onDismiss = {
                 openDialog.value = false
                 viewModel.deselectItems()
             },
-            icon = {
-                CircularBox(
-                    icon = PoposIcons.Info,
-                    doesSelected = false,
-                    size = 80.dp,
-                )
-            },
-            title = {
-                Text(text = DELETE_CATEGORY_ITEM_TITLE)
-            },
-            text = {
-                Text(
-                    text = DELETE_CATEGORY_ITEM_MESSAGE,
-                )
-            },
-            confirmButton = {
-                PoposTextButton(
-                    text = "Delete",
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deleteItems()
-                    },
-                )
-            },
-            dismissButton = {
-                PoposTextButton(
-                    text = "Cancel",
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deselectItems()
-                    },
-                )
-            },
-            shape = RoundedCornerShape(28.dp),
         )
     }
 }

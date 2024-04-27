@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.niyaj.common.utils.getAllCapitalizedLetters
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.IconSizeMedium
 import com.niyaj.designsystem.theme.IconSizeSmall
 import com.niyaj.designsystem.theme.SpaceMini
@@ -36,7 +37,7 @@ fun CircularBox(
     text: String? = null,
     showBorder: Boolean = false,
     size: Dp = 40.dp,
-    selectedIcon: ImageVector = Icons.Default.Check,
+    selectedIcon: ImageVector = PoposIcons.Check,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
     selectedTint: Color = MaterialTheme.colorScheme.primary,
     unselectedTint: Color = MaterialTheme.colorScheme.secondary,

@@ -7,6 +7,8 @@ import com.niyaj.data.repository.ChargesRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ChargesViewModel @Inject constructor(
     private val chargesRepository: ChargesRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel() {
 
     override var totalItems: List<Int> = emptyList()
@@ -38,7 +41,7 @@ class ChargesViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = UiState.Loading
+            initialValue = UiState.Loading,
         )
 
     override fun deleteItems() {
@@ -52,6 +55,7 @@ class ChargesViewModel @Inject constructor(
 
                 is Resource.Success -> {
                     mEventFlow.emit(UiEvent.OnSuccess("${selectedItems.size} charges has been deleted"))
+                    analyticsHelper.logDeletedCharges(selectedItems.toList())
                 }
             }
 
@@ -59,4 +63,15 @@ class ChargesViewModel @Inject constructor(
         }
     }
 
+}
+
+internal fun AnalyticsHelper.logDeletedCharges(charges: List<Int>) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "charges_deleted",
+            extras = listOf(
+                AnalyticsEvent.Param("charges_deleted", charges.toString()),
+            ),
+        ),
+    )
 }

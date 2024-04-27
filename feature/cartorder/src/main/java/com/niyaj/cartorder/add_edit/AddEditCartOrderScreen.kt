@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.CartOrderTestTags.ADDRESS_NAME_ERROR_FIELD
 import com.niyaj.common.tags.CartOrderTestTags.ADDRESS_NAME_FIELD
 import com.niyaj.common.tags.CartOrderTestTags.ADD_EDIT_CART_ORDER_SCREEN
@@ -78,6 +77,7 @@ import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,7 +85,7 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 @Composable
 fun AddEditCartOrderScreen(
     cartOrderId: Int = 0,
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: AddEditCartOrderViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
@@ -159,7 +159,7 @@ fun AddEditCartOrderScreen(
                 )
             }
         },
-        onBackClick = navController::navigateUp,
+        onBackClick = navigator::navigateUp,
     ) {
         TrackScrollJank(scrollableState = lazyListState, stateName = "CreateOrUpdate Cart Order")
 

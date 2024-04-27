@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -64,7 +63,6 @@ import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.CartOrderTestTags.CREATE_NEW_CART_ORDER
 import com.niyaj.common.tags.CartOrderTestTags.DELETE_CART_ORDER_ITEM_MESSAGE
 import com.niyaj.common.tags.CartOrderTestTags.DELETE_CART_ORDER_ITEM_TITLE
-import com.niyaj.designsystem.components.PoposTextButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
@@ -77,6 +75,7 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
 import com.niyaj.ui.components.StandardChip
+import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.StandardScaffoldRoute
 import com.niyaj.ui.components.TextWithCount
@@ -333,38 +332,18 @@ fun CartOrderScreen(
 
 
     if (openDialog.value) {
-        AlertDialog(
-            onDismissRequest = {
+        StandardDialog(
+            title = DELETE_CART_ORDER_ITEM_TITLE,
+            message = DELETE_CART_ORDER_ITEM_MESSAGE,
+            onConfirm = {
+                openDialog.value = false
+                viewModel.deleteItems()
+            },
+            onDismiss = {
                 openDialog.value = false
                 viewModel.deselectItems()
+
             },
-            title = {
-                Text(text = DELETE_CART_ORDER_ITEM_TITLE)
-            },
-            text = {
-                Text(
-                    text = DELETE_CART_ORDER_ITEM_MESSAGE,
-                )
-            },
-            confirmButton = {
-                PoposTextButton(
-                    text = "Delete",
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deleteItems()
-                    },
-                )
-            },
-            dismissButton = {
-                PoposTextButton(
-                    text = "Cancel",
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deselectItems()
-                    },
-                )
-            },
-            shape = RoundedCornerShape(28.dp),
         )
     }
 }

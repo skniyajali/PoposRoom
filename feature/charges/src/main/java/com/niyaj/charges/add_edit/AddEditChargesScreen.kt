@@ -1,18 +1,15 @@
 package com.niyaj.charges.add_edit
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.CurrencyRupee
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,7 +21,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.ChargesTestTags.ADD_EDIT_CHARGES_BUTTON
 import com.niyaj.common.tags.ChargesTestTags.ADD_EDIT_CHARGES_SCREEN
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_AMOUNT_ERROR
@@ -35,24 +31,28 @@ import com.niyaj.common.tags.ChargesTestTags.CHARGES_NAME_FIELD
 import com.niyaj.common.tags.ChargesTestTags.CREATE_NEW_CHARGES
 import com.niyaj.common.tags.ChargesTestTags.EDIT_CHARGES_ITEM
 import com.niyaj.common.utils.safeString
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
 @Destination
 @Composable
 fun AddEditChargesScreen(
     chargesId: Int = 0,
-    navController: NavController,
+    navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: AddEditChargesViewModel = hiltViewModel(),
 ) {
+    val lazyListState = rememberLazyListState()
     val nameError = viewModel.nameError.collectAsStateWithLifecycle().value
     val priceError = viewModel.priceError.collectAsStateWithLifecycle().value
 
@@ -74,11 +74,10 @@ fun AddEditChargesScreen(
             }
         }
     }
-    
-    TrackScreenViewEvent(screenName = "Add Edit Charges Screen")
-    
-    StandardScaffoldNew(
-        navController = navController,
+
+    TrackScreenViewEvent(screenName = "Add Edit Charges Screen - $chargesId")
+
+    StandardScaffoldRouteNew(
         title = title,
         showBackButton = true,
         showBottomBar = true,
@@ -88,68 +87,81 @@ fun AddEditChargesScreen(
                     .testTag(ADD_EDIT_CHARGES_BUTTON)
                     .padding(SpaceMedium),
                 text = title,
-                icon = if (chargesId == 0) Icons.Default.Add else Icons.Default.Edit,
+                icon = if (chargesId == 0) PoposIcons.Add else PoposIcons.Edit,
                 enabled = enableBtn,
                 onClick = {
                     viewModel.onEvent(AddEditChargesEvent.CreateOrUpdateCharges(chargesId))
-                }
+                },
             )
-        }
+        },
+        onBackClick = navigator::navigateUp,
     ) {
-        Column(
+        TrackScrollJank(
+            scrollableState = lazyListState,
+            stateName = "Add/Edit Charges Screen::Fields",
+        )
+
+        LazyColumn(
             modifier = Modifier
                 .testTag(ADD_EDIT_CHARGES_SCREEN)
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(SpaceMedium),
+            state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
-            StandardOutlinedTextField(
-                value = viewModel.addEditState.chargesName,
-                label = CHARGES_NAME_FIELD,
-                leadingIcon = Icons.Default.Category,
-                isError = nameError != null,
-                errorText = nameError,
-                errorTextTag = CHARGES_NAME_ERROR,
-                onValueChange = {
-                    viewModel.onEvent(AddEditChargesEvent.ChargesNameChanged(it))
-                }
-            )
-
-            StandardOutlinedTextField(
-                value = viewModel.addEditState.chargesPrice.safeString,
-                label = CHARGES_AMOUNT_FIELD,
-                leadingIcon = Icons.Default.CurrencyRupee,
-                isError = priceError != null,
-                errorText = priceError,
-                keyboardType = KeyboardType.Number,
-                errorTextTag = CHARGES_AMOUNT_ERROR,
-                onValueChange = {
-                    viewModel.onEvent(AddEditChargesEvent.ChargesPriceChanged(it))
-                }
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Checkbox(
-                    modifier = Modifier.testTag(CHARGES_APPLIED_SWITCH),
-                    checked = viewModel.addEditState.chargesApplicable,
-                    onCheckedChange = {
-                        viewModel.onEvent(AddEditChargesEvent.ChargesApplicableChanged)
-                    }
-                )
-                Spacer(modifier = Modifier.width(SpaceSmall))
-                Text(
-                    text = if (viewModel.addEditState.chargesApplicable)
-                        "Marked as applied"
-                    else
-                        "Marked as not applied",
-                    style = MaterialTheme.typography.labelMedium
+            item(CHARGES_NAME_FIELD) {
+                StandardOutlinedTextField(
+                    value = viewModel.addEditState.chargesName,
+                    label = CHARGES_NAME_FIELD,
+                    leadingIcon = PoposIcons.Category,
+                    isError = nameError != null,
+                    errorText = nameError,
+                    errorTextTag = CHARGES_NAME_ERROR,
+                    onValueChange = {
+                        viewModel.onEvent(AddEditChargesEvent.ChargesNameChanged(it))
+                    },
                 )
             }
 
-            Spacer(modifier = Modifier.height(SpaceSmall))
+            item(CHARGES_AMOUNT_FIELD) {
+                StandardOutlinedTextField(
+                    value = viewModel.addEditState.chargesPrice.safeString,
+                    label = CHARGES_AMOUNT_FIELD,
+                    leadingIcon = PoposIcons.Rupee,
+                    isError = priceError != null,
+                    errorText = priceError,
+                    keyboardType = KeyboardType.Number,
+                    errorTextTag = CHARGES_AMOUNT_ERROR,
+                    onValueChange = {
+                        viewModel.onEvent(AddEditChargesEvent.ChargesPriceChanged(it))
+                    },
+                )
+            }
+
+            item(CHARGES_APPLIED_SWITCH) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Checkbox(
+                        modifier = Modifier.testTag(CHARGES_APPLIED_SWITCH),
+                        checked = viewModel.addEditState.chargesApplicable,
+                        onCheckedChange = {
+                            viewModel.onEvent(AddEditChargesEvent.ChargesApplicableChanged)
+                        },
+                    )
+                    Spacer(modifier = Modifier.width(SpaceSmall))
+                    Text(
+                        text = if (viewModel.addEditState.chargesApplicable)
+                            "Marked as applied"
+                        else
+                            "Marked as not applied",
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(SpaceSmall))
+            }
         }
     }
 }
