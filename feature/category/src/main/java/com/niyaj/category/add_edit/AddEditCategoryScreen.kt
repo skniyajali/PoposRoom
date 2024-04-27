@@ -1,13 +1,14 @@
 package com.niyaj.category.add_edit
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -87,48 +88,53 @@ fun AddEditCategoryScreen(
             )
         },
         onBackClick = navigator::navigateUp,
-    ) {
-        Column(
+    ) { paddingValues ->
+        LazyColumn(
             modifier = Modifier
                 .testTag(ADD_EDIT_CATEGORY_SCREEN)
                 .fillMaxWidth()
-                .padding(SpaceMedium),
+                .padding(paddingValues),
+            contentPadding = PaddingValues(SpaceMedium),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
-            StandardOutlinedTextField(
-                value = viewModel.addEditState.categoryName,
-                label = CATEGORY_NAME_FIELD,
-                leadingIcon = PoposIcons.Category,
-                isError = nameError != null,
-                errorText = nameError,
-                errorTextTag = CATEGORY_NAME_ERROR_TAG,
-                onValueChange = {
-                    viewModel.onEvent(AddEditCategoryEvent.CategoryNameChanged(it))
-                },
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Checkbox(
-                    modifier = Modifier.testTag(CATEGORY_AVAILABLE_SWITCH),
-                    checked = viewModel.addEditState.isAvailable,
-                    onCheckedChange = {
-                        viewModel.onEvent(AddEditCategoryEvent.CategoryAvailabilityChanged)
+            item(CATEGORY_NAME_FIELD) {
+                StandardOutlinedTextField(
+                    value = viewModel.addEditState.categoryName,
+                    label = CATEGORY_NAME_FIELD,
+                    leadingIcon = PoposIcons.Category,
+                    isError = nameError != null,
+                    errorText = nameError,
+                    errorTextTag = CATEGORY_NAME_ERROR_TAG,
+                    onValueChange = {
+                        viewModel.onEvent(AddEditCategoryEvent.CategoryNameChanged(it))
                     },
-                )
-                Spacer(modifier = Modifier.width(SpaceSmall))
-                Text(
-                    text = if (viewModel.addEditState.isAvailable)
-                        "Marked as available"
-                    else
-                        "Marked as not available",
-                    style = MaterialTheme.typography.labelMedium,
                 )
             }
 
-            Spacer(modifier = Modifier.height(SpaceSmall))
+            item(CATEGORY_AVAILABLE_SWITCH) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Checkbox(
+                        modifier = Modifier.testTag(CATEGORY_AVAILABLE_SWITCH),
+                        checked = viewModel.addEditState.isAvailable,
+                        onCheckedChange = {
+                            viewModel.onEvent(AddEditCategoryEvent.CategoryAvailabilityChanged)
+                        },
+                    )
+                    Spacer(modifier = Modifier.width(SpaceSmall))
+                    Text(
+                        text = if (viewModel.addEditState.isAvailable)
+                            "Marked as available"
+                        else
+                            "Marked as not available",
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(SpaceSmall))
+            }
         }
     }
 }

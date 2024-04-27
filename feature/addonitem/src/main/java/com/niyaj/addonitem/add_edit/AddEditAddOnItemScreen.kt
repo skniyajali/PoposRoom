@@ -1,6 +1,7 @@
 package com.niyaj.addonitem.add_edit
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -105,7 +106,8 @@ fun AddEditAddOnItemScreen(
             modifier = Modifier
                 .testTag(ADD_EDIT_ADDON_SCREEN)
                 .fillMaxSize()
-                .padding(SpaceMedium),
+                .padding(it),
+            contentPadding = PaddingValues(SpaceMedium),
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {

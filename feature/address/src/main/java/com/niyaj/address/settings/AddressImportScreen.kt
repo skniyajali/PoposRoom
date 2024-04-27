@@ -8,6 +8,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -222,7 +223,8 @@ fun AddressImportScreen(
                 LazyVerticalGrid(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(SpaceSmall),
+                        .padding(it),
+                    contentPadding = PaddingValues(SpaceSmall),
                     columns = GridCells.Fixed(2),
                     state = lazyGridState,
                 ) {

@@ -8,6 +8,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -193,8 +194,9 @@ fun EmployeeImportScreen(
             }
         },
         onBackClick = navigator::navigateUp,
-    ) {
+    ) { paddingValues ->
         Crossfade(
+            modifier = Modifier.padding(paddingValues),
             targetState = importedItems.isEmpty(),
             label = "Imported Items",
         ) { itemAvailable ->
@@ -219,8 +221,8 @@ fun EmployeeImportScreen(
 
                 LazyColumn(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(SpaceSmall),
+                        .fillMaxSize(),
+                    contentPadding = PaddingValues(SpaceSmall),
                     state = lazyListState,
                 ) {
                     items(

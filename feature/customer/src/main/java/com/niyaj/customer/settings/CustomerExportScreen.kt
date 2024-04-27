@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -232,7 +233,7 @@ fun CustomerExportScreen(
                 )
             }
         },
-    ) {
+    ) { paddingValues ->
         if (customers.isEmpty()) {
             ItemNotAvailable(
                 text = if (searchText.isEmpty()) CUSTOMER_NOT_AVAILABLE else NO_ITEMS_IN_CUSTOMER,
@@ -247,7 +248,8 @@ fun CustomerExportScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(SpaceSmall),
+                    .padding(paddingValues),
+                contentPadding = PaddingValues(SpaceSmall),
                 state = lazyListState,
             ) {
                 items(

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -140,7 +141,8 @@ fun AddressDetailsScreen(
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),
             modifier = Modifier
                 .fillMaxSize()
-                .padding(SpaceSmall),
+                .padding(it),
+            contentPadding = PaddingValues(SpaceSmall),
         ) {
             item(key = "TotalOrder Details") {
                 TotalOrderDetailsCard(details = totalOrdersState)

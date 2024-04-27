@@ -1,6 +1,7 @@
 package com.niyaj.charges.add_edit
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -95,7 +96,7 @@ fun AddEditChargesScreen(
             )
         },
         onBackClick = navigator::navigateUp,
-    ) {
+    ) { paddingValues ->
         TrackScrollJank(
             scrollableState = lazyListState,
             stateName = "Add/Edit Charges Screen::Fields",
@@ -105,7 +106,8 @@ fun AddEditChargesScreen(
             modifier = Modifier
                 .testTag(ADD_EDIT_CHARGES_SCREEN)
                 .fillMaxSize()
-                .padding(SpaceMedium),
+                .padding(paddingValues),
+            contentPadding = PaddingValues(SpaceMedium),
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {

@@ -1,6 +1,7 @@
 package com.niyaj.customer.add_edit
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -87,12 +88,13 @@ fun AddEditCustomerScreen(
                 },
             )
         },
-    ) {
+    ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .testTag(ADD_EDIT_CUSTOMER_SCREEN)
                 .fillMaxSize()
-                .padding(SpaceMedium),
+                .padding(paddingValues),
+            contentPadding = PaddingValues(SpaceMedium),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
             item(CUSTOMER_PHONE_FIELD) {

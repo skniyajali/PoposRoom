@@ -1,5 +1,6 @@
 package com.niyaj.ui.components
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutLinearInEasing
@@ -14,8 +15,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
@@ -38,6 +37,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
@@ -55,6 +55,7 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.utils.Constants
@@ -563,6 +564,7 @@ fun StandardScaffoldNew(
 }
 
 
+@SuppressLint("DesignSystem")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StandardScaffoldRouteNew(
@@ -578,7 +580,7 @@ fun StandardScaffoldRouteNew(
     navActions: @Composable RowScope.() -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
-    content: @Composable () -> Unit = {},
+    content: @Composable (PaddingValues) -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val layoutDirection = LocalLayoutDirection.current
@@ -686,25 +688,16 @@ fun StandardScaffoldRouteNew(
             .imePadding(),
         containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
-        ElevatedCard(
+        Surface(
+            color = boxColor.value,
+            tonalElevation = 2.dp,
+            shadowElevation = 2.dp,
+            shape = shape.value,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    start = padding.calculateStartPadding(layoutDirection),
-                    top = padding.calculateTopPadding(),
-                    end = padding.calculateEndPadding(layoutDirection),
-                )
-                .windowInsetsPadding(
-                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
-                )
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
-            shape = shape.value,
-            elevation = CardDefaults.cardElevation(),
-            colors = CardDefaults.elevatedCardColors(
-                containerColor = boxColor.value,
-            ),
         ) {
-            content()
+            content(padding)
         }
     }
 }

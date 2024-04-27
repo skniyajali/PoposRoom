@@ -6,8 +6,10 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -160,15 +162,16 @@ fun AddEditCartOrderScreen(
             }
         },
         onBackClick = navigator::navigateUp,
-    ) {
+    ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "CreateOrUpdate Cart Order")
 
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
                 .testTag(ADD_EDIT_CART_ORDER_SCREEN)
-                .fillMaxWidth()
-                .padding(SpaceMedium),
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentPadding = PaddingValues(SpaceMedium),
         ) {
             item(ORDER_TYPE_FIELD) {
                 val orderTypes = listOf(

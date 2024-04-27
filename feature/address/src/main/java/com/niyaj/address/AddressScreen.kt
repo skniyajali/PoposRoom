@@ -240,6 +240,7 @@ fun AddressScreen(
 
                     LazyVerticalGrid(
                         modifier = Modifier
+                            .fillMaxSize()
                             .padding(SpaceSmall),
                         columns = GridCells.Fixed(2),
                         state = lazyGridState,

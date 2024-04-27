@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -231,7 +232,7 @@ fun ChargesExportScreen(
                 )
             }
         },
-    ) {
+    ) { paddingValues ->
         if (charges.isEmpty()) {
             ItemNotAvailable(
                 text = if (searchText.isEmpty()) ChargesTestTags.CHARGES_NOT_AVAILABLE else ChargesTestTags.NO_ITEMS_IN_CHARGES,
@@ -246,7 +247,8 @@ fun ChargesExportScreen(
             LazyVerticalGrid(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(SpaceSmall),
+                    .padding(paddingValues),
+                contentPadding = PaddingValues(SpaceSmall),
                 columns = GridCells.Fixed(2),
                 state = lazyGridState,
             ) {

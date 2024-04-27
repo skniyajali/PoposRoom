@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -232,7 +233,7 @@ fun AddOnExportScreen(
                 )
             }
         },
-    ) {
+    ) { paddingValues ->
         if (addOnItems.isEmpty()) {
             ItemNotAvailable(
                 text = if (searchText.isEmpty()) AddOnTestTags.ADDON_NOT_AVAIlABLE else Constants.SEARCH_ITEM_NOT_FOUND,
@@ -247,7 +248,8 @@ fun AddOnExportScreen(
             LazyVerticalGrid(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(SpaceSmall),
+                    .padding(paddingValues),
+                contentPadding = PaddingValues(SpaceSmall),
                 columns = GridCells.Fixed(2),
                 state = lazyGridState,
             ) {

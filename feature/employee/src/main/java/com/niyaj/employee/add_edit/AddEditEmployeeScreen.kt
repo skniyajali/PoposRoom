@@ -2,6 +2,7 @@ package com.niyaj.employee.add_edit
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -73,7 +74,6 @@ import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
-import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
@@ -131,7 +131,7 @@ fun AddEditEmployeeScreen(
         title = title,
         showBackButton = true,
         onBackClick = navigator::navigateUp,
-        showBottomBar = lazyListState.isScrollingUp(),
+        showBottomBar = true,
         bottomBar = {
             BottomAppBar(
                 containerColor = Color.White,
@@ -157,8 +157,9 @@ fun AddEditEmployeeScreen(
             state = lazyListState,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(SpaceMedium),
-            verticalArrangement = Arrangement.spacedBy(SpaceMedium),
+                .padding(it),
+            contentPadding = PaddingValues(SpaceMedium),
+            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
             item(EMPLOYEE_NAME_FIELD) {
                 StandardOutlinedTextField(

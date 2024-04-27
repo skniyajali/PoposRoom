@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -231,7 +232,7 @@ fun EmployeeExportScreen(
                 )
             }
         },
-    ) {
+    ) { paddingValues ->
         if (employees.isEmpty()) {
             ItemNotAvailable(
                 text = if (searchText.isEmpty()) EmployeeTestTags.EMPLOYEE_NOT_AVAILABLE else EmployeeTestTags.NO_ITEMS_IN_EMPLOYEE,
@@ -246,7 +247,8 @@ fun EmployeeExportScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(SpaceSmall),
+                    .padding(paddingValues),
+                contentPadding = PaddingValues(SpaceSmall),
                 state = lazyListState,
             ) {
                 items(

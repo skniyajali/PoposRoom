@@ -1,6 +1,7 @@
 package com.niyaj.address.add_edit
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -82,12 +83,13 @@ fun AddEditAddressScreen(
                 },
             )
         },
-    ) {
+    ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .testTag(title)
                 .fillMaxSize()
-                .padding(SpaceMedium),
+                .padding(paddingValues),
+            contentPadding = PaddingValues(SpaceMedium),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
             item(ADDRESS_FULL_NAME_FIELD) {
