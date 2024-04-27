@@ -7,23 +7,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Login
-import androidx.compose.material.icons.filled.AllInbox
-import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PhoneAndroid
-import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
@@ -48,13 +38,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.niyaj.common.utils.toFormattedDateAndTime
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
 import com.niyaj.common.utils.toTime
 import com.niyaj.customer.destinations.AddEditCustomerScreenDestination
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -65,7 +54,7 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardExpandable
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.components.TextWithCount
 import com.niyaj.ui.components.TotalOrderDetailsCard
 import com.niyaj.ui.event.UiState
@@ -74,20 +63,17 @@ import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
 @Destination(route = Screens.CUSTOMER_DETAILS_SCREEN)
 @Composable
 fun CustomerDetailsScreen(
     customerId: Int = 0,
-    navController: NavController,
+    navController: DestinationsNavigator,
     onClickOrder: (Int) -> Unit,
     viewModel: CustomerDetailsViewModel = hiltViewModel(),
 ) {
-    val currentId = navController.currentBackStackEntryAsState()
-        .value?.arguments?.getInt("customerId") ?: customerId
-
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
 
@@ -103,11 +89,10 @@ fun CustomerDetailsScreen(
     var orderExpanded by remember {
         mutableStateOf(true)
     }
-    
-    TrackScreenViewEvent(screenName = Screens.CUSTOMER_DETAILS_SCREEN)
 
-    StandardScaffoldNew(
-        navController = navController,
+    TrackScreenViewEvent(screenName = Screens.CUSTOMER_DETAILS_SCREEN + "/$customerId")
+
+    StandardScaffoldRouteNew(
         title = "Customer Details",
         showBackButton = true,
         showBottomBar = false,
@@ -120,18 +105,19 @@ fun CustomerDetailsScreen(
                     scope.launch {
                         lazyListState.animateScrollToItem(index = 0)
                     }
-                }
+                },
             )
         },
+        onBackClick = navController::navigateUp,
     ) {
         TrackScrollJank(scrollableState = lazyListState, stateName = "Customer Details::List")
 
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(SpaceSmall),
-            verticalArrangement = Arrangement.spacedBy(SpaceMedium)
+            verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
             item(key = "TotalOrder Details") {
                 TotalOrderDetailsCard(details = totalOrders)
@@ -145,8 +131,8 @@ fun CustomerDetailsScreen(
                     },
                     doesExpanded = detailsExpanded,
                     onClickEdit = {
-                        navController.navigate(AddEditCustomerScreenDestination(currentId))
-                    }
+                        navController.navigate(AddEditCustomerScreenDestination(customerId))
+                    },
                 )
             }
 
@@ -157,7 +143,7 @@ fun CustomerDetailsScreen(
                     onExpanded = {
                         orderExpanded = !orderExpanded
                     },
-                    onClickOrder = onClickOrder
+                    onClickOrder = onClickOrder,
                 )
 
                 Spacer(modifier = Modifier.height(SpaceMedium))
@@ -181,8 +167,8 @@ fun CustomerDetailsCard(
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.background
-        )
+            containerColor = MaterialTheme.colorScheme.background,
+        ),
     ) {
         StandardExpandable(
             modifier = Modifier
@@ -195,17 +181,17 @@ fun CustomerDetailsCard(
             title = {
                 IconWithText(
                     text = "Customer Details",
-                    icon = Icons.Default.Business,
+                    icon = PoposIcons.Address,
                 )
             },
             trailing = {
                 IconButton(
-                    onClick = onClickEdit
+                    onClick = onClickEdit,
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Edit,
+                        imageVector = PoposIcons.Edit,
                         contentDescription = "Edit Employee",
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.colorScheme.primary,
                     )
                 }
             },
@@ -213,26 +199,26 @@ fun CustomerDetailsCard(
             expand = { modifier: Modifier ->
                 IconButton(
                     modifier = modifier,
-                    onClick = onExpanded
+                    onClick = onExpanded,
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.KeyboardArrowDown,
+                        imageVector = PoposIcons.ArrowDown,
                         contentDescription = "Expand More",
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = MaterialTheme.colorScheme.secondary,
                     )
                 }
             },
             content = {
                 Crossfade(
                     targetState = customerState,
-                    label = "Customer State"
+                    label = "Customer State",
                 ) { state ->
                     when (state) {
                         is UiState.Loading -> LoadingIndicator()
                         is UiState.Empty -> {
                             ItemNotAvailable(
                                 text = "Unable to get customer details",
-                                showImage = false
+                                showImage = false,
                             )
                         }
 
@@ -240,19 +226,19 @@ fun CustomerDetailsCard(
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(SpaceSmall)
+                                    .padding(SpaceSmall),
                             ) {
                                 IconWithText(
                                     modifier = Modifier.testTag(state.data.customerPhone),
                                     text = "Phone - ${state.data.customerPhone}",
-                                    icon = Icons.Default.PhoneAndroid
+                                    icon = PoposIcons.PhoneAndroid,
                                 )
                                 state.data.customerName?.let { name ->
                                     Spacer(modifier = Modifier.height(SpaceSmall))
                                     IconWithText(
                                         modifier = Modifier.testTag(name),
                                         text = "Name - $name",
-                                        icon = Icons.Default.Person
+                                        icon = PoposIcons.Person4,
                                     )
                                 }
 
@@ -262,7 +248,7 @@ fun CustomerDetailsCard(
                                     IconWithText(
                                         modifier = Modifier.testTag(email),
                                         text = "Email : $email",
-                                        icon = Icons.Default.Email
+                                        icon = PoposIcons.Email,
                                     )
                                 }
 
@@ -271,14 +257,14 @@ fun CustomerDetailsCard(
                                 IconWithText(
                                     modifier = Modifier.testTag(state.data.createdAt.toFormattedDateAndTime),
                                     text = "Created At : ${state.data.createdAt.toPrettyDate()}",
-                                    icon = Icons.Default.CalendarToday
+                                    icon = PoposIcons.CalenderToday,
                                 )
 
                                 state.data.updatedAt?.let {
                                     Spacer(modifier = Modifier.height(SpaceSmall))
                                     IconWithText(
                                         text = "Updated At : ${it.toFormattedDateAndTime}",
-                                        icon = Icons.AutoMirrored.Filled.Login
+                                        icon = PoposIcons.Login,
                                     )
                                 }
                             }
@@ -304,8 +290,8 @@ fun RecentOrders(
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.background
-        )
+            containerColor = MaterialTheme.colorScheme.background,
+        ),
     ) {
         StandardExpandable(
             modifier = Modifier
@@ -318,26 +304,26 @@ fun RecentOrders(
             title = {
                 IconWithText(
                     text = "Recent Orders",
-                    icon = Icons.Default.AllInbox,
+                    icon = PoposIcons.AllInbox,
                 )
             },
             rowClickable = true,
             expand = { modifier: Modifier ->
                 IconButton(
                     modifier = modifier,
-                    onClick = onExpanded
+                    onClick = onExpanded,
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.KeyboardArrowDown,
+                        imageVector = PoposIcons.ArrowDown,
                         contentDescription = "Expand More",
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = MaterialTheme.colorScheme.secondary,
                     )
                 }
             },
             content = {
                 Crossfade(
                     targetState = customerWiseOrders,
-                    label = "Recent Orders"
+                    label = "Recent Orders",
                 ) { state ->
                     when (state) {
                         is UiState.Loading -> LoadingIndicator()
@@ -369,28 +355,28 @@ fun RecentOrders(
                                                 }
                                                 .padding(SpaceSmall),
                                             verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.SpaceBetween
+                                            horizontalArrangement = Arrangement.SpaceBetween,
                                         ) {
                                             IconWithText(
                                                 text = "${order.orderId}",
-                                                icon = Icons.Default.Tag,
+                                                icon = PoposIcons.Tag,
                                                 isTitle = true,
                                             )
 
                                             Text(
                                                 text = order.customerAddress,
-                                                textAlign = TextAlign.Start
+                                                textAlign = TextAlign.Start,
                                             )
 
                                             Text(
                                                 text = order.totalPrice.toRupee,
                                                 textAlign = TextAlign.Start,
-                                                fontWeight = FontWeight.SemiBold
+                                                fontWeight = FontWeight.SemiBold,
                                             )
 
                                             Text(
                                                 text = order.updatedAt.toTime,
-                                                textAlign = TextAlign.End
+                                                textAlign = TextAlign.End,
                                             )
                                         }
 
@@ -405,7 +391,7 @@ fun RecentOrders(
                         }
                     }
                 }
-            }
+            },
         )
     }
 }

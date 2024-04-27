@@ -13,6 +13,8 @@ import com.niyaj.data.repository.CustomerRepository
 import com.niyaj.data.repository.validation.CustomerValidationRepository
 import com.niyaj.model.Customer
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,7 +31,8 @@ import javax.inject.Inject
 class AddEditCustomerViewModel @Inject constructor(
     private val customerRepository: CustomerRepository,
     private val validationRepository: CustomerValidationRepository,
-    savedStateHandle: SavedStateHandle
+    private val analyticsHelper: AnalyticsHelper,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private var customerId = savedStateHandle.get<Int>("customerId") ?: 0
@@ -51,7 +54,7 @@ class AddEditCustomerViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     val nameError: StateFlow<String?> = snapshotFlow { addEditState.customerName }
@@ -60,7 +63,7 @@ class AddEditCustomerViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     val emailError: StateFlow<String?> = snapshotFlow { addEditState.customerEmail }
@@ -69,7 +72,7 @@ class AddEditCustomerViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     fun onEvent(event: AddEditCustomerEvent) {
@@ -108,7 +111,7 @@ class AddEditCustomerViewModel @Inject constructor(
                             addEditState = addEditState.copy(
                                 customerPhone = customer.customerPhone,
                                 customerName = customer.customerName,
-                                customerEmail = customer.customerEmail
+                                customerEmail = customer.customerEmail,
                             )
                         }
                     }
@@ -126,7 +129,7 @@ class AddEditCustomerViewModel @Inject constructor(
                     customerName = addEditState.customerName?.trimEnd()?.capitalizeWords,
                     customerEmail = addEditState.customerEmail?.trimEnd(),
                     createdAt = System.currentTimeMillis(),
-                    updatedAt = if (customerId != 0) System.currentTimeMillis() else null
+                    updatedAt = if (customerId != 0) System.currentTimeMillis() else null,
                 )
 
                 when (customerRepository.upsertCustomer(newCustomer)) {
@@ -137,6 +140,8 @@ class AddEditCustomerViewModel @Inject constructor(
                     is Resource.Success -> {
                         val message = if (customerId == 0) "Created" else "Updated"
                         _eventFlow.emit(UiEvent.OnSuccess("Customer $message Successfully."))
+
+                        analyticsHelper.logOnCreateOrUpdateCustomer(customerId, message)
                     }
                 }
 
@@ -144,4 +149,15 @@ class AddEditCustomerViewModel @Inject constructor(
             }
         }
     }
+}
+
+private fun AnalyticsHelper.logOnCreateOrUpdateCustomer(data: Int, message: String) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "charges_$message",
+            extras = listOf(
+                AnalyticsEvent.Param("charges_$message", data.toString()),
+            ),
+        ),
+    )
 }

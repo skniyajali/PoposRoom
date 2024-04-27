@@ -105,7 +105,6 @@ class CustomerSettingsViewModel @Inject constructor(
     }
 }
 
-
 internal fun AnalyticsHelper.logImportedCustomersFromFile(totalCustomers: Int) {
     logEvent(
         event = AnalyticsEvent(
