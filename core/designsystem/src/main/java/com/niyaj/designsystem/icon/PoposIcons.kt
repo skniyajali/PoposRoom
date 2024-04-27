@@ -2,11 +2,16 @@ package com.niyaj.designsystem.icon
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material.icons.automirrored.filled.Login
+import androidx.compose.material.icons.automirrored.filled.MergeType
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AllInbox
+import androidx.compose.material.icons.filled.Approval
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Business
@@ -26,15 +31,21 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.EditLocationAlt
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.EventBusy
 import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.Merge
+import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Person4
+import androidx.compose.material.icons.filled.PersonPin
 import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.Radar
 import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Tag
@@ -50,6 +61,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
  * Popos icons. Material icons are [ImageVector]s, custom icons are drawable resource IDs.
  */
 object PoposIcons {
+    val ArrowForward: ImageVector = Icons.AutoMirrored.Filled.ArrowForward
+    val Radar: ImageVector = Icons.Default.Radar
+    val PersonPin: ImageVector = Icons.Default.PersonPin
+    val Payments: ImageVector = Icons.Default.Payments
+    val AccountBalance: ImageVector = Icons.Default.AccountBalance
+    val Money: ImageVector = Icons.Default.Money
+    val Merge: ImageVector = Icons.Default.Merge
+    val Approval: ImageVector = Icons.Default.Approval
+    val MergeType: ImageVector = Icons.AutoMirrored.Filled.MergeType
+    val AccessTime: ImageVector = Icons.Default.AccessTime
+    val EventBusy: ImageVector = Icons.Default.EventBusy
     val Person: ImageVector = Icons.Default.Person
     val AllInbox: ImageVector = Icons.Default.AllInbox
     val Email: ImageVector = Icons.Default.Email

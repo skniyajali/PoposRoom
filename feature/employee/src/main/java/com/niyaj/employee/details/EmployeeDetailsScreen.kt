@@ -1,14 +1,11 @@
 package com.niyaj.employee.details
 
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.EventBusy
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarHostState
@@ -21,43 +18,39 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.niyaj.common.utils.toYearAndMonth
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.employee.components.AbsentDetails
 import com.niyaj.employee.components.EmployeeDetails
 import com.niyaj.employee.components.PaymentDetails
 import com.niyaj.employee.components.SalaryEstimationCard
-import com.niyaj.employee.destinations.AddEditEmployeeScreenDestination
-import com.niyaj.ui.components.StandardScaffold
+import com.niyaj.ui.components.StandardScaffoldRoute
+import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
 /**
  * Employee Details Screen
  * @author Sk Niyaj Ali
  * @param employeeId
- * @param navController
+ * @param navigator
  * @param viewModel
  * @see EmployeeDetailsViewModel
  */
-@Destination
+@Destination(route = Screens.EMPLOYEE_DETAILS_SCREEN)
 @Composable
 fun EmployeeDetailsScreen(
     employeeId: Int = 0,
-    navController: NavController,
+    navigator: DestinationsNavigator,
     onClickAddPayment: (Int) -> Unit,
     onClickAddAbsent: (Int) -> Unit,
     viewModel: EmployeeDetailsViewModel = hiltViewModel(),
 ) {
-    val empId = navController.currentBackStackEntryAsState().value?.arguments?.getInt("employeeId")
-        ?: employeeId
-
     val lazyListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -85,39 +78,42 @@ fun EmployeeDetailsScreen(
     var absentReportsExpanded by remember {
         mutableStateOf(false)
     }
-    
-    TrackScreenViewEvent(screenName = "Employee Details Screen")
 
-    StandardScaffold(
-        navController = navController,
+    TrackScreenViewEvent(screenName = Screens.EMPLOYEE_DETAILS_SCREEN + "/$employeeId")
+
+    StandardScaffoldRoute(
+        currentRoute = Screens.EMPLOYEE_DETAILS_SCREEN,
+        selectionCount = 0,
         snackbarHostState = snackbarHostState,
         title = "Employee Details",
-        selectionCount = 0,
         showBackButton = true,
+        gesturesEnabled = false,
         floatingActionButton = {},
         navActions = {
             IconButton(
                 onClick = {
-                    onClickAddPayment(empId)
-                }
+                    onClickAddPayment(employeeId)
+                },
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Payment Entry")
+                Icon(imageVector = PoposIcons.Add, contentDescription = "Add Payment Entry")
             }
 
             IconButton(
                 onClick = {
-                    onClickAddAbsent(empId)
-                }
+                    onClickAddAbsent(employeeId)
+                },
             ) {
-                Icon(imageVector = Icons.Default.EventBusy, contentDescription = "Add Absent Entry")
+                Icon(imageVector = PoposIcons.EventBusy, contentDescription = "Add Absent Entry")
             }
         },
+        onBackClick = navigator::navigateUp,
+        onNavigateToScreen = navigator::navigate,
     ) {
         TrackScrollJank(scrollableState = lazyListState, stateName = "Employee Details::List")
 
         LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(SpaceSmall),
             state = lazyListState,
         ) {
@@ -129,7 +125,7 @@ fun EmployeeDetailsScreen(
                     salaryDates = salaryDates,
                     onDateClick = {
                         viewModel.onEvent(
-                            EmployeeDetailsEvent.OnChooseSalaryDate(it)
+                            EmployeeDetailsEvent.OnChooseSalaryDate(it),
                         )
                     },
                     onClickPaymentCount = {
@@ -143,10 +139,10 @@ fun EmployeeDetailsScreen(
                         }
                     },
                     onClickAbsentEntry = {
-                        onClickAddAbsent(empId)
+                        onClickAddAbsent(employeeId)
                     },
                     onClickSalaryEntry = {
-                        onClickAddPayment(empId)
+                        onClickAddPayment(employeeId)
                     },
                 )
 
@@ -158,11 +154,15 @@ fun EmployeeDetailsScreen(
                     employeeState = employeeState,
                     employeeDetailsExpanded = employeeDetailsExpanded,
                     onClickEdit = {
-                        navController.navigate(AddEditEmployeeScreenDestination(empId))
+                        navigator.navigate(
+                            com.niyaj.employee.destinations.AddEditEmployeeScreenDestination(
+                                employeeId,
+                            ),
+                        )
                     },
                     onExpanded = {
                         employeeDetailsExpanded = !employeeDetailsExpanded
-                    }
+                    },
                 )
 
                 Spacer(modifier = Modifier.height(SpaceMedium))

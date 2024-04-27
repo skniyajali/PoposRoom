@@ -13,6 +13,8 @@ import com.niyaj.data.repository.EmployeeRepository
 import com.niyaj.data.repository.EmployeeValidationRepository
 import com.niyaj.model.Employee
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,6 +31,7 @@ import javax.inject.Inject
 class AddEditEmployeeViewModel @Inject constructor(
     private val employeeRepository: EmployeeRepository,
     private val validationRepository: EmployeeValidationRepository,
+    private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -41,7 +44,7 @@ class AddEditEmployeeViewModel @Inject constructor(
 
     init {
         savedStateHandle.get<Int>("employeeId")?.let { employeeId ->
-            getCustomerById(employeeId)
+            getEmployeeById(employeeId)
         }
     }
 
@@ -51,7 +54,7 @@ class AddEditEmployeeViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     val nameError: StateFlow<String?> = snapshotFlow { state.employeeName }
@@ -60,7 +63,7 @@ class AddEditEmployeeViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     val salaryError: StateFlow<String?> = snapshotFlow { state.employeeSalary }
@@ -69,7 +72,7 @@ class AddEditEmployeeViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     val positionError: StateFlow<String?> = snapshotFlow { state.employeePosition }
@@ -78,7 +81,7 @@ class AddEditEmployeeViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     fun onEvent(event: AddEditEmployeeEvent) {
@@ -118,12 +121,12 @@ class AddEditEmployeeViewModel @Inject constructor(
             }
 
             is AddEditEmployeeEvent.CreateOrUpdateEmployee -> {
-                createOrUpdateCustomer(event.employeeId)
+                createOrUpdateEmployee(event.employeeId)
             }
         }
     }
 
-    private fun getCustomerById(itemId: Int) {
+    private fun getEmployeeById(itemId: Int) {
         viewModelScope.launch {
             employeeRepository.getEmployeeById(itemId)?.let { employee ->
                 state = state.copy(
@@ -134,20 +137,20 @@ class AddEditEmployeeViewModel @Inject constructor(
                     employeePosition = employee.employeePosition,
                     employeeSalaryType = employee.employeeSalaryType,
                     employeeType = employee.employeeType,
-                    employeeJoinedDate = employee.employeeJoinedDate
+                    employeeJoinedDate = employee.employeeJoinedDate,
                 )
             }
         }
     }
 
-    private fun createOrUpdateCustomer(employeeId: Int = 0) {
+    private fun createOrUpdateEmployee(employeeId: Int = 0) {
         viewModelScope.launch {
             val hasError = listOf(phoneError, nameError, salaryError, positionError).all {
                 it.value != null
             }
 
             if (!hasError) {
-                val addOnItem = Employee(
+                val newEmployee = Employee(
                     employeeId = employeeId,
                     employeeName = state.employeeName.trim().capitalizeWords,
                     employeePhone = state.employeePhone.trim(),
@@ -158,10 +161,10 @@ class AddEditEmployeeViewModel @Inject constructor(
                     employeeType = state.employeeType,
                     employeeJoinedDate = state.employeeJoinedDate,
                     createdAt = System.currentTimeMillis(),
-                    updatedAt = if (employeeId != 0) System.currentTimeMillis() else null
+                    updatedAt = if (employeeId != 0) System.currentTimeMillis() else null,
                 )
 
-                when (employeeRepository.upsertEmployee(addOnItem)) {
+                when (employeeRepository.upsertEmployee(newEmployee)) {
                     is Resource.Error -> {
                         _eventFlow.emit(UiEvent.OnError("Unable To Create Employee."))
                     }
@@ -169,10 +172,22 @@ class AddEditEmployeeViewModel @Inject constructor(
                     is Resource.Success -> {
                         val message = if (employeeId == 0) "Created" else "Updated"
                         _eventFlow.emit(UiEvent.OnSuccess("Employee $message Successfully."))
+                        analyticsHelper.logOnCreateOrUpdateEmployee(employeeId, message)
                     }
                 }
                 state = AddEditEmployeeState()
             }
         }
     }
+}
+
+private fun AnalyticsHelper.logOnCreateOrUpdateEmployee(data: Int, message: String) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "employee_$message",
+            extras = listOf(
+                AnalyticsEvent.Param("employee_$message", data.toString()),
+            ),
+        ),
+    )
 }

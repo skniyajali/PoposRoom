@@ -16,6 +16,7 @@ import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.SuggestionChipDefaults.suggestionChipBorder
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -133,8 +134,8 @@ fun StandardRoundedFilterChip(
         colors = FilterChipDefaults.elevatedFilterChipColors(
             containerColor = containerColor,
             selectedContainerColor = selectedColor,
-            selectedLabelColor = MaterialTheme.colorScheme.onSecondary
-        )
+            selectedLabelColor = contentColorFor(backgroundColor = selectedColor),
+        ),
     )
 }
 

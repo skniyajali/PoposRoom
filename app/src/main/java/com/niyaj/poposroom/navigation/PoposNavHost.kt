@@ -142,7 +142,8 @@ fun PoposNavHost(
 
                 composable(EmployeeDetailsScreenDestination) {
                     EmployeeDetailsScreen(
-                        navController = navController,
+                        employeeId = this.navBackStackEntry.arguments?.getInt("employeeId") ?: 0,
+                        navigator = this.destinationsNavigator,
                         onClickAddPayment = {
                             navController.navigate(AddEditPaymentScreenDestination(employeeId = it))
                         },
@@ -174,6 +175,7 @@ fun PoposNavHost(
 
                 composable(ProductDetailsScreenDestination) {
                     ProductDetailsScreen(
+                        productId = this.navBackStackEntry.arguments?.getInt("productId") ?: 0,
                         navController = navController,
                         onClickOrder = {
                             navController.navigate(OrderDetailsScreenDestination(it))

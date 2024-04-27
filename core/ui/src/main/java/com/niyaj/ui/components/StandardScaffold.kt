@@ -246,6 +246,7 @@ fun StandardScaffoldRoute(
     selectionCount: Int,
     showBottomBar: Boolean = false,
     showBackButton: Boolean = false,
+    gesturesEnabled: Boolean = true,
     onDeselect: () -> Unit = {},
     onBackClick: () -> Unit,
     onNavigateToScreen: (String) -> Unit,
@@ -286,7 +287,7 @@ fun StandardScaffoldRoute(
                 onNavigateToScreen = onNavigateToScreen,
             )
         },
-        gesturesEnabled = true,
+        gesturesEnabled = gesturesEnabled,
     ) {
         Scaffold(
             topBar = {

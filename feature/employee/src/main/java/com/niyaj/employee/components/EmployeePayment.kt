@@ -5,10 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.Money
-import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toBarDate
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Payment
 import com.niyaj.model.PaymentMode
@@ -42,7 +39,7 @@ fun EmployeePayment(
             style = MaterialTheme.typography.labelMedium,
             textAlign = TextAlign.Start,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.weight(0.8F)
+            modifier = Modifier.weight(0.8F),
         )
 
         Text(
@@ -60,9 +57,9 @@ fun EmployeePayment(
             IconBox(
                 text = payment.paymentMode.name,
                 icon = when (payment.paymentMode) {
-                    PaymentMode.Cash -> Icons.Default.Money
-                    PaymentMode.Online -> Icons.Default.AccountBalance
-                    else -> Icons.Default.Payments
+                    PaymentMode.Cash -> PoposIcons.Money
+                    PaymentMode.Online -> PoposIcons.AccountBalance
+                    else -> PoposIcons.Payments
                 },
                 selected = false,
             )

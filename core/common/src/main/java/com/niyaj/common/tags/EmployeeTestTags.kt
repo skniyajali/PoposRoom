@@ -49,7 +49,7 @@ object EmployeeTestTags {
     const val EMPLOYEE_SALARY_LENGTH_ERROR = "Employee salary must be more than 5 digits"
 
     const val DELETE_EMPLOYEE_TITLE = "Delete Employee?"
-    const val DELETE_EMPLOYEE_MESSAGE = "Are you sure to delete these employee?"
+    const val DELETE_EMPLOYEE_MESSAGE = "Are you sure to delete these employee? This action cannot be undone."
 
     const val EMPLOYEE_TAG = "Customer-"
 
