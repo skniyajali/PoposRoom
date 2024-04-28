@@ -10,13 +10,7 @@ interface CategoryRepository {
 
     suspend fun getCategoryById(categoryId: Int): Resource<Category?>
 
-    suspend fun addOrIgnoreCategory(newCategory: Category): Resource<Boolean>
-
-    suspend fun updateCategory(newCategory: Category): Resource<Boolean>
-
     suspend fun upsertCategory(newCategory: Category): Resource<Boolean>
-
-    suspend fun deleteCategory(categoryId: Int): Resource<Boolean>
 
     suspend fun deleteCategories(categoryIds: List<Int>): Resource<Boolean>
 

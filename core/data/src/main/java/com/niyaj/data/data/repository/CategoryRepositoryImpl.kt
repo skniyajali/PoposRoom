@@ -13,7 +13,6 @@ import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Category
 import com.niyaj.model.searchCategory
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
@@ -25,7 +24,6 @@ class CategoryRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher,
 ) : CategoryRepository, CategoryValidationRepository {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getAllCategory(searchText: String): Flow<List<Category>> {
         return withContext(ioDispatcher) {
             categoryDao.getAllCategories().mapLatest { it ->
@@ -46,43 +44,6 @@ class CategoryRepositoryImpl(
         }
     }
 
-    override suspend fun addOrIgnoreCategory(newCategory: Category): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val validateCategoryName = validateCategoryName(newCategory.categoryName)
-
-                if (validateCategoryName.successful) {
-                    val result = categoryDao.insertOrIgnoreCategory(newCategory.toEntity())
-
-                    Resource.Success(result > 0)
-                } else {
-                    Resource.Error(validateCategoryName.errorMessage ?: "Unable to create category")
-                }
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unable to create new category")
-        }
-    }
-
-    override suspend fun updateCategory(newCategory: Category): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val validateCategoryName =
-                    validateCategoryName(newCategory.categoryName, newCategory.categoryId)
-
-                if (validateCategoryName.successful) {
-                    val result = categoryDao.updateCategory(newCategory.toEntity())
-
-                    Resource.Success(result > 0)
-                } else {
-                    Resource.Error(validateCategoryName.errorMessage ?: "Unable to update category")
-                }
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unable to update category")
-        }
-    }
-
     override suspend fun upsertCategory(newCategory: Category): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
@@ -96,18 +57,6 @@ class CategoryRepositoryImpl(
                 } else {
                     Resource.Error(validateCategoryName.errorMessage ?: "Unable")
                 }
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unable")
-        }
-    }
-
-    override suspend fun deleteCategory(categoryId: Int): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val result = categoryDao.deleteCategory(categoryId)
-
-                Resource.Success(result > 0)
             }
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Unable")
@@ -135,14 +84,14 @@ class CategoryRepositoryImpl(
         if (categoryName.isEmpty()) {
             return ValidationResult(
                 successful = false,
-                errorMessage = CategoryConstants.CATEGORY_NAME_EMPTY_ERROR
+                errorMessage = CategoryConstants.CATEGORY_NAME_EMPTY_ERROR,
             )
         }
 
         if (categoryName.length < 3) {
             return ValidationResult(
                 successful = false,
-                errorMessage = CategoryConstants.CATEGORY_NAME_LENGTH_ERROR
+                errorMessage = CategoryConstants.CATEGORY_NAME_LENGTH_ERROR,
             )
         }
 
@@ -153,12 +102,12 @@ class CategoryRepositoryImpl(
         if (serverResult) {
             return ValidationResult(
                 successful = false,
-                errorMessage = CategoryConstants.CATEGORY_NAME_ALREADY_EXIST_ERROR
+                errorMessage = CategoryConstants.CATEGORY_NAME_ALREADY_EXIST_ERROR,
             )
         }
 
         return ValidationResult(
-            successful = true
+            successful = true,
         )
     }
 
