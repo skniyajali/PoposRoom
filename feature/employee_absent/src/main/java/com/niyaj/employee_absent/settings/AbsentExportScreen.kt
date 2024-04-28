@@ -4,19 +4,18 @@ import android.Manifest
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Checklist
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -40,6 +39,7 @@ import com.niyaj.common.tags.AbsentScreenTags.EXPORT_ABSENT_BTN_TEXT
 import com.niyaj.common.tags.AbsentScreenTags.EXPORT_ABSENT_FILE_NAME
 import com.niyaj.common.tags.AbsentScreenTags.EXPORT_ABSENT_TITLE
 import com.niyaj.common.utils.Constants
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.domain.utils.ImportExport
@@ -50,7 +50,7 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -104,7 +104,7 @@ fun AbsentExportScreen(
         permissions = listOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        )
+        ),
     )
 
     val askForPermissions = {
@@ -115,14 +115,15 @@ fun AbsentExportScreen(
 
     val exportLauncher =
         rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) {
-            it.data?.data?.let {
+            ActivityResultContracts.StartActivityForResult(),
+        ) { activityResult ->
+            activityResult.data?.data?.let {
                 scope.launch {
-                    val result = ImportExport.writeData(context, it, exportedItems)
+                    val result = ImportExport.writeDataAsync(context, it, exportedItems)
 
-                    if (result) {
-                        resultBackNavigator.navigateBack("${exportedItems.size} Items has been exported.")
+                    if (result.isSuccess) {
+                        val countItems = exportedItems.sumOf { it.absents.size }
+                        resultBackNavigator.navigateBack("$countItems Items has been exported.")
                     } else {
                         resultBackNavigator.navigateBack("Unable to export items.")
                     }
@@ -143,13 +144,12 @@ fun AbsentExportScreen(
     BackHandler {
         onBackClick()
     }
-    
+
     TrackScreenViewEvent(screenName = "Absent Export Screen")
 
-    StandardScaffoldNew(
-        navController = navController,
+    StandardScaffoldRouteNew(
         title = if (selectedItems.isEmpty()) EXPORT_ABSENT_TITLE else "${selectedItems.size} Selected",
-        showBackButton = true,
+        showBackButton = selectedItems.isEmpty() || showSearchBar,
         showBottomBar = items.isNotEmpty(),
         navActions = {
             if (showSearchBar) {
@@ -157,25 +157,25 @@ fun AbsentExportScreen(
                     searchText = searchText,
                     placeholderText = ABSENT_SEARCH_PLACEHOLDER,
                     onClearClick = viewModel::clearSearchText,
-                    onSearchTextChanged = viewModel::searchTextChanged
+                    onSearchTextChanged = viewModel::searchTextChanged,
                 )
             } else {
                 if (items.isNotEmpty()) {
                     IconButton(
-                        onClick = viewModel::selectAllItems
+                        onClick = viewModel::selectAllItems,
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Checklist,
-                            contentDescription = Constants.SELECT_ALL_ICON
+                            imageVector = PoposIcons.Checklist,
+                            contentDescription = Constants.SELECT_ALL_ICON,
                         )
                     }
 
                     IconButton(
                         onClick = viewModel::openSearchBar,
-                        modifier = Modifier.testTag(NAV_SEARCH_BTN)
+                        modifier = Modifier.testTag(NAV_SEARCH_BTN),
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Search,
+                            imageVector = PoposIcons.Search,
                             contentDescription = "Search Icon",
                         )
                     }
@@ -187,7 +187,7 @@ fun AbsentExportScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(SpaceSmallMax),
-                verticalArrangement = Arrangement.spacedBy(SpaceSmall)
+                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} items will be exported.")
 
@@ -197,21 +197,21 @@ fun AbsentExportScreen(
                         .testTag(EXPORT_ABSENT_BTN),
                     enabled = true,
                     text = EXPORT_ABSENT_BTN_TEXT,
-                    icon = Icons.Default.Upload,
+                    icon = PoposIcons.Upload,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
+                        containerColor = MaterialTheme.colorScheme.secondary,
                     ),
                     onClick = {
                         scope.launch {
                             askForPermissions()
                             val result = ImportExport.createFile(
                                 context = context,
-                                fileName = EXPORT_ABSENT_FILE_NAME
+                                fileName = EXPORT_ABSENT_FILE_NAME,
                             )
                             exportLauncher.launch(result)
                             viewModel.onEvent(AbsentSettingsEvent.GetExportedItems)
                         }
-                    }
+                    },
                 )
             }
         },
@@ -224,48 +224,71 @@ fun AbsentExportScreen(
                     scope.launch {
                         lazyListState.animateScrollToItem(index = 0)
                     }
-                }
+                },
             )
-        }
-    ) {
-        if (items.isEmpty()) {
-            ItemNotAvailable(
-                text = if (searchText.isEmpty()) AbsentScreenTags.ABSENT_NOT_AVAIlABLE else AbsentScreenTags.NO_ITEMS_IN_ABSENT,
-                buttonText = AbsentScreenTags.CREATE_NEW_ABSENT,
-                onClick = {
-                    navController.navigate(AddEditAbsentScreenDestination())
-                }
-            )
-        } else {
-            TrackScrollJank(scrollableState = lazyListState, stateName = "Exported Absentees::List")
-
-            LazyColumn(
-                modifier = Modifier
-                    .padding(SpaceSmall),
-                state = lazyListState
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = viewModel::deselectItems,
             ) {
-                items(
-                    items = items,
-                    key = { it.employee.employeeId }
-                ) { item ->
-                    if (item.absents.isNotEmpty()) {
-                        AbsentData(
-                            item = item,
-                            expanded = {
-                                selectedEmployee == it
-                            },
-                            doesSelected = {
-                                selectedItems.contains(it)
-                            },
-                            onClick = viewModel::selectItem,
-                            onExpandChanged = viewModel::selectEmployee,
-                            onLongClick = viewModel::selectItem,
-                            onChipClick = {
-                                navController.navigate(AddEditAbsentScreenDestination(employeeId = it))
-                            }
-                        )
+                Icon(
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Deselect All",
+                )
+            }
+        },
+    ) { paddingValues ->
+        Crossfade(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            targetState = items.isEmpty(),
+            label = "Absent Export Screen::State",
+        ) { itemNotAvailable ->
+            if (itemNotAvailable) {
+                ItemNotAvailable(
+                    text = if (searchText.isEmpty()) AbsentScreenTags.ABSENT_NOT_AVAILABLE else AbsentScreenTags.NO_ITEMS_IN_ABSENT,
+                    buttonText = AbsentScreenTags.CREATE_NEW_ABSENT,
+                    onClick = {
+                        navController.navigate(AddEditAbsentScreenDestination())
+                    },
+                )
+            } else {
+                TrackScrollJank(
+                    scrollableState = lazyListState,
+                    stateName = "Exported Absentees::List",
+                )
 
-                        Spacer(modifier = Modifier.height(SpaceSmall))
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentPadding = PaddingValues(SpaceSmall),
+                    state = lazyListState,
+                ) {
+                    items(
+                        items = items,
+                        key = { it.employee.employeeId },
+                    ) { item ->
+                        if (item.absents.isNotEmpty()) {
+                            AbsentData(
+                                item = item,
+                                expanded = {
+                                    selectedEmployee == it
+                                },
+                                doesSelected = {
+                                    selectedItems.contains(it)
+                                },
+                                onClick = viewModel::selectItem,
+                                onExpandChanged = viewModel::selectEmployee,
+                                onLongClick = viewModel::selectItem,
+                                onChipClick = {
+                                    navController.navigate(AddEditAbsentScreenDestination(employeeId = it))
+                                },
+                                showTrailingIcon = false,
+                            )
+
+                            Spacer(modifier = Modifier.height(SpaceSmall))
+                        }
                     }
                 }
             }

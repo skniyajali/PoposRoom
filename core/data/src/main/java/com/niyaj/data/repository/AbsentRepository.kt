@@ -10,7 +10,7 @@ interface AbsentRepository {
 
     fun getAllEmployee(): Flow<List<Employee>>
 
-    suspend fun getEmployeeById(employeeId: Int) : Employee?
+    suspend fun getEmployeeById(employeeId: Int): Employee?
 
     suspend fun getAllEmployeeAbsents(searchText: String): Flow<List<EmployeeWithAbsents>>
 
@@ -18,13 +18,7 @@ interface AbsentRepository {
 
     suspend fun getAbsentById(absentId: Int): Resource<Absent?>
 
-    suspend fun addOrIgnoreAbsent(newAbsent: Absent): Resource<Boolean>
-
-    suspend fun updateAbsent(newAbsent: Absent): Resource<Boolean>
-
     suspend fun upsertAbsent(newAbsent: Absent): Resource<Boolean>
-
-    suspend fun deleteAbsent(absentId: Int): Resource<Boolean>
 
     suspend fun deleteAbsents(absentIds: List<Int>): Resource<Boolean>
 

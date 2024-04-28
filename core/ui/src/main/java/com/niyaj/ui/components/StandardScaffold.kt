@@ -53,7 +53,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -583,8 +582,6 @@ fun StandardScaffoldRouteNew(
     content: @Composable (PaddingValues) -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val layoutDirection = LocalLayoutDirection.current
-
     // Remember a SystemUiController
     val systemUiController = rememberSystemUiController()
 
@@ -596,10 +593,7 @@ fun StandardScaffoldRouteNew(
     val navColor = MaterialTheme.colorScheme.surface
 
     SideEffect {
-        systemUiController.setStatusBarColor(
-            color = color.value,
-            darkIcons = true,
-        )
+        systemUiController.setStatusBarColor(color = color.value, darkIcons = true)
 
         systemUiController.setNavigationBarColor(color = navColor)
     }
@@ -634,9 +628,7 @@ fun StandardScaffoldRouteNew(
                         } else navigationIcon()
                     }
                 },
-                actions = {
-                    navActions()
-                },
+                actions = navActions,
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.largeTopAppBarColors(
                     containerColor = color.value,

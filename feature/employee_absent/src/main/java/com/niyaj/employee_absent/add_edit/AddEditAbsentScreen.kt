@@ -1,7 +1,9 @@
 package com.niyaj.employee_absent.add_edit
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -35,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_DATE_ERROR
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_DATE_FIELD
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_EMPLOYEE_NAME_ERROR
@@ -54,12 +55,13 @@ import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
@@ -72,7 +74,7 @@ import java.time.LocalDate
 fun AddEditAbsentScreen(
     absentId: Int = 0,
     employeeId: Int = 0,
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: AddEditAbsentViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
@@ -111,14 +113,11 @@ fun AddEditAbsentScreen(
 
     val title = if (absentId == 0) CREATE_NEW_ABSENT else EDIT_ABSENT_ITEM
 
-    TrackScreenViewEvent(screenName = "Add/Edit Absent Screen")
+    TrackScreenViewEvent(screenName = "Add/Edit Absent Screen/employeeId: $employeeId/absentId: $absentId")
 
-    StandardScaffoldNew(
-        navController = navController,
+    StandardScaffoldRouteNew(
         title = title,
-        onBackClick = {
-            navController.navigateUp()
-        },
+        onBackClick = navigator::navigateUp,
         showBottomBar = true,
         showBackButton = true,
         bottomBar = {
@@ -135,15 +134,16 @@ fun AddEditAbsentScreen(
                 },
             )
         },
-    ) {
+    ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "Add/Edit Absent Screen Field")
 
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
                 .testTag(ADD_EDIT_ABSENT_SCREEN)
-                .fillMaxWidth()
-                .padding(SpaceMedium),
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentPadding = PaddingValues(SpaceMedium),
         ) {
             item(ABSENT_EMPLOYEE_NAME_FIELD) {
                 ExposedDropdownMenuBox(
@@ -240,7 +240,7 @@ fun AddEditAbsentScreen(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             onClick = {
-                                navController.navigate(Screens.ADD_EDIT_EMPLOYEE_SCREEN)
+                                navigator.navigate(Screens.ADD_EDIT_EMPLOYEE_SCREEN)
                             },
                             text = {
                                 Text(
