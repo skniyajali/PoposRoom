@@ -92,8 +92,7 @@ fun CustomPermissionDialog(
                                 MaterialTheme.colorScheme.surfaceContainerHigh,
                                 CircleShape,
                             ),
-
-                        ) {
+                    ) {
                         Icon(
                             imageVector = icon,
                             contentDescription = title,
