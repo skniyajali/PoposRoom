@@ -1,34 +1,22 @@
 package com.niyaj.employee_payment.add_edit
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
-import androidx.compose.material.icons.automirrored.filled.MergeType
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Money
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Person4
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -51,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.PaymentScreenTags.ADD_EDIT_PAYMENT_ENTRY_BUTTON
 import com.niyaj.common.tags.PaymentScreenTags.ADD_EDIT_PAYMENT_SCREEN
 import com.niyaj.common.tags.PaymentScreenTags.CREATE_NEW_PAYMENT
@@ -68,6 +55,7 @@ import com.niyaj.common.tags.PaymentScreenTags.PAYMENT_NOTE_FIELD
 import com.niyaj.common.tags.PaymentScreenTags.PAYMENT_TYPE_FIELD
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -77,13 +65,15 @@ import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardRoundedFilterChip
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
@@ -96,12 +86,12 @@ import java.time.LocalDate
 fun AddEditPaymentScreen(
     paymentId: Int = 0,
     employeeId: Int = 0,
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: AddEditPaymentViewModel = hiltViewModel(),
-    resultBackNavigator: ResultBackNavigator<String>
+    resultBackNavigator: ResultBackNavigator<String>,
 ) {
-    TrackScreenViewEvent(screenName = "Add/Edit Payment Screen-${employeeId}")
-    
+    TrackScreenViewEvent(screenName = "Add/Edit Payment Screen-${employeeId}/${paymentId}")
+
     val lazyListState = rememberLazyListState()
 
     val employees = viewModel.employees.collectAsStateWithLifecycle().value
@@ -126,10 +116,11 @@ fun AddEditPaymentScreen(
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
-            when(data) {
+            when (data) {
                 is UiEvent.OnError -> {
                     resultBackNavigator.navigateBack(data.errorMessage)
                 }
+
                 is UiEvent.OnSuccess -> {
                     resultBackNavigator.navigateBack(data.successMessage)
                 }
@@ -147,12 +138,9 @@ fun AddEditPaymentScreen(
 
     val title = if (paymentId == 0) CREATE_NEW_PAYMENT else EDIT_PAYMENT_ITEM
 
-    StandardScaffoldNew(
-        navController = navController,
+    StandardScaffoldRouteNew(
         title = title,
-        onBackClick = {
-            navController.navigateUp()
-        },
+        onBackClick = navigator::navigateUp,
         showBackButton = true,
         showBottomBar = lazyListState.isScrollingUp(),
         bottomBar = {
@@ -163,21 +151,22 @@ fun AddEditPaymentScreen(
                     .padding(SpaceMedium),
                 enabled = enableBtn,
                 text = title,
-                icon = if (paymentId == 0) Icons.Default.Add else Icons.Default.Edit,
+                icon = if (paymentId == 0) PoposIcons.Add else PoposIcons.Edit,
                 onClick = {
                     viewModel.onEvent(AddEditPaymentEvent.CreateOrUpdatePayment(paymentId))
-                }
+                },
             )
-        }
-    ) {
+        },
+    ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "Add/Edit Payment::Fields")
 
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
                 .testTag(ADD_EDIT_PAYMENT_SCREEN)
-                .fillMaxWidth()
-                .padding(SpaceMedium),
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentPadding = PaddingValues(SpaceMedium),
         ) {
             item(PAYMENT_EMPLOYEE_NAME_FIELD) {
                 ExposedDropdownMenuBox(
@@ -196,7 +185,7 @@ fun AddEditPaymentScreen(
                             .menuAnchor(),
                         value = selectedEmployee.employeeName,
                         label = PAYMENT_EMPLOYEE_NAME_FIELD,
-                        leadingIcon = Icons.Default.Person4,
+                        leadingIcon = PoposIcons.Person4,
                         isError = employeeError != null,
                         errorText = employeeError,
                         readOnly = true,
@@ -204,7 +193,7 @@ fun AddEditPaymentScreen(
                         onValueChange = {},
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(
-                                expanded = employeeToggled
+                                expanded = employeeToggled,
                             )
                         },
                     )
@@ -215,9 +204,9 @@ fun AddEditPaymentScreen(
                             employeeToggled = false
                         },
                         modifier = Modifier
-                            .width(with(LocalDensity.current){textFieldSize.width.toDp()}),
+                            .width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
                     ) {
-                        employees.forEachIndexed{ index, employee ->
+                        employees.forEachIndexed { index, employee ->
                             DropdownMenuItem(
                                 modifier = Modifier
                                     .testTag(employee.employeeName)
@@ -232,19 +221,21 @@ fun AddEditPaymentScreen(
                                 },
                                 leadingIcon = {
                                     CircularBox(
-                                        icon = Icons.Default.Person,
+                                        icon = PoposIcons.Person,
                                         doesSelected = false,
                                         size = 30.dp,
                                         showBorder = false,
-                                        text = employee.employeeName
+                                        text = employee.employeeName,
                                     )
-                                }
+                                },
                             )
 
-                            if(index != employees.size - 1) {
-                                HorizontalDivider(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 44.dp))
+                            if (index != employees.size - 1) {
+                                HorizontalDivider(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 44.dp),
+                                )
                             }
                         }
 
@@ -261,7 +252,7 @@ fun AddEditPaymentScreen(
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .align(Alignment.CenterHorizontally)
+                                            .align(Alignment.CenterHorizontally),
                                     )
                                 },
                             )
@@ -273,27 +264,27 @@ fun AddEditPaymentScreen(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             onClick = {
-                                navController.navigate(Screens.ADD_EDIT_EMPLOYEE_SCREEN)
+                                navigator.navigate(Screens.ADD_EDIT_EMPLOYEE_SCREEN)
                             },
                             text = {
                                 Text(
                                     text = "Create a new employee",
-                                    color = MaterialTheme.colorScheme.secondary
+                                    color = MaterialTheme.colorScheme.secondary,
                                 )
                             },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Default.Add,
+                                    imageVector = PoposIcons.Add,
                                     contentDescription = "Create",
-                                    tint = MaterialTheme.colorScheme.secondary
+                                    tint = MaterialTheme.colorScheme.secondary,
                                 )
                             },
                             trailingIcon = {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
-                                    contentDescription = "trailing"
+                                    imageVector = PoposIcons.ArrowRightAlt,
+                                    contentDescription = "trailing",
                                 )
-                            }
+                            },
                         )
                     }
                 }
@@ -305,12 +296,15 @@ fun AddEditPaymentScreen(
                 StandardOutlinedTextField(
                     value = viewModel.state.paymentDate.toPrettyDate(),
                     label = GIVEN_DATE_FIELD,
-                    leadingIcon = Icons.Default.CalendarToday,
+                    leadingIcon = PoposIcons.CalenderToday,
                     trailingIcon = {
                         FilledTonalIconButton(
-                            onClick = { dialogState.show() }
+                            onClick = { dialogState.show() },
                         ) {
-                            Icon(imageVector = Icons.Default.CalendarMonth, contentDescription = "Choose a date")
+                            Icon(
+                                imageVector = PoposIcons.CalenderMonth,
+                                contentDescription = "Choose a date",
+                            )
                         }
                     },
                     isError = dateError != null,
@@ -324,9 +318,9 @@ fun AddEditPaymentScreen(
                         ) {
                             Text(text = "Click Here")
                             Spacer(modifier = Modifier.width(SpaceMini))
-                            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, "Click Here")
+                            Icon(imageVector = PoposIcons.ArrowForward, "Click Here")
                         }
-                    }
+                    },
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
@@ -336,14 +330,14 @@ fun AddEditPaymentScreen(
                 StandardOutlinedTextField(
                     value = viewModel.state.paymentAmount,
                     label = GIVEN_AMOUNT_FIELD,
-                    leadingIcon = Icons.Default.Money,
+                    leadingIcon = PoposIcons.Money,
                     keyboardType = KeyboardType.Number,
                     isError = amountError != null,
                     errorText = amountError,
                     errorTextTag = GIVEN_AMOUNT_ERROR,
                     onValueChange = {
                         viewModel.onEvent(AddEditPaymentEvent.PaymentAmountChanged(it))
-                    }
+                    },
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
@@ -353,13 +347,13 @@ fun AddEditPaymentScreen(
                 StandardOutlinedTextField(
                     value = viewModel.state.paymentNote,
                     label = PAYMENT_NOTE_FIELD,
-                    leadingIcon = Icons.Default.Description,
+                    leadingIcon = PoposIcons.Description,
                     isError = noteError != null,
                     errorText = noteError,
                     errorTextTag = PAYMENT_NOTE_ERROR,
                     onValueChange = {
                         viewModel.onEvent(AddEditPaymentEvent.PaymentNoteChanged(it))
-                    }
+                    },
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
@@ -373,22 +367,21 @@ fun AddEditPaymentScreen(
                 ) {
                     IconWithText(
                         text = PAYMENT_TYPE_FIELD,
-                        icon = Icons.AutoMirrored.Filled.MergeType
+                        icon = PoposIcons.MergeType,
                     )
 
                     Spacer(modifier = Modifier.height(SpaceMini))
 
                     Row {
                         PaymentType.entries.forEach { type ->
-                            ElevatedFilterChip(
+                            StandardRoundedFilterChip(
                                 modifier = Modifier.testTag(PAYMENT_TYPE_FIELD.plus(type.name)),
+                                text = type.name,
                                 selected = viewModel.state.paymentType == type,
+                                selectedColor = MaterialTheme.colorScheme.tertiary,
                                 onClick = {
                                     viewModel.onEvent(AddEditPaymentEvent.PaymentTypeChanged(type))
                                 },
-                                label = {
-                                    Text(text = type.name)
-                                }
                             )
 
                             Spacer(modifier = Modifier.width(SpaceMini))
@@ -407,26 +400,21 @@ fun AddEditPaymentScreen(
                 ) {
                     IconWithText(
                         text = PAYMENT_MODE_FIELD,
-                        icon = Icons.AutoMirrored.Filled.MergeType
+                        icon = PoposIcons.MergeType,
                     )
 
                     Spacer(modifier = Modifier.height(SpaceMini))
 
                     Row {
                         PaymentMode.entries.forEach { type ->
-                            ElevatedFilterChip(
+                            StandardRoundedFilterChip(
                                 modifier = Modifier.testTag(PAYMENT_MODE_FIELD.plus(type.name)),
+                                text = type.name,
                                 selected = viewModel.state.paymentMode == type,
+                                selectedColor = MaterialTheme.colorScheme.secondary,
                                 onClick = {
                                     viewModel.onEvent(AddEditPaymentEvent.PaymentModeChanged(type))
                                 },
-                                label = {
-                                    Text(text = type.name)
-                                },
-                                colors = FilterChipDefaults.elevatedFilterChipColors(
-                                    selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                    selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer
-                                )
                             )
 
                             Spacer(modifier = Modifier.width(SpaceMini))
@@ -444,15 +432,15 @@ fun AddEditPaymentScreen(
         buttons = {
             positiveButton("Ok")
             negativeButton("Cancel")
-        }
+        },
     ) {
         datepicker(
             allowedDateValidator = { date ->
                 if (selectedEmployee.employeeId != 0) {
                     (date.toMilliSecond >= selectedEmployee.employeeJoinedDate) && (date <= LocalDate.now())
                 } else date == LocalDate.now()
-            }
-        ) {date ->
+            },
+        ) { date ->
             viewModel.onEvent(AddEditPaymentEvent.PaymentDateChanged(date.toMilliSecond))
         }
     }

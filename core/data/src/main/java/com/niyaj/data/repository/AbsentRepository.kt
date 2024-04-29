@@ -14,8 +14,6 @@ interface AbsentRepository {
 
     suspend fun getAllEmployeeAbsents(searchText: String): Flow<List<EmployeeWithAbsents>>
 
-    suspend fun getAllAbsent(searchText: String): Flow<List<Absent>>
-
     suspend fun getAbsentById(absentId: Int): Resource<Absent?>
 
     suspend fun upsertAbsent(newAbsent: Absent): Resource<Boolean>

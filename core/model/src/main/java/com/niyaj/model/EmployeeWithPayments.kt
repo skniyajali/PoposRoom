@@ -1,14 +1,12 @@
 package com.niyaj.model
 
 import com.squareup.moshi.JsonClass
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 @JsonClass(generateAdapter = true)
 data class EmployeeWithPayments(
     val employee: Employee,
 
-    val payments: ImmutableList<Payment> = persistentListOf(),
+    val payments: List<Payment> = emptyList(),
 )
 
 

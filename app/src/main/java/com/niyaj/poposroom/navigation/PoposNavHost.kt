@@ -200,7 +200,7 @@ fun PoposNavHost(
 
                 composable(PaymentScreenDestination) {
                     PaymentScreen(
-                        navController = navController,
+                        navigator = this.destinationsNavigator,
                         onClickEmployee = {
                             navController.navigate(EmployeeDetailsScreenDestination(it))
                         },

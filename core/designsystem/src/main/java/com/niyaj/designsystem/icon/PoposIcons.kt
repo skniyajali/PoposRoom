@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.CalendarViewDay
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Checklist
@@ -51,6 +52,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.TaskAlt
 import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.filled.ViewAgenda
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.Print
@@ -61,6 +63,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
  * Popos icons. Material icons are [ImageVector]s, custom icons are drawable resource IDs.
  */
 object PoposIcons {
+    val CalendarViewDay: ImageVector = Icons.Default.CalendarViewDay
+    val ViewAgenda: ImageVector = Icons.Default.ViewAgenda
     val ArrowForward: ImageVector = Icons.AutoMirrored.Filled.ArrowForward
     val Radar: ImageVector = Icons.Default.Radar
     val PersonPin: ImageVector = Icons.Default.PersonPin

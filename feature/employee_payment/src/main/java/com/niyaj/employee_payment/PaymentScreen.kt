@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,15 +21,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MergeType
-import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CalendarViewDay
-import androidx.compose.material.icons.filled.Money
-import androidx.compose.material.icons.filled.Payments
-import androidx.compose.material.icons.filled.ViewAgenda
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ElevatedAssistChip
@@ -44,7 +36,6 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -62,7 +53,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.PaymentScreenTags.CREATE_NEW_PAYMENT
 import com.niyaj.common.tags.PaymentScreenTags.DELETE_PAYMENT_MESSAGE
 import com.niyaj.common.tags.PaymentScreenTags.DELETE_PAYMENT_TITLE
@@ -74,6 +64,7 @@ import com.niyaj.common.tags.PaymentScreenTags.PAYMENT_TAG
 import com.niyaj.common.utils.toBarDate
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.IconSizeSmall
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
@@ -90,9 +81,10 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
 import com.niyaj.ui.components.StandardAssistChip
+import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.StandardFilterChip
-import com.niyaj.ui.components.StandardScaffold
+import com.niyaj.ui.components.StandardScaffoldRoute
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -101,7 +93,7 @@ import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
@@ -110,7 +102,7 @@ import kotlinx.coroutines.launch
 @Destination(route = Screens.PAYMENT_SCREEN)
 @Composable
 fun PaymentScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: PaymentViewModel = hiltViewModel(),
     onClickEmployee: (employeeId: Int) -> Unit,
     resultRecipient: ResultRecipient<AddEditPaymentScreenDestination, String>,
@@ -158,7 +150,7 @@ fun PaymentScreen(
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
         } else {
-            navController.navigateUp()
+            navigator.navigateUp()
         }
     }
 
@@ -203,11 +195,11 @@ fun PaymentScreen(
     var listView by remember {
         mutableStateOf(false)
     }
-    
+
     TrackScreenViewEvent(screenName = Screens.PAYMENT_SCREEN)
 
-    StandardScaffold(
-        navController = navController,
+    StandardScaffoldRoute(
+        currentRoute = Screens.PAYMENT_SCREEN,
         title = if (selectedItems.isEmpty()) PAYMENT_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
@@ -216,13 +208,13 @@ fun PaymentScreen(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
                 containerColor = MaterialTheme.colorScheme.surface,
                 onFabClick = {
-                    navController.navigate(AddEditPaymentScreenDestination())
+                    navigator.navigate(AddEditPaymentScreenDestination())
                 },
                 onClickScroll = {
                     scope.launch {
                         lazyListState.animateScrollToItem(0)
                     }
-                }
+                },
             )
         },
         navActions = {
@@ -234,13 +226,13 @@ fun PaymentScreen(
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
-                    navController.navigate(AddEditPaymentScreenDestination(selectedItems.first()))
+                    navigator.navigate(AddEditPaymentScreenDestination(selectedItems.first()))
                 },
                 onDeleteClick = {
                     openDialog.value = true
                 },
                 onSettingsClick = {
-                    navController.navigate(PaymentSettingsScreenDestination)
+                    navigator.navigate(PaymentSettingsScreenDestination)
                 },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
@@ -251,16 +243,16 @@ fun PaymentScreen(
                         IconButton(
                             onClick = {
                                 listView = !listView
-                            }
+                            },
                         ) {
                             Icon(
-                                imageVector = if (listView) Icons.Default.ViewAgenda
-                                else Icons.Default.CalendarViewDay,
-                                contentDescription = "Change View"
+                                imageVector = if (listView) PoposIcons.ViewAgenda
+                                else PoposIcons.CalendarViewDay,
+                                contentDescription = "Change View",
                             )
                         }
                     }
-                }
+                },
             )
         },
         fabPosition = if (lazyListState.isScrolled) FabPosition.End else FabPosition.Center,
@@ -269,6 +261,7 @@ fun PaymentScreen(
         onDeselect = viewModel::deselectItems,
         onBackClick = viewModel::closeSearchBar,
         snackbarHostState = snackbarState,
+        onNavigateToScreen = navigator::navigate,
     ) { _ ->
         when (state) {
             is UiState.Loading -> LoadingIndicator()
@@ -278,8 +271,8 @@ fun PaymentScreen(
                     text = if (searchText.isEmpty()) PAYMENT_NOT_AVAIlABLE else NO_ITEMS_IN_PAYMENT,
                     buttonText = CREATE_NEW_PAYMENT,
                     onClick = {
-                        navController.navigate(AddEditPaymentScreenDestination())
-                    }
+                        navigator.navigate(AddEditPaymentScreenDestination())
+                    },
                 )
             }
 
@@ -288,14 +281,15 @@ fun PaymentScreen(
 
                 LazyColumn(
                     modifier = Modifier
+                        .fillMaxSize()
                         .padding(SpaceSmall),
-                    state = lazyListState
+                    state = lazyListState,
                 ) {
                     itemsIndexed(
                         items = state.data,
                         key = { _, item ->
                             item.employee.employeeId
-                        }
+                        },
                     ) { _, empWithPayments ->
                         PaymentData(
                             showListView = listView,
@@ -311,9 +305,9 @@ fun PaymentScreen(
                             },
                             onLongClick = viewModel::selectItem,
                             onClickAddPayment = {
-                                navController.navigate(AddEditPaymentScreenDestination(employeeId = it))
+                                navigator.navigate(AddEditPaymentScreenDestination(employeeId = it))
                             },
-                            onClickEmployee = onClickEmployee
+                            onClickEmployee = onClickEmployee,
                         )
 
                         Spacer(modifier = Modifier.height(SpaceMedium))
@@ -324,40 +318,17 @@ fun PaymentScreen(
     }
 
     if (openDialog.value) {
-        AlertDialog(
-            onDismissRequest = {
+        StandardDialog(
+            title = DELETE_PAYMENT_TITLE,
+            message = DELETE_PAYMENT_MESSAGE,
+            onConfirm = {
+                openDialog.value = false
+                viewModel.deleteItems()
+            },
+            onDismiss = {
                 openDialog.value = false
                 viewModel.deselectItems()
             },
-            title = {
-                Text(text = DELETE_PAYMENT_TITLE)
-            },
-            text = {
-                Text(
-                    text = DELETE_PAYMENT_MESSAGE
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deleteItems()
-                    },
-                ) {
-                    Text("Delete")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deselectItems()
-                    },
-                ) {
-                    Text("Cancel")
-                }
-            },
-            shape = RoundedCornerShape(28.dp)
         )
     }
 }
@@ -382,7 +353,7 @@ fun PaymentData(
     ) {
         ListItem(
             colors = ListItemDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.background
+                containerColor = MaterialTheme.colorScheme.background,
             ),
             modifier = modifier
                 .fillMaxWidth()
@@ -394,15 +365,15 @@ fun PaymentData(
                 },
             leadingContent = {
                 CircularBox(
-                    icon = Icons.Default.Money,
+                    icon = PoposIcons.Money,
                     doesSelected = false,
-                    text = employee.employeeName
+                    text = employee.employeeName,
                 )
             },
             headlineContent = {
                 Text(
                     text = employee.employeeName,
-                    style = MaterialTheme.typography.labelLarge
+                    style = MaterialTheme.typography.labelLarge,
                 )
             },
             supportingContent = {
@@ -415,15 +386,15 @@ fun PaymentData(
                     },
                     shape = RoundedCornerShape(SpaceMini),
                     colors = IconButtonDefaults.filledTonalIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    ),
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Add,
+                        imageVector = PoposIcons.Add,
                         contentDescription = "Add New Payment",
                     )
                 }
-            }
+            },
         )
 
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
@@ -437,7 +408,7 @@ fun PaymentData(
                     doesSelected = doesSelected,
                     onClick = onClick,
                     onLongClick = onLongClick,
-                    border = border
+                    border = border,
                 )
 
                 if (index != payments.size - 1) {
@@ -445,7 +416,7 @@ fun PaymentData(
                     HorizontalDivider(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = SpaceSmall)
+                            .padding(horizontal = SpaceSmall),
                     )
                     Spacer(modifier = Modifier.height(SpaceSmall))
                 }
@@ -463,7 +434,7 @@ fun PaymentData(
                     HorizontalDivider(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = SpaceSmall)
+                            .padding(horizontal = SpaceSmall),
                     )
                 }
             }
@@ -481,16 +452,18 @@ fun EmployeePayment(
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-)= trace("EmployeePayment") {
+) = trace("EmployeePayment") {
     val borderStroke = if (doesSelected(payment.paymentId)) border else null
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .testTag(PAYMENT_TAG.plus(payment.paymentId))
-            .then(borderStroke?.let {
-                Modifier.border(it)
-            } ?: Modifier)
+            .then(
+                borderStroke?.let {
+                    Modifier.border(it)
+                } ?: Modifier,
+            )
             .combinedClickable(
                 onClick = {
                     onClick(payment.paymentId)
@@ -498,7 +471,7 @@ fun EmployeePayment(
                 onLongClick = {
                     onLongClick(payment.paymentId)
                 },
-            )
+            ),
     ) {
         Row(
             modifier = Modifier.padding(horizontal = SpaceSmall),
@@ -510,7 +483,7 @@ fun EmployeePayment(
                 style = MaterialTheme.typography.labelLarge,
                 textAlign = TextAlign.Start,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.weight(0.8F)
+                modifier = Modifier.weight(0.8F),
             )
 
             Text(
@@ -528,9 +501,9 @@ fun EmployeePayment(
                 StandardFilterChip(
                     text = payment.paymentMode.name,
                     icon = when (payment.paymentMode) {
-                        PaymentMode.Cash -> Icons.Default.Money
-                        PaymentMode.Online -> Icons.Default.AccountBalance
-                        else -> Icons.Default.Payments
+                        PaymentMode.Cash -> PoposIcons.Money
+                        PaymentMode.Online -> PoposIcons.AccountBalance
+                        else -> PoposIcons.Payments
                     },
                     selected = false,
                 )
@@ -539,7 +512,7 @@ fun EmployeePayment(
 
                 StandardAssistChip(
                     text = payment.paymentType.name,
-                    icon = Icons.AutoMirrored.Filled.MergeType
+                    icon = PoposIcons.MergeType,
                 )
             }
         }
@@ -571,9 +544,9 @@ fun EmployeePaymentCardView(
         leadingContent = {
             CircularBox(
                 icon = when (payment.paymentMode) {
-                    PaymentMode.Cash -> Icons.Default.Money
-                    PaymentMode.Online -> Icons.Default.AccountBalance
-                    else -> Icons.Default.Payments
+                    PaymentMode.Cash -> PoposIcons.Money
+                    PaymentMode.Online -> PoposIcons.AccountBalance
+                    else -> PoposIcons.Payments
                 },
                 doesSelected = doesSelected(payment.paymentId),
             )
@@ -581,7 +554,7 @@ fun EmployeePaymentCardView(
         headlineContent = {
             Text(
                 text = payment.paymentAmount.toRupee,
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
             )
         },
         supportingContent = {
@@ -596,9 +569,9 @@ fun EmployeePaymentCardView(
                 StandardFilterChip(
                     text = payment.paymentMode.name,
                     icon = when (payment.paymentMode) {
-                        PaymentMode.Cash -> Icons.Default.Money
-                        PaymentMode.Online -> Icons.Default.AccountBalance
-                        else -> Icons.Default.Payments
+                        PaymentMode.Cash -> PoposIcons.Money
+                        PaymentMode.Online -> PoposIcons.AccountBalance
+                        else -> PoposIcons.Payments
                     },
                 )
 
@@ -606,10 +579,10 @@ fun EmployeePaymentCardView(
 
                 StandardAssistChip(
                     text = payment.paymentType.name,
-                    icon = Icons.AutoMirrored.Filled.MergeType
+                    icon = PoposIcons.MergeType,
                 )
             }
-        }
+        },
     )
 }
 
@@ -629,15 +602,17 @@ fun PaymentData(
 
     ListItem(
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
         ),
         modifier = modifier
             .testTag(PAYMENT_TAG.plus(item.paymentId))
             .fillMaxWidth()
             .padding(SpaceSmall)
-            .then(borderStroke?.let {
-                Modifier.border(it, RoundedCornerShape(SpaceMini))
-            } ?: Modifier)
+            .then(
+                borderStroke?.let {
+                    Modifier.border(it, RoundedCornerShape(SpaceMini))
+                } ?: Modifier,
+            )
             .clip(RoundedCornerShape(SpaceMini))
             .combinedClickable(
                 onClick = {
@@ -649,15 +624,15 @@ fun PaymentData(
             ),
         leadingContent = {
             CircularBox(
-                icon = Icons.Default.Money,
+                icon = PoposIcons.Money,
                 doesSelected = doesSelected(item.paymentId),
-                text = employeeName
+                text = employeeName,
             )
         },
         headlineContent = {
             Text(
                 text = item.paymentAmount.toRupee,
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
             )
         },
         overlineContent = {
@@ -672,16 +647,16 @@ fun PaymentData(
                     label = {
                         Text(
                             text = item.paymentType.name,
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.labelSmall,
                         )
                     },
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.MergeType,
+                            imageVector = PoposIcons.MergeType,
                             contentDescription = "Payment Type",
-                            modifier = Modifier.size(IconSizeSmall)
+                            modifier = Modifier.size(IconSizeSmall),
                         )
-                    }
+                    },
                 )
                 Spacer(modifier = Modifier.width(SpaceSmall))
                 ElevatedAssistChip(
@@ -689,19 +664,19 @@ fun PaymentData(
                     label = {
                         Text(
                             text = item.paymentMode.name,
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.labelSmall,
                         )
                     },
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Default.Payments,
+                            imageVector = PoposIcons.Payments,
                             contentDescription = "Payments Mode",
-                            modifier = Modifier.size(IconSizeSmall)
+                            modifier = Modifier.size(IconSizeSmall),
                         )
                     },
-                    colors = AssistChipDefaults.elevatedAssistChipColors()
+                    colors = AssistChipDefaults.elevatedAssistChipColors(),
                 )
             }
-        }
+        },
     )
 }

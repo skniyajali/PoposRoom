@@ -7,6 +7,8 @@ import com.niyaj.data.repository.PaymentRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PaymentViewModel @Inject constructor(
-    private val paymentRepository: PaymentRepository
+    private val paymentRepository: PaymentRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel() {
 
     override var totalItems: List<Int> = emptyList()
@@ -39,7 +42,7 @@ class PaymentViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = UiState.Loading
+            initialValue = UiState.Loading,
         )
 
     override fun deleteItems() {
@@ -53,10 +56,22 @@ class PaymentViewModel @Inject constructor(
 
                 is Resource.Success -> {
                     mEventFlow.emit(UiEvent.OnSuccess("${selectedItems.size} payments has been deleted"))
+                    analyticsHelper.logDeletedPayments(selectedItems.toList())
                 }
             }
 
             mSelectedItems.clear()
         }
     }
+}
+
+internal fun AnalyticsHelper.logDeletedPayments(data: List<Int>) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "employee_payment_deleted",
+            extras = listOf(
+                AnalyticsEvent.Param("employee_payment_deleted", data.toString()),
+            ),
+        ),
+    )
 }

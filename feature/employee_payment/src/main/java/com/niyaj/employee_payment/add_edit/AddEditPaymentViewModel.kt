@@ -14,6 +14,8 @@ import com.niyaj.model.Employee
 import com.niyaj.model.Payment
 import com.niyaj.model.PaymentMode
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,7 +34,8 @@ import javax.inject.Inject
 class AddEditPaymentViewModel @Inject constructor(
     private val paymentRepository: PaymentRepository,
     private val validationRepository: PaymentValidationRepository,
-    savedStateHandle: SavedStateHandle
+    private val analyticsHelper: AnalyticsHelper,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     var state by mutableStateOf(AddEditPaymentState())
@@ -43,7 +46,7 @@ class AddEditPaymentViewModel @Inject constructor(
     val employees = paymentRepository.getAllEmployee().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
+        initialValue = emptyList(),
     )
 
     private val _selectedEmployee = MutableStateFlow(Employee())
@@ -65,7 +68,7 @@ class AddEditPaymentViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     val amountError: StateFlow<String?> = snapshotFlow { state.paymentAmount }
@@ -74,7 +77,7 @@ class AddEditPaymentViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     val dateError: StateFlow<String?> = snapshotFlow { state.paymentDate }
@@ -83,7 +86,7 @@ class AddEditPaymentViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     val paymentTypeError: StateFlow<String?> = snapshotFlow { state.paymentType }
@@ -92,7 +95,7 @@ class AddEditPaymentViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     val paymentModeError: StateFlow<String?> = snapshotFlow { state.paymentMode }
@@ -101,19 +104,19 @@ class AddEditPaymentViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     val paymentNoteError: StateFlow<String?> = snapshotFlow { state.paymentMode }
         .mapLatest {
             validationRepository.validatePaymentNote(
                 paymentNote = state.paymentNote,
-                isRequired = it == PaymentMode.Both
+                isRequired = it == PaymentMode.Both,
             ).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     fun onEvent(event: AddEditPaymentEvent) {
@@ -190,7 +193,7 @@ class AddEditPaymentViewModel @Inject constructor(
                 dateError,
                 paymentModeError,
                 paymentNoteError,
-                paymentTypeError
+                paymentTypeError,
             ).all { it.value != null }
 
             if (!hasError) {
@@ -203,7 +206,7 @@ class AddEditPaymentViewModel @Inject constructor(
                     paymentMode = state.paymentMode,
                     paymentNote = state.paymentNote,
                     createdAt = System.currentTimeMillis(),
-                    updatedAt = if (paymentId != 0) System.currentTimeMillis() else null
+                    updatedAt = if (paymentId != 0) System.currentTimeMillis() else null,
                 )
 
                 when (paymentRepository.upsertPayment(newPayment)) {
@@ -214,6 +217,7 @@ class AddEditPaymentViewModel @Inject constructor(
                     is Resource.Success -> {
                         val message = if (paymentId == 0) "Added" else "Updated"
                         _eventFlow.emit(UiEvent.OnSuccess("Payment $message Successfully."))
+                        analyticsHelper.logOnCreateOrUpdatePayment(paymentId, message)
                     }
                 }
 
@@ -221,4 +225,15 @@ class AddEditPaymentViewModel @Inject constructor(
             }
         }
     }
+}
+
+private fun AnalyticsHelper.logOnCreateOrUpdatePayment(data: Int, message: String) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "employee_payment_$message",
+            extras = listOf(
+                AnalyticsEvent.Param("employee_payment_$message", data.toString()),
+            ),
+        ),
+    )
 }

@@ -23,7 +23,7 @@ import javax.inject.Inject
 class PaymentSettingsViewModel @Inject constructor(
     private val repository: PaymentRepository,
     private val analyticsHelper: AnalyticsHelper,
-): BaseViewModel() {
+) : BaseViewModel() {
 
     val items = snapshotFlow { mSearchText.value }.flatMapLatest {
         repository.getAllEmployeePayments(it)
@@ -33,7 +33,7 @@ class PaymentSettingsViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
+        initialValue = emptyList(),
     )
 
     private val _exportedItems = MutableStateFlow<List<EmployeeWithPayments>>(emptyList())
@@ -43,7 +43,7 @@ class PaymentSettingsViewModel @Inject constructor(
     val importedItems = _importedItems.asStateFlow()
 
     fun onEvent(event: PaymentSettingsEvent) {
-        when(event) {
+        when (event) {
             is PaymentSettingsEvent.GetExportedItems -> {
                 viewModelScope.launch {
                     if (mSelectedItems.isEmpty()) {
@@ -71,7 +71,8 @@ class PaymentSettingsViewModel @Inject constructor(
                     _importedItems.value = emptyList()
 
                     if (event.data.isNotEmpty()) {
-                        totalItems = event.data.flatMap { item -> item.payments.map { it.paymentId } }
+                        totalItems =
+                            event.data.flatMap { item -> item.payments.map { it.paymentId } }
                         _importedItems.value = event.data
                     }
 
@@ -82,19 +83,20 @@ class PaymentSettingsViewModel @Inject constructor(
             is PaymentSettingsEvent.ImportPaymentsToDatabase -> {
                 viewModelScope.launch {
                     val data = if (mSelectedItems.isNotEmpty()) {
-                        mSelectedItems.flatMap {paymentId ->
+                        mSelectedItems.flatMap { paymentId ->
                             _importedItems.value.filter { employeeWithAbsents ->
                                 employeeWithAbsents.payments.any { it.paymentId == paymentId }
                             }
                         }
-                    }else {
+                    } else {
                         _importedItems.value
                     }
 
-                    when(val result = repository.importPaymentsToDatabase(data)) {
+                    when (val result = repository.importPaymentsToDatabase(data)) {
                         is Resource.Error -> {
                             mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
                         }
+
                         is Resource.Success -> {
                             mEventFlow.emit(UiEvent.OnSuccess("${data.sumOf { it.payments.size }} items has been imported successfully"))
                             analyticsHelper.logImportedPaymentToDatabase(data.sumOf { it.payments.size })
