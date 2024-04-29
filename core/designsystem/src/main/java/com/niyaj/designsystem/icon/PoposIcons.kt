@@ -6,7 +6,10 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.MergeType
+import androidx.compose.material.icons.automirrored.filled.NoteAdd
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.automirrored.filled.StickyNote2
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Add
@@ -51,6 +54,7 @@ import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.TaskAlt
+import androidx.compose.material.icons.filled.TurnedInNot
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material.icons.filled.ViewAgenda
 import androidx.compose.material.icons.filled.Visibility
@@ -63,6 +67,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
  * Popos icons. Material icons are [ImageVector]s, custom icons are drawable resource IDs.
  */
 object PoposIcons {
+    val NoteAdd: ImageVector = Icons.AutoMirrored.Filled.NoteAdd
+    val StickyNote2: ImageVector = Icons.AutoMirrored.Filled.StickyNote2
+    val TurnedInNot: ImageVector = Icons.Default.TurnedInNot
+    val TrendingUp: ImageVector = Icons.AutoMirrored.Filled.TrendingUp
     val CalendarViewDay: ImageVector = Icons.Default.CalendarViewDay
     val ViewAgenda: ImageVector = Icons.Default.ViewAgenda
     val ArrowForward: ImageVector = Icons.AutoMirrored.Filled.ArrowForward

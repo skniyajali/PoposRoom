@@ -135,7 +135,6 @@ fun PaymentImportScreen(
         }
     }
 
-
     StandardScaffoldRouteNew(
         title = if (selectedItems.isEmpty()) IMPORT_PAYMENT_TITLE else "${selectedItems.size} Selected",
         showBackButton = selectedItems.isEmpty(),

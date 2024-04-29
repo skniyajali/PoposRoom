@@ -312,7 +312,9 @@ fun AbsentData(
     onChipClick: (Int) -> Unit = {},
     showTrailingIcon: Boolean = true,
 ) = trace("AbsentData") {
-    val groupByMonth = item.absents.groupBy { toMonthAndYear(it.absentDate) }
+    val groupByMonth = remember(item.absents) {
+        item.absents.groupBy { toMonthAndYear(it.absentDate) }
+    }
 
     ElevatedCard(
         modifier = modifier

@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSES_AMOUNT_ALREADY_EXISTS
 import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.data.repository.ExpenseRepository
 import com.niyaj.data.repository.ExpenseValidationRepository
@@ -75,7 +76,7 @@ class AddEditExpenseViewModel @Inject constructor(
 
     val existingData: StateFlow<String?> = _name.combine(_date) { name, date ->
         if (expenseRepository.findExpenseByNameAndDate(name, date)) {
-            "Expenses already added on given expense name and chosen date."
+            EXPENSES_AMOUNT_ALREADY_EXISTS
         } else null
     }.stateIn(
         scope = viewModelScope,

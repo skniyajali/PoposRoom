@@ -31,6 +31,8 @@ object ExpenseTestTags {
 
     const val EXPENSE_DATE_EMPTY_ERROR = "Expense date must not be empty."
 
+    const val EXPENSES_AMOUNT_ALREADY_EXISTS = "Expenses already added on given expense name and chosen date."
+
     const val DELETE_EXPENSE_TITLE = "Delete Expense?"
     const val DELETE_EXPENSE_MESSAGE = "Are you sure to delete these expenses?"
 
