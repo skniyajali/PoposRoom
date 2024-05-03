@@ -14,6 +14,8 @@ import com.niyaj.data.repository.ExpenseRepository
 import com.niyaj.data.repository.ExpenseValidationRepository
 import com.niyaj.model.Expense
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,6 +34,7 @@ import javax.inject.Inject
 class AddEditExpenseViewModel @Inject constructor(
     private val expenseRepository: ExpenseRepository,
     private val validationRepository: ExpenseValidationRepository,
+    private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -54,7 +57,7 @@ class AddEditExpenseViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = null
+        initialValue = null,
     )
 
     val priceError: StateFlow<String?> = snapshotFlow { state.expenseAmount }
@@ -63,7 +66,7 @@ class AddEditExpenseViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     val dateError: StateFlow<String?> = _date.mapLatest {
@@ -71,7 +74,7 @@ class AddEditExpenseViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = null
+        initialValue = null,
     )
 
     val existingData: StateFlow<String?> = _name.combine(_date) { name, date ->
@@ -81,7 +84,7 @@ class AddEditExpenseViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = null
+        initialValue = null,
     )
 
     val expensesName: StateFlow<List<String>> = snapshotFlow { state.expenseName }
@@ -90,7 +93,7 @@ class AddEditExpenseViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList()
+            initialValue = emptyList(),
         )
 
 
@@ -131,7 +134,7 @@ class AddEditExpenseViewModel @Inject constructor(
                             expenseName = expense.expenseName,
                             expenseDate = expense.expenseDate,
                             expenseAmount = expense.expenseAmount,
-                            expenseNote = expense.expenseNote
+                            expenseNote = expense.expenseNote,
                         )
                     }
                 }
@@ -151,21 +154,22 @@ class AddEditExpenseViewModel @Inject constructor(
                     expenseDate = state.expenseDate,
                     expenseNote = state.expenseNote.trim().capitalizeWords,
                     createdAt = System.currentTimeMillis(),
-                    updatedAt = if (expenseId != 0) System.currentTimeMillis() else null
+                    updatedAt = if (expenseId != 0) System.currentTimeMillis() else null,
                 )
 
                 when (val result = expenseRepository.upsertExpense(newExpense)) {
                     is Resource.Error -> {
                         _eventFlow.emit(
                             UiEvent.OnError(
-                                result.message ?: "Unable to add or update expense"
-                            )
+                                result.message ?: "Unable to add or update expense",
+                            ),
                         )
                     }
 
                     is Resource.Success -> {
                         val message = if (expenseId == 0) "added" else "updated"
                         _eventFlow.emit(UiEvent.OnSuccess("Expense $message successfully"))
+                        analyticsHelper.logOnCreateOrUpdateExpenses(expenseId, message)
                     }
                 }
 
@@ -175,3 +179,13 @@ class AddEditExpenseViewModel @Inject constructor(
     }
 }
 
+private fun AnalyticsHelper.logOnCreateOrUpdateExpenses(data: Int, message: String) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "expenses_$message",
+            extras = listOf(
+                AnalyticsEvent.Param("expenses_$message", data.toString()),
+            ),
+        ),
+    )
+}

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import com.niyaj.database.model.PrinterEntity
+import com.niyaj.database.model.ProfileEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -22,5 +23,12 @@ interface PrinterDao {
      */
     @Upsert
     suspend fun insertOrUpdatePrinterInfo(printerEntity: PrinterEntity): Long
+
+    @Query(
+        value = """
+        SELECT * FROM profile WHERE restaurantId = :restaurantId
+    """
+    )
+    fun getProfileInfo(restaurantId: Int): Flow<ProfileEntity?>
 
 }

@@ -28,7 +28,7 @@ data class Printer(
     val updatedAt: String? = null,
 ) {
     companion object {
-        private const val PRINTER_ID = "PRINTER11"
+        const val PRINTER_ID = "PRINTER11"
         private const val PRINTER_DPI = 176
         private const val PRINTER_WIDTH_MM = 58f
         private const val PRINTER_NBR_LINE = 31

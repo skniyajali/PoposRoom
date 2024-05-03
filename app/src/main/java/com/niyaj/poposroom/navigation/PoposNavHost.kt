@@ -176,7 +176,7 @@ fun PoposNavHost(
                 composable(ProductDetailsScreenDestination) {
                     ProductDetailsScreen(
                         productId = this.navBackStackEntry.arguments?.getInt("productId") ?: 0,
-                        navController = navController,
+                        navigator = this.destinationsNavigator,
                         onClickOrder = {
                             navController.navigate(OrderDetailsScreenDestination(it))
                         },

@@ -1,16 +1,12 @@
 package com.niyaj.print
 
-import android.app.Application
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dantsu.escposprinter.EscPosPrinter
 import com.dantsu.escposprinter.exceptions.EscPosConnectionException
-import com.dantsu.escposprinter.textparser.PrinterTextParserImg
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.utils.createDottedString
-import com.niyaj.common.utils.toFormattedDate
 import com.niyaj.common.utils.toFormattedTime
 import com.niyaj.common.utils.toTime
 import com.niyaj.data.repository.PrintRepository
@@ -23,16 +19,11 @@ import com.niyaj.model.ChargesNameAndPrice
 import com.niyaj.model.DeliveryReport
 import com.niyaj.model.OrderPrice
 import com.niyaj.model.OrderType
-import com.niyaj.model.Profile
-import com.niyaj.print.utils.FileExtension.getImageFromDeviceOrDefault
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -42,24 +33,16 @@ import javax.inject.Inject
  * A ViewModel that handles printing orders and delivery reports.
  *
  * @param printRepository The repository for accessing data.
- * @param application The application context.
  * @param ioDispatcher The coroutine dispatcher for IO operations.
+ * @param bluetoothPrinter The Bluetooth printer for printing orders.
  */
 @HiltViewModel
 class OrderPrintViewModel @Inject constructor(
     private val printRepository: PrintRepository,
-    private val application: Application,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
     private val bluetoothPrinter: BluetoothPrinter,
 ) : ViewModel() {
-    private val resInfo = printRepository.getProfileInfo(Profile.RESTAURANT_ID)
-        .flowOn(ioDispatcher).stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = Profile.defaultProfileInfo,
-        )
-
     private val printerInfo = bluetoothPrinter.printerInfo.value
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
@@ -109,7 +92,7 @@ class OrderPrintViewModel @Inject constructor(
                     withContext(ioDispatcher) {
                         val orderDetails = printRepository.getOrderDetails(orderId)
 
-                        printItems += printRestaurantDetails(it)
+                        printItems += bluetoothPrinter.getPrintableRestaurantDetails(it)
                         printItems += printOrderDetails(orderDetails.cartOrder)
                         printItems += printProductDetails(orderDetails.cartProducts.toList())
 
@@ -129,8 +112,8 @@ class OrderPrintViewModel @Inject constructor(
 
                         printItems += printSubTotalAndDiscount(orderDetails.orderPrice)
                         printItems += printTotalPrice(orderDetails.orderPrice.totalPrice)
-                        printItems += printFooterInfo()
-                        printItems += printQrCode()
+                        printItems += bluetoothPrinter.getPrintableFooterInfo()
+                        printItems += bluetoothPrinter.getPrintableQrCode()
                     }
 
                     printer.printFormattedText(printItems)
@@ -149,31 +132,6 @@ class OrderPrintViewModel @Inject constructor(
                 return@launch
             }
         }
-    }
-
-    private fun printRestaurantDetails(printer: EscPosPrinter): String {
-        var details = ""
-
-        try {
-            val logo = application.getImageFromDeviceOrDefault(resInfo.value.printLogo)
-
-            logo?.let {
-                val imagePrint =
-                    PrinterTextParserImg.bitmapToHexadecimalString(printer, it)
-
-                imagePrint?.let {
-                    details += if (printerInfo.printResLogo) {
-                        "[C]<img>$imagePrint</img>\n\n"
-                    } else " \n"
-                }
-            }
-        } catch (e: Exception) {
-            _eventFlow.tryEmit(UiEvent.OnError("Error printing restaurant logo"))
-        }
-
-        details += "[C]--------- ORDER BILL ---------\n\n"
-
-        return details
     }
 
     private fun printOrderDetails(cartOrder: CartOrder): String {
@@ -220,24 +178,6 @@ class OrderPrintViewModel @Inject constructor(
         return "[L]-------------------------------\n" +
                 "[L]Total[R] Rs. ${orderPrice}\n" +
                 "[L]-------------------------------\n\n"
-    }
-
-    private fun printQrCode(): String {
-        return if (printerInfo.printQRCode) {
-            "[C]Pay by scanning this QR code\n\n" +
-                    "[L]\n" +
-                    "[C]<qrcode size ='40'>${resInfo.value.paymentQrCode}</qrcode>\n\n\n" +
-                    "[C]Good Food, Good Mood\n\n" +
-                    "[L]-------------------------------\n"
-        } else ""
-    }
-
-    private fun printFooterInfo(): String {
-        return if (printerInfo.printWelcomeText) {
-            "[C]Thank you for ordering!\n" +
-                    "[C]For order and inquiry, Call.\n" +
-                    "[C]${resInfo.value.primaryPhone} / ${resInfo.value.secondaryPhone}\n\n"
-        } else ""
     }
 
     private fun printAddOnItems(addOnItemList: List<AddOnItem>): String {
@@ -305,7 +245,7 @@ class OrderPrintViewModel @Inject constructor(
                     val deliveryReports = printRepository.getDeliveryReports(date)
 
                     var printItems = ""
-                    printItems += getPrintableHeader(date)
+                    printItems += bluetoothPrinter.getPrintableHeader("DELIVERY REPORTS", date)
                     printItems += getPrintableOrders(deliveryReports)
 
                     printer.printFormattedText(printItems, 50)
@@ -315,20 +255,6 @@ class OrderPrintViewModel @Inject constructor(
                 _eventFlow.emit(UiEvent.OnError("Error printing delivery reports"))
             }
         }
-    }
-
-    private fun getPrintableHeader(date: String): String {
-        var header = "[C]<b><font size='big'>DELIVERY</font></b>\n\n"
-
-        header += if (date.isEmpty()) {
-            "[C]--------- ${System.currentTimeMillis().toString().toFormattedDate} --------\n"
-        } else {
-            "[C]----------${date.toFormattedDate}---------\n"
-        }
-
-        header += "[L]\n"
-
-        return header
     }
 
     private fun getPrintableOrders(deliveryReports: List<DeliveryReport>): String {

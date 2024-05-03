@@ -1,29 +1,25 @@
 package com.niyaj.product
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.ProductTestTags.CREATE_NEW_PRODUCT
 import com.niyaj.common.tags.ProductTestTags.DELETE_PRODUCT_MESSAGE
 import com.niyaj.common.tags.ProductTestTags.DELETE_PRODUCT_TITLE
@@ -46,8 +42,9 @@ import com.niyaj.ui.components.ItemNotAvailableHalf
 import com.niyaj.ui.components.ItemNotFound
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
+import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardFAB
-import com.niyaj.ui.components.StandardScaffold
+import com.niyaj.ui.components.StandardScaffoldRoute
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -56,7 +53,7 @@ import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
@@ -65,7 +62,7 @@ import kotlinx.coroutines.launch
 @Destination(route = Screens.PRODUCT_SCREEN)
 @Composable
 fun ProductScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: ProductViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditProductScreenDestination, String>,
     exportRecipient: ResultRecipient<ExportProductScreenDestination, String>,
@@ -131,7 +128,7 @@ fun ProductScreen(
     }
 
     exportRecipient.onNavResult { result ->
-        when(result) {
+        when (result) {
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
                 scope.launch {
@@ -142,7 +139,7 @@ fun ProductScreen(
     }
 
     importRecipient.onNavResult { result ->
-        when(result) {
+        when (result) {
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
                 scope.launch {
@@ -153,7 +150,7 @@ fun ProductScreen(
     }
 
     increaseRecipient.onNavResult { result ->
-        when(result) {
+        when (result) {
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
                 scope.launch {
@@ -164,7 +161,7 @@ fun ProductScreen(
     }
 
     decreaseRecipient.onNavResult { result ->
-        when(result) {
+        when (result) {
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
                 scope.launch {
@@ -188,14 +185,14 @@ fun ProductScreen(
         } else if (selectedCategory != 0) {
             viewModel.selectCategory(selectedCategory)
         } else {
-            navController.navigateUp()
+            navigator.navigateUp()
         }
     }
-    
+
     TrackScreenViewEvent(screenName = Screens.PRODUCT_SCREEN)
 
-    StandardScaffold(
-        navController = navController,
+    StandardScaffoldRoute(
+        currentRoute = Screens.PRODUCT_SCREEN,
         title = if (selectedItems.isEmpty()) PRODUCT_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
@@ -203,13 +200,13 @@ fun ProductScreen(
                 fabText = CREATE_NEW_PRODUCT,
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
                 onFabClick = {
-                    navController.navigate(AddEditProductScreenDestination())
+                    navigator.navigate(AddEditProductScreenDestination())
                 },
                 onClickScroll = {
                     scope.launch {
                         lazyListState.animateScrollToItem(0)
                     }
-                }
+                },
             )
         },
         navActions = {
@@ -221,18 +218,18 @@ fun ProductScreen(
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
-                    navController.navigate(AddEditProductScreenDestination(selectedItems.first()))
+                    navigator.navigate(AddEditProductScreenDestination(selectedItems.first()))
                 },
                 onDeleteClick = {
                     openDialog.value = true
                 },
                 onSettingsClick = {
-                    navController.navigate(ProductSettingScreenDestination())
+                    navigator.navigate(ProductSettingScreenDestination())
                 },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
                 onSearchClick = viewModel::openSearchBar,
-                onSearchTextChanged = viewModel::searchTextChanged
+                onSearchTextChanged = viewModel::searchTextChanged,
             )
         },
         fabPosition = if (lazyListState.isScrolled) FabPosition.End else FabPosition.Center,
@@ -241,16 +238,18 @@ fun ProductScreen(
         onDeselect = viewModel::deselectItems,
         onBackClick = viewModel::closeSearchBar,
         snackbarHostState = snackbarState,
-    ) { _ ->
+        onNavigateToScreen = navigator::navigate,
+    ) {
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(SpaceSmall),
         ) {
             CategoriesData(
                 lazyRowState = lazyRowState,
                 categories = categories,
                 selectedCategory = selectedCategory,
-                onSelect = viewModel::selectCategory
+                onSelect = viewModel::selectCategory,
             )
 
             when (state) {
@@ -262,8 +261,8 @@ fun ProductScreen(
                         text = if (searchText.isEmpty()) PRODUCT_NOT_AVAIlABLE else NO_ITEMS_IN_PRODUCT,
                         buttonText = CREATE_NEW_PRODUCT,
                         onClick = {
-                            navController.navigate(AddEditProductScreenDestination())
-                        }
+                            navigator.navigate(AddEditProductScreenDestination())
+                        },
                     )
                 }
 
@@ -277,21 +276,19 @@ fun ProductScreen(
                             items = state.data,
                             key = { index, item ->
                                 item.productName.plus(index).plus(item.productId)
-                            }
+                            },
                         ) { index, item ->
                             ProductCard(
                                 item = item,
-                                doesSelected = {
-                                    selectedItems.contains(it)
-                                },
+                                doesSelected = selectedItems::contains,
                                 onClick = {
                                     if (selectedItems.isNotEmpty()) {
                                         viewModel.selectItem(it)
                                     } else {
-                                        navController.navigate(ProductDetailsScreenDestination(it))
+                                        navigator.navigate(ProductDetailsScreenDestination(it))
                                     }
                                 },
-                                onLongClick = viewModel::selectItem
+                                onLongClick = viewModel::selectItem,
                             )
 
                             if (index == state.data.size - 1) {
@@ -304,8 +301,8 @@ fun ProductScreen(
                             ItemNotFound(
                                 btnText = CREATE_NEW_PRODUCT,
                                 onBtnClick = {
-                                    navController.navigate(AddEditProductScreenDestination())
-                                }
+                                    navigator.navigate(AddEditProductScreenDestination())
+                                },
                             )
                         }
                     }
@@ -314,41 +311,20 @@ fun ProductScreen(
         }
     }
 
-    if (openDialog.value) {
-        AlertDialog(
-            onDismissRequest = {
+    AnimatedVisibility(
+        visible = openDialog.value,
+    ) {
+        StandardDialog(
+            title = DELETE_PRODUCT_TITLE,
+            message = DELETE_PRODUCT_MESSAGE,
+            onConfirm = {
+                openDialog.value = false
+                viewModel.deleteItems()
+            },
+            onDismiss = {
                 openDialog.value = false
                 viewModel.deselectItems()
             },
-            title = {
-                Text(text = DELETE_PRODUCT_TITLE)
-            },
-            text = {
-                Text(
-                    text = DELETE_PRODUCT_MESSAGE
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deleteItems()
-                    },
-                ) {
-                    Text("Delete")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deselectItems()
-                    },
-                ) {
-                    Text("Cancel")
-                }
-            },
-            shape = RoundedCornerShape(28.dp)
         )
     }
 }

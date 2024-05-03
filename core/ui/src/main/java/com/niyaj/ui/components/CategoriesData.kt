@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Category
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.Category
@@ -34,22 +34,23 @@ const val CATEGORY_ITEM_TAG = "Category-"
 
 @Composable
 fun CategoriesData(
+    modifier: Modifier = Modifier,
     lazyRowState: LazyListState,
     categories: ImmutableList<Category>,
     selectedCategory: Int,
     onSelect: (Int) -> Unit,
-) {
+) = trace("CategoriesData") {
     TrackScrollJank(scrollableState = lazyRowState, stateName = "category:list")
 
     LazyRow(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         state = lazyRowState,
     ) {
         items(
             items = categories,
             key = {
                 it.categoryId
-            }
+            },
         ) { category ->
             CategoryData(
                 item = category,
@@ -64,28 +65,27 @@ fun CategoriesData(
 
 @Composable
 fun CategoriesData(
+    modifier: Modifier = Modifier,
     lazyRowState: LazyListState,
     categories: ImmutableList<Category>,
     selectedCategory: List<Int>,
     onSelect: (Int) -> Unit,
-) {
+) = trace("CategoriesData") {
     TrackScrollJank(scrollableState = lazyRowState, stateName = "category:list")
 
     LazyRow(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         state = lazyRowState,
     ) {
         items(
             items = categories,
             key = {
                 it.categoryId
-            }
+            },
         ) { category ->
             CategoryData(
                 item = category,
-                doesSelected = {
-                    selectedCategory.contains(it)
-                },
+                doesSelected = selectedCategory::contains,
                 onClick = onSelect,
             )
         }
@@ -99,8 +99,8 @@ fun CategoryData(
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     selectedColor: Color = MaterialTheme.colorScheme.secondaryContainer,
-    unselectedColor: Color = MaterialTheme.colorScheme.surface
-) {
+    unselectedColor: Color = MaterialTheme.colorScheme.surface,
+) = trace("CategoryData") {
     val color = if (doesSelected(item.categoryId)) selectedColor else unselectedColor
 
     ElevatedCard(
@@ -111,21 +111,21 @@ fun CategoryData(
             onClick(item.categoryId)
         },
         colors = CardDefaults.elevatedCardColors(
-            containerColor = color
-        )
+            containerColor = color,
+        ),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(SpaceSmall),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             CircularBox(
-                icon = Icons.Default.Category,
+                icon = PoposIcons.Category,
                 doesSelected = doesSelected(item.categoryId),
                 size = 25.dp,
-                text = item.categoryName
+                text = item.categoryName,
             )
 
             Spacer(modifier = Modifier.width(SpaceSmallMax))

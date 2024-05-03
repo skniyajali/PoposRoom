@@ -142,6 +142,12 @@ val Date.toBarDate
         Locale.getDefault()
     ).format(this).toString()
 
+val Long.toBarDate
+    get() = SimpleDateFormat(
+        "dd MMM",
+        Locale.getDefault()
+    ).format(this).toString()
+
 val String.toFormattedDate
     get() = SimpleDateFormat(
         "dd MMM yy",

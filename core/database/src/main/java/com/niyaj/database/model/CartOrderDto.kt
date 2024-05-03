@@ -33,23 +33,23 @@ data class CartOrderDto(
 
     val doesChargesIncluded: Boolean,
 
-    val customerId: Int,
+    val customerId: Int? = null,
 
-    val addressId: Int,
+    val addressId: Int? = null,
 
     @Relation(
         parentColumn = "customerId",
         entity = CustomerEntity::class,
         entityColumn = "customerId",
     )
-    val customer: Customer = Customer(),
+    val customer: Customer? = null,
 
     @Relation(
         parentColumn = "addressId",
         entity = AddressEntity::class,
         entityColumn = "addressId",
     )
-    val address: Address = Address(),
+    val address: Address? = null,
 
     val createdAt: Date,
 
@@ -62,8 +62,8 @@ fun CartOrderDto.toExternalModel(): CartOrder {
         orderType = orderType,
         orderStatus = orderStatus,
         doesChargesIncluded = doesChargesIncluded,
-        customer = customer,
-        address = address,
+        customer = customer ?: Customer(),
+        address = address ?: Address(),
         createdAt = createdAt,
         updatedAt = updatedAt,
     )

@@ -17,11 +17,9 @@ import com.niyaj.database.dao.ProductDao
 import com.niyaj.database.model.CategoryWithProductCrossRef
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Category
-import com.niyaj.model.CategoryWithProducts
 import com.niyaj.model.Product
 import com.niyaj.model.ProductIdWithPrice
 import com.niyaj.model.ProductWiseOrder
-import com.niyaj.model.filterCategory
 import com.niyaj.model.filterProducts
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -54,18 +52,6 @@ class ProductRepositoryImpl(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun getAllCategoryProducts(searchText: String): Flow<List<CategoryWithProducts>> {
-        return withContext(ioDispatcher) {
-            productDao.getAllCategoryProduct().mapLatest { list ->
-                list.map { it.asExternalModel() }
-                    .filter {
-                        it.category.filterCategory(searchText)
-                    }
-            }
-        }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getAllProduct(
         searchText: String,
         selectedCategory: Int,
@@ -93,82 +79,6 @@ class ProductRepositoryImpl(
         }
     }
 
-    override suspend fun addOrIgnoreProduct(newProduct: Product): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val validateCategory = validateCategoryId(newProduct.categoryId)
-                val valProduct = validateProductName(newProduct.productName)
-                val validateProductPrice = validateProductPrice(newProduct.productPrice)
-
-                val hasError = listOf(
-                    validateCategory,
-                    validateProductPrice,
-                    valProduct
-                ).any { !it.successful }
-
-                if (!hasError) {
-
-                    val category = withContext(ioDispatcher) {
-                        productDao.getCategoryById(newProduct.categoryId)
-                    }
-
-                    if (category != null) {
-                        val result = withContext(ioDispatcher) {
-                            productDao.insertOrIgnoreProduct(newProduct.toEntity())
-                        }
-
-                        Resource.Success(result > 0)
-                    } else {
-                        Resource.Error("Unable to find category")
-                    }
-
-                } else {
-                    Resource.Error("Unable to validate product")
-                }
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unable to create new product")
-        }
-    }
-
-    override suspend fun updateProduct(newProduct: Product): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val validateCategory = validateCategoryId(newProduct.categoryId)
-                val valProduct = validateProductName(newProduct.productName, newProduct.productId)
-                val validateProductPrice = validateProductPrice(newProduct.productPrice)
-
-                val hasError = listOf(
-                    validateCategory,
-                    validateProductPrice,
-                    valProduct
-                ).any { !it.successful }
-
-                if (!hasError) {
-
-                    val category = withContext(ioDispatcher) {
-                        productDao.getCategoryById(newProduct.categoryId)
-                    }
-
-                    if (category != null) {
-                        val result = withContext(ioDispatcher) {
-                            productDao.updateProduct(newProduct.toEntity())
-                        }
-
-                        Resource.Success(result > 0)
-                    } else {
-                        Resource.Error("Unable to find category")
-                    }
-
-                } else {
-                    Resource.Error("Unable to validate product")
-                }
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unable to create new product")
-        }
-    }
-
     override suspend fun upsertProduct(newProduct: Product): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
@@ -179,7 +89,7 @@ class ProductRepositoryImpl(
                 val hasError = listOf(
                     validateCategory,
                     validateProductPrice,
-                    valProduct
+                    valProduct,
                 ).any { !it.successful }
 
 
@@ -198,8 +108,8 @@ class ProductRepositoryImpl(
                                 productDao.upsertCategoryWithProductCrossReference(
                                     CategoryWithProductCrossRef(
                                         newProduct.categoryId,
-                                        result.toInt()
-                                    )
+                                        result.toInt(),
+                                    ),
                                 )
                             }
                         }
@@ -215,18 +125,6 @@ class ProductRepositoryImpl(
             }
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Unable to create or update new product")
-        }
-    }
-
-    override suspend fun deleteProduct(productId: Int): Resource<Boolean> {
-        return try {
-            val result = withContext(ioDispatcher) {
-                productDao.deleteProduct(productId)
-            }
-
-            Resource.Success(result > 0)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unable to delete product")
         }
     }
 
@@ -246,12 +144,12 @@ class ProductRepositoryImpl(
         if (categoryId == 0) {
             return ValidationResult(
                 successful = false,
-                errorMessage = PRODUCT_CATEGORY_EMPTY_ERROR
+                errorMessage = PRODUCT_CATEGORY_EMPTY_ERROR,
             )
         }
 
         return ValidationResult(
-            successful = true
+            successful = true,
         )
     }
 
@@ -262,14 +160,14 @@ class ProductRepositoryImpl(
         if (productName.isEmpty()) {
             return ValidationResult(
                 successful = false,
-                errorMessage = PRODUCT_NAME_EMPTY_ERROR
+                errorMessage = PRODUCT_NAME_EMPTY_ERROR,
             )
         }
 
         if (productName.length < 4) {
             return ValidationResult(
                 successful = false,
-                errorMessage = PRODUCT_NAME_LENGTH_ERROR
+                errorMessage = PRODUCT_NAME_LENGTH_ERROR,
             )
         }
 
@@ -280,12 +178,12 @@ class ProductRepositoryImpl(
         if (serverResult) {
             return ValidationResult(
                 successful = false,
-                errorMessage = PRODUCT_NAME_ALREADY_EXIST_ERROR
+                errorMessage = PRODUCT_NAME_ALREADY_EXIST_ERROR,
             )
         }
 
         return ValidationResult(
-            successful = true
+            successful = true,
         )
     }
 
@@ -293,19 +191,19 @@ class ProductRepositoryImpl(
         if (productPrice == 0) {
             return ValidationResult(
                 successful = false,
-                errorMessage = PRODUCT_PRICE_EMPTY_ERROR
+                errorMessage = PRODUCT_PRICE_EMPTY_ERROR,
             )
         }
 
         if (type.isNullOrEmpty() && productPrice < 10) {
             return ValidationResult(
                 successful = false,
-                errorMessage = PRODUCT_PRICE_LENGTH_ERROR
+                errorMessage = PRODUCT_PRICE_LENGTH_ERROR,
             )
         }
 
         return ValidationResult(
-            successful = true
+            successful = true,
         )
     }
 
@@ -327,7 +225,7 @@ class ProductRepositoryImpl(
                         orderType = it.cartOrder.orderType,
                         quantity = it.productQuantity.quantity,
                         customerPhone = it.customer?.customerPhone,
-                        customerAddress = it.address?.addressName
+                        customerAddress = it.address?.addressName,
                     )
                 }
             }
@@ -344,7 +242,7 @@ class ProductRepositoryImpl(
                 val hasError = listOf(
                     validateCategory,
                     validateProductPrice,
-                    valProduct
+                    valProduct,
                 ).any { !it.successful }
 
                 if (!hasError) {
@@ -362,8 +260,8 @@ class ProductRepositoryImpl(
                                 productDao.upsertCategoryWithProductCrossReference(
                                     CategoryWithProductCrossRef(
                                         newProduct.categoryId,
-                                        result.toInt()
-                                    )
+                                        result.toInt(),
+                                    ),
                                 )
                             }
                         }

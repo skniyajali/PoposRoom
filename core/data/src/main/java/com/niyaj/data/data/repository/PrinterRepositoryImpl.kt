@@ -6,8 +6,10 @@ import com.niyaj.common.result.Resource
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.PrinterRepository
 import com.niyaj.database.dao.PrinterDao
+import com.niyaj.database.model.asExternalModel
 import com.niyaj.database.model.toExternalModel
 import com.niyaj.model.Printer
+import com.niyaj.model.Profile
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -42,4 +44,11 @@ class PrinterRepositoryImpl(
             }
         }
     }
+
+    override fun getProfileInfo(restaurantId: Int): Flow<Profile> {
+        return printerDao.getProfileInfo(restaurantId).mapLatest {
+            it?.asExternalModel() ?: Profile.defaultProfileInfo
+        }
+    }
+
 }

@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
+import androidx.compose.material.icons.automirrored.filled.Feed
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.MergeType
 import androidx.compose.material.icons.automirrored.filled.NoteAdd
@@ -17,6 +18,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AllInbox
 import androidx.compose.material.icons.filled.Approval
 import androidx.compose.material.icons.filled.Apps
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.AutoGraph
 import androidx.compose.material.icons.filled.BluetoothConnected
 import androidx.compose.material.icons.filled.BluetoothDisabled
 import androidx.compose.material.icons.filled.Bolt
@@ -28,6 +32,8 @@ import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.CollectionsBookmark
+import androidx.compose.material.icons.filled.ControlPoint
 import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeliveryDining
@@ -60,6 +66,8 @@ import androidx.compose.material.icons.filled.PersonPin
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Radar
+import androidx.compose.material.icons.filled.RadioButtonChecked
+import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.RoomService
@@ -75,8 +83,10 @@ import androidx.compose.material.icons.filled.ViewAgenda
 import androidx.compose.material.icons.filled.ViewHeadline
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.WidthNormal
+import androidx.compose.material.icons.outlined.AddCircleOutline
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.Print
+import androidx.compose.material.icons.outlined.RemoveCircleOutline
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Today
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -85,6 +95,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
  * Popos icons. Material icons are [ImageVector]s, custom icons are drawable resource IDs.
  */
 object PoposIcons {
+    val ArrowDropUp: ImageVector = Icons.Default.ArrowDropUp
+    val ArrowDropDown: ImageVector = Icons.Default.ArrowDropDown
+    val AutoGraph: ImageVector = Icons.Filled.AutoGraph
+    val Feed: ImageVector = Icons.AutoMirrored.Filled.Feed
+    val CollectionsBookmark: ImageVector = Icons.Default.CollectionsBookmark
+    val RadioButtonUnchecked: ImageVector = Icons.Default.RadioButtonUnchecked
+    val RadioButtonChecked: ImageVector = Icons.Default.RadioButtonChecked
+    val AddCircleOutline: ImageVector = Icons.Outlined.AddCircleOutline
+    val ArrowBack: ImageVector = Icons.AutoMirrored.Filled.ArrowBack
+    val ControlPoint: ImageVector = Icons.Filled.ControlPoint
+    val RemoveCircleOutline: ImageVector = Icons.Outlined.RemoveCircleOutline
     val ReceiptLong: ImageVector = Icons.AutoMirrored.Filled.ReceiptLong
     val Receipt: ImageVector = Icons.Default.Receipt
     val Margin: ImageVector = Icons.Default.Margin

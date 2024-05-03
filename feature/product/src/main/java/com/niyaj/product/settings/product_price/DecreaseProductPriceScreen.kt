@@ -1,27 +1,16 @@
 package com.niyaj.product.settings.product_price
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Checklist
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.CurrencyRupee
-import androidx.compose.material.icons.filled.RemoveCircleOutline
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -30,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -38,10 +26,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.ProductTestTags
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.safeString
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
@@ -55,7 +43,7 @@ import com.niyaj.ui.components.ItemNotAvailableHalf
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.components.StandardTextField
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -63,14 +51,14 @@ import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import kotlinx.coroutines.launch
 
 @Destination
 @Composable
 fun DecreaseProductPriceScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: ProductSettingsViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
@@ -83,8 +71,6 @@ fun DecreaseProductPriceScreen(
 
     val selectedItems = viewModel.selectedItems.toList()
     val selectedCategory = viewModel.selectedCategory.toList()
-
-    val selectionCount = rememberUpdatedState(newValue = selectedItems.size)
 
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
@@ -112,84 +98,60 @@ fun DecreaseProductPriceScreen(
             viewModel.closeSearchBar()
         } else if (selectedItems.isNotEmpty()) {
             viewModel.deselectItems()
-        }  else {
-            navController.navigateUp()
+        } else {
+            navigator.navigateUp()
         }
     }
 
     BackHandler {
         onBackClick()
     }
-    
+
     TrackScreenViewEvent(screenName = "Decreased Product Price::Screen")
 
-    StandardScaffoldNew(
-        navController = navController,
+    StandardScaffoldRouteNew(
         title = if (selectedItems.isEmpty()) ProductTestTags.DECREASE_PRODUCTS_TITLE else "${selectedItems.size} Selected",
+        showBackButton = selectedItems.isEmpty() || showSearchBar,
         navigationIcon = {
-            AnimatedContent(
-                targetState = selectionCount,
-                transitionSpec = {
-                    (fadeIn()).togetherWith(
-                        fadeOut(animationSpec = tween(200))
-                    )
-                },
-                label = "navigationIcon",
-                contentKey = {
-                    it
-                }
-            ) { intState ->
-                if (intState.value != 0 && !showSearchBar) {
-                    IconButton(
-                        onClick = viewModel::deselectItems
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = Constants.CLEAR_ICON
-                        )
-                    }
-                } else {
-                    IconButton(
-                        onClick = { onBackClick() },
-                        modifier = Modifier.testTag(Constants.STANDARD_BACK_BUTTON)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = null,
-                        )
-                    }
-                }
+            IconButton(
+                onClick = viewModel::deselectItems,
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Close,
+                    contentDescription = Constants.CLEAR_ICON,
+                )
             }
         },
         showBottomBar = products.isNotEmpty() && lazyListState.isScrollingUp(),
-        showDrawer = false,
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
                     searchText = searchText,
                     placeholderText = "Search for products...",
                     onClearClick = viewModel::clearSearchText,
-                    onSearchTextChanged = viewModel::searchTextChanged
+                    onSearchTextChanged = viewModel::searchTextChanged,
                 )
-            }else {
+            } else {
                 if (products.isNotEmpty()) {
                     IconButton(
-                        onClick = viewModel::selectAllItems
+                        onClick = viewModel::selectAllItems,
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Checklist,
-                            contentDescription = Constants.SELECT_ALL_ICON
+                            imageVector = PoposIcons.Checklist,
+                            contentDescription = Constants.SELECT_ALL_ICON,
                         )
                     }
 
-                    IconButton(
-                        onClick = viewModel::openSearchBar,
-                        modifier = Modifier.testTag(NAV_SEARCH_BTN)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search Icon",
-                        )
+                    if (selectedItems.isEmpty()) {
+                        IconButton(
+                            onClick = viewModel::openSearchBar,
+                            modifier = Modifier.testTag(NAV_SEARCH_BTN),
+                        ) {
+                            Icon(
+                                imageVector = PoposIcons.Search,
+                                contentDescription = "Search Icon",
+                            )
+                        }
                     }
                 }
             }
@@ -199,7 +161,7 @@ fun DecreaseProductPriceScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(SpaceSmallMax),
-                verticalArrangement = Arrangement.spacedBy(SpaceMedium)
+                verticalArrangement = Arrangement.spacedBy(SpaceMedium),
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} products price will be decreased.")
 
@@ -209,17 +171,17 @@ fun DecreaseProductPriceScreen(
                         .testTag(ProductTestTags.DECREASE_PRODUCTS_BTN_TEXT),
                     enabled = productPrice.isNotEmpty(),
                     text = ProductTestTags.DECREASE_PRODUCTS_BTN_TEXT,
-                    icon = Icons.Default.RemoveCircleOutline,
+                    icon = PoposIcons.RemoveCircleOutline,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
+                        containerColor = MaterialTheme.colorScheme.secondary,
                     ),
                     onClick = {
                         viewModel.onEvent(ProductSettingsEvent.OnDecreaseProductPrice)
-                    }
+                    },
                 )
             }
         },
-        onBackClick = {onBackClick()},
+        onBackClick = { onBackClick() },
         fabPosition = FabPosition.End,
         floatingActionButton = {
             ScrollToTop(
@@ -228,39 +190,41 @@ fun DecreaseProductPriceScreen(
                     scope.launch {
                         lazyListState.animateScrollToItem(index = 0)
                     }
-                }
+                },
             )
-        }
-    ) {
+        },
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(SpaceSmall),
+                .padding(paddingValues),
         ) {
             TrackScrollJank(scrollableState = lazyListState, stateName = "Decreased Products::List")
 
             StandardTextField(
-                modifier = Modifier.padding(horizontal = SpaceSmall),
+                modifier = Modifier.padding(start = SpaceMedium, end = SpaceMedium, top = SpaceSmall),
                 value = productPrice,
                 label = ProductTestTags.DECREASE_PRODUCTS_TEXT_FIELD,
-                leadingIcon = Icons.Default.CurrencyRupee,
+                leadingIcon = PoposIcons.Rupee,
                 keyboardType = KeyboardType.Number,
                 onValueChange = {
                     viewModel.onEvent(ProductSettingsEvent.OnChangeProductPrice(it))
-                }
+                },
             )
 
             CategoriesData(
+                modifier = Modifier.padding(horizontal = SpaceSmall),
                 lazyRowState = lazyRowState,
                 categories = categories,
                 selectedCategory = selectedCategory,
                 onSelect = {
                     viewModel.onEvent(ProductSettingsEvent.OnSelectCategory(it))
-                }
+                },
             )
 
             LazyColumn(
                 state = lazyListState,
+                contentPadding = PaddingValues(SpaceSmall),
             ) {
                 item {
                     if (products.isEmpty()) {
@@ -269,25 +233,26 @@ fun DecreaseProductPriceScreen(
                             text = if (searchText.isEmpty()) ProductTestTags.PRODUCT_NOT_AVAIlABLE else ProductTestTags.NO_ITEMS_IN_PRODUCT,
                             buttonText = ProductTestTags.CREATE_NEW_PRODUCT,
                             onClick = {
-                                navController.navigate(AddEditProductScreenDestination())
-                            }
+                                navigator.navigate(AddEditProductScreenDestination())
+                            },
                         )
                     }
                 }
+
                 itemsIndexed(
                     items = products,
                     key = { index, item ->
                         item.productName.plus(index).plus(item.productId)
-                    }
+                    },
                 ) { _, item ->
                     ProductCard(
                         item = item,
-                        doesSelected = {
-                            selectedItems.contains(it)
-                        },
+                        doesSelected = selectedItems::contains,
                         onClick = viewModel::selectItem,
                         onLongClick = viewModel::selectItem,
-                        border = BorderStroke(0.dp, Color.Transparent)
+                        border = BorderStroke(0.dp, Color.Transparent),
+                        showArrow = false,
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
                     )
                 }
             }

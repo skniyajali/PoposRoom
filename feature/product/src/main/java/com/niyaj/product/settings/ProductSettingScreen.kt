@@ -5,14 +5,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ControlPoint
-import androidx.compose.material.icons.filled.RemoveCircleOutline
-import androidx.compose.material.icons.filled.SaveAlt
-import androidx.compose.material.icons.filled.Upload
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.product.destinations.DecreaseProductPriceScreenDestination
 import com.niyaj.product.destinations.ExportProductScreenDestination
@@ -23,13 +18,13 @@ import com.niyaj.ui.components.StandardBottomSheet
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 
 @Destination(style = DestinationStyleBottomSheet::class)
 @Composable
 fun ProductSettingScreen(
-    navController: NavController
+    navigator: DestinationsNavigator,
 ) {
     TrackScreenViewEvent(screenName = "Product Setting Screen")
 
@@ -39,23 +34,23 @@ fun ProductSettingScreen(
 
     StandardBottomSheet(
         title = "Product Settings",
-        onBackClick = { navController.navigateUp() }
+        onBackClick = navigator::navigateUp,
     ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(SpaceMedium),
             state = lazyListState,
-            verticalArrangement = Arrangement.spacedBy(SpaceMedium)
-        ){
+            verticalArrangement = Arrangement.spacedBy(SpaceMedium),
+        ) {
             item("IncreaseProductPrice") {
                 SettingsCard(
                     title = "Increase Product Price",
                     subtitle = "Click here to increase product price.",
-                    icon = Icons.Default.ControlPoint,
+                    icon = PoposIcons.ControlPoint,
                     onClick = {
-                        navController.navigate(IncreaseProductPriceScreenDestination)
-                    }
+                        navigator.navigate(IncreaseProductPriceScreenDestination)
+                    },
                 )
             }
 
@@ -63,10 +58,10 @@ fun ProductSettingScreen(
                 SettingsCard(
                     title = "Decrease Product Price",
                     subtitle = "Click here to decrease product price.",
-                    icon = Icons.Default.RemoveCircleOutline,
+                    icon = PoposIcons.RemoveCircleOutline,
                     onClick = {
-                        navController.navigate(DecreaseProductPriceScreenDestination)
-                    }
+                        navigator.navigate(DecreaseProductPriceScreenDestination)
+                    },
                 )
             }
 
@@ -74,10 +69,10 @@ fun ProductSettingScreen(
                 SettingsCard(
                     title = "Import Product",
                     subtitle = "Click here to import product from file.",
-                    icon = Icons.Default.SaveAlt,
+                    icon = PoposIcons.Import,
                     onClick = {
-                        navController.navigate(ImportProductScreenDestination())
-                    }
+                        navigator.navigate(ImportProductScreenDestination())
+                    },
                 )
             }
 
@@ -85,10 +80,10 @@ fun ProductSettingScreen(
                 SettingsCard(
                     title = "Export Product",
                     subtitle = "Click here to export products to file.",
-                    icon = Icons.Default.Upload,
+                    icon = PoposIcons.Upload,
                     onClick = {
-                        navController.navigate(ExportProductScreenDestination())
-                    }
+                        navigator.navigate(ExportProductScreenDestination())
+                    },
                 )
             }
         }
