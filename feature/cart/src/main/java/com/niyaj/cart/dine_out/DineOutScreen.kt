@@ -58,6 +58,23 @@ fun DineOutScreen(
 
     val context = LocalContext.current
 
+    val printError = printViewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
+
+    LaunchedEffect(key1 = printError) {
+        printError?.let {
+            when (printError) {
+                is UiEvent.OnError -> {
+                    snackbarHostState.showSnackbar(
+                        message = printError.errorMessage,
+                        duration = SnackbarDuration.Short,
+                    )
+                }
+
+                else -> {}
+            }
+        }
+    }
+
     val bluetoothPermissions =
         // Checks if the device has Android 12 or above
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

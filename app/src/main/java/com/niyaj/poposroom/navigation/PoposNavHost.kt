@@ -123,7 +123,7 @@ fun PoposNavHost(
 
                 composable(OrderScreenDestination) {
                     OrderScreen(
-                        navController = navController,
+                        navigator = this.destinationsNavigator,
                         onClickEditOrder = {
                             navController.navigate(AddEditCartOrderScreenDestination(it))
                         },
@@ -213,7 +213,7 @@ fun PoposNavHost(
                 composable(OrderDetailsScreenDestination) {
                     OrderDetailsScreen(
                         orderId = this.navBackStackEntry.arguments?.getInt("orderId") ?: 0,
-                        navController = navController,
+                        navigator = this.destinationsNavigator,
                         onClickCustomer = {
                             navController.navigate(CustomerDetailsScreenDestination(it))
                         },

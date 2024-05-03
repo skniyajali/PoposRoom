@@ -1,5 +1,6 @@
 package com.niyaj.order.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,10 +34,13 @@ import com.niyaj.model.Order
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.StandardFilledTonalIconButton
 
+// TODO:: Fix Linting Issue after migrating all icons to Outlined icons.
+
+@SuppressLint("DesignSystem")
 @Composable
 fun OrderedItemData(
     modifier: Modifier = Modifier,
-    shape : Shape,
+    shape: Shape,
     order: Order,
     onClickViewDetails: (Int) -> Unit,
     onClickPrintOrder: (Int) -> Unit,
@@ -47,11 +51,11 @@ fun OrderedItemData(
             .fillMaxWidth(),
         shape = shape,
         colors = CardDefaults.elevatedCardColors(
-            containerColor = LightColor8
+            containerColor = LightColor8,
         ),
         elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 2.dp
-        )
+            defaultElevation = 2.dp,
+        ),
     ) {
         Row(
             modifier = Modifier
@@ -70,7 +74,7 @@ fun OrderedItemData(
                 ) {
                     IconWithText(
                         text = order.orderId.toString(),
-                        icon = Icons.Outlined.Tag
+                        icon = Icons.Outlined.Tag,
                     )
 
                     order.customerPhone?.let {
@@ -78,7 +82,7 @@ fun OrderedItemData(
 
                         IconWithText(
                             text = it,
-                            icon = Icons.Outlined.PhoneAndroid
+                            icon = Icons.Outlined.PhoneAndroid,
                         )
                     }
 
@@ -86,7 +90,7 @@ fun OrderedItemData(
 
                     IconWithText(
                         text = order.orderDate.toTime,
-                        icon = Icons.Outlined.AccessTime
+                        icon = Icons.Outlined.AccessTime,
                     )
                 }
 
@@ -96,21 +100,22 @@ fun OrderedItemData(
                     order.customerAddress?.let {
                         IconWithText(
                             text = it,
-                            icon = Icons.Outlined.Place
+                            icon = Icons.Outlined.Place,
                         )
                         Spacer(modifier = Modifier.height(SpaceSmall))
                     }
 
                     IconWithText(
-                        text = order.orderPrice.basePrice.minus(order.orderPrice.discountPrice).toString(),
-                        icon = Icons.Outlined.CurrencyRupee
+                        text = order.orderPrice.basePrice.minus(order.orderPrice.discountPrice)
+                            .toString(),
+                        icon = Icons.Outlined.CurrencyRupee,
                     )
                 }
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(SpaceMini)
-                ){
+                    horizontalArrangement = Arrangement.spacedBy(SpaceMini),
+                ) {
                     StandardFilledTonalIconButton(
                         icon = Icons.Outlined.Visibility,
                         containerColor = MaterialTheme.colorScheme.errorContainer,

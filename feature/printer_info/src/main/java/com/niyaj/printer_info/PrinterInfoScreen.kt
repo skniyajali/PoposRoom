@@ -28,7 +28,6 @@ import androidx.compose.material.icons.filled.BluetoothConnected
 import androidx.compose.material.icons.filled.BluetoothDisabled
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.InsertLink
-import androidx.compose.material.icons.filled.NearbyOff
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Card
@@ -46,16 +45,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_INFO_NOTES_FOUR
 import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_INFO_NOTES_ONE
@@ -64,8 +60,6 @@ import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_INFO_NOTES_TWO
 import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_NOT_AVAILABLE
 import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_SCREEN_TITLE
 import com.niyaj.common.tags.PrinterInfoTestTags.UPDATE_PRINTER_INFO
-import com.niyaj.common.utils.Constants.BLUETOOTH_PER_DENY_TEXT
-import com.niyaj.common.utils.Constants.BLUETOOTH_PER_RATIONAL_TEXT
 import com.niyaj.common.utils.findActivity
 import com.niyaj.common.utils.openAppSettings
 import com.niyaj.common.utils.toPrettyDate
@@ -76,7 +70,8 @@ import com.niyaj.designsystem.theme.ProfilePictureSizeSmall
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.printer_info.destinations.UpdatePrinterInfoScreenDestination
-import com.niyaj.ui.components.CustomPermissionDialog
+import com.niyaj.ui.components.BluetoothPermissionDialog
+import com.niyaj.ui.components.HandleBluetoothPermissionState
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
@@ -90,6 +85,7 @@ import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
+import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.navigate
@@ -111,16 +107,23 @@ fun PrinterInfoScreen(
     val lazyListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
-    val enableBluetoothContract = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {}
+    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
-    val bluetoothManager = remember {
-        context.getSystemService(BluetoothManager::class.java)
-    }
-
-    val bluetoothAdapter: BluetoothAdapter? = remember {
-        bluetoothManager.adapter
+    LaunchedEffect(key1 = event) {
+        event?.let {
+            when(event) {
+                is UiEvent.OnError -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(event.errorMessage)
+                    }
+                }
+                is UiEvent.OnSuccess -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(event.successMessage)
+                    }
+                }
+            }
+        }
     }
 
     val bluetoothPermissionsState =
@@ -143,9 +146,23 @@ fun PrinterInfoScreen(
             )
         }
 
+    TrackScreenViewEvent(screenName = Screens.PRINTER_INFO_SCREEN)
+
     HandleBluetoothPermissionState(
         multiplePermissionsState = bluetoothPermissionsState,
         onSuccessful = {
+            val enableBluetoothContract = rememberLauncherForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) {}
+
+            val bluetoothManager = remember {
+                context.getSystemService(BluetoothManager::class.java)
+            }
+
+            val bluetoothAdapter: BluetoothAdapter? = remember {
+                bluetoothManager.adapter
+            }
+
             LaunchedEffect(key1 = bluetoothPermissionsState, key2 = true) {
                 if (bluetoothPermissionsState.allPermissionsGranted) {
                     if (bluetoothAdapter?.isEnabled == false) {
@@ -170,8 +187,6 @@ fun PrinterInfoScreen(
                     }
                 }
             }
-
-            TrackScreenViewEvent(screenName = Screens.PRINTER_INFO_SCREEN)
 
             StandardScaffold(
                 navController = navController,
@@ -464,42 +479,5 @@ fun PrinterInfoScreen(
                 }
             )
         }
-    )
-}
-
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-private fun HandleBluetoothPermissionState(
-    multiplePermissionsState: MultiplePermissionsState,
-    onSuccessful: @Composable () -> Unit,
-    onError: @Composable (Boolean) -> Unit,
-) {
-    if (multiplePermissionsState.allPermissionsGranted) {
-        onSuccessful.invoke()
-    } else {
-        onError.invoke(multiplePermissionsState.shouldShowRationale)
-    }
-}
-
-@Composable
-private fun BluetoothPermissionDialog(
-    modifier: Modifier = Modifier,
-    shouldShowRationale: Boolean,
-    onClickRequestPermission: () -> Unit,
-    onClickOpenSettings: () -> Unit,
-    onDismissRequest: () -> Unit,
-) {
-    val text = if (shouldShowRationale) BLUETOOTH_PER_RATIONAL_TEXT else BLUETOOTH_PER_DENY_TEXT
-
-    CustomPermissionDialog(
-        modifier = modifier,
-        title = "Nearby Devices",
-        text = text,
-        icon = Icons.Default.NearbyOff,
-        image = ImageVector.vectorResource(com.niyaj.core.ui.R.drawable.bluetooth_icon),
-        shouldShowRationale = shouldShowRationale,
-        onClickRequestPermission = onClickRequestPermission,
-        onClickOpenSettings = onClickOpenSettings,
-        onDismissRequest = onDismissRequest
     )
 }

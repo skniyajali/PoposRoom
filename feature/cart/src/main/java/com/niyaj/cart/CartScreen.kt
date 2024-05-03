@@ -32,7 +32,6 @@ fun CartScreen(
     onClickOrderDetails: (Int) -> Unit,
     onNavigateToOrderScreen: () -> Unit,
 ) {
-
     TrackScreenViewEvent(screenName = Screens.CART_SCREEN)
 
     val pagerState = rememberPagerState { 2 }

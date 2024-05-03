@@ -77,7 +77,7 @@ fun StandardScaffoldWithBottomNavigation(
     bottomBar: @Composable () -> Unit = {
         AnimatedBottomNavigationBar(
             currentRoute = currentRoute,
-            onNavigateToDestination = onNavigateToScreen
+            onNavigateToDestination = onNavigateToScreen,
         )
     },
     navActions: @Composable RowScope.() -> Unit = {},
@@ -107,10 +107,10 @@ fun StandardScaffoldWithBottomNavigation(
         drawerContent = {
             StandardDrawer(
                 currentRoute = currentRoute,
-                onNavigateToScreen = onNavigateToScreen
+                onNavigateToScreen = onNavigateToScreen,
             )
         },
-        gesturesEnabled = true
+        gesturesEnabled = true,
     ) {
         Scaffold(
             topBar = {
@@ -126,7 +126,7 @@ fun StandardScaffoldWithBottomNavigation(
                                 height = 40.dp,
                                 onClick = {
                                     onNavigateToScreen(Screens.SELECT_ORDER_SCREEN)
-                                }
+                                },
                             )
                         }
                     },
@@ -134,20 +134,20 @@ fun StandardScaffoldWithBottomNavigation(
                         if (showSearchBar) {
                             IconButton(
                                 onClick = closeSearchBar,
-                                modifier = Modifier.testTag(Constants.STANDARD_BACK_BUTTON)
+                                modifier = Modifier.testTag(Constants.STANDARD_BACK_BUTTON),
                             ) {
                                 Icon(
                                     imageVector = PoposIcons.Back,
-                                    contentDescription = Constants.STANDARD_BACK_BUTTON
+                                    contentDescription = Constants.STANDARD_BACK_BUTTON,
                                 )
                             }
                         } else if (showBackButton) {
                             IconButton(
-                                onClick = onBackClick
+                                onClick = onBackClick,
                             ) {
                                 Icon(
                                     imageVector = PoposIcons.Back,
-                                    contentDescription = Constants.STANDARD_BACK_BUTTON
+                                    contentDescription = Constants.STANDARD_BACK_BUTTON,
                                 )
                             }
                         } else {
@@ -156,11 +156,11 @@ fun StandardScaffoldWithBottomNavigation(
                                     scope.launch {
                                         drawerState.open()
                                     }
-                                }
+                                },
                             ) {
                                 Icon(
                                     imageVector = PoposIcons.App,
-                                    contentDescription = null
+                                    contentDescription = null,
                                 )
                             }
                         }
@@ -171,26 +171,28 @@ fun StandardScaffoldWithBottomNavigation(
                                 searchText = searchText,
                                 placeholderText = searchPlaceholderText,
                                 onClearClick = onClearClick,
-                                onSearchTextChanged = onSearchTextChanged
+                                onSearchTextChanged = onSearchTextChanged,
                             )
-                        } else if (showSearchIcon) {
-                            IconButton(
-                                onClick = openSearchBar
-                            ) {
-                                Icon(
-                                    imageVector = PoposIcons.Search,
-                                    contentDescription = Constants.SEARCH_ICON
-                                )
-                            }
                         } else {
                             navActions()
+
+                            if (showSearchIcon) {
+                                IconButton(
+                                    onClick = openSearchBar,
+                                ) {
+                                    Icon(
+                                        imageVector = PoposIcons.Search,
+                                        contentDescription = Constants.SEARCH_ICON,
+                                    )
+                                }
+                            }
                         }
                     },
                     scrollBehavior = scrollBehavior,
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                         containerColor = MaterialTheme.colorScheme.surface,
-                        scrolledContainerColor = MaterialTheme.colorScheme.surface
-                    )
+                        scrolledContainerColor = MaterialTheme.colorScheme.surface,
+                    ),
                 )
             },
             bottomBar = {
@@ -200,13 +202,13 @@ fun StandardScaffoldWithBottomNavigation(
                     enter = fadeIn() + slideInVertically(
                         initialOffsetY = { fullHeight ->
                             fullHeight / 4
-                        }
+                        },
                     ),
                     exit = fadeOut() + slideOutVertically(
                         targetOffsetY = { fullHeight ->
                             fullHeight / 4
-                        }
-                    )
+                        },
+                    ),
                 ) {
                     bottomBar()
                 }
@@ -218,23 +220,23 @@ fun StandardScaffoldWithBottomNavigation(
                     enter = fadeIn() + slideInVertically(
                         initialOffsetY = { fullHeight ->
                             fullHeight / 4
-                        }
+                        },
                     ),
                     exit = fadeOut() + slideOutVertically(
                         targetOffsetY = { fullHeight ->
                             fullHeight / 4
-                        }
-                    )
+                        },
+                    ),
                 ) {
                     FloatingActionButton(
                         onClick = {
                             onNavigateToScreen(Screens.ADD_EDIT_CART_ORDER_SCREEN)
                         },
-                        containerColor = MaterialTheme.colorScheme.secondary
+                        containerColor = MaterialTheme.colorScheme.secondary,
                     ) {
                         Icon(
                             imageVector = PoposIcons.Add,
-                            contentDescription = "Create new order"
+                            contentDescription = "Create new order",
                         )
                     }
                 }
@@ -251,7 +253,7 @@ fun StandardScaffoldWithBottomNavigation(
                     .padding(
                         start = padding.calculateStartPadding(layoutDirection),
                         top = padding.calculateTopPadding(),
-                        end = padding.calculateEndPadding(layoutDirection)
+                        end = padding.calculateEndPadding(layoutDirection),
                     )
                     .windowInsetsPadding(
                         WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
@@ -260,8 +262,8 @@ fun StandardScaffoldWithBottomNavigation(
                 elevation = CardDefaults.cardElevation(),
                 shape = shape.value,
                 colors = CardDefaults.elevatedCardColors(
-                    containerColor = MaterialTheme.colorScheme.onPrimary
-                )
+                    containerColor = MaterialTheme.colorScheme.onPrimary,
+                ),
             ) {
                 content()
             }

@@ -32,4 +32,6 @@ dependencies {
     implementation(libs.coil.kt.compose)
     implementation(libs.navigation.bar)
     implementation(libs.lottie.compose)
+
+    implementation(libs.accompanist.permissions)
 }

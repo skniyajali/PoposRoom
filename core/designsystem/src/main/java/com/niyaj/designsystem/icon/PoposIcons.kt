@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeliveryDining
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Details
 import androidx.compose.material.icons.filled.DinnerDining
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
@@ -41,32 +42,51 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Merge
+import androidx.compose.material.icons.filled.ModeStandby
 import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.NearbyOff
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Person4
 import androidx.compose.material.icons.filled.PersonPin
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Radar
+import androidx.compose.material.icons.filled.Restore
+import androidx.compose.material.icons.filled.RoomService
 import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.TaskAlt
 import androidx.compose.material.icons.filled.TurnedInNot
+import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material.icons.filled.ViewAgenda
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.outlined.Today
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
  * Popos icons. Material icons are [ImageVector]s, custom icons are drawable resource IDs.
  */
 object PoposIcons {
+    val Restore: ImageVector = Icons.Filled.Restore
+    val RoomService: ImageVector = Icons.Filled.RoomService
+    val ShoppingBag: ImageVector = Icons.Filled.ShoppingBag
+    val Details: ImageVector = Icons.Default.Details
+    val Update: ImageVector = Icons.Filled.Update
+    val LocationOn: ImageVector = Icons.Default.LocationOn
+    val Phone: ImageVector = Icons.Default.Phone
+    val ModeStandby: ImageVector = Icons.Default.ModeStandby
+    val NearbyOff: ImageVector = Icons.Default.NearbyOff
+    val Today: ImageVector = Icons.Outlined.Today
     val NoteAdd: ImageVector = Icons.AutoMirrored.Filled.NoteAdd
     val StickyNote2: ImageVector = Icons.AutoMirrored.Filled.StickyNote2
     val TurnedInNot: ImageVector = Icons.Default.TurnedInNot

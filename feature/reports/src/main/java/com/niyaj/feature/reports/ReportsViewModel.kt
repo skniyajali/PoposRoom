@@ -250,7 +250,7 @@ class ReportsViewModel @Inject constructor(
             printItems += getPrintableAddressWiseReport()
             printItems += getPrintableCustomerWiseReport()
 
-            escposPrinter.printFormattedText(printItems, info.printerWidth)
+            escposPrinter?.printFormattedText(printItems, info.printerWidth)
         } catch (e: Exception) {
             Log.d("Printer", e.message ?: "Error printing")
         }

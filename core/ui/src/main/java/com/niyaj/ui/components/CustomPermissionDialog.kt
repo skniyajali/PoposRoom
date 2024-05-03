@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -36,8 +37,13 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.MultiplePermissionsState
+import com.niyaj.common.utils.Constants.BLUETOOTH_PER_DENY_TEXT
+import com.niyaj.common.utils.Constants.BLUETOOTH_PER_RATIONAL_TEXT
 import com.niyaj.core.ui.R
 import com.niyaj.designsystem.components.PoposTextButton
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.IconSizeExtraLarge
 import com.niyaj.designsystem.theme.ProfilePictureSizeExtraLarge
 import com.niyaj.designsystem.theme.ProfilePictureSizeMedium
@@ -45,6 +51,44 @@ import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.designsystem.theme.gradient2
+
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun HandleBluetoothPermissionState(
+    multiplePermissionsState: MultiplePermissionsState,
+    onSuccessful: @Composable () -> Unit,
+    onError: @Composable (Boolean) -> Unit,
+) {
+    if (multiplePermissionsState.allPermissionsGranted) {
+        onSuccessful.invoke()
+    } else {
+        onError.invoke(multiplePermissionsState.shouldShowRationale)
+    }
+}
+
+@Composable
+fun BluetoothPermissionDialog(
+    modifier: Modifier = Modifier,
+    shouldShowRationale: Boolean,
+    onClickRequestPermission: () -> Unit,
+    onClickOpenSettings: () -> Unit,
+    onDismissRequest: () -> Unit,
+) {
+    val text = if (shouldShowRationale) BLUETOOTH_PER_RATIONAL_TEXT else BLUETOOTH_PER_DENY_TEXT
+
+    CustomPermissionDialog(
+        modifier = modifier,
+        title = "Nearby Devices",
+        text = text,
+        icon = PoposIcons.NearbyOff,
+        image = ImageVector.vectorResource(R.drawable.bluetooth_icon),
+        shouldShowRationale = shouldShowRationale,
+        onClickRequestPermission = onClickRequestPermission,
+        onClickOpenSettings = onClickOpenSettings,
+        onDismissRequest = onDismissRequest,
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

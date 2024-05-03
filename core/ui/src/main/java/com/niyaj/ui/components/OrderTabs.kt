@@ -1,10 +1,14 @@
 package com.niyaj.ui.components
 
+import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LeadingIconTab
 import androidx.compose.material3.MaterialTheme
@@ -20,13 +24,14 @@ import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.theme.SpaceMini
 import kotlinx.coroutines.launch
 
+@SuppressLint("DesignSystem")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OrderTabs(
     tabs: List<OrderTab>,
     pagerState: PagerState,
     containerColor: Color = TabRowDefaults.primaryContainerColor,
-    contentColor: Color = TabRowDefaults.primaryContentColor
+    contentColor: Color = TabRowDefaults.primaryContentColor,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -43,16 +48,28 @@ fun OrderTabs(
                     Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
                     width = 80.dp,
                     height = 4.dp,
-                    shape = CutCornerShape(topStart = SpaceMini, topEnd = SpaceMini)
+                    shape = CutCornerShape(topStart = SpaceMini, topEnd = SpaceMini),
                 )
             }
-        }
+        },
     ) {
         // Add tabs for all of our pages
         tabs.forEachIndexed { index, tab ->
             LeadingIconTab(
                 icon = { Icon(imageVector = tab.icon, contentDescription = tab.title) },
-                text = { Text(tab.title) },
+                text = {
+                    BadgedBox(
+                        badge = {
+                            AnimatedVisibility(
+                                visible = tab.showBadge,
+                            ) {
+                                Badge(containerColor = MaterialTheme.colorScheme.secondary)
+                            }
+                        },
+                    ) {
+                        Text(tab.title)
+                    }
+                },
                 selected = pagerState.currentPage == index,
                 onClick = {
                     scope.launch {
@@ -60,7 +77,7 @@ fun OrderTabs(
                     }
                 },
                 unselectedContentColor = MaterialTheme.colorScheme.outline,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
@@ -71,7 +88,7 @@ fun OrderTabs(
 fun OrderTabsContent(
     modifier: Modifier = Modifier,
     tabs: List<OrderTab>,
-    pagerState: PagerState
+    pagerState: PagerState,
 ) {
     HorizontalPager(
         modifier = modifier,

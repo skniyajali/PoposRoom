@@ -7,10 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor9
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Order
@@ -54,23 +51,23 @@ fun OrderedItem(
                 IconButton(
                     onClick = {
                         onMarkedAsProcessing(order.orderId)
-                    }
+                    },
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Restore,
+                        imageVector = PoposIcons.Restore,
                         contentDescription = "Mark as processing",
                         tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp),
                     )
                 }
 
                 IconButton(
                     onClick = {
                         onClickEdit(order.orderId)
-                    }
+                    },
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Edit,
+                        imageVector = PoposIcons.Edit,
                         contentDescription = "Edit Order",
                         tint = MaterialTheme.colorScheme.onPrimary,
                     )
@@ -85,7 +82,7 @@ fun OrderedItem(
                 modifier = Modifier.padding(horizontal = 25.dp),
             ) {
                 Icon(
-                    imageVector = Icons.Default.Delete,
+                    imageVector = PoposIcons.Delete,
                     contentDescription = "Delete order",
                     tint = MaterialTheme.colorScheme.onSecondary,
                 )

@@ -52,7 +52,7 @@ interface ReportsDao {
     )
     suspend fun getTotalExpenses(startDate: Long, endDate: Long): TotalExpenses
 
-
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         value = """
@@ -69,6 +69,7 @@ interface ReportsDao {
     ): List<OrderDto>
 
 
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         value = """
