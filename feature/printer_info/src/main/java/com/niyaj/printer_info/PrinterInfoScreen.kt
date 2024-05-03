@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,14 +23,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Notes
-import androidx.compose.material.icons.filled.BluetoothConnected
-import androidx.compose.material.icons.filled.BluetoothDisabled
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.InsertLink
-import androidx.compose.material.icons.filled.Print
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
@@ -50,7 +43,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.common.tags.PrinterInfoTestTags.PRINTER_INFO_NOTES_FOUR
@@ -64,6 +56,7 @@ import com.niyaj.common.utils.findActivity
 import com.niyaj.common.utils.openAppSettings
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toSafeString
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor9
 import com.niyaj.designsystem.theme.ProfilePictureSizeMedium
 import com.niyaj.designsystem.theme.ProfilePictureSizeSmall
@@ -78,7 +71,7 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.StandardChip
 import com.niyaj.ui.components.StandardOutlinedChip
-import com.niyaj.ui.components.StandardScaffold
+import com.niyaj.ui.components.StandardScaffoldRoute
 import com.niyaj.ui.components.TwoGridText
 import com.niyaj.ui.components.drawAnimatedBorder
 import com.niyaj.ui.event.UiState
@@ -88,7 +81,7 @@ import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
@@ -98,7 +91,7 @@ import kotlinx.coroutines.launch
 @RootNavGraph(start = true)
 @Destination(route = Screens.PRINTER_INFO_SCREEN)
 fun PrinterInfoScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: PrinterInfoViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<UpdatePrinterInfoScreenDestination, String>,
 ) {
@@ -188,25 +181,27 @@ fun PrinterInfoScreen(
                 }
             }
 
-            StandardScaffold(
-                navController = navController,
+            StandardScaffoldRoute(
+                currentRoute = Screens.PRINTER_INFO_SCREEN,
                 snackbarHostState = snackbarHostState,
                 title = PRINTER_SCREEN_TITLE,
                 showBottomBar = false,
                 navActions = {
                     IconButton(
                         onClick = {
-                            navController.navigate(UpdatePrinterInfoScreenDestination())
+                            navigator.navigate(UpdatePrinterInfoScreenDestination())
                         }
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.Edit,
+                            imageVector = PoposIcons.Edit,
                             contentDescription = "Edit Printer Information"
                         )
                     }
                 },
                 floatingActionButton = {},
                 selectionCount = 0,
+                onBackClick = navigator::navigateUp,
+                onNavigateToScreen = navigator::navigate
             ) {
                 Crossfade(
                     targetState = uiState,
@@ -219,7 +214,7 @@ fun PrinterInfoScreen(
                             ItemNotAvailable(
                                 text = PRINTER_NOT_AVAILABLE,
                                 buttonText = UPDATE_PRINTER_INFO,
-                                icon = Icons.Default.Edit,
+                                icon = PoposIcons.Edit,
                                 onClick = {}
                             )
                         }
@@ -232,7 +227,7 @@ fun PrinterInfoScreen(
 
                             LazyColumn(
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .fillMaxSize()
                                     .padding(SpaceSmall),
                                 state = lazyListState,
                                 verticalArrangement = Arrangement.spacedBy(SpaceSmall)
@@ -289,12 +284,12 @@ fun PrinterInfoScreen(
                                                         ) {
                                                             IconWithText(
                                                                 text = data.name,
-                                                                icon = Icons.AutoMirrored.Filled.Notes
+                                                                icon = PoposIcons.StickyNote2
                                                             )
 
                                                             IconWithText(
                                                                 text = data.address,
-                                                                icon = Icons.Default.InsertLink
+                                                                icon = PoposIcons.Link
                                                             )
                                                         }
 
@@ -311,7 +306,7 @@ fun PrinterInfoScreen(
 
                                                             StandardChip(
                                                                 text = if (data.connected) "Connected" else "Connect",
-                                                                icon = if (data.connected) Icons.Default.BluetoothConnected else Icons.Default.BluetoothDisabled,
+                                                                icon = if (data.connected) PoposIcons.BluetoothConnected else PoposIcons.BluetoothDisabled,
                                                                 isPrimary = data.connected,
                                                                 isClickable = !data.connected,
                                                                 onClick = {
@@ -364,7 +359,7 @@ fun PrinterInfoScreen(
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Icon(
-                                                    imageVector = Icons.Default.Print,
+                                                    imageVector = PoposIcons.Print,
                                                     contentDescription = "Printer Info",
                                                     tint = MaterialTheme.colorScheme.primary,
                                                     modifier = Modifier
@@ -471,7 +466,7 @@ fun PrinterInfoScreen(
                     bluetoothPermissionsState.launchMultiplePermissionRequest()
                 },
                 onDismissRequest = {
-                    navController.navigateUp()
+                    navigator.navigateUp()
                 },
                 shouldShowRationale = shouldShowRationale,
                 onClickOpenSettings = {

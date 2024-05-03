@@ -8,6 +8,7 @@ import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.MergeType
 import androidx.compose.material.icons.automirrored.filled.NoteAdd
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.AccessTime
@@ -16,6 +17,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AllInbox
 import androidx.compose.material.icons.filled.Approval
 import androidx.compose.material.icons.filled.Apps
+import androidx.compose.material.icons.filled.BluetoothConnected
+import androidx.compose.material.icons.filled.BluetoothDisabled
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -28,6 +31,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeliveryDining
+import androidx.compose.material.icons.filled.DensityMedium
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Details
 import androidx.compose.material.icons.filled.DinnerDining
@@ -43,6 +47,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Margin
 import androidx.compose.material.icons.filled.Merge
 import androidx.compose.material.icons.filled.ModeStandby
 import androidx.compose.material.icons.filled.Money
@@ -55,6 +60,7 @@ import androidx.compose.material.icons.filled.PersonPin
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Radar
+import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.RoomService
 import androidx.compose.material.icons.filled.SaveAlt
@@ -66,7 +72,9 @@ import androidx.compose.material.icons.filled.TurnedInNot
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material.icons.filled.ViewAgenda
+import androidx.compose.material.icons.filled.ViewHeadline
 import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.WidthNormal
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.Share
@@ -77,6 +85,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
  * Popos icons. Material icons are [ImageVector]s, custom icons are drawable resource IDs.
  */
 object PoposIcons {
+    val ReceiptLong: ImageVector = Icons.AutoMirrored.Filled.ReceiptLong
+    val Receipt: ImageVector = Icons.Default.Receipt
+    val Margin: ImageVector = Icons.Default.Margin
+    val ViewHeadline: ImageVector = Icons.Default.ViewHeadline
+    val WidthNormal: ImageVector = Icons.Default.WidthNormal
+    val DensityMedium: ImageVector = Icons.Default.DensityMedium
+    val BluetoothDisabled: ImageVector = Icons.Default.BluetoothDisabled
+    val BluetoothConnected: ImageVector = Icons.Default.BluetoothConnected
     val Restore: ImageVector = Icons.Filled.Restore
     val RoomService: ImageVector = Icons.Filled.RoomService
     val ShoppingBag: ImageVector = Icons.Filled.ShoppingBag

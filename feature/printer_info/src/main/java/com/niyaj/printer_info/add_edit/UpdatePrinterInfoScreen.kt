@@ -1,18 +1,12 @@
 package com.niyaj.printer_info.add_edit
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ReceiptLong
-import androidx.compose.material.icons.filled.DensityMedium
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Margin
-import androidx.compose.material.icons.filled.Receipt
-import androidx.compose.material.icons.filled.ViewHeadline
-import androidx.compose.material.icons.filled.WidthNormal
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -20,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.PrinterInfoTestTags.ADDRESS_REPORT_LIMIT_FIELD
 import com.niyaj.common.tags.PrinterInfoTestTags.ADDRESS_REPORT_LIMIT_MESSAGE
 import com.niyaj.common.tags.PrinterInfoTestTags.CUSTOMER_REPORT_LIMIT_FIELD
@@ -40,25 +33,26 @@ import com.niyaj.common.tags.PrinterInfoTestTags.PRODUCT_REPORT_LIMIT_FIELD
 import com.niyaj.common.tags.PrinterInfoTestTags.PRODUCT_REPORT_LIMIT_MESSAGE
 import com.niyaj.common.tags.PrinterInfoTestTags.UPDATE_PRINTER_BUTTON
 import com.niyaj.common.tags.PrinterInfoTestTags.UPDATE_PRINTER_INFO
+import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardCheckboxWithText
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
-@Destination(
-    route = Screens.UPDATE_PRINTER_INFO_SCREEN
-)
+@Destination(route = Screens.UPDATE_PRINTER_INFO_SCREEN)
 @Composable
 fun UpdatePrinterInfoScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: UpdatePrinterInfoViewModel = hiltViewModel(),
 ) {
@@ -88,17 +82,14 @@ fun UpdatePrinterInfoScreen(
             }
         }
     }
-    
+
     TrackScreenViewEvent(screenName = Screens.UPDATE_PRINTER_INFO_SCREEN)
     TrackScrollJank(scrollableState = state, stateName = "Update::PrinterInfo")
 
-    StandardScaffoldNew(
-        navController = navController,
+    StandardScaffoldRouteNew(
         title = UPDATE_PRINTER_INFO,
         showBackButton = true,
-        onBackClick = {
-            navController.navigateUp()
-        },
+        onBackClick = navigator::navigateUp,
         showBottomBar = !hasError,
         bottomBar = {
             StandardButton(
@@ -108,146 +99,147 @@ fun UpdatePrinterInfoScreen(
                     .padding(SpaceSmallMax),
                 enabled = !hasError,
                 text = UPDATE_PRINTER_INFO,
-                icon = Icons.Default.Edit,
+                icon = PoposIcons.Edit,
                 onClick = {
                     viewModel.onEvent(UpdatePrinterInfoEvent.UpdatePrinterInfo)
-                }
+                },
             )
-        }
-    ) {
+        },
+    ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentPadding = PaddingValues(SpaceMedium),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             state = state,
         ) {
-            item {
+            item(PRINTER_DPI_FIELD) {
                 StandardOutlinedTextField(
                     value = viewModel.state.printerDpi.toString(),
-                    leadingIcon = Icons.Default.DensityMedium,
+                    leadingIcon = PoposIcons.DensityMedium,
                     label = PRINTER_DPI_FIELD,
                     isError = dpiError != null,
                     errorText = dpiError,
                     message = PRINTER_DPI_MESSAGE,
                     onValueChange = {
                         viewModel.onEvent(UpdatePrinterInfoEvent.PrinterDpiChanged(it))
-                    }
+                    },
                 )
             }
 
-            item {
+            item(PRINTER_WIDTH_FIELD) {
                 StandardOutlinedTextField(
                     value = viewModel.state.printerWidth.toString(),
                     label = PRINTER_WIDTH_FIELD,
-                    leadingIcon = Icons.Default.WidthNormal,
+                    leadingIcon = PoposIcons.WidthNormal,
                     isError = widthError != null,
                     errorText = widthError,
                     message = PRINTER_WIDTH_MESSAGE,
                     onValueChange = {
                         viewModel.onEvent(UpdatePrinterInfoEvent.PrinterWidthChanged(it))
-                    }
+                    },
                 )
             }
 
-            item {
+            item(PRINTER_NBR_LINES_FIELD) {
                 StandardOutlinedTextField(
                     value = viewModel.state.printerNbrLines.toString(),
                     label = PRINTER_NBR_LINES_FIELD,
-                    leadingIcon = Icons.Default.ViewHeadline,
+                    leadingIcon = PoposIcons.ViewHeadline,
                     isError = nbrError != null,
                     errorText = nbrError,
                     message = PRINTER_NBR_LINES_MESSAGE,
                     onValueChange = {
                         viewModel.onEvent(UpdatePrinterInfoEvent.PrinterNbrLinesChanged(it))
-                    }
+                    },
                 )
             }
 
-            item {
+            item(PRINTER_PRODUCT_NAME_LENGTH_FIELD){
                 StandardOutlinedTextField(
                     value = viewModel.state.productNameLength.toString(),
                     label = PRINTER_PRODUCT_NAME_LENGTH_FIELD,
-                    leadingIcon = Icons.Default.Margin,
+                    leadingIcon = PoposIcons.Margin,
                     isError = nameLengthError != null,
                     errorText = nameLengthError,
                     message = PRINTER_PRODUCT_NAME_LENGTH_MESSAGE,
                     onValueChange = {
                         viewModel.onEvent(UpdatePrinterInfoEvent.ProductNameLengthChanged(it))
-                    }
+                    },
                 )
             }
 
-            item {
+            item(PRODUCT_REPORT_LIMIT_FIELD) {
                 StandardOutlinedTextField(
                     value = viewModel.state.productWiseReportLimit.toString(),
                     label = PRODUCT_REPORT_LIMIT_FIELD,
-                    leadingIcon = Icons.AutoMirrored.Filled.ReceiptLong,
+                    leadingIcon = PoposIcons.ReceiptLong,
                     isError = productLimitError != null,
                     errorText = productLimitError,
                     message = PRODUCT_REPORT_LIMIT_MESSAGE,
                     onValueChange = {
                         viewModel.onEvent(UpdatePrinterInfoEvent.ProductReportLimitChanged(it))
-                    }
+                    },
                 )
             }
 
-            item {
+            item(ADDRESS_REPORT_LIMIT_FIELD) {
                 StandardOutlinedTextField(
                     value = viewModel.state.addressWiseReportLimit.toString(),
                     label = ADDRESS_REPORT_LIMIT_FIELD,
-                    leadingIcon = Icons.Default.Receipt,
+                    leadingIcon = PoposIcons.Receipt,
                     isError = addressLimitError != null,
                     errorText = addressLimitError,
                     message = ADDRESS_REPORT_LIMIT_MESSAGE,
                     onValueChange = {
                         viewModel.onEvent(UpdatePrinterInfoEvent.AddressReportLimitChanged(it))
-                    }
+                    },
                 )
             }
 
-            item {
+            item(CUSTOMER_REPORT_LIMIT_FIELD) {
                 StandardOutlinedTextField(
                     value = viewModel.state.customerWiseReportLimit.toString(),
                     label = CUSTOMER_REPORT_LIMIT_FIELD,
-                    leadingIcon = Icons.Default.Receipt,
+                    leadingIcon = PoposIcons.Receipt,
                     isError = customerLimitError != null,
                     errorText = customerLimitError,
                     message = CUSTOMER_REPORT_LIMIT_MESSAGE,
                     onValueChange = {
                         viewModel.onEvent(UpdatePrinterInfoEvent.CustomerReportLimitChanged(it))
-                    }
+                    },
                 )
             }
 
-            item {
+            item(PRINT_QR_CODE_IN_BILL) {
                 StandardCheckboxWithText(
                     text = PRINT_QR_CODE_IN_BILL,
                     checked = viewModel.state.printQRCode,
                     onCheckedChange = {
                         viewModel.onEvent(UpdatePrinterInfoEvent.PrintQrCodeChanged)
-                    }
+                    },
                 )
             }
 
-            item {
+            item(PRINT_LOGO_IN_BILL) {
                 StandardCheckboxWithText(
                     text = PRINT_LOGO_IN_BILL,
                     checked = viewModel.state.printResLogo,
                     onCheckedChange = {
                         viewModel.onEvent(UpdatePrinterInfoEvent.PrintResLogoChanged)
-                    }
+                    },
                 )
             }
 
-            item {
+            item(PRINT_WELCOME_TEXT_IN_BILL) {
                 StandardCheckboxWithText(
                     text = PRINT_WELCOME_TEXT_IN_BILL,
                     checked = viewModel.state.printWelcomeText,
                     onCheckedChange = {
                         viewModel.onEvent(UpdatePrinterInfoEvent.PrintWelcomeTextChanged)
-                    }
+                    },
                 )
             }
         }
