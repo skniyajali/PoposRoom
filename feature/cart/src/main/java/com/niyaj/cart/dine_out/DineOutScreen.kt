@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.cart.dine_out
 
 import android.Manifest
@@ -13,6 +29,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -22,11 +39,11 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.cart.components.CartFooterPlaceOrder
@@ -36,7 +53,6 @@ import com.niyaj.print.OrderPrintViewModel
 import com.niyaj.print.PrintEvent
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
-import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
@@ -47,7 +63,7 @@ import kotlinx.coroutines.flow.collectLatest
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun DineOutScreen(
-    navController: NavController,
+    onClickCreateOrder: () -> Unit,
     onClickEditOrder: (Int) -> Unit,
     onClickOrderDetails: (Int) -> Unit,
     onNavigateToOrderScreen: () -> Unit,
@@ -210,7 +226,8 @@ fun DineOutScreen(
                 )
             }
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        modifier = Modifier.fillMaxSize(),
     ) {
         if (isLoading) {
             LoadingIndicator()
@@ -219,14 +236,13 @@ fun DineOutScreen(
                 text = "DineOut orders are not available",
                 buttonText = "Add Item To Cart",
                 image = painterResource(R.drawable.emptycarttwo),
-                onClick = {
-                    navController.navigate(Screens.HOME_SCREEN)
-                }
+                onClick = onClickCreateOrder
             )
         } else {
             TrackScrollJank(scrollableState = listState, stateName = "DineOut Orders::Cart")
 
             CartItems(
+                modifier = Modifier.fillMaxSize(),
                 listState = listState,
                 cartItems = dineOutOrders,
                 selectedCartItems = selectedDineOutOrder,

@@ -32,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.HomeScreenTestTags
 import com.niyaj.common.tags.HomeScreenTestTags.HOME_SEARCH_PLACEHOLDER
 import com.niyaj.core.ui.R
@@ -51,6 +50,7 @@ import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 
@@ -58,7 +58,7 @@ import kotlinx.coroutines.launch
 @Destination(route = Screens.HOME_SCREEN)
 @Composable
 fun HomeScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -124,7 +124,7 @@ fun HomeScreen(
         } else if (selectedCategory != 0) {
             viewModel.selectCategory(selectedCategory)
         } else {
-            navController.popBackStack()
+            navigator.popBackStack()
         }
     }
 
@@ -144,7 +144,7 @@ fun HomeScreen(
         onSearchTextChanged = viewModel::searchTextChanged,
         onClearClick = viewModel::clearSearchText,
         onBackClick = onBackClick,
-        onNavigateToScreen = navController::navigate,
+        onNavigateToScreen = navigator::navigate,
         productState = productState,
         categoryState = categoriesState,
         selectedCategory = selectedCategory,
@@ -153,7 +153,7 @@ fun HomeScreen(
             if (selectedOrder.orderId != 0) {
                 viewModel.addProductToCart(selectedOrder.orderId, it)
             } else {
-                navController.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
+                navigator.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
             }
         },
         onDecreaseQuantity = {
@@ -165,7 +165,7 @@ fun HomeScreen(
             }
         },
         onClickCreateProduct = {
-            navController.navigate(Screens.ADD_EDIT_PRODUCT_SCREEN)
+            navigator.navigate(Screens.ADD_EDIT_PRODUCT_SCREEN)
         },
     )
 }

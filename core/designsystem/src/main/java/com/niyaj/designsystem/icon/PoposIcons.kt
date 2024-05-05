@@ -46,6 +46,8 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CalendarViewDay
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CollectionsBookmark
@@ -115,6 +117,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
  * Popos icons. Material icons are [ImageVector]s, custom icons are drawable resource IDs.
  */
 object PoposIcons {
+    val CheckCircleOutline: ImageVector = Icons.Filled.CheckCircleOutline
+    val CheckCircle: ImageVector = Icons.Filled.CheckCircle
     val Remove: ImageVector = Icons.Filled.Remove
     val PeopleAlt: ImageVector = Icons.Filled.PeopleAlt
     val Dns: ImageVector = Icons.Default.Dns

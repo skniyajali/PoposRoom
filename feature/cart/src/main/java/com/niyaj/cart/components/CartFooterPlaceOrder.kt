@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.cart.components
 
 import androidx.compose.foundation.clickable
@@ -9,11 +25,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.CheckCircleOutline
-import androidx.compose.material.icons.filled.Print
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +41,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.designsystem.components.PoposButton
+import com.niyaj.designsystem.components.PoposIconTextButton
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor10
 import com.niyaj.designsystem.theme.SpaceSmall
 
@@ -63,8 +77,8 @@ fun CartFooterPlaceOrder(
                 ) {
                     Icon(
                         imageVector = if (countTotalItems == countSelectedItem)
-                            Icons.Default.CheckCircle
-                        else Icons.Default.CheckCircleOutline,
+                            PoposIcons.CheckCircle
+                        else PoposIcons.CheckCircleOutline,
                         contentDescription = "Select All Order",
                         tint = if (countTotalItems == countSelectedItem) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.secondary
@@ -100,31 +114,30 @@ fun CartFooterPlaceOrder(
             ) {
                 val text =
                     if (countSelectedItem == 0) " " else if (countSelectedItem < countTotalItems) " $countSelectedItem " else " All "
-                Button(
+
+                PoposButton(
+                    text = "Place${text}Order",
                     onClick = onClickPlaceAllOrder,
                     enabled = countSelectedItem > 0,
-                    shape = CutCornerShape(4.dp)
-                ) {
-                    Text(
-                        text = "Place${text}Order".uppercase(),
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                }
+                    shape = CutCornerShape(4.dp),
+                    style = MaterialTheme.typography.labelSmall,
+                    btnHeight = ButtonDefaults.MinHeight
+                )
 
                 if (showPrintBtn) {
                     Spacer(modifier = Modifier.width(SpaceSmall))
 
-                    Button(
-                        onClick = onClickPrintAllOrder,
+                    PoposIconTextButton(
+                        icon = PoposIcons.Print,
                         enabled = countSelectedItem > 0,
+                        onClick = onClickPrintAllOrder,
+                        contentDescription = "Print Order",
+                        btnHeight = 30.dp,
                         shape = CutCornerShape(4.dp),
-                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Print,
-                            contentDescription = "Print Order",
-                        )
-                    }
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary
+                        ),
+                    )
                 }
             }
         }

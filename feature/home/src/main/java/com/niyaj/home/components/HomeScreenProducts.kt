@@ -42,7 +42,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,14 +49,12 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.common.tags.HomeScreenTestTags
 import com.niyaj.common.tags.ProductTestTags
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.home.ProductWithFlowQuantity
 import com.niyaj.model.ProductWithQuantity
 import com.niyaj.ui.components.CircularBoxWithQty
 import com.niyaj.ui.components.ItemNotFound
@@ -65,7 +62,6 @@ import com.niyaj.ui.components.TitleWithIcon
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.isScrolled
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreenProducts(
@@ -103,71 +99,6 @@ fun HomeScreenProducts(
             ) { product ->
                 HomeScreenProductCard(
                     product = product,
-                    onIncrease = onIncrease,
-                    onDecrease = onDecrease,
-                )
-
-                Spacer(modifier = Modifier.height(SpaceSmall))
-            }
-
-            item {
-                ItemNotFound(
-                    btnText = HomeScreenTestTags.CREATE_NEW_PRODUCT,
-                    onBtnClick = onCreateProduct,
-                )
-
-                Spacer(modifier = Modifier.height(SpaceSmall))
-            }
-        }
-    }
-}
-
-@Composable
-fun HomeScreenFlowProducts(
-    modifier: Modifier = Modifier,
-    lazyListState: LazyListState,
-    products: ImmutableList<ProductWithFlowQuantity>,
-    onIncrease: (Int) -> Unit,
-    onDecrease: (Int) -> Unit,
-    onCreateProduct: () -> Unit,
-) = trace("MainFeedProducts") {
-    val scope = rememberCoroutineScope()
-    TrackScrollJank(scrollableState = lazyListState, stateName = "products:list")
-
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(SpaceSmall),
-        verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-    ) {
-        TitleWithIcon(
-            text = "Products",
-            icon = PoposIcons.Dns,
-            showScrollToTop = lazyListState.isScrolled,
-            onClickScrollToTop = {
-                scope.launch {
-                    lazyListState.animateScrollToItem(0)
-                }
-            },
-        )
-
-        LazyColumn(
-            state = lazyListState,
-        ) {
-            items(
-                items = products,
-                key = {
-                    it.productId
-                },
-            ) { product ->
-                HomeScreenProductCard(
-                    product = ProductWithQuantity(
-                        categoryId = product.categoryId,
-                        productId = product.productId,
-                        productName = product.productName,
-                        productPrice = product.productPrice,
-                        quantity = product.quantity.collectAsStateWithLifecycle().value,
-                    ),
                     onIncrease = onIncrease,
                     onDecrease = onDecrease,
                 )

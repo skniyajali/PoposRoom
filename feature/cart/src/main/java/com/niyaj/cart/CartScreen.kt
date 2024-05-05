@@ -1,5 +1,22 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.cart
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,7 +25,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import com.niyaj.cart.components.CartTabItem
 import com.niyaj.cart.components.Tabs
 import com.niyaj.cart.components.TabsContent
@@ -18,30 +34,33 @@ import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.ui.components.StandardScaffoldWithBottomNavigation
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
-import com.niyaj.ui.utils.currentRoute
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalFoundationApi::class)
 @RootNavGraph(start = true)
 @Destination(route = Screens.CART_SCREEN)
 @Composable
 fun CartScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     onClickEditOrder: (Int) -> Unit,
     onClickOrderDetails: (Int) -> Unit,
-    onNavigateToOrderScreen: () -> Unit,
 ) {
     TrackScreenViewEvent(screenName = Screens.CART_SCREEN)
 
     val pagerState = rememberPagerState { 2 }
 
+    BackHandler {
+        navigator.navigate(Screens.HOME_SCREEN)
+    }
+
     StandardScaffoldWithBottomNavigation(
-        currentRoute = navController.currentRoute(),
+        currentRoute = Screens.CART_SCREEN,
         title = "My Cart",
         navActions = {
             IconButton(
-                onClick = onNavigateToOrderScreen,
+                onClick = { navigator.navigate(Screens.ORDER_SCREEN) }
             ) {
                 Icon(
                     imageVector = PoposIcons.Order,
@@ -51,24 +70,26 @@ fun CartScreen(
         },
         bottomBar = {},
         showBackButton = true,
-        onBackClick = navController::navigateUp,
-        onNavigateToScreen = navController::navigate,
+        onBackClick = {
+            navigator.navigate(Screens.HOME_SCREEN)
+        },
+        onNavigateToScreen = navigator::navigate,
     ) {
         val tabs = listOf(
             CartTabItem.DineOutItem {
                 DineOutScreen(
-                    navController = navController,
                     onClickEditOrder = onClickEditOrder,
                     onClickOrderDetails = onClickOrderDetails,
-                    onNavigateToOrderScreen = onNavigateToOrderScreen,
+                    onNavigateToOrderScreen = { navigator.navigate(Screens.ORDER_SCREEN) },
+                    onClickCreateOrder = { navigator.navigate(Screens.HOME_SCREEN) },
                 )
             },
             CartTabItem.DineInItem {
                 DineInScreen(
-                    navController = navController,
                     onClickEditOrder = onClickEditOrder,
                     onClickOrderDetails = onClickOrderDetails,
-                    onNavigateToOrderScreen = onNavigateToOrderScreen,
+                    onNavigateToOrderScreen = { navigator.navigate(Screens.ORDER_SCREEN) },
+                    onClickCreateOrder = { navigator.navigate(Screens.HOME_SCREEN) },
                 )
             },
         )
@@ -77,7 +98,10 @@ fun CartScreen(
             modifier = Modifier
                 .fillMaxSize(),
         ) {
-            Tabs(tabs = tabs, pagerState = pagerState)
+            Tabs(
+                tabs = listOf(CartTabItem.DineOutItem(), CartTabItem.DineInItem()),
+                pagerState = pagerState,
+            )
 
             TabsContent(tabs = tabs, pagerState = pagerState)
         }
