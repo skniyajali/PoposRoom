@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 13,
-    "identityHash": "32b0437fb161337c5205d0597b157308",
+    "version": 14,
+    "identityHash": "9c2412398acb4d3414f197b1cb53769f",
     "entities": [
       {
         "tableName": "addonitem",
@@ -1909,12 +1909,12 @@
     "views": [
       {
         "viewName": "product_with_quantity",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT product.categoryId, product.productId, productName, productPrice, COALESCE(cart.quantity, 0) as quantity\n        FROM product\n        LEFT JOIN cart ON product.productId = cart.productId \n        AND cart.orderId = COALESCE((SELECT orderId FROM selected LIMIT 1), 0)"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT product.categoryId, product.productId, productName, productPrice, COALESCE(cart.quantity, 0) as quantity\n        FROM product\n        LEFT JOIN cart ON product.productId = cart.productId \n        AND CASE WHEN (SELECT orderId FROM selected LIMIT 1) IS NOT NULL\n        THEN cart.orderId = COALESCE((SELECT orderId FROM selected LIMIT 1), 0) ELSE 1 END"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '32b0437fb161337c5205d0597b157308')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9c2412398acb4d3414f197b1cb53769f')"
     ]
   }
 }

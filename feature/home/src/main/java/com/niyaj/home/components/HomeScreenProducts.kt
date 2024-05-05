@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.home.components
 
 import androidx.compose.foundation.clickable
@@ -14,10 +30,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Dns
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -42,6 +54,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.common.tags.HomeScreenTestTags
 import com.niyaj.common.tags.ProductTestTags
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.home.ProductWithFlowQuantity
@@ -62,25 +75,21 @@ fun HomeScreenProducts(
     onIncrease: (Int) -> Unit,
     onDecrease: (Int) -> Unit,
     onCreateProduct: () -> Unit,
+    onClickScrollToTop: () -> Unit,
 ) = trace("MainFeedProducts") {
-    val scope = rememberCoroutineScope()
     TrackScrollJank(scrollableState = lazyListState, stateName = "products:list")
 
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(SpaceSmall),
-        verticalArrangement = Arrangement.spacedBy(SpaceSmall)
+        verticalArrangement = Arrangement.spacedBy(SpaceSmall),
     ) {
         TitleWithIcon(
             text = "Products",
-            icon = Icons.Default.Dns,
+            icon = PoposIcons.Dns,
             showScrollToTop = lazyListState.isScrolled,
-            onClickScrollToTop = {
-                scope.launch {
-                    lazyListState.animateScrollToItem(0)
-                }
-            }
+            onClickScrollToTop = onClickScrollToTop,
         )
 
         LazyColumn(
@@ -90,12 +99,12 @@ fun HomeScreenProducts(
                 items = products,
                 key = {
                     it.productId
-                }
+                },
             ) { product ->
                 HomeScreenProductCard(
                     product = product,
                     onIncrease = onIncrease,
-                    onDecrease = onDecrease
+                    onDecrease = onDecrease,
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
@@ -104,7 +113,7 @@ fun HomeScreenProducts(
             item {
                 ItemNotFound(
                     btnText = HomeScreenTestTags.CREATE_NEW_PRODUCT,
-                    onBtnClick = onCreateProduct
+                    onBtnClick = onCreateProduct,
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
@@ -129,17 +138,17 @@ fun HomeScreenFlowProducts(
         modifier = modifier
             .fillMaxWidth()
             .padding(SpaceSmall),
-        verticalArrangement = Arrangement.spacedBy(SpaceSmall)
+        verticalArrangement = Arrangement.spacedBy(SpaceSmall),
     ) {
         TitleWithIcon(
             text = "Products",
-            icon = Icons.Default.Dns,
+            icon = PoposIcons.Dns,
             showScrollToTop = lazyListState.isScrolled,
             onClickScrollToTop = {
                 scope.launch {
                     lazyListState.animateScrollToItem(0)
                 }
-            }
+            },
         )
 
         LazyColumn(
@@ -149,7 +158,7 @@ fun HomeScreenFlowProducts(
                 items = products,
                 key = {
                     it.productId
-                }
+                },
             ) { product ->
                 HomeScreenProductCard(
                     product = ProductWithQuantity(
@@ -157,10 +166,10 @@ fun HomeScreenFlowProducts(
                         productId = product.productId,
                         productName = product.productName,
                         productPrice = product.productPrice,
-                        quantity = product.quantity.collectAsStateWithLifecycle().value
+                        quantity = product.quantity.collectAsStateWithLifecycle().value,
                     ),
                     onIncrease = onIncrease,
-                    onDecrease = onDecrease
+                    onDecrease = onDecrease,
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
@@ -169,7 +178,7 @@ fun HomeScreenFlowProducts(
             item {
                 ItemNotFound(
                     btnText = HomeScreenTestTags.CREATE_NEW_PRODUCT,
-                    onBtnClick = onCreateProduct
+                    onBtnClick = onCreateProduct,
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
@@ -191,7 +200,7 @@ fun HomeScreenProductCard(
             .fillMaxWidth()
             .clip(RoundedCornerShape(SpaceMini)),
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)
+            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
         ),
         headlineContent = {
             Text(
@@ -207,7 +216,7 @@ fun HomeScreenProductCard(
         leadingContent = {
             CircularBoxWithQty(
                 text = product.productName,
-                qty = product.quantity
+                qty = product.quantity,
             )
         },
         trailingContent = {
@@ -216,8 +225,8 @@ fun HomeScreenProductCard(
                     .height(40.dp),
                 shape = RoundedCornerShape(SpaceMini),
                 colors = CardDefaults.elevatedCardColors(
-                    containerColor = MaterialTheme.colorScheme.onPrimary
-                )
+                    containerColor = MaterialTheme.colorScheme.onPrimary,
+                ),
             ) {
                 Row(
                     modifier = Modifier
@@ -234,11 +243,11 @@ fun HomeScreenProductCard(
                             topStart = SpaceMini,
                             topEnd = 0.dp,
                             bottomStart = SpaceMini,
-                            bottomEnd = 0.dp
+                            bottomEnd = 0.dp,
                         ),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.onPrimary
-                        )
+                            containerColor = MaterialTheme.colorScheme.onPrimary,
+                        ),
                     ) {
                         Row(
                             modifier = Modifier
@@ -246,7 +255,7 @@ fun HomeScreenProductCard(
                                 .padding(SpaceSmall),
                         ) {
                             Spacer(modifier = Modifier.width(SpaceSmall))
-                            Icon(imageVector = Icons.Default.Remove, contentDescription = "remove")
+                            Icon(imageVector = PoposIcons.Remove, contentDescription = "remove")
                             Spacer(modifier = Modifier.width(SpaceSmall))
                         }
                     }
@@ -255,7 +264,7 @@ fun HomeScreenProductCard(
                     HorizontalDivider(
                         modifier = Modifier
                             .width(1.dp)
-                            .fillMaxHeight()
+                            .fillMaxHeight(),
                     )
                     Row(
                         modifier = Modifier
@@ -266,11 +275,11 @@ fun HomeScreenProductCard(
                             .padding(SpaceSmall),
                     ) {
                         Spacer(modifier = Modifier.width(SpaceSmall))
-                        Icon(imageVector = Icons.Default.Add, contentDescription = "add")
+                        Icon(imageVector = PoposIcons.Add, contentDescription = "add")
                         Spacer(modifier = Modifier.width(SpaceSmall))
                     }
                 }
             }
-        }
+        },
     )
 }

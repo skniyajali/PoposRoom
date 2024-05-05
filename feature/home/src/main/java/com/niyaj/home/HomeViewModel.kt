@@ -1,7 +1,25 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.home
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
+import com.niyaj.common.network.Dispatcher
+import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.data.repository.CartRepository
 import com.niyaj.data.repository.HomeRepository
@@ -9,13 +27,15 @@ import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -26,9 +46,9 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val repository: HomeRepository,
     private val cartRepository: CartRepository,
+    @Dispatcher(PoposDispatchers.IO)
+    private val ioDispatcher: CoroutineDispatcher,
 ) : BaseViewModel() {
-
-    override var totalItems: List<Int> = emptyList()
 
     private val _selectedCategory = MutableStateFlow(0)
     val selectedCategory = _selectedCategory.asStateFlow()
@@ -41,59 +61,35 @@ class HomeViewModel @Inject constructor(
                 val address = repository.getSelectedOrderAddress(it.orderId)
                 SelectedOrderState(
                     orderId = it.orderId,
-                    addressName = address ?: ""
+                    addressName = address ?: "",
                 )
             } else SelectedOrderState()
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = SelectedOrderState()
+            initialValue = SelectedOrderState(),
         )
-
-    val products = _text.combine(_selectedCategory) { text, category ->
-        repository.getAllProduct(text, category)
-    }.flatMapLatest { it ->
-        it.map { items ->
-            totalItems = items.take(1).map { it.productId }
-            items.map {
-                ProductWithFlowQuantity(
-                    categoryId = it.categoryId,
-                    productId = it.productId,
-                    productName = it.productName,
-                    productPrice = it.productPrice,
-                    quantity = it.quantity.stateIn(viewModelScope)
-                )
-            }
-        }
-    }.mapLatest {
-        if (it.isEmpty()) UiState.Empty else UiState.Success(it.toImmutableList())
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = UiState.Loading
-    )
-
 
     val productsWithQuantity = _text.combine(_selectedCategory) { text, category ->
         repository.getProductsWithQuantities(text, category)
-    }.flatMapLatest { it ->
+    }.distinctUntilChanged().flatMapLatest {
         it.map { items ->
-            totalItems = items.take(1).map { it.productId }
             if (items.isEmpty()) UiState.Empty else UiState.Success(items.toImmutableList())
         }
+    }.flowOn(ioDispatcher).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = UiState.Loading,
+    )
+
+    val categories = repository.getAllCategory().map {
+        if (it.isEmpty()) UiState.Empty else UiState.Success(it)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = UiState.Loading
+        initialValue = UiState.Loading,
     )
-
-    val categories = repository.getAllCategory().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = persistentListOf()
-    )
-
 
     fun selectCategory(categoryId: Int) {
         viewModelScope.launch {

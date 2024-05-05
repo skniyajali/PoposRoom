@@ -1,5 +1,22 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.ui.components
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +42,7 @@ import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.Category
+import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.TrackScrollJank
 import kotlinx.collections.immutable.ImmutableList
 
@@ -36,31 +54,43 @@ const val CATEGORY_ITEM_TAG = "Category-"
 fun CategoriesData(
     modifier: Modifier = Modifier,
     lazyRowState: LazyListState,
-    categories: ImmutableList<Category>,
+    uiState: UiState<ImmutableList<Category>>,
     selectedCategory: Int,
     onSelect: (Int) -> Unit,
 ) = trace("CategoriesData") {
-    TrackScrollJank(scrollableState = lazyRowState, stateName = "category:list")
+    Crossfade(
+        targetState = uiState,
+        label = "CategoryData::State",
+    ) { state ->
+        when (state) {
+            is UiState.Success -> {
+                TrackScrollJank(scrollableState = lazyRowState, stateName = "category:list")
 
-    LazyRow(
-        modifier = modifier.fillMaxWidth(),
-        state = lazyRowState,
-    ) {
-        items(
-            items = categories,
-            key = {
-                it.categoryId
-            },
-        ) { category ->
-            CategoryData(
-                item = category,
-                doesSelected = {
-                    selectedCategory == it
-                },
-                onClick = onSelect,
-            )
+                LazyRow(
+                    modifier = modifier.fillMaxWidth(),
+                    state = lazyRowState,
+                ) {
+                    items(
+                        items = state.data,
+                        key = {
+                            it.categoryId
+                        },
+                    ) { category ->
+                        CategoryData(
+                            item = category,
+                            doesSelected = {
+                                selectedCategory == it
+                            },
+                            onClick = onSelect,
+                        )
+                    }
+                }
+            }
+
+            else -> Unit
         }
     }
+
 }
 
 @Composable
@@ -68,7 +98,7 @@ fun CategoriesData(
     modifier: Modifier = Modifier,
     lazyRowState: LazyListState,
     categories: ImmutableList<Category>,
-    selectedCategory: List<Int>,
+    doesSelected: (Int) -> Boolean,
     onSelect: (Int) -> Unit,
 ) = trace("CategoriesData") {
     TrackScrollJank(scrollableState = lazyRowState, stateName = "category:list")
@@ -85,7 +115,7 @@ fun CategoriesData(
         ) { category ->
             CategoryData(
                 item = category,
-                doesSelected = selectedCategory::contains,
+                doesSelected = doesSelected,
                 onClick = onSelect,
             )
         }

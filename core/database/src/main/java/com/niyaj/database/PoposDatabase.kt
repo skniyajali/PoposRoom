@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.database
 
 import androidx.room.Database
@@ -49,6 +65,7 @@ import com.niyaj.database.model.MeasureUnitEntity
 import com.niyaj.database.model.PaymentEntity
 import com.niyaj.database.model.PrinterEntity
 import com.niyaj.database.model.ProductEntity
+import com.niyaj.database.model.ProductWIthQuantityView
 import com.niyaj.database.model.ProfileEntity
 import com.niyaj.database.model.ReportsEntity
 import com.niyaj.database.model.SelectedEntity
@@ -85,9 +102,12 @@ import com.niyaj.database.util.TimestampConverters
         MarketListWithItemEntity::class,
         MeasureUnitEntity::class,
     ],
-    version = 13,
+    version = 15,
     autoMigrations = [],
     exportSchema = true,
+    views = [
+        ProductWIthQuantityView::class
+    ]
 )
 @TypeConverters(TimestampConverters::class, ListConverter::class)
 abstract class PoposDatabase : RoomDatabase() {

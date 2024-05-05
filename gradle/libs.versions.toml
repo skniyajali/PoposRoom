@@ -98,7 +98,7 @@ minSdk = "26"
 compileSdk = "34"
 targetSdk = "34"
 versionCode = "1"
-versionName = "1.0.1"
+versionName = "1.0.5"
 sourceCompatibility = "VERSION_11"
 targetCompatibility = "VERSION_11"
 
