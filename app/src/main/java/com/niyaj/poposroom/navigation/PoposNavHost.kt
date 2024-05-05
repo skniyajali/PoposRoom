@@ -185,7 +185,7 @@ fun PoposNavHost(
 
                 composable(ReportScreenDestination) {
                     ReportScreen(
-                        navController = navController,
+                        navigator = this.destinationsNavigator,
                         onClickAddress = {
                             navController.navigate(AddressDetailsScreenDestination(it))
                         },

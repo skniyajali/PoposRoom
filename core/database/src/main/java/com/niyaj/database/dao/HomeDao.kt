@@ -32,7 +32,6 @@ interface HomeDao {
         COALESCE(cart.quantity, 0) as quantity
         FROM product
         LEFT JOIN cart ON product.productId = cart.productId AND cart.orderId = :orderId
-        WHERE cart.orderId IS NULL OR cart.orderId = :orderId
         """
     )
     fun getProductWithQty(orderId: Int?): Flow<List<ProductWithQuantity>>

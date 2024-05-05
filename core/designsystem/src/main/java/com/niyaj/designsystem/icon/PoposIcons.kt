@@ -41,6 +41,7 @@ import androidx.compose.material.icons.filled.DensityMedium
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Details
 import androidx.compose.material.icons.filled.DinnerDining
+import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditCalendar
@@ -60,6 +61,7 @@ import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.NearbyOff
 import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.filled.PeopleAlt
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Person4
 import androidx.compose.material.icons.filled.PersonPin
@@ -74,6 +76,7 @@ import androidx.compose.material.icons.filled.RoomService
 import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingBag
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.TaskAlt
 import androidx.compose.material.icons.filled.TurnedInNot
@@ -95,6 +98,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
  * Popos icons. Material icons are [ImageVector]s, custom icons are drawable resource IDs.
  */
 object PoposIcons {
+    val PeopleAlt: ImageVector = Icons.Filled.PeopleAlt
+    val Dns: ImageVector = Icons.Default.Dns
+    val Sync: ImageVector = Icons.Filled.Sync
     val ArrowDropUp: ImageVector = Icons.Default.ArrowDropUp
     val ArrowDropDown: ImageVector = Icons.Default.ArrowDropDown
     val AutoGraph: ImageVector = Icons.Filled.AutoGraph

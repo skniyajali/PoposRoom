@@ -49,7 +49,7 @@ internal data class NavigationItem(
 )
 
 @Composable
-internal fun AnimatedBottomNavigationBar(
+fun AnimatedBottomNavigationBar(
     navController: NavController,
     windowInsets: WindowInsets = NavigationBarDefaults.windowInsets,
 ) {
@@ -65,7 +65,7 @@ internal fun AnimatedBottomNavigationBar(
             unselectedIcon = R.drawable.outline_home,
             onClick = {
                 navController.navigate(Screens.HOME_SCREEN)
-            }
+            },
         ),
         NavigationItem(
             index = Screens.CART_SCREEN.hashCode(),
@@ -75,7 +75,7 @@ internal fun AnimatedBottomNavigationBar(
             unselectedIcon = R.drawable.outline_cart,
             onClick = {
                 navController.navigate(Screens.CART_SCREEN)
-            }
+            },
         ),
         NavigationItem(
             index = Screens.ORDER_SCREEN.hashCode(),
@@ -85,7 +85,7 @@ internal fun AnimatedBottomNavigationBar(
             unselectedIcon = R.drawable.outline_orders,
             onClick = {
                 navController.navigate(Screens.ORDER_SCREEN)
-            }
+            },
         ),
         NavigationItem(
             index = Screens.REPORT_SCREEN.hashCode(),
@@ -95,8 +95,8 @@ internal fun AnimatedBottomNavigationBar(
             unselectedIcon = R.drawable.outline_reports,
             onClick = {
                 navController.navigate(Screens.REPORT_SCREEN)
-            }
-        )
+            },
+        ),
     )
 
     val index = navItems.indexOf(navItems.find { it.index == currentRoute })
@@ -116,16 +116,16 @@ internal fun AnimatedBottomNavigationBar(
             indentHeight = 15.dp,
             animationSpec = tween(
                 DoubleDuration,
-                easing = { OvershootInterpolator().getInterpolation(it) }
-            )
-        )
+                easing = { OvershootInterpolator().getInterpolation(it) },
+            ),
+        ),
     ) {
         navItems.forEachIndexed { index, it ->
             key(index) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     DropletButton(
                         modifier = Modifier.fillMaxWidth(),
@@ -135,7 +135,7 @@ internal fun AnimatedBottomNavigationBar(
                         dropletColor = Purple,
                         iconColor = MaterialTheme.colorScheme.tertiary,
                         size = 24.dp,
-                        animationSpec = tween(durationMillis = Duration, easing = LinearEasing)
+                        animationSpec = tween(durationMillis = Duration, easing = LinearEasing),
                     )
 
                     Spacer(modifier = Modifier.height(3.dp))
@@ -154,7 +154,7 @@ internal fun AnimatedBottomNavigationBar(
 
 
 @Composable
-internal fun AnimatedBottomNavigationBar(
+fun AnimatedBottomNavigationBar(
     modifier: Modifier = Modifier,
     currentRoute: String,
     onNavigateToDestination: (String) -> Unit,
@@ -183,9 +183,9 @@ internal fun AnimatedBottomNavigationBar(
             indentHeight = 15.dp,
             animationSpec = tween(
                 DoubleDuration,
-                easing = { OvershootInterpolator().getInterpolation(it) }
-            )
-        )
+                easing = { OvershootInterpolator().getInterpolation(it) },
+            ),
+        ),
     ) {
         destinations.forEachIndexed { index, it ->
             val selected = remember(currentRoute, it) {
@@ -196,7 +196,7 @@ internal fun AnimatedBottomNavigationBar(
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     DropletButton(
                         modifier = Modifier.fillMaxWidth(),
@@ -206,7 +206,7 @@ internal fun AnimatedBottomNavigationBar(
                         dropletColor = Purple,
                         iconColor = MaterialTheme.colorScheme.tertiary,
                         size = 24.dp,
-                        animationSpec = tween(durationMillis = Duration, easing = LinearEasing)
+                        animationSpec = tween(durationMillis = Duration, easing = LinearEasing),
                     )
 
                     Spacer(modifier = Modifier.height(3.dp))

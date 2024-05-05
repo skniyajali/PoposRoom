@@ -1,6 +1,9 @@
 package com.niyaj.model
 
 data class AddressWiseReport(
-    val address: Address,
-    val orderQty: Int,
+    val addressId: Int,
+    val addressName: String,
+    val shortName: String,
+    val totalSales: Int,
+    val totalOrders: Int,
 )

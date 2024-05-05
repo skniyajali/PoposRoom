@@ -1,35 +1,40 @@
 package com.niyaj.feature.reports.components
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Business
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor4
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.feature.reports.AddressWiseReportState
+import com.niyaj.model.AddressWiseReport
+import com.niyaj.model.TotalOrders
 import com.niyaj.ui.components.CountBox
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.StandardExpandable
+import com.niyaj.ui.event.UiState
 
 
 @Composable
 fun AddressWiseReport(
-    addressState: AddressWiseReportState,
+    addressState: UiState<List<AddressWiseReport>>,
+    totalReports: TotalOrders,
     addressWiseRepExpanded: Boolean,
     onExpandChanged: () -> Unit,
     onAddressClick: (addressId: Int) -> Unit,
@@ -40,7 +45,7 @@ fun AddressWiseReport(
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(
             containerColor = LightColor4,
-        )
+        ),
     ) {
         StandardExpandable(
             modifier = Modifier
@@ -53,44 +58,52 @@ fun AddressWiseReport(
             title = {
                 IconWithText(
                     text = "Address Wise Report",
-                    icon = Icons.Default.Business,
+                    icon = PoposIcons.Address,
                 )
             },
             trailing = {
-                CountBox(count = addressState.reports.size.toString())
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(SpaceMini),
+                ) {
+                    CountBox(count = totalReports.totalAmount.toRupee)
+
+                    CountBox(
+                        count = totalReports.totalOrders.toString(),
+                        backgroundColor = MaterialTheme.colorScheme.secondary,
+                    )
+                }
             },
             rowClickable = true,
             expand = null,
             contentDesc = "Address wise report",
             content = {
                 Crossfade(targetState = addressState, label = "AddressState") { state ->
-                    when {
-                        state.isLoading -> LoadingIndicator()
+                    when (state) {
+                        is UiState.Loading -> LoadingIndicator()
 
-                        state.reports.isNotEmpty() -> {
+                        is UiState.Empty -> {
+                            ItemNotAvailable(
+                                text = "Address wise report not available",
+                                showImage = false,
+                            )
+                        }
+
+                        is UiState.Success -> {
                             Column(
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             ) {
-                                state.reports.forEachIndexed { index, report ->
+                                state.data.forEachIndexed { index, report ->
                                     AddressReportCard(
                                         report = report,
-                                        onAddressClick = onAddressClick
+                                        onAddressClick = onAddressClick,
                                     )
 
-                                    if (index != state.reports.size - 1) {
-                                        Spacer(modifier = Modifier.height(SpaceMini))
+                                    if (index != state.data.size - 1) {
                                         HorizontalDivider(modifier = Modifier.fillMaxWidth())
-                                        Spacer(modifier = Modifier.height(SpaceMini))
                                     }
                                 }
                             }
-                        }
-
-                        else -> {
-                            ItemNotAvailable(
-                                text = state.error ?: "Address wise report not available",
-                                showImage = false
-                            )
                         }
                     }
                 }

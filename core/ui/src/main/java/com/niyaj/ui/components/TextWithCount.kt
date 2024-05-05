@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -42,7 +43,7 @@ fun TextWithCount(
                 indication = null,
                 onClick = {
                     onClick()
-                }
+                },
             ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -50,7 +51,7 @@ fun TextWithCount(
         IconWithText(
             text = text,
             icon = leadingIcon,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
 
         CountBox(count = count.toString())
@@ -76,7 +77,7 @@ fun TextWithCount(
                 indication = null,
                 onClick = {
                     onClick()
-                }
+                },
             ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -84,7 +85,7 @@ fun TextWithCount(
         IconWithText(
             text = text,
             icon = leadingIcon,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
 
         Row {
@@ -95,7 +96,7 @@ fun TextWithCount(
 
             CountBox(
                 count = count.toString(),
-                backgroundColor = MaterialTheme.colorScheme.secondary
+                backgroundColor = MaterialTheme.colorScheme.secondary,
             )
         }
     }
@@ -106,8 +107,8 @@ fun TextWithCount(
 fun CountBox(
     modifier: Modifier = Modifier,
     count: String,
-    textColor: Color = MaterialTheme.colorScheme.onPrimary,
-    backgroundColor: Color = MaterialTheme.colorScheme.primary
+    backgroundColor: Color = MaterialTheme.colorScheme.primary,
+    textColor: Color = contentColorFor(backgroundColor = backgroundColor),
 ) {
     Column(
         modifier = modifier
@@ -120,7 +121,7 @@ fun CountBox(
             text = count,
             style = MaterialTheme.typography.labelSmall,
             color = textColor,
-            modifier = Modifier
+            modifier = Modifier,
         )
     }
 }
@@ -131,7 +132,7 @@ fun TextWithBorderCount(
     text: String,
     leadingIcon: ImageVector? = null,
     count: Int,
-    backgroundColor: Color = MaterialTheme.colorScheme.tertiaryContainer
+    backgroundColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
 ) {
     Row(
         modifier = modifier
@@ -152,7 +153,7 @@ fun TextWithBorderCount(
             text = count.toString(),
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier
+            modifier = Modifier,
         )
     }
 }

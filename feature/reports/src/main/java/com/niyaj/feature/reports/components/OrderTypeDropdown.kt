@@ -1,9 +1,6 @@
 package com.niyaj.feature.reports.components
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -13,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.model.OrderType
 import com.niyaj.ui.components.StandardOutlinedAssistChip
 
@@ -26,16 +24,16 @@ fun OrderTypeDropdown(
     Column {
         StandardOutlinedAssistChip(
             text = text,
-            icon = Icons.Default.CalendarMonth,
+            icon = PoposIcons.CalenderMonth,
             onClick = {
                 menuExpanded = !menuExpanded
             },
-            trailingIcon = Icons.Default.ArrowDropDown
+            trailingIcon = PoposIcons.ArrowDropDown,
         )
 
         DropdownMenu(
             expanded = menuExpanded,
-            onDismissRequest = { menuExpanded = false }
+            onDismissRequest = { menuExpanded = false },
         ) {
             DropdownMenuItem(
                 text = {
@@ -47,7 +45,7 @@ fun OrderTypeDropdown(
                 onClick = {
                     onItemClick("")
                     menuExpanded = false
-                }
+                },
             )
 
             DropdownMenuItem(
@@ -60,7 +58,7 @@ fun OrderTypeDropdown(
                 onClick = {
                     onItemClick(OrderType.DineIn.name)
                     menuExpanded = false
-                }
+                },
             )
             DropdownMenuItem(
                 text = {
@@ -72,7 +70,7 @@ fun OrderTypeDropdown(
                 onClick = {
                     onItemClick(OrderType.DineOut.name)
                     menuExpanded = false
-                }
+                },
             )
         }
     }

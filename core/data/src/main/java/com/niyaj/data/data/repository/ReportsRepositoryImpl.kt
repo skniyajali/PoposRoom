@@ -3,18 +3,19 @@ package com.niyaj.data.data.repository
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
+import com.niyaj.common.utils.calculateEndOfDayTime
+import com.niyaj.common.utils.getStartTime
 import com.niyaj.data.repository.ReportsRepository
 import com.niyaj.database.dao.ReportsDao
 import com.niyaj.database.model.ReportsEntity
-import com.niyaj.database.model.asExternalModel
 import com.niyaj.database.model.toExternalModel
 import com.niyaj.model.AddressWiseReport
 import com.niyaj.model.CategoryWiseReport
 import com.niyaj.model.CustomerWiseReport
-import com.niyaj.model.ProductAndQuantity
+import com.niyaj.model.ExpensesReport
+import com.niyaj.model.OrderType
 import com.niyaj.model.ProductWiseReport
 import com.niyaj.model.Reports
-import com.niyaj.model.TotalOrders
 import com.niyaj.model.TotalSales
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
@@ -30,23 +31,25 @@ class ReportsRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher,
 ) : ReportsRepository {
 
-    override suspend fun generateReport(startDate: String, endDate: String): Resource<Boolean> {
+    override suspend fun generateReport(reportDate: String): Resource<Boolean> {
         return try {
-            val itemReports = getItemsReport(startDate.toLong(), endDate.toLong())
+            val endDate: String = calculateEndOfDayTime(date = reportDate)
+
+            val itemReports = getItemsReport(reportDate.toLong(), endDate.toLong())
 
             val findReport = withContext(ioDispatcher) {
-                reportsDao.findReportExists(startDate)
+                reportsDao.findReportExists(reportDate)
             }
 
             val newReport = ReportsEntity(
                 reportId = findReport ?: 0,
-                expensesQty = itemReports.expenses.totalExpenses,
+                expensesQty = itemReports.expenses.totalQuantity,
                 expensesAmount = itemReports.expenses.totalExpenses,
                 dineInSalesQty = itemReports.dineInOrders.totalOrders,
                 dineInSalesAmount = itemReports.dineInOrders.totalAmount,
                 dineOutSalesQty = itemReports.dineOutOrders.totalOrders,
                 dineOutSalesAmount = itemReports.dineOutOrders.totalAmount,
-                reportDate = startDate,
+                reportDate = reportDate,
                 updatedAt = if (findReport != null) System.currentTimeMillis().toString() else null,
             )
 
@@ -60,15 +63,16 @@ class ReportsRepositoryImpl(
         }
     }
 
-    override suspend fun getReportByReportDate(reportDate: String): Flow<Reports?> {
+    override suspend fun getReportByReportDate(reportDate: String): Flow<Reports> {
         return withContext(ioDispatcher) {
-            reportsDao.getReportByReportDate(reportDate).mapLatest { it?.toExternalModel() }
+            reportsDao.getReportByReportDate(reportDate)
+                .mapLatest { it?.toExternalModel() ?: Reports() }
         }
     }
 
-    override suspend fun getReports(startDate: String): Flow<List<Reports>> {
+    override suspend fun getReports(): Flow<List<Reports>> {
         return withContext(ioDispatcher) {
-            reportsDao.getReports(startDate).mapLatest { list ->
+            reportsDao.getReports().mapLatest { list ->
                 list.map {
                     it.toExternalModel()
                 }
@@ -78,69 +82,44 @@ class ReportsRepositoryImpl(
 
     override suspend fun getProductWiseReport(
         startDate: String,
-        endDate: String,
         orderType: String,
     ): Flow<List<ProductWiseReport>> {
         return withContext(ioDispatcher) {
-            reportsDao.getProductWiseOrder(startDate.toLong(), endDate.toLong())
-                .mapLatest { it ->
-                    it.asSequence().filter {
-                        if (orderType.isNotEmpty()) {
-                            it.cartOrderEntity.orderType.name == orderType
-                        } else true
-                    }.flatMap { orders ->
-                        orders.cartItems.map { product ->
-                            ProductAndQuantity(
-                                productId = product.productId,
-                                quantity = product.quantity,
-                            )
-                        }
-                    }.groupBy { it.productId }.map { groupedProducts ->
-                        ProductWiseReport(
-                            productId = groupedProducts.key,
-                            productName = withContext(ioDispatcher) {
-                                reportsDao.getProductNameById(groupedProducts.key)
-                            },
-                            quantity = groupedProducts.value.sumOf { it.quantity }
-                        )
-                    }.sortedByDescending { it.quantity }.toList()
-                }
+            val endDate: String = calculateEndOfDayTime(date = startDate.ifEmpty { getStartTime })
+            reportsDao.getProductWiseOrders(
+                startDate.toLong(),
+                endDate.toLong(),
+                orderType.ifEmpty { null },
+            )
         }
     }
 
     override suspend fun getCategoryWiseReport(
         startDate: String,
-        endDate: String,
         orderType: String,
     ): Flow<List<CategoryWiseReport>> {
         return withContext(ioDispatcher) {
-            reportsDao.getProductWiseOrder(startDate.toLong(), endDate.toLong())
-                .mapLatest { orders ->
-                    orders.asSequence().filter {
-                        orderType.isEmpty() || it.cartOrderEntity.orderType.name == orderType
-                    }.flatMap { order ->
-                        order.cartItems.map { cartItem -> cartItem.productId to cartItem.quantity }
+            val endDate: String = calculateEndOfDayTime(date = startDate.ifEmpty { getStartTime })
+
+            reportsDao.getCategoryWiseOrders(
+                startDate.toLong(),
+                endDate.toLong(),
+                orderType.ifEmpty { null },
+            )
+                .mapLatest { list ->
+                    list.groupBy { it.categoryName }.map { (categoryName, products) ->
+                        CategoryWiseReport(
+                            categoryName = categoryName,
+                            productWithQuantity = products.map {
+                                ProductWiseReport(
+                                    productId = it.productId,
+                                    productName = it.productName,
+                                    quantity = it.quantity,
+                                )
+                            }.toImmutableList(),
+                        )
                     }
-                        .groupBy { (productId, _) ->
-                            reportsDao.getProductCategoryById(productId)
-                        }
-                        .map { (category, productAndQuantityList) ->
-                            CategoryWiseReport(
-                                category = reportsDao.getCategoryById(category).asExternalModel(),
-                                productWithQuantity = productAndQuantityList
-                                    .groupBy { (productId, _) -> productId }
-                                    .map { (productId, productAndQuantityList) ->
-                                        ProductWiseReport(
-                                            productId = productId,
-                                            productName = withContext(ioDispatcher) {
-                                                reportsDao.getProductNameById(productId)
-                                            },
-                                            quantity = productAndQuantityList.sumOf { (_, quantity) -> quantity }
-                                        )
-                                    }.sortedByDescending { it.quantity }.toImmutableList()
-                            )
-                        }.sortedByDescending { it -> it.productWithQuantity.sumOf { it.quantity } }
-                        .toList()
+                        .sortedByDescending { report -> report.productWithQuantity.sumOf { it.quantity } }
                 }
         }
     }
@@ -149,42 +128,19 @@ class ReportsRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun getAddressWiseReport(
-        startDate: String,
-        endDate: String,
-    ): Flow<List<AddressWiseReport>> {
+    override suspend fun getAddressWiseReport(startDate: String): Flow<List<AddressWiseReport>> {
         return withContext(ioDispatcher) {
-            reportsDao.getAddressWiseOrder(startDate.toLong(), endDate.toLong()).mapLatest { list ->
-                list.groupBy {
-                    it
-                }.map {
-                    AddressWiseReport(
-                        address = withContext(ioDispatcher) {
-                            reportsDao.getAddressById(it.key).asExternalModel()
-                        },
-                        orderQty = it.value.size
-                    )
-                }
-            }
+            val endDate: String = calculateEndOfDayTime(date = startDate.ifEmpty { getStartTime })
+
+            reportsDao.getAddressWiseOrders(startDate.toLong(), endDate.toLong())
         }
     }
 
-    override suspend fun getCustomerWiseReport(
-        startDate: String,
-        endDate: String,
-    ): Flow<List<CustomerWiseReport>> {
+    override suspend fun getCustomerWiseReport(startDate: String): Flow<List<CustomerWiseReport>> {
         return withContext(ioDispatcher) {
+            val endDate: String = calculateEndOfDayTime(date = startDate.ifEmpty { getStartTime })
+
             reportsDao.getCustomerWiseOrder(startDate.toLong(), endDate.toLong())
-                .mapLatest { list ->
-                    list.groupBy { it }.map {
-                        CustomerWiseReport(
-                            customer = withContext(ioDispatcher) {
-                                reportsDao.getCustomerById(it.key).asExternalModel()
-                            },
-                            orderQty = it.value.size
-                        )
-                    }
-                }
         }
     }
 
@@ -195,28 +151,26 @@ class ReportsRepositoryImpl(
             }
 
             val dineInOrder = async(ioDispatcher) {
-                val result = reportsDao.getTotalDineInOrders(startDate, endDate)
-
-                TotalOrders(
-                    totalOrders = result.size.toLong(),
-                    totalAmount = result.sumOf { it.orderPrice.totalPrice }
-                )
+                reportsDao.getTotalOrders(startDate, endDate, OrderType.DineIn)
             }
 
             val dineOutOrder = async(ioDispatcher) {
-                val result = reportsDao.getTotalDineOutOrders(startDate, endDate)
-
-                TotalOrders(
-                    totalOrders = result.size.toLong(),
-                    totalAmount = result.sumOf { it.orderPrice.totalPrice }
-                )
+                reportsDao.getTotalOrders(startDate, endDate, OrderType.DineOut)
             }
 
             TotalSales(
                 expenses = expenses.await(),
                 dineInOrders = dineInOrder.await(),
-                dineOutOrders = dineOutOrder.await()
+                dineOutOrders = dineOutOrder.await(),
             )
+        }
+    }
+
+    override suspend fun getExpensesReports(startDate: String): Flow<List<ExpensesReport>> {
+        return withContext(ioDispatcher) {
+            val endDate: String = calculateEndOfDayTime(date = startDate.ifEmpty { getStartTime })
+
+            reportsDao.getExpensesReport(startDate.toLong(), endDate.toLong())
         }
     }
 }
