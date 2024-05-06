@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.ui.components
 
 import android.annotation.SuppressLint
@@ -55,7 +71,6 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.Constants.DRAWER_ICON
@@ -68,172 +83,7 @@ import com.niyaj.designsystem.theme.SeaShell
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun StandardScaffold(
-    modifier: Modifier = Modifier,
-    navController: NavController,
-    title: String,
-    floatingActionButton: @Composable () -> Unit,
-    navActions: @Composable RowScope.() -> Unit,
-    bottomBar: @Composable () -> Unit = {},
-    fabPosition: FabPosition = FabPosition.Center,
-    selectionCount: Int,
-    showBottomBar: Boolean = false,
-    showBackButton: Boolean = false,
-    onDeselect: () -> Unit = {},
-    onBackClick: () -> Unit = { navController.navigateUp() },
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    content: @Composable (PaddingValues) -> Unit,
-) {
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
-    // Remember a SystemUiController
-    val systemUiController = rememberSystemUiController()
-
-    val colorTransitionFraction = scrollBehavior.state.collapsedFraction
-
-    val color = rememberUpdatedState(newValue = containerColorForPrimary(colorTransitionFraction))
-    val navColor = MaterialTheme.colorScheme.surface
-    val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
-
-    val selectedState = updateTransition(targetState = selectionCount, label = "selection count")
-
-    SideEffect {
-        systemUiController.setStatusBarColor(
-            color = color.value,
-            darkIcons = false,
-        )
-
-        systemUiController.setNavigationBarColor(
-            color = navColor,
-        )
-    }
-
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            StandardDrawer(
-                navController = navController,
-            )
-        },
-        gesturesEnabled = true,
-    ) {
-        Scaffold(
-            topBar = {
-                LargeTopAppBar(
-                    title = {
-                        Text(text = title)
-                    },
-                    navigationIcon = {
-                        if (showBackButton) {
-                            IconButton(
-                                onClick = onBackClick,
-                                modifier = Modifier.testTag(STANDARD_BACK_BUTTON),
-                            ) {
-                                Icon(
-                                    imageVector = PoposIcons.Back,
-                                    contentDescription = null,
-                                )
-                            }
-                        } else {
-                            AnimatedContent(
-                                targetState = selectedState,
-                                transitionSpec = {
-                                    (fadeIn()).togetherWith(
-                                        fadeOut(animationSpec = tween(200)),
-                                    )
-                                },
-                                label = "navigationIcon",
-                                contentKey = {
-                                    it
-                                },
-                            ) { state ->
-                                if (state.currentState != 0) {
-                                    IconButton(
-                                        onClick = onDeselect,
-                                    ) {
-                                        Icon(
-                                            imageVector = PoposIcons.Close,
-                                            contentDescription = Constants.CLEAR_ICON,
-                                        )
-                                    }
-                                } else {
-                                    IconButton(
-                                        onClick = {
-                                            scope.launch {
-                                                drawerState.open()
-                                            }
-                                        },
-                                    ) {
-                                        Icon(
-                                            imageVector = PoposIcons.App,
-                                            contentDescription = DRAWER_ICON,
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    actions = navActions,
-                    scrollBehavior = scrollBehavior,
-                    colors = TopAppBarDefaults.largeTopAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        scrolledContainerColor = RoyalPurple,
-                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                        actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
-                )
-            },
-            bottomBar = {
-                AnimatedVisibility(
-                    visible = showBottomBar,
-                    label = "BottomBar",
-                    enter = fadeIn() + slideInVertically(
-                        initialOffsetY = { fullHeight ->
-                            fullHeight / 4
-                        },
-                    ),
-                    exit = fadeOut() + slideOutVertically(
-                        targetOffsetY = { fullHeight ->
-                            fullHeight / 4
-                        },
-                    ),
-                ) {
-                    bottomBar()
-                }
-            },
-            containerColor = MaterialTheme.colorScheme.primary,
-            floatingActionButton = floatingActionButton,
-            floatingActionButtonPosition = fabPosition,
-            snackbarHost = { SnackbarHost(snackbarHostState) },
-            modifier = modifier
-                .testTag(title)
-                .fillMaxSize()
-                .navigationBarsPadding()
-                .imePadding(),
-        ) { padding ->
-            ElevatedCard(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .consumeWindowInsets(padding)
-                    .windowInsetsPadding(
-                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
-                    )
-                    .nestedScroll(scrollBehavior.nestedScrollConnection),
-                shape = shape.value,
-                elevation = CardDefaults.cardElevation(),
-            ) {
-                content(padding)
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("DesignSystem")
 @Composable
 fun StandardScaffoldRoute(
     modifier: Modifier = Modifier,
@@ -282,7 +132,7 @@ fun StandardScaffoldRoute(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            StandardDrawer(
+            PoposDrawer(
                 currentRoute = currentRoute,
                 onNavigateToScreen = onNavigateToScreen,
             )
@@ -401,167 +251,6 @@ fun StandardScaffoldRoute(
         }
     }
 }
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun StandardScaffoldNew(
-    navController: NavController,
-    modifier: Modifier = Modifier,
-    title: String,
-    showDrawer: Boolean = true,
-    showBackButton: Boolean = false,
-    showBottomBar: Boolean = false,
-    showFab: Boolean = false,
-    fabPosition: FabPosition = FabPosition.Center,
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    onBackClick: () -> Unit = { navController.navigateUp() },
-    navigationIcon: @Composable () -> Unit = {},
-    navActions: @Composable RowScope.() -> Unit = {},
-    floatingActionButton: @Composable () -> Unit = {},
-    bottomBar: @Composable () -> Unit = { AnimatedBottomNavigationBar(navController) },
-    content: @Composable (PaddingValues) -> Unit = {},
-) {
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
-    // Remember a SystemUiController
-    val systemUiController = rememberSystemUiController()
-
-    val colorTransitionFraction = scrollBehavior.state.collapsedFraction
-
-    val color = rememberUpdatedState(newValue = containerColorForSecondary(colorTransitionFraction))
-    val boxColor = rememberUpdatedState(newValue = containerColor(colorTransitionFraction))
-    val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
-    val navColor = MaterialTheme.colorScheme.surface
-
-    SideEffect {
-        systemUiController.setStatusBarColor(
-            color = color.value,
-            darkIcons = true,
-        )
-
-        systemUiController.setNavigationBarColor(color = navColor)
-    }
-
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            StandardDrawer(
-                navController = navController,
-            )
-        },
-        gesturesEnabled = true,
-    ) {
-        Scaffold(
-            topBar = {
-                LargeTopAppBar(
-                    title = {
-                        Text(text = title)
-                    },
-                    navigationIcon = {
-                        if (showBackButton) {
-                            IconButton(
-                                onClick = onBackClick,
-                                modifier = Modifier.testTag(STANDARD_BACK_BUTTON),
-                            ) {
-                                Icon(
-                                    imageVector = PoposIcons.Back,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.scrim,
-                                )
-                            }
-                        } else if (showDrawer) {
-                            IconButton(
-                                onClick = {
-                                    scope.launch {
-                                        drawerState.open()
-                                    }
-                                },
-                            ) {
-                                Icon(
-                                    imageVector = PoposIcons.App,
-                                    contentDescription = null,
-                                )
-                            }
-                        } else navigationIcon()
-                    },
-                    actions = {
-                        navActions()
-                    },
-                    scrollBehavior = scrollBehavior,
-                    colors = TopAppBarDefaults.largeTopAppBarColors(
-                        containerColor = color.value,
-                        scrolledContainerColor = color.value,
-                    ),
-                )
-            },
-            bottomBar = {
-                AnimatedVisibility(
-                    visible = showBottomBar,
-                    label = "BottomBar",
-                    enter = fadeIn() + slideInVertically(
-                        initialOffsetY = { fullHeight ->
-                            fullHeight / 4
-                        },
-                    ),
-                    exit = fadeOut() + slideOutVertically(
-                        targetOffsetY = { fullHeight ->
-                            fullHeight / 4
-                        },
-                    ),
-                ) {
-                    bottomBar()
-                }
-            },
-            floatingActionButton = {
-                AnimatedVisibility(
-                    visible = showFab,
-                    label = "BottomBar",
-                    enter = fadeIn() + slideInVertically(
-                        initialOffsetY = { fullHeight ->
-                            fullHeight / 4
-                        },
-                    ),
-                    exit = fadeOut() + slideOutVertically(
-                        targetOffsetY = { fullHeight ->
-                            fullHeight / 4
-                        },
-                    ),
-                ) {
-                    floatingActionButton()
-                }
-            },
-            floatingActionButtonPosition = fabPosition,
-            snackbarHost = { SnackbarHost(snackbarHostState) },
-            modifier = modifier
-                .testTag(title)
-                .fillMaxSize()
-                .navigationBarsPadding()
-                .imePadding(),
-            containerColor = MaterialTheme.colorScheme.background,
-        ) { padding ->
-            ElevatedCard(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .consumeWindowInsets(padding)
-                    .windowInsetsPadding(
-                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
-                    )
-                    .nestedScroll(scrollBehavior.nestedScrollConnection),
-                shape = shape.value,
-                elevation = CardDefaults.cardElevation(),
-                colors = CardDefaults.elevatedCardColors(
-                    containerColor = boxColor.value,
-                ),
-            ) {
-                content(padding)
-            }
-        }
-    }
-}
-
 
 @SuppressLint("DesignSystem")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -720,7 +409,6 @@ internal fun containerColor(colorTransitionFraction: Float): Color {
         FastOutLinearInEasing.transform(colorTransitionFraction),
     )
 }
-
 
 @Composable
 internal fun containerShape(colorTransitionFraction: Float): Shape {
