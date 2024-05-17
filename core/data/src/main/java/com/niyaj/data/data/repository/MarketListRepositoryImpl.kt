@@ -1,141 +1,157 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.data.data.repository
 
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
-import com.niyaj.common.utils.toListString
 import com.niyaj.data.mapper.toEntity
+import com.niyaj.data.mapper.toExternalModel
 import com.niyaj.data.repository.MarketListRepository
-import com.niyaj.database.dao.MarketItemDao
 import com.niyaj.database.dao.MarketListDao
-import com.niyaj.database.model.MarketItemEntity
-import com.niyaj.database.model.MarketListWithItemEntity
-import com.niyaj.database.model.asExternalModel
-import com.niyaj.model.ItemQuantityAndType
+import com.niyaj.database.dao.MarketListWIthTypeDao
+import com.niyaj.database.model.MarketListWithTypeEntity
 import com.niyaj.model.MarketItemAndQuantity
-import com.niyaj.model.MarketItemWithQuantity
 import com.niyaj.model.MarketList
-import com.niyaj.model.MarketListType
-import com.niyaj.model.MarketListWithItems
-import com.niyaj.model.searchItems
-import com.niyaj.model.searchMarketListItem
+import com.niyaj.model.MarketListAndType
+import com.niyaj.model.MarketListWithTypes
+import com.niyaj.model.MarketTypeIdAndListTypes
+import com.niyaj.model.asExternalModel
+import com.niyaj.model.toExternalModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class MarketListRepositoryImpl(
     private val marketListDao: MarketListDao,
-    private val marketItemDao: MarketItemDao,
+    private val listTypeDao: MarketListWIthTypeDao,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
 ) : MarketListRepository {
 
-    override suspend fun getAllMarketLists(searchText: String): Flow<List<MarketListWithItems>> {
+    override suspend fun getAllMarketLists(searchText: String): Flow<List<MarketListWithTypes>> {
         return withContext(ioDispatcher) {
-            marketListDao.getAllMarketLists().mapLatest { list ->
-                list.map { it.asExternalModel() }.searchMarketListItem(searchText)
+            marketListDao.getMarketItems().mapLatest { typeList ->
+                typeList.toExternalModel()
             }
         }
     }
 
-    override suspend fun getMarketListById(marketId: Int): Flow<MarketList?> {
+    override suspend fun getAllMarketTypes(): Flow<List<MarketTypeIdAndListTypes>> {
         return withContext(ioDispatcher) {
-            marketListDao.getMarketListById(marketId).map { it?.asExternalModel() }
-        }
-    }
-
-    override suspend fun getMarketItemsWithQuantityById(
-        marketId: Int,
-        searchText: String
-    ): Flow<List<MarketItemWithQuantity>> {
-        return withContext(ioDispatcher) {
-            marketListDao.getMarketItems().mapLatest { list ->
-                mapItemToItemWithQuantity(list, marketId).searchItems(searchText)
+            marketListDao.getAllMarketTypes().map { listTypes ->
+                listTypes.sortedBy { it.listTypes.size }
             }
         }
     }
 
-
-    override suspend fun getMarketItemsAndQuantity(marketId: Int): Flow<List<MarketItemAndQuantity>> {
+    override suspend fun getMarketListById(marketId: Int): Flow<MarketListWithTypes?> {
         return withContext(ioDispatcher) {
-            marketListDao.getItemsWithQuantityByMarketId(marketId).mapLatest { list ->
-                list.map {
-                    MarketItemAndQuantity(
-                        item = it.item.asExternalModel(),
-                        quantityAndType = it.itemQuantity
-                    )
-                }
+            marketListDao.getMarketListByMarketId(marketId).map {
+                it?.asExternalModel()
             }
         }
     }
 
-    override suspend fun addOrIgnoreMarketList(newMarketList: MarketList): Resource<Boolean> {
+    override suspend fun getMarketDetail(marketId: Int): Flow<MarketListAndType> {
+        return withContext(ioDispatcher) {
+            marketListDao.getMarketDetailsById(marketId)
+        }
+    }
+
+    override suspend fun getShareableMarketItems(listTypeIds: List<Int>): Flow<List<MarketItemAndQuantity>> {
+        return withContext(ioDispatcher) {
+            marketListDao.getShareableMarketItems(listTypeIds)
+        }
+    }
+
+    override suspend fun upsertMarketList(newMarketList: MarketListWithTypes): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
-                val validateDate = validateMarketDate(newMarketList.marketDate)
-                if (validateDate.successful) {
-                    val result = marketListDao.insertOrIgnoreMarketList(newMarketList.toEntity())
+                val validateDate: ValidationResult =
+                    validateMarketDate(newMarketList.marketList.marketDate)
 
-                    Resource.Success(result > 0)
-                } else {
-                    Resource.Error("Unable to create item")
-                }
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message)
-        }
-    }
+                if (validateDate.successful && newMarketList.marketTypes.isNotEmpty()) {
+                    val marketId: Int = newMarketList.marketList.marketId
 
-    override suspend fun updateMarketList(newMarketList: MarketList): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val validateDate = validateMarketDate(newMarketList.marketDate)
+                    val result = marketListDao.upsertMarketList(newMarketList.marketList.toEntity())
 
-                if (validateDate.successful) {
-                    val result = marketListDao.updateMarketList(newMarketList.toEntity())
+                    if (marketId == 0) {
+                        val listTypes: List<MarketListWithTypeEntity> =
+                            newMarketList.marketTypes.toExternalModel(result.toInt())
 
-                    Resource.Success(result > 0)
-                } else {
-                    Resource.Error("Unable to update item")
-                }
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message)
-        }
-    }
+                        async {
+                            listTypes.forEach { it: MarketListWithTypeEntity ->
+                                listTypeDao.insertMarketListWithType(it)
+                            }
+                        }.await()
+                    } else {
+                        val listTypes: List<MarketListWithTypeEntity> =
+                            newMarketList.marketTypes.toExternalModel(marketId)
 
-    override suspend fun upsertMarketList(newMarketList: MarketList): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val validateDate = validateMarketDate(newMarketList.marketDate)
+                        val allTypes =
+                            async { listTypeDao.getAllMarketListWithTypeById(marketId) }.await()
+                        val existingTypesSet = allTypes.map { it.typeId to it.listType }.toSet()
 
-                if (validateDate.successful) {
-                    val result = marketListDao.upsertMarketList(newMarketList.toEntity())
+                        val newTypesToInsert = async {
+                            listTypes.filter { newType ->
+                                val typeIdAndListType = newType.typeId to newType.listType
+                                !existingTypesSet.contains(typeIdAndListType)
+                            }
+                        }.await()
 
-                    Resource.Success(result > 0)
+                        val typesToDelete = async {
+                            allTypes.filter { existingType ->
+                                !listTypes.any { it.typeId == existingType.typeId && it.listType == existingType.listType }
+                            }
+                        }.await()
+
+                        // Insert new types and delete obsolete types concurrently
+                        awaitAll(
+                            async {
+                                newTypesToInsert.forEach {
+                                    listTypeDao.insertMarketListWithType(it)
+                                }
+                            },
+                            async {
+                                typesToDelete.forEach {
+                                    listTypeDao.deleteMarketListWithType(
+                                        marketId,
+                                        it.typeId,
+                                        it.listType,
+                                    )
+                                }
+                            },
+                        )
+                    }
+
+                    Resource.Success(true)
                 } else {
                     Resource.Error("Unable to create or update item")
                 }
             }
         } catch (e: Exception) {
-            Resource.Error(e.message)
-        }
-    }
-
-    override suspend fun deleteMarketList(marketId: Int): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val result = marketListDao.deleteMarketList(marketId)
-
-                Resource.Success(result > 0)
-            }
-        } catch (e: Exception) {
+            Timber.e(e)
             Resource.Error(e.message)
         }
     }
@@ -156,151 +172,6 @@ class MarketListRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun addMarketListItem(marketId: Int, itemId: Int): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val item = async {
-                    marketListDao.findItemByMarketIdAndItemId(marketId, itemId)
-                }.await()
-
-                async {
-                    val whiteListItem =
-                        marketItemDao.getWhitelistItems(marketId).toListString()
-
-                    if (whiteListItem.contains(itemId)) {
-                        whiteListItem.remove(itemId)
-                        val newItem = whiteListItem.toListString()
-
-                        marketItemDao.updateWhiteListItems(marketId, newItem)
-                    }
-                }.await()
-
-                if (item == null) {
-                    val newItem = MarketListWithItemEntity(
-                        marketId = marketId,
-                        itemId = itemId,
-                        itemQuantity = 0.0,
-                        marketListType = MarketListType.Needed
-                    )
-
-                    val result = marketListDao.insertOrIgnoreMarketListWithItem(newItem)
-
-                    Resource.Success(result > 0)
-                } else if (item.itemQuantity == 0.0) {
-                    val result = marketListDao.deleteMarketListWithItem(marketId, itemId)
-
-                    Resource.Success(result > 0)
-                }
-
-                Resource.Success(true)
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message)
-        }
-    }
-
-    override suspend fun removeMarketListItem(marketId: Int, itemId: Int): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val item = async {
-                    marketListDao.getItemQuantityByMarketIdAndItemId(marketId, itemId)
-                }.await()
-
-                async {
-                    val items = marketItemDao.getWhitelistItems(marketId).toListString()
-
-                    if (!items.contains(itemId)) {
-                        items.add(itemId)
-                        val newItem = items.toListString()
-
-                        marketItemDao.updateWhiteListItems(marketId, newItem)
-                    } else {
-                        items.remove(itemId)
-                        val newItem = items.toListString()
-
-                        marketItemDao.updateWhiteListItems(marketId, newItem)
-                    }
-                }.await()
-
-                if (item != null) {
-                    val result = marketListDao.deleteMarketListWithItem(marketId, itemId)
-
-                    Resource.Success(result > 0)
-                }
-
-                Resource.Success(true)
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message)
-        }
-    }
-
-    override suspend fun increaseMarketListItemQuantity(
-        marketId: Int,
-        itemId: Int
-    ): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val itemQuantity = async {
-                    marketListDao.getItemQuantityByMarketIdAndItemId(marketId, itemId)
-                }.await()
-
-                val unitValue = async {
-                    marketListDao.getItemMeasureUnitValueItemId(itemId)
-                }.await()
-
-                if (itemQuantity != null && unitValue != null) {
-                    val result = marketListDao.updateMarketListWithItemQuantity(
-                        marketId,
-                        itemId,
-                        itemQuantity.plus(unitValue)
-                    )
-
-                    Resource.Success(result > 0)
-                }
-
-                Resource.Success(true)
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message)
-        }
-    }
-
-    override suspend fun decreaseMarketListItemQuantity(
-        marketId: Int,
-        itemId: Int
-    ): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val itemQuantity = async {
-                    marketListDao.getItemQuantityByMarketIdAndItemId(marketId, itemId)
-                }.await()
-
-                val unitValue = async {
-                    marketListDao.getItemMeasureUnitValueItemId(itemId)
-                }.await()
-
-                if (itemQuantity != null && unitValue != null) {
-                    if (itemQuantity.minus(unitValue) >= 0.0) {
-                        val result = marketListDao.updateMarketListWithItemQuantity(
-                            marketId,
-                            itemId,
-                            itemQuantity.minus(unitValue)
-                        )
-
-                        Resource.Success(result > 0)
-                    }
-
-                    Resource.Success(true)
-                } else {
-                    Resource.Error("Unable to find item")
-                }
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message)
-        }
-    }
-
     override fun validateItemQuantity(quantity: String): ValidationResult {
         return ValidationResult(true)
     }
@@ -309,32 +180,4 @@ class MarketListRepositoryImpl(
         return ValidationResult(true)
     }
 
-    private suspend fun mapItemToItemWithQuantity(
-        list: List<MarketItemEntity>,
-        marketId: Int
-    ): List<MarketItemWithQuantity> {
-        return coroutineScope {
-            list.map { entity ->
-                val doesExist = async(ioDispatcher) {
-                    marketListDao.findItemIdByMarketIdAndItemId(
-                        marketId,
-                        entity.itemId
-                    ).distinctUntilChanged()
-                }
-
-                val quantity = async(ioDispatcher) {
-                    marketListDao.getItemQuantityAndType(marketId, entity.itemId)
-                        .distinctUntilChanged()
-                }
-
-                // TODO:: Fix this
-
-                MarketItemWithQuantity(
-                    item = entity.asExternalModel(),
-                    doesExist = false,
-                    quantity = ItemQuantityAndType()
-                )
-            }
-        }
-    }
 }

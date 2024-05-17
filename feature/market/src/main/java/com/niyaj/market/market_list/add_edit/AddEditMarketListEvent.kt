@@ -16,6 +16,6 @@
 
 package com.niyaj.market.market_list.add_edit
 
-sealed class AddEditMarketListEvent {
-    
+sealed interface AddEditMarketListEvent {
+
 }

@@ -21,6 +21,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.automirrored.filled.Feed
+import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.MergeType
 import androidx.compose.material.icons.automirrored.filled.Note
@@ -72,6 +73,7 @@ import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.EditLocationAlt
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.EventBusy
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Inbox
@@ -156,6 +158,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
  * Popos icons. Material icons are [ImageVector]s, custom icons are drawable resource IDs.
  */
 object PoposIcons {
+
+    val ExpandMore: ImageVector = Icons.Default.ExpandMore
+
+    val ListAlt: ImageVector = Icons.AutoMirrored.Filled.ListAlt
 
     val OutlinedCart: ImageVector = Icons.Outlined.ShoppingCart
     val Cart: ImageVector = Icons.Default.ShoppingCart

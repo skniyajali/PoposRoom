@@ -93,9 +93,9 @@ fun HomeScreenProducts(
         ) {
             items(
                 items = products,
-                key = {
-                    it.productId
-                },
+//                key = {
+//                    it.productId
+//                },
             ) { product ->
                 HomeScreenProductCard(
                     product = product,

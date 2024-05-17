@@ -53,6 +53,7 @@ fun PoposTextButton(
     modifier: Modifier = Modifier,
     text: String,
     onClick: () -> Unit,
+    icon: ImageVector? = null,
     enabled: Boolean = true,
     shape: Shape = ButtonDefaults.textShape,
     contentColor: Color = MaterialTheme.colorScheme.primary,
@@ -81,6 +82,15 @@ fun PoposTextButton(
             style = textStyle,
             fontWeight = fontWeight,
         )
+
+        icon?.let {
+            Spacer(modifier = Modifier.width(SpaceMini))
+
+            Icon(
+                imageVector = icon,
+                contentDescription = text,
+            )
+        }
     }
 }
 

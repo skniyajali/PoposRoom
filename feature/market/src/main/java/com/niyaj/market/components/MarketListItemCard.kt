@@ -16,16 +16,22 @@
 
 package com.niyaj.market.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,33 +40,43 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.niyaj.common.tags.MarketListTestTags
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toTimeSpan
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.model.MarketListWithItems
+import com.niyaj.model.MarketListWithType
+import com.niyaj.model.MarketListWithTypes
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.StandardFilledTonalIconButton
+import com.niyaj.ui.components.StandardOutlinedIconButton
 import com.niyaj.ui.components.TextWithIcon
 import com.niyaj.ui.components.drawAnimatedBorder
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MarketListItemCard(
-    withItems: MarketListWithItems,
+    items: MarketListWithTypes,
     doesSelected: (Int) -> Boolean,
+    doesExpanded: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
-    onClickShare: (Int, Long) -> Unit,
-    onClickPrint: (Int) -> Unit,
-    border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
+    onClickShare: (List<Int>) -> Unit,
+    onClickPrint: (List<Int>) -> Unit,
+    onClickViewDetails: (List<Int>) -> Unit,
+    onClickManageList: (listTypeId: Int) -> Unit,
+    border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
 ) {
-    val marketId = withItems.marketList.marketId
+    val listIds = items.marketTypes.map { it.listWithTypeId }
+
+    val marketId = items.marketList.marketId
     val borderStroke = if (doesSelected(marketId)) border else null
 
     ElevatedCard(
@@ -74,17 +90,17 @@ fun MarketListItemCard(
                         .drawAnimatedBorder(
                             strokeWidth = 1.dp,
                             durationMillis = 2000,
-                            shape = CardDefaults.elevatedShape
+                            shape = CardDefaults.elevatedShape,
                         )
-                } ?: Modifier
+                } ?: Modifier,
             )
             .clip(CardDefaults.elevatedShape),
         elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 2.dp
+            defaultElevation = 2.dp,
         ),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.background
-        )
+            containerColor = MaterialTheme.colorScheme.background,
+        ),
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -92,15 +108,18 @@ fun MarketListItemCard(
             ListItem(
                 headlineContent = {
                     Text(
-                        text = withItems.marketList.marketDate.toPrettyDate(),
+                        text = items.marketList.marketDate.toPrettyDate(),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
                 },
+                overlineContent = {
+                    Text(text = "Market Date")
+                },
                 leadingContent = {
                     CircularBox(
                         icon = PoposIcons.ShoppingBag,
-                        doesSelected = false
+                        doesSelected = false,
                     )
                 },
                 trailingContent = {
@@ -108,25 +127,34 @@ fun MarketListItemCard(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(
                             SpaceSmall,
-                            Alignment.CenterHorizontally
-                        )
+                            Alignment.CenterHorizontally,
+                        ),
                     ) {
-                        StandardFilledTonalIconButton(
+                        StandardOutlinedIconButton(
                             icon = PoposIcons.Print,
                             onClick = {
-                                onClickPrint(marketId)
+                                onClickPrint(listIds)
                             },
-                            enabled = withItems.items.isNotEmpty(),
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                            enabled = items.marketTypes.isNotEmpty(),
+                            borderColor = MaterialTheme.colorScheme.secondary,
                         )
 
-                        StandardFilledTonalIconButton(
+                        StandardOutlinedIconButton(
                             icon = PoposIcons.Share,
                             onClick = {
-                                onClickShare(marketId, withItems.marketList.marketDate)
+                                onClickShare(listIds)
                             },
-                            enabled = withItems.items.isNotEmpty(),
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                            enabled = items.marketTypes.isNotEmpty(),
+                            borderColor = MaterialTheme.colorScheme.secondary,
+                        )
+
+                        StandardOutlinedIconButton(
+                            icon = PoposIcons.OpenInNew,
+                            onClick = {
+                                onClickViewDetails(listIds)
+                            },
+                            enabled = items.marketTypes.isNotEmpty(),
+                            borderColor = MaterialTheme.colorScheme.secondary,
                         )
                     }
                 },
@@ -137,7 +165,7 @@ fun MarketListItemCard(
                     onLongClick = {
                         onLongClick(marketId)
                     },
-                )
+                ),
             )
 
             Row(
@@ -145,21 +173,97 @@ fun MarketListItemCard(
                     .fillMaxWidth()
                     .padding(SpaceSmall),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
+                val size = items.marketTypes.size
+
                 IconWithText(
-                    text = "${withItems.items.size} Items",
-                    icon = PoposIcons.Inbox
+                    text = "$size Market List",
+                    icon = PoposIcons.Inbox,
                 )
 
                 TextWithIcon(
-                    text = (withItems.marketList.updatedAt
-                        ?: withItems.marketList.createdAt).toTimeSpan,
+                    text = (items.marketList.updatedAt
+                        ?: items.marketList.createdAt).toTimeSpan,
                     icon = PoposIcons.AccessTime,
                     tintColor = Color.Gray,
-                    textColor = Color.Gray
+                    textColor = Color.Gray,
                 )
             }
+
+            HorizontalDivider()
+
+            AnimatedVisibility(
+                visible = doesExpanded(items.marketList.marketId),
+            ) {
+                Column {
+                    Spacer(modifier = Modifier.height(SpaceMini))
+
+                    items.marketTypes.forEachIndexed { index, listType ->
+                        TypeList(
+                            marketType = listType,
+                            onClickManageList = onClickManageList,
+                        )
+
+                        if (index < items.marketTypes.size - 1) {
+                            Spacer(modifier = Modifier.height(SpaceMini))
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TypeList(
+    modifier: Modifier = Modifier,
+    marketType: MarketListWithType,
+    onClickManageList: (listTypeId: Int) -> Unit,
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+        ),
+        shape = RectangleShape,
+        onClick = {
+            onClickManageList(marketType.listWithTypeId)
+        },
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            IconWithText(
+                text = marketType.typeName,
+                icon = PoposIcons.Category,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = SpaceMini),
+            )
+
+            IconWithText(
+                text = marketType.listType,
+                icon = PoposIcons.ListAlt,
+                style = TextStyle(
+                    fontFamily = FontFamily.Cursive,
+                    fontWeight = FontWeight.SemiBold,
+                ),
+                modifier = Modifier.weight(1.5f),
+            )
+
+            Icon(
+                imageVector = PoposIcons.ArrowRightAlt,
+                contentDescription = marketType.typeName,
+                modifier = Modifier
+                    .padding(SpaceSmall),
+            )
         }
     }
 }

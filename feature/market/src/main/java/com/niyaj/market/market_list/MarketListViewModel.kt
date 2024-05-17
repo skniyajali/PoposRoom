@@ -16,25 +16,22 @@
 
 package com.niyaj.market.market_list
 
-import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
-import android.net.Uri
-import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshotFlow
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
+import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
-import com.niyaj.common.utils.startOfDayTime
+import com.niyaj.common.utils.toFormattedDate
+import com.niyaj.common.utils.toSafeString
 import com.niyaj.data.repository.MarketListRepository
+import com.niyaj.feature.printer.bluetooth_printer.BluetoothPrinter
 import com.niyaj.model.MarketItemAndQuantity
-import com.niyaj.model.MarketList
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,16 +41,16 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
 class MarketListViewModel @Inject constructor(
     private val marketListRepository: MarketListRepository,
+    private val bluetoothPrinter: BluetoothPrinter,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel() {
+
+    private val _expandedItems = mutableStateListOf<Int>()
 
     val items = snapshotFlow { mSearchText.value }.flatMapLatest {
         marketListRepository.getAllMarketLists(it)
@@ -63,84 +60,33 @@ class MarketListViewModel @Inject constructor(
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
-        UiState.Loading
+        UiState.Loading,
     )
 
-    private val _showList = MutableStateFlow(0L)
-    val showList = _showList.asStateFlow()
+    private val _shareableItems = MutableStateFlow<List<MarketItemAndQuantity>>(emptyList())
+    val shareableItems = _shareableItems.asStateFlow()
 
-    private val _listItems = MutableStateFlow<List<MarketItemAndQuantity>>(emptyList())
-    val listItems = _listItems.asStateFlow()
-
-    fun createNewList() {
+    fun getListItems(listTypeIds: List<Int>) {
         viewModelScope.launch {
-            val newList = MarketList(
-                marketDate = startOfDayTime.toLong(),
-                createdAt = System.currentTimeMillis()
-            )
-
-            marketListRepository.addOrIgnoreMarketList(newList)
-        }
-    }
-
-    fun onDismissList() {
-        viewModelScope.launch {
-            _listItems.update { emptyList() }
-            _showList.update { 0L }
-        }
-    }
-
-    fun onShowList(marketId: Int, marketDate: Long) {
-        viewModelScope.launch {
-            _showList.value = marketDate
-            getListItems(marketId)
-        }
-    }
-
-    private fun getListItems(marketId: Int) {
-        viewModelScope.launch {
-            marketListRepository.getMarketItemsAndQuantity(marketId).collectLatest {
-                _listItems.value = it
-                it.ifEmpty { _showList.value = 0L }
+            marketListRepository.getShareableMarketItems(listTypeIds).collectLatest { list ->
+                _shareableItems.update { list }
             }
         }
     }
 
-    fun shareContent(
-        context: Context,
-        title: String,
-        uri: Uri,
-    ) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val sendIntent: Intent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_STREAM, uri)
-                setDataAndType(uri, "image/png")
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-
-            val shareIntent = Intent.createChooser(sendIntent, title)
-            ContextCompat.startActivity(context, shareIntent, null)
-        }
+    fun doesSelected(marketId: Int): Boolean {
+        return mSelectedItems.contains(marketId)
     }
 
-    suspend fun saveImage(image: Bitmap, context: Context): Uri? {
-        return withContext(Dispatchers.IO) {
-            val imagesFolder = File(context.cacheDir, "images")
-            try {
-                imagesFolder.mkdirs()
-                val file = File(imagesFolder, "shared_image.png")
+    fun doesExpanded(marketId: Int): Boolean {
+        return _expandedItems.contains(marketId)
+    }
 
-                val stream = FileOutputStream(file)
-                image.compress(Bitmap.CompressFormat.PNG, 90, stream)
-                stream.flush()
-                stream.close()
-
-                FileProvider.getUriForFile(context, "com.popos.fileprovider", file)
-            } catch (e: IOException) {
-                Log.d("saving bitmap", "saving bitmap error ${e.message}")
-                null
-            }
+    fun onClickExpand(marketId: Int) {
+        if (_expandedItems.contains(marketId)) {
+            _expandedItems.remove(marketId)
+        } else {
+            _expandedItems.add(marketId)
         }
     }
 
@@ -161,4 +107,82 @@ class MarketListViewModel @Inject constructor(
             mSelectedItems.clear()
         }
     }
+
+    fun printMarketList(listTypeIds: List<Int>, marketDate: Long) {
+        viewModelScope.launch {
+            try {
+                val marketList =
+                    marketListRepository.getShareableMarketItems(listTypeIds).stateIn(this)
+
+                bluetoothPrinter.connectBluetoothPrinter()
+                val escposPrinter = bluetoothPrinter.printer
+
+                escposPrinter?.let { printer ->
+                    var printItems = ""
+
+                    printItems += bluetoothPrinter.getPrintableHeader(
+                        title = "MARKET LIST",
+                        marketDate.toString(),
+                    )
+                    printItems += getPrintableItems(marketList.value)
+
+                    printItems += "[L]-------------------------------\n"
+                    printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
+                    printItems += "[L]-------------------------------\n"
+
+                    printer.printFormattedTextAndCut(printItems, 10f)
+                    analyticsHelper.logPrintMarketList(marketDate)
+                }
+            } catch (e: Exception) {
+                viewModelScope.launch {
+                    mEventFlow.emit(UiEvent.OnError("Unable to print"))
+                }
+            }
+        }
+    }
+
+    private fun getPrintableItems(marketList: List<MarketItemAndQuantity>): String {
+        var printableString = ""
+
+        val groupByType = marketList.groupBy {
+            it.typeName
+        }
+
+        groupByType.forEach { (itemType, groupedByType) ->
+            val groupByListType = groupedByType.groupBy { it.listType }
+
+            if (groupByListType.isEmpty()) {
+                printableString += "[L]You have not added any item in the list\n"
+            }
+
+            groupByListType.forEach { (listType, groupedByList) ->
+
+                printableString += "[L]-------------------------------\n"
+                printableString += "[L]${itemType} [R]${listType}[${groupedByList.size}]\n"
+                printableString += "[L]-------------------------------\n"
+
+                groupedByList.fastForEachIndexed { i, it ->
+                    printableString += "[L]${it.itemName} [R]${it.itemQuantity?.toSafeString()} ${it.unitName}\n"
+
+                    if (i != groupedByList.size - 1) {
+                        printableString += "[L]\n"
+                    }
+                }
+            }
+        }
+
+        return printableString
+    }
+
+}
+
+private fun AnalyticsHelper.logPrintMarketList(marketDate: Long) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "market_list_printed_for",
+            extras = listOf(
+                AnalyticsEvent.Param("market_list_printed_for", marketDate.toFormattedDate),
+            ),
+        ),
+    )
 }

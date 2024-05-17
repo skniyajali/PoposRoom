@@ -20,93 +20,79 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toRupee
 import com.niyaj.common.utils.toSafeString
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.model.ItemQuantityAndType
-import com.niyaj.model.MarketItem
+import com.niyaj.designsystem.theme.MintCream
+import com.niyaj.model.MarketItemAndQuantity
 import com.niyaj.ui.components.IncDecBox
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
 @Composable
 fun MarketItemWithQuantityCard(
-    item: MarketItem,
-    itemQuantity: ItemQuantityAndType,
-    itemState: (itemId: Int) -> ToggleableState,
+    item: MarketItemAndQuantity,
     onAddItem: (itemId: Int) -> Unit,
     onRemoveItem: (itemId: Int) -> Unit,
     onDecreaseQuantity: (itemId: Int) -> Unit,
     onIncreaseQuantity: (itemId: Int) -> Unit,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) = trace("MarketItemWithQuantityCard") {
-    val interactionSource = remember { MutableInteractionSource() }
-    val toggleState by rememberUpdatedState(newValue = itemState(item.itemId))
-    val quantity by rememberUpdatedState(newValue = itemQuantity.itemQuantity)
 
-    val addItem = key(item.itemId) {
-        SwipeAction(
-            icon = rememberVectorPainter(PoposIcons.Add),
-            background = MaterialTheme.colorScheme.primaryContainer,
-            isUndo = true,
-            onSwipe = {
-                onAddItem(item.itemId)
-            }
-        )
-    }
-
-    val removeItem = key(item.itemId) {
-        SwipeAction(
-            icon = rememberVectorPainter(PoposIcons.Delete),
-            background = MaterialTheme.colorScheme.secondaryContainer,
-            isUndo = true,
-            onSwipe = {
-                onRemoveItem(item.itemId)
-            },
-        )
+    val itemState by derivedStateOf {
+        item.itemQuantity?.let { quantity -> quantity >= 0.0 } ?: false
     }
 
     val color = animateColorAsState(
-        targetValue = when (toggleState) {
-            ToggleableState.Off -> MaterialTheme.colorScheme.outline
-            ToggleableState.Indeterminate -> MaterialTheme.colorScheme.error
-            else -> MaterialTheme.colorScheme.onBackground
-        },
-        label = "Animate Text Color"
+        targetValue = if (itemState) MaterialTheme.colorScheme.primary
+        else MaterialTheme.colorScheme.outline,
+        label = "Color State",
     )
 
     SwipeableActionsBox(
-        startActions = listOf(addItem),
-        endActions = listOf(removeItem),
-        backgroundUntilSwipeThreshold = MaterialTheme.colorScheme.background
+        startActions = listOf(
+            addSwipeAction {
+                if (!itemState) onAddItem(item.itemId)
+            },
+        ),
+        endActions = listOf(
+            removeSwipeAction {
+                if (itemState) onRemoveItem(item.itemId)
+            },
+        ),
+        backgroundUntilSwipeThreshold = MaterialTheme.colorScheme.background,
     ) {
         ListItem(
             leadingContent = {
-                TriStateCheckbox(
-                    state = toggleState,
-                    onClick = {
-                        onAddItem(item.itemId)
+                Checkbox(
+                    checked = itemState,
+                    onCheckedChange = {
+                        if (!itemState) {
+                            onAddItem(item.itemId)
+                        } else {
+                            onRemoveItem(item.itemId)
+                        }
                     },
-                    enabled = toggleState != ToggleableState.Indeterminate,
                     colors = CheckboxDefaults.colors(
                         checkedColor = MaterialTheme.colorScheme.primary,
                         disabledIndeterminateColor = MaterialTheme.colorScheme.secondary,
-                    )
+                    ),
                 )
             },
             headlineContent = {
@@ -123,10 +109,10 @@ fun MarketItemWithQuantityCard(
             },
             trailingContent = {
                 IncDecBox(
-                    quantity = quantity.toSafeString(),
-                    measureUnit = item.itemMeasureUnit?.unitName ?: "",
-                    enableDecreasing = quantity != 0.0 && toggleState == ToggleableState.On,
-                    enableIncreasing = toggleState == ToggleableState.On,
+                    quantity = item.itemQuantity?.toSafeString() ?: "0",
+                    measureUnit = item.unitName,
+                    enableDecreasing = (item.itemQuantity != 0.0) && itemState,
+                    enableIncreasing = itemState,
                     onDecrease = {
                         onDecreaseQuantity(item.itemId)
                     },
@@ -136,18 +122,138 @@ fun MarketItemWithQuantityCard(
                 )
             },
             colors = ListItemDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.background
+                containerColor = MintCream,
             ),
             modifier = Modifier
                 .fillMaxWidth()
+                .shadow(1.dp)
                 .clickable(
                     interactionSource = interactionSource,
                     indication = null,
-                    enabled = itemState(item.itemId) != ToggleableState.On,
+                    enabled = !itemState,
                     onClick = {
                         onAddItem(item.itemId)
-                    }
-                )
+                    },
+                ),
         )
     }
+}
+
+@Composable
+fun MarketItemWithQuantityCard(
+    item: MarketItemAndQuantity,
+    onAddItem: (listTypeId: Int, itemId: Int) -> Unit,
+    onRemoveItem: (listTypeId: Int, itemId: Int) -> Unit,
+    onDecreaseQuantity: (listTypeId: Int, itemId: Int) -> Unit,
+    onIncreaseQuantity: (listTypeId: Int, itemId: Int) -> Unit,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+) = trace("MarketItemWithQuantityCard") {
+
+    val itemState by derivedStateOf {
+        item.itemQuantity?.let { quantity -> quantity >= 0.0 } ?: false
+    }
+
+    val color = animateColorAsState(
+        targetValue = if (itemState) MaterialTheme.colorScheme.primary
+        else MaterialTheme.colorScheme.outline,
+        label = "Color State",
+    )
+
+    SwipeableActionsBox(
+        startActions = listOf(
+            addSwipeAction {
+                if (!itemState) onAddItem(item.listWithTypeId, item.itemId)
+            },
+        ),
+        endActions = listOf(
+            removeSwipeAction {
+                if (itemState) onRemoveItem(item.listWithTypeId, item.itemId)
+            },
+        ),
+        backgroundUntilSwipeThreshold = MaterialTheme.colorScheme.background,
+    ) {
+        ListItem(
+            leadingContent = {
+                Checkbox(
+                    checked = itemState,
+                    onCheckedChange = {
+                        if (!itemState) {
+                            onAddItem(item.listWithTypeId, item.itemId)
+                        } else {
+                            onRemoveItem(item.listWithTypeId, item.itemId)
+                        }
+                    },
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = MaterialTheme.colorScheme.primary,
+                        disabledIndeterminateColor = MaterialTheme.colorScheme.secondary,
+                    ),
+                )
+            },
+            headlineContent = {
+                Text(
+                    text = item.itemName,
+                    fontWeight = FontWeight.SemiBold,
+                    color = color.value,
+                )
+            },
+            supportingContent = {
+                item.itemPrice?.let {
+                    Text(text = it.toRupee)
+                }
+            },
+            trailingContent = {
+                IncDecBox(
+                    quantity = item.itemQuantity?.toSafeString() ?: "0",
+                    measureUnit = item.unitName,
+                    enableDecreasing = (item.itemQuantity != 0.0) && itemState,
+                    enableIncreasing = itemState,
+                    onDecrease = {
+                        onDecreaseQuantity(item.listWithTypeId, item.itemId)
+                    },
+                    onIncrease = {
+                        onIncreaseQuantity(item.listWithTypeId, item.itemId)
+                    },
+                )
+            },
+            colors = ListItemDefaults.colors(
+                containerColor = MintCream,
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .shadow(1.dp)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    enabled = !itemState,
+                    onClick = {
+                        onAddItem(item.listWithTypeId, item.itemId)
+                    },
+                ),
+        )
+    }
+}
+
+
+@Composable
+fun addSwipeAction(
+    onSwipe: () -> Unit,
+): SwipeAction {
+    return SwipeAction(
+        icon = rememberVectorPainter(PoposIcons.Add),
+        background = MaterialTheme.colorScheme.primaryContainer,
+        isUndo = false,
+        onSwipe = onSwipe,
+    )
+}
+
+@Composable
+fun removeSwipeAction(
+    onSwipe: () -> Unit,
+): SwipeAction {
+    return SwipeAction(
+        icon = rememberVectorPainter(PoposIcons.Delete),
+        background = MaterialTheme.colorScheme.secondaryContainer,
+        isUndo = false,
+        onSwipe = onSwipe,
+    )
 }

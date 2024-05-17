@@ -36,6 +36,8 @@ object MarketListTestTags {
     const val CREATE_NEW_LIST = "Create New List"
     const val UPDATE_LIST = "Update List"
 
+    const val TYPES_NOTE_TEXT = "Please select at least one list type."
+
 
     const val MARKET_ITEM_TYPE_FIELD = "Item Type"
     const val MARKET_ITEM_TYPE_ERROR_TAG = "Item Type Error"
@@ -52,8 +54,6 @@ object MarketListTestTags {
     const val MARKET_LIST_ITEM_DESC = "Item Description"
 
     const val MARKET_ITEM_TYPE_EMPTY_ERROR = "Item type must not be empty."
-    const val MARKET_ITEM_TYPE_DIGIT_ERROR = "Item type must not contains any digit."
-    const val MARKET_ITEM_TYPE_LENGTH_ERROR = "Item type must be at least 4 characters long."
 
     const val MARKET_ITEM_NAME_EMPTY_ERROR = "Item name must not be empty."
     const val MARKET_ITEM_NAME_DIGIT_ERROR = "Item name must not contains any digit."

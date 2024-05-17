@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.ui.components
 
 import androidx.compose.foundation.BorderStroke
@@ -6,6 +22,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.AssistChipDefaults.assistChipBorder
 import androidx.compose.material3.ChipColors
 import androidx.compose.material3.ElevatedFilterChip
@@ -22,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.theme.IconSizeMini
@@ -65,6 +83,8 @@ fun StandardFilterChip(
     selected: Boolean = false,
     containerColor: Color = MaterialTheme.colorScheme.surface,
     selectedColor: Color = MaterialTheme.colorScheme.secondary,
+    textStyle: TextStyle = MaterialTheme.typography.labelSmall,
+    fontWeight: FontWeight = FontWeight.Normal,
     onClick: () -> Unit = {},
 ) {
     ElevatedFilterChip(
@@ -74,7 +94,8 @@ fun StandardFilterChip(
         label = {
             Text(
                 text = text,
-                style = MaterialTheme.typography.labelSmall
+                style = textStyle,
+                fontWeight = fontWeight,
             )
         },
         leadingIcon = {
@@ -87,8 +108,10 @@ fun StandardFilterChip(
         },
         colors = FilterChipDefaults.elevatedFilterChipColors(
             containerColor = containerColor,
-            selectedContainerColor = selectedColor
-        )
+            selectedContainerColor = selectedColor,
+            labelColor = contentColorFor(backgroundColor = containerColor),
+            iconColor = contentColorFor(backgroundColor = containerColor),
+        ),
     )
 }
 
@@ -146,6 +169,8 @@ fun StandardOutlinedAssistChip(
     text: String,
     icon: ImageVector,
     trailingIcon: ImageVector? = null,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
+    textStyle: TextStyle = MaterialTheme.typography.labelSmall,
     onClick: () -> Unit = {},
 ) {
     AssistChip(
@@ -154,21 +179,27 @@ fun StandardOutlinedAssistChip(
         label = {
             Text(
                 text = text,
-                style = MaterialTheme.typography.labelSmall
+                style = textStyle
             )
         },
         leadingIcon = {
             Icon(
                 imageVector = icon,
-                contentDescription = "$text Leading Icon",
-                modifier = Modifier.size(IconSizeMini)
+                contentDescription = "$text Leading Icon"
             )
         },
         trailingIcon = {
             trailingIcon?.let {
                 Icon(imageVector = it, contentDescription = "chip icon")
             }
-        }
+        },
+        border = AssistChipDefaults.assistChipBorder(
+            enabled = true,
+            borderColor = containerColor
+        ),
+        colors = AssistChipDefaults.assistChipColors(
+            leadingIconContentColor = containerColor,
+        ),
     )
 }
 

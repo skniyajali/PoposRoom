@@ -18,6 +18,7 @@ package com.niyaj.data.repository
 
 import com.niyaj.common.result.Resource
 import com.niyaj.model.MarketItem
+import com.niyaj.model.MarketTypeIdAndName
 import com.niyaj.model.MeasureUnit
 import kotlinx.coroutines.flow.Flow
 
@@ -31,7 +32,7 @@ interface MarketItemRepository {
 
     suspend fun getMarketItemById(itemId: Int): Resource<MarketItem?>
 
-    suspend fun getAllItemType(searchText: String): Flow<List<String>>
+    suspend fun getAllItemType(searchText: String): Flow<List<MarketTypeIdAndName>>
 
     suspend fun upsertMarketItem(newMarketItem: MarketItem): Resource<Boolean>
 

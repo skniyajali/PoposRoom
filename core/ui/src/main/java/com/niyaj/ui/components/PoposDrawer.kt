@@ -81,7 +81,7 @@ fun PoposDrawer(
         modifier = modifier,
     ) {
         Column(
-            modifier = Modifier.weight(0.3f)
+            modifier = Modifier.weight(0.3f),
         ) {
             Spacer(modifier = Modifier.height(SpaceSmall))
 
@@ -92,7 +92,7 @@ fun PoposDrawer(
 
         LazyColumn(
             modifier = Modifier
-                .weight(2.5f)
+                .weight(2.5f),
         ) {
             item("Divider") {
                 HorizontalDivider(thickness = 1.dp, modifier = Modifier.fillMaxWidth())
@@ -108,7 +108,7 @@ fun PoposDrawer(
                     selected = currentRoute == Screens.HOME_SCREEN,
                     onClick = {
                         onNavigateToScreen(Screens.HOME_SCREEN)
-                    }
+                    },
                 )
             }
 
@@ -121,7 +121,7 @@ fun PoposDrawer(
                     selected = currentRoute == Screens.CART_SCREEN,
                     onClick = {
                         onNavigateToScreen(Screens.CART_SCREEN)
-                    }
+                    },
                 )
             }
 
@@ -134,7 +134,7 @@ fun PoposDrawer(
                     selected = currentRoute == Screens.ORDER_SCREEN,
                     onClick = {
                         onNavigateToScreen(Screens.ORDER_SCREEN)
-                    }
+                    },
                 )
             }
 
@@ -147,7 +147,7 @@ fun PoposDrawer(
                     selected = currentRoute == Screens.REPORT_SCREEN,
                     onClick = {
                         onNavigateToScreen(Screens.REPORT_SCREEN)
-                    }
+                    },
                 )
             }
 
@@ -160,7 +160,7 @@ fun PoposDrawer(
                     selected = currentRoute == Screens.EXPENSES_SCREEN,
                     onClick = {
                         onNavigateToScreen(Screens.EXPENSES_SCREEN)
-                    }
+                    },
                 )
             }
 
@@ -173,7 +173,7 @@ fun PoposDrawer(
                     selected = currentRoute == Screens.MARKET_LIST_SCREEN,
                     onClick = {
                         onNavigateToScreen(Screens.MARKET_LIST_SCREEN)
-                    }
+                    },
                 )
             }
 
@@ -183,13 +183,13 @@ fun PoposDrawer(
                 HorizontalDivider(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(LightColor12)
+                        .background(LightColor12),
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
 
                 val doesExpanded = currentRoute in listOf(
-                    Screens.CART_ORDER_SCREEN
+                    Screens.CART_ORDER_SCREEN,
                 )
 
                 StandardExpandable(
@@ -208,7 +208,7 @@ fun PoposDrawer(
                         Icon(
                             imageVector = PoposIcons.OutlinedAllInbox,
                             contentDescription = "Cart Order Icon",
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = MaterialTheme.colorScheme.onSurface,
                         )
                         Spacer(modifier = Modifier.width(SpaceSmall))
                     },
@@ -217,11 +217,11 @@ fun PoposDrawer(
                             modifier = modifier,
                             onClick = {
                                 ordersExpanded.value = !ordersExpanded.value
-                            }
+                            },
                         ) {
                             Icon(
                                 imageVector = PoposIcons.ArrowDown,
-                                contentDescription = "Expand Cart Order"
+                                contentDescription = "Expand Cart Order",
                             )
                         }
                     },
@@ -237,7 +237,7 @@ fun PoposDrawer(
                                 selected = currentRoute == Screens.ORDER_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.ORDER_SCREEN)
-                                }
+                                },
                             )
                             Spacer(modifier = Modifier.height(SpaceSmall))
                             PoposDrawerItem(
@@ -247,7 +247,7 @@ fun PoposDrawer(
                                 selected = currentRoute == Screens.CART_ORDER_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.CART_ORDER_SCREEN)
-                                }
+                                },
                             )
                         }
                     },
@@ -260,6 +260,7 @@ fun PoposDrawer(
                 val doesExpanded = currentRoute in listOf(
                     Screens.MARKET_ITEM_SCREEN,
                     Screens.MEASURE_UNIT_SCREEN,
+                    Screens.MARKET_TYPE_SCREEN,
                 )
 
                 StandardExpandable(
@@ -278,7 +279,7 @@ fun PoposDrawer(
                         Icon(
                             imageVector = PoposIcons.OutlinedKitchen,
                             contentDescription = "Market Item, Measure Units Icon",
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = MaterialTheme.colorScheme.onSurface,
                         )
                         Spacer(modifier = Modifier.width(SpaceSmall))
                     },
@@ -287,11 +288,11 @@ fun PoposDrawer(
                             modifier = modifier,
                             onClick = {
                                 marketItemExpanded.value = !marketItemExpanded.value
-                            }
+                            },
                         ) {
                             Icon(
                                 imageVector = PoposIcons.ArrowDown,
-                                contentDescription = "Expand Cart Order"
+                                contentDescription = "Expand Cart Order",
                             )
                         }
                     },
@@ -299,7 +300,18 @@ fun PoposDrawer(
                         Column(
                             modifier = Modifier
                                 .padding(SpaceSmall),
+                            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
                         ) {
+                            PoposDrawerItem(
+                                text = "Market Types",
+                                icon = if (currentRoute == Screens.MARKET_TYPE_SCREEN)
+                                    PoposIcons.Category else PoposIcons.OutlinedCategory,
+                                selected = currentRoute == Screens.MARKET_TYPE_SCREEN,
+                                onClick = {
+                                    onNavigateToScreen(Screens.MARKET_TYPE_SCREEN)
+                                },
+                            )
+
                             PoposDrawerItem(
                                 text = "Market Item",
                                 icon = if (currentRoute == Screens.MARKET_ITEM_SCREEN)
@@ -307,9 +319,9 @@ fun PoposDrawer(
                                 selected = currentRoute == Screens.MARKET_ITEM_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.MARKET_ITEM_SCREEN)
-                                }
+                                },
                             )
-                            Spacer(modifier = Modifier.height(SpaceSmall))
+
                             PoposDrawerItem(
                                 text = "Measure Units",
                                 icon = if (currentRoute == Screens.MEASURE_UNIT_SCREEN)
@@ -317,7 +329,7 @@ fun PoposDrawer(
                                 selected = currentRoute == Screens.MEASURE_UNIT_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.MEASURE_UNIT_SCREEN)
-                                }
+                                },
                             )
                         }
                     },
@@ -329,7 +341,7 @@ fun PoposDrawer(
 
                 val doesExpanded = currentRoute in listOf(
                     Screens.CUSTOMER_SCREEN,
-                    Screens.ADDRESS_SCREEN
+                    Screens.ADDRESS_SCREEN,
                 )
 
                 StandardExpandable(
@@ -348,7 +360,7 @@ fun PoposDrawer(
                         Icon(
                             imageVector = PoposIcons.OutlinedBadge,
                             contentDescription = "Customers, Addresses Icon",
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = MaterialTheme.colorScheme.onSurface,
                         )
                         Spacer(modifier = Modifier.width(SpaceSmall))
                     },
@@ -357,11 +369,11 @@ fun PoposDrawer(
                             modifier = modifier,
                             onClick = {
                                 customersExpanded.value = !customersExpanded.value
-                            }
+                            },
                         ) {
                             Icon(
                                 imageVector = PoposIcons.ArrowDown,
-                                contentDescription = "Expand Customer, Addresses"
+                                contentDescription = "Expand Customer, Addresses",
                             )
                         }
                     },
@@ -376,7 +388,7 @@ fun PoposDrawer(
                                 selected = currentRoute == Screens.CUSTOMER_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.CUSTOMER_SCREEN)
-                                }
+                                },
                             )
 
                             Spacer(modifier = Modifier.height(SpaceSmall))
@@ -388,7 +400,7 @@ fun PoposDrawer(
                                 selected = currentRoute == Screens.ADDRESS_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.ADDRESS_SCREEN)
-                                }
+                                },
                             )
                         }
                     },
@@ -401,7 +413,7 @@ fun PoposDrawer(
                 val doesExpanded = currentRoute in listOf(
                     Screens.EMPLOYEE_SCREEN,
                     Screens.PAYMENT_SCREEN,
-                    Screens.ABSENT_SCREEN
+                    Screens.ABSENT_SCREEN,
                 )
 
                 StandardExpandable(
@@ -420,7 +432,7 @@ fun PoposDrawer(
                         Icon(
                             imageVector = PoposIcons.OutlinedPeopleAlt,
                             contentDescription = "Employee, Salary, Advance Icon",
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = MaterialTheme.colorScheme.onSurface,
                         )
                         Spacer(modifier = Modifier.width(SpaceSmall))
                     },
@@ -429,11 +441,11 @@ fun PoposDrawer(
                             modifier = modifier,
                             onClick = {
                                 employeeExpanded.value = !employeeExpanded.value
-                            }
+                            },
                         ) {
                             Icon(
                                 imageVector = PoposIcons.ArrowDown,
-                                contentDescription = "Expand Employee"
+                                contentDescription = "Expand Employee",
                             )
                         }
                     },
@@ -448,7 +460,7 @@ fun PoposDrawer(
                                 selected = currentRoute == Screens.EMPLOYEE_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.EMPLOYEE_SCREEN)
-                                }
+                                },
                             )
 
                             Spacer(modifier = Modifier.height(SpaceSmall))
@@ -460,7 +472,7 @@ fun PoposDrawer(
                                 selected = currentRoute == Screens.ABSENT_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.ABSENT_SCREEN)
-                                }
+                                },
                             )
 
                             Spacer(modifier = Modifier.height(SpaceSmall))
@@ -472,7 +484,7 @@ fun PoposDrawer(
                                 selected = currentRoute == Screens.PAYMENT_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.PAYMENT_SCREEN)
-                                }
+                                },
                             )
                         }
                     },
@@ -486,7 +498,7 @@ fun PoposDrawer(
                     Screens.CATEGORY_SCREEN,
                     Screens.PRODUCT_SCREEN,
                     Screens.ADD_ON_ITEM_SCREEN,
-                    Screens.CHARGES_SCREEN
+                    Screens.CHARGES_SCREEN,
                 )
 
                 StandardExpandable(
@@ -505,7 +517,7 @@ fun PoposDrawer(
                         Icon(
                             imageVector = PoposIcons.OutlinedWidgets,
                             contentDescription = "Products, Categories Icon",
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = MaterialTheme.colorScheme.onSurface,
                         )
 
                         Spacer(modifier = Modifier.width(SpaceSmall))
@@ -515,7 +527,7 @@ fun PoposDrawer(
                             modifier = modifier,
                             onClick = {
                                 expanded.value = !expanded.value
-                            }
+                            },
                         ) {
                             Icon(
                                 imageVector = PoposIcons.ArrowDown,
@@ -535,7 +547,7 @@ fun PoposDrawer(
                                 selected = currentRoute == Screens.CATEGORY_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.CATEGORY_SCREEN)
-                                }
+                                },
                             )
 
                             Spacer(modifier = Modifier.height(SpaceSmall))
@@ -547,7 +559,7 @@ fun PoposDrawer(
                                 selected = currentRoute == Screens.PRODUCT_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.PRODUCT_SCREEN)
-                                }
+                                },
                             )
 
                             Spacer(modifier = Modifier.height(SpaceSmall))
@@ -559,7 +571,7 @@ fun PoposDrawer(
                                 selected = currentRoute == Screens.ADD_ON_ITEM_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.ADD_ON_ITEM_SCREEN)
-                                }
+                                },
                             )
 
                             Spacer(modifier = Modifier.height(SpaceSmall))
@@ -571,7 +583,7 @@ fun PoposDrawer(
                                 selected = currentRoute == Screens.CHARGES_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.CHARGES_SCREEN)
-                                }
+                                },
                             )
 
                         }
@@ -598,7 +610,7 @@ fun PoposDrawer(
                         Icon(
                             imageVector = PoposIcons.OutlinedSettings,
                             contentDescription = "Settings Icon",
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = MaterialTheme.colorScheme.onSurface,
                         )
                         Spacer(modifier = Modifier.width(SpaceSmall))
                     },
@@ -607,11 +619,11 @@ fun PoposDrawer(
                             modifier = modifier,
                             onClick = {
                                 settingsExpanded.value = !settingsExpanded.value
-                            }
+                            },
                         ) {
                             Icon(
                                 imageVector = PoposIcons.ArrowDown,
-                                contentDescription = "Expand Settings"
+                                contentDescription = "Expand Settings",
                             )
                         }
                     },
@@ -626,7 +638,7 @@ fun PoposDrawer(
                                 selected = currentRoute == Screens.REMINDER_SCREEN,
                                 onClick = {
 //                                    onNavigateToScreen(ReminderScreenDestination())
-                                }
+                                },
                             )
                             Spacer(modifier = Modifier.height(SpaceSmall))
                             PoposDrawerItem(
@@ -636,7 +648,7 @@ fun PoposDrawer(
                                 selected = currentRoute == Screens.SETTINGS_SCREEN,
                                 onClick = {
 //                                    onNavigateToScreen(SettingsScreenDestination())
-                                }
+                                },
                             )
                             Spacer(modifier = Modifier.height(SpaceSmall))
 
@@ -647,7 +659,7 @@ fun PoposDrawer(
                                 selected = currentRoute == Screens.PRINTER_INFO_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.PRINTER_INFO_SCREEN)
-                                }
+                                },
                             )
                         }
                     },
@@ -656,7 +668,7 @@ fun PoposDrawer(
         }
 
         Column(
-            modifier = Modifier.weight(0.2f)
+            modifier = Modifier.weight(0.2f),
         ) {
             HorizontalDivider(thickness = 1.dp, modifier = Modifier.fillMaxWidth())
 
@@ -668,7 +680,7 @@ fun PoposDrawer(
                 selected = false,
                 onClick = {
 
-                }
+                },
             )
         }
     }
@@ -681,7 +693,7 @@ fun PoposDrawerHeader(
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
             modifier = Modifier.padding(start = SpaceSmallMax),
@@ -692,14 +704,14 @@ fun PoposDrawerHeader(
                 contentDescription = "Restaurant Logo",
                 modifier = Modifier
                     .size(ProfilePictureSizeSmall)
-                    .clip(RoundedCornerShape(SpaceMini))
+                    .clip(RoundedCornerShape(SpaceMini)),
             )
 
             Spacer(modifier = Modifier.width(SpaceMedium))
 
             Column(
                 modifier = Modifier,
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
                     text = stringResource(id = R.string.restaurant_name),
@@ -712,7 +724,7 @@ fun PoposDrawerHeader(
                 Text(
                     text = stringResource(id = R.string.restaurant_slogan),
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
                 )
             }
         }
@@ -722,7 +734,7 @@ fun PoposDrawerHeader(
             onClick = {
                 onNavigateToScreen(Screens.PROFILE_SCREEN)
             },
-            modifier = Modifier.padding(end = SpaceSmall)
+            modifier = Modifier.padding(end = SpaceSmall),
         ) {
             Icon(
                 imageVector = PoposIcons.OutlinedAccountCircle,
@@ -748,7 +760,7 @@ fun PoposDrawerItem(
             Icon(
                 imageVector = icon,
                 contentDescription = text.plus("Icon"),
-                tint = iconColor
+                tint = iconColor,
             )
         },
         label = { Text(text) },
@@ -757,7 +769,7 @@ fun PoposDrawerItem(
         onClick = onClick,
         modifier = Modifier
             .height(48.dp)
-            .padding(NavigationDrawerItemDefaults.ItemPadding)
+            .padding(NavigationDrawerItemDefaults.ItemPadding),
     )
 }
 

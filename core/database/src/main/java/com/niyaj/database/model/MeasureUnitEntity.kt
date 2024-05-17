@@ -16,6 +16,7 @@
 
 package com.niyaj.database.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.niyaj.model.MeasureUnit
@@ -23,12 +24,12 @@ import com.niyaj.model.MeasureUnit
 @Entity(tableName = "measure_unit")
 data class MeasureUnitEntity(
     @PrimaryKey(autoGenerate = true)
-//    @ColumnInfo(index = true)
+    @ColumnInfo(index = true)
     val unitId: Int = 0,
 
     val unitName: String,
 
-    val unitValue: Double
+    val unitValue: Double,
 )
 
 

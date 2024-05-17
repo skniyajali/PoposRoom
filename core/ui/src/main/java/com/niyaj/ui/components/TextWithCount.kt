@@ -128,6 +128,7 @@ fun CountBox(
     count: String,
     backgroundColor: Color = MaterialTheme.colorScheme.primary,
     textColor: Color = contentColorFor(backgroundColor = backgroundColor),
+    style: TextStyle = MaterialTheme.typography.labelSmall,
 ) {
     Column(
         modifier = modifier
@@ -138,7 +139,7 @@ fun CountBox(
     ) {
         Text(
             text = count,
-            style = MaterialTheme.typography.labelSmall,
+            style = style,
             color = textColor,
             modifier = Modifier,
         )

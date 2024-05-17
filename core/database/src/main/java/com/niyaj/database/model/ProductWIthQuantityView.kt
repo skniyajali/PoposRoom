@@ -16,6 +16,7 @@
 
 package com.niyaj.database.model
 
+import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
 import com.niyaj.model.ProductWithQuantity
 
@@ -25,15 +26,21 @@ import com.niyaj.model.ProductWithQuantity
         FROM product
         LEFT JOIN cart ON product.productId = cart.productId 
         AND CASE WHEN (SELECT orderId FROM selected LIMIT 1) IS NOT NULL
-        THEN cart.orderId = COALESCE((SELECT orderId FROM selected LIMIT 1), 0) ELSE 1 END
+        THEN cart.orderId = COALESCE((SELECT orderId FROM selected LIMIT 1), 0) ELSE 0 END
     """,
     viewName = "product_with_quantity",
 )
 data class ProductWIthQuantityView(
     val categoryId: Int,
+
+    @ColumnInfo(index = true)
     val productId: Int,
+
+    @ColumnInfo(index = true)
     val productName: String,
+
     val productPrice: Int,
+
     val quantity: Int = 0,
 )
 

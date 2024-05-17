@@ -126,7 +126,7 @@ class MeasureUnitSettingsViewModel @Inject constructor(
     }
 }
 
-internal fun AnalyticsHelper.logImportedUnitsFromFile(totalUnits: Int) {
+private fun AnalyticsHelper.logImportedUnitsFromFile(totalUnits: Int) {
     logEvent(
         event = AnalyticsEvent(
             type = "measure_unit_imported_from_file",
@@ -137,7 +137,7 @@ internal fun AnalyticsHelper.logImportedUnitsFromFile(totalUnits: Int) {
     )
 }
 
-internal fun AnalyticsHelper.logImportedUnitsToDatabase(totalUnits: Int) {
+private fun AnalyticsHelper.logImportedUnitsToDatabase(totalUnits: Int) {
     logEvent(
         event = AnalyticsEvent(
             type = "measure_unit_imported_to_database",
@@ -148,7 +148,7 @@ internal fun AnalyticsHelper.logImportedUnitsToDatabase(totalUnits: Int) {
     )
 }
 
-internal fun AnalyticsHelper.logExportedUnitsToFile(totalItems: Int) {
+private fun AnalyticsHelper.logExportedUnitsToFile(totalItems: Int) {
     logEvent(
         event = AnalyticsEvent(
             type = "measure_unit_exported_to_file",

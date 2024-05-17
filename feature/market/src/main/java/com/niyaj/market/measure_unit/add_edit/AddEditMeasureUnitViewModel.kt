@@ -60,6 +60,10 @@ class AddEditMeasureUnitViewModel @Inject constructor(
         savedStateHandle.get<Int>("unitId")?.let {
             getMeasureUnitById(it)
         }
+
+        savedStateHandle.get<String>("unitName")?.let {
+            state = state.copy(unitName = it)
+        }
     }
 
     val nameError = snapshotFlow { state.unitName }.mapLatest {

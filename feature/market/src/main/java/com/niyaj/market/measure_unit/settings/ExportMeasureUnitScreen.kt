@@ -172,7 +172,7 @@ fun ExportMeasureUnitScreen(
             if (showSearchBar) {
                 StandardSearchBar(
                     searchText = searchText,
-                    placeholderText = "Search for categories...",
+                    placeholderText = "Search for items...",
                     onClearClick = viewModel::clearSearchText,
                     onSearchTextChanged = viewModel::searchTextChanged,
                 )
@@ -284,9 +284,7 @@ fun ExportMeasureUnitScreen(
                 ) { item: MeasureUnit ->
                     MeasureUnitItem(
                         item = item,
-                        doesSelected = {
-                            selectedItems.contains(it)
-                        },
+                        doesSelected = selectedItems::contains,
                         onClick = viewModel::selectItem,
                         onLongClick = viewModel::selectItem,
                     )

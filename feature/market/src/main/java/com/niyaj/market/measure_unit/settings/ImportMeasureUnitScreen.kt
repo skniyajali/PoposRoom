@@ -65,6 +65,7 @@ import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
@@ -233,6 +234,8 @@ fun ImportMeasureUnitScreen(
             } else if (isLoading) {
                 LoadingIndicator()
             } else {
+                TrackScrollJank(scrollableState = lazyGridState, stateName = "ImportUnitList::State")
+
                 LazyVerticalGrid(
                     modifier = Modifier
                         .fillMaxSize()

@@ -27,16 +27,14 @@ import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_NAME_EMPTY_ERROR
 import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_NAME_LENGTH_ERROR
 import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_PRICE_INVALID
 import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_PRICE_LESS_THAN_FIVE_ERROR
-import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_TYPE_DIGIT_ERROR
 import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_TYPE_EMPTY_ERROR
-import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_TYPE_LENGTH_ERROR
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.MarketItemRepository
 import com.niyaj.data.repository.validation.MarketItemValidationRepository
 import com.niyaj.database.dao.MarketItemDao
-import com.niyaj.database.model.MarketItemEntity
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.MarketItem
+import com.niyaj.model.MarketTypeIdAndName
 import com.niyaj.model.MeasureUnit
 import com.niyaj.model.searchMarketItems
 import com.niyaj.model.searchMeasureUnit
@@ -77,7 +75,7 @@ class MarketItemRepositoryImpl(
             marketItemDao.getAllMarketItems()
                 .mapLatest { list ->
                     list.filterNot {
-                        removedItems.contains(it.itemId)
+                        removedItems.contains(it.marketItem.itemId)
                     }.map {
                         it.asExternalModel()
                     }.searchMarketItems(searchText)
@@ -85,11 +83,13 @@ class MarketItemRepositoryImpl(
         }
     }
 
-    override suspend fun getAllItemType(searchText: String): Flow<List<String>> {
+    override suspend fun getAllItemType(searchText: String): Flow<List<MarketTypeIdAndName>> {
         return withContext(ioDispatcher) {
             marketItemDao.getAllItemTypes().mapLatest { list ->
                 list.filter {
-                    it.contains(searchText, true)
+                    if (searchText.isNotEmpty()) {
+                        it.typeName.contains(searchText, ignoreCase = true)
+                    } else true
                 }
             }
         }
@@ -110,52 +110,22 @@ class MarketItemRepositoryImpl(
     override suspend fun upsertMarketItem(newMarketItem: MarketItem): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
-                val validateItemType = validateItemType(newMarketItem.itemType)
+                val validateItemType = validateItemType(newMarketItem.itemType.typeId)
                 val validateName = validateItemName(newMarketItem.itemName, newMarketItem.itemId)
                 val validatePrice = validateItemPrice(newMarketItem.itemPrice)
-                val validateItemUnit =
-                    validateItemMeasureUnit(newMarketItem.itemMeasureUnit?.unitName ?: "")
+                val validateItemUnit = validateItemMeasureUnit(newMarketItem.itemMeasureUnit.unitId)
 
                 val hasError = listOf(
                     validateItemType,
                     validateName,
                     validatePrice,
-                    validateItemUnit
+                    validateItemUnit,
                 ).any { !it.successful }
 
                 if (!hasError) {
-                    val findUnit = newMarketItem.itemMeasureUnit?.let {
-                        marketItemDao.findMeasureUnitByIdOrName(it.unitId, it.unitName)
-                    }
+                    val result = marketItemDao.upsertMarketItem(newMarketItem.toEntity())
 
-                    val measureUnit = if (findUnit == null) {
-                        val result = newMarketItem.itemMeasureUnit?.toEntity()?.let {
-                            marketItemDao.upsertMeasureUnit(it)
-                        }
-                        result?.let {
-                            marketItemDao.getMeasureUnitById(it.toInt())
-                        }
-                    } else findUnit
-
-                    if (measureUnit == null) {
-                        Resource.Error("Unable to create or get Measure Unit")
-                    } else {
-
-                        val newItem = MarketItemEntity(
-                            itemId = newMarketItem.itemId,
-                            itemType = newMarketItem.itemType,
-                            itemName = newMarketItem.itemName,
-                            itemPrice = newMarketItem.itemPrice,
-                            itemDescription = newMarketItem.itemDescription,
-                            itemMeasureUnit = measureUnit,
-                            createdAt = System.currentTimeMillis(),
-                            updatedAt = if (newMarketItem.itemId == 0) null else System.currentTimeMillis()
-                        )
-
-                        val result = marketItemDao.upsertMarketItem(newItem)
-
-                        Resource.Success(result > 0)
-                    }
+                    Resource.Success(result > 0)
                 } else {
                     Resource.Error("Unable to create or update item")
                 }
@@ -191,32 +161,15 @@ class MarketItemRepositoryImpl(
         }
     }
 
-    override fun validateItemType(itemType: String): ValidationResult {
-        if (itemType.isEmpty()) {
+    override fun validateItemType(typeId: Int): ValidationResult {
+        if (typeId == 0) {
             return ValidationResult(
                 successful = false,
                 errorMessage = MARKET_ITEM_TYPE_EMPTY_ERROR,
             )
         }
 
-        if (itemType.length < 4) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = MARKET_ITEM_TYPE_LENGTH_ERROR,
-            )
-        }
-
-        val result = itemType.any { it.isDigit() }
-
-        if (result) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = MARKET_ITEM_TYPE_DIGIT_ERROR,
-            )
-        }
-
         return ValidationResult(successful = true)
-
     }
 
     override suspend fun validateItemName(itemName: String, itemId: Int?): ValidationResult {
@@ -258,8 +211,8 @@ class MarketItemRepositoryImpl(
         return ValidationResult(successful = true)
     }
 
-    override fun validateItemMeasureUnit(itemMeasureUnit: String): ValidationResult {
-        if (itemMeasureUnit.isEmpty()) {
+    override fun validateItemMeasureUnit(unitId: Int): ValidationResult {
+        if (unitId == 0) {
             return ValidationResult(
                 successful = false,
                 errorMessage = MARKET_ITEM_MEASURE_EMPTY_ERROR,

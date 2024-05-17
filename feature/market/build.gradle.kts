@@ -35,6 +35,9 @@ dependencies {
     implementation(libs.dialog.datetime)
     implementation(libs.saket.swipe)
 
+    implementation(project(":feature:printer"))
+    implementation(libs.pos.printer)
+
     //RaamCosta Library
     implementation(libs.raamcosta.animation.core)
     ksp(libs.raamcosta.ksp)

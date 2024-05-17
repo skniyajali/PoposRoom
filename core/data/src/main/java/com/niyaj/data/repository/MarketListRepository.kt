@@ -1,42 +1,47 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.data.repository
 
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
 import com.niyaj.model.MarketItemAndQuantity
-import com.niyaj.model.MarketItemWithQuantity
 import com.niyaj.model.MarketList
-import com.niyaj.model.MarketListWithItems
+import com.niyaj.model.MarketListAndType
+import com.niyaj.model.MarketListWithTypes
+import com.niyaj.model.MarketTypeIdAndListTypes
 import kotlinx.coroutines.flow.Flow
 
 interface MarketListRepository {
 
-    suspend fun getAllMarketLists(searchText: String): Flow<List<MarketListWithItems>>
+    suspend fun getAllMarketLists(searchText: String): Flow<List<MarketListWithTypes>>
 
-    suspend fun getMarketListById(marketId: Int): Flow<MarketList?>
+    suspend fun getAllMarketTypes(): Flow<List<MarketTypeIdAndListTypes>>
 
-    suspend fun getMarketItemsWithQuantityById(marketId: Int, searchText: String): Flow<List<MarketItemWithQuantity>>
+    suspend fun getMarketListById(marketId: Int): Flow<MarketListWithTypes?>
 
-    suspend fun getMarketItemsAndQuantity(marketId: Int): Flow<List<MarketItemAndQuantity>>
+    suspend fun getMarketDetail(marketId: Int): Flow<MarketListAndType>
 
-    suspend fun addOrIgnoreMarketList(newMarketList: MarketList): Resource<Boolean>
+    suspend fun getShareableMarketItems(listTypeIds: List<Int>): Flow<List<MarketItemAndQuantity>>
 
-    suspend fun updateMarketList(newMarketList: MarketList): Resource<Boolean>
-
-    suspend fun upsertMarketList(newMarketList: MarketList): Resource<Boolean>
-
-    suspend fun deleteMarketList(marketId: Int): Resource<Boolean>
+    suspend fun upsertMarketList(newMarketList: MarketListWithTypes): Resource<Boolean>
 
     suspend fun deleteMarketLists(marketIds: List<Int>): Resource<Boolean>
 
     suspend fun importMarketListsToDatabase(marketLists: List<MarketList>): Resource<Boolean>
-
-    suspend fun addMarketListItem(marketId: Int, itemId: Int): Resource<Boolean>
-
-    suspend fun removeMarketListItem(marketId: Int, itemId: Int): Resource<Boolean>
-
-    suspend fun increaseMarketListItemQuantity(marketId: Int, itemId: Int): Resource<Boolean>
-
-    suspend fun decreaseMarketListItemQuantity(marketId: Int, itemId: Int): Resource<Boolean>
 
     fun validateItemQuantity(quantity: String): ValidationResult
 

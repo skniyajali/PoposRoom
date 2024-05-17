@@ -16,187 +16,169 @@
 
 package com.niyaj.market.market_list.add_edit
 
-import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
-import android.net.Uri
-import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshotFlow
-import androidx.core.content.ContextCompat.startActivity
-import androidx.core.content.FileProvider
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.common.utils.getStartTime
 import com.niyaj.data.repository.MarketListRepository
-import com.niyaj.model.MarketItemAndQuantity
-import com.niyaj.ui.event.BaseViewModel
-import com.niyaj.ui.event.UiState
+import com.niyaj.model.MarketList
+import com.niyaj.model.MarketListWithType
+import com.niyaj.model.MarketListWithTypes
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
 class AddEditMarketListViewModel @Inject constructor(
     private val repository: MarketListRepository,
+    private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
-) : BaseViewModel() {
+) : ViewModel() {
 
     private val marketId = savedStateHandle.get<Int>("marketId") ?: 0
 
-    private val _selectedDate = MutableStateFlow("")
+    private val _selectedDate = MutableStateFlow(getStartTime)
     val selectedDate = _selectedDate.asStateFlow()
 
-    val marketList = snapshotFlow { marketId }.flatMapLatest {
-        repository.getMarketListById(it)
+    private val _selectedListTypes = mutableStateListOf<MarketListWithType>()
+
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
+
+    val marketTypes = snapshotFlow { marketId }.flatMapLatest {
+        repository.getAllMarketTypes()
     }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5_000),
-        null,
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList(),
     )
 
-    val marketItems = snapshotFlow { mSearchText.value }.flatMapLatest { searchText ->
-        repository.getMarketItemsWithQuantityById(marketId, searchText)
-    }.mapLatest { itemList ->
-        if (itemList.isEmpty()) UiState.Empty else {
-            totalItems = itemList.map { it.item.itemId }
-
-            UiState.Success(itemList)
+    init {
+        savedStateHandle.get<Int>("marketId")?.let {
+            if (it != 0) getMarketListByMarketId(it)
         }
+    }
+
+    private val _typeFlow = snapshotFlow { _selectedListTypes.size }
+
+    val isError = _typeFlow.mapLatest {
+        _selectedListTypes.isEmpty()
     }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5_000),
-        UiState.Loading,
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = true,
     )
 
-    private val _showList = MutableStateFlow(false)
-    val showList = _showList.asStateFlow()
 
-    private val _listItems = MutableStateFlow<List<MarketItemAndQuantity>>(emptyList())
-    val listItems = _listItems.asStateFlow()
-
-    fun onAddItem(itemId: Int) {
+    fun updateSelectedDate(date: String) {
         viewModelScope.launch {
-            when (val result = repository.addMarketListItem(marketId, itemId)) {
-                is Resource.Error -> {
-                    mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
+            _selectedDate.update { date }
+        }
+    }
+
+    fun updateSelectedListTypes(typeId: Int, listName: String) {
+        viewModelScope.launch {
+            val newType = MarketListWithType(
+                typeId = typeId,
+                listType = listName,
+                listWithTypeId = 0,
+                typeName = "",
+            )
+
+            if (_selectedListTypes.any { it.typeId == typeId && it.listType == listName }) {
+                _selectedListTypes.removeIf { it.typeId == typeId && it.listType == listName }
+            }else {
+                _selectedListTypes.add(newType)
+            }
+        }
+    }
+
+    fun isListTypeChecked(typeId: Int, listName: String): Boolean {
+        return _selectedListTypes.any { it.typeId == typeId && it.listType == listName }
+    }
+
+    fun isTypeChecked(typeId: Int): Boolean {
+        return _selectedListTypes.any { it.typeId == typeId }
+    }
+
+    fun createOrUpdateMarketList() {
+        viewModelScope.launch {
+            if (_selectedListTypes.isNotEmpty()) {
+                val marketList = MarketListWithTypes(
+                    marketList = MarketList(
+                        marketId = marketId,
+                        marketDate = _selectedDate.value.toLong(),
+                        createdAt = System.currentTimeMillis(),
+                        updatedAt = if (marketId == 0) System.currentTimeMillis() else null,
+                    ),
+                    marketTypes = _selectedListTypes
+                )
+
+                val result = repository.upsertMarketList(marketList)
+                val message = if (marketId == 0) "created" else "updated"
+
+                when (result) {
+                    is Resource.Error -> {
+                        _eventFlow.emit(
+                            UiEvent.OnError(result.message.toString()),
+                        )
+                    }
+
+                    is Resource.Success -> {
+                        _eventFlow.emit(
+                            UiEvent.OnSuccess("Market list $message successfully"),
+                        )
+                        analyticsHelper.logOnCreateOrUpdateMarketList(marketId, message)
+                    }
                 }
 
-                is Resource.Success -> {}
+                _selectedListTypes.clear()
             }
         }
     }
 
-    fun onRemoveItem(itemId: Int) {
+    private fun getMarketListByMarketId(marketId: Int) {
         viewModelScope.launch {
-            when (val result = repository.removeMarketListItem(marketId, itemId)) {
-                is Resource.Error -> {
-                    mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
+            repository.getMarketListById(marketId).collect { marketList ->
+                marketList?.let { withTypes ->
+                    _selectedDate.value = withTypes.marketList.marketDate.toString()
+
+                    _selectedListTypes.addAll(withTypes.marketTypes)
                 }
-
-                is Resource.Success -> {}
             }
         }
     }
 
-    fun onIncreaseQuantity(itemId: Int) {
-        viewModelScope.launch {
-            when (val result = repository.increaseMarketListItemQuantity(marketId, itemId)) {
-                is Resource.Error -> {
-                    mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
-                }
+}
 
-                is Resource.Success -> {}
-            }
-        }
-    }
+data class MarketTypeIdAndList(
+    val typeId: Int,
+    val listTypes: SnapshotStateList<MarketListWithType> = mutableStateListOf(),
+)
 
-    fun onDecreaseQuantity(itemId: Int) {
-        viewModelScope.launch {
-            when (val result = repository.decreaseMarketListItemQuantity(marketId, itemId)) {
-                is Resource.Error -> {
-                    mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
-                }
-
-                is Resource.Success -> {}
-            }
-        }
-    }
-
-    fun selectDate(selectedDate: String) {
-        viewModelScope.launch {
-            _selectedDate.value = selectedDate
-        }
-    }
-
-    private fun getListItems() {
-        viewModelScope.launch {
-            repository.getMarketItemsAndQuantity(marketId).collectLatest {
-                _listItems.value = it
-            }
-        }
-    }
-
-    fun onDismissList() {
-        viewModelScope.launch {
-            _showList.value = false
-        }
-    }
-
-    fun onShowList() {
-        viewModelScope.launch {
-            getListItems()
-            _showList.value = true
-        }
-    }
-
-    fun shareContent(
-        context: Context,
-        title: String,
-        uri: Uri,
-    ) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val sendIntent: Intent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_STREAM, uri)
-                setDataAndType(uri, "image/png")
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-
-            val shareIntent = Intent.createChooser(sendIntent, title)
-            startActivity(context, shareIntent, null)
-        }
-    }
-
-    suspend fun saveImage(image: Bitmap, context: Context): Uri? {
-        return withContext(Dispatchers.IO) {
-            val imagesFolder = File(context.cacheDir, "images")
-            try {
-                imagesFolder.mkdirs()
-                val file = File(imagesFolder, "shared_image.png")
-
-                val stream = FileOutputStream(file)
-                image.compress(Bitmap.CompressFormat.PNG, 90, stream)
-                stream.flush()
-                stream.close()
-
-                FileProvider.getUriForFile(context, "com.popos.fileprovider", file)
-            } catch (e: IOException) {
-                Log.d("saving bitmap", "saving bitmap error ${e.message}")
-                null
-            }
-        }
-    }
+private fun AnalyticsHelper.logOnCreateOrUpdateMarketList(data: Int, message: String) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "market_list_$message",
+            extras = listOf(
+                AnalyticsEvent.Param("market_list_$message", data.toString()),
+            ),
+        ),
+    )
 }

@@ -33,6 +33,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,12 +51,15 @@ import com.niyaj.market.components.MarketListItemCard
 import com.niyaj.market.components.ShareableMarketList
 import com.niyaj.market.destinations.AddEditMarketListScreenDestination
 import com.niyaj.market.destinations.MarketItemScreenDestination
+import com.niyaj.market.destinations.MarketListItemScreenDestination
+import com.niyaj.market.destinations.MarketListItemsScreenDestination
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
 import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.StandardScaffoldRoute
+import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens.MARKET_LIST_SCREEN
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -64,6 +68,9 @@ import com.niyaj.ui.utils.isScrolled
 import com.niyaj.ui.utils.rememberCaptureController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.NavResult
+import com.ramcosta.composedestinations.result.ResultRecipient
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 @Composable
@@ -71,6 +78,8 @@ import kotlinx.coroutines.launch
 fun MarketListScreen(
     navigator: DestinationsNavigator,
     viewModel: MarketListViewModel = hiltViewModel(),
+    shareViewModel: ShareViewModel = hiltViewModel(),
+    resultRecipient: ResultRecipient<AddEditMarketListScreenDestination, String>,
 ) {
     val scope = rememberCoroutineScope()
     val lazyGridState = rememberLazyGridState()
@@ -83,14 +92,18 @@ fun MarketListScreen(
 
     val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
-    val showList = viewModel.showList.collectAsStateWithLifecycle().value
-    val marketLists = viewModel.listItems.collectAsStateWithLifecycle().value
+    val showDialog = shareViewModel.showDialog.collectAsStateWithLifecycle().value
 
     val searchText = viewModel.searchText.value
     val selectedItems = viewModel.selectedItems.toList()
     val showFab = viewModel.totalItems.isNotEmpty()
 
     val openDialog = remember { mutableStateOf(false) }
+
+    val items = viewModel.shareableItems.collectAsStateWithLifecycle().value
+    val marketDate = remember {
+        mutableLongStateOf(0)
+    }
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -105,6 +118,22 @@ fun MarketListScreen(
                     scope.launch {
                         snackbarState.showSnackbar(data.successMessage)
                     }
+                }
+            }
+        }
+    }
+
+    resultRecipient.onNavResult {
+        when (it) {
+            is NavResult.Canceled -> {
+                viewModel.deselectItems()
+            }
+
+            is NavResult.Value -> {
+                viewModel.deselectItems()
+
+                scope.launch {
+                    snackbarState.showSnackbar(it.value)
                 }
             }
         }
@@ -130,7 +159,9 @@ fun MarketListScreen(
                 showScrollToTop = lazyGridState.isScrolled,
                 fabText = MarketListTestTags.CREATE_NEW_LIST,
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
-                onFabClick = viewModel::createNewList,
+                onFabClick = {
+                    navigator.navigate(AddEditMarketListScreenDestination())
+                },
                 onClickScroll = {
                     scope.launch {
                         lazyGridState.animateScrollToItem(0)
@@ -153,7 +184,7 @@ fun MarketListScreen(
                     openDialog.value = true
                 },
                 onSettingsClick = {
-//                    navController.navigate(AddEditMarketItemScreenDestination())
+//                    navigator.navigate(AddEditMarketListScreenDestination())
                 },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
@@ -192,7 +223,9 @@ fun MarketListScreen(
                     ItemNotAvailable(
                         text = if (searchText.isEmpty()) MarketListTestTags.MARKET_LIST_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND,
                         buttonText = MarketListTestTags.CREATE_NEW_LIST,
-                        onClick = viewModel::createNewList,
+                        onClick = {
+                            navigator.navigate(AddEditMarketListScreenDestination())
+                        },
                     )
                 }
 
@@ -200,7 +233,7 @@ fun MarketListScreen(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize(),
-                        contentPadding = PaddingValues(SpaceSmall)
+                        contentPadding = PaddingValues(SpaceSmall),
                     ) {
                         items(
                             items = state.data,
@@ -209,21 +242,42 @@ fun MarketListScreen(
                             },
                         ) { items ->
                             MarketListItemCard(
-                                withItems = items,
-                                doesSelected = {
-                                    selectedItems.contains(it)
-                                },
+                                items = items,
+                                doesSelected = viewModel::doesSelected,
+                                doesExpanded = viewModel::doesExpanded,
                                 onClick = {
                                     if (selectedItems.isEmpty()) {
-                                        navigator.navigate(AddEditMarketListScreenDestination(it))
+                                        viewModel.onClickExpand(it)
                                     } else {
                                         viewModel.selectItem(it)
                                     }
                                 },
                                 onLongClick = viewModel::selectItem,
-                                onClickShare = viewModel::onShowList,
+                                onClickShare = {
+                                    scope.launch {
+                                        async {
+                                            viewModel.getListItems(it)
+                                        }.await()
+
+                                        marketDate.longValue = items.marketList.marketDate
+
+                                        shareViewModel.onShowDialog()
+                                    }
+                                },
                                 onClickPrint = {
-                                    // TODO:: print market list
+                                    viewModel.printMarketList(it, items.marketList.marketDate)
+                                },
+                                onClickViewDetails = {
+                                    navigator.navigate(
+                                        MarketListItemsScreenDestination(
+                                            it.toIntArray(),
+                                        ),
+                                    )
+                                },
+                                onClickManageList = { listTypeId ->
+                                    navigator.navigate(
+                                        MarketListItemScreenDestination(listTypeId),
+                                    )
                                 },
                             )
 
@@ -237,35 +291,37 @@ fun MarketListScreen(
 
 
     AnimatedVisibility(
-        visible = showList != 0L && marketLists.isNotEmpty(),
+        visible = showDialog,
     ) {
-        ShareableMarketList(
-            captureController = captureController,
-            marketDate = showList,
-            onDismiss = viewModel::onDismissList,
-            marketLists = marketLists,
-            onClickShare = {
-                captureController.captureLongScreenshot()
-            },
-            onCaptured = { bitmap, error ->
-                bitmap?.let {
-                    scope.launch {
-                        val uri = viewModel.saveImage(it, context)
-                        uri?.let {
-                            viewModel.shareContent(context, "Share Image", uri)
+        if (items.isNotEmpty()) {
+            ShareableMarketList(
+                captureController = captureController,
+                marketDate = marketDate.longValue,
+                onDismiss = shareViewModel::onDismissDialog,
+                marketLists = items,
+                onClickShare = {
+                    captureController.captureLongScreenshot()
+                },
+                onCaptured = { bitmap, error ->
+                    bitmap?.let {
+                        scope.launch {
+                            val uri = shareViewModel.saveImage(it, context)
+                            uri?.let {
+                                shareViewModel.shareContent(context, "Share Image", uri)
+                            }
                         }
                     }
-                }
-                error?.let {
-                    Log.d("Capturable", "Error: ${it.message}\n${it.stackTrace.joinToString()}")
-                }
-            },
-        )
+                    error?.let {
+                        Log.d("Capturable", "Error: ${it.message}\n${it.stackTrace.joinToString()}")
+                    }
+                },
+            )
+        }
     }
 
 
     AnimatedVisibility(
-        visible = openDialog.value
+        visible = openDialog.value,
     ) {
         StandardDialog(
             title = MarketListTestTags.DELETE_LIST_TITLE,

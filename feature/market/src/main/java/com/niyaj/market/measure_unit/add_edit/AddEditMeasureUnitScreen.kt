@@ -54,6 +54,7 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 @Composable
 fun AddEditMeasureUnitScreen(
     unitId: Int = 0,
+    unitName: String?=null,
     navigator: DestinationsNavigator,
     viewModel: AddEditMeasureUnitViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
@@ -83,7 +84,7 @@ fun AddEditMeasureUnitScreen(
 
     val title = if (unitId == 0) CREATE_NEW_UNIT else UPDATE_UNIT
 
-    TrackScreenViewEvent(screenName = "$title/unitId=$unitId")
+    TrackScreenViewEvent(screenName = "$title/unitId=$unitId/unitName=$unitName")
 
     StandardScaffoldRouteNew(
         title = title,

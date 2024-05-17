@@ -33,6 +33,9 @@ import com.niyaj.database.dao.ExpenseDao
 import com.niyaj.database.dao.HomeDao
 import com.niyaj.database.dao.MarketItemDao
 import com.niyaj.database.dao.MarketListDao
+import com.niyaj.database.dao.MarketListWIthItemsDao
+import com.niyaj.database.dao.MarketListWIthTypeDao
+import com.niyaj.database.dao.MarketTypeDao
 import com.niyaj.database.dao.MeasureUnitDao
 import com.niyaj.database.dao.OrderDao
 import com.niyaj.database.dao.PaymentDao
@@ -60,7 +63,9 @@ import com.niyaj.database.model.EmployeeWithPaymentCrossRef
 import com.niyaj.database.model.ExpenseEntity
 import com.niyaj.database.model.MarketItemEntity
 import com.niyaj.database.model.MarketListEntity
-import com.niyaj.database.model.MarketListWithItemEntity
+import com.niyaj.database.model.MarketListWithItemsEntity
+import com.niyaj.database.model.MarketListWithTypeEntity
+import com.niyaj.database.model.MarketTypeEntity
 import com.niyaj.database.model.MeasureUnitEntity
 import com.niyaj.database.model.PaymentEntity
 import com.niyaj.database.model.PrinterEntity
@@ -97,17 +102,19 @@ import com.niyaj.database.util.TimestampConverters
         ProfileEntity::class,
         PrinterEntity::class,
         ReportsEntity::class,
+        MarketTypeEntity::class,
         MarketItemEntity::class,
         MarketListEntity::class,
-        MarketListWithItemEntity::class,
+        MarketListWithTypeEntity::class,
+        MarketListWithItemsEntity::class,
         MeasureUnitEntity::class,
     ],
-    version = 15,
+    version = 21,
     autoMigrations = [],
     exportSchema = true,
     views = [
-        ProductWIthQuantityView::class
-    ]
+        ProductWIthQuantityView::class,
+    ],
 )
 @TypeConverters(TimestampConverters::class, ListConverter::class)
 abstract class PoposDatabase : RoomDatabase() {
@@ -131,7 +138,10 @@ abstract class PoposDatabase : RoomDatabase() {
     abstract fun printerDao(): PrinterDao
     abstract fun profileDao(): ProfileDao
     abstract fun reportsDao(): ReportsDao
+    abstract fun marketTypeDao(): MarketTypeDao
     abstract fun marketItemDao(): MarketItemDao
     abstract fun marketListDao(): MarketListDao
+    abstract fun marketListWithTypeDao(): MarketListWIthTypeDao
+    abstract fun marketListWithItemsDao(): MarketListWIthItemsDao
     abstract fun measureUnitDao(): MeasureUnitDao
 }

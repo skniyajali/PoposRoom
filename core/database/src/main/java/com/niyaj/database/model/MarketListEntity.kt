@@ -1,11 +1,24 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
-import com.niyaj.database.util.ListConverter
 import com.niyaj.model.MarketList
-import kotlinx.collections.immutable.toImmutableList
 
 @Entity(tableName = "market_list")
 data class MarketListEntity(
@@ -18,9 +31,6 @@ data class MarketListEntity(
     val createdAt: Long,
 
     val updatedAt: Long? = null,
-
-    @TypeConverters(ListConverter::class)
-    val whitelistItems: List<Int> = emptyList(),
 )
 
 
@@ -30,6 +40,5 @@ fun MarketListEntity.asExternalModel(): MarketList {
         marketDate = marketDate,
         createdAt = createdAt,
         updatedAt = updatedAt,
-        whitelistItems = whitelistItems.toImmutableList(),
     )
 }
