@@ -29,6 +29,7 @@ import com.niyaj.employee.EmployeeNavGraph
 import com.niyaj.employee_absent.EmployeeabsentNavGraph
 import com.niyaj.employee_payment.EmployeepaymentNavGraph
 import com.niyaj.expenses.ExpensesNavGraph
+import com.niyaj.feature.account.AccountNavGraph
 import com.niyaj.feature.reports.ReportsNavGraph
 import com.niyaj.home.HomeNavGraph
 import com.niyaj.market.DailymarketNavGraph
@@ -46,9 +47,10 @@ object RootNavGraph : NavGraphSpec {
 
     override val destinationsByRoute = emptyMap<String, DestinationSpec<*>>()
 
-    override val startRoute = HomeNavGraph
+    override val startRoute = AccountNavGraph
 
     override val nestedNavGraphs = listOf(
+        AccountNavGraph,
         AddonitemNavGraph,
         AddressNavGraph,
         CartNavGraph,

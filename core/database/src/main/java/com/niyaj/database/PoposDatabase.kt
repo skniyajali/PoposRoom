@@ -20,6 +20,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.niyaj.database.dao.AbsentDao
+import com.niyaj.database.dao.AccountDao
 import com.niyaj.database.dao.AddOnItemDao
 import com.niyaj.database.dao.AddressDao
 import com.niyaj.database.dao.CartDao
@@ -46,6 +47,7 @@ import com.niyaj.database.dao.ProfileDao
 import com.niyaj.database.dao.ReportsDao
 import com.niyaj.database.dao.SelectedDao
 import com.niyaj.database.model.AbsentEntity
+import com.niyaj.database.model.AccountEntity
 import com.niyaj.database.model.AddOnItemEntity
 import com.niyaj.database.model.AddressEntity
 import com.niyaj.database.model.CartAddOnItemsEntity
@@ -80,6 +82,7 @@ import com.niyaj.database.util.TimestampConverters
 
 @Database(
     entities = [
+        AccountEntity::class,
         AddOnItemEntity::class,
         AddressEntity::class,
         ChargesEntity::class,
@@ -109,7 +112,7 @@ import com.niyaj.database.util.TimestampConverters
         MarketListWithItemsEntity::class,
         MeasureUnitEntity::class,
     ],
-    version = 21,
+    version = 22,
     autoMigrations = [],
     exportSchema = true,
     views = [
@@ -118,6 +121,7 @@ import com.niyaj.database.util.TimestampConverters
 )
 @TypeConverters(TimestampConverters::class, ListConverter::class)
 abstract class PoposDatabase : RoomDatabase() {
+    abstract fun accountDao(): AccountDao
     abstract fun addOnItemDao(): AddOnItemDao
     abstract fun addressDao(): AddressDao
     abstract fun chargesDao(): ChargesDao

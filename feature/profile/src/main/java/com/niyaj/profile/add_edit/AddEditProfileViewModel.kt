@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.profile.add_edit
 
 import androidx.compose.runtime.getValue
@@ -24,8 +40,7 @@ class AddEditProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
     private val validation: ProfileValidationRepository,
     savedStateHandle: SavedStateHandle,
-): ViewModel() {
-
+) : ViewModel() {
     var state by mutableStateOf(AddEditProfileState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
@@ -38,7 +53,7 @@ class AddEditProfileViewModel @Inject constructor(
     }
 
     fun onEvent(event: AddEditProfileEvent) {
-        when(event) {
+        when (event) {
             is AddEditProfileEvent.NameChanged -> {
                 state = state.copy(
                     name = event.name,
@@ -136,11 +151,11 @@ class AddEditProfileViewModel @Inject constructor(
                     primaryPhoneError = validatePrimaryPhone.errorMessage,
                     secondaryPhoneError = validateSecondaryPhone.errorMessage,
                     addressError = validateAddress.errorMessage,
-                    logoError = validateLogo.errorMessage
+                    logoError = validateLogo.errorMessage,
                 )
 
                 return@launch
-            }else {
+            } else {
                 val newProfile = Profile(
                     restaurantId = RESTAURANT_ID,
                     name = state.name,
@@ -154,13 +169,15 @@ class AddEditProfileViewModel @Inject constructor(
                     printLogo = state.description,
                     paymentQrCode = state.paymentQrCode,
                     createdAt = System.currentTimeMillis().toString(),
-                    updatedAt = if (restaurantId != 0) System.currentTimeMillis().toString() else null,
+                    updatedAt = if (restaurantId != 0) System.currentTimeMillis()
+                        .toString() else null,
                 )
 
-                when(profileRepository.insertOrUpdateProfile(newProfile)) {
+                when (profileRepository.insertOrUpdateProfile(newProfile)) {
                     is Resource.Error -> {
                         _eventFlow.emit(UiEvent.OnError("Unable to create or update profile information"))
                     }
+
                     is Resource.Success -> {
                         _eventFlow.emit(UiEvent.OnSuccess("Profile information created or updated successfully"))
                     }
@@ -171,22 +188,19 @@ class AddEditProfileViewModel @Inject constructor(
 
     private fun getProfileInfo(restaurantId: Int) {
         viewModelScope.launch {
-            profileRepository.getProfileInfo().collectLatest { it ->
-                it?.let { profile ->
-                    state = state.copy(
-                        name = profile.name,
-                        email = profile.email,
-                        primaryPhone = profile.primaryPhone,
-                        secondaryPhone = profile.secondaryPhone,
-                        tagline = profile.tagline,
-                        description = profile.description,
-                        address = profile.address,
-                        logo = profile.logo,
-                        printLogo = profile.printLogo,
-                        paymentQrCode = profile.paymentQrCode
-                    )
-                }
-
+            profileRepository.getProfileInfo(restaurantId).collectLatest { profile ->
+                state = state.copy(
+                    name = profile.name,
+                    email = profile.email,
+                    primaryPhone = profile.primaryPhone,
+                    secondaryPhone = profile.secondaryPhone,
+                    tagline = profile.tagline,
+                    description = profile.description,
+                    address = profile.address,
+                    logo = profile.logo,
+                    printLogo = profile.printLogo,
+                    paymentQrCode = profile.paymentQrCode,
+                )
             }
         }
     }

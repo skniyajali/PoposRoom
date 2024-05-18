@@ -41,7 +41,7 @@ object DatabaseModule {
         PoposDatabase::class.java,
         "popos-database",
     ).fallbackToDestructiveMigration()
-        .addCallback(CALLBACK)
+//        .addCallback(CALLBACK)
         .build()
 
     private val CALLBACK = object : RoomDatabase.Callback() {
@@ -51,7 +51,7 @@ object DatabaseModule {
             db.execSQL(
                 """
             CREATE TRIGGER[IF NOT EXISTS] product_with_quantity_trigger
-            AFTER INSERT, UPDATE, DELETE ON cart, selected, cartorder
+            AFTER INSERT, UPDATE, DELETE ON cart
             BEGIN
                 REFRESH VIEW product_with_quantity;
             END;

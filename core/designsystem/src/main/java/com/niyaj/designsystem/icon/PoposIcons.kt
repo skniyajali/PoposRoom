@@ -24,10 +24,13 @@ import androidx.compose.material.icons.automirrored.filled.Feed
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.MergeType
+import androidx.compose.material.icons.automirrored.filled.NavigateBefore
+import androidx.compose.material.icons.automirrored.filled.NavigateNext
 import androidx.compose.material.icons.automirrored.filled.Note
 import androidx.compose.material.icons.automirrored.filled.NoteAdd
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.automirrored.filled.ReceiptLong
+import androidx.compose.material.icons.automirrored.filled.StarHalf
 import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.automirrored.outlined.Logout
@@ -67,6 +70,7 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Details
 import androidx.compose.material.icons.filled.DinnerDining
 import androidx.compose.material.icons.filled.Dns
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditCalendar
@@ -92,6 +96,7 @@ import androidx.compose.material.icons.filled.MonitorWeight
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.NearbyOff
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.PeopleAlt
 import androidx.compose.material.icons.filled.Person
@@ -100,11 +105,14 @@ import androidx.compose.material.icons.filled.PersonPin
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.PostAdd
+import androidx.compose.material.icons.filled.QrCode
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Radar
 import androidx.compose.material.icons.filled.RadioButtonChecked
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.RoomService
 import androidx.compose.material.icons.filled.SaveAlt
@@ -159,6 +167,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
  */
 object PoposIcons {
 
+    val Restaurant: ImageVector = Icons.Default.Restaurant
+    val StarHalf: ImageVector = Icons.AutoMirrored.Filled.StarHalf
+    val QrCode: ImageVector = Icons.Default.QrCode
+    val QrCodeScanner: ImageVector = Icons.Default.QrCodeScanner
+    val NavigateNext: ImageVector = Icons.AutoMirrored.Filled.NavigateNext
+    val NavigateBefore: ImageVector = Icons.AutoMirrored.Filled.NavigateBefore
+    val Done: ImageVector = Icons.Default.Done
+    val Password: ImageVector = Icons.Default.Password
     val ExpandMore: ImageVector = Icons.Default.ExpandMore
 
     val ListAlt: ImageVector = Icons.AutoMirrored.Filled.ListAlt

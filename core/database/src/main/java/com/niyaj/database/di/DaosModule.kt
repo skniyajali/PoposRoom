@@ -18,6 +18,7 @@ package com.niyaj.database.di
 
 import com.niyaj.database.PoposDatabase
 import com.niyaj.database.dao.AbsentDao
+import com.niyaj.database.dao.AccountDao
 import com.niyaj.database.dao.AddOnItemDao
 import com.niyaj.database.dao.AddressDao
 import com.niyaj.database.dao.CartDao
@@ -51,6 +52,9 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 object DaosModule {
+
+    @Provides
+    fun providesAccountDao(database: PoposDatabase): AccountDao = database.accountDao()
 
     @Provides
     fun providesAbsentDao(database: PoposDatabase): AbsentDao = database.absentDao()

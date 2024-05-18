@@ -20,7 +20,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.core.graphics.drawable.toBitmapOrNull
-import com.niyaj.feature.printer.R
 import java.io.File
 import java.io.FileInputStream
 
@@ -30,7 +29,7 @@ object FileExtension {
         imageFileName: String,
     ): Bitmap? {
         return if (imageFileName.isEmpty()) {
-            this.getDrawable(R.drawable.reslogo)?.toBitmapOrNull()
+            this.getDrawable(com.niyaj.core.ui.R.drawable.reslogo)?.toBitmapOrNull()
         } else {
             val file = File(this.filesDir, imageFileName)
 
