@@ -49,6 +49,9 @@ interface AccountDao {
     @Query("UPDATE account SET password = :newPassword WHERE restaurantId = :resId")
     suspend fun updatePassword(resId: Int, newPassword: String): Int
 
+    @Query("UPDATE account SET phone = :phone, email = :email WHERE restaurantId = :resId")
+    suspend fun updateEmailAndPhone(resId: Int, email: String, phone: String): Int
+
     @Query("SELECT isLoggedIn FROM account WHERE restaurantId = :resId")
     fun checkIsLoggedIn(resId: Int): Flow<Boolean?>
 }

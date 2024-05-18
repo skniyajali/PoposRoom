@@ -18,18 +18,19 @@ package com.niyaj.ui.utils
 
 object Screens {
 
-    const val ADD_ON_ITEM_SCREEN = "add_on_item_screen"
-    const val ADD_EDIT_ADD_ON_ITEM_SCREEN = "add_edit_add_on_item_screen"
-
     const val SPLASH_SCREEN= "splash_screen"
 
     const val LOGIN_SCREEN = "login_screen"
     const val REGISTER_SCREEN = "register_screen"
+
+    const val PROFILE_SCREEN = "profile_screen"
+    const val UPDATE_PROFILE_SCREEN = "update_profile_screen"
     const val CHANGE_PASSWORD_SCREEN = "change_password_screen"
 
     const val HOME_SCREEN = "home_screen"
 
-    const val PROFILE_SCREEN = "profile_screen"
+    const val ADD_ON_ITEM_SCREEN = "add_on_item_screen"
+    const val ADD_EDIT_ADD_ON_ITEM_SCREEN = "add_edit_add_on_item_screen"
 
     const val CART_SCREEN = "cart_screen"
 

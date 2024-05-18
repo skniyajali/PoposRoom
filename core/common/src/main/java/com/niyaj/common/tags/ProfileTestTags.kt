@@ -77,6 +77,7 @@ object ProfileTestTags {
     const val PRINT_LOGO_FIELD = "Printing Logo"
 
     const val QR_CODE_FIELD = "Payment QR Data"
+    const val QR_CODE_ERROR_TAG = "Payment QR DataError"
 
     const val QR_CODE_EMPTY_ERROR = "Payment QR code must not be empty"
 

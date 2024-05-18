@@ -1,5 +1,23 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.ui.components
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,9 +28,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -21,6 +36,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -125,7 +142,7 @@ fun IconWithText(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(SpaceMini)
+        horizontalArrangement = Arrangement.spacedBy(SpaceMini),
     ) {
         Icon(
             imageVector = icon,
@@ -136,7 +153,7 @@ fun IconWithText(
         Column(
             modifier = Modifier,
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(SpaceMini)
+            verticalArrangement = Arrangement.spacedBy(SpaceMini),
         ) {
             Text(
                 text = text,
@@ -173,12 +190,12 @@ fun TextWithIcon(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(SpaceMini)
+        horizontalArrangement = Arrangement.spacedBy(SpaceMini),
     ) {
         Column(
             modifier = Modifier,
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(SpaceMini)
+            verticalArrangement = Arrangement.spacedBy(SpaceMini),
         ) {
             Text(
                 text = text,
@@ -251,12 +268,21 @@ fun NoteText(
     modifier: Modifier = Modifier,
     iconModifier: Modifier = Modifier.size(SpaceMedium),
     text: String,
-    icon: ImageVector = Icons.Default.ErrorOutline,
+    icon: ImageVector = PoposIcons.ErrorOutline,
     color: Color = MaterialTheme.colorScheme.secondary,
     fontWeight: FontWeight = FontWeight.Normal,
+    onClick: () -> Unit = {},
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+
     Row(
-        modifier = modifier,
+        modifier = modifier
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+            ) {
+                onClick()
+            },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
@@ -284,19 +310,28 @@ fun InfoText(
     modifier: Modifier = Modifier,
     iconModifier: Modifier = Modifier.size(SpaceMedium),
     text: String,
-    icon: ImageVector = Icons.Default.ErrorOutline,
+    icon: ImageVector = PoposIcons.ErrorOutline,
     backgroundColor: Color = MaterialTheme.colorScheme.errorContainer,
     textColor: Color = MaterialTheme.colorScheme.error,
     fontWeight: FontWeight = FontWeight.Normal,
-    textStyle: TextStyle = MaterialTheme.typography.labelSmall
+    textStyle: TextStyle = MaterialTheme.typography.labelSmall,
+    onClick: () -> Unit = {},
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+
     Card(
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+            ) {
+                onClick()
+            },
         shape = RoundedCornerShape(SpaceMini),
         colors = CardDefaults.cardColors(
-            containerColor = backgroundColor
-        )
+            containerColor = backgroundColor,
+        ),
     ) {
         Row(
             modifier = Modifier
@@ -329,28 +364,37 @@ fun InfoText(
 fun NoteCard(
     modifier: Modifier = Modifier,
     text: String,
-    icon: ImageVector = Icons.Default.Info,
+    icon: ImageVector = PoposIcons.Info,
     height: Dp = 48.dp,
     containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
-    textStyle: TextStyle = MaterialTheme.typography.labelMedium
+    textStyle: TextStyle = MaterialTheme.typography.labelMedium,
+    onClick: () -> Unit = {},
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+
     ListItem(
         modifier = modifier
             .height(height)
             .fillMaxWidth()
-            .clip(RoundedCornerShape(SpaceMini)),
+            .clip(RoundedCornerShape(SpaceMini))
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+            ) {
+                onClick()
+            },
         headlineContent = {
             Text(
                 text = text,
-                style = textStyle
+                style = textStyle,
             )
         },
         leadingContent = {
             Icon(
                 imageVector = icon,
-                contentDescription = "info"
+                contentDescription = "info",
             )
         },
-        colors = ListItemDefaults.colors(containerColor = containerColor)
+        colors = ListItemDefaults.colors(containerColor = containerColor),
     )
 }

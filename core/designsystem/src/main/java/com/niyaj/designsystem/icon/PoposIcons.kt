@@ -38,6 +38,7 @@ import androidx.compose.material.icons.automirrored.outlined.StickyNote2
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.AllInbox
 import androidx.compose.material.icons.filled.Api
 import androidx.compose.material.icons.filled.Approval
@@ -76,6 +77,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.EditLocationAlt
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.EventBusy
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.FileOpen
@@ -88,6 +90,7 @@ import androidx.compose.material.icons.filled.Kitchen
 import androidx.compose.material.icons.filled.LineWeight
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.ManageAccounts
 import androidx.compose.material.icons.filled.Margin
 import androidx.compose.material.icons.filled.Merge
 import androidx.compose.material.icons.filled.ModeStandby
@@ -167,6 +170,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
  */
 object PoposIcons {
 
+    val ManageAccounts: ImageVector = Icons.Filled.ManageAccounts
+    val ImageSearch: ImageVector = Icons.Default.Search
+    val AddToPhotos: ImageVector = Icons.Default.AddAPhoto
+    val ErrorOutline: ImageVector = Icons.Default.ErrorOutline
+    val AddAPhoto: ImageVector = Icons.Default.AddAPhoto
     val Restaurant: ImageVector = Icons.Default.Restaurant
     val StarHalf: ImageVector = Icons.AutoMirrored.Filled.StarHalf
     val QrCode: ImageVector = Icons.Default.QrCode

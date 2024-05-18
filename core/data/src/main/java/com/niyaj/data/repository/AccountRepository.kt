@@ -26,6 +26,8 @@ interface AccountRepository {
 
     suspend fun getAccountInfo(resId: Int): Flow<Account>
 
+    suspend fun updateAccountInfo(resId: Int, email: String, phone: String): Resource<Boolean>
+
     suspend fun register(account: Account): Resource<Boolean>
 
     suspend fun login(emailOrPhone: String, password: String): Resource<Boolean>

@@ -86,7 +86,7 @@ fun ShareableMarketList(
     val groupByType = remember(marketLists) {
         marketLists.groupBy { it.typeName }
     }
-    
+
     BasicAlertDialog(
         onDismissRequest = onDismiss,
         modifier = Modifier
@@ -129,7 +129,7 @@ fun ShareableMarketList(
 
                 ShareableListBottomBar(
                     onDismiss = onDismiss,
-                    onClickShare = onClickShare
+                    onClickShare = onClickShare,
                 )
             }
         }
@@ -159,7 +159,7 @@ fun ListTypeHeader(
                 text = itemType.uppercase(),
                 icon = PoposIcons.Category,
                 fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
             )
 
             Row {
@@ -167,8 +167,8 @@ fun ListTypeHeader(
                     count = listType,
                     style = TextStyle(
                         fontFamily = FontFamily.Cursive,
-                        fontStyle = FontStyle.Italic
-                    )
+                        fontStyle = FontStyle.Italic,
+                    ),
                 )
 
                 Spacer(modifier = Modifier.width(SpaceMini))
@@ -201,7 +201,7 @@ fun ShareableItemHeader(
             text = marketDate.toFormattedDate,
             icon = PoposIcons.CalenderMonth,
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
 
         marketDetail?.let {
@@ -257,9 +257,7 @@ fun ShareableListBottomBar(
             text = "Close",
             onClick = onDismiss,
             shape = RoundedCornerShape(SpaceMini),
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = MaterialTheme.colorScheme.error,
-            ),
+            color = MaterialTheme.colorScheme.error,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
         )
 
@@ -284,11 +282,11 @@ fun ShareableListBottomBar(
 @Composable
 fun ShareableItemBody(
     modifier: Modifier = Modifier,
-    groupByType:   Map<String, List<MarketItemAndQuantity>>,
+    groupByType: Map<String, List<MarketItemAndQuantity>>,
 ) = trace("ShareableItemBody") {
     Column(
         modifier = modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
     ) {
         groupByType.forEach { (itemType, groupedByType) ->
             val groupByListType = remember(groupedByType) {

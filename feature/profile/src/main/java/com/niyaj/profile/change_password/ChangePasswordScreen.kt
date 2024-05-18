@@ -24,6 +24,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,10 +35,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.StandardButton
@@ -91,12 +96,29 @@ fun ChangePasswordScreen(
             }
         }
     }
-    
+
     TrackScreenViewEvent(screenName = Screens.CHANGE_PASSWORD_SCREEN + "resId?=$resId")
 
     StandardScaffoldRouteNew(
         title = "Change Password",
         onBackClick = navController::navigateUp,
+        showBottomBar = true,
+        bottomBar = {
+            BottomAppBar(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            ) {
+                StandardButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = SpaceMedium),
+                    text = "Change Password",
+                    enabled = hasError,
+                    onClick = {
+                        viewModel.onEvent(ChangePasswordEvent.ChangePassword)
+                    },
+                )
+            }
+        },
     ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "ChangePassword::Fields")
 
@@ -105,7 +127,7 @@ fun ChangePasswordScreen(
                 .fillMaxWidth()
                 .padding(paddingValues),
             state = lazyListState,
-            contentPadding = PaddingValues(SpaceSmall),
+            contentPadding = PaddingValues(SpaceMedium),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
@@ -122,6 +144,9 @@ fun ChangePasswordScreen(
                     onValueChange = {
                         viewModel.onEvent(ChangePasswordEvent.CurrentPasswordChanged(it))
                     },
+                    textStyle = LocalTextStyle.current.copy(
+                        fontFamily = FontFamily.Cursive,
+                    ),
                 )
             }
 
@@ -140,6 +165,9 @@ fun ChangePasswordScreen(
                     onValueChange = {
                         viewModel.onEvent(ChangePasswordEvent.NewPasswordChanged(it))
                     },
+                    textStyle = LocalTextStyle.current.copy(
+                        fontFamily = FontFamily.Cursive,
+                    ),
                 )
             }
 
@@ -158,6 +186,9 @@ fun ChangePasswordScreen(
                     onValueChange = {
                         viewModel.onEvent(ChangePasswordEvent.ConfirmPasswordChanged(it))
                     },
+                    textStyle = LocalTextStyle.current.copy(
+                        fontFamily = FontFamily.Cursive,
+                    ),
                 )
             }
 
@@ -166,17 +197,6 @@ fun ChangePasswordScreen(
                     Spacer(modifier = Modifier.height(SpaceSmall))
                     NoteCard(text = it)
                 }
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(SpaceSmall))
-                StandardButton(
-                    text = "Change Password",
-                    enabled = hasError,
-                    onClick = {
-                        viewModel.onEvent(ChangePasswordEvent.ChangePassword)
-                    },
-                )
             }
         }
     }

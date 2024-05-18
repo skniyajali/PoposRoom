@@ -181,10 +181,10 @@ fun PoposOutlinedButton(
     icon: ImageVector? = null,
     enabled: Boolean = true,
     btnHeight: Dp = ButtonSize,
-    border: BorderStroke = ButtonDefaults.outlinedButtonBorder,
-    shape: Shape = ButtonDefaults.outlinedShape,
-    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(),
-    textColor: Color = contentColorFor(backgroundColor = colors.containerColor),
+    shape: Shape = RoundedCornerShape(SpaceMini),
+    color: Color = MaterialTheme.colorScheme.secondary,
+    border: BorderStroke = BorderStroke(1.dp, color),
+    textColor: Color = color,
     style: TextStyle = MaterialTheme.typography.labelLarge,
     onClick: () -> Unit,
 ) {
@@ -192,7 +192,9 @@ fun PoposOutlinedButton(
         onClick = onClick,
         enabled = enabled,
         shape = shape,
-        colors = colors,
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = color,
+        ),
         border = border,
         modifier = modifier
             .testTag(text)
@@ -206,7 +208,6 @@ fun PoposOutlinedButton(
             )
             Spacer(modifier = Modifier.width(SpaceMini))
         }
-
         Text(
             text = text.uppercase(),
             style = style,

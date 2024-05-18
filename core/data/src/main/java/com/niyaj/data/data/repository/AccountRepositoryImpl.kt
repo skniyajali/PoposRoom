@@ -46,6 +46,22 @@ class AccountRepositoryImpl(
         }
     }
 
+    override suspend fun updateAccountInfo(
+        resId: Int,
+        email: String,
+        phone: String,
+    ): Resource<Boolean> {
+        return withContext(ioDispatcher) {
+            try {
+                val result = accountDao.updateEmailAndPhone(resId, email, phone)
+                Resource.Success(result > 0)
+
+            } catch (e: Exception) {
+                Resource.Error(e.message)
+            }
+        }
+    }
+
     override suspend fun register(account: Account): Resource<Boolean> {
         return withContext(ioDispatcher) {
             try {
