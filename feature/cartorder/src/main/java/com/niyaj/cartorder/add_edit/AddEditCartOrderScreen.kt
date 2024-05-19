@@ -6,22 +6,17 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.DeliveryDining
-import androidx.compose.material.icons.filled.DinnerDining
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.PhoneAndroid
-import androidx.compose.material.icons.filled.Tag
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -50,7 +45,6 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.CartOrderTestTags.ADDRESS_NAME_ERROR_FIELD
 import com.niyaj.common.tags.CartOrderTestTags.ADDRESS_NAME_FIELD
 import com.niyaj.common.tags.CartOrderTestTags.ADD_EDIT_CART_ORDER_SCREEN
@@ -64,6 +58,8 @@ import com.niyaj.common.tags.CartOrderTestTags.EDIT_CART_ORDER
 import com.niyaj.common.tags.CartOrderTestTags.ORDER_ID_FIELD
 import com.niyaj.common.tags.CartOrderTestTags.ORDER_TYPE_FIELD
 import com.niyaj.common.tags.ProductTestTags.ADD_EDIT_PRODUCT_BUTTON
+import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.LightColor6
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.OrderType
@@ -76,13 +72,14 @@ import com.niyaj.ui.components.MultiSelector
 import com.niyaj.ui.components.PhoneNoCountBox
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -90,7 +87,7 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 @Composable
 fun AddEditCartOrderScreen(
     cartOrderId: Int = 0,
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: AddEditCartOrderViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
@@ -139,44 +136,49 @@ fun AddEditCartOrderScreen(
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
     val title = if (cartOrderId == 0) CREATE_NEW_CART_ORDER else EDIT_CART_ORDER
-    
+
     TrackScreenViewEvent(screenName = Screens.ADD_EDIT_CART_ORDER_SCREEN)
 
-    StandardScaffoldNew(
-        navController = navController,
+    StandardScaffoldRouteNew(
         title = title,
         showBackButton = true,
         showBottomBar = true,
         bottomBar = {
-            StandardButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag(ADD_EDIT_PRODUCT_BUTTON)
-                    .padding(SpaceMedium),
-                enabled = enableBtn,
-                text = title,
-                icon = if (cartOrderId == 0) Icons.Default.Add else Icons.Default.Edit,
-                onClick = {
-                    viewModel.onEvent(AddEditCartOrderEvent.CreateOrUpdateCartOrder(cartOrderId))
-                }
-            )
-        }
-    ) {
+            BottomAppBar(
+                containerColor = LightColor6
+            ) {
+                StandardButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag(ADD_EDIT_PRODUCT_BUTTON)
+                        .padding(SpaceSmall),
+                    enabled = enableBtn,
+                    text = title,
+                    icon = if (cartOrderId == 0) PoposIcons.Add else PoposIcons.Edit,
+                    onClick = {
+                        viewModel.onEvent(AddEditCartOrderEvent.CreateOrUpdateCartOrder(cartOrderId))
+                    },
+                )
+            }
+        },
+        onBackClick = navigator::navigateUp,
+    ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "CreateOrUpdate Cart Order")
 
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
                 .testTag(ADD_EDIT_CART_ORDER_SCREEN)
-                .fillMaxWidth()
-                .padding(SpaceMedium),
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentPadding = PaddingValues(SpaceMedium),
         ) {
             item(ORDER_TYPE_FIELD) {
                 val orderTypes = listOf(
-                    OrderType.DineIn.name, OrderType.DineOut.name
+                    OrderType.DineIn.name, OrderType.DineOut.name,
                 )
                 val icons = listOf(
-                    Icons.Default.DinnerDining, Icons.Default.DeliveryDining
+                    PoposIcons.DinnerDining, PoposIcons.DeliveryDining,
                 )
 
                 MultiSelector(
@@ -185,13 +187,13 @@ fun AddEditCartOrderScreen(
                     selectedOption = viewModel.state.orderType.name,
                     onOptionSelect = { option ->
                         viewModel.onEvent(
-                            AddEditCartOrderEvent.OrderTypeChanged(OrderType.valueOf(option))
+                            AddEditCartOrderEvent.OrderTypeChanged(OrderType.valueOf(option)),
                         )
                     },
                     modifier = Modifier
                         .height(48.dp)
                         .testTag(ORDER_TYPE_FIELD)
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(SpaceMedium))
@@ -201,9 +203,9 @@ fun AddEditCartOrderScreen(
                 StandardOutlinedTextField(
                     value = orderId.toString(),
                     label = ORDER_ID_FIELD,
-                    leadingIcon = Icons.Default.Tag,
+                    leadingIcon = PoposIcons.Tag,
                     readOnly = true,
-                    onValueChange = {}
+                    onValueChange = {},
                 )
             }
 
@@ -231,19 +233,19 @@ fun AddEditCartOrderScreen(
                                 .menuAnchor(),
                             value = newAddress.addressName,
                             label = ADDRESS_NAME_FIELD,
-                            leadingIcon = Icons.Default.Business,
+                            leadingIcon = PoposIcons.Address,
                             isError = addressError != null,
                             errorText = addressError,
                             errorTextTag = ADDRESS_NAME_ERROR_FIELD,
                             onValueChange = {
                                 viewModel.onEvent(
-                                    AddEditCartOrderEvent.AddressNameChanged(it)
+                                    AddEditCartOrderEvent.AddressNameChanged(it),
                                 )
                                 addressToggled = true
                             },
                             trailingIcon = {
                                 ExposedDropdownMenuDefaults.TrailingIcon(
-                                    expanded = addressToggled
+                                    expanded = addressToggled,
                                 )
                             },
                         )
@@ -270,7 +272,7 @@ fun AddEditCartOrderScreen(
                                             .fillMaxWidth(),
                                         onClick = {
                                             viewModel.onEvent(
-                                                AddEditCartOrderEvent.AddressChanged(address)
+                                                AddEditCartOrderEvent.AddressChanged(address),
                                             )
                                             addressToggled = false
                                         },
@@ -279,20 +281,20 @@ fun AddEditCartOrderScreen(
                                         },
                                         leadingIcon = {
                                             CircularBox(
-                                                icon = Icons.Default.Business,
+                                                icon = PoposIcons.Address,
                                                 doesSelected = false,
                                                 size = 30.dp,
                                                 showBorder = false,
-                                                text = address.addressName
+                                                text = address.addressName,
                                             )
-                                        }
+                                        },
                                     )
 
                                     if (index != addresses.size - 1) {
                                         HorizontalDivider(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .padding(start = 44.dp)
+                                                .padding(start = 44.dp),
                                         )
                                     }
                                 }
@@ -326,14 +328,14 @@ fun AddEditCartOrderScreen(
                                 .menuAnchor(),
                             value = newCustomer.customerPhone,
                             label = CUSTOMER_PHONE_FIELD,
-                            leadingIcon = Icons.Default.PhoneAndroid,
+                            leadingIcon = PoposIcons.PhoneAndroid,
                             isError = customerError != null,
                             errorText = customerError,
                             errorTextTag = CUSTOMER_PHONE_ERROR_FIELD,
                             keyboardType = KeyboardType.Number,
                             onValueChange = {
                                 viewModel.onEvent(
-                                    AddEditCartOrderEvent.CustomerPhoneChanged(it)
+                                    AddEditCartOrderEvent.CustomerPhoneChanged(it),
                                 )
                                 customerToggled = true
                             },
@@ -342,13 +344,13 @@ fun AddEditCartOrderScreen(
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
                                     PhoneNoCountBox(
-                                        count = newCustomer.customerPhone.length
+                                        count = newCustomer.customerPhone.length,
                                     )
 
                                     Spacer(modifier = Modifier.width(1.dp))
 
                                     ExposedDropdownMenuDefaults.TrailingIcon(
-                                        expanded = customerToggled
+                                        expanded = customerToggled,
                                     )
                                 }
                             },
@@ -377,7 +379,7 @@ fun AddEditCartOrderScreen(
                                             .fillMaxWidth(),
                                         onClick = {
                                             viewModel.onEvent(
-                                                AddEditCartOrderEvent.CustomerChanged(customer)
+                                                AddEditCartOrderEvent.CustomerChanged(customer),
                                             )
                                             customerToggled = false
                                         },
@@ -386,19 +388,19 @@ fun AddEditCartOrderScreen(
                                         },
                                         leadingIcon = {
                                             CircularBox(
-                                                icon = Icons.Default.PhoneAndroid,
+                                                icon = PoposIcons.PhoneAndroid,
                                                 doesSelected = false,
                                                 size = 30.dp,
                                                 showBorder = false,
                                             )
-                                        }
+                                        },
                                     )
 
                                     if (index != customers.size - 1) {
                                         HorizontalDivider(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .padding(start = 44.dp)
+                                                .padding(start = 44.dp),
                                         )
                                     }
                                 }
@@ -420,7 +422,7 @@ fun AddEditCartOrderScreen(
                         checked = viewModel.state.doesChargesIncluded,
                         onCheckedChange = {
                             viewModel.onEvent(AddEditCartOrderEvent.DoesChargesIncluded)
-                        }
+                        },
                     )
                     Spacer(modifier = Modifier.width(SpaceSmall))
                     Text(
@@ -428,7 +430,7 @@ fun AddEditCartOrderScreen(
                             "Charges included"
                         else
                             "Charges not included",
-                        style = MaterialTheme.typography.labelMedium
+                        style = MaterialTheme.typography.labelMedium,
                     )
                 }
 
@@ -438,14 +440,14 @@ fun AddEditCartOrderScreen(
             item(CART_ADD_ON_ITEMS) {
                 Crossfade(
                     targetState = addOnState,
-                    label = "AddOnState"
+                    label = "AddOnState",
                 ) { items ->
-                    when(items) {
+                    when (items) {
                         is UiState.Empty -> {}
                         is UiState.Loading -> LoadingIndicatorHalf()
                         is UiState.Success -> {
                             Column(
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             ) {
                                 AnimatedTextDividerDashed(text = "AddOn Items")
 
@@ -457,7 +459,7 @@ fun AddEditCartOrderScreen(
                                     backgroundColor = Color.Transparent,
                                     onClick = {
                                         viewModel.onEvent(AddEditCartOrderEvent.SelectAddOnItem(it))
-                                    }
+                                    },
                                 )
                             }
                         }
@@ -470,14 +472,14 @@ fun AddEditCartOrderScreen(
             item(CART_CHARGES_ITEMS) {
                 Crossfade(
                     targetState = chargesState,
-                    label = "Charges"
+                    label = "Charges",
                 ) { items ->
-                    when(items) {
+                    when (items) {
                         is UiState.Empty -> {}
                         is UiState.Loading -> LoadingIndicatorHalf()
                         is UiState.Success -> {
                             Column(
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             ) {
                                 AnimatedTextDividerDashed(text = "Charges")
 
@@ -489,7 +491,7 @@ fun AddEditCartOrderScreen(
                                     backgroundColor = Color.Transparent,
                                     onClick = {
                                         viewModel.onEvent(AddEditCartOrderEvent.SelectCharges(it))
-                                    }
+                                    },
                                 )
                             }
                         }

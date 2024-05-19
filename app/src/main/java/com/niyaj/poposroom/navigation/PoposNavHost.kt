@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.poposroom.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -57,7 +73,7 @@ import com.ramcosta.composedestinations.spec.Route
  */
 @OptIn(
     ExperimentalComposeUiApi::class, ExperimentalMaterialNavigationApi::class,
-    ExperimentalAnimationApi::class
+    ExperimentalAnimationApi::class,
 )
 @Composable
 fun PoposNavHost(
@@ -76,8 +92,8 @@ fun PoposNavHost(
         // all other nav graphs not specified in this map,
         // will get their animations from the `rootDefaultAnimations` above.
         defaultAnimationsForNestedNavGraph = mapOf(
-            RootNavGraph to NestedNavGraphDefaultAnimations.ACCOMPANIST_FADING
-        )
+            RootNavGraph to NestedNavGraphDefaultAnimations.ACCOMPANIST_FADING,
+        ),
     )
 
     ModalBottomSheetLayout(
@@ -98,7 +114,7 @@ fun PoposNavHost(
             manualComposableCallsBuilder = {
                 composable(CartOrderScreenDestination) {
                     CartOrderScreen(
-                        navController = navController,
+                        navigator = this.destinationsNavigator,
                         onClickOrderDetails = {
                             navController.navigate(OrderDetailsScreenDestination(it))
                         },
@@ -108,47 +124,45 @@ fun PoposNavHost(
 
                 composable(CartScreenDestination) {
                     CartScreen(
-                        navController = navController,
+                        navigator = this.destinationsNavigator,
                         onClickEditOrder = {
                             navController.navigate(AddEditCartOrderScreenDestination(it))
                         },
                         onClickOrderDetails = {
                             navController.navigate(OrderDetailsScreenDestination(it))
                         },
-                        onNavigateToOrderScreen = {
-                            navController.navigate(OrderScreenDestination())
-                        }
                     )
                 }
 
                 composable(OrderScreenDestination) {
                     OrderScreen(
-                        navController = navController,
+                        navigator = this.destinationsNavigator,
                         onClickEditOrder = {
                             navController.navigate(AddEditCartOrderScreenDestination(it))
-                        }
+                        },
                     )
                 }
 
                 bottomSheetComposable(SelectOrderScreenDestination) {
                     SelectOrderScreen(
-                        navController = navController,
+                        navigator = this.destinationsNavigator,
                         onEditClick = {
                             navController.navigate(AddEditCartOrderScreenDestination(it))
                         },
-                        resultBackNavigator = resultBackNavigator()
+                        resultBackNavigator = resultBackNavigator(),
                     )
                 }
 
                 composable(EmployeeDetailsScreenDestination) {
                     EmployeeDetailsScreen(
-                        navController = navController,
+                        employeeId = this.navBackStackEntry.arguments?.getInt("employeeId") ?: 0,
+                        navigator = this.destinationsNavigator,
                         onClickAddPayment = {
                             navController.navigate(AddEditPaymentScreenDestination(employeeId = it))
                         },
                         onClickAddAbsent = {
                             navController.navigate(AddEditAbsentScreenDestination(employeeId = it))
-                        }
+                        },
                     )
                 }
 
@@ -158,31 +172,33 @@ fun PoposNavHost(
                         navigator = this.destinationsNavigator,
                         onClickOrder = {
                             navController.navigate(OrderDetailsScreenDestination(it))
-                        }
+                        },
                     )
                 }
 
                 composable(CustomerDetailsScreenDestination) {
                     CustomerDetailsScreen(
-                        navController = navController,
+                        customerId = this.navBackStackEntry.arguments?.getInt("customerId") ?: 0,
+                        navController = this.destinationsNavigator,
                         onClickOrder = {
                             navController.navigate(OrderDetailsScreenDestination(it))
-                        }
+                        },
                     )
                 }
 
                 composable(ProductDetailsScreenDestination) {
                     ProductDetailsScreen(
-                        navController = navController,
+                        productId = this.navBackStackEntry.arguments?.getInt("productId") ?: 0,
+                        navigator = this.destinationsNavigator,
                         onClickOrder = {
                             navController.navigate(OrderDetailsScreenDestination(it))
-                        }
+                        },
                     )
                 }
 
                 composable(ReportScreenDestination) {
                     ReportScreen(
-                        navController = navController,
+                        navigator = this.destinationsNavigator,
                         onClickAddress = {
                             navController.navigate(AddressDetailsScreenDestination(it))
                         },
@@ -191,35 +207,35 @@ fun PoposNavHost(
                         },
                         onClickProduct = {
                             navController.navigate(ProductDetailsScreenDestination(it))
-                        }
+                        },
                     )
                 }
 
                 composable(PaymentScreenDestination) {
                     PaymentScreen(
-                        navController = navController,
+                        navigator = this.destinationsNavigator,
                         onClickEmployee = {
                             navController.navigate(EmployeeDetailsScreenDestination(it))
                         },
                         resultRecipient = resultRecipient(),
                         exportRecipient = resultRecipient(),
-                        importRecipient = resultRecipient()
+                        importRecipient = resultRecipient(),
                     )
                 }
 
                 composable(OrderDetailsScreenDestination) {
                     OrderDetailsScreen(
                         orderId = this.navBackStackEntry.arguments?.getInt("orderId") ?: 0,
-                        navController = navController,
+                        navigator = this.destinationsNavigator,
                         onClickCustomer = {
                             navController.navigate(CustomerDetailsScreenDestination(it))
                         },
                         onClickAddress = {
                             navController.navigate(AddressDetailsScreenDestination(it))
-                        }
+                        },
                     )
                 }
-            }
+            },
         )
     }
 }

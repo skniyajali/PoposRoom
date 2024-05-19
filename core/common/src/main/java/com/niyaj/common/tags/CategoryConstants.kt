@@ -19,8 +19,9 @@ object CategoryConstants {
     const val CATEGORY_NAME_LENGTH_ERROR = "Category name must be at least 3 characters long."
     const val CATEGORY_NAME_ALREADY_EXIST_ERROR = "Category name already exists."
 
-    const val DELETE_CATEGORY_ITEM_TITLE = "Delete Category?"
-    const val DELETE_CATEGORY_ITEM_MESSAGE = "Are you sure to delete these categories?"
+    const val DELETE_CATEGORY_ITEM_TITLE = "Delete Category!"
+    const val DELETE_CATEGORY_ITEM_MESSAGE =
+        "Are you sure to delete these categories? This action cannot be undone."
 
     const val CATEGORY_ITEM_TAG = "Category-"
 

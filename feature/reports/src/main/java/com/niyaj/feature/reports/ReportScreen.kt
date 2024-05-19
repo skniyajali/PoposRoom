@@ -8,16 +8,14 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Print
-import androidx.compose.material.icons.filled.Today
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,23 +30,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.common.utils.calculateStartOfDayTime
+import com.niyaj.common.utils.isToday
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.feature.reports.components.AddressWiseReport
 import com.niyaj.feature.reports.components.CategoryWiseReport
 import com.niyaj.feature.reports.components.CustomerWiseReport
+import com.niyaj.feature.reports.components.ExpenseWiseReport
 import com.niyaj.feature.reports.components.ProductWiseReport
 import com.niyaj.feature.reports.components.ReportBarData
 import com.niyaj.feature.reports.components.TotalReports
 import com.niyaj.feature.reports.destinations.ViewLastSevenDaysReportsDestination
+import com.niyaj.ui.components.ItemNotFound
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardOutlinedAssistChip
 import com.niyaj.ui.components.StandardScaffoldRouteNew
@@ -58,7 +58,7 @@ import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
@@ -74,15 +74,12 @@ import java.time.LocalDate
 @Destination(route = Screens.REPORT_SCREEN)
 @Composable
 fun ReportScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     onClickAddress: (Int) -> Unit,
     onClickCustomer: (Int) -> Unit,
     onClickProduct: (Int) -> Unit,
-    reportsViewModel: ReportsViewModel = hiltViewModel(),
+    viewModel: ReportsViewModel = hiltViewModel(),
 ) {
-    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-        ?: Screens.REPORT_SCREEN
-
     val context = LocalContext.current
 
     val bluetoothPermissions =
@@ -94,19 +91,19 @@ fun ReportScreen(
                     Manifest.permission.BLUETOOTH_ADMIN,
                     Manifest.permission.BLUETOOTH_CONNECT,
                     Manifest.permission.BLUETOOTH_SCAN,
-                )
+                ),
             )
         } else {
             rememberMultiplePermissionsState(
                 permissions = listOf(
                     Manifest.permission.BLUETOOTH,
                     Manifest.permission.BLUETOOTH_ADMIN,
-                )
+                ),
             )
         }
 
     val enableBluetoothContract = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult(),
     ) {}
 
     // This intent will open the enable bluetooth dialog
@@ -124,11 +121,11 @@ fun ReportScreen(
         if (bluetoothPermissions.allPermissionsGranted) {
             if (bluetoothAdapter?.isEnabled == true) {
                 // Bluetooth is on print the receipt
-                reportsViewModel.onReportEvent(ReportsEvent.PrintReport)
+                viewModel.onReportEvent(ReportsEvent.PrintReport)
             } else {
                 // Bluetooth is off, ask user to turn it on
                 enableBluetoothContract.launch(enableBluetoothIntent)
-                reportsViewModel.onReportEvent(ReportsEvent.PrintReport)
+                viewModel.onReportEvent(ReportsEvent.PrintReport)
             }
         } else {
             bluetoothPermissions.launchMultiplePermissionRequest()
@@ -139,38 +136,37 @@ fun ReportScreen(
     val lazyListState = rememberLazyListState()
     val dialogState = rememberMaterialDialogState()
 
-    val report = reportsViewModel.reportState.collectAsStateWithLifecycle().value.report
+    val reportState = viewModel.reportState.collectAsStateWithLifecycle().value
+    val reportBarState = viewModel.reportsBarData.collectAsStateWithLifecycle().value
+    val productState = viewModel.productWiseData.collectAsStateWithLifecycle().value
+    val categoryState = viewModel.categoryWiseData.collectAsStateWithLifecycle().value
+    val addressState = viewModel.addressWiseData.collectAsStateWithLifecycle().value
+    val customerState = viewModel.customerWiseData.collectAsStateWithLifecycle().value
+    val expensesState = viewModel.expensesReports.collectAsStateWithLifecycle().value
 
-    val reportBarState = reportsViewModel.reportsBarData.collectAsStateWithLifecycle().value
+    val selectedDate = viewModel.selectedDate.collectAsStateWithLifecycle().value
+    val productOrderType = viewModel.productOrderType.collectAsStateWithLifecycle().value
+    val categoryOrderType = viewModel.categoryOrderType.collectAsStateWithLifecycle().value
+    val selectedCategory = viewModel.selectedCategory.collectAsStateWithLifecycle().value
+    val totalCustomerReports = viewModel.totalCustomerReports.collectAsStateWithLifecycle().value
+    val totalAddressReports = viewModel.totalAddressReports.collectAsStateWithLifecycle().value
+    val totalExpensesReport = viewModel.totalExpensesReports.collectAsStateWithLifecycle().value
 
-    val productState = reportsViewModel.productWiseData.collectAsStateWithLifecycle().value
-
-    val selectedDate = reportsViewModel.selectedDate.collectAsStateWithLifecycle().value
     val lastSevenStartDate = calculateStartOfDayTime(days = "-8")
 
-    val categoryState = reportsViewModel.categoryWiseData.collectAsStateWithLifecycle().value
-
-    val addressState = reportsViewModel.addressWiseData.collectAsStateWithLifecycle().value
-
-    val customerState = reportsViewModel.customerWiseData.collectAsStateWithLifecycle().value
-
-    val selectedCategory = reportsViewModel.selectedCategory.collectAsStateWithLifecycle().value
-
     var categoryWiseRepExpanded by remember { mutableStateOf(false) }
-
     var productWiseRepExpanded by remember { mutableStateOf(false) }
-
     var customerWiseRepExpanded by remember { mutableStateOf(false) }
-
     var addressWiseRepExpanded by remember { mutableStateOf(false) }
+    var expensesRepExpanded by remember { mutableStateOf(false) }
 
     var selectedBarData by remember {
         mutableStateOf("")
     }
-
     var selectedProductData by remember {
         mutableStateOf("")
     }
+
 
     LaunchedEffect(key1 = selectedDate) {
         selectedBarData = ""
@@ -180,31 +176,28 @@ fun ReportScreen(
     TrackScreenViewEvent(screenName = Screens.REPORT_SCREEN)
 
     StandardScaffoldRouteNew(
-        showBottomBar = lazyListState.isScrollingUp(),
         showBackButton = true,
         title = "Reports",
         navActions = {
-            if (selectedDate.isNotEmpty() && selectedDate != LocalDate.now().toString()) {
+            if (!selectedDate.isToday) {
                 StandardOutlinedAssistChip(
                     text = selectedDate.toPrettyDate(),
-                    icon = Icons.Default.ArrowDropDown,
-                    onClick = {
-                        dialogState.show()
-                    }
+                    icon = PoposIcons.ArrowDropDown,
+                    onClick = dialogState::show,
                 )
                 Spacer(modifier = Modifier.width(SpaceMini))
             } else {
                 IconButton(
-                    onClick = { dialogState.show() }
+                    onClick = dialogState::show,
                 ) {
-                    Icon(imageVector = Icons.Default.Today, contentDescription = "Choose Date")
+                    Icon(imageVector = PoposIcons.Today, contentDescription = "Choose Date")
                 }
             }
 
             IconButton(
                 onClick = printReport,
             ) {
-                Icon(imageVector = Icons.Default.Print, contentDescription = "Print Reports")
+                Icon(imageVector = PoposIcons.Print, contentDescription = "Print Reports")
             }
 
         },
@@ -216,33 +209,35 @@ fun ReportScreen(
                     scope.launch {
                         lazyListState.animateScrollToItem(index = 0)
                     }
-                }
+                },
             )
         },
-        onBackClick = navController::navigateUp,
-    ) {
+        onBackClick = navigator::navigateUp,
+    ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "Reports::List")
 
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
-                .padding(SpaceSmall),
-            verticalArrangement = Arrangement.spacedBy(SpaceMedium)
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentPadding = PaddingValues(SpaceSmall),
+            verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
             item("reportBoxData") {
                 Spacer(modifier = Modifier.height(SpaceMini))
 
                 TotalReports(
-                    report = report,
+                    uiState = reportState,
                     onOrderClick = {
-                        navController.navigate(Screens.ORDER_SCREEN)
+                        navigator.navigate(Screens.ORDER_SCREEN)
                     },
                     onExpensesClick = {
-                        navController.navigate(Screens.EXPENSES_SCREEN)
+                        navigator.navigate(Screens.EXPENSES_SCREEN)
                     },
-                    onRefreshReport = {
-                        reportsViewModel.onReportEvent(ReportsEvent.RefreshReport)
-                    }
+                    onRegenerateReport = {
+                        viewModel.onReportEvent(ReportsEvent.GenerateReport)
+                    },
                 )
             }
 
@@ -254,68 +249,94 @@ fun ReportScreen(
                         selectedBarData = it
                     },
                     onClickViewMore = {
-                        navController.navigate(ViewLastSevenDaysReportsDestination())
-                    }
+                        navigator.navigate(ViewLastSevenDaysReportsDestination())
+                    },
                 )
             }
 
             item("categoryWiseReport") {
                 CategoryWiseReport(
                     categoryState = categoryState,
+                    orderType = categoryOrderType,
                     reportExpanded = categoryWiseRepExpanded,
                     selectedCategory = selectedCategory,
                     onCategoryExpandChanged = {
-                        reportsViewModel.onReportEvent(ReportsEvent.OnSelectCategory(it))
+                        viewModel.onReportEvent(ReportsEvent.OnSelectCategory(it))
                     },
                     onExpandChanged = {
                         categoryWiseRepExpanded = !categoryWiseRepExpanded
                     },
                     onClickOrderType = {
-                        reportsViewModel.onReportEvent(ReportsEvent.OnChangeCategoryOrderType(it))
+                        viewModel.onReportEvent(ReportsEvent.OnChangeCategoryOrderType(it))
                     },
-                    onProductClick = onClickProduct
+                    onProductClick = onClickProduct,
                 )
             }
 
             item("productWiseReport") {
                 ProductWiseReport(
                     productState = productState,
+                    orderType = productOrderType,
                     productRepExpanded = productWiseRepExpanded,
                     selectedProduct = selectedProductData,
                     onExpandChanged = {
                         productWiseRepExpanded = !productWiseRepExpanded
                     },
                     onClickOrderType = {
-                        reportsViewModel.onReportEvent(ReportsEvent.OnChangeOrderType(it))
+                        viewModel.onReportEvent(ReportsEvent.OnChangeProductOrderType(it))
                     },
                     onBarClick = {
                         selectedProductData = it
-                    }
+                    },
                 )
             }
 
             item("addressWiseReport") {
                 AddressWiseReport(
                     addressState = addressState,
+                    totalReports = totalAddressReports,
                     addressWiseRepExpanded = addressWiseRepExpanded,
                     onExpandChanged = {
                         addressWiseRepExpanded = !addressWiseRepExpanded
                     },
-                    onAddressClick = onClickAddress
+                    onAddressClick = onClickAddress,
                 )
             }
 
             item("customerWiseReport") {
                 CustomerWiseReport(
                     customerState = customerState,
+                    totalReports = totalCustomerReports,
                     customerWiseRepExpanded = customerWiseRepExpanded,
                     onExpandChanged = {
                         customerWiseRepExpanded = !customerWiseRepExpanded
                     },
-                    onCustomerClick = onClickCustomer
+                    onCustomerClick = onClickCustomer,
+                )
+            }
+
+            item("expenses_report") {
+                // Expenses Report
+                ExpenseWiseReport(
+                    uiState = expensesState,
+                    totalReports = totalExpensesReport,
+                    doesExpanded = expensesRepExpanded,
+                    onExpandChanged = {
+                        expensesRepExpanded = !expensesRepExpanded
+                    },
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
+            }
+
+            item("end_of_the_list") {
+                ItemNotFound(
+                    title = "No more reports available",
+                    btnText = "Place New Order",
+                    onBtnClick = {
+                        navigator.navigate(Screens.HOME_SCREEN)
+                    },
+                )
             }
         }
     }
@@ -325,14 +346,14 @@ fun ReportScreen(
         buttons = {
             positiveButton("Ok")
             negativeButton("Cancel")
-        }
+        },
     ) {
         datepicker(
             allowedDateValidator = { date ->
                 (date.toMilliSecond >= lastSevenStartDate) && (date <= LocalDate.now())
-            }
+            },
         ) { date ->
-            reportsViewModel.onReportEvent(ReportsEvent.SelectDate(date.toString()))
+            viewModel.onReportEvent(ReportsEvent.SelectDate(date.toMilliSecond))
         }
     }
 }

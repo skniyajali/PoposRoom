@@ -13,16 +13,14 @@ import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.AddOnItem
 import com.niyaj.model.searchAddOnItem
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class AddOnItemRepositoryImpl(
     private val addOnItemDao: AddOnItemDao,
     @Dispatcher(PoposDispatchers.IO)
-    private val ioDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher,
 ) : AddOnItemRepository, AddOnItemValidationRepository {
 
     override suspend fun getAllAddOnItem(searchText: String): Flow<List<AddOnItem>> {
@@ -44,48 +42,6 @@ class AddOnItemRepositoryImpl(
         }
     }
 
-    override suspend fun addOrIgnoreAddOnItem(newAddOnItem: AddOnItem): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val validateName = validateItemName(newAddOnItem.itemName, newAddOnItem.itemId)
-                val validatePrice = validateItemPrice(newAddOnItem.itemPrice)
-
-                val hasError = listOf(validateName, validatePrice).any { !it.successful }
-
-                if (!hasError) {
-                    val result = addOnItemDao.insertOrIgnoreAddOnItem(newAddOnItem.toEntity())
-
-                    Resource.Success(result > 0)
-                } else {
-                    Resource.Error("Unable to create addon item")
-                }
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message)
-        }
-    }
-
-    override suspend fun updateAddOnItem(newAddOnItem: AddOnItem): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val validateName = validateItemName(newAddOnItem.itemName, newAddOnItem.itemId)
-                val validatePrice = validateItemPrice(newAddOnItem.itemPrice)
-
-                val hasError = listOf(validateName, validatePrice).any { !it.successful }
-
-                if (!hasError) {
-                    val result = addOnItemDao.updateAddOnItem(newAddOnItem.toEntity())
-
-                    Resource.Success(result > 0)
-                } else {
-                    Resource.Error("Unable to update addon item")
-                }
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message)
-        }
-    }
-
     override suspend fun upsertAddOnItem(newAddOnItem: AddOnItem): Resource<Boolean> {
         return try {
             val validateName = validateItemName(newAddOnItem.itemName, newAddOnItem.itemId)
@@ -101,18 +57,6 @@ class AddOnItemRepositoryImpl(
                 Resource.Success(result > 0)
             } else {
                 Resource.Error("Unable to create or update addon item")
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message)
-        }
-    }
-
-    override suspend fun deleteAddOnItem(itemId: Int): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val result = addOnItemDao.deleteAddOnItem(itemId)
-
-                Resource.Success(result > 0)
             }
         } catch (e: Exception) {
             Resource.Error(e.message)
@@ -170,7 +114,7 @@ class AddOnItemRepositoryImpl(
         }
 
         return ValidationResult(
-            successful = true
+            successful = true,
         )
     }
 
@@ -190,7 +134,7 @@ class AddOnItemRepositoryImpl(
         }
 
         return ValidationResult(
-            successful = true
+            successful = true,
         )
     }
 

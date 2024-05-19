@@ -1,14 +1,10 @@
 package com.niyaj.address.add_edit
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.CurrencyRupee
-import androidx.compose.material.icons.filled.EditLocationAlt
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -24,6 +20,7 @@ import com.niyaj.common.tags.AddressTestTags.CREATE_ADDRESS_SCREEN
 import com.niyaj.common.tags.AddressTestTags.CREATE_NEW_ADDRESS
 import com.niyaj.common.tags.AddressTestTags.EDIT_ADDRESS
 import com.niyaj.common.tags.AddressTestTags.UPDATE_ADDRESS_SCREEN
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.StandardButton
@@ -80,43 +77,48 @@ fun AddEditAddressScreen(
                     .padding(SpaceMedium),
                 text = if (addressId == 0) CREATE_NEW_ADDRESS else EDIT_ADDRESS,
                 enabled = enableBtn,
-                icon = if (addressId == 0) Icons.Default.Add else Icons.Default.EditLocationAlt,
+                icon = if (addressId == 0) PoposIcons.Add else PoposIcons.EditLocation,
                 onClick = {
                     viewModel.onEvent(AddEditAddressEvent.CreateOrUpdateAddress(addressId))
-                }
+                },
             )
-        }
-    ) {
-        Column(
+        },
+    ) { paddingValues ->
+        LazyColumn(
             modifier = Modifier
                 .testTag(title)
                 .fillMaxSize()
-                .padding(SpaceMedium),
+                .padding(paddingValues),
+            contentPadding = PaddingValues(SpaceMedium),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
-            StandardOutlinedTextField(
-                value = viewModel.state.addressName,
-                label = ADDRESS_FULL_NAME_FIELD,
-                leadingIcon = Icons.Default.Business,
-                isError = nameError != null,
-                errorText = nameError,
-                errorTextTag = ADDRESS_FULL_NAME_ERROR,
-                onValueChange = {
-                    viewModel.onEvent(AddEditAddressEvent.AddressNameChanged(it))
-                }
-            )
+            item(ADDRESS_FULL_NAME_FIELD) {
+                StandardOutlinedTextField(
+                    value = viewModel.state.addressName,
+                    label = ADDRESS_FULL_NAME_FIELD,
+                    leadingIcon = PoposIcons.Address,
+                    isError = nameError != null,
+                    errorText = nameError,
+                    errorTextTag = ADDRESS_FULL_NAME_ERROR,
+                    onValueChange = {
+                        viewModel.onEvent(AddEditAddressEvent.AddressNameChanged(it))
+                    },
+                )
+            }
 
-            StandardOutlinedTextField(
-                value = viewModel.state.shortName,
-                label = ADDRESS_SHORT_NAME_FIELD,
-                leadingIcon = Icons.Default.CurrencyRupee,
-                isError = shortNameError != null,
-                errorText = shortNameError,
-                errorTextTag = ADDRESS_SHORT_NAME_ERROR,
-                onValueChange = {
-                    viewModel.onEvent(AddEditAddressEvent.ShortNameChanged(it))
-                }
-            )
+            item(ADDRESS_SHORT_NAME_FIELD) {
+                StandardOutlinedTextField(
+                    value = viewModel.state.shortName,
+                    label = ADDRESS_SHORT_NAME_FIELD,
+                    leadingIcon = PoposIcons.Rupee,
+                    isError = shortNameError != null,
+                    errorText = shortNameError,
+                    errorTextTag = ADDRESS_SHORT_NAME_ERROR,
+                    onValueChange = {
+                        viewModel.onEvent(AddEditAddressEvent.ShortNameChanged(it))
+                    },
+                )
+            }
         }
     }
 }

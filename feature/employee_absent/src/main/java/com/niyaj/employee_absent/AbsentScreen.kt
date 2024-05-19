@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,19 +15,12 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -35,12 +29,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import com.niyaj.common.tags.AbsentScreenTags.ABSENT_NOT_AVAIlABLE
+import com.niyaj.common.tags.AbsentScreenTags.ABSENT_NOT_AVAILABLE
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_SCREEN_TITLE
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_TAG
@@ -50,6 +42,7 @@ import com.niyaj.common.tags.AbsentScreenTags.DELETE_ABSENT_TITLE
 import com.niyaj.common.tags.AbsentScreenTags.NO_ITEMS_IN_ABSENT
 import com.niyaj.common.utils.toDate
 import com.niyaj.common.utils.toMonthAndYear
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.employee_absent.destinations.AbsentExportScreenDestination
@@ -63,10 +56,11 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
 import com.niyaj.ui.components.StandardAssistChip
+import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardElevatedCard
 import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.components.StandardFAB
-import com.niyaj.ui.components.StandardScaffold
+import com.niyaj.ui.components.StandardScaffoldRoute
 import com.niyaj.ui.components.TextWithBorderCount
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
@@ -76,7 +70,7 @@ import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
@@ -85,7 +79,7 @@ import kotlinx.coroutines.launch
 @Destination(route = Screens.ABSENT_SCREEN)
 @Composable
 fun AbsentScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: AbsentViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditAbsentScreenDestination, String>,
     exportRecipient: ResultRecipient<AbsentExportScreenDestination, String>,
@@ -134,7 +128,7 @@ fun AbsentScreen(
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
         } else {
-            navController.navigateUp()
+            navigator.navigateUp()
         }
     }
 
@@ -143,6 +137,7 @@ fun AbsentScreen(
             is NavResult.Canceled -> {
                 viewModel.deselectItems()
             }
+
             is NavResult.Value -> {
                 scope.launch {
                     snackbarState.showSnackbar(result.value)
@@ -154,7 +149,7 @@ fun AbsentScreen(
     }
 
     exportRecipient.onNavResult { result ->
-        when(result) {
+        when (result) {
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
                 scope.launch {
@@ -165,7 +160,7 @@ fun AbsentScreen(
     }
 
     importRecipient.onNavResult { result ->
-        when(result) {
+        when (result) {
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
                 scope.launch {
@@ -174,11 +169,11 @@ fun AbsentScreen(
             }
         }
     }
-    
+
     TrackScreenViewEvent(screenName = Screens.ABSENT_SCREEN)
 
-    StandardScaffold(
-        navController = navController,
+    StandardScaffoldRoute(
+        currentRoute = Screens.ABSENT_SCREEN,
         title = if (selectedItems.isEmpty()) ABSENT_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
@@ -187,13 +182,13 @@ fun AbsentScreen(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
                 containerColor = MaterialTheme.colorScheme.surface,
                 onFabClick = {
-                    navController.navigate(AddEditAbsentScreenDestination())
+                    navigator.navigate(AddEditAbsentScreenDestination())
                 },
                 onClickScroll = {
                     scope.launch {
                         lazyListState.animateScrollToItem(0)
                     }
-                }
+                },
             )
         },
         navActions = {
@@ -205,18 +200,18 @@ fun AbsentScreen(
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
-                    navController.navigate(AddEditAbsentScreenDestination(selectedItems.first()))
+                    navigator.navigate(AddEditAbsentScreenDestination(selectedItems.first()))
                 },
                 onDeleteClick = {
                     openDialog.value = true
                 },
                 onSettingsClick = {
-                    navController.navigate(AbsentSettingsScreenDestination)
+                    navigator.navigate(AbsentSettingsScreenDestination)
                 },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
                 onSearchClick = viewModel::openSearchBar,
-                onSearchTextChanged = viewModel::searchTextChanged
+                onSearchTextChanged = viewModel::searchTextChanged,
             )
         },
         fabPosition = if (lazyListState.isScrolled) FabPosition.End else FabPosition.Center,
@@ -225,21 +220,23 @@ fun AbsentScreen(
         onDeselect = viewModel::deselectItems,
         onBackClick = viewModel::closeSearchBar,
         snackbarHostState = snackbarState,
+        onNavigateToScreen = navigator::navigate,
     ) { _ ->
         Crossfade(
+            modifier = Modifier.fillMaxSize(),
             targetState = uiState,
-            label = "Absent State"
+            label = "Absent State",
         ) { state ->
             when (state) {
                 is UiState.Loading -> LoadingIndicator()
 
                 is UiState.Empty -> {
                     ItemNotAvailable(
-                        text = if (searchText.isEmpty()) ABSENT_NOT_AVAIlABLE else NO_ITEMS_IN_ABSENT,
+                        text = if (searchText.isEmpty()) ABSENT_NOT_AVAILABLE else NO_ITEMS_IN_ABSENT,
                         buttonText = CREATE_NEW_ABSENT,
                         onClick = {
-                            navController.navigate(AddEditAbsentScreenDestination())
-                        }
+                            navigator.navigate(AddEditAbsentScreenDestination())
+                        },
                     )
                 }
 
@@ -248,12 +245,14 @@ fun AbsentScreen(
 
                     LazyColumn(
                         modifier = Modifier
+                            .fillMaxSize()
                             .padding(SpaceSmall),
-                        state = lazyListState
+                        state = lazyListState,
                     ) {
                         items(
                             items = state.data,
-                            key = { it.employee.employeeId }
+                            key = { it.employee.employeeId },
+                            contentType = { it },
                         ) { item ->
                             if (item.absents.isNotEmpty()) {
                                 AbsentData(
@@ -272,8 +271,8 @@ fun AbsentScreen(
                                     onExpandChanged = viewModel::selectEmployee,
                                     onLongClick = viewModel::selectItem,
                                     onChipClick = {
-                                        navController.navigate(AddEditAbsentScreenDestination(employeeId = it))
-                                    }
+                                        navigator.navigate(AddEditAbsentScreenDestination(employeeId = it))
+                                    },
                                 )
 
                                 Spacer(modifier = Modifier.height(SpaceSmall))
@@ -286,40 +285,17 @@ fun AbsentScreen(
     }
 
     if (openDialog.value) {
-        AlertDialog(
-            onDismissRequest = {
+        StandardDialog(
+            title = DELETE_ABSENT_TITLE,
+            message = DELETE_ABSENT_MESSAGE,
+            onConfirm = {
+                openDialog.value = false
+                viewModel.deleteItems()
+            },
+            onDismiss = {
                 openDialog.value = false
                 viewModel.deselectItems()
             },
-            title = {
-                Text(text = DELETE_ABSENT_TITLE)
-            },
-            text = {
-                Text(
-                    text = DELETE_ABSENT_MESSAGE
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deleteItems()
-                    },
-                ) {
-                    Text("Delete")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deselectItems()
-                    },
-                ) {
-                    Text("Cancel")
-                }
-            },
-            shape = RoundedCornerShape(28.dp)
         )
     }
 }
@@ -334,16 +310,19 @@ fun AbsentData(
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     onChipClick: (Int) -> Unit = {},
+    showTrailingIcon: Boolean = true,
 ) = trace("AbsentData") {
-    val groupByMonth = item.absents.groupBy { toMonthAndYear(it.absentDate) }
+    val groupByMonth = remember(item.absents) {
+        item.absents.groupBy { toMonthAndYear(it.absentDate) }
+    }
 
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(SpaceMini),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
     ) {
         StandardExpandable(
             modifier = Modifier.padding(vertical = SpaceSmall),
@@ -354,26 +333,28 @@ fun AbsentData(
             title = {
                 IconWithText(
                     text = item.employee.employeeName,
-                    icon = Icons.Default.Person,
-                    isTitle = true
+                    icon = PoposIcons.Person,
+                    isTitle = true,
                 )
             },
             trailing = {
-                StandardAssistChip(
-                    modifier = Modifier.wrapContentSize(),
-                    text = "Add Entry",
-                    icon = Icons.Default.Add,
-                    onClick = { onChipClick(item.employee.employeeId) },
-                )
+                if (showTrailingIcon) {
+                    StandardAssistChip(
+                        modifier = Modifier.wrapContentSize(),
+                        text = "Add Entry",
+                        icon = PoposIcons.Add,
+                        onClick = { onChipClick(item.employee.employeeId) },
+                    )
+                }
             },
             content = {
                 EmployeeAbsentData(
                     groupedAbsents = groupByMonth,
                     doesSelected = doesSelected,
                     onClick = onClick,
-                    onLongClick = onLongClick
+                    onLongClick = onLongClick,
                 )
-            }
+            },
         )
     }
 }
@@ -398,7 +379,7 @@ fun EmployeeAbsentData(
             TextWithBorderCount(
                 modifier = Modifier,
                 text = grouped.key,
-                leadingIcon = Icons.Default.CalendarMonth,
+                leadingIcon = PoposIcons.CalenderMonth,
                 count = grouped.value.size,
             )
 
@@ -406,7 +387,7 @@ fun EmployeeAbsentData(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(SpaceMini),
-                horizontalArrangement = Arrangement.Start
+                horizontalArrangement = Arrangement.Start,
             ) {
                 grouped.value.forEach { item ->
                     StandardElevatedCard(
@@ -419,7 +400,7 @@ fun EmployeeAbsentData(
                         },
                         onLongClick = {
                             onLongClick(item.absentId)
-                        }
+                        },
                     ) {
                         Text(
                             text = item.absentDate.toDate,
@@ -427,7 +408,7 @@ fun EmployeeAbsentData(
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier
-                                .padding(SpaceSmall)
+                                .padding(SpaceSmall),
                         )
                     }
                 }

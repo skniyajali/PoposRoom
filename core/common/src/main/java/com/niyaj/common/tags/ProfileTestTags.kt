@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.common.tags
 
 object ProfileTestTags {
@@ -23,6 +39,11 @@ object ProfileTestTags {
     const val EMAIL_ERROR_FIELD = "Restaurant EmailError"
     const val EMAIL_EMPTY_ERROR = "Restaurant email cannot be empty."
     const val EMAIL_NOT_VALID = "Restaurant email is not valid."
+
+    const val PASSWORD_FIELD = "Password"
+    const val PASSWORD_ERROR_FIELD = "Restaurant PasswordError"
+    const val PASSWORD_EMPTY_ERROR = "Password cannot be empty."
+    const val PASSWORD_NOT_VALID = "Password is not valid."
 
     const val P_PHONE_FIELD = "Restaurant Phone"
     const val P_PHONE_ERROR_FIELD = "Restaurant PhoneError"
@@ -56,5 +77,8 @@ object ProfileTestTags {
     const val PRINT_LOGO_FIELD = "Printing Logo"
 
     const val QR_CODE_FIELD = "Payment QR Data"
+    const val QR_CODE_ERROR_TAG = "Payment QR DataError"
+
+    const val QR_CODE_EMPTY_ERROR = "Payment QR code must not be empty"
 
 }

@@ -32,7 +32,7 @@ object AddOnTestTags {
     const val ADDON_PRICE_LESS_THAN_FIVE_ERROR = "AddOn item price must greater than 5 rupees."
 
     const val DELETE_ADD_ON_ITEM_TITLE = "Delete AddOn Item?"
-    const val DELETE_ADD_ON_ITEM_MESSAGE = "Are you sure to delete these addon items?"
+    const val DELETE_ADD_ON_ITEM_MESSAGE = "Are you sure to delete these addon items? This action cannot be undone."
 
     const val ADDON_ITEM_TAG = "AddOn-"
 

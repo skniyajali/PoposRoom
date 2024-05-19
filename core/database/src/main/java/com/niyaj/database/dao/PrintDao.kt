@@ -5,6 +5,8 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.niyaj.database.model.CartItemDto
 import com.niyaj.database.model.DeliveryReportDto
+import com.niyaj.database.model.OrderDetailsDto
+import com.niyaj.database.model.ProductEntity
 import com.niyaj.database.model.ProfileEntity
 import com.niyaj.model.ChargesNameAndPrice
 import com.niyaj.model.OrderStatus
@@ -37,6 +39,14 @@ interface PrintDao {
     )
     suspend fun getOrderDetails(orderId: Int): CartItemDto
 
+    @Transaction
+    @Query(
+        value = """
+        SELECT * FROM cartorder WHERE orderId = :orderId
+    """,
+    )
+    fun getFullOrderDetails(orderId: Int): OrderDetailsDto
+
     @Query(
         value = """
         SELECT chargesName, chargesPrice FROM charges WHERE isApplicable = :isApplicable ORDER BY createdAt DESC
@@ -50,4 +60,11 @@ interface PrintDao {
     """
     )
     fun getProfileInfo(restaurantId: Int): Flow<ProfileEntity?>
+
+    @Query(
+        value = """
+        SELECT * FROM product WHERE productId = :productId
+    """,
+    )
+    suspend fun getProductById(productId: Int): ProductEntity
 }

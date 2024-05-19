@@ -2,8 +2,10 @@ package com.niyaj.expenses.add_edit
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -12,16 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.automirrored.filled.NoteAdd
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.PhoneAndroid
-import androidx.compose.material.icons.filled.Radar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,7 +45,6 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.ExpenseTestTags.ADD_EDIT_EXPENSE_BUTTON
 import com.niyaj.common.tags.ExpenseTestTags.CREATE_NEW_EXPENSE
 import com.niyaj.common.tags.ExpenseTestTags.EDIT_EXPENSE_ITEM
@@ -66,16 +57,18 @@ import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NAME_FIELD
 import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NOTE_FIELD
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
@@ -87,12 +80,12 @@ import java.time.LocalDate
 @Composable
 fun AddEditExpenseScreen(
     expenseId: Int = 0,
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: AddEditExpenseViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
-    TrackScreenViewEvent(screenName = "Add/Edit Expenses Screen")
-    
+    TrackScreenViewEvent(screenName = "Add/Edit Expenses Screen/${expenseId}")
+
     val lazyListState = rememberLazyListState()
     val dateError = viewModel.dateError.collectAsStateWithLifecycle().value
     val nameError = viewModel.nameError.collectAsStateWithLifecycle().value
@@ -129,12 +122,9 @@ fun AddEditExpenseScreen(
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
-    StandardScaffoldNew(
-        navController = navController,
+    StandardScaffoldRouteNew(
         title = title,
-        onBackClick = {
-            navController.navigateUp()
-        },
+        onBackClick = navigator::navigateUp,
         showBottomBar = true,
         showBackButton = true,
         bottomBar = {
@@ -144,20 +134,24 @@ fun AddEditExpenseScreen(
                     .testTag(ADD_EDIT_EXPENSE_BUTTON)
                     .padding(SpaceMedium),
                 text = if (expenseId == 0) CREATE_NEW_EXPENSE else EDIT_EXPENSE_ITEM,
-                icon = if (expenseId == 0) Icons.Default.Add else Icons.Default.Edit,
+                icon = if (expenseId == 0) PoposIcons.Add else PoposIcons.Edit,
                 enabled = enableBtn,
                 onClick = {
                     viewModel.onEvent(AddEditExpenseEvent.AddOrUpdateExpense(expenseId))
-                }
+                },
             )
-        }
-    ) {
-        TrackScrollJank(scrollableState = lazyListState, stateName = "Add/Edit Expenses Screen::Field")
+        },
+    ) { paddingValues ->
+        TrackScrollJank(
+            scrollableState = lazyListState,
+            stateName = "Add/Edit Expenses Screen::Field",
+        )
 
         LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceMedium),
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentPadding = PaddingValues(SpaceMedium),
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
@@ -174,7 +168,7 @@ fun AddEditExpenseScreen(
                             },
                         value = viewModel.state.expenseName,
                         label = EXPENSE_NAME_FIELD,
-                        leadingIcon = Icons.Default.Radar,
+                        leadingIcon = PoposIcons.Radar,
                         isError = nameError != null,
                         errorText = nameError,
                         errorTextTag = EXPENSE_NAME_ERROR,
@@ -185,7 +179,7 @@ fun AddEditExpenseScreen(
                         },
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(
-                                expanded = expanded
+                                expanded = expanded,
                             )
                         },
                     )
@@ -214,7 +208,7 @@ fun AddEditExpenseScreen(
                                     onClick = {
                                         expanded = false
                                         viewModel.onEvent(
-                                            AddEditExpenseEvent.ExpensesNameChanged(name)
+                                            AddEditExpenseEvent.ExpensesNameChanged(name),
                                         )
                                     },
                                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
@@ -224,7 +218,7 @@ fun AddEditExpenseScreen(
                                     HorizontalDivider(
                                         modifier = Modifier.fillMaxWidth(),
                                         thickness = 0.8.dp,
-                                        color = Color.Gray
+                                        color = Color.Gray,
                                     )
                                 }
                             }
@@ -237,14 +231,14 @@ fun AddEditExpenseScreen(
                 StandardOutlinedTextField(
                     value = viewModel.state.expenseAmount,
                     label = EXPENSE_AMOUNT_FIELD,
-                    leadingIcon = Icons.Default.PhoneAndroid,
+                    leadingIcon = PoposIcons.PhoneAndroid,
                     isError = amountError != null,
                     errorText = amountError,
                     errorTextTag = EXPENSE_AMOUNT_ERROR,
                     keyboardType = KeyboardType.Number,
                     onValueChange = {
                         viewModel.onEvent(AddEditExpenseEvent.ExpensesAmountChanged(it))
-                    }
+                    },
                 )
             }
 
@@ -252,14 +246,14 @@ fun AddEditExpenseScreen(
                 StandardOutlinedTextField(
                     value = viewModel.state.expenseDate.toPrettyDate(),
                     label = EXPENSE_DATE_FIELD,
-                    leadingIcon = Icons.Default.CalendarToday,
+                    leadingIcon = PoposIcons.CalenderToday,
                     trailingIcon = {
                         IconButton(
-                            onClick = { dialogState.show() }
+                            onClick = dialogState::show,
                         ) {
                             Icon(
-                                imageVector = Icons.Default.CalendarMonth,
-                                contentDescription = "Choose a date"
+                                imageVector = PoposIcons.CalenderMonth,
+                                contentDescription = "Choose a date",
                             )
                         }
                     },
@@ -274,9 +268,9 @@ fun AddEditExpenseScreen(
                         ) {
                             Text(text = "Click Here")
                             Spacer(modifier = Modifier.width(SpaceMini))
-                            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, "Click Here")
+                            Icon(imageVector = PoposIcons.ArrowForward, "Click Here")
                         }
-                    }
+                    },
                 )
             }
 
@@ -284,10 +278,10 @@ fun AddEditExpenseScreen(
                 StandardOutlinedTextField(
                     value = viewModel.state.expenseNote,
                     label = EXPENSE_NOTE_FIELD,
-                    leadingIcon = Icons.AutoMirrored.Filled.NoteAdd,
+                    leadingIcon = PoposIcons.NoteAdd,
                     onValueChange = {
                         viewModel.onEvent(AddEditExpenseEvent.ExpensesNoteChanged(it))
-                    }
+                    },
                 )
             }
 
@@ -303,15 +297,15 @@ fun AddEditExpenseScreen(
                         headlineContent = {
                             Text(
                                 text = it,
-                                style = MaterialTheme.typography.labelSmall
+                                style = MaterialTheme.typography.labelSmall,
                             )
                         },
                         leadingContent = {
-                            Icon(imageVector = Icons.Default.Info, contentDescription = "info")
+                            Icon(imageVector = PoposIcons.Info, contentDescription = "info")
                         },
                         colors = ListItemDefaults.colors(
                             containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        )
+                        ),
                     )
 
                 }
@@ -324,12 +318,12 @@ fun AddEditExpenseScreen(
         buttons = {
             positiveButton("Ok")
             negativeButton("Cancel")
-        }
+        },
     ) {
         datepicker(
             allowedDateValidator = { date ->
                 date <= LocalDate.now()
-            }
+            },
         ) { date ->
             viewModel.onEvent(AddEditExpenseEvent.ExpensesDateChanged(date.toMilliSecond))
         }

@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
-import androidx.compose.material.icons.filled.AutoGraph
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -23,20 +20,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.feature.chart.common.dimens.ChartDimens
 import com.niyaj.feature.chart.horizontalbar.HorizontalBarChart
 import com.niyaj.feature.chart.horizontalbar.axis.HorizontalAxisConfig
 import com.niyaj.feature.chart.horizontalbar.config.HorizontalBarConfig
 import com.niyaj.feature.chart.horizontalbar.config.StartDirection
-import com.niyaj.feature.reports.ReportsBarState
+import com.niyaj.feature.chart.horizontalbar.model.HorizontalBarData
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.event.UiState
 
 @Composable
 fun ReportBarData(
-    reportBarState: ReportsBarState,
+    reportBarState: UiState<List<HorizontalBarData>>,
     selectedBarData: String,
     onBarClick: (String) -> Unit,
     onClickViewMore: () -> Unit,
@@ -51,12 +50,18 @@ fun ReportBarData(
             targetState = reportBarState,
             label = "ReportBarState"
         ) { state ->
-            when {
-                state.isLoading -> LoadingIndicator()
+            when(state) {
+                is UiState.Loading -> LoadingIndicator()
 
-                state.reportBarData.isNotEmpty() -> {
-                    val reportBarData = state.reportBarData
+                is UiState.Empty -> {
+                    ItemNotAvailable(
+                        modifier = Modifier.padding(SpaceSmall),
+                        text = "Reports are not available",
+                        showImage = false,
+                    )
+                }
 
+                is UiState.Success -> {
                     Column(
                         modifier = Modifier
                             .padding(SpaceSmall)
@@ -67,8 +72,8 @@ fun ReportBarData(
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             IconWithText(
-                                text = "Last ${reportBarData.size} Days Reports",
-                                icon = Icons.Default.AutoGraph,
+                                text = "Last ${state.data.size} Days Reports",
+                                icon = PoposIcons.AutoGraph,
                                 secondaryText = selectedBarData.ifEmpty { null }
                             )
 
@@ -76,7 +81,7 @@ fun ReportBarData(
                                 onClick = onClickViewMore
                             ) {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
+                                    imageVector = PoposIcons.ArrowRightAlt,
                                     contentDescription = "View more"
                                 )
                             }
@@ -91,7 +96,7 @@ fun ReportBarData(
                         HorizontalBarChart(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height((reportBarData.size.times(60)).dp)
+                                .height((state.data.size.times(60)).dp)
                                 .padding(SpaceSmall),
                             onBarClick = {
                                 onBarClick(
@@ -114,17 +119,9 @@ fun ReportBarData(
                                 showAxes = true,
                                 showUnitLabels = false
                             ),
-                            horizontalBarData = reportBarData,
+                            horizontalBarData = state.data,
                         )
                     }
-                }
-
-                else -> {
-                    ItemNotAvailable(
-                        modifier = Modifier.padding(SpaceSmall),
-                        text = state.error ?: "Reports are not available",
-                        showImage = false,
-                    )
                 }
             }
         }

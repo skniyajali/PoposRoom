@@ -31,7 +31,7 @@ class ExpenseRepositoryImpl(
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getAllExpensesOnSpecificDate(
         searchText: String,
-        givenDate: String
+        givenDate: String,
     ): Flow<List<Expense>> {
         return withContext(ioDispatcher) {
             expenseDao.getAllExpenseOnGivenDate(givenDate).mapLatest { it ->
@@ -61,14 +61,6 @@ class ExpenseRepositoryImpl(
         }
     }
 
-    override suspend fun getAllPagingExpenses(
-        searchText: String,
-        limit: Int,
-        offset: Int,
-    ): List<Expense> {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun findExpenseByNameAndDate(
         expenseName: String,
         expenseDate: String,
@@ -85,58 +77,6 @@ class ExpenseRepositoryImpl(
             }
         } catch (e: Exception) {
             Resource.Error("Unable to get expense details")
-        }
-    }
-
-    override suspend fun addOrIgnoreExpense(newExpense: Expense): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val validateName = validateExpenseName(newExpense.expenseName)
-                val validateAmount = validateExpenseName(newExpense.expenseAmount)
-                val validateDate = validateExpenseName(newExpense.expenseDate)
-
-                val hasError = listOf(validateName, validateAmount, validateDate).any {
-                    !it.successful
-                }
-
-                if (!hasError) {
-                    val result = withContext(ioDispatcher) {
-                        expenseDao.insertOrIgnoreExpense(newExpense.toEntity())
-                    }
-
-                    Resource.Success(result > 0)
-                } else {
-                    Resource.Error("Unable to validate expenses")
-                }
-            }
-        } catch (e: Exception) {
-            Resource.Error("Unable to add new expense")
-        }
-    }
-
-    override suspend fun updateExpense(newExpense: Expense): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val validateName = validateExpenseName(newExpense.expenseName)
-                val validateAmount = validateExpenseName(newExpense.expenseAmount)
-                val validateDate = validateExpenseName(newExpense.expenseDate)
-
-                val hasError = listOf(validateName, validateAmount, validateDate).any {
-                    !it.successful
-                }
-
-                if (!hasError) {
-                    val result = withContext(ioDispatcher) {
-                        expenseDao.updateExpense(newExpense.toEntity())
-                    }
-
-                    Resource.Success(result > 0)
-                } else {
-                    Resource.Error("Unable to validate expenses")
-                }
-            }
-        } catch (e: Exception) {
-            Resource.Error("Unable to update expense")
         }
     }
 
@@ -166,18 +106,6 @@ class ExpenseRepositoryImpl(
         }
     }
 
-    override suspend fun deleteExpense(expenseId: Int): Resource<Boolean> {
-        return try {
-            val result = withContext(ioDispatcher) {
-                expenseDao.deleteExpense(expenseId)
-            }
-
-            Resource.Success(result > 0)
-        } catch (e: Exception) {
-            Resource.Error("Unable to delete expense")
-        }
-    }
-
     override suspend fun deleteExpenses(expenseIds: List<Int>): Resource<Boolean> {
         return try {
             val result = withContext(ioDispatcher) {
@@ -194,14 +122,14 @@ class ExpenseRepositoryImpl(
         if (expenseName.isEmpty()) {
             return ValidationResult(
                 successful = false,
-                errorMessage = EXPENSE_NAME_EMPTY_ERROR
+                errorMessage = EXPENSE_NAME_EMPTY_ERROR,
             )
         }
 
         if (expenseName.length < 3) {
             return ValidationResult(
                 successful = false,
-                errorMessage = EXPENSE_NAME_LENGTH_ERROR
+                errorMessage = EXPENSE_NAME_LENGTH_ERROR,
             )
         }
 
@@ -212,7 +140,7 @@ class ExpenseRepositoryImpl(
         if (expenseDate.isEmpty()) {
             return ValidationResult(
                 successful = false,
-                errorMessage = EXPENSE_DATE_EMPTY_ERROR
+                errorMessage = EXPENSE_DATE_EMPTY_ERROR,
             )
         }
 
@@ -223,7 +151,7 @@ class ExpenseRepositoryImpl(
         if (expenseAmount.isEmpty()) {
             return ValidationResult(
                 successful = false,
-                errorMessage = EXPENSE_PRICE_EMPTY_ERROR
+                errorMessage = EXPENSE_PRICE_EMPTY_ERROR,
             )
         }
 
@@ -231,13 +159,13 @@ class ExpenseRepositoryImpl(
             if (expenseAmount.toInt() < 10) {
                 return ValidationResult(
                     successful = false,
-                    errorMessage = EXPENSE_PRICE_LESS_THAN_TEN_ERROR
+                    errorMessage = EXPENSE_PRICE_LESS_THAN_TEN_ERROR,
                 )
             }
         } catch (e: NumberFormatException) {
             return ValidationResult(
                 successful = false,
-                errorMessage = "Expenses amount is not valid."
+                errorMessage = "Expenses amount is not valid.",
             )
         }
 

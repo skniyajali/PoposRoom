@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,11 +14,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Checklist
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -41,8 +37,10 @@ import com.niyaj.common.tags.AddOnTestTags.EXPORT_ADDON_BTN_TEXT
 import com.niyaj.common.tags.AddOnTestTags.EXPORT_ADDON_FILE_NAME
 import com.niyaj.common.tags.AddOnTestTags.EXPORT_ADDON_TITLE
 import com.niyaj.common.utils.Constants
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
+import com.niyaj.domain.utils.ImportExport
 import com.niyaj.model.AddOnItem
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
@@ -55,7 +53,6 @@ import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
-import com.niyaj.domain.utils.ImportExport
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
@@ -104,7 +101,7 @@ fun AddOnExportScreen(
         permissions = listOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        )
+        ),
     )
 
     val askForPermissions = {
@@ -115,7 +112,7 @@ fun AddOnExportScreen(
 
     val exportLauncher =
         rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
+            ActivityResultContracts.StartActivityForResult(),
         ) {
             it.data?.data?.let {
                 scope.launch {
@@ -156,25 +153,25 @@ fun AddOnExportScreen(
                     searchText = searchText,
                     placeholderText = "Search for addon items...",
                     onClearClick = viewModel::clearSearchText,
-                    onSearchTextChanged = viewModel::searchTextChanged
+                    onSearchTextChanged = viewModel::searchTextChanged,
                 )
             } else {
                 if (addOnItems.isNotEmpty()) {
                     IconButton(
-                        onClick = viewModel::selectAllItems
+                        onClick = viewModel::selectAllItems,
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Checklist,
-                            contentDescription = Constants.SELECT_ALL_ICON
+                            imageVector = PoposIcons.Checklist,
+                            contentDescription = Constants.SELECT_ALL_ICON,
                         )
                     }
 
                     IconButton(
                         onClick = viewModel::openSearchBar,
-                        modifier = Modifier.testTag(NAV_SEARCH_BTN)
+                        modifier = Modifier.testTag(NAV_SEARCH_BTN),
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Search,
+                            imageVector = PoposIcons.Search,
                             contentDescription = "Search Icon",
                         )
                     }
@@ -186,7 +183,7 @@ fun AddOnExportScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(SpaceSmallMax),
-                verticalArrangement = Arrangement.spacedBy(SpaceSmall)
+                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} addon items will be exported.")
 
@@ -196,21 +193,21 @@ fun AddOnExportScreen(
                         .testTag(EXPORT_ADDON_BTN),
                     enabled = showBottomBar,
                     text = EXPORT_ADDON_BTN_TEXT,
-                    icon = Icons.Default.Upload,
+                    icon = PoposIcons.Upload,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
+                        containerColor = MaterialTheme.colorScheme.secondary,
                     ),
                     onClick = {
                         scope.launch {
                             askForPermissions()
                             val result = ImportExport.createFile(
                                 context = context,
-                                fileName = EXPORT_ADDON_FILE_NAME
+                                fileName = EXPORT_ADDON_FILE_NAME,
                             )
                             exportLauncher.launch(result)
                             viewModel.onEvent(AddOnSettingsEvent.GetExportedItems)
                         }
-                    }
+                    },
                 )
             }
         },
@@ -223,27 +220,27 @@ fun AddOnExportScreen(
                     scope.launch {
                         lazyGridState.animateScrollToItem(index = 0)
                     }
-                }
+                },
             )
         },
         navigationIcon = {
             IconButton(
-                onClick = viewModel::deselectItems
+                onClick = viewModel::deselectItems,
             ) {
                 Icon(
-                    imageVector = Icons.Default.Clear,
-                    contentDescription = "Deselect All"
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Deselect All",
                 )
             }
-        }
-    ) {
+        },
+    ) { paddingValues ->
         if (addOnItems.isEmpty()) {
             ItemNotAvailable(
                 text = if (searchText.isEmpty()) AddOnTestTags.ADDON_NOT_AVAIlABLE else Constants.SEARCH_ITEM_NOT_FOUND,
                 buttonText = AddOnTestTags.CREATE_NEW_ADD_ON,
                 onClick = {
                     navigator.navigate(AddEditAddOnItemScreenDestination())
-                }
+                },
             )
         } else {
             TrackScrollJank(scrollableState = lazyGridState, stateName = "addon-export:list")
@@ -251,13 +248,14 @@ fun AddOnExportScreen(
             LazyVerticalGrid(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(SpaceSmall),
+                    .padding(paddingValues),
+                contentPadding = PaddingValues(SpaceSmall),
                 columns = GridCells.Fixed(2),
                 state = lazyGridState,
             ) {
                 items(
                     items = addOnItems,
-                    key = { it.itemId }
+                    key = { it.itemId },
                 ) { item: AddOnItem ->
                     AddOnItemData(
                         item = item,
@@ -265,7 +263,7 @@ fun AddOnExportScreen(
                             selectedItems.contains(it)
                         },
                         onClick = viewModel::selectItem,
-                        onLongClick = viewModel::selectItem
+                        onLongClick = viewModel::selectItem,
                     )
                 }
             }

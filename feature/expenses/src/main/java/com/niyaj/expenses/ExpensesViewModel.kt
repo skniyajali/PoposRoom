@@ -8,6 +8,8 @@ import com.niyaj.data.repository.ExpenseRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ExpensesViewModel @Inject constructor(
-    private val expenseRepository: ExpenseRepository
+    private val expenseRepository: ExpenseRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel() {
     override var totalItems: List<Int> = emptyList()
 
@@ -50,7 +53,7 @@ class ExpensesViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = UiState.Loading
+            initialValue = UiState.Loading,
         )
 
     fun selectDate(selectedDate: String) {
@@ -70,10 +73,22 @@ class ExpensesViewModel @Inject constructor(
 
                 is Resource.Success -> {
                     mEventFlow.emit(UiEvent.OnSuccess("${selectedItems.size} expenses has been deleted"))
+                    analyticsHelper.logDeletedExpenses(selectedItems.toList())
                 }
             }
 
             mSelectedItems.clear()
         }
     }
+}
+
+internal fun AnalyticsHelper.logDeletedExpenses(data: List<Int>) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "expenses_deleted",
+            extras = listOf(
+                AnalyticsEvent.Param("expenses_deleted", data.toString()),
+            ),
+        ),
+    )
 }

@@ -2,18 +2,18 @@ package com.niyaj.database.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Upsert
-import com.niyaj.database.model.AddressEntity
-import com.niyaj.database.model.CategoryEntity
-import com.niyaj.database.model.CustomerEntity
-import com.niyaj.database.model.OrderDto
-import com.niyaj.database.model.ProductWiseOrderDto
 import com.niyaj.database.model.ReportsEntity
+import com.niyaj.model.AddressWiseReport
+import com.niyaj.model.CategoryWithProduct
+import com.niyaj.model.CustomerWiseReport
+import com.niyaj.model.ExpensesReport
 import com.niyaj.model.OrderStatus
 import com.niyaj.model.OrderType
+import com.niyaj.model.ProductWiseReport
 import com.niyaj.model.TotalExpenses
+import com.niyaj.model.TotalOrders
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -22,23 +22,23 @@ interface ReportsDao {
     @Query(
         value = """
             SELECT * FROM reports WHERE reportDate = :reportDate
-        """
+        """,
     )
     fun getReportByReportDate(reportDate: String): Flow<ReportsEntity?>
 
     @Query(
         value = """ 
             SELECT reportId FROM reports WHERE reportDate = :reportDate
-        """
+        """,
     )
     suspend fun findReportExists(reportDate: String): Int?
 
     @Query(
         value = """
-            SELECT * FROM reports WHERE createdAt <= :startDate ORDER BY reportId DESC
-        """
+            SELECT * FROM reports ORDER BY reportId DESC
+        """,
     )
-    fun getReports(startDate: String): Flow<List<ReportsEntity>>
+    fun getReports(): Flow<List<ReportsEntity>>
 
     @Upsert
     fun updateOrInsertReport(report: ReportsEntity): Long
@@ -47,124 +47,131 @@ interface ReportsDao {
     @Query(
         value = """
             SELECT COUNT(*) as totalQuantity, SUM(expenseAmount) as totalExpenses FROM expense
-            WHERE createdAt BETWEEN :startDate AND :endDate
-        """
+            WHERE expenseDate BETWEEN :startDate AND :endDate
+        """,
     )
     suspend fun getTotalExpenses(startDate: Long, endDate: Long): TotalExpenses
 
+    @Transaction
+    @Query(
+        value = """
+            SELECT COUNT(co.orderId) AS totalOrders, SUM(cp.totalPrice) AS totalAmount FROM cartorder co
+            JOIN cart_price cp ON co.orderId = cp.orderId
+            WHERE orderStatus = :orderStatus AND orderType = :orderType 
+            AND (co.createdAt BETWEEN :startDate AND :endDate  
+            OR updatedAt BETWEEN :startDate AND :endDate)
+        """,
+    )
+    suspend fun getTotalOrders(
+        startDate: Long,
+        endDate: Long,
+        orderType: OrderType,
+        orderStatus: OrderStatus = OrderStatus.PLACED,
+    ): TotalOrders
+
+
+    @Query(
+        value = """
+            SELECT p.productId, p.productName, SUM(c.quantity) AS quantity 
+            
+            FROM product p
+            JOIN cart c ON p.productId = c.productId
+            JOIN cartorder co ON co.orderId = c.orderId
+            
+            WHERE CASE WHEN :orderType != null THEN co.orderType = :orderType else 1 END 
+            AND co.orderStatus = :orderStatus
+            AND (co.createdAt BETWEEN :startDate AND :endDate OR co.updatedAt BETWEEN :startDate AND :endDate)
+            
+            GROUP BY p.productId ORDER BY quantity DESC
+        """,
+    )
+    fun getProductWiseOrders(
+        startDate: Long,
+        endDate: Long,
+        orderType: String?,
+        orderStatus: OrderStatus = OrderStatus.PLACED,
+    ): Flow<List<ProductWiseReport>>
+
+
+    @Query(
+        value = """
+            SELECT cat.categoryName, p.productId, p.productName, SUM(c.quantity) AS quantity
+            
+            FROM product p
+            JOIN cart c ON p.productId = c.productId
+            JOIN cartorder co ON co.orderId = c.orderId
+            JOIN categorywithproductcrossref cp ON cp.productId = p.productId
+            JOIN category cat ON cat.categoryId = cp.categoryId
+            
+            WHERE co.orderStatus = :orderStatus 
+            AND CASE WHEN :orderType IS NOT null THEN co.orderType = :orderType else 1 END
+            AND (co.createdAt BETWEEN :startDate AND :endDate OR co.updatedAt BETWEEN :startDate AND :endDate)
+            
+            GROUP BY cat.categoryName, p.productId
+            ORDER BY cat.categoryName, quantity DESC
+        """,
+    )
+    fun getCategoryWiseOrders(
+        startDate: Long,
+        endDate: Long,
+        orderType: String? = null,
+        orderStatus: OrderStatus = OrderStatus.PLACED,
+    ): Flow<List<CategoryWithProduct>>
+
 
     @Transaction
     @Query(
         value = """
-            SELECT * FROM cartorder WHERE (createdAt BETWEEN :startDate 
-            AND :endDate OR updatedAt BETWEEN :startDate 
-            AND :endDate) AND orderStatus = :orderStatus AND orderType = :orderType
-        """
+            SELECT ad.addressId, ad.addressName, ad.shortName, COUNT(DISTINCT co.orderId) As totalOrders, SUM(cp.totalPrice) As totalSales  
+            FROM address ad
+            JOIN cartorder co ON ad.addressId = co.addressId
+            JOIN cart_price cp ON cp.orderId = co.orderId
+            WHERE co.orderStatus = :orderStatus AND co.orderType = :orderType 
+            AND (co.createdAt BETWEEN :startDate AND :endDate OR co.updatedAt BETWEEN :startDate AND :endDate)
+            GROUP BY ad.addressId
+            ORDER BY totalOrders DESC
+        """,
     )
-    suspend fun getTotalDineInOrders(
+    fun getAddressWiseOrders(
         startDate: Long,
         endDate: Long,
-        orderStatus: OrderStatus = OrderStatus.PLACED,
-        orderType: OrderType = OrderType.DineIn,
-    ): List<OrderDto>
-
-
-    @Transaction
-    @Query(
-        value = """
-            SELECT * FROM cartorder WHERE (createdAt BETWEEN :startDate 
-            AND :endDate  OR updatedAt BETWEEN :startDate 
-            AND :endDate) AND orderStatus = :orderStatus AND orderType = :orderType
-        """
-    )
-    suspend fun getTotalDineOutOrders(
-        startDate: Long,
-        endDate: Long,
-        orderStatus: OrderStatus = OrderStatus.PLACED,
         orderType: OrderType = OrderType.DineOut,
-    ): List<OrderDto>
-
-
-    @Transaction
-    @RewriteQueriesToDropUnusedColumns
-    @Query(
-        value = """
-            SELECT * FROM cartorder WHERE createdAt BETWEEN :startDate 
-            AND :endDate  OR updatedAt BETWEEN :startDate 
-            AND :endDate AND orderStatus = :orderStatus
-        """
-    )
-    fun getProductWiseOrder(
-        startDate: Long,
-        endDate: Long,
         orderStatus: OrderStatus = OrderStatus.PLACED,
-    ): Flow<List<ProductWiseOrderDto>>
+    ): Flow<List<AddressWiseReport>>
 
     @Transaction
     @Query(
         value = """
-            SELECT addressId FROM cartorder WHERE orderStatus = :orderStatus AND orderType = :orderType 
-            AND (createdAt BETWEEN :startDate AND :endDate OR updatedAt BETWEEN :startDate AND :endDate)
-        """
-    )
-    fun getAddressWiseOrder(
-        startDate: Long,
-        endDate: Long,
-        orderType: OrderType = OrderType.DineOut,
-        orderStatus: OrderStatus = OrderStatus.PLACED,
-    ): Flow<List<Int>>
-
-
-    @Transaction
-    @Query(
-        value = """
-            SELECT customerId FROM cartorder WHERE 
-            (createdAt BETWEEN :startDate AND :endDate OR updatedAt BETWEEN :startDate AND :endDate)
-            AND orderStatus = :orderStatus AND orderType = :orderType
-        """
+            SELECT cu.customerId, cu.customerPhone, cu.customerEmail, cu.customerName, 
+            COUNT(DISTINCT co.orderId) As totalOrders, SUM(cp.totalPrice) As totalSales  
+            
+            FROM customer cu
+            JOIN cartorder co ON cu.customerId = co.customerId
+            JOIN cart_price cp ON cp.orderId = co.orderId
+            
+            WHERE co.orderStatus = :orderStatus AND co.orderType = :orderType 
+            AND (co.createdAt BETWEEN :startDate AND :endDate OR co.updatedAt BETWEEN :startDate AND :endDate)
+            
+            GROUP BY cu.customerId
+            ORDER BY totalOrders DESC
+        """,
     )
     fun getCustomerWiseOrder(
         startDate: Long,
         endDate: Long,
         orderType: OrderType = OrderType.DineOut,
         orderStatus: OrderStatus = OrderStatus.PLACED,
-    ): Flow<List<Int>>
+    ): Flow<List<CustomerWiseReport>>
 
 
     @Query(
         value = """
-            SELECT * FROM address WHERE addressId = :addressId
-        """
+            SELECT expenseId, expenseAmount, expenseName FROM expense
+            WHERE expenseDate BETWEEN :startDate AND :endDate ORDER BY expenseAmount DESC
+        """,
     )
-    suspend fun getAddressById(addressId: Int): AddressEntity
-
-    @Query(
-        value = """
-            SELECT * FROM customer WHERE customerId = :customerId
-        """
-    )
-    suspend fun getCustomerById(customerId: Int): CustomerEntity
-
-
-    @Query(
-        value = """
-            SELECT categoryId FROM product WHERE productId = :productId
-        """
-    )
-    suspend fun getProductCategoryById(productId: Int): Int
-
-
-    @Query(
-        value = """
-            SELECT productName FROM product WHERE productId = :productId
-        """
-    )
-    suspend fun getProductNameById(productId: Int): String
-
-    @Query(
-        value = """
-            SELECT * FROM category WHERE categoryId = :categoryId
-        """
-    )
-    suspend fun getCategoryById(categoryId: Int): CategoryEntity
+    fun getExpensesReport(
+        startDate: Long,
+        endDate: Long,
+    ): Flow<List<ExpensesReport>>
 }

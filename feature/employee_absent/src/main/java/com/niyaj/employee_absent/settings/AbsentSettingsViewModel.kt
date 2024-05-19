@@ -23,7 +23,7 @@ import javax.inject.Inject
 class AbsentSettingsViewModel @Inject constructor(
     private val repository: AbsentRepository,
     private val analyticsHelper: AnalyticsHelper,
-): BaseViewModel() {
+) : BaseViewModel() {
 
     val items = snapshotFlow { mSearchText.value }.flatMapLatest {
         repository.getAllEmployeeAbsents(it)
@@ -33,7 +33,7 @@ class AbsentSettingsViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
+        initialValue = emptyList(),
     )
 
     private val _exportedItems = MutableStateFlow<List<EmployeeWithAbsents>>(emptyList())
@@ -49,14 +49,14 @@ class AbsentSettingsViewModel @Inject constructor(
         viewModelScope.launch {
             if (_selectedEmployee.value == employeeId) {
                 _selectedEmployee.value = 0
-            }else {
+            } else {
                 _selectedEmployee.value = employeeId
             }
         }
     }
 
     fun onEvent(event: AbsentSettingsEvent) {
-        when(event) {
+        when (event) {
             is AbsentSettingsEvent.GetExportedItems -> {
                 viewModelScope.launch {
                     if (mSelectedItems.isEmpty()) {
@@ -95,19 +95,20 @@ class AbsentSettingsViewModel @Inject constructor(
             is AbsentSettingsEvent.ImportAbsentItemsToDatabase -> {
                 viewModelScope.launch {
                     val data = if (mSelectedItems.isNotEmpty()) {
-                        mSelectedItems.flatMap {absentId ->
+                        mSelectedItems.flatMap { absentId ->
                             _importedItems.value.filter { employeeWithAbsents ->
                                 employeeWithAbsents.absents.any { it.absentId == absentId }
                             }
                         }
-                    }else {
+                    } else {
                         _importedItems.value
                     }
 
-                    when(val result = repository.importAbsentDataToDatabase(data)) {
+                    when (val result = repository.importAbsentDataToDatabase(data)) {
                         is Resource.Error -> {
                             mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
                         }
+
                         is Resource.Success -> {
                             mEventFlow.emit(UiEvent.OnSuccess("${data.sumOf { it.absents.size }} items has been imported successfully"))
                             analyticsHelper.logImportedAbsentToDatabase(data.sumOf { it.absents.size })

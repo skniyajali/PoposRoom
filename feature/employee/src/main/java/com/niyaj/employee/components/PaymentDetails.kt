@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Money
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -27,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toFormattedDate
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.EmployeePayments
@@ -55,7 +53,7 @@ fun PaymentDetails(
         shape = RoundedCornerShape(4.dp),
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 1.dp,
-        )
+        ),
     ) {
         StandardExpandable(
             modifier = Modifier
@@ -68,7 +66,7 @@ fun PaymentDetails(
             title = {
                 IconWithText(
                     text = "Payment Details",
-                    icon = Icons.Default.Money
+                    icon = PoposIcons.Money,
                 )
             },
             rowClickable = true,
@@ -77,19 +75,19 @@ fun PaymentDetails(
                     modifier = modifier,
                     onClick = {
                         onExpanded()
-                    }
+                    },
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.KeyboardArrowDown,
+                        imageVector = PoposIcons.ArrowDown,
                         contentDescription = "Expand More",
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = MaterialTheme.colorScheme.secondary,
                     )
                 }
             },
             content = {
                 Crossfade(
                     targetState = employeePaymentsState,
-                    label = "PaymentDetails"
+                    label = "PaymentDetails",
                 ) { state ->
                     when (state) {
                         is UiState.Loading -> LoadingIndicator()
@@ -105,14 +103,14 @@ fun PaymentDetails(
                             Spacer(modifier = Modifier.height(SpaceSmall))
                             Column(
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .fillMaxWidth(),
                             ) {
                                 state.data.forEachIndexed { index, salaries ->
                                     Column(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(SpaceSmall),
-                                        horizontalAlignment = Alignment.Start
+                                        horizontalAlignment = Alignment.Start,
                                     ) {
                                         Column {
                                             Text(

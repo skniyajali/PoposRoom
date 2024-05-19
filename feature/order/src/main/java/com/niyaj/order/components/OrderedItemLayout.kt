@@ -44,7 +44,7 @@ fun OrderedItemLayout(
             image = painterResource(R.drawable.emptycarttwo),
             onClick = {
                 onNavigateToHomeScreen()
-            }
+            },
         )
     } else if (isLoading) {
         LoadingIndicator()
@@ -62,7 +62,7 @@ fun OrderedItemLayout(
                 items = orders,
                 key = {
                     it.orderId
-                }
+                },
             ) { order ->
                 OrderedItem(
                     order = order,

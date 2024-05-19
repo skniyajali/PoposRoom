@@ -7,6 +7,8 @@ import com.niyaj.data.repository.EmployeeRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EmployeeViewModel @Inject constructor(
-    private val employeeRepository: EmployeeRepository
+    private val employeeRepository: EmployeeRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel() {
 
     override var totalItems: List<Int> = emptyList()
@@ -38,7 +41,7 @@ class EmployeeViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = UiState.Loading
+            initialValue = UiState.Loading,
         )
 
     override fun deleteItems() {
@@ -53,13 +56,25 @@ class EmployeeViewModel @Inject constructor(
                 is Resource.Success -> {
                     mEventFlow.emit(
                         UiEvent.OnSuccess(
-                            "${selectedItems.size} employee has been deleted"
-                        )
+                            "${selectedItems.size} employee has been deleted",
+                        ),
                     )
+
+                    analyticsHelper.logDeletedEmployees(selectedItems.toList())
                 }
             }
             mSelectedItems.clear()
         }
     }
+}
 
+internal fun AnalyticsHelper.logDeletedEmployees(data: List<Int>) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "employees_deleted",
+            extras = listOf(
+                AnalyticsEvent.Param("employees_deleted", data.toString()),
+            ),
+        ),
+    )
 }

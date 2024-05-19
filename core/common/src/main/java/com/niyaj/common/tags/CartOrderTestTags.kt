@@ -39,8 +39,8 @@ object CartOrderTestTags {
     const val CUSTOMER_PHONE_LENGTH_ERROR = "Customer phone must be 10 digits."
     const val CART_ORDER_PHONE_ERROR = "Unable to create or get customer."
 
-    const val DELETE_CART_ORDER_ITEM_TITLE = "Delete Cart Order?"
-    const val DELETE_CART_ORDER_ITEM_MESSAGE = "Are you sure to delete these orders?"
+    const val DELETE_CART_ORDER_ITEM_TITLE = "Delete Cart Order!"
+    const val DELETE_CART_ORDER_ITEM_MESSAGE = "Are you sure to delete these orders? This action cannot be undone."
 
     const val CART_ORDER_ITEM_TAG = "CartOrder-"
 

@@ -1,23 +1,15 @@
 package com.niyaj.employee_absent.add_edit
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.EditCalendar
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Person4
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_DATE_ERROR
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_DATE_FIELD
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_EMPLOYEE_NAME_ERROR
@@ -57,18 +48,20 @@ import com.niyaj.common.tags.AbsentScreenTags.CREATE_NEW_ABSENT
 import com.niyaj.common.tags.AbsentScreenTags.EDIT_ABSENT_ITEM
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
@@ -81,7 +74,7 @@ import java.time.LocalDate
 fun AddEditAbsentScreen(
     absentId: Int = 0,
     employeeId: Int = 0,
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: AddEditAbsentViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
@@ -120,14 +113,11 @@ fun AddEditAbsentScreen(
 
     val title = if (absentId == 0) CREATE_NEW_ABSENT else EDIT_ABSENT_ITEM
 
-    TrackScreenViewEvent(screenName = "Add/Edit Absent Screen")
-    
-    StandardScaffoldNew(
-        navController = navController,
+    TrackScreenViewEvent(screenName = "Add/Edit Absent Screen/employeeId: $employeeId/absentId: $absentId")
+
+    StandardScaffoldRouteNew(
         title = title,
-        onBackClick = {
-            navController.navigateUp()
-        },
+        onBackClick = navigator::navigateUp,
         showBottomBar = true,
         showBackButton = true,
         bottomBar = {
@@ -138,21 +128,22 @@ fun AddEditAbsentScreen(
                     .padding(SpaceMedium),
                 enabled = enableBtn,
                 text = title,
-                icon = if (absentId == 0) Icons.Default.Add else Icons.Default.EditCalendar,
+                icon = if (absentId == 0) PoposIcons.Add else PoposIcons.EditCalender,
                 onClick = {
                     viewModel.onEvent(AddEditAbsentEvent.CreateOrUpdateAbsent(absentId))
-                }
+                },
             )
-        }
-    ) {
+        },
+    ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "Add/Edit Absent Screen Field")
 
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
                 .testTag(ADD_EDIT_ABSENT_SCREEN)
-                .fillMaxWidth()
-                .padding(SpaceMedium),
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentPadding = PaddingValues(SpaceMedium),
         ) {
             item(ABSENT_EMPLOYEE_NAME_FIELD) {
                 ExposedDropdownMenuBox(
@@ -171,7 +162,7 @@ fun AddEditAbsentScreen(
                             .menuAnchor(),
                         value = selectedEmployee.employeeName,
                         label = ABSENT_EMPLOYEE_NAME_FIELD,
-                        leadingIcon = Icons.Default.Person4,
+                        leadingIcon = PoposIcons.Person4,
                         isError = employeeError != null,
                         errorText = employeeError,
                         readOnly = true,
@@ -179,7 +170,7 @@ fun AddEditAbsentScreen(
                         onValueChange = {},
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(
-                                expanded = employeeToggled
+                                expanded = employeeToggled,
                             )
                         },
                     )
@@ -206,20 +197,20 @@ fun AddEditAbsentScreen(
                                 },
                                 leadingIcon = {
                                     CircularBox(
-                                        icon = Icons.Default.Person,
+                                        icon = PoposIcons.Person4,
                                         doesSelected = false,
                                         size = 30.dp,
                                         showBorder = false,
-                                        text = employee.employeeName
+                                        text = employee.employeeName,
                                     )
-                                }
+                                },
                             )
 
                             if (index != employees.size - 1) {
                                 HorizontalDivider(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(start = 44.dp)
+                                        .padding(start = 44.dp),
                                 )
                             }
                         }
@@ -237,7 +228,7 @@ fun AddEditAbsentScreen(
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .align(Alignment.CenterHorizontally)
+                                            .align(Alignment.CenterHorizontally),
                                     )
                                 },
                             )
@@ -249,27 +240,27 @@ fun AddEditAbsentScreen(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             onClick = {
-                                navController.navigate(Screens.ADD_EDIT_EMPLOYEE_SCREEN)
+                                navigator.navigate(Screens.ADD_EDIT_EMPLOYEE_SCREEN)
                             },
                             text = {
                                 Text(
                                     text = "Create a new employee",
-                                    color = MaterialTheme.colorScheme.secondary
+                                    color = MaterialTheme.colorScheme.secondary,
                                 )
                             },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Default.Add,
+                                    imageVector = PoposIcons.Add,
                                     contentDescription = "Create",
-                                    tint = MaterialTheme.colorScheme.secondary
+                                    tint = MaterialTheme.colorScheme.secondary,
                                 )
                             },
                             trailingIcon = {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
-                                    contentDescription = "trailing"
+                                    imageVector = PoposIcons.ArrowRightAlt,
+                                    contentDescription = "trailing",
                                 )
-                            }
+                            },
                         )
                     }
                 }
@@ -281,14 +272,14 @@ fun AddEditAbsentScreen(
                 StandardOutlinedTextField(
                     value = viewModel.state.absentDate.toPrettyDate(),
                     label = ABSENT_DATE_FIELD,
-                    leadingIcon = Icons.Default.CalendarToday,
+                    leadingIcon = PoposIcons.CalenderToday,
                     trailingIcon = {
                         FilledTonalIconButton(
-                            onClick = { dialogState.show() }
+                            onClick = { dialogState.show() },
                         ) {
                             Icon(
-                                imageVector = Icons.Default.CalendarMonth,
-                                contentDescription = "Choose a date"
+                                imageVector = PoposIcons.CalenderMonth,
+                                contentDescription = "Choose a date",
                             )
                         }
                     },
@@ -303,9 +294,9 @@ fun AddEditAbsentScreen(
                         ) {
                             Text(text = "Click Here")
                             Spacer(modifier = Modifier.width(SpaceMini))
-                            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, "Click Here")
+                            Icon(imageVector = PoposIcons.ArrowRightAlt, "Click Here")
                         }
-                    }
+                    },
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
@@ -315,10 +306,10 @@ fun AddEditAbsentScreen(
                 StandardOutlinedTextField(
                     value = viewModel.state.absentReason,
                     label = ABSENT_REASON_FIELD,
-                    leadingIcon = Icons.Default.Description,
+                    leadingIcon = PoposIcons.Description,
                     onValueChange = {
                         viewModel.onEvent(AddEditAbsentEvent.AbsentReasonChanged(it))
-                    }
+                    },
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
@@ -332,14 +323,14 @@ fun AddEditAbsentScreen(
         buttons = {
             positiveButton("Ok")
             negativeButton("Cancel")
-        }
+        },
     ) {
         datepicker(
             allowedDateValidator = { date ->
                 if (selectedEmployee.employeeId != 0) {
                     (date.toMilliSecond >= selectedEmployee.employeeJoinedDate) && (date <= LocalDate.now())
                 } else date == LocalDate.now()
-            }
+            },
         ) { date ->
             viewModel.onEvent(AddEditAbsentEvent.AbsentDateChanged(date.toMilliSecond))
         }

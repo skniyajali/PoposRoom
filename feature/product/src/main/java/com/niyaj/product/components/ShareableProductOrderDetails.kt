@@ -1,5 +1,6 @@
 package com.niyaj.product.components
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -17,25 +18,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Feed
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.CollectionsBookmark
-import androidx.compose.material.icons.filled.CurrencyRupee
-import androidx.compose.material.icons.filled.Print
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -65,6 +52,7 @@ import com.niyaj.common.utils.toFormattedDateAndTime
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
 import com.niyaj.common.utils.toTime
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.ButtonSize
 import com.niyaj.designsystem.theme.Pewter
 import com.niyaj.designsystem.theme.SpaceMedium
@@ -78,6 +66,7 @@ import com.niyaj.product.details.ProductTotalOrderDetails
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedIconButton
 import com.niyaj.ui.components.StandardSuggestionChip
 import com.niyaj.ui.components.TextWithCount
@@ -90,13 +79,13 @@ import com.niyaj.ui.utils.ScrollableCapturable
 fun ShareableProductOrderDetails(
     modifier: Modifier = Modifier,
     captureController: CaptureController,
-    productState: UiState<Product>,
+    productState: UiState<Product>  ,
     totalOrderDetails: ProductTotalOrderDetails,
     ordersState: UiState<List<ProductWiseOrder>>,
     onDismiss: () -> Unit,
     onClickShare: () -> Unit,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
-    onClickPrintOrder: () -> Unit,
+    onClickPrintOrder: () -> Unit
 ) = trace("ShareableProductOrderDetails") {
     BasicAlertDialog(
         onDismissRequest = onDismiss,
@@ -159,6 +148,7 @@ fun ShareableProductOrderDetails(
     }
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun CapturableOrderDetailsCard(
     modifier: Modifier = Modifier,
@@ -212,7 +202,7 @@ fun CapturableOrderDetailsCard(
                             modifier = Modifier
                                 .align(Alignment.BottomCenter)
                                 .offset(y = 40.dp),
-                            icon = Icons.AutoMirrored.Filled.Feed,
+                            icon = PoposIcons.Feed,
                             text = product.productName,
                             showBorder = true,
                             doesSelected = false,
@@ -241,9 +231,9 @@ fun ShareableOrderDetails(
     orders: List<ProductWiseOrder>,
     productPrice: Int,
 ) = trace("ShareableOrderDetails") {
-    val groupedOrders = remember { orders.groupBy { it.orderedDate.toPrettyDate() } }
+    val groupedOrders = remember(orders) { orders.groupBy { it.orderedDate.toPrettyDate() } }
     // Track the currently loaded dates
-    var loadedDates by remember { mutableStateOf(groupedOrders.keys.take(1)) }
+    var loadedDates by remember(groupedOrders) { mutableStateOf(groupedOrders.keys.take(1)) }
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -290,14 +280,8 @@ fun ShareableProductOrderDetailsCard(
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        TextWithCount(
-            modifier = Modifier
-                .background(Color.Transparent),
-            text = date,
-            trailingText = totalSales.toRupee,
-            count = orders.size,
-            leadingIcon = Icons.Default.CalendarMonth
-        )
+        TextWithCount(modifier = Modifier
+                .background(Color.Transparent), text = date, trailingText = totalSales.toRupee, count = orders.size, leadingIcon = PoposIcons.CalenderMonth)
 
         grpByOrderType.forEach { (orderType, grpOrders) ->
             val totalPrice =
@@ -332,7 +316,7 @@ fun ShareableProductOrderDetailsCard(
                 ) {
                     IconWithText(
                         text = "${order.orderId}",
-                        icon = Icons.Default.Tag,
+                        icon = PoposIcons.Tag,
                         isTitle = true,
                         modifier = Modifier.weight(0.5f)
                     )
@@ -399,7 +383,7 @@ fun PaginationButtons(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
             ) {
-                Icon(imageVector = Icons.Default.ArrowDropUp, contentDescription = "View Less")
+                Icon(imageVector = PoposIcons.ArrowDropUp, contentDescription = "View Less")
                 Text("View Less")
             }
         }
@@ -409,7 +393,7 @@ fun PaginationButtons(
             onClick = onClickViewMore,
             enabled = showViewMoreBtn,
         ) {
-            Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "View More")
+            Icon(imageVector = PoposIcons.ArrowDropDown, contentDescription = "View More")
             Text("Load More")
         }
     }
@@ -442,18 +426,18 @@ fun ShareableProductDetails(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             StandardSuggestionChip(
-                icon = Icons.Default.CollectionsBookmark,
+                icon = PoposIcons.CollectionsBookmark,
                 text = product.productName,
             )
 
             StandardSuggestionChip(
-                icon = Icons.Default.CurrencyRupee,
+                icon = PoposIcons.Rupee,
                 text = product.productPrice.toString(),
             )
         }
 
         StandardSuggestionChip(
-            icon = Icons.Default.CalendarMonth,
+            icon = PoposIcons.CalenderMonth,
             text = (product.updatedAt ?: product.createdAt).toFormattedDateAndTime,
         )
 
@@ -485,7 +469,7 @@ fun DialogButtons(
             StandardOutlinedIconButton(
                 modifier = Modifier
                     .size(ButtonSize),
-                icon = Icons.Default.Close,
+                icon = PoposIcons.Close,
                 onClick = onDismiss,
                 borderColor = MaterialTheme.colorScheme.error,
             )
@@ -493,28 +477,21 @@ fun DialogButtons(
             StandardOutlinedIconButton(
                 modifier = Modifier
                     .size(ButtonSize),
-                icon = Icons.Default.Print,
+                icon = PoposIcons.Print,
                 onClick = onClickPrintOrder,
                 borderColor = MaterialTheme.colorScheme.secondary,
             )
 
-            Button(
-                onClick = onClickShare,
+            StandardButton(
                 modifier = Modifier
-                    .heightIn(ButtonSize)
                     .weight(1f),
-                shape = RoundedCornerShape(SpaceMini),
+                text = "Share",
+                onClick = onClickShare,
+                icon = PoposIcons.Share,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = shareButtonColor,
                 ),
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Share,
-                    contentDescription = "Share Data"
-                )
-                Spacer(modifier = Modifier.width(SpaceMini))
-                Text(text = "Share")
-            }
+            )
         }
     }
 }

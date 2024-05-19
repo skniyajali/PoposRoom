@@ -1,7 +1,38 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.common.utils
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.text.format.DateUtils
+import com.niyaj.common.result.Resource
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.InputStream
+import java.io.OutputStream
 import java.math.RoundingMode
+import java.nio.ByteBuffer
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -15,6 +46,13 @@ import java.util.Date
 import java.util.Locale
 
 val API_KEY = "WQBvKOC4PBQ8EZUqOrVpslYSavvudON84Q5RyZavmPMHhZ00VvgfeIpXL2C5jFyM"
+
+fun isValidPassword(password: String): Boolean {
+    if (password.length < 8) return false
+    if (password.firstOrNull { it.isDigit() } == null) return false
+    if (password.firstOrNull { it.isLetter() } == null) return false
+    return password.firstOrNull { !it.isLetterOrDigit() } != null
+}
 
 val Int.safeString: String
     get() = if (this == 0) "" else this.toString()
@@ -142,7 +180,19 @@ val Date.toBarDate
         Locale.getDefault()
     ).format(this).toString()
 
+val Long.toBarDate
+    get() = SimpleDateFormat(
+        "dd MMM",
+        Locale.getDefault()
+    ).format(this).toString()
+
 val String.toFormattedDate
+    get() = SimpleDateFormat(
+        "dd MMM yy",
+        Locale.getDefault()
+    ).format(this.toLong()).toString()
+
+val Long.toFormattedDate
     get() = SimpleDateFormat(
         "dd MMM yy",
         Locale.getDefault()
@@ -705,4 +755,118 @@ fun Double.toSafeString(): String {
         this == this.toInt().toDouble() -> this.toInt().toString()
         else -> this.toString()
     }
+}
+
+fun Uri.toBitmap(context: Context): Bitmap? {
+    val inputStream = context.contentResolver.openInputStream(this)
+
+    val bitmap: Bitmap? = BitmapFactory.decodeStream(inputStream)
+
+    inputStream?.close()
+
+    return bitmap
+}
+
+suspend fun Context.saveImageToInternalStorage(
+    uri: Uri,
+    fileName: String,
+    oldFileName: String = "",
+    dispatcher: CoroutineDispatcher = Dispatchers.IO,
+): Resource<String> {
+    val contentResolver = this.contentResolver
+    val targetFile = File(this.filesDir, fileName)
+
+    if (oldFileName.isNotEmpty()) {
+        val oldFile = File(this.filesDir, oldFileName)
+        if (oldFile.exists()) {
+            oldFile.delete()
+        }
+    }
+
+    return withContext(dispatcher) {
+        try {
+            targetFile.createNewFile()
+            contentResolver.openInputStream(uri)?.use { inputStream ->
+                targetFile.outputStream().use { outputStream ->
+                    inputStream.copyTo(outputStream, bufferSize = 1024)
+                }
+            }
+            Resource.Success(fileName)
+        } catch (e: Exception) {
+            Resource.Error(e.message.toString())
+        }
+    }
+}
+
+private fun InputStream.copyTo(
+    outputStream: OutputStream,
+    bufferSize: Int = 1024
+) {
+    val buffer = ByteArray(bufferSize)
+    var bytesRead: Int
+    while (read(buffer).also { bytesRead = it } > 0) {
+        outputStream.write(buffer, 0, bytesRead)
+    }
+}
+
+fun drawableToByteArray(context: Context, imageRes: Int): ByteArray {
+    // Get the drawable from the resources
+    val drawable: Drawable? = context.getDrawable(imageRes)
+
+    // Convert the drawable to a Bitmap
+    val bitmap = Bitmap.createBitmap(
+        drawable?.intrinsicWidth ?: 0,
+        drawable?.intrinsicHeight ?: 0,
+        Bitmap.Config.ARGB_8888
+    )
+    val canvas = Canvas(bitmap)
+    drawable?.setBounds(0, 0, canvas.width, canvas.height)
+    drawable?.draw(canvas)
+
+    // Convert the Bitmap to a byte array
+    val stream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+    val byteArray = stream.toByteArray()
+
+    // Clean up resources
+    stream.close()
+    bitmap.recycle()
+
+    // Now you have the byte array representing the drawable
+
+    return byteArray
+}
+
+/**
+ * Convert bitmap to byte array using ByteBuffer.
+ */
+fun Bitmap.convertToByteArray(): ByteArray {
+    //minimum number of bytes that can be used to store this bitmaps pixels
+    val size = this.byteCount
+
+    //allocate new instances which will hold bitmap
+    val buffer = ByteBuffer.allocate(size)
+    val bytes = ByteArray(size)
+
+    //copy the bitmap's pixels into the specified buffer
+    this.copyPixelsToBuffer(buffer)
+
+    //rewinds buffer (buffer position is set to zero and the mark is discarded)
+    buffer.rewind()
+
+    //transfer bytes from buffer into the given destination array
+    buffer.get(bytes)
+
+    //return bitmaps pixels
+    return bytes
+}
+
+fun Bitmap.toByteArray(): ByteArray {
+    val stream = ByteArrayOutputStream()
+    this.compress(Bitmap.CompressFormat.PNG, 100, stream)
+    return stream.toByteArray()
+}
+
+fun ByteArray.toBitmap(): Bitmap {
+    return BitmapFactory.decodeByteArray(this, 0, this.size)
 }

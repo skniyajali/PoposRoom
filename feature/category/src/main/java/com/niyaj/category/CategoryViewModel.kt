@@ -2,16 +2,14 @@ package com.niyaj.category
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
-import com.niyaj.common.network.Dispatcher
-import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.data.repository.CategoryRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -23,13 +21,11 @@ import javax.inject.Inject
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
-    @Dispatcher(PoposDispatchers.IO)
-    private val ioDispatcher: CoroutineDispatcher
-): BaseViewModel() {
+    private val analyticsHelper: AnalyticsHelper,
+) : BaseViewModel() {
 
     override var totalItems: List<Int> = emptyList()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val addOnItems = snapshotFlow { searchText.value }
         .flatMapLatest { it ->
             categoryRepository.getAllCategory(it)
@@ -43,26 +39,40 @@ class CategoryViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = UiState.Loading
+            initialValue = UiState.Loading,
         )
 
     override fun deleteItems() {
         super.deleteItems()
 
-        viewModelScope.launch(ioDispatcher) {
-            when(val result = categoryRepository.deleteCategories(selectedItems.toList())) {
+        viewModelScope.launch {
+            when (val result = categoryRepository.deleteCategories(selectedItems.toList())) {
                 is Resource.Error -> {
                     mEventFlow.emit(UiEvent.OnError(result.message!!))
                 }
+
                 is Resource.Success -> {
                     mEventFlow.emit(
                         UiEvent.OnSuccess(
-                            "${selectedItems.size} category has been deleted"
-                        )
+                            "${selectedItems.size} category has been deleted",
+                        ),
                     )
+
+                    analyticsHelper.logDeletedCategories(selectedItems.toList())
                 }
             }
             mSelectedItems.clear()
         }
     }
+}
+
+internal fun AnalyticsHelper.logDeletedCategories(categories: List<Int>) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "category_deleted",
+            extras = listOf(
+                AnalyticsEvent.Param("category_deleted", categories.toString()),
+            ),
+        ),
+    )
 }

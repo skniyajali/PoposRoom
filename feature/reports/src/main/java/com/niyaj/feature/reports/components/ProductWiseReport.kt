@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
@@ -15,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor3
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.feature.chart.common.dimens.ChartDimens
@@ -22,15 +21,17 @@ import com.niyaj.feature.chart.horizontalbar.HorizontalBarChart
 import com.niyaj.feature.chart.horizontalbar.axis.HorizontalAxisConfig
 import com.niyaj.feature.chart.horizontalbar.config.HorizontalBarConfig
 import com.niyaj.feature.chart.horizontalbar.config.StartDirection
-import com.niyaj.feature.reports.ProductWiseReportState
+import com.niyaj.feature.chart.horizontalbar.model.HorizontalBarData
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.StandardExpandable
+import com.niyaj.ui.event.UiState
 
 @Composable
 fun ProductWiseReport(
-    productState: ProductWiseReportState,
+    productState: UiState<List<HorizontalBarData>>,
+    orderType: String,
     productRepExpanded: Boolean,
     selectedProduct: String,
     onExpandChanged: () -> Unit,
@@ -57,12 +58,12 @@ fun ProductWiseReport(
                 IconWithText(
                     text = "Product Wise Report",
                     secondaryText = selectedProduct.ifEmpty { null },
-                    icon = Icons.Default.Dns,
+                    icon = PoposIcons.Dns,
                 )
             },
             trailing = {
                 OrderTypeDropdown(
-                    text = productState.orderType.ifEmpty { "All" },
+                    text = orderType.ifEmpty { "All" },
                     onItemClick = onClickOrderType
                 )
             },
@@ -73,10 +74,17 @@ fun ProductWiseReport(
                     targetState = productState,
                     label = "ProductState"
                 ) { state ->
-                    when {
-                        state.isLoading -> LoadingIndicator()
+                    when(state) {
+                        is UiState.Empty -> {
+                            ItemNotAvailable(
+                                text = "Product wise report not available",
+                                showImage = false,
+                            )
+                        }
 
-                        state.data.isNotEmpty() -> {
+                        is UiState.Loading -> LoadingIndicator()
+
+                        is UiState.Success -> {
                             Spacer(modifier = Modifier.height(SpaceSmall))
 
                             HorizontalBarChart(
@@ -105,13 +113,6 @@ fun ProductWiseReport(
                                     showUnitLabels = false
                                 ),
                                 horizontalBarData = state.data,
-                            )
-                        }
-
-                        else -> {
-                            ItemNotAvailable(
-                                text = state.error ?: "Product wise report not available",
-                                showImage = false,
                             )
                         }
                     }

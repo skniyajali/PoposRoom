@@ -14,6 +14,8 @@ import com.niyaj.data.repository.validation.AbsentValidationRepository
 import com.niyaj.model.Absent
 import com.niyaj.model.Employee
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -33,6 +35,7 @@ import javax.inject.Inject
 class AddEditAbsentViewModel @Inject constructor(
     private val absentRepository: AbsentRepository,
     private val validationRepository: AbsentValidationRepository,
+    private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -46,7 +49,7 @@ class AddEditAbsentViewModel @Inject constructor(
     val employees = absentRepository.getAllEmployee().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
+        initialValue = emptyList(),
     )
 
     private val _selectedEmployee = MutableStateFlow(Employee())
@@ -68,7 +71,7 @@ class AddEditAbsentViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     private val observeDate = snapshotFlow { state.absentDate }
@@ -77,12 +80,12 @@ class AddEditAbsentViewModel @Inject constructor(
         validationRepository.validateAbsentDate(
             absentDate = date,
             employeeId = emp.employeeId,
-            absentId = absentId
+            absentId = absentId,
         ).errorMessage
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = null
+        initialValue = null,
     )
 
     fun onEvent(event: AddEditAbsentEvent) {
@@ -121,7 +124,7 @@ class AddEditAbsentViewModel @Inject constructor(
 
                         state = state.copy(
                             absentDate = absent.absentDate,
-                            absentReason = absent.absentReason
+                            absentReason = absent.absentReason,
                         )
                     }
                 }
@@ -148,7 +151,7 @@ class AddEditAbsentViewModel @Inject constructor(
                     absentDate = state.absentDate,
                     absentReason = state.absentReason.trim().capitalizeWords,
                     createdAt = System.currentTimeMillis(),
-                    updatedAt = if (absentId == 0) null else System.currentTimeMillis()
+                    updatedAt = if (absentId == 0) null else System.currentTimeMillis(),
                 )
 
                 when (absentRepository.upsertAbsent(newAbsent)) {
@@ -157,7 +160,9 @@ class AddEditAbsentViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
-                        _eventFlow.emit(UiEvent.OnSuccess("Employee Marked As Absent."))
+                        val message = if (absentId == 0) "created" else "updated"
+                        _eventFlow.emit(UiEvent.OnSuccess("Employee absent date $message."))
+                        analyticsHelper.logOnCreateOrUpdateAbsent(absentId, message)
                     }
                 }
 
@@ -165,4 +170,15 @@ class AddEditAbsentViewModel @Inject constructor(
             }
         }
     }
+}
+
+private fun AnalyticsHelper.logOnCreateOrUpdateAbsent(data: Int, message: String) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "employee_absent_$message",
+            extras = listOf(
+                AnalyticsEvent.Param("employee_absent_$message", data.toString()),
+            ),
+        ),
+    )
 }

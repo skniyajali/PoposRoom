@@ -9,6 +9,7 @@ import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,6 +19,8 @@ class PrinterInfoViewModel @Inject constructor(
     private val bluetoothPrinter: BluetoothPrinter,
     private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
+
+    val eventFlow = bluetoothPrinter.mEventFlow.shareIn(viewModelScope, SharingStarted.WhileSubscribed(5_000))
 
     val info = bluetoothPrinter.printerInfo.mapLatest {
         if (it.printerId.isEmpty()) {

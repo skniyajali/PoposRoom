@@ -18,7 +18,6 @@ import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Absent
 import com.niyaj.model.Employee
 import com.niyaj.model.EmployeeWithAbsents
-import com.niyaj.model.filterAbsent
 import com.niyaj.model.filterEmployee
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -47,20 +46,11 @@ class AbsentRepositoryImpl(
     override suspend fun getAllEmployeeAbsents(searchText: String): Flow<List<EmployeeWithAbsents>> {
         return withContext(ioDispatcher) {
             absentDao.getAllAbsentEmployee().mapLatest { list ->
-                list.map(EmployeeWithAbsentsDto::asExternalModel)
+                list.filter { it.absents.isNotEmpty() }
+                    .map(EmployeeWithAbsentsDto::asExternalModel)
                     .filter {
                         it.employee.filterEmployee(searchText)
                     }
-            }
-        }
-    }
-
-    override suspend fun getAllAbsent(searchText: String): Flow<List<Absent>> {
-        return withContext(ioDispatcher) {
-            absentDao.getAllAbsent().mapLatest { list ->
-                list
-                    .map { it.asExternalModel() }
-                    .filter { it.filterAbsent(searchText) }
             }
         }
     }
@@ -75,64 +65,13 @@ class AbsentRepositoryImpl(
         }
     }
 
-    override suspend fun addOrIgnoreAbsent(newAbsent: Absent): Resource<Boolean> {
-        return try {
-            val validateAbsentEmployee = validateAbsentEmployee(newAbsent.employeeId)
-            val validateAbsentDate = validateAbsentDate(
-                absentDate = newAbsent.absentDate,
-                employeeId = newAbsent.employeeId
-            )
-
-            val hasError = listOf(validateAbsentEmployee, validateAbsentDate).any { !it.successful }
-
-            if (!hasError) {
-                val result = absentDao.insertOrIgnoreAbsent(newAbsent.toEntity())
-
-                if (result > 0) {
-                    absentDao.upsertEmployeeWithAbsentCrossReference(
-                        EmployeeWithAbsentCrossRef(newAbsent.employeeId, result.toInt())
-                    )
-                }
-
-                Resource.Success(result > 0)
-            } else {
-                Resource.Error("Unable to validate attendance")
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unable to add absent entry.")
-        }
-    }
-
-    override suspend fun updateAbsent(newAbsent: Absent): Resource<Boolean> {
-        return try {
-            val validateAbsentEmployee = validateAbsentEmployee(newAbsent.employeeId)
-            val validateAbsentDate = validateAbsentDate(
-                absentDate = newAbsent.absentDate,
-                employeeId = newAbsent.employeeId,
-                absentId = newAbsent.absentId
-            )
-
-            val hasError = listOf(validateAbsentEmployee, validateAbsentDate).any { !it.successful }
-
-            if (!hasError) {
-                val result = absentDao.updateAbsent(newAbsent.toEntity())
-
-                Resource.Success(result > 0)
-            } else {
-                Resource.Error("Unable to validate attendance")
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unable to update absent entry.")
-        }
-    }
-
     override suspend fun upsertAbsent(newAbsent: Absent): Resource<Boolean> {
         return try {
             val validateAbsentEmployee = validateAbsentEmployee(newAbsent.employeeId)
             val validateAbsentDate = validateAbsentDate(
                 absentDate = newAbsent.absentDate,
                 employeeId = newAbsent.employeeId,
-                absentId = newAbsent.absentId
+                absentId = newAbsent.absentId,
             )
 
             val hasError = listOf(validateAbsentEmployee, validateAbsentDate).any { !it.successful }
@@ -142,7 +81,7 @@ class AbsentRepositoryImpl(
 
                 if (result > 0) {
                     absentDao.upsertEmployeeWithAbsentCrossReference(
-                        EmployeeWithAbsentCrossRef(newAbsent.employeeId, result.toInt())
+                        EmployeeWithAbsentCrossRef(newAbsent.employeeId, result.toInt()),
                     )
                 }
 
@@ -152,18 +91,6 @@ class AbsentRepositoryImpl(
             }
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Unable to add or update absent entry.")
-        }
-    }
-
-    override suspend fun deleteAbsent(absentId: Int): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val result = absentDao.deleteAbsent(absentId)
-
-                Resource.Success(result > 0)
-            }
-        } catch (e: Exception) {
-            Resource.Error("Unable to delete absent entry")
         }
     }
 
@@ -187,7 +114,7 @@ class AbsentRepositoryImpl(
         if (absentDate.isEmpty()) {
             return ValidationResult(
                 successful = false,
-                errorMessage = ABSENT_DATE_EMPTY
+                errorMessage = ABSENT_DATE_EMPTY,
             )
         }
 
@@ -226,7 +153,7 @@ class AbsentRepositoryImpl(
                 val findEmployee = withContext(ioDispatcher) {
                     absentDao.findEmployeeByName(
                         empWithAbsents.employee.employeeName,
-                        empWithAbsents.employee.employeeId
+                        empWithAbsents.employee.employeeId,
                     )
                 }
 

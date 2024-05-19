@@ -4,25 +4,26 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Category
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor2
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.feature.reports.CategoryWiseReportState
+import com.niyaj.model.CategoryWiseReport
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.StandardExpandable
+import com.niyaj.ui.event.UiState
 
 @Composable
 fun CategoryWiseReport(
-    categoryState: CategoryWiseReportState,
+    categoryState: UiState<List<CategoryWiseReport>>,
+    orderType: String,
     reportExpanded: Boolean,
     selectedCategory: String,
     onCategoryExpandChanged: (String) -> Unit,
@@ -49,12 +50,12 @@ fun CategoryWiseReport(
             title = {
                 IconWithText(
                     text = "Category Wise Report",
-                    icon = Icons.Default.Category
+                    icon = PoposIcons.Category
                 )
             },
             trailing = {
                 OrderTypeDropdown(
-                    text = categoryState.orderType.ifEmpty { "All" }
+                    text = orderType.ifEmpty { "All" }
                 ) {
                     onClickOrderType(it)
                 }
@@ -66,21 +67,22 @@ fun CategoryWiseReport(
                     targetState = categoryState,
                     label = "CategoryState"
                 ) { state ->
-                    when {
-                        state.isLoading -> LoadingIndicator()
-                        state.categoryWiseReport.isNotEmpty() -> {
-                            CategoryWiseReportCard(
-                                report = state.categoryWiseReport,
-                                selectedCategory = selectedCategory,
-                                onExpandChanged = onCategoryExpandChanged,
-                                onProductClick = onProductClick
+                    when(state) {
+                        is UiState.Loading -> LoadingIndicator()
+
+                        is UiState.Empty -> {
+                            ItemNotAvailable(
+                                text = "Category wise report not available",
+                                showImage = false,
                             )
                         }
 
-                        else -> {
-                            ItemNotAvailable(
-                                text = state.hasError ?: "Category wise report not available",
-                                showImage = false,
+                        is UiState.Success -> {
+                            CategoryWiseReportCard(
+                                report = state.data,
+                                selectedCategory = selectedCategory,
+                                onExpandChanged = onCategoryExpandChanged,
+                                onProductClick = onProductClick
                             )
                         }
                     }

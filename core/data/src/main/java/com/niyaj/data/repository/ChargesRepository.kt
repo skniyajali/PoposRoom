@@ -10,13 +10,7 @@ interface ChargesRepository {
 
     suspend fun getChargesById(chargesId: Int): Resource<Charges?>
 
-    suspend fun addOrIgnoreCharges(newCharges: Charges): Resource<Boolean>
-
-    suspend fun updateCharges(newCharges: Charges): Resource<Boolean>
-
     suspend fun upsertCharges(newCharges: Charges): Resource<Boolean>
-
-    suspend fun deleteCharges(chargesId: Int): Resource<Boolean>
 
     suspend fun deleteCharges(chargesIds: List<Int>): Resource<Boolean>
 

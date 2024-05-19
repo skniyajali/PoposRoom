@@ -61,6 +61,7 @@ kotlinxSerializationJson = "1.6.3"
 kotlinxImmutable = "0.3.6"
 ksp = "1.9.23-1.0.20"
 lint = "31.3.2"
+lottieVersion = "6.4.0"
 leakcanaryVersion = '2.10'
 moduleGraph = "2.5.0"
 moshiVersion = '1.15.0'
@@ -90,6 +91,7 @@ zxing = "3.5.1"
 saketSwipe = "1.2.0"
 capturable = "1.0.3"
 fragula-compose = "2.10"
+konfetti-compose = "2.0.4"
 
 # App Version
 namespace = "com.niyaj.poposroom"
@@ -97,7 +99,7 @@ minSdk = "26"
 compileSdk = "34"
 targetSdk = "34"
 versionCode = "1"
-versionName = "1.0.1"
+versionName = "1.0.6"
 sourceCompatibility = "VERSION_11"
 targetCompatibility = "VERSION_11"
 
@@ -223,11 +225,15 @@ kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime",
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 kotlinx-collections-immutable = {group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinxImmutable"}
 
+konfetti-compose = { group = "nl.dionsegijn", name = "konfetti-compose", version.ref = "konfetti-compose" }
+
 lint-api = { group = "com.android.tools.lint", name = "lint-api", version.ref = "androidTools" }
 lint-checks = { group = "com.android.tools.lint", name = "lint-checks", version.ref = "androidTools" }
 lint-tests = { group = "com.android.tools.lint", name = "lint-tests", version.ref = "androidTools" }
 # debugImplementation because LeakCanary should only run in debug builds.
 leakcanary = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanaryVersion" }
+
+lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottieVersion" }
 
 # Moshi
 moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshiVersion" }

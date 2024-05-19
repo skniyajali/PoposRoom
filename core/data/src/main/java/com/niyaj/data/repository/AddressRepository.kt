@@ -11,13 +11,7 @@ interface AddressRepository {
 
     suspend fun getAddressById(addressId: Int): Resource<Address?>
 
-    suspend fun addOrIgnoreAddress(newAddress: Address): Int
-
-    suspend fun updateAddress(newAddress: Address): Resource<Boolean>
-
     suspend fun upsertAddress(newAddress: Address): Resource<Boolean>
-
-    suspend fun deleteAddress(addressId: Int): Resource<Boolean>
 
     suspend fun deleteAddresses(addressIds: List<Int>): Resource<Boolean>
 

@@ -1,10 +1,26 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.common.tags
 
 object MeasureUnitTestTags {
 
     const val UNIT_SCREEN_TITLE = "Measure Units"
-    const val UNIT_SEARCH_PLACEHOLDER = "Search for Items..."
-    const val UNIT_NOT_AVAILABLE = "Items Not Available"
+    const val UNIT_SEARCH_PLACEHOLDER = "Search For Measure Units..."
+    const val UNIT_NOT_AVAILABLE = "Measure units are not available, Click below button to create new unit."
 
     const val ADD_EDIT_UNIT_BUTTON = "AddEdit Unit"
 
@@ -33,13 +49,13 @@ object MeasureUnitTestTags {
 
     const val UNIT_SETTINGS_TITLE = "Item Settings"
 
-    const val IMPORT_UNIT_TITLE = "Import Item"
-    const val IMPORT_UNIT_BTN_TEXT = "Import Item"
+    const val IMPORT_UNIT_TITLE = "Import Units"
+    const val IMPORT_UNIT_BTN_TEXT = "Import Units"
     const val IMPORT_UNIT_OPN_FILE = "Open File"
     const val IMPORT_UNIT_NOTE_TEXT = "Make sure to open measure-units.json file."
 
-    const val EXPORT_UNIT_TITLE = "Export Item"
-    const val EXPORT_UNIT_BTN_TEXT = "Export Item"
+    const val EXPORT_UNIT_TITLE = "Export Units"
+    const val EXPORT_UNIT_BTN_TEXT = "Export Units"
     const val EXPORT_UNIT_BTN = "Export Item"
 
     const val EXPORT_UNIT_FILE_NAME = "measure-units"

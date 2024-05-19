@@ -16,6 +16,8 @@ import com.niyaj.data.repository.validation.ProductValidationRepository
 import com.niyaj.model.Category
 import com.niyaj.model.Product
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -33,6 +35,7 @@ import javax.inject.Inject
 class AddEditProductViewModel @Inject constructor(
     private val productRepository: ProductRepository,
     private val validationRepository: ProductValidationRepository,
+    private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -49,7 +52,7 @@ class AddEditProductViewModel @Inject constructor(
     val categories = productRepository.getAllCategory().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
+        initialValue = emptyList(),
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -59,7 +62,7 @@ class AddEditProductViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -69,7 +72,7 @@ class AddEditProductViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -79,17 +82,17 @@ class AddEditProductViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     init {
-        savedStateHandle.get<Int>("productId")?.let {productId ->
+        savedStateHandle.get<Int>("productId")?.let { productId ->
             getProductById(productId)
         }
     }
 
     fun onEvent(event: AddEditProductEvent) {
-        when(event) {
+        when (event) {
             is AddEditProductEvent.CategoryChanged -> {
                 viewModelScope.launch {
                     _selectedCategory.value = event.category
@@ -99,7 +102,7 @@ class AddEditProductViewModel @Inject constructor(
             is AddEditProductEvent.ProductNameChanged -> {
                 viewModelScope.launch {
                     state = state.copy(
-                        productName = event.productName
+                        productName = event.productName,
                     )
                 }
             }
@@ -107,7 +110,7 @@ class AddEditProductViewModel @Inject constructor(
             is AddEditProductEvent.ProductPriceChanged -> {
                 viewModelScope.launch {
                     state = state.copy(
-                        productPrice = event.productPrice
+                        productPrice = event.productPrice,
                     )
                 }
             }
@@ -115,7 +118,7 @@ class AddEditProductViewModel @Inject constructor(
             is AddEditProductEvent.ProductDescChanged -> {
                 viewModelScope.launch {
                     state = state.copy(
-                        productDesc = event.productDesc
+                        productDesc = event.productDesc,
                     )
                 }
             }
@@ -123,7 +126,7 @@ class AddEditProductViewModel @Inject constructor(
             is AddEditProductEvent.ProductAvailabilityChanged -> {
                 viewModelScope.launch {
                     state = state.copy(
-                        productAvailability = !state.productAvailability
+                        productAvailability = !state.productAvailability,
                     )
                 }
             }
@@ -150,15 +153,17 @@ class AddEditProductViewModel @Inject constructor(
                     productDescription = state.productDesc.trim().capitalizeWords,
                     productAvailability = state.productAvailability,
                     createdAt = System.currentTimeMillis(),
-                    updatedAt = if (productId == 0) null else System.currentTimeMillis()
+                    updatedAt = if (productId == 0) null else System.currentTimeMillis(),
                 )
 
                 when (productRepository.upsertProduct(newProduct)) {
                     is Resource.Error -> {
                         _eventFlow.emit(UiEvent.OnError("Unable to $message product"))
                     }
+
                     is Resource.Success -> {
                         _eventFlow.emit(UiEvent.OnSuccess("Product $message successfully"))
+                        analyticsHelper.logOnCreateOrUpdateProduct(productId, message)
                     }
                 }
             }
@@ -171,6 +176,7 @@ class AddEditProductViewModel @Inject constructor(
                 is Resource.Error -> {
                     _eventFlow.emit(UiEvent.OnError("Unable to retrieve product"))
                 }
+
                 is Resource.Success -> {
                     result.data?.let { product ->
                         getCategoryById(product.categoryId)
@@ -179,7 +185,7 @@ class AddEditProductViewModel @Inject constructor(
                             productName = product.productName,
                             productPrice = product.productPrice.toString(),
                             productDesc = product.productDescription,
-                            productAvailability = product.productAvailability
+                            productAvailability = product.productAvailability,
                         )
                     }
                 }
@@ -194,4 +200,15 @@ class AddEditProductViewModel @Inject constructor(
             }
         }
     }
+}
+
+private fun AnalyticsHelper.logOnCreateOrUpdateProduct(data: Int, message: String) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "product_$message",
+            extras = listOf(
+                AnalyticsEvent.Param("product_$message", data.toString()),
+            ),
+        ),
+    )
 }

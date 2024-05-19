@@ -8,7 +8,6 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkerParameters
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
-import com.niyaj.common.utils.getEndTime
 import com.niyaj.common.utils.getStartTime
 import com.niyaj.data.repository.ReportsRepository
 import com.popos.core.notifications.Notifier
@@ -30,7 +29,7 @@ class GenerateReportWorker @AssistedInject constructor(
     private val reportsRepository: ReportsRepository,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
-    private val notifier: Notifier
+    private val notifier: Notifier,
 ) : CoroutineWorker(context, workParams) {
 
     override suspend fun getForegroundInfo(): ForegroundInfo =
@@ -39,10 +38,7 @@ class GenerateReportWorker @AssistedInject constructor(
     override suspend fun doWork(): Result = withContext(ioDispatcher) {
         notifier.showReportGenerationNotification()
 
-        val startDate = getStartTime
-        val endDate = getEndTime
-
-        val result = reportsRepository.generateReport(startDate, endDate)
+        val result = reportsRepository.generateReport(getStartTime)
 
         result.message?.let {
             Result.retry()
@@ -59,7 +55,7 @@ class GenerateReportWorker @AssistedInject constructor(
          */
         fun generateReportWorker() = PeriodicWorkRequestBuilder<DelegatingWorker>(
             GENERATE_REPORT_INTERVAL_HOUR,
-            TimeUnit.HOURS
+            TimeUnit.HOURS,
         ).addTag(GENERATE_REPORT_WORKER_TAG)
             .setInputData(GenerateReportWorker::class.delegatedData())
             .build()

@@ -60,7 +60,7 @@ fun AbsentDetails(
         shape = RoundedCornerShape(4.dp),
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 1.dp,
-        )
+        ),
     ) {
         StandardExpandable(
             modifier = Modifier
@@ -73,26 +73,26 @@ fun AbsentDetails(
             title = {
                 IconWithText(
                     text = "Absent Details",
-                    icon = Icons.Default.EventBusy
+                    icon = Icons.Default.EventBusy,
                 )
             },
             rowClickable = true,
             expand = { modifier: Modifier ->
                 IconButton(
                     modifier = modifier,
-                    onClick = onExpanded
+                    onClick = onExpanded,
                 ) {
                     Icon(
                         imageVector = Icons.Filled.KeyboardArrowDown,
                         contentDescription = "Expand Absent Details",
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = MaterialTheme.colorScheme.secondary,
                     )
                 }
             },
             content = {
                 Crossfade(
                     targetState = absentState,
-                    label = "AbsentDetails"
+                    label = "AbsentDetails",
                 ) { state ->
                     when (state) {
                         is UiState.Loading -> LoadingIndicator()
@@ -109,14 +109,14 @@ fun AbsentDetails(
 
                             Column(
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .fillMaxWidth(),
                             ) {
                                 state.data.forEachIndexed { index, absentReport ->
                                     Column(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(SpaceSmall),
-                                        horizontalAlignment = Alignment.Start
+                                        horizontalAlignment = Alignment.Start,
                                     ) {
                                         Column {
                                             Text(
@@ -144,8 +144,8 @@ fun AbsentDetails(
                                                     modifier = Modifier
                                                         .testTag(date.plus(absentReport.startDate)),
                                                     colors = CardDefaults.cardColors(
-                                                        containerColor = LightColor6
-                                                    )
+                                                        containerColor = LightColor6,
+                                                    ),
                                                 ) {
                                                     Text(
                                                         text = date.toFormattedDate,
@@ -153,7 +153,7 @@ fun AbsentDetails(
                                                         textAlign = TextAlign.Start,
                                                         fontWeight = FontWeight.SemiBold,
                                                         modifier = Modifier
-                                                            .padding(SpaceSmall)
+                                                            .padding(SpaceSmall),
                                                     )
                                                 }
                                                 Spacer(modifier = Modifier.width(SpaceSmall))

@@ -1,58 +1,63 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.database.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
+import androidx.room.Transaction
 import androidx.room.Upsert
+import com.niyaj.database.model.MarketItemDto
 import com.niyaj.database.model.MarketItemEntity
 import com.niyaj.database.model.MeasureUnitEntity
+import com.niyaj.model.MarketTypeIdAndName
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MarketItemDao {
 
+    @Transaction
     @Query(
         value = """
         SELECT * FROM market_item ORDER BY createdAt DESC
     """
     )
-    fun getAllMarketItems(): Flow<List<MarketItemEntity>>
+    fun getAllMarketItems(): Flow<List<MarketItemDto>>
 
     @Query(
         value = """
-        SELECT * FROM measure_unit
+        SELECT * FROM measure_unit ORDER BY unitId DESC
     """
     )
     fun getAllMeasureUnits(): Flow<List<MeasureUnitEntity>>
 
+    @Transaction
     @Query(
         value = """
         SELECT * FROM market_item WHERE itemId = :itemId
     """
     )
-    fun getMarketItemById(itemId: Int): MarketItemEntity?
+    fun getMarketItemById(itemId: Int): MarketItemDto?
 
     @Query(
         value = """
-            SELECT DISTINCT itemType FROM market_item ORDER BY createdAt DESC
+            SELECT typeId, typeName FROM market_type ORDER BY createdAt DESC
         """
     )
-    fun getAllItemTypes(): Flow<List<String>>
-
-    /**
-     * Inserts [MarketItemEntity] into the db if they don't exist, and ignores those that do
-     */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertOrIgnoreMarketItem(marketItem: MarketItemEntity): Long
-
-
-    /**
-     * Updates [MarketItemEntity] in the db that match the primary key, and no-ops if they don't
-     */
-    @Update
-    suspend fun updateMarketItem(marketItem: MarketItemEntity): Int
+    fun getAllItemTypes(): Flow<List<MarketTypeIdAndName>>
 
     /**
      * Inserts or updates [MarketItemEntity] in the db under the specified primary keys
@@ -60,12 +65,6 @@ interface MarketItemDao {
     @Upsert
     suspend fun upsertMarketItem(marketItem: MarketItemEntity): Long
 
-    @Query(
-        value = """
-                DELETE FROM market_item WHERE itemId = :itemId
-        """
-    )
-    suspend fun deleteMarketItem(itemId: Int): Int
 
     /**
      * Deletes rows in the db matching the specified [itemIds]
@@ -109,19 +108,4 @@ interface MarketItemDao {
         """
     )
     fun findMeasureUnitByIdOrName(unitId: Int, unitName: String): MeasureUnitEntity?
-
-
-    @Query(
-        """
-        SELECT whitelistItems FROM market_list WHERE marketId = :marketId
-    """
-    )
-    suspend fun getWhitelistItems(marketId: Int): String
-
-    @Query(
-        """
-        UPDATE market_list SET whitelistItems = :whitelistItems  WHERE marketId = :marketId
-    """
-    )
-    suspend fun updateWhiteListItems(marketId: Int, whitelistItems: String): Int
 }

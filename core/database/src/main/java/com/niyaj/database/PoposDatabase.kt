@@ -1,9 +1,26 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.niyaj.database.dao.AbsentDao
+import com.niyaj.database.dao.AccountDao
 import com.niyaj.database.dao.AddOnItemDao
 import com.niyaj.database.dao.AddressDao
 import com.niyaj.database.dao.CartDao
@@ -17,6 +34,9 @@ import com.niyaj.database.dao.ExpenseDao
 import com.niyaj.database.dao.HomeDao
 import com.niyaj.database.dao.MarketItemDao
 import com.niyaj.database.dao.MarketListDao
+import com.niyaj.database.dao.MarketListWIthItemsDao
+import com.niyaj.database.dao.MarketListWIthTypeDao
+import com.niyaj.database.dao.MarketTypeDao
 import com.niyaj.database.dao.MeasureUnitDao
 import com.niyaj.database.dao.OrderDao
 import com.niyaj.database.dao.PaymentDao
@@ -27,6 +47,7 @@ import com.niyaj.database.dao.ProfileDao
 import com.niyaj.database.dao.ReportsDao
 import com.niyaj.database.dao.SelectedDao
 import com.niyaj.database.model.AbsentEntity
+import com.niyaj.database.model.AccountEntity
 import com.niyaj.database.model.AddOnItemEntity
 import com.niyaj.database.model.AddressEntity
 import com.niyaj.database.model.CartAddOnItemsEntity
@@ -44,11 +65,14 @@ import com.niyaj.database.model.EmployeeWithPaymentCrossRef
 import com.niyaj.database.model.ExpenseEntity
 import com.niyaj.database.model.MarketItemEntity
 import com.niyaj.database.model.MarketListEntity
-import com.niyaj.database.model.MarketListWithItemEntity
+import com.niyaj.database.model.MarketListWithItemsEntity
+import com.niyaj.database.model.MarketListWithTypeEntity
+import com.niyaj.database.model.MarketTypeEntity
 import com.niyaj.database.model.MeasureUnitEntity
 import com.niyaj.database.model.PaymentEntity
 import com.niyaj.database.model.PrinterEntity
 import com.niyaj.database.model.ProductEntity
+import com.niyaj.database.model.ProductWIthQuantityView
 import com.niyaj.database.model.ProfileEntity
 import com.niyaj.database.model.ReportsEntity
 import com.niyaj.database.model.SelectedEntity
@@ -58,6 +82,7 @@ import com.niyaj.database.util.TimestampConverters
 
 @Database(
     entities = [
+        AccountEntity::class,
         AddOnItemEntity::class,
         AddressEntity::class,
         ChargesEntity::class,
@@ -80,17 +105,23 @@ import com.niyaj.database.util.TimestampConverters
         ProfileEntity::class,
         PrinterEntity::class,
         ReportsEntity::class,
+        MarketTypeEntity::class,
         MarketItemEntity::class,
         MarketListEntity::class,
-        MarketListWithItemEntity::class,
+        MarketListWithTypeEntity::class,
+        MarketListWithItemsEntity::class,
         MeasureUnitEntity::class,
     ],
-    version = 13,
+    version = 22,
     autoMigrations = [],
     exportSchema = true,
+    views = [
+        ProductWIthQuantityView::class,
+    ],
 )
 @TypeConverters(TimestampConverters::class, ListConverter::class)
 abstract class PoposDatabase : RoomDatabase() {
+    abstract fun accountDao(): AccountDao
     abstract fun addOnItemDao(): AddOnItemDao
     abstract fun addressDao(): AddressDao
     abstract fun chargesDao(): ChargesDao
@@ -111,7 +142,10 @@ abstract class PoposDatabase : RoomDatabase() {
     abstract fun printerDao(): PrinterDao
     abstract fun profileDao(): ProfileDao
     abstract fun reportsDao(): ReportsDao
+    abstract fun marketTypeDao(): MarketTypeDao
     abstract fun marketItemDao(): MarketItemDao
     abstract fun marketListDao(): MarketListDao
+    abstract fun marketListWithTypeDao(): MarketListWIthTypeDao
+    abstract fun marketListWithItemsDao(): MarketListWIthItemsDao
     abstract fun measureUnitDao(): MeasureUnitDao
 }

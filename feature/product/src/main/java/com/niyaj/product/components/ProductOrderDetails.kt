@@ -3,7 +3,6 @@ package com.niyaj.product.components
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,22 +13,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowOutward
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Tag
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -44,6 +38,7 @@ import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
 import com.niyaj.common.utils.toTime
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.OrderType
@@ -66,138 +61,80 @@ fun ProductOrderDetails(
     productPrice: Int,
     onClickOrder: (Int) -> Unit,
 ) = trace("ProductOrderDetails") {
-    ElevatedCard(
+    Surface(
         modifier = modifier
-            .testTag("RecentOrders")
-            .fillMaxWidth(),
+            .testTag("RecentOrders"),
         shape = RoundedCornerShape(4.dp),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.background
-        )
+        color = MaterialTheme.colorScheme.background,
+        shadowElevation = 2.dp,
+        tonalElevation = 2.dp
     ) {
         Crossfade(
             targetState = orderState,
             label = "ProductOrderState",
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Start),
         ) { state ->
             when (state) {
                 is UiState.Loading -> LoadingIndicator()
 
                 is UiState.Empty -> {
                     ItemNotAvailable(
-                        text = "Have not placed any order on this product."
+                        text = "Have not placed any order on this product.",
                     )
                 }
 
                 is UiState.Success -> {
-                    val dineInOrders = remember {
+                    val dineInOrders by remember(state.data) {
                         derivedStateOf {
-                            state.data.filter { it.orderType == OrderType.DineIn }
+                            state.data
+                                .filter { it.orderType == OrderType.DineIn }
+                                .groupBy { it.orderedDate.toPrettyDate() }
                         }
                     }
-                    val dineOutOrders = remember {
+                    val dineOutOrders by remember(state.data) {
                         derivedStateOf {
-                            state.data.filter { it.orderType == OrderType.DineOut }
+                            state.data
+                                .filter { it.orderType == OrderType.DineOut }
+                                .groupBy { it.orderedDate.toPrettyDate() }
                         }
                     }
 
-                    RecentOrdersTabbed(
-                        pagerState = pagerState,
-                        dineInOrders = dineInOrders.value,
-                        dineOutOrders = dineOutOrders.value,
-                        productPrice = productPrice,
-                        onClickOrder = onClickOrder
+                    val tabs = listOf(
+                        OrderTab.DineOutOrder {
+                            GroupedProductOrders(
+                                groupedByDate = dineOutOrders,
+                                productPrice = productPrice,
+                                onClickOrder = onClickOrder,
+                            )
+                        },
+                        OrderTab.DineInOrder {
+                            GroupedProductOrders(
+                                groupedByDate = dineInOrders,
+                                productPrice = productPrice,
+                                onClickOrder = onClickOrder,
+                            )
+                        },
                     )
-                }
-            }
-        }
-    }
-}
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun RecentOrdersTabbed(
-    modifier: Modifier = Modifier,
-    pagerState: PagerState = rememberPagerState{ 2 },
-    dineInOrders: List<ProductWiseOrder>,
-    dineOutOrders: List<ProductWiseOrder>,
-    productPrice: Int,
-    onClickOrder: (Int) -> Unit,
-) = trace("RecentOrdersTabbed") {
-    val tabs = listOf(
-        OrderTab.DineOutOrder {
-            DineOutProductOrders(
-                orderList = dineOutOrders,
-                productPrice = productPrice,
-                onClickOrder = onClickOrder
-            )
-        },
-        OrderTab.DineInOrder {
-            DineInProductOrders(
-                orderList = dineInOrders,
-                productPrice = productPrice,
-                onClickOrder = onClickOrder
-            )
-        },
-    )
+                    Column(
+                        modifier = modifier,
+                        verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+                    ) {
+                        OrderTabs(
+                            tabs = listOf(
+                                OrderTab.DineOutOrder(dineOutOrders.isNotEmpty()),
+                                OrderTab.DineInOrder(dineInOrders.isNotEmpty()),
+                            ),
+                            pagerState = pagerState,
+                            containerColor = MaterialTheme.colorScheme.background,
+                        )
 
-    Column(
-        modifier = modifier
-            .fillMaxSize(),
-    ) {
-        OrderTabs(
-            tabs = tabs,
-            pagerState = pagerState,
-            containerColor = MaterialTheme.colorScheme.background
-        )
-        OrderTabsContent(tabs = tabs, pagerState = pagerState)
-    }
-}
-
-@Composable
-fun DineInProductOrders(
-    modifier: Modifier = Modifier,
-    orderList: List<ProductWiseOrder>,
-    productPrice: Int,
-    onClickOrder: (Int) -> Unit,
-) = trace("DineInProductOrders") {
-    val groupedByDate = orderList.groupBy { it.orderedDate.toPrettyDate() }
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(top = SpaceSmall),
-        horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.Top,
-    ) {
-        groupedByDate.forEach { (date, groupedOrders) ->
-            val totalSales = groupedOrders
-                .sumOf { it.quantity }
-                .times(productPrice).toString()
-
-            TextWithCount(
-                modifier = Modifier
-                    .background(Color.Transparent),
-                text = date,
-                trailingText = totalSales.toRupee,
-                count = groupedOrders.size,
-                leadingIcon = Icons.Default.CalendarMonth
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            groupedOrders.forEachIndexed { index, order ->
-                key(order.orderId) {
-                    OrderDetailsCard(
-                        order = order,
-                        onClickOrder = onClickOrder
-                    )
-                }
-
-                if (index != orderList.size - 1 && index != groupedOrders.size - 1) {
-                    Spacer(modifier = Modifier.height(SpaceSmall))
+                        OrderTabsContent(
+                            tabs = tabs,
+                            pagerState = pagerState,
+                            modifier = Modifier
+                                .fillMaxSize(),
+                        )
+                    }
                 }
             }
         }
@@ -205,51 +142,52 @@ fun DineInProductOrders(
 }
 
 @Composable
-fun DineOutProductOrders(
+fun GroupedProductOrders(
     modifier: Modifier = Modifier,
-    orderList: List<ProductWiseOrder>,
+    groupedByDate: Map<String, List<ProductWiseOrder>>,
     productPrice: Int,
     onClickOrder: (Int) -> Unit,
-) = trace("DineOutProductOrders") {
-    val groupedByDate = orderList.groupBy { it.orderedDate.toPrettyDate() }
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(top = SpaceSmall),
-        horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.Top,
+) {
+    Box(
+        modifier = modifier,
     ) {
-        groupedByDate.forEach { (date, groupedOrders) ->
-            val totalSales = groupedOrders
-                .sumOf { it.quantity }
-                .times(productPrice).toString()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .align(Alignment.TopStart),
+        ) {
+            groupedByDate.forEach { (date, groupedOrders) ->
+                val totalSales = groupedOrders
+                    .sumOf { it.quantity }
+                    .times(productPrice).toString()
 
-            TextWithCount(
-                modifier = Modifier
-                    .background(Color.Transparent),
-                text = date,
-                trailingText = totalSales.toRupee,
-                count = groupedOrders.size,
-                leadingIcon = Icons.Default.CalendarMonth
-            )
+                TextWithCount(
+                    modifier = Modifier
+                        .background(Color.Transparent),
+                    text = date,
+                    trailingText = totalSales.toRupee,
+                    count = groupedOrders.size,
+                    leadingIcon = PoposIcons.CalenderMonth,
+                )
 
-            groupedOrders.forEachIndexed { index, order ->
-                key(order.orderId) {
-                    OrderDetailsCard(
-                        order = order,
-                        onClickOrder = onClickOrder
-                    )
-                }
+                HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
-                if (index != orderList.size - 1 && index != groupedOrders.size - 1) {
-                    Spacer(modifier = Modifier.height(SpaceSmall))
+                groupedOrders.forEachIndexed { index, order ->
+                    key(order.orderId) {
+                        OrderDetailsCard(
+                            order = order,
+                            onClickOrder = onClickOrder,
+                        )
+                    }
+
+                    if (index != groupedOrders.size - 1) {
+                        Spacer(modifier = Modifier.height(SpaceSmall))
+                    }
                 }
             }
         }
     }
 }
-
 
 @Composable
 fun OrderDetailsCard(
@@ -257,85 +195,87 @@ fun OrderDetailsCard(
     order: ProductWiseOrder,
     onClickOrder: (Int) -> Unit,
 ) = trace("OrderDetailsCard") {
-    Row(
+    Surface(
         modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceContainerLow)
-            .clickable {
-                onClickOrder(order.orderId)
-            },
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .fillMaxWidth(),
+        onClick = { onClickOrder(order.orderId) },
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
-        Column(
-            modifier = Modifier.weight(2.5f)
+        Row(
+            modifier = modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(SpaceSmall),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+            Column(
+                modifier = Modifier.weight(2.5f),
             ) {
-                IconWithText(
-                    text = "${order.orderId}",
-                    icon = Icons.Default.Tag,
-                    isTitle = true,
-                )
-
-                Text(
-                    text = "${order.quantity} Qty",
-                    textAlign = TextAlign.End,
-                    fontWeight = FontWeight.SemiBold,
-                )
-
-                Text(
-                    text = order.orderedDate.toTime,
-                    textAlign = TextAlign.End,
-                )
-            }
-
-            order.customerAddress?.let {
-                Box(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(topStart = SpaceSmall))
-                        .background(MaterialTheme.colorScheme.tertiaryContainer),
-                    contentAlignment = Alignment.Center,
+                        .padding(SpaceSmall),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(
-                            SpaceSmall,
-                            Alignment.CenterHorizontally
-                        ),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = it,
-                            textAlign = TextAlign.End,
-                        )
+                    IconWithText(
+                        text = "${order.orderId}",
+                        icon = PoposIcons.Tag,
+                        isTitle = true,
+                    )
 
-                        order.customerPhone?.let {
+                    Text(
+                        text = "${order.quantity} Qty",
+                        textAlign = TextAlign.End,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+
+                    Text(
+                        text = order.orderedDate.toTime,
+                        textAlign = TextAlign.End,
+                    )
+                }
+
+                order.customerAddress?.let {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(topStart = SpaceSmall))
+                            .background(MaterialTheme.colorScheme.tertiaryContainer),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(
+                                SpaceSmall,
+                                Alignment.CenterHorizontally,
+                            ),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
                             Text(
                                 text = it,
                                 textAlign = TextAlign.End,
                             )
+
+                            order.customerPhone?.let {
+                                Text(
+                                    text = it,
+                                    textAlign = TextAlign.End,
+                                )
+                            }
                         }
                     }
                 }
             }
-        }
 
-        FilledTonalIconButton(
-            onClick = { onClickOrder(order.orderId) },
-            shape = RoundedCornerShape(SpaceMini),
-            colors = IconButtonDefaults.filledTonalIconButtonColors(
-                containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            Icon(imageVector = Icons.Default.ArrowOutward, contentDescription =  "View Details")
+            FilledTonalIconButton(
+                onClick = { onClickOrder(order.orderId) },
+                shape = RoundedCornerShape(SpaceMini),
+                colors = IconButtonDefaults.filledTonalIconButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = MaterialTheme.colorScheme.primary,
+                ),
+            ) {
+                Icon(imageVector = PoposIcons.ArrowRightAlt, contentDescription = "View Details")
+            }
         }
     }
 }

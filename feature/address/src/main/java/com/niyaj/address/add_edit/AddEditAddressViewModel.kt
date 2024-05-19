@@ -14,6 +14,8 @@ import com.niyaj.data.repository.AddressRepository
 import com.niyaj.data.repository.validation.AddressValidationRepository
 import com.niyaj.model.Address
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -30,6 +32,7 @@ import javax.inject.Inject
 class AddEditAddressViewModel @Inject constructor(
     private val addressRepository: AddressRepository,
     private val validationRepository: AddressValidationRepository,
+    private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -52,7 +55,7 @@ class AddEditAddressViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     val shortNameError: StateFlow<String?> = snapshotFlow { state.shortName }
@@ -61,7 +64,7 @@ class AddEditAddressViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = null,
         )
 
     fun onEvent(event: AddEditAddressEvent) {
@@ -69,7 +72,7 @@ class AddEditAddressViewModel @Inject constructor(
             is AddEditAddressEvent.AddressNameChanged -> {
                 state = state.copy(
                     addressName = event.addressName,
-                    shortName = getAllCapitalizedLetters(event.addressName)
+                    shortName = getAllCapitalizedLetters(event.addressName),
                 )
             }
 
@@ -91,7 +94,7 @@ class AddEditAddressViewModel @Inject constructor(
                     addressName = state.addressName.capitalizeWords.trimEnd(),
                     shortName = state.shortName.trimEnd(),
                     createdAt = System.currentTimeMillis(),
-                    updatedAt = if (addressId != 0) System.currentTimeMillis() else null
+                    updatedAt = if (addressId != 0) System.currentTimeMillis() else null,
                 )
 
                 when (val result = addressRepository.upsertAddress(address)) {
@@ -102,8 +105,9 @@ class AddEditAddressViewModel @Inject constructor(
                     is Resource.Success -> {
                         val message = if (addressId == 0) "Created" else "Updated"
                         _eventFlow.emit(
-                            UiEvent.OnSuccess("Address $message Successfully.")
+                            UiEvent.OnSuccess("Address $message Successfully."),
                         )
+                        analyticsHelper.logOnCreateOrUpdateAddress(addressId, message)
                     }
                 }
 
@@ -133,4 +137,15 @@ class AddEditAddressViewModel @Inject constructor(
         }
     }
 
+}
+
+private fun AnalyticsHelper.logOnCreateOrUpdateAddress(addressId: Int, message: String) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "address_$message",
+            extras = listOf(
+                AnalyticsEvent.Param("address_$message", addressId.toString()),
+            ),
+        ),
+    )
 }

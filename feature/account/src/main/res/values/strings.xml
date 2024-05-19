@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~      Copyright 2024 Sk Niyaj Ali
+  ~
+  ~      Licensed under the Apache License, Version 2.0 (the "License");
+  ~      you may not use this file except in compliance with the License.
+  ~      You may obtain a copy of the License at
+  ~
+  ~              http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~      Unless required by applicable law or agreed to in writing, software
+  ~      distributed under the License is distributed on an "AS IS" BASIS,
+  ~      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~      See the License for the specific language governing permissions and
+  ~      limitations under the License.
+  -->
+
+<resources>
+    <!--  Login & Sing Up Screen  -->
+    <string name="login">Login</string>
+    <string name="register">Create an Account</string>
+    <string name="email_phone">Email or Phone</string>
+    <string name="password">Password</string>
+    <string name="welcome">Welcome Back</string>
+    <string name="login_text">Sign in to continue.</string>
+    <string name="no_account">Do not have any account?</string>
+    <string name="question_count">\u00A0of %d</string>
+    <string name="submit">Submit</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="on_success_register_title">Hooray!!</string>
+    <string name="on_success_register_subtitle">Your account has been created.</string>
+    <string name="on_success_register_desc">Please save your password for future login purpose, otherwise you can not able to login to your account.</string>
+    <string name="setup_profile">Setup Your Restaurant</string>
+    <string name="setup_profile_text">Click next to continue.</string>
+    <string name="basic_title">Fill Additional Info</string>
+    <string name="basic_subtitle">Click submit to create an account.</string>
+    <string name="login_info_note">Please upload a logo within 512x512 px size.</string>
+    <string name="on_failure_register_title">Oops!!</string>
+    <string name="on_failure_register_subtitle">Something Went Wrong!</string>
+    <string name="on_failure_register_desc">Please go back and check and verify your input data and try again.</string>
+    <string name="go_back">Go Back</string>
+    <string name="done">Done</string>
+</resources>

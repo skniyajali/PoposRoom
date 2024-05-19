@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.cart.components
 
 import androidx.compose.animation.Crossfade
@@ -10,15 +26,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.PhoneAndroid
-import androidx.compose.material.icons.filled.RadioButtonChecked
-import androidx.compose.material.icons.filled.RadioButtonUnchecked
-import androidx.compose.material.icons.filled.Tag
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -27,6 +34,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.designsystem.components.PoposIconButton
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor8
 import com.niyaj.designsystem.theme.Pewter
 import com.niyaj.designsystem.theme.SpaceMini
@@ -65,11 +74,11 @@ fun CartItemOrderDetailsSection(
         ) {
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.Start
+                horizontalAlignment = Alignment.Start,
             ) {
                 IconWithText(
                     text = orderId,
-                    icon = Icons.Default.Tag,
+                    icon = PoposIcons.Tag,
                     isTitle = true,
                     textColor = iconColor,
                     tintColor = iconColor,
@@ -79,7 +88,7 @@ fun CartItemOrderDetailsSection(
                     Spacer(modifier = Modifier.height(SpaceMini))
                     IconWithText(
                         text = it,
-                        icon = Icons.Default.PhoneAndroid,
+                        icon = PoposIcons.PhoneAndroid,
                         isTitle = true,
                         textColor = iconColor,
                         tintColor = iconColor,
@@ -92,7 +101,7 @@ fun CartItemOrderDetailsSection(
                 iconColor = iconColor,
                 onClick = onClick,
                 onEditClick = onEditClick,
-                onViewClick = onViewClick
+                onViewClick = onViewClick,
             )
         }
     }
@@ -108,36 +117,30 @@ fun CartOrderDetailsButtons(
     onViewClick: () -> Unit,
 ) = trace("CartOrderDetailsButtons") {
     Row(modifier) {
-        IconButton(
-            onClick = onEditClick
-        ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = "Edit Cart",
-                tint = iconColor
-            )
-        }
+        PoposIconButton(
+            icon = PoposIcons.Edit,
+            onClick = onEditClick,
+            contentColor = iconColor,
+            contentDescription = "Edit Cart",
+        )
 
-        IconButton(
-            onClick = onViewClick
-        ) {
-            Icon(
-                imageVector = Icons.Default.Visibility,
-                contentDescription = "Order Details",
-                tint = iconColor,
-            )
-        }
+        PoposIconButton(
+            icon = PoposIcons.Visibility,
+            onClick = onViewClick,
+            contentColor = iconColor,
+            contentDescription = "Order Details",
+        )
 
-        Crossfade(targetState = selected, label = "selected") {
-            IconButton(
-                onClick = onClick
-            ) {
-                Icon(
-                    imageVector = if (it) Icons.Default.RadioButtonChecked else Icons.Default.RadioButtonUnchecked,
-                    contentDescription = null,
-                    tint = iconColor
-                )
-            }
+        Crossfade(
+            targetState = selected,
+            label = "selected",
+        ) {
+            PoposIconButton(
+                icon = if (it) PoposIcons.RadioButtonChecked else PoposIcons.RadioButtonUnchecked,
+                onClick = onClick,
+                contentColor = iconColor,
+                contentDescription = "Select Cart",
+            )
         }
     }
 }

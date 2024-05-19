@@ -8,6 +8,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -16,10 +17,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,17 +32,21 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.utils.Constants
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceMedium
 
@@ -72,7 +75,7 @@ fun StandardScaffoldWithOutDrawer(
         )
 
         systemUiController.setNavigationBarColor(
-            color = color.value
+            color = color.value,
         )
     }
 
@@ -86,12 +89,12 @@ fun StandardScaffoldWithOutDrawer(
                 navigationIcon = {
                     IconButton(
                         onClick = onBackClick,
-                        modifier = Modifier.testTag(Constants.STANDARD_BACK_BUTTON)
+                        modifier = Modifier.testTag(Constants.STANDARD_BACK_BUTTON),
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = PoposIcons.Back,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.scrim
+                            tint = MaterialTheme.colorScheme.scrim,
                         )
                     }
                 },
@@ -107,19 +110,19 @@ fun StandardScaffoldWithOutDrawer(
                 enter = fadeIn() + slideInVertically(
                     initialOffsetY = { fullHeight ->
                         fullHeight / 4
-                    }
+                    },
                 ),
                 exit = fadeOut() + slideOutVertically(
                     targetOffsetY = { fullHeight ->
                         fullHeight / 4
-                    }
-                )
+                    },
+                ),
             ) {
                 BottomAppBar {
                     bottomBar()
                 }
             }
-        }
+        },
     ) { padding ->
         ElevatedCard(
             modifier = Modifier
@@ -127,11 +130,11 @@ fun StandardScaffoldWithOutDrawer(
                 .padding(padding),
             shape = shape.value,
             colors = CardDefaults.elevatedCardColors(
-                containerColor = MaterialTheme.colorScheme.surface
+                containerColor = MaterialTheme.colorScheme.surface,
             ),
             elevation = CardDefaults.elevatedCardElevation(
-                defaultElevation = colorTransitionFraction.dp
-            )
+                defaultElevation = colorTransitionFraction.dp,
+            ),
         ) {
             content()
         }
@@ -164,8 +167,8 @@ fun StandardBottomSheetScaffold(
                         onClick = onBackClick,
                     ) {
                         Icon(
-                            Icons.Filled.Close,
-                            contentDescription = "Close Sheet"
+                            imageVector = PoposIcons.Close,
+                            contentDescription = "Close Sheet",
                         )
                     }
                 },
@@ -177,24 +180,24 @@ fun StandardBottomSheetScaffold(
                 enter = fadeIn() + slideInVertically(
                     initialOffsetY = { fullHeight ->
                         fullHeight / 4
-                    }
+                    },
                 ),
                 exit = fadeOut() + slideOutVertically(
                     targetOffsetY = { fullHeight ->
                         fullHeight / 4
-                    }
-                )
+                    },
+                ),
             ) {
                 BottomAppBar {
                     bottomBar()
                 }
             }
-        }
+        },
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(it)
+                .padding(it),
         ) {
             content()
         }
@@ -215,20 +218,20 @@ fun StandardBottomSheet(
         modifier = modifier
             .consumeWindowInsets(windowInsets)
             .imePadding(),
-        color = MaterialTheme.colorScheme.background
+        color = MaterialTheme.colorScheme.background,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = SpaceLarge)
+                .padding(bottom = SpaceLarge),
         ) {
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxWidth(),
                 colors = CardDefaults.elevatedCardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = MaterialTheme.colorScheme.surface,
                 ),
-                elevation = CardDefaults.elevatedCardElevation(0.dp)
+                elevation = CardDefaults.elevatedCardElevation(0.dp),
             ) {
                 Row(
                     modifier = Modifier
@@ -240,16 +243,16 @@ fun StandardBottomSheet(
                     Text(
                         text = title,
                         style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                     )
                     IconButton(
                         onClick = onBackClick,
-                        modifier = Modifier.size(29.dp)
+                        modifier = Modifier.size(29.dp),
                     ) {
                         Icon(
-                            Icons.Filled.Close,
+                            imageVector = PoposIcons.Close,
                             tint = closeButtonColor,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                     }
                 }
@@ -257,10 +260,77 @@ fun StandardBottomSheet(
 
             Box(
                 modifier = Modifier
-                    .imePadding()
+                    .imePadding(),
             ) {
                 content()
             }
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun StandardBottomSheetNew(
+    modifier: Modifier = Modifier,
+    title: String,
+    onBackClick: () -> Unit,
+    shape: Shape = BottomSheetDefaults.ExpandedShape,
+    containerColor: Color = BottomSheetDefaults.ContainerColor,
+    contentColor: Color = contentColorFor(backgroundColor = BottomSheetDefaults.ContainerColor),
+    tonalElevation: Dp = BottomSheetDefaults.Elevation,
+    shadowElevation: Dp = BottomSheetDefaults.Elevation,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(0.dp),
+        shape = shape,
+        color = containerColor,
+        contentColor = contentColor,
+        tonalElevation = tonalElevation,
+        shadowElevation = shadowElevation,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .imePadding(),
+        ) {
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ),
+                elevation = CardDefaults.elevatedCardElevation(0.dp),
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(SpaceMedium),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    )
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier.size(29.dp),
+                    ) {
+                        Icon(
+                            imageVector = PoposIcons.Close,
+                            tint = contentColor,
+                            contentDescription = "Close Sheet",
+                        )
+                    }
+                }
+            }
+
+            content()
         }
     }
 }

@@ -1,9 +1,6 @@
 package com.niyaj.employee.components
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -15,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toYearAndMonth
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.model.EmployeeMonthlyDate
 import com.niyaj.ui.components.StandardOutlinedAssistChip
 
@@ -29,16 +27,16 @@ fun SalaryDateDropdown(
     Column {
         StandardOutlinedAssistChip(
             text = text,
-            icon = Icons.Default.CalendarMonth,
+            icon = PoposIcons.CalenderMonth,
             onClick = {
                 menuExpanded = !menuExpanded
             },
-            trailingIcon = Icons.Default.ArrowDropDown
+            trailingIcon = PoposIcons.ArrowDown,
         )
 
         DropdownMenu(
             expanded = menuExpanded,
-            onDismissRequest = { menuExpanded = false }
+            onDismissRequest = { menuExpanded = false },
         ) {
             salaryDates.forEach { date ->
                 DropdownMenuItem(
@@ -51,7 +49,7 @@ fun SalaryDateDropdown(
                     onClick = {
                         onDateClick(Pair(date.startDate, date.endDate))
                         menuExpanded = false
-                    }
+                    },
                 )
             }
         }

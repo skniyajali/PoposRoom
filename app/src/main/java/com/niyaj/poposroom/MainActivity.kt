@@ -1,8 +1,22 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.poposroom
 
 import android.Manifest
-import android.app.Activity
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -17,32 +31,34 @@ import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.core.app.ActivityCompat
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.metrics.performance.JankStats
 import androidx.profileinstaller.ProfileVerifier
-import com.niyaj.common.utils.hasBluetoothPermission
-import com.niyaj.common.utils.hasNetworkPermission
-import com.niyaj.common.utils.hasNotificationPermission
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.niyaj.common.utils.findActivity
+import com.niyaj.common.utils.openAppSettings
 import com.niyaj.common.utils.showToast
 import com.niyaj.data.utils.NetworkMonitor
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.model.DarkThemeConfig
 import com.niyaj.model.ThemeBrand
 import com.niyaj.poposroom.ui.PoposApp
+import com.niyaj.ui.components.CustomPermissionDialog
 import com.samples.apps.core.analytics.AnalyticsHelper
 import com.samples.apps.core.analytics.LocalAnalyticsHelper
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -53,9 +69,6 @@ import timber.log.Timber
 import javax.inject.Inject
 
 private const val TAG = "MainActivity"
-private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 888
-private const val NETWORK_PERMISSION_REQUEST_CODE = 777
-private const val BLUETOOTH_PERMISSION_REQUEST_CODE = 999
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @AndroidEntryPoint
@@ -109,8 +122,8 @@ class MainActivity : ComponentActivity() {
                         android.graphics.Color.TRANSPARENT,
                     ) { darkTheme },
                     navigationBarStyle = SystemBarStyle.auto(
-                        lightScrim,
-                        darkScrim,
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT,
                     ) { darkTheme },
                 )
 
@@ -123,7 +136,7 @@ class MainActivity : ComponentActivity() {
                     androidTheme = shouldUseAndroidTheme(uiState),
                     disableDynamicTheming = shouldDisableDynamicTheming(uiState),
                 ) {
-                    PermissionsHandler(context = this)
+                    RequestAllPermissions()
 
                     PoposApp(
                         viewModel = viewModel,
@@ -197,95 +210,81 @@ private fun shouldUseDarkTheme(
     }
 }
 
-@Composable
-fun PermissionsHandler(
-    context: Context
-) {
-    val coroutineScope = rememberCoroutineScope()
-
-    val hasNotificationPermission by rememberUpdatedState(
-        context.hasNotificationPermission()
-    )
-    val hasNetworkPermission by rememberUpdatedState(
-        context.hasNetworkPermission()
-    )
-    val hasBluetoothPermission by rememberUpdatedState(
-        context.hasBluetoothPermission()
-    )
-
-    LaunchedEffect(
-        hasNotificationPermission,
-        hasNetworkPermission,
-        hasBluetoothPermission
-    ) {
-        if (!hasNotificationPermission) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                requestNotificationPermission(context, coroutineScope)
-            }
-        }
-        if (!hasNetworkPermission) {
-            requestNetworkPermissions(context, coroutineScope)
-        }
-        if (!hasBluetoothPermission) {
-            requestBluetoothPermissions(context, coroutineScope)
-        }
-    }
-}
-
-private fun requestNotificationPermission(
-    context: Context,
-    coroutineScope: CoroutineScope
-) {
-    coroutineScope.launch {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ActivityCompat.requestPermissions(
-                context as Activity,
-                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                NOTIFICATION_PERMISSION_REQUEST_CODE
-            )
-        }
-    }
-}
-
-private fun requestNetworkPermissions(
-    context: Context,
-    coroutineScope: CoroutineScope
-) {
-    coroutineScope.launch {
-        val permissions = arrayOf(
+private val allPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        listOf(
             Manifest.permission.ACCESS_NETWORK_STATE,
-            Manifest.permission.CHANGE_NETWORK_STATE
-        )
-
-        ActivityCompat.requestPermissions(
-            context as Activity,
-            permissions,
-            NETWORK_PERMISSION_REQUEST_CODE
-        )
-    }
-}
-
-private fun requestBluetoothPermissions(
-    context: Context,
-    coroutineScope: CoroutineScope
-) {
-    coroutineScope.launch {
-        val bluetoothPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) arrayOf(
             Manifest.permission.BLUETOOTH,
             Manifest.permission.BLUETOOTH_ADMIN,
             Manifest.permission.BLUETOOTH_CONNECT,
-            Manifest.permission.BLUETOOTH_SCAN
-        ) else arrayOf(
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.POST_NOTIFICATIONS,
+        )
+    } else {
+        listOf(
+            Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.BLUETOOTH,
-            Manifest.permission.BLUETOOTH_ADMIN
+            Manifest.permission.BLUETOOTH_ADMIN,
         )
+    }
+} else {
+    listOf(
+        Manifest.permission.ACCESS_NETWORK_STATE,
+        Manifest.permission.BLUETOOTH,
+        Manifest.permission.BLUETOOTH_ADMIN,
+    )
+}
 
-        // Request permissions
-        ActivityCompat.requestPermissions(
-            context as Activity,
-            bluetoothPermissions,
-            BLUETOOTH_PERMISSION_REQUEST_CODE
+@Composable
+@OptIn(ExperimentalPermissionsApi::class)
+private fun RequestAllPermissions() {
+    val showDialog = remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val allPermissionState = rememberMultiplePermissionsState(
+        permissions = allPermissions,
+        onPermissionsResult = { permissions ->
+            showDialog.value = !permissions.all { it.value }
+        },
+    )
+
+    DisposableEffect(
+        key1 = lifecycleOwner,
+        effect = {
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_START) {
+                    allPermissionState.launchMultiplePermissionRequest()
+                }
+            }
+
+            lifecycleOwner.lifecycle.addObserver(observer)
+
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
+            }
+        },
+    )
+
+    if (showDialog.value) {
+        CustomPermissionDialog(
+            title = "Permissions are required",
+            text = "Please grant all permissions for the app to function properly.",
+            icon = PoposIcons.Info,
+            shouldShowRationale = allPermissionState.shouldShowRationale,
+            onClickRequestPermission = {
+                allPermissionState.launchMultiplePermissionRequest()
+            },
+            onClickOpenSettings = {
+                context.findActivity().openAppSettings()
+            },
+            onDismissRequest = {
+                showDialog.value = false
+            },
         )
+    }
+
+    allPermissionState.permissions.forEach {
+        Timber.tag("Permissions").d("Permissions - ${it.permission} - ${it.status}")
     }
 }
 

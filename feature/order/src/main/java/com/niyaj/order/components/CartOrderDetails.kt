@@ -7,14 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DeliveryDining
-import androidx.compose.material.icons.filled.Inventory
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.MoreTime
-import androidx.compose.material.icons.filled.RoomService
-import androidx.compose.material.icons.filled.Tag
-import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -25,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor1
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.CartOrder
@@ -53,7 +46,7 @@ fun CartOrderDetails(
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.elevatedCardColors(
             containerColor = LightColor1,
-        )
+        ),
     ) {
         StandardExpandable(
             modifier = Modifier
@@ -66,8 +59,8 @@ fun CartOrderDetails(
             title = {
                 IconWithText(
                     text = "Order Details",
-                    icon = Icons.Default.Inventory,
-                    isTitle = true
+                    icon = PoposIcons.Order,
+                    isTitle = true,
                 )
             },
             trailing = {
@@ -82,12 +75,12 @@ fun CartOrderDetails(
                     modifier = modifier,
                     onClick = {
                         onExpandChanged()
-                    }
+                    },
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.KeyboardArrowDown,
+                        imageVector = PoposIcons.ArrowDown,
                         contentDescription = "Expand More",
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = MaterialTheme.colorScheme.secondary,
                     )
                 }
             },
@@ -95,26 +88,26 @@ fun CartOrderDetails(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(SpaceSmall)
+                        .padding(SpaceSmall),
                 ) {
                     IconWithText(
                         text = cartOrder.orderId.toString(),
-                        icon = Icons.Default.Tag
+                        icon = PoposIcons.Tag,
                     )
 
                     Spacer(modifier = Modifier.height(SpaceSmall))
 
                     IconWithText(
                         text = "Order Type : ${cartOrder.orderType}",
-                        icon = if(cartOrder.orderType == OrderType.DineIn)
-                            Icons.Default.RoomService else Icons.Default.DeliveryDining
+                        icon = if (cartOrder.orderType == OrderType.DineIn)
+                            PoposIcons.RoomService else PoposIcons.DeliveryDining,
                     )
 
                     Spacer(modifier = Modifier.height(SpaceSmall))
 
                     IconWithText(
                         text = "Created At : ${cartOrder.createdAt.toPrettyDate()}",
-                        icon = Icons.Default.MoreTime
+                        icon = PoposIcons.AccessTime,
                     )
 
                     cartOrder.updatedAt?.let {
@@ -122,7 +115,7 @@ fun CartOrderDetails(
 
                         IconWithText(
                             text = "Updated At : ${it.toPrettyDate()}",
-                            icon = Icons.Default.Update
+                            icon = PoposIcons.Update,
                         )
                     }
                 }

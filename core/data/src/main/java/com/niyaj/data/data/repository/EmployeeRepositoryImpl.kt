@@ -15,17 +15,14 @@ import com.niyaj.data.repository.EmployeeRepository
 import com.niyaj.data.repository.EmployeeValidationRepository
 import com.niyaj.database.dao.EmployeeDao
 import com.niyaj.database.model.asExternalModel
-import com.niyaj.model.Absent
 import com.niyaj.model.Employee
 import com.niyaj.model.EmployeeAbsentDates
 import com.niyaj.model.EmployeeMonthlyDate
 import com.niyaj.model.EmployeePayments
 import com.niyaj.model.EmployeeSalaryEstimation
-import com.niyaj.model.Payment
 import com.niyaj.model.searchEmployee
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flowOn
@@ -39,7 +36,6 @@ class EmployeeRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher,
 ) : EmployeeRepository, EmployeeValidationRepository {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getAllEmployee(searchText: String): Flow<List<Employee>> {
         return withContext(ioDispatcher) {
             employeeDao.getAllEmployee().mapLatest { it ->
@@ -60,67 +56,6 @@ class EmployeeRepositoryImpl(
         }
     }
 
-    override suspend fun addOrIgnoreEmployee(newEmployee: Employee): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val validateEmployeeName = validateEmployeeName(newEmployee.employeeName)
-                val validateEmployeePhone = validateEmployeePhone(newEmployee.employeePhone)
-                val validateEmployeePosition =
-                    validateEmployeePosition(newEmployee.employeePosition)
-                val validateEmployeeSalary = validateEmployeeSalary(newEmployee.employeeSalary)
-
-                val hasError = listOf(
-                    validateEmployeeName,
-                    validateEmployeePhone,
-                    validateEmployeePosition,
-                    validateEmployeeSalary
-                ).any { !it.successful }
-
-                if (!hasError) {
-                    withContext(ioDispatcher) {
-                        val result = employeeDao.insertOrIgnoreEmployee(newEmployee.toEntity())
-                        Resource.Success(result > 0)
-                    }
-                } else {
-                    Resource.Error("Unable to validate employee")
-                }
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Error creating Employee Item")
-        }
-    }
-
-    override suspend fun updateEmployee(newEmployee: Employee): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val validateEmployeeName = validateEmployeeName(newEmployee.employeeName)
-                val validateEmployeePhone =
-                    validateEmployeePhone(newEmployee.employeePhone, newEmployee.employeeId)
-                val validateEmployeePosition =
-                    validateEmployeePosition(newEmployee.employeePosition)
-                val validateEmployeeSalary = validateEmployeeSalary(newEmployee.employeeSalary)
-
-                val hasError = listOf(
-                    validateEmployeeName,
-                    validateEmployeePhone,
-                    validateEmployeePosition,
-                    validateEmployeeSalary
-                ).any { !it.successful }
-
-                if (!hasError) {
-                    withContext(ioDispatcher) {
-                        val result = employeeDao.updateEmployee(newEmployee.toEntity())
-                        Resource.Success(result > 0)
-                    }
-                } else {
-                    Resource.Error("Unable to validate employee")
-                }
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Error updating employee")
-        }
-    }
-
     override suspend fun upsertEmployee(newEmployee: Employee): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
@@ -136,7 +71,7 @@ class EmployeeRepositoryImpl(
                     validateEmployeeName,
                     validateEmployeePhone,
                     validateEmployeePosition,
-                    validateEmployeeSalary
+                    validateEmployeeSalary,
                 ).any { !it.successful }
 
                 if (!hasError) {
@@ -150,18 +85,6 @@ class EmployeeRepositoryImpl(
             }
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Error creating Employee Item")
-        }
-    }
-
-    override suspend fun deleteEmployee(employeeId: Int): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val result = employeeDao.deleteEmployee(employeeId)
-
-                Resource.Success(result > 0)
-            }
-        } catch (e: Exception) {
-            Resource.Error("Unable to delete Employee")
         }
     }
 
@@ -195,7 +118,7 @@ class EmployeeRepositoryImpl(
         if (name.any { it.isDigit() }) {
             return ValidationResult(
                 successful = false,
-                errorMessage = EmployeeTestTags.EMPLOYEE_NAME_DIGIT_ERROR
+                errorMessage = EmployeeTestTags.EMPLOYEE_NAME_DIGIT_ERROR,
             )
         }
 
@@ -222,21 +145,21 @@ class EmployeeRepositoryImpl(
         if (phone.isEmpty()) {
             return ValidationResult(
                 successful = false,
-                errorMessage = EmployeeTestTags.EMPLOYEE_PHONE_EMPTY_ERROR
+                errorMessage = EmployeeTestTags.EMPLOYEE_PHONE_EMPTY_ERROR,
             )
         }
 
         if (phone.length != 10) {
             return ValidationResult(
                 successful = false,
-                errorMessage = EmployeeTestTags.EMPLOYEE_PHONE_LENGTH_ERROR
+                errorMessage = EmployeeTestTags.EMPLOYEE_PHONE_LENGTH_ERROR,
             )
         }
 
         if (phone.any { !it.isDigit() }) {
             return ValidationResult(
                 successful = false,
-                errorMessage = EmployeeTestTags.EMPLOYEE_PHONE_LETTER_ERROR
+                errorMessage = EmployeeTestTags.EMPLOYEE_PHONE_LETTER_ERROR,
             )
         }
 
@@ -247,7 +170,7 @@ class EmployeeRepositoryImpl(
         if (serverResult) {
             return ValidationResult(
                 successful = false,
-                errorMessage = EmployeeTestTags.EMPLOYEE_PHONE_ALREADY_EXIST_ERROR
+                errorMessage = EmployeeTestTags.EMPLOYEE_PHONE_ALREADY_EXIST_ERROR,
             )
         }
 
@@ -268,64 +191,27 @@ class EmployeeRepositoryImpl(
         if (salary.isEmpty()) {
             return ValidationResult(
                 successful = false,
-                errorMessage = EmployeeTestTags.EMPLOYEE_SALARY_EMPTY_ERROR
+                errorMessage = EmployeeTestTags.EMPLOYEE_SALARY_EMPTY_ERROR,
             )
         }
 
         if (salary.length != 5) {
             return ValidationResult(
                 successful = false,
-                errorMessage = EmployeeTestTags.EMPLOYEE_SALARY_LENGTH_ERROR
+                errorMessage = EmployeeTestTags.EMPLOYEE_SALARY_LENGTH_ERROR,
             )
         }
 
         if (salary.any { it.isLetter() }) {
             return ValidationResult(
                 successful = false,
-                errorMessage = EmployeeTestTags.EMPLOYEE_SALARY_LETTER_ERROR
+                errorMessage = EmployeeTestTags.EMPLOYEE_SALARY_LETTER_ERROR,
             )
         }
 
         return ValidationResult(
             successful = true,
         )
-    }
-
-    override suspend fun getEmployeePaymentById(employeeId: Int): Resource<Payment?> {
-        return try {
-            val result = employeeDao.getEmployeePaymentById(employeeId)?.asExternalModel()
-
-            Resource.Success(result)
-        } catch (e: Exception) {
-            Resource.Error(e.message)
-        }
-    }
-
-    override suspend fun getEmployeeAbsentById(employeeId: Int): Resource<Absent?> {
-        return try {
-            val result = employeeDao.getEmployeeAbsentById(employeeId)?.asExternalModel()
-
-            Resource.Success(result)
-        } catch (e: Exception) {
-            Resource.Error(e.message)
-        }
-    }
-
-    override suspend fun findEmployeeAttendanceByAbsentDate(
-        absentDate: String,
-        employeeId: Int,
-        absentId: Int?,
-    ): Boolean {
-        return try {
-            withContext(ioDispatcher) {
-                val result =
-                    employeeDao.findEmployeeAbsentDateByIdAndDate(absentDate, employeeId, absentId)
-
-                result != null
-            }
-        } catch (e: Exception) {
-            false
-        }
     }
 
     override suspend fun getEmployeeSalaryEstimation(
@@ -356,7 +242,7 @@ class EmployeeRepositoryImpl(
                     employeeDao.getEmployeePaymentAmountsByDate(
                         employeeId,
                         firstDate,
-                        secondDate
+                        secondDate,
                     ).flowOn(ioDispatcher).produceIn(this).receive().forEach { payment ->
                         amountPaid += payment.toLong()
 
@@ -366,7 +252,7 @@ class EmployeeRepositoryImpl(
                     employeeDao.getEmployeeAbsentDatesByDate(
                         employeeId,
                         firstDate,
-                        secondDate
+                        secondDate,
                     ).flowOn(ioDispatcher).produceIn(this).receive().map {
                         noOfAbsents += 1
                     }
@@ -397,7 +283,7 @@ class EmployeeRepositoryImpl(
                             remainingAmount = remainingAmount.toString(),
                             paymentCount = noOfPayments.toString(),
                             absentCount = noOfAbsents.toString(),
-                        )
+                        ),
                     )
                 } else {
                     send(EmployeeSalaryEstimation())
@@ -424,15 +310,15 @@ class EmployeeRepositoryImpl(
                             val absentDates = employeeDao.getEmployeeAbsentDatesByDate(
                                 employeeId,
                                 date.first,
-                                date.second
+                                date.second,
                             ).flowOn(ioDispatcher).produceIn(this).receive()
 
                             employeeAbsentDates.add(
                                 EmployeeAbsentDates(
                                     startDate = date.first,
                                     endDate = date.second,
-                                    absentDates = absentDates.toImmutableList()
-                                )
+                                    absentDates = absentDates.toImmutableList(),
+                                ),
                             )
                         }
                     }
@@ -464,7 +350,7 @@ class EmployeeRepositoryImpl(
                             val result = employeeDao.getEmployeePaymentsByDate(
                                 employeeId,
                                 date.first,
-                                date.second
+                                date.second,
                             ).flowOn(ioDispatcher).produceIn(this).receive()
                                 .map { it.asExternalModel() }
 
@@ -472,8 +358,8 @@ class EmployeeRepositoryImpl(
                                 EmployeePayments(
                                     startDate = date.first,
                                     endDate = date.second,
-                                    payments = result.toImmutableList()
-                                )
+                                    payments = result.toImmutableList(),
+                                ),
                             )
                         }
                     }
@@ -504,8 +390,8 @@ class EmployeeRepositoryImpl(
                         list.add(
                             EmployeeMonthlyDate(
                                 startDate = date.first,
-                                endDate = date.second
-                            )
+                                endDate = date.second,
+                            ),
                         )
                     }
                 }

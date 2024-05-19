@@ -7,6 +7,8 @@ import com.niyaj.data.repository.ProductRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,6 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductViewModel @Inject constructor(
     private val productRepository: ProductRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel() {
     override var totalItems: List<Int> = emptyList()
 
@@ -45,13 +48,13 @@ class ProductViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = UiState.Loading
+        initialValue = UiState.Loading,
     )
 
     val categories = productRepository.getAllCategory().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = persistentListOf()
+        initialValue = persistentListOf(),
     )
 
     override fun deleteItems() {
@@ -65,6 +68,7 @@ class ProductViewModel @Inject constructor(
 
                 is Resource.Success -> {
                     mEventFlow.emit(UiEvent.OnSuccess("${selectedItems.size} products has been deleted"))
+                    analyticsHelper.logDeletedProducts(selectedItems.toList())
                 }
             }
 
@@ -81,4 +85,15 @@ class ProductViewModel @Inject constructor(
             }
         }
     }
+}
+
+internal fun AnalyticsHelper.logDeletedProducts(data: List<Int>) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "products_deleted",
+            extras = listOf(
+                AnalyticsEvent.Param("products_deleted", data.toString()),
+            ),
+        ),
+    )
 }

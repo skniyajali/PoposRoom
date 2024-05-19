@@ -11,15 +11,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Print
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,10 +33,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.product.components.ProductDetails
@@ -46,13 +44,14 @@ import com.niyaj.product.components.ProductTotalOrdersDetails
 import com.niyaj.product.components.ShareableProductOrderDetails
 import com.niyaj.product.destinations.AddEditProductScreenDestination
 import com.niyaj.ui.components.StandardFAB
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
+import com.niyaj.ui.utils.isScrolled
 import com.niyaj.ui.utils.isScrollingUp
 import com.niyaj.ui.utils.rememberCaptureController
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class)
@@ -60,13 +59,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProductDetailsScreen(
     productId: Int = 0,
-    navController: NavController,
+    navigator: DestinationsNavigator,
     onClickOrder: (Int) -> Unit,
     viewModel: ProductDetailsViewModel = hiltViewModel(),
 ) {
-    val currentId = navController.currentBackStackEntryAsState()
-        .value?.arguments?.getInt("productId") ?: productId
-
     val context = LocalContext.current
     val lazyListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -85,7 +81,7 @@ fun ProductDetailsScreen(
     var productDetailsExpanded by rememberSaveable { mutableStateOf(false) }
 
     val pagerState = rememberPagerState { 2 }
-    
+
     val bluetoothPermissions =
         // Checks if the device has Android 12 or above
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -95,19 +91,19 @@ fun ProductDetailsScreen(
                     Manifest.permission.BLUETOOTH_ADMIN,
                     Manifest.permission.BLUETOOTH_CONNECT,
                     Manifest.permission.BLUETOOTH_SCAN,
-                )
+                ),
             )
         } else {
             rememberMultiplePermissionsState(
                 permissions = listOf(
                     Manifest.permission.BLUETOOTH,
                     Manifest.permission.BLUETOOTH_ADMIN,
-                )
+                ),
             )
         }
 
     val enableBluetoothContract = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult(),
     ) {}
 
     // This intent will open the enable bluetooth dialog
@@ -121,15 +117,15 @@ fun ProductDetailsScreen(
         bluetoothManager.adapter
     }
 
-    val printOrder: (Int) -> Unit = {
+    val printOrder: () -> Unit = {
         if (bluetoothPermissions.allPermissionsGranted) {
             if (bluetoothAdapter?.isEnabled == true) {
                 // Bluetooth is on print the receipt
-//                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
+                viewModel.printProductDetails()
             } else {
                 // Bluetooth is off, ask user to turn it on
                 enableBluetoothContract.launch(enableBluetoothIntent)
-//                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
+                viewModel.printProductDetails()
             }
         } else {
             bluetoothPermissions.launchMultiplePermissionRequest()
@@ -138,49 +134,49 @@ fun ProductDetailsScreen(
 
     TrackScreenViewEvent(screenName = "Product Details Screen::$productId")
 
-    StandardScaffoldNew(
-        navController = navController,
+    StandardScaffoldRouteNew(
         title = "Product Details",
         showBackButton = true,
-        showBottomBar = false,
         showFab = lazyListState.isScrollingUp(),
         fabPosition = FabPosition.End,
         floatingActionButton = {
             StandardFAB(
                 fabVisible = lazyListState.isScrollingUp(),
-                showScrollToTop = !lazyListState.isScrollingUp(),
-                fabIcon = Icons.Default.Share,
+                showScrollToTop = lazyListState.isScrolled,
+                fabIcon = PoposIcons.Share,
                 onFabClick = viewModel::onShowDialog,
                 onClickScroll = {
                     scope.launch {
                         lazyListState.animateScrollToItem(index = 0)
                     }
-                }
+                },
             )
         },
         navActions = {
             IconButton(
-                onClick = { printOrder(productId) }
+                onClick = printOrder,
             ) {
-                Icon(imageVector = Icons.Default.Print, contentDescription = "Print Details")
+                Icon(imageVector = PoposIcons.Print, contentDescription = "Print Details")
             }
 
             IconButton(
-                onClick = viewModel::onShowDialog
+                onClick = viewModel::onShowDialog,
             ) {
-                Icon(imageVector = Icons.Default.Share, contentDescription = "Share Details")
+                Icon(imageVector = PoposIcons.Share, contentDescription = "Share Details")
             }
-        }
+        },
+        onBackClick = navigator::navigateUp,
     ) {
         TrackScrollJank(scrollableState = lazyListState, stateName = "Product Details::List")
 
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
-                .padding(SpaceSmall),
-            verticalArrangement = Arrangement.spacedBy(SpaceMedium)
+                .fillMaxSize()
+                .padding(it),
+            contentPadding = PaddingValues(SpaceSmall),
+            verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
-
             item("TotalOrderDetails") {
                 ProductTotalOrdersDetails(details = totalOrderDetails)
             }
@@ -193,8 +189,8 @@ fun ProductDetailsScreen(
                     },
                     doesExpanded = productDetailsExpanded,
                     onClickEdit = {
-                        navController.navigate(AddEditProductScreenDestination(currentId))
-                    }
+                        navigator.navigate(AddEditProductScreenDestination(productId))
+                    },
                 )
             }
 
@@ -212,7 +208,7 @@ fun ProductDetailsScreen(
     }
 
     AnimatedVisibility(
-        visible = showShareDialog
+        visible = showShareDialog,
     ) {
         ShareableProductOrderDetails(
             captureController = captureController,
@@ -238,7 +234,8 @@ fun ProductDetailsScreen(
             },
             onClickPrintOrder = {
                 viewModel.onDismissDialog()
-            }
+                printOrder()
+            },
         )
     }
 }

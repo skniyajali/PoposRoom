@@ -33,7 +33,7 @@ class EmployeeSettingsViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
+        initialValue = emptyList(),
     )
 
     private val _exportedItems = MutableStateFlow<List<Employee>>(emptyList())

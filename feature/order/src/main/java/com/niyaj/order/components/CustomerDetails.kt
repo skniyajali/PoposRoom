@@ -7,15 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.OpenInNew
-import androidx.compose.material.icons.filled.AlternateEmail
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.MoreTime
-import androidx.compose.material.icons.filled.OpenInBrowser
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PhoneAndroid
-import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -27,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor2
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -42,9 +34,9 @@ import com.niyaj.ui.components.StandardExpandable
 fun CustomerDetails(
     modifier: Modifier = Modifier,
     customer: Customer,
-    doesExpanded : Boolean,
-    onExpandChanged : () -> Unit,
-    onClickViewDetails : (Int) -> Unit
+    doesExpanded: Boolean,
+    onExpandChanged: () -> Unit,
+    onClickViewDetails: (Int) -> Unit,
 ) = trace("CustomerDetails") {
     ElevatedCard(
         modifier = modifier
@@ -56,7 +48,7 @@ fun CustomerDetails(
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.elevatedCardColors(
             containerColor = LightColor2,
-        )
+        ),
     ) {
         StandardExpandable(
             onExpandChanged = {
@@ -69,33 +61,33 @@ fun CustomerDetails(
             title = {
                 IconWithText(
                     text = "Customer Details",
-                    icon = Icons.Default.Person,
-                    isTitle = true
+                    icon = PoposIcons.Person,
+                    isTitle = true,
                 )
             },
             rowClickable = true,
-            expand = {  modifier: Modifier ->
+            expand = { modifier: Modifier ->
                 IconButton(
                     onClick = {
                         onClickViewDetails(customer.customerId)
-                    }
+                    },
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                        imageVector = PoposIcons.OpenInNew,
                         contentDescription = "View Address Details",
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = MaterialTheme.colorScheme.secondary,
                     )
                 }
                 IconButton(
                     modifier = modifier,
                     onClick = {
                         onExpandChanged()
-                    }
+                    },
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.KeyboardArrowDown,
+                        imageVector = PoposIcons.ArrowDown,
                         contentDescription = "Expand More",
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = MaterialTheme.colorScheme.secondary,
                     )
                 }
             },
@@ -108,14 +100,14 @@ fun CustomerDetails(
                     customer.customerName?.let {
                         IconWithText(
                             text = "Name: $it",
-                            icon = Icons.Default.Person,
+                            icon = PoposIcons.Person,
                         )
                         Spacer(modifier = Modifier.height(SpaceSmall))
                     }
 
                     IconWithText(
                         text = "Phone: ${customer.customerPhone}",
-                        icon = Icons.Default.PhoneAndroid,
+                        icon = PoposIcons.PhoneAndroid,
                     )
 
                     customer.customerEmail?.let {
@@ -123,7 +115,7 @@ fun CustomerDetails(
 
                         IconWithText(
                             text = "Name: $it",
-                            icon = Icons.Default.AlternateEmail,
+                            icon = PoposIcons.Email,
                         )
                     }
 
@@ -131,7 +123,7 @@ fun CustomerDetails(
 
                     IconWithText(
                         text = "Created At : ${customer.createdAt.toPrettyDate()}",
-                        icon = Icons.Default.MoreTime
+                        icon = PoposIcons.AccessTime,
                     )
 
                     customer.updatedAt?.let {
@@ -139,7 +131,7 @@ fun CustomerDetails(
 
                         IconWithText(
                             text = "Updated At : ${it.toPrettyDate()}",
-                            icon = Icons.Default.Update
+                            icon = PoposIcons.Update,
                         )
                     }
 
@@ -150,10 +142,10 @@ fun CustomerDetails(
                             onClickViewDetails(customer.customerId)
                         },
                         text = "View Customer Details".uppercase(),
-                        icon = Icons.Default.OpenInBrowser,
+                        icon = PoposIcons.OpenInNew,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiary
-                        )
+                            containerColor = MaterialTheme.colorScheme.tertiary,
+                        ),
                     )
                 }
             },

@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
@@ -27,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor6
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
@@ -67,7 +65,7 @@ fun CartItemDetails(
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(
             containerColor = LightColor6,
-        )
+        ),
     ) {
         StandardExpandable(
             modifier = Modifier
@@ -80,8 +78,8 @@ fun CartItemDetails(
             title = {
                 IconWithText(
                     text = "Cart Items",
-                    icon = Icons.Default.ShoppingBag,
-                    isTitle = true
+                    icon = PoposIcons.ShoppingBag,
+                    isTitle = true,
                 )
             },
             trailing = {
@@ -93,12 +91,12 @@ fun CartItemDetails(
                     modifier = modifier,
                     onClick = {
                         onExpandChanged()
-                    }
+                    },
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.KeyboardArrowDown,
+                        imageVector = PoposIcons.ArrowDown,
                         contentDescription = "Expand More",
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = MaterialTheme.colorScheme.secondary,
                     )
                 }
             },
@@ -110,7 +108,7 @@ fun CartItemDetails(
                     addOnItems = addOnItems,
                     charges = charges,
                     additionalCharges = additionalCharges,
-                    orderPrice = orderPrice
+                    orderPrice = orderPrice,
                 )
             },
         )
@@ -131,13 +129,13 @@ fun CartItemOrderProductDetails(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(SpaceSmall)
+            .padding(SpaceSmall),
     ) {
         ThreeGridTexts(
             textOne = "Name",
             textTwo = "Qty",
             textThree = "Price",
-            isTitle = true
+            isTitle = true,
         )
         Spacer(modifier = Modifier.height(SpaceSmall))
 
@@ -158,7 +156,7 @@ fun CartItemOrderProductDetails(
             Spacer(modifier = Modifier.height(SpaceSmall))
 
             TextDivider(
-                text = "Add On Items"
+                text = "Add On Items",
             )
 
             Spacer(modifier = Modifier.height(SpaceSmall))
@@ -173,7 +171,7 @@ fun CartItemOrderProductDetails(
         }
 
         if (charges.isNotEmpty()) {
-            if (doesChargesIncluded) {
+            if (doesChargesIncluded && orderType == OrderType.DineOut) {
 
                 val showText = charges.any { it.isApplicable }
 
@@ -220,7 +218,7 @@ fun CartItemOrderProductDetails(
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
             thickness = 1.dp,
-            color = Color.Gray
+            color = Color.Gray,
         )
 
         Spacer(modifier = Modifier.height(SpaceSmall))
@@ -238,7 +236,7 @@ fun CartItemOrderProductDetails(
             Text(
                 text = orderPrice.basePrice.toRupee,
                 style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
             )
         }
 
@@ -251,13 +249,13 @@ fun CartItemOrderProductDetails(
         ) {
             Text(
                 text = "Discount",
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
             )
 
             Text(
                 text = orderPrice.discountPrice.toRupee,
                 style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
             )
         }
 
@@ -266,7 +264,7 @@ fun CartItemOrderProductDetails(
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
             thickness = 2.dp,
-            color = Color.Gray
+            color = Color.Gray,
         )
 
         Spacer(modifier = Modifier.height(SpaceSmall))
@@ -285,7 +283,7 @@ fun CartItemOrderProductDetails(
             Text(
                 text = (orderPrice.basePrice.minus(orderPrice.discountPrice)).toRupee,
                 style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
             )
         }
 

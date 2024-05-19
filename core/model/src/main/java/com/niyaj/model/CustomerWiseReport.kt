@@ -1,6 +1,10 @@
 package com.niyaj.model
 
 data class CustomerWiseReport(
-    val customer: Customer,
-    val orderQty: Int = 0,
+    val customerId: Int,
+    val customerPhone: String,
+    val customerName: String? = null,
+    val customerEmail: String? = null,
+    val totalSales: Int,
+    val totalOrders: Int,
 )

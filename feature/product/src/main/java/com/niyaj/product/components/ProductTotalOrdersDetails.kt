@@ -11,12 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
-import androidx.compose.material.icons.filled.AutoGraph
-import androidx.compose.material.icons.filled.DeliveryDining
-import androidx.compose.material.icons.filled.Inventory2
-import androidx.compose.material.icons.filled.RamenDining
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -35,6 +29,7 @@ import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.isSameDay
 import com.niyaj.common.utils.toBarDate
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor1
 import com.niyaj.designsystem.theme.LightColor2
 import com.niyaj.designsystem.theme.LightColor3
@@ -123,7 +118,7 @@ fun ProductTotalOrdersDetails(
                                 if (!details.datePeriod.isSameDay) {
                                     Spacer(modifier = Modifier.width(SpaceMini))
                                     Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
+                                        imageVector = PoposIcons.ArrowRightAlt,
                                         contentDescription = "DatePeriod"
                                     )
                                     Spacer(modifier = Modifier.width(SpaceMini))
@@ -154,7 +149,7 @@ fun ProductTotalOrdersDetails(
                     modifier = Modifier,
                     title = "DineIn Sales",
                     subtitle = details.dineInAmount.toRupee,
-                    icon = Icons.Default.RamenDining,
+                    icon = PoposIcons.DinnerDining,
                     minusWidth = 30.dp,
                     iconTint = MaterialTheme.colorScheme.error,
                     containerColor = LightColor1,
@@ -165,7 +160,7 @@ fun ProductTotalOrdersDetails(
                     modifier = Modifier,
                     title = "DineOut Sales",
                     subtitle = details.dineOutAmount.toRupee,
-                    icon = Icons.Default.DeliveryDining,
+                    icon = PoposIcons.DeliveryDining,
                     iconTint = MaterialTheme.colorScheme.tertiary,
                     containerColor = LightColor2,
                     minusWidth = 30.dp,
@@ -177,7 +172,7 @@ fun ProductTotalOrdersDetails(
                         modifier = Modifier,
                         title = "Most Sales",
                         subtitle = details.mostOrderQtyDate,
-                        icon = Icons.Default.AutoGraph,
+                        icon = PoposIcons.AutoGraph,
                         minusWidth = 30.dp,
                         iconTint = MaterialTheme.colorScheme.secondary,
                         containerColor = LightColor3,
@@ -190,7 +185,7 @@ fun ProductTotalOrdersDetails(
                         modifier = Modifier,
                         title = "Most Orders",
                         subtitle = details.mostOrderQtyDate,
-                        icon = Icons.Default.Inventory2,
+                        icon = PoposIcons.Order,
                         minusWidth = 30.dp,
                         iconTint = MaterialTheme.colorScheme.primary,
                         containerColor = LightColor4,

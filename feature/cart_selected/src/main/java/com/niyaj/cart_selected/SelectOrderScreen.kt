@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.cart_selected
 
 import androidx.compose.animation.Crossfade
@@ -15,20 +31,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Tag
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,11 +56,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.CartOrderTestTags
 import com.niyaj.common.tags.SelectedTestTag.SELECTED_SCREEN_NOTE
 import com.niyaj.common.tags.SelectedTestTag.SELECTED_SCREEN_TITLE
 import com.niyaj.common.utils.toTimeSpan
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -63,6 +71,7 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.StandardBottomSheetScaffold
 import com.niyaj.ui.components.StandardButton
+import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -70,6 +79,7 @@ import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 import kotlinx.coroutines.flow.collectLatest
@@ -77,11 +87,11 @@ import kotlinx.coroutines.flow.collectLatest
 @RootNavGraph(start = true)
 @Destination(
     route = Screens.SELECT_ORDER_SCREEN,
-    style = DestinationStyleBottomSheet::class
+    style = DestinationStyleBottomSheet::class,
 )
 @Composable
 fun SelectOrderScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     onEditClick: (Int) -> Unit,
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: SelectedViewModel = hiltViewModel(),
@@ -110,13 +120,13 @@ fun SelectOrderScreen(
             }
         }
     }
-    
+
     TrackScreenViewEvent(screenName = Screens.SELECT_ORDER_SCREEN)
 
     StandardBottomSheetScaffold(
         title = SELECTED_SCREEN_TITLE,
         onBackClick = {
-            navController.navigateUp()
+            navigator.navigate(Screens.HOME_SCREEN)
         },
         showBottomBar = true,
         bottomBar = {
@@ -126,16 +136,16 @@ fun SelectOrderScreen(
                     .padding(SpaceSmall),
                 enabled = true,
                 text = CartOrderTestTags.CREATE_NEW_CART_ORDER,
-                icon = Icons.Default.Add,
+                icon = PoposIcons.Add,
                 onClick = {
-                    navController.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
-                }
+                    navigator.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
+                },
             )
-        }
+        },
     ) {
         Crossfade(
             targetState = state,
-            label = "Select Cart Order"
+            label = "Select Cart Order",
         ) { state ->
             when (state) {
                 is UiState.Loading -> LoadingIndicator()
@@ -145,13 +155,16 @@ fun SelectOrderScreen(
                         text = CartOrderTestTags.CART_ORDER_NOT_AVAILABLE,
                         buttonText = CartOrderTestTags.CREATE_NEW_CART_ORDER,
                         onClick = {
-                            navController.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
-                        }
+                            navigator.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
+                        },
                     )
                 }
 
                 is UiState.Success -> {
-                    TrackScrollJank(scrollableState = lazyListState, stateName = "Cart Orders::List")
+                    TrackScrollJank(
+                        scrollableState = lazyListState,
+                        stateName = "Cart Orders::List",
+                    )
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -167,18 +180,18 @@ fun SelectOrderScreen(
                                 headlineContent = {
                                     Text(
                                         text = SELECTED_SCREEN_NOTE,
-                                        style = MaterialTheme.typography.labelMedium
+                                        style = MaterialTheme.typography.labelMedium,
                                     )
                                 },
                                 leadingContent = {
                                     Icon(
-                                        imageVector = Icons.Default.Info,
-                                        contentDescription = "info"
+                                        imageVector = PoposIcons.Info,
+                                        contentDescription = "info",
                                     )
                                 },
                                 colors = ListItemDefaults.colors(
                                     containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                                )
+                                ),
                             )
 
                             Spacer(modifier = Modifier.height(SpaceMedium))
@@ -188,7 +201,7 @@ fun SelectOrderScreen(
                             items = state.data,
                             key = {
                                 it.orderId
-                            }
+                            },
                         ) { item: CartOrder ->
                             SelectedData(
                                 cartOrder = item,
@@ -213,45 +226,24 @@ fun SelectOrderScreen(
 
 
     if (openDialog.value) {
-        AlertDialog(
-            onDismissRequest = {
+        StandardDialog(
+            title = CartOrderTestTags.DELETE_CART_ORDER_ITEM_TITLE,
+            message = CartOrderTestTags.DELETE_CART_ORDER_ITEM_MESSAGE,
+            onConfirm = {
                 openDialog.value = false
+                viewModel.deleteCartOrder(selectedId)
             },
-            title = {
-                Text(text = CartOrderTestTags.DELETE_CART_ORDER_ITEM_TITLE)
+            onDismiss = {
+                openDialog.value = false
+                selectedId = 0
             },
-            text = {
-                Text(
-                    text = CartOrderTestTags.DELETE_CART_ORDER_ITEM_MESSAGE
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deleteCartOrder(selectedId)
-                    },
-                ) {
-                    Text("Delete")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                        selectedId = 0
-                    },
-                ) {
-                    Text("Cancel")
-                }
-            },
-            shape = RoundedCornerShape(28.dp)
         )
     }
 }
 
 @Composable
 fun SelectedData(
+    modifier: Modifier = Modifier,
     cartOrder: CartOrder,
     doesSelected: (Int) -> Boolean,
     onSelectOrder: (Int) -> Unit,
@@ -259,7 +251,7 @@ fun SelectedData(
     onEditClick: (Int) -> Unit,
 ) = trace("CartOrders") {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(48.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -280,8 +272,8 @@ fun SelectedData(
                             withStyle(
                                 style = SpanStyle(
                                     color = Color.Red,
-                                    fontWeight = FontWeight.Bold
-                                )
+                                    fontWeight = FontWeight.Bold,
+                                ),
                             ) {
                                 append(cartOrder.address.shortName.uppercase())
 
@@ -291,12 +283,12 @@ fun SelectedData(
 
                         append(cartOrder.orderId.toString())
                     },
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
             },
             leadingContent = {
                 CircularBox(
-                    icon = Icons.Default.Tag,
+                    icon = PoposIcons.Tag,
                     doesSelected = doesSelected(cartOrder.orderId),
                     size = 30.dp,
                 )
@@ -304,12 +296,12 @@ fun SelectedData(
             trailingContent = {
                 Text(
                     text = cartOrder.createdAt.toTimeSpan,
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelSmall,
                 )
             },
             colors = ListItemDefaults.colors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
-            )
+            ),
         )
 
         Spacer(modifier = Modifier.width(SpaceSmall))
@@ -319,11 +311,11 @@ fun SelectedData(
                 onEditClick(cartOrder.orderId)
             },
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(SpaceMini))
+                .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(SpaceMini)),
         ) {
             Icon(
                 contentDescription = "Edit",
-                imageVector = Icons.Default.Edit,
+                imageVector = PoposIcons.Edit,
                 tint = MaterialTheme.colorScheme.onPrimary,
             )
         }
@@ -335,12 +327,12 @@ fun SelectedData(
                 onDeleteClick(cartOrder.orderId)
             },
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.secondary, RoundedCornerShape(SpaceMini))
+                .background(MaterialTheme.colorScheme.secondary, RoundedCornerShape(SpaceMini)),
         ) {
             Icon(
                 contentDescription = "Delete cart order",
-                imageVector = Icons.Default.Delete,
-                tint = MaterialTheme.colorScheme.onSecondary
+                imageVector = PoposIcons.Delete,
+                tint = MaterialTheme.colorScheme.onSecondary,
             )
         }
     }

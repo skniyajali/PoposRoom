@@ -6,16 +6,13 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowRight
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -23,7 +20,6 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -36,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.CustomerTestTags.CREATE_NEW_CUSTOMER
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_NOT_AVAILABLE
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_SCREEN_TITLE
@@ -50,6 +45,7 @@ import com.niyaj.customer.destinations.CustomerDetailsScreenDestination
 import com.niyaj.customer.destinations.CustomerExportScreenDestination
 import com.niyaj.customer.destinations.CustomerImportScreenDestination
 import com.niyaj.customer.destinations.CustomerSettingsScreenDestination
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Customer
@@ -57,8 +53,9 @@ import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScaffoldNavActions
+import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardFAB
-import com.niyaj.ui.components.StandardScaffold
+import com.niyaj.ui.components.StandardScaffoldRoute
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -67,7 +64,7 @@ import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
@@ -76,7 +73,7 @@ import kotlinx.coroutines.launch
 @Destination(route = Screens.CUSTOMER_SCREEN)
 @Composable
 fun CustomerScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: CustomerViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditCustomerScreenDestination, String>,
     exportRecipient: ResultRecipient<CustomerExportScreenDestination, String>,
@@ -133,7 +130,7 @@ fun CustomerScreen(
     }
 
     exportRecipient.onNavResult { result ->
-        when(result) {
+        when (result) {
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
                 scope.launch {
@@ -144,7 +141,7 @@ fun CustomerScreen(
     }
 
     importRecipient.onNavResult { result ->
-        when(result) {
+        when (result) {
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
                 scope.launch {
@@ -160,14 +157,14 @@ fun CustomerScreen(
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
         } else {
-            navController.navigateUp()
+            navigator.navigateUp()
         }
     }
 
     TrackScreenViewEvent(screenName = Screens.CUSTOMER_SCREEN)
-    
-    StandardScaffold(
-        navController = navController,
+
+    StandardScaffoldRoute(
+        currentRoute = Screens.CUSTOMER_SCREEN,
         title = if (selectedItems.isEmpty()) CUSTOMER_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
@@ -175,13 +172,13 @@ fun CustomerScreen(
                 fabText = CREATE_NEW_CUSTOMER,
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
                 onFabClick = {
-                    navController.navigate(AddEditCustomerScreenDestination())
+                    navigator.navigate(AddEditCustomerScreenDestination())
                 },
                 onClickScroll = {
                     scope.launch {
                         lazyListState.animateScrollToItem(0)
                     }
-                }
+                },
             )
         },
         navActions = {
@@ -193,18 +190,18 @@ fun CustomerScreen(
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = {
-                    navController.navigate(AddEditCustomerScreenDestination(selectedItems.first()))
+                    navigator.navigate(AddEditCustomerScreenDestination(selectedItems.first()))
                 },
                 onDeleteClick = {
                     openDialog.value = true
                 },
                 onSettingsClick = {
-                    navController.navigate(CustomerSettingsScreenDestination)
+                    navigator.navigate(CustomerSettingsScreenDestination)
                 },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
                 onSearchClick = viewModel::openSearchBar,
-                onSearchTextChanged = viewModel::searchTextChanged
+                onSearchTextChanged = viewModel::searchTextChanged,
             )
         },
         fabPosition = if (lazyListState.isScrolled) FabPosition.End else FabPosition.Center,
@@ -213,10 +210,11 @@ fun CustomerScreen(
         onDeselect = viewModel::deselectItems,
         onBackClick = viewModel::closeSearchBar,
         snackbarHostState = snackbarState,
+        onNavigateToScreen = navigator::navigate,
     ) { _ ->
         Crossfade(
             targetState = uiState,
-            label = "Customer State"
+            label = "Customer State",
         ) { state ->
             when (state) {
                 is UiState.Loading -> LoadingIndicator()
@@ -226,8 +224,8 @@ fun CustomerScreen(
                         text = if (searchText.isEmpty()) CUSTOMER_NOT_AVAILABLE else NO_ITEMS_IN_CUSTOMER,
                         buttonText = CREATE_NEW_CUSTOMER,
                         onClick = {
-                            navController.navigate(AddEditCustomerScreenDestination())
-                        }
+                            navigator.navigate(AddEditCustomerScreenDestination())
+                        },
                     )
                 }
 
@@ -236,12 +234,13 @@ fun CustomerScreen(
 
                     LazyColumn(
                         modifier = Modifier
+                            .fillMaxSize()
                             .padding(SpaceSmall),
-                        state = lazyListState
+                        state = lazyListState,
                     ) {
                         items(
                             items = state.data,
-                            key = { it.customerId }
+                            key = { it.customerId },
                         ) { item: Customer ->
                             CustomerData(
                                 item = item,
@@ -252,10 +251,10 @@ fun CustomerScreen(
                                     if (selectedItems.isNotEmpty()) {
                                         viewModel.selectItem(it)
                                     } else {
-                                        navController.navigate(CustomerDetailsScreenDestination(it))
+                                        navigator.navigate(CustomerDetailsScreenDestination(it))
                                     }
                                 },
-                                onLongClick = viewModel::selectItem
+                                onLongClick = viewModel::selectItem,
                             )
                         }
                     }
@@ -265,40 +264,17 @@ fun CustomerScreen(
     }
 
     if (openDialog.value) {
-        AlertDialog(
-            onDismissRequest = {
+        StandardDialog(
+            title = DELETE_CUSTOMER_TITLE,
+            message = DELETE_CUSTOMER_MESSAGE,
+            onConfirm = {
+                openDialog.value = false
+                viewModel.deleteItems()
+            },
+            onDismiss = {
                 openDialog.value = false
                 viewModel.deselectItems()
             },
-            title = {
-                Text(text = DELETE_CUSTOMER_TITLE)
-            },
-            text = {
-                Text(
-                    text = DELETE_CUSTOMER_MESSAGE
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deleteItems()
-                    },
-                ) {
-                    Text("Delete")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                        viewModel.deselectItems()
-                    },
-                ) {
-                    Text("Cancel")
-                }
-            },
-            shape = RoundedCornerShape(28.dp)
         )
     }
 }
@@ -321,9 +297,11 @@ fun CustomerData(
             .testTag(CUSTOMER_TAG.plus(item.customerId))
             .fillMaxWidth()
             .padding(SpaceSmall)
-            .then(borderStroke?.let {
-                Modifier.border(it, RoundedCornerShape(SpaceMini))
-            } ?: Modifier)
+            .then(
+                borderStroke?.let {
+                    Modifier.border(it, RoundedCornerShape(SpaceMini))
+                } ?: Modifier,
+            )
             .clip(RoundedCornerShape(SpaceMini))
             .combinedClickable(
                 onClick = {
@@ -336,32 +314,32 @@ fun CustomerData(
         headlineContent = {
             Text(
                 text = item.customerPhone,
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
             )
         },
         supportingContent = item.customerName?.let {
             {
                 Text(
-                    text = it
+                    text = it,
                 )
             }
         },
         leadingContent = {
             CircularBox(
-                icon = Icons.Default.Person,
+                icon = PoposIcons.Person4,
                 doesSelected = doesSelected(item.customerId),
-                text = item.customerName
+                text = item.customerName,
             )
         },
         trailingContent = {
             Icon(
-                Icons.AutoMirrored.Filled.ArrowRight,
+                PoposIcons.ArrowRightAlt,
                 contentDescription = "Localized description",
             )
         },
         shadowElevation = 4.dp,
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.background
-        )
+            containerColor = MaterialTheme.colorScheme.background,
+        ),
     )
 }

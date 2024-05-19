@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 13,
-    "identityHash": "b7603fd66c8ae960cd9734f50027d4b1",
+    "identityHash": "32b0437fb161337c5205d0597b157308",
     "entities": [
       {
         "tableName": "addonitem",
@@ -1906,10 +1906,15 @@
         "foreignKeys": []
       }
     ],
-    "views": [],
+    "views": [
+      {
+        "viewName": "product_with_quantity",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT product.categoryId, product.productId, productName, productPrice, COALESCE(cart.quantity, 0) as quantity\n        FROM product\n        LEFT JOIN cart ON product.productId = cart.productId \n        AND cart.orderId = COALESCE((SELECT orderId FROM selected LIMIT 1), 0)"
+      }
+    ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b7603fd66c8ae960cd9734f50027d4b1')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '32b0437fb161337c5205d0597b157308')"
     ]
   }
 }

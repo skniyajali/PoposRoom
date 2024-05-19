@@ -19,30 +19,14 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DeliveryDining
-import androidx.compose.material.icons.filled.DinnerDining
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.ModeStandby
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Print
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Tag
-import androidx.compose.material.icons.filled.ViewAgenda
-import androidx.compose.material.icons.filled.ViewDay
 import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -65,6 +49,7 @@ import androidx.compose.ui.util.trace
 import androidx.compose.ui.window.DialogProperties
 import com.niyaj.common.utils.toFormattedDateAndTime
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.ButtonSize
 import com.niyaj.designsystem.theme.LightColor10
 import com.niyaj.designsystem.theme.LightColor8
@@ -88,6 +73,7 @@ import com.niyaj.ui.components.CartAddOnItems
 import com.niyaj.ui.components.CartChargesItem
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedIconButton
 import com.niyaj.ui.components.StandardSuggestionChip
 import com.niyaj.ui.components.drawRainbowBorder
@@ -117,24 +103,24 @@ fun ShareableOrderDetails(
             dismissOnClickOutside = true,
             dismissOnBackPress = true,
             usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false
-        )
+            decorFitsSystemWindows = false,
+        ),
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth(),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.background
+                containerColor = MaterialTheme.colorScheme.background,
             ),
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 val icon = if (orderDetails.cartOrder.orderType == OrderType.DineIn) {
-                    Icons.Default.DinnerDining
-                } else Icons.Default.DeliveryDining
+                    PoposIcons.DinnerDining
+                } else PoposIcons.DeliveryDining
                 val containerColor = if (orderDetails.cartOrder.orderType == OrderType.DineIn) {
                     MaterialTheme.colorScheme.tertiary
                 } else MaterialTheme.colorScheme.primary
@@ -180,7 +166,7 @@ fun ShareableOrderDetails(
     onDismiss: () -> Unit,
     onClickShare: () -> Unit,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
-    onClickPrintOrder: () -> Unit,
+    onClickPrintOrder: (orderId: Int) -> Unit,
 ) = trace("ShareableOrderDetails") {
     var changeLayout by remember { mutableStateOf(false) }
 
@@ -192,19 +178,19 @@ fun ShareableOrderDetails(
             dismissOnClickOutside = true,
             dismissOnBackPress = true,
             usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false
-        )
+            decorFitsSystemWindows = false,
+        ),
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth(),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.background
+                containerColor = MaterialTheme.colorScheme.background,
             ),
         ) {
             Crossfade(
                 targetState = orderDetails,
-                label = "OrderDetails"
+                label = "OrderDetails",
             ) { state ->
                 when (state) {
                     UiState.Empty -> LoadingIndicator()
@@ -213,11 +199,11 @@ fun ShareableOrderDetails(
                         Column(
                             modifier = Modifier
                                 .fillMaxSize(),
-                            verticalArrangement = Arrangement.SpaceBetween
+                            verticalArrangement = Arrangement.SpaceBetween,
                         ) {
                             val icon = if (state.data.cartOrder.orderType == OrderType.DineIn) {
-                                Icons.Default.DinnerDining
-                            } else Icons.Default.DeliveryDining
+                                PoposIcons.DinnerDining
+                            } else PoposIcons.DeliveryDining
                             val containerColor =
                                 if (state.data.cartOrder.orderType == OrderType.DineIn) {
                                     MaterialTheme.colorScheme.tertiary
@@ -248,7 +234,9 @@ fun ShareableOrderDetails(
                                 onClickChangeLayout = {
                                     changeLayout = !changeLayout
                                 },
-                                onClickPrintOrder = onClickPrintOrder,
+                                onClickPrintOrder = {
+                                    onClickPrintOrder(state.data.cartOrder.orderId)
+                                },
                             )
                         }
                     }
@@ -257,7 +245,6 @@ fun ShareableOrderDetails(
         }
     }
 }
-
 
 @Composable
 fun CapturableCard(
@@ -275,25 +262,25 @@ fun CapturableCard(
         controller = captureController,
         onCaptured = onCaptured,
         modifier = modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth(),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.background
+                containerColor = MaterialTheme.colorScheme.background,
             ),
         ) {
             Crossfade(
                 targetState = layoutChanged,
-                label = "LayoutChanged"
+                label = "LayoutChanged",
             ) {
                 if (it) {
                     CartItemOrderDetails(
                         orderDetails = orderDetails,
                         charges = charges,
                         icon = icon,
-                        containerColor = containerColor
+                        containerColor = containerColor,
                     )
                 } else {
                     CartItemOrderDetailsCard(
@@ -301,7 +288,7 @@ fun CapturableCard(
                         charges = charges,
                         icon = icon,
                         containerColor = containerColor,
-                        backgroundColor = backgroundColor
+                        backgroundColor = backgroundColor,
                     )
                 }
             }
@@ -320,16 +307,16 @@ fun CartItemOrderDetails(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(SpaceSmall)
+            .padding(SpaceSmall),
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
         ) {
             ShareableCartOrderDetails(
                 cartOrder = orderDetails.cartOrder,
                 icon = icon,
-                color = containerColor
+                color = containerColor,
             )
 
             if (orderDetails.cartProducts.isNotEmpty()) {
@@ -340,7 +327,7 @@ fun CartItemOrderDetails(
                     addOnItems = orderDetails.addOnItems,
                     charges = charges,
                     additionalCharges = orderDetails.charges,
-                    orderPrice = orderDetails.orderPrice
+                    orderPrice = orderDetails.orderPrice,
                 )
             } else {
                 Text(text = "Looks, like you have not added any product!")
@@ -348,7 +335,6 @@ fun CartItemOrderDetails(
         }
     }
 }
-
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
@@ -365,16 +351,16 @@ fun CartItemOrderDetailsCard(
             .fillMaxWidth()
             .padding(SpaceSmall),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = MaterialTheme.colorScheme.background,
         ),
         elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 2.dp
+            defaultElevation = 2.dp,
         ),
-        shape = RoundedCornerShape(SpaceSmall)
+        shape = RoundedCornerShape(SpaceSmall),
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
         ) {
             BoxWithConstraints(
                 modifier = Modifier
@@ -384,7 +370,7 @@ fun CartItemOrderDetailsCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(120.dp)
-                        .background(backgroundColor)
+                        .background(backgroundColor),
                 )
 
                 CircularBox(
@@ -404,7 +390,7 @@ fun CartItemOrderDetailsCard(
                 modifier = Modifier.padding(top = 40.dp),
                 cartOrder = orderDetails.cartOrder,
                 icon = icon,
-                color = containerColor
+                color = containerColor,
             )
 
             ShareableCartProductsDetails(
@@ -412,7 +398,7 @@ fun CartItemOrderDetailsCard(
                 charges = charges,
                 additionalCharges = orderDetails.charges,
                 addOnItems = orderDetails.addOnItems,
-                orderPrice = orderDetails.orderPrice
+                orderPrice = orderDetails.orderPrice,
             )
         }
     }
@@ -448,7 +434,7 @@ fun ShareableCartOrderDetailsCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             StandardSuggestionChip(
-                icon = Icons.Default.Tag,
+                icon = PoposIcons.Tag,
                 text = cartOrder.orderId.toString(),
                 borderColor = color,
             )
@@ -456,7 +442,7 @@ fun ShareableCartOrderDetailsCard(
             StandardSuggestionChip(
                 icon = icon,
                 text = cartOrder.orderType.name,
-                borderColor = color
+                borderColor = color,
             )
         }
 
@@ -468,16 +454,16 @@ fun ShareableCartOrderDetailsCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             StandardSuggestionChip(
-                icon = Icons.Default.ModeStandby,
+                icon = PoposIcons.ModeStandby,
                 text = cartOrder.orderStatus.name,
-                borderColor = color
+                borderColor = color,
             )
 
             StandardSuggestionChip(
-                icon = Icons.Default.CalendarMonth,
+                icon = PoposIcons.CalenderMonth,
                 text = (cartOrder.updatedAt
                     ?: cartOrder.createdAt).toFormattedDateAndTime,
-                borderColor = color
+                borderColor = color,
             )
         }
 
@@ -491,14 +477,14 @@ fun ShareableCartOrderDetailsCard(
             ) {
                 StandardSuggestionChip(
                     text = cartOrder.customer.customerPhone,
-                    icon = Icons.Default.Phone,
-                    borderColor = color
+                    icon = PoposIcons.Phone,
+                    borderColor = color,
                 )
 
                 StandardSuggestionChip(
                     text = cartOrder.address.addressName,
-                    icon = Icons.Default.LocationOn,
-                    borderColor = color
+                    icon = PoposIcons.LocationOn,
+                    borderColor = color,
                 )
             }
         }
@@ -546,7 +532,7 @@ fun ShareableCartOrderDetails(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             StandardSuggestionChip(
-                icon = Icons.Default.Tag,
+                icon = PoposIcons.Tag,
                 text = cartOrder.orderId.toString(),
                 borderColor = color,
             )
@@ -554,7 +540,7 @@ fun ShareableCartOrderDetails(
             StandardSuggestionChip(
                 icon = icon,
                 text = cartOrder.orderType.name,
-                borderColor = color
+                borderColor = color,
             )
         }
 
@@ -566,16 +552,16 @@ fun ShareableCartOrderDetails(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             StandardSuggestionChip(
-                icon = Icons.Default.ModeStandby,
+                icon = PoposIcons.ModeStandby,
                 text = cartOrder.orderStatus.name,
-                borderColor = color
+                borderColor = color,
             )
 
             StandardSuggestionChip(
-                icon = Icons.Default.CalendarMonth,
+                icon = PoposIcons.CalenderMonth,
                 text = (cartOrder.updatedAt
                     ?: cartOrder.createdAt).toFormattedDateAndTime,
-                borderColor = color
+                borderColor = color,
             )
         }
 
@@ -590,14 +576,14 @@ fun ShareableCartOrderDetails(
             ) {
                 StandardSuggestionChip(
                     text = cartOrder.customer.customerPhone,
-                    icon = Icons.Default.Phone,
-                    borderColor = color
+                    icon = PoposIcons.Phone,
+                    borderColor = color,
                 )
 
                 StandardSuggestionChip(
                     text = cartOrder.address.addressName,
-                    icon = Icons.Default.LocationOn,
-                    borderColor = color
+                    icon = PoposIcons.LocationOn,
+                    borderColor = color,
                 )
             }
         }
@@ -608,7 +594,7 @@ fun ShareableCartOrderDetails(
                 .fillMaxWidth()
                 .padding(vertical = SpaceLarge, horizontal = SpaceMini)
                 .drawRainbowBorder(2.dp, durationMillis = 5000),
-            thickness = SpaceMini
+            thickness = SpaceMini,
         )
     }
 }
@@ -626,7 +612,7 @@ fun ShareableCartProductsDetails(
         modifier = modifier
             .fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = MaterialTheme.colorScheme.background,
         ),
     ) {
         if (cartProducts.isNotEmpty()) {
@@ -635,15 +621,15 @@ fun ShareableCartProductsDetails(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(topStart = SpaceSmall, topEnd = SpaceSmall))
                     .background(MaterialTheme.colorScheme.surface)
-                    .padding(SpaceSmall)
+                    .padding(SpaceSmall),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(
                         SpaceMini,
-                        Alignment.CenterHorizontally
-                    )
+                        Alignment.CenterHorizontally,
+                    ),
                 ) {
                     Text(
                         modifier = Modifier
@@ -694,7 +680,7 @@ fun ShareableCartProductsDetails(
                 AnimatedTextDividerDashed(text = "Additional Charges")
 
                 CartChargesItem(
-                    chargesList = additionalCharges
+                    chargesList = additionalCharges,
                 )
             }
 
@@ -706,10 +692,10 @@ fun ShareableCartProductsDetails(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.inverseOnSurface)
-                    .padding(SpaceSmall)
+                    .padding(SpaceSmall),
             ) {
                 Column(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -724,7 +710,7 @@ fun ShareableCartProductsDetails(
                         Text(
                             text = orderPrice.basePrice.toRupee,
                             style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
                         )
                     }
 
@@ -737,13 +723,13 @@ fun ShareableCartProductsDetails(
                     ) {
                         Text(
                             text = "Discount",
-                            style = MaterialTheme.typography.bodySmall
+                            style = MaterialTheme.typography.bodySmall,
                         )
 
                         Text(
                             text = orderPrice.discountPrice.toRupee,
                             style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
                         )
                     }
 
@@ -756,7 +742,7 @@ fun ShareableCartProductsDetails(
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
                             modifier = Modifier,
@@ -787,7 +773,7 @@ fun ShareableCartProductsDetails(
 @Composable
 fun CartProduct(
     modifier: Modifier = Modifier,
-    cartProduct: CartProductItem
+    cartProduct: CartProductItem,
 ) = trace("CartProduct") {
     key(cartProduct.productId) {
         Row(
@@ -796,13 +782,13 @@ fun CartProduct(
                 .height(40.dp)
                 .padding(SpaceMini),
             horizontalArrangement = Arrangement.spacedBy(SpaceMini, Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
                     .background(LightColor9, RoundedCornerShape(4.dp))
-                    .weight(1.9f, true)
+                    .weight(1.9f, true),
             ) {
                 Text(
                     modifier = Modifier
@@ -812,7 +798,7 @@ fun CartProduct(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
                 )
             }
 
@@ -820,12 +806,12 @@ fun CartProduct(
                 modifier = Modifier
                     .fillMaxHeight()
                     .background(LightColor8, RoundedCornerShape(4.dp))
-                    .weight(0.5f, true)
+                    .weight(0.5f, true),
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
                     text = cartProduct.productPrice.toString().toRupee,
-                    textAlign = TextAlign.End
+                    textAlign = TextAlign.End,
                 )
             }
 
@@ -833,7 +819,7 @@ fun CartProduct(
                 modifier = Modifier
                     .fillMaxHeight()
                     .background(LightColor10, RoundedCornerShape(4.dp))
-                    .weight(0.3f, true)
+                    .weight(0.3f, true),
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
@@ -866,7 +852,7 @@ fun DialogButtons(
         StandardOutlinedIconButton(
             modifier = Modifier
                 .size(ButtonSize),
-            icon = Icons.Default.Close,
+            icon = PoposIcons.Close,
             onClick = onDismiss,
             borderColor = MaterialTheme.colorScheme.error,
         )
@@ -874,7 +860,7 @@ fun DialogButtons(
         StandardOutlinedIconButton(
             modifier = Modifier
                 .size(ButtonSize),
-            icon = Icons.Default.Print,
+            icon = PoposIcons.Print,
             onClick = onClickPrintOrder,
             borderColor = MaterialTheme.colorScheme.secondary,
         )
@@ -882,27 +868,21 @@ fun DialogButtons(
         StandardOutlinedIconButton(
             modifier = Modifier
                 .size(ButtonSize),
-            icon = if (layoutChanged) Icons.Default.ViewAgenda else Icons.Default.ViewDay,
+            icon = if (layoutChanged) PoposIcons.ViewAgenda else PoposIcons.CalendarViewDay,
             onClick = onClickChangeLayout,
             borderColor = MaterialTheme.colorScheme.primary,
         )
 
-        Button(
-            onClick = onClickShare,
+        StandardButton(
             modifier = Modifier
                 .heightIn(ButtonSize)
                 .weight(1f),
-            shape = RoundedCornerShape(SpaceMini),
+            text = "Share Data",
+            icon = PoposIcons.Share,
             colors = ButtonDefaults.buttonColors(
                 containerColor = shareButtonColor,
             ),
-        ) {
-            Icon(
-                imageVector = Icons.Default.Share,
-                contentDescription = "Share Data"
-            )
-            Spacer(modifier = Modifier.width(SpaceMini))
-            Text(text = "Share")
-        }
+            onClick = onClickShare,
+        )
     }
 }

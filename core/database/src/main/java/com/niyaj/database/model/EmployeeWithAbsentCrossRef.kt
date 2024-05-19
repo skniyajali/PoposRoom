@@ -7,7 +7,6 @@ import androidx.room.ForeignKey
 import androidx.room.Junction
 import androidx.room.Relation
 import com.niyaj.model.EmployeeWithAbsents
-import kotlinx.collections.immutable.toImmutableList
 
 @Entity(
     primaryKeys = ["employeeId", "absentId"],
@@ -17,23 +16,23 @@ import kotlinx.collections.immutable.toImmutableList
             parentColumns = arrayOf("employeeId"),
             childColumns = arrayOf("employeeId"),
             onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.NO_ACTION
+            onUpdate = ForeignKey.NO_ACTION,
         ),
         ForeignKey(
             entity = AbsentEntity::class,
             parentColumns = arrayOf("absentId"),
             childColumns = arrayOf("absentId"),
             onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.NO_ACTION
-        )
-    ]
+            onUpdate = ForeignKey.NO_ACTION,
+        ),
+    ],
 )
 data class EmployeeWithAbsentCrossRef(
     @ColumnInfo(index = true)
     val employeeId: Int,
 
     @ColumnInfo(index = true)
-    val absentId: Int
+    val absentId: Int,
 )
 
 
@@ -45,14 +44,14 @@ data class EmployeeWithAbsentsDto(
         parentColumn = "employeeId",
         entity = AbsentEntity::class,
         entityColumn = "absentId",
-        associateBy = Junction(EmployeeWithAbsentCrossRef::class)
+        associateBy = Junction(EmployeeWithAbsentCrossRef::class),
     )
-    val absents: List<AbsentEntity> = emptyList()
+    val absents: List<AbsentEntity> = emptyList(),
 )
 
 fun EmployeeWithAbsentsDto.asExternalModel(): EmployeeWithAbsents {
     return EmployeeWithAbsents(
         employee = this.employee.asExternalModel(),
-        absents = this.absents.map { it.asExternalModel() }.toImmutableList()
+        absents = this.absents.map { it.asExternalModel() },
     )
 }

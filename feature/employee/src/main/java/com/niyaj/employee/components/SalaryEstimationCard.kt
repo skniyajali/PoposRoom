@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.EventBusy
-import androidx.compose.material.icons.filled.Money
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +24,7 @@ import androidx.compose.ui.util.trace
 import com.niyaj.common.tags.EmployeeTestTags
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.EmployeeMonthlyDate
 import com.niyaj.model.EmployeeSalaryEstimation
@@ -65,7 +63,7 @@ fun SalaryEstimationCard(
             Text(
                 text = "Salary Estimation",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
 
             SalaryDateDropdown(
@@ -73,7 +71,7 @@ fun SalaryEstimationCard(
                 salaryDates = salaryDates,
                 onDateClick = {
                     onDateClick(it)
-                }
+                },
             )
         }
 
@@ -84,7 +82,7 @@ fun SalaryEstimationCard(
 
         Crossfade(
             targetState = uiState,
-            label = "SalaryEstimationState"
+            label = "SalaryEstimationState",
         ) { state ->
             when (state) {
                 is UiState.Loading -> LoadingIndicator()
@@ -108,7 +106,7 @@ fun SalaryEstimationCard(
                                 text = state.data.remainingAmount.toRupee,
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.testTag(EmployeeTestTags.REMAINING_AMOUNT_TEXT)
+                                modifier = Modifier.testTag(EmployeeTestTags.REMAINING_AMOUNT_TEXT),
                             )
 
                             Column(
@@ -123,7 +121,7 @@ fun SalaryEstimationCard(
                                         color = if (state.data.status == Constants.PAID)
                                             MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
                                         style = MaterialTheme.typography.labelSmall,
-                                        textAlign = TextAlign.End
+                                        textAlign = TextAlign.End,
                                     )
                                 }
                             }
@@ -165,23 +163,23 @@ fun SalaryEstimationCard(
 
                         StandardButton(
                             text = "Add Absent Entry",
-                            icon = Icons.Default.EventBusy,
+                            icon = PoposIcons.EventBusy,
                             onClick = onClickAbsentEntry,
                             colors = ButtonDefaults.outlinedButtonColors(
                                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                                contentColor = MaterialTheme.colorScheme.error
-                            )
+                                contentColor = MaterialTheme.colorScheme.error,
+                            ),
                         )
 
                         Spacer(modifier = Modifier.height(SpaceSmall))
 
                         StandardButton(
                             text = "Add Payment Entry",
-                            icon = Icons.Default.Money,
+                            icon = PoposIcons.Money,
                             onClick = onClickSalaryEntry,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.secondary,
-                            )
+                            ),
                         )
                     }
                 }

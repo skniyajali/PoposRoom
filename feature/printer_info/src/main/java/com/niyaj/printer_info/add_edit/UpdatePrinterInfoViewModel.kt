@@ -11,6 +11,8 @@ import com.niyaj.data.repository.PrinterRepository
 import com.niyaj.data.repository.validation.PrinterValidationRepository
 import com.niyaj.model.Printer
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,6 +30,7 @@ import javax.inject.Inject
 class UpdatePrinterInfoViewModel @Inject constructor(
     private val repository: PrinterRepository,
     private val validationRepository: PrinterValidationRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
     private val _state = mutableStateOf(Printer.defaultPrinterInfo)
@@ -180,6 +183,7 @@ class UpdatePrinterInfoViewModel @Inject constructor(
                 when (repository.addOrUpdatePrinterInfo(_state.value)) {
                     is Resource.Success -> {
                         _eventFlow.emit(UiEvent.OnSuccess("Printer info updated successfully"))
+                        analyticsHelper.updatedPrinterInfo()
                     }
 
                     is Resource.Error -> {
@@ -212,4 +216,15 @@ class UpdatePrinterInfoViewModel @Inject constructor(
         }
     }
 
+}
+
+internal fun AnalyticsHelper.updatedPrinterInfo() {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "updated_printer_info",
+            extras = listOf(
+                AnalyticsEvent.Param("updated_printer_info", "Yes"),
+            ),
+        ),
+    )
 }

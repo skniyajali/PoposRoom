@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.cart.components
 
 import androidx.compose.animation.AnimatedContent
@@ -17,10 +33,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +53,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor8
 import com.niyaj.designsystem.theme.LightColor9
 import com.niyaj.designsystem.theme.SpaceMini
@@ -132,7 +145,7 @@ fun CartProduct(
                         ) {
                             Icon(
                                 imageVector = if (cartProduct.productQuantity > 1)
-                                    Icons.Default.Remove else Icons.Default.Delete,
+                                    PoposIcons.Remove else PoposIcons.Delete,
                                 contentDescription = "Decrease quantity",
                                 tint = MaterialTheme.colorScheme.error
                             )
@@ -144,7 +157,7 @@ fun CartProduct(
                             onClick = { increaseQuantity(cartProduct.productId) },
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Add,
+                                imageVector = PoposIcons.Add,
                                 contentDescription = "Increase quantity",
                                 tint = MaterialTheme.colorScheme.primary
                             )

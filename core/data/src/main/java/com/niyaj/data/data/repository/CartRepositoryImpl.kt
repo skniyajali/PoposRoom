@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.data.data.repository
 
 import com.niyaj.common.network.Dispatcher
@@ -14,6 +30,7 @@ import com.niyaj.database.model.CartChargesEntity
 import com.niyaj.database.model.CartEntity
 import com.niyaj.database.model.CartItemDto
 import com.niyaj.database.model.CartPriceEntity
+import com.niyaj.database.model.ProductEntity
 import com.niyaj.database.model.SelectedEntity
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.AddOnItem
@@ -24,9 +41,7 @@ import com.niyaj.model.OrderWithCartItems
 import com.niyaj.model.SELECTED_ID
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
@@ -55,25 +70,15 @@ class CartRepositoryImpl(
         return flow { }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getAllDineInCart(): Flow<List<CartItem>> {
         return withContext(ioDispatcher) {
-            cartDao.getAllOrders(OrderType.DineIn).mapLatest { list ->
-                val data = list.filter { it.cartItems.isNotEmpty() }
-
-                mapCartOrderToCartItem(data)
-            }
+            cartDao.getAllOrders(OrderType.DineIn).mapLatest(::mapCartOrderToCartItemAsync)
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getAllDineOutCart(): Flow<List<CartItem>> {
         return withContext(ioDispatcher) {
-            cartDao.getAllOrders(OrderType.DineOut).mapLatest { list ->
-                val data = list.filter { it.cartItems.isNotEmpty() }
-
-                mapCartOrderToCartItem(data)
-            }
+            cartDao.getAllOrders(OrderType.DineOut).mapLatest(::mapCartOrderToCartItemAsync)
         }
     }
 
@@ -98,7 +103,7 @@ class CartRepositoryImpl(
                     val newCartEntity = CartEntity(
                         orderId = orderId,
                         productId = productId,
-                        quantity = 1
+                        quantity = 1,
                     )
 
                     val result = cartDao.addOrRemoveCartProduct(newCartEntity)
@@ -249,34 +254,41 @@ class CartRepositoryImpl(
         }
     }
 
-    private suspend fun mapCartOrderToCartItem(cartOrders: List<CartItemDto>): List<CartItem> {
-        return coroutineScope {
-            cartOrders.map { order ->
-                val cartProducts = async(ioDispatcher) {
-                    order.cartItems.map { cartItem ->
-                        val product = cartDao.getProductById(cartItem.productId)
+    private suspend fun mapCartOrderToCartItemAsync(cartOrders: List<CartItemDto>): List<CartItem> {
+        return withContext(ioDispatcher) {
+            val productMap = withContext(ioDispatcher) {
+                val productIds = cartOrders.flatMap { it.cartItems }.map { it.productId }.toSet()
+                cartDao.getProductsById(productIds.toList())
+                    .associateBy { it.productId } // Create map for efficient lookup by product ID
+            }
+
+            cartOrders
+                .filter { it.cartItems.isNotEmpty() }
+                .map { order ->
+                    val cartProducts = order.cartItems.map { cartItem ->
+                        val product = productMap[cartItem.productId] ?: ProductEntity()
 
                         CartProductItem(
                             productId = product.productId,
                             productName = product.productName,
                             productPrice = product.productPrice,
-                            productQuantity = cartItem.quantity
+                            productQuantity = cartItem.quantity,
                         )
                     }
-                }
 
-                CartItem(
-                    orderId = order.cartOrder.orderId,
-                    orderType = order.cartOrder.orderType,
-                    cartProducts = cartProducts.await().toImmutableList(),
-                    addOnItems = order.addOnItems.toImmutableList(),
-                    charges = order.charges.toImmutableList(),
-                    customerPhone = order.customerPhone,
-                    customerAddress = order.customerAddress,
-                    updatedAt = (order.cartOrder.updatedAt ?: order.cartOrder.createdAt).toTimeSpan,
-                    orderPrice = order.orderPrice.totalPrice
-                )
-            }
+                    CartItem(
+                        orderId = order.cartOrder.orderId,
+                        orderType = order.cartOrder.orderType,
+                        cartProducts = cartProducts.toImmutableList(),
+                        addOnItems = order.addOnItems.toImmutableList(),
+                        charges = order.charges.toImmutableList(),
+                        customerPhone = order.customerPhone,
+                        customerAddress = order.customerAddress,
+                        updatedAt = (order.cartOrder.updatedAt
+                            ?: order.cartOrder.createdAt).toTimeSpan,
+                        orderPrice = order.orderPrice.totalPrice,
+                    )
+                }
         }
     }
 
@@ -288,8 +300,8 @@ class CartRepositoryImpl(
                 selectedDao.insertOrUpdateSelectedOrder(
                     SelectedEntity(
                         selectedId = SELECTED_ID,
-                        orderId = it
-                    )
+                        orderId = it,
+                    ),
                 )
             } ?: selectedDao.deleteSelectedOrder(SELECTED_ID)
         }
@@ -314,7 +326,7 @@ class CartRepositoryImpl(
                 basePrice = cartBasePrice,
                 discountPrice = cartPrice.discountPrice,
                 totalPrice = cartTotalPrice,
-                createdAt = System.currentTimeMillis().toString()
+                createdAt = System.currentTimeMillis().toString(),
             )
 
             cartPriceDao.updateCartPrice(updateCartPrice)
@@ -339,7 +351,7 @@ class CartRepositoryImpl(
                 basePrice = cartBasePrice,
                 discountPrice = cartPrice.discountPrice,
                 totalPrice = cartTotalPrice,
-                createdAt = System.currentTimeMillis().toString()
+                createdAt = System.currentTimeMillis().toString(),
             )
 
             cartPriceDao.updateCartPrice(updateCartPrice)
@@ -369,7 +381,7 @@ class CartRepositoryImpl(
                 basePrice = basePrice,
                 discountPrice = discountPrice,
                 totalPrice = totalPrice,
-                createdAt = System.currentTimeMillis().toString()
+                createdAt = System.currentTimeMillis().toString(),
             )
 
             cartPriceDao.updateCartPrice(priceEntity)
@@ -399,7 +411,7 @@ class CartRepositoryImpl(
                 basePrice = basePrice,
                 discountPrice = discountPrice,
                 totalPrice = totalPrice,
-                createdAt = System.currentTimeMillis().toString()
+                createdAt = System.currentTimeMillis().toString(),
             )
 
             cartPriceDao.updateCartPrice(priceEntity)
@@ -426,7 +438,7 @@ class CartRepositoryImpl(
                 orderId = orderId,
                 basePrice = basePrice,
                 discountPrice = discountPrice,
-                totalPrice = totalPrice
+                totalPrice = totalPrice,
             )
 
             cartPriceDao.updateCartPrice(priceEntity)
@@ -453,7 +465,7 @@ class CartRepositoryImpl(
                 orderId = orderId,
                 basePrice = basePrice,
                 discountPrice = discountPrice,
-                totalPrice = totalPrice
+                totalPrice = totalPrice,
             )
 
             cartPriceDao.updateCartPrice(priceEntity)

@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.ui.components
 
 import androidx.compose.foundation.BorderStroke
@@ -32,7 +48,7 @@ import com.niyaj.designsystem.theme.SpaceMini
 @Composable
 fun StandardButton(
     modifier: Modifier = Modifier,
-    iconModifier : Modifier = Modifier,
+    iconModifier: Modifier = Modifier,
     text: String,
     icon: ImageVector? = null,
     enabled: Boolean = true,
@@ -54,7 +70,7 @@ fun StandardButton(
             Icon(
                 imageVector = icon,
                 contentDescription = text,
-                modifier = iconModifier
+                modifier = iconModifier,
             )
             Spacer(modifier = Modifier.width(SpaceMini))
         }
@@ -68,7 +84,7 @@ fun StandardButton(
 @Composable
 fun StandardElevatedButton(
     modifier: Modifier = Modifier,
-    iconModifier : Modifier = Modifier,
+    iconModifier: Modifier = Modifier,
     text: String,
     icon: ImageVector? = null,
     enabled: Boolean = true,
@@ -89,7 +105,7 @@ fun StandardElevatedButton(
             Icon(
                 imageVector = icon,
                 contentDescription = text.plus("button"),
-                modifier = iconModifier
+                modifier = iconModifier,
             )
             Spacer(modifier = Modifier.width(SpaceMini))
         }
@@ -104,20 +120,22 @@ fun StandardElevatedButton(
 @Composable
 fun StandardOutlinedButton(
     modifier: Modifier = Modifier,
-    iconModifier : Modifier = Modifier,
+    iconModifier: Modifier = Modifier,
     text: String,
     icon: ImageVector? = null,
     enabled: Boolean = true,
     shape: Shape = RoundedCornerShape(SpaceMini),
-    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(),
-    border: BorderStroke = ButtonDefaults.outlinedButtonBorder,
+    color: Color = MaterialTheme.colorScheme.secondary,
+    border: BorderStroke = BorderStroke(1.dp, color),
     onClick: () -> Unit,
 ) {
     OutlinedButton(
         onClick = onClick,
         enabled = enabled,
         shape = shape,
-        colors = colors,
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = color,
+        ),
         border = border,
         modifier = modifier
             .testTag(text)
@@ -127,7 +145,7 @@ fun StandardOutlinedButton(
             Icon(
                 imageVector = icon,
                 contentDescription = text,
-                modifier = iconModifier
+                modifier = iconModifier,
             )
             Spacer(modifier = Modifier.width(SpaceMini))
         }
@@ -147,7 +165,7 @@ fun StandardFilledTonalIconButton(
     enabled: Boolean = true,
     containerColor: Color = MaterialTheme.colorScheme.outlineVariant,
     contentColor: Color = contentColorFor(backgroundColor = containerColor),
-    shape: Shape = RoundedCornerShape(SpaceMini)
+    shape: Shape = RoundedCornerShape(SpaceMini),
 ) {
     FilledTonalIconButton(
         modifier = modifier,
@@ -157,7 +175,7 @@ fun StandardFilledTonalIconButton(
         colors = IconButtonDefaults.filledTonalIconButtonColors(
             containerColor = containerColor,
             contentColor = contentColor,
-        )
+        ),
     ) {
         Icon(
             imageVector = icon,
@@ -174,9 +192,9 @@ fun StandardOutlinedIconButton(
     enabled: Boolean = true,
     borderColor: Color = MaterialTheme.colorScheme.outlineVariant,
     colors: IconButtonColors = IconButtonDefaults.outlinedIconButtonColors(
-        contentColor = borderColor
+        contentColor = borderColor,
     ),
-    shape: Shape = RoundedCornerShape(SpaceMini)
+    shape: Shape = RoundedCornerShape(SpaceMini),
 ) {
     OutlinedIconButton(
         modifier = modifier,
@@ -184,7 +202,7 @@ fun StandardOutlinedIconButton(
         shape = shape,
         enabled = enabled,
         colors = colors,
-        border = BorderStroke(1.dp, borderColor)
+        border = BorderStroke(1.dp, borderColor),
     ) {
         Icon(
             imageVector = icon,

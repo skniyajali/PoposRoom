@@ -1,10 +1,28 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.common.tags
 
 object MarketListTestTags {
 
     const val MARKET_ITEM_SCREEN_TITLE = "Market Items"
     const val MARKET_ITEM_SEARCH_PLACEHOLDER = "Search for Items..."
-    const val MARKET_ITEM_NOT_AVAILABLE = "Items Not Available"
+    const val MARKET_ITEM_NOT_AVAILABLE = "Market items are not available, Click below button to create new item."
+
+    const val MARKET_LIST_NOT_AVAILABLE = "Market lists are not available, Click below button to create new item."
 
     const val ADD_EDIT_MARKET_ITEM_BUTTON = "AddEdit Item"
 
@@ -17,6 +35,8 @@ object MarketListTestTags {
 
     const val CREATE_NEW_LIST = "Create New List"
     const val UPDATE_LIST = "Update List"
+
+    const val TYPES_NOTE_TEXT = "Please select at least one list type."
 
 
     const val MARKET_ITEM_TYPE_FIELD = "Item Type"
@@ -34,8 +54,6 @@ object MarketListTestTags {
     const val MARKET_LIST_ITEM_DESC = "Item Description"
 
     const val MARKET_ITEM_TYPE_EMPTY_ERROR = "Item type must not be empty."
-    const val MARKET_ITEM_TYPE_DIGIT_ERROR = "Item type must not contains any digit."
-    const val MARKET_ITEM_TYPE_LENGTH_ERROR = "Item type must be at least 4 characters long."
 
     const val MARKET_ITEM_NAME_EMPTY_ERROR = "Item name must not be empty."
     const val MARKET_ITEM_NAME_DIGIT_ERROR = "Item name must not contains any digit."

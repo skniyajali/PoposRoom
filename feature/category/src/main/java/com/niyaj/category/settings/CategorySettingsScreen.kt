@@ -5,15 +5,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.SaveAlt
-import androidx.compose.material.icons.filled.Upload
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.niyaj.category.destinations.ExportCategoryScreenDestination
 import com.niyaj.category.destinations.ImportCategoryScreenDestination
 import com.niyaj.common.tags.CategoryConstants.CATEGORY_SETTINGS_TITLE
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
@@ -26,7 +24,7 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 @Destination(style = DestinationStyleBottomSheet::class)
 @Composable
 fun CategorySettingsScreen(
-    navController: NavController
+    navController: NavController,
 ) {
     TrackScreenViewEvent(screenName = "Category Setting Screen")
 
@@ -36,23 +34,23 @@ fun CategorySettingsScreen(
 
     StandardBottomSheet(
         title = CATEGORY_SETTINGS_TITLE,
-        onBackClick = { navController.navigateUp() }
+        onBackClick = { navController.navigateUp() },
     ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(SpaceMedium),
             state = lazyListState,
-            verticalArrangement = Arrangement.spacedBy(SpaceMedium)
-        ){
+            verticalArrangement = Arrangement.spacedBy(SpaceMedium),
+        ) {
             item("ImportCategory") {
                 SettingsCard(
                     title = "Import Category",
                     subtitle = "Click here to import data from file.",
-                    icon = Icons.Default.SaveAlt,
+                    icon = PoposIcons.Import,
                     onClick = {
                         navController.navigate(ImportCategoryScreenDestination())
-                    }
+                    },
                 )
             }
 
@@ -60,10 +58,10 @@ fun CategorySettingsScreen(
                 SettingsCard(
                     title = "Export Category",
                     subtitle = "Click here to export category to file.",
-                    icon = Icons.Default.Upload,
+                    icon = PoposIcons.Upload,
                     onClick = {
                         navController.navigate(ExportCategoryScreenDestination())
-                    }
+                    },
                 )
             }
         }

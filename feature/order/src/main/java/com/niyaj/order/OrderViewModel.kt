@@ -2,7 +2,6 @@ package com.niyaj.order
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
-import com.dantsu.escposprinter.EscPosPrinter
 import com.niyaj.common.result.Resource
 import com.niyaj.data.repository.OrderRepository
 import com.niyaj.model.Charges
@@ -13,7 +12,6 @@ import com.niyaj.ui.utils.UiEvent
 import com.samples.apps.core.analytics.AnalyticsEvent
 import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,14 +30,11 @@ class OrderViewModel @Inject constructor(
     private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel() {
 
-    private lateinit var escposPrinter: EscPosPrinter
-
     private val _selectedDate = MutableStateFlow("")
     val selectedDate = _selectedDate.asStateFlow()
 
     val text = snapshotFlow { mSearchText.value }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val cartOrders = _selectedDate.combine(text) { date, text ->
         orderRepository.getAllOrders(date, text)
     }.flatMapLatest {
@@ -49,7 +44,7 @@ class OrderViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = OrderState()
+        initialValue = OrderState(),
     )
 
     fun onOrderEvent(event: OrderEvent) {

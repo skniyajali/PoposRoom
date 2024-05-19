@@ -1,6 +1,7 @@
 package com.niyaj.product.add_edit
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,14 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
-import androidx.compose.material.icons.automirrored.filled.FeaturedPlayList
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Money
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -46,7 +39,6 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.common.tags.PaymentScreenTags
 import com.niyaj.common.tags.ProductTestTags.ADD_EDIT_PRODUCT_BUTTON
 import com.niyaj.common.tags.ProductTestTags.CREATE_NEW_PRODUCT
@@ -59,17 +51,20 @@ import com.niyaj.common.tags.ProductTestTags.PRODUCT_NAME_ERROR
 import com.niyaj.common.tags.ProductTestTags.PRODUCT_NAME_FIELD
 import com.niyaj.common.tags.ProductTestTags.PRODUCT_PRICE_ERROR
 import com.niyaj.common.tags.ProductTestTags.PRODUCT_PRICE_FIELD
+import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardScaffoldNew
+import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,12 +72,12 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 @Composable
 fun AddEditProductScreen(
     productId: Int = 0,
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: AddEditProductViewModel = hiltViewModel(),
-    resultBackNavigator: ResultBackNavigator<String>
+    resultBackNavigator: ResultBackNavigator<String>,
 ) {
     TrackScreenViewEvent(screenName = Screens.ADD_EDIT_PRODUCT_SCREEN)
-    
+
     val lazyListState = rememberLazyListState()
 
     val categories = viewModel.categories.collectAsStateWithLifecycle().value
@@ -123,11 +118,10 @@ fun AddEditProductScreen(
 
     TrackScrollJank(scrollableState = lazyListState, stateName = "Add/Edit Product::Fields")
 
-    StandardScaffoldNew(
-        navController = navController,
+    StandardScaffoldRouteNew(
         title = title,
         showBackButton = true,
-        showBottomBar = enableBtn,
+        showBottomBar = true,
         bottomBar = {
             StandardButton(
                 modifier = Modifier
@@ -136,20 +130,22 @@ fun AddEditProductScreen(
                     .padding(SpaceSmallMax),
                 enabled = enableBtn,
                 text = title,
-                icon = if (productId == 0) Icons.Default.Add else Icons.Default.Edit,
+                icon = if (productId == 0) PoposIcons.Add else PoposIcons.Edit,
                 onClick = {
                     viewModel.onEvent(AddEditProductEvent.AddOrUpdateProduct(productId))
-                }
+                },
             )
-        }
-    ) {
+        },
+        onBackClick = navigator::navigateUp,
+    ) { paddingValues ->
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
                 .testTag(PaymentScreenTags.ADD_EDIT_PAYMENT_SCREEN)
                 .fillMaxWidth()
-                .padding(SpaceSmallMax),
-            verticalArrangement = Arrangement.spacedBy(SpaceSmall)
+                .padding(paddingValues),
+            contentPadding = PaddingValues(SpaceMedium),
+            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
             item(PRODUCT_CATEGORY_FIELD) {
                 ExposedDropdownMenuBox(
@@ -168,7 +164,7 @@ fun AddEditProductScreen(
                             .menuAnchor(),
                         value = selectedCategory.categoryName,
                         label = PRODUCT_CATEGORY_FIELD,
-                        leadingIcon = Icons.Default.Category,
+                        leadingIcon = PoposIcons.Category,
                         isError = categoryError != null,
                         errorText = categoryError,
                         readOnly = true,
@@ -176,7 +172,7 @@ fun AddEditProductScreen(
                         onValueChange = {},
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(
-                                expanded = categoryToggled
+                                expanded = categoryToggled,
                             )
                         },
                     )
@@ -203,7 +199,7 @@ fun AddEditProductScreen(
                                     .fillMaxWidth(),
                                 onClick = {
                                     viewModel.onEvent(
-                                        AddEditProductEvent.CategoryChanged(category)
+                                        AddEditProductEvent.CategoryChanged(category),
                                     )
                                     categoryToggled = false
                                 },
@@ -212,19 +208,21 @@ fun AddEditProductScreen(
                                 },
                                 leadingIcon = {
                                     CircularBox(
-                                        icon = Icons.Default.Category,
+                                        icon = PoposIcons.Category,
                                         doesSelected = false,
                                         size = 30.dp,
                                         showBorder = !category.isAvailable,
-                                        text = category.categoryName
+                                        text = category.categoryName,
                                     )
-                                }
+                                },
                             )
 
                             if (index != categories.size - 1) {
-                                HorizontalDivider(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 44.dp))
+                                HorizontalDivider(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 44.dp),
+                                )
                             }
                         }
 
@@ -241,7 +239,7 @@ fun AddEditProductScreen(
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .align(Alignment.CenterHorizontally)
+                                            .align(Alignment.CenterHorizontally),
                                     )
                                 },
                             )
@@ -253,27 +251,27 @@ fun AddEditProductScreen(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             onClick = {
-                                navController.navigate(Screens.ADD_EDIT_CATEGORY_SCREEN)
+                                navigator.navigate(Screens.ADD_EDIT_CATEGORY_SCREEN)
                             },
                             text = {
                                 Text(
                                     text = "Create a new category",
-                                    color = MaterialTheme.colorScheme.secondary
+                                    color = MaterialTheme.colorScheme.secondary,
                                 )
                             },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Default.Add,
+                                    imageVector = PoposIcons.Add,
                                     contentDescription = "Create",
-                                    tint = MaterialTheme.colorScheme.secondary
+                                    tint = MaterialTheme.colorScheme.secondary,
                                 )
                             },
                             trailingIcon = {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
-                                    contentDescription = "trailing"
+                                    imageVector = PoposIcons.ArrowRightAlt,
+                                    contentDescription = "trailing",
                                 )
-                            }
+                            },
                         )
                     }
                 }
@@ -283,7 +281,7 @@ fun AddEditProductScreen(
                 StandardOutlinedTextField(
                     value = viewModel.state.productName,
                     label = PRODUCT_NAME_FIELD,
-                    leadingIcon = Icons.AutoMirrored.Filled.FeaturedPlayList,
+                    leadingIcon = PoposIcons.Feed,
                     isError = nameError != null,
                     errorText = nameError,
                     errorTextTag = PRODUCT_NAME_ERROR,
@@ -297,14 +295,14 @@ fun AddEditProductScreen(
                 StandardOutlinedTextField(
                     value = viewModel.state.productPrice,
                     label = PRODUCT_PRICE_FIELD,
-                    leadingIcon = Icons.Default.Money,
+                    leadingIcon = PoposIcons.Money,
                     keyboardType = KeyboardType.Number,
                     isError = priceError != null,
                     errorText = priceError,
                     errorTextTag = PRODUCT_PRICE_ERROR,
                     onValueChange = {
                         viewModel.onEvent(AddEditProductEvent.ProductPriceChanged(it))
-                    }
+                    },
                 )
             }
 
@@ -312,10 +310,10 @@ fun AddEditProductScreen(
                 StandardOutlinedTextField(
                     value = viewModel.state.productDesc,
                     label = PRODUCT_DESCRIPTION_FIELD,
-                    leadingIcon = Icons.Default.Description,
+                    leadingIcon = PoposIcons.Description,
                     onValueChange = {
                         viewModel.onEvent(AddEditProductEvent.ProductDescChanged(it))
-                    }
+                    },
                 )
             }
 
@@ -329,7 +327,7 @@ fun AddEditProductScreen(
                         checked = viewModel.state.productAvailability,
                         onCheckedChange = {
                             viewModel.onEvent(AddEditProductEvent.ProductAvailabilityChanged)
-                        }
+                        },
                     )
                     Spacer(modifier = Modifier.width(SpaceSmall))
                     Text(
@@ -337,7 +335,7 @@ fun AddEditProductScreen(
                             "Marked as available"
                         else
                             "Marked as not available",
-                        style = MaterialTheme.typography.labelMedium
+                        style = MaterialTheme.typography.labelMedium,
                     )
                 }
 

@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.cart.dine_in
 
 import android.annotation.SuppressLint
@@ -20,13 +36,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.cart.components.CartFooterPlaceOrder
 import com.niyaj.cart.components.CartItems
 import com.niyaj.core.ui.R
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
-import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
@@ -36,7 +50,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun DineInScreen(
-    navController: NavController,
+    onClickCreateOrder: () -> Unit,
     onClickEditOrder: (Int) -> Unit,
     onClickOrderDetails: (Int) -> Unit,
     onNavigateToOrderScreen: () -> Unit,
@@ -61,7 +75,7 @@ fun DineInScreen(
                     val result = snackbarHostState.showSnackbar(
                         message = event.successMessage,
                         actionLabel = "View",
-                        duration = SnackbarDuration.Short
+                        duration = SnackbarDuration.Short,
                     )
                     if (result == SnackbarResult.ActionPerformed) {
                         onNavigateToOrderScreen()
@@ -71,7 +85,7 @@ fun DineInScreen(
                 is UiEvent.OnError -> {
                     snackbarHostState.showSnackbar(
                         message = event.errorMessage,
-                        duration = SnackbarDuration.Short
+                        duration = SnackbarDuration.Short,
                     )
                 }
             }
@@ -89,13 +103,13 @@ fun DineInScreen(
                 enter = fadeIn() + slideInVertically(
                     initialOffsetY = { fullHeight ->
                         fullHeight / 4
-                    }
+                    },
                 ),
                 exit = fadeOut() + slideOutVertically(
                     targetOffsetY = { fullHeight ->
                         fullHeight / 4
-                    }
-                )
+                    },
+                ),
             ) {
                 CartFooterPlaceOrder(
                     countTotalItems = countTotalDineInItems,
@@ -107,7 +121,7 @@ fun DineInScreen(
                     onClickPlaceAllOrder = {
                         viewModel.onEvent(DineInEvent.PlaceAllDineInOrder)
                     },
-                    onClickPrintAllOrder = {}
+                    onClickPrintAllOrder = {},
                 )
             }
         },
@@ -120,14 +134,13 @@ fun DineInScreen(
                 text = "Dine in order not available",
                 buttonText = "Add Item To Cart",
                 image = painterResource(R.drawable.emptycart),
-                onClick = {
-                    navController.navigate(Screens.HOME_SCREEN)
-                }
+                onClick = onClickCreateOrder,
             )
         } else {
             TrackScrollJank(scrollableState = lazyListState, stateName = "DineIn Orders::Cart")
 
             CartItems(
+                modifier = Modifier.fillMaxSize(),
                 listState = lazyListState,
                 cartItems = dineInOrders,
                 selectedCartItems = selectedDineInOrder,

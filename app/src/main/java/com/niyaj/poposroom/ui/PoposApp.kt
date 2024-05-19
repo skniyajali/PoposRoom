@@ -1,6 +1,24 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.poposroom.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -15,6 +33,7 @@ import com.niyaj.data.utils.NetworkMonitor
 import com.niyaj.designsystem.components.PoposBackground
 import com.niyaj.designsystem.components.PoposGradientBackground
 import com.niyaj.designsystem.theme.LocalGradientColors
+import com.niyaj.home.HomeNavGraph
 import com.niyaj.poposroom.MainActivityViewModel
 import com.niyaj.poposroom.navigation.PoposNavHost
 import com.niyaj.poposroom.navigation.RootNavGraph
@@ -44,6 +63,7 @@ fun PoposApp(
             val isOffline by appState.isOffline.collectAsStateWithLifecycle()
             val reportState = viewModel.reportState.collectAsStateWithLifecycle().value
             val deleteState = viewModel.deleteState.collectAsStateWithLifecycle().value
+            val isLoggedIn = viewModel.isLoggedIn.collectAsStateWithLifecycle().value
 
             LaunchedEffect(key1 = deleteState, key2 = reportState) {
                 if (deleteState) {
@@ -109,9 +129,11 @@ fun PoposApp(
             */
 
             PoposNavHost(
-                modifier = Modifier,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .navigationBarsPadding(),
                 appState = appState,
-                startRoute = RootNavGraph.startRoute,
+                startRoute = if (isLoggedIn) HomeNavGraph else RootNavGraph.startRoute,
             )
         }
     }
