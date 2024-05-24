@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 22,
-    "identityHash": "8cca13903bed81533bbae48244811172",
+    "identityHash": "9a59754a87c388f9f4a727262390b55e",
     "entities": [
       {
         "tableName": "account",
@@ -1449,7 +1449,7 @@
       },
       {
         "tableName": "profile",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`restaurantId` INTEGER NOT NULL, `name` TEXT NOT NULL, `email` TEXT NOT NULL, `primaryPhone` TEXT NOT NULL, `secondaryPhone` TEXT NOT NULL, `tagline` TEXT NOT NULL, `description` TEXT NOT NULL, `address` TEXT NOT NULL, `logo` TEXT NOT NULL, `printLogo` TEXT NOT NULL, `paymentQrCode` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `updatedAt` TEXT, PRIMARY KEY(`restaurantId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`restaurantId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `email` TEXT NOT NULL, `primaryPhone` TEXT NOT NULL, `secondaryPhone` TEXT NOT NULL, `tagline` TEXT NOT NULL, `description` TEXT NOT NULL, `address` TEXT NOT NULL, `logo` TEXT NOT NULL, `printLogo` TEXT NOT NULL, `paymentQrCode` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `updatedAt` TEXT)",
         "fields": [
           {
             "fieldPath": "restaurantId",
@@ -1531,7 +1531,7 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": false,
+          "autoGenerate": true,
           "columnNames": [
             "restaurantId"
           ]
@@ -2144,7 +2144,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8cca13903bed81533bbae48244811172')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9a59754a87c388f9f4a727262390b55e')"
     ]
   }
 }

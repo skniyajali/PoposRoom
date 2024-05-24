@@ -86,15 +86,15 @@ fun AddressDetailsScreen(
         fabPosition = FabPosition.End,
         floatingActionButton = {
             StandardFAB(
-                showScrollToTop = !lazyListState.isScrollingUp(),
                 fabVisible = lazyListState.isScrollingUp(),
-                fabIcon = PoposIcons.Share,
                 onFabClick = { /*TODO: Add Share functionality*/ },
                 onClickScroll = {
                     scope.launch {
                         lazyListState.animateScrollToItem(index = 0)
                     }
                 },
+                showScrollToTop = !lazyListState.isScrollingUp(),
+                fabIcon = PoposIcons.Share,
             )
         },
         navActions = {

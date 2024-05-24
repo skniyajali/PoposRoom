@@ -110,7 +110,7 @@ fun MarketListItemHeader(
                 StandardOutlinedAssistChip(
                     text = marketList.listType,
                     icon = PoposIcons.ListAlt,
-                    containerColor = MaterialTheme.colorScheme.secondary,
+                    borderColor = MaterialTheme.colorScheme.secondary,
                     textStyle = TextStyle(
                         fontFamily = FontFamily.Cursive,
                         fontWeight = FontWeight.SemiBold,

@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.feature.printer.bluetooth_printer
 
 import android.annotation.SuppressLint
@@ -10,6 +26,7 @@ import com.dantsu.escposprinter.textparser.PrinterTextParserImg
 import com.niyaj.common.network.di.ApplicationScope
 import com.niyaj.common.utils.toFormattedDate
 import com.niyaj.data.repository.PrinterRepository
+import com.niyaj.data.repository.UserDataRepository
 import com.niyaj.feature.printer.bluetooth_printer.utils.FileExtension.getImageFromDeviceOrDefault
 import com.niyaj.model.BluetoothDeviceState
 import com.niyaj.model.Printer
@@ -21,19 +38,23 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import java.io.IOException
 import javax.inject.Inject
 
 class BluetoothPrinter @Inject constructor(
-    private val repository: PrinterRepository,
+    repository: PrinterRepository,
+    userDataRepository: UserDataRepository,
     private val application: Application,
     @ApplicationScope
     private val externalScope: CoroutineScope,
 ) {
     private val bluetoothConnections by lazy { BluetoothPrintersConnections() }
 
-    private val profileInfo = repository.getProfileInfo(Profile.RESTAURANT_ID).stateIn(
+    private val profileInfo = userDataRepository.loggedInUserId.flatMapLatest {
+        repository.getProfileInfo(it)
+    }.stateIn(
         scope = externalScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = Profile.defaultProfileInfo,

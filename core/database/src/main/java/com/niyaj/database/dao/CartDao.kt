@@ -49,6 +49,16 @@ interface CartDao {
         orderStatus: OrderStatus = OrderStatus.PROCESSING,
     ): Flow<List<CartItemDto>>
 
+    @Transaction
+    @Query(
+        value = """
+        SELECT * FROM cartorder WHERE orderId = :orderId ORDER BY createdAt DESC
+    """,
+    )
+    fun getCartItemByOrderId(
+        orderId: Int
+    ): Flow<CartItemDto>
+
     @Query(
         value = """
         SELECT quantity FROM cart WHERE orderId = :orderId AND productId = :productId

@@ -31,7 +31,7 @@ import com.niyaj.cart.components.TabsContent
 import com.niyaj.cart.dine_in.DineInScreen
 import com.niyaj.cart.dine_out.DineOutScreen
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.ui.components.StandardScaffoldWithBottomNavigation
+import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.ramcosta.composedestinations.annotation.Destination
@@ -52,15 +52,15 @@ fun CartScreen(
     val pagerState = rememberPagerState { 2 }
 
     BackHandler {
-        navigator.navigate(Screens.HOME_SCREEN)
+        navigator.popBackStack()
     }
 
-    StandardScaffoldWithBottomNavigation(
-        currentRoute = Screens.CART_SCREEN,
+    StandardScaffoldWithOutDrawer(
         title = "My Cart",
+        onBackClick = navigator::popBackStack,
         navActions = {
             IconButton(
-                onClick = { navigator.navigate(Screens.ORDER_SCREEN) }
+                onClick = { navigator.navigate(Screens.ORDER_SCREEN) },
             ) {
                 Icon(
                     imageVector = PoposIcons.Order,
@@ -68,12 +68,6 @@ fun CartScreen(
                 )
             }
         },
-        bottomBar = {},
-        showBackButton = true,
-        onBackClick = {
-            navigator.navigate(Screens.HOME_SCREEN)
-        },
-        onNavigateToScreen = navigator::navigate,
     ) {
         val tabs = listOf(
             CartTabItem.DineOutItem {

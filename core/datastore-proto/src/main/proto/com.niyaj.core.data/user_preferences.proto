@@ -1,0 +1,31 @@
+
+syntax = "proto3";
+
+import "com.niyaj.core.data/theme_brand.proto";
+import "com.niyaj.core.data/dark_theme_config.proto";
+
+option java_package = "com.niyaj.core.datastore";
+option java_multiple_files = true;
+
+message UserPreferences {
+
+    bool user_logged_in = 1;
+
+    int32 logged_in_user_id = 2;
+
+    bool should_hide_onboarding = 3;
+
+    bool use_dynamic_color = 4;
+
+    ThemeBrandProto theme_brand = 5;
+
+    DarkThemeConfigProto dark_theme_config = 6;
+
+    bool send_order_sms = 7;
+
+    bool use_delivery_partner_qr_code = 8;
+
+    int32 selected_order_id = 9;
+
+    // NEXT AVAILABLE ID: 10
+}

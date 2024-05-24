@@ -151,7 +151,7 @@ fun MeasureUnitScreen(
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
         } else {
-            navigator.navigateUp()
+            navigator.popBackStack()
         }
     }
 
@@ -162,8 +162,6 @@ fun MeasureUnitScreen(
         title = if (selectedItems.isEmpty()) UNIT_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
-                showScrollToTop = lazyGridState.isScrolled,
-                fabText = CREATE_NEW_UNIT,
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
                 onFabClick = {
                     navigator.navigate(AddEditMeasureUnitScreenDestination())
@@ -173,6 +171,8 @@ fun MeasureUnitScreen(
                         lazyGridState.animateScrollToItem(0)
                     }
                 },
+                showScrollToTop = lazyGridState.isScrolled,
+                fabText = CREATE_NEW_UNIT,
             )
         },
         navActions = {

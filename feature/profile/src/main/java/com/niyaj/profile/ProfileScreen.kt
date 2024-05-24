@@ -16,6 +16,7 @@
 
 package com.niyaj.profile
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -51,7 +52,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.tags.ProfileTestTags.PROFILE_SCREEN
 import com.niyaj.designsystem.icon.PoposIcons
@@ -68,7 +68,7 @@ import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
@@ -83,7 +83,7 @@ import kotlinx.coroutines.launch
 @Destination(route = Screens.PROFILE_SCREEN)
 @Composable
 fun ProfileScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: ProfileViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<UpdateProfileScreenDestination, String>,
 ) {
@@ -154,6 +154,10 @@ fun ProfileScreen(
         }
     }
 
+    BackHandler {
+        navigator.popBackStack()
+    }
+
     TrackScreenViewEvent(screenName = Screens.PROFILE_SCREEN)
 
     Scaffold(
@@ -165,7 +169,7 @@ fun ProfileScreen(
                 title = { Text(text = PROFILE_SCREEN) },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.navigateUp() },
+                        onClick = navigator::popBackStack,
                     ) {
                         Icon(
                             imageVector = PoposIcons.ArrowBack,
@@ -176,7 +180,7 @@ fun ProfileScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            navController.navigate(UpdateProfileScreenDestination())
+                            navigator.navigate(UpdateProfileScreenDestination())
                         },
                     ) {
                         Icon(
@@ -241,7 +245,7 @@ fun ProfileScreen(
                     icon = PoposIcons.Password,
                     containerColor = Color.White,
                     onClick = {
-                        navController.navigate(ChangePasswordScreenDestination(info.restaurantId))
+                        navigator.navigate(ChangePasswordScreenDestination(info.restaurantId))
                     },
                 )
 

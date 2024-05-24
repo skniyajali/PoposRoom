@@ -18,46 +18,27 @@ package com.niyaj.poposroom
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.niyaj.data.repository.AccountRepository
+import com.niyaj.data.repository.UserDataRepository
 import com.niyaj.data.utils.WorkMonitor
-import com.niyaj.model.Profile
 import com.niyaj.model.UserData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     workMonitor: WorkMonitor,
-    accountRepository: AccountRepository,
+    userDataRepository: UserDataRepository,
 ) : ViewModel() {
-    private val _uiState =
-        MutableStateFlow<MainActivityUiState>(MainActivityUiState.Success(UserData()))
-    val uiState = _uiState.asStateFlow()
-
-    val isLoggedIn = accountRepository
-        .checkIsLoggedIn(resId = Profile.RESTAURANT_ID)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = false,
-        )
-
-    val reportState = workMonitor.isGeneratingReport.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5_000),
-        false,
+    val uiState = userDataRepository.userData.map {
+        MainActivityUiState.Success(it)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = MainActivityUiState.Loading,
     )
-
-    val deleteState = workMonitor.isDeletingData.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5_000),
-        false,
-    )
-
 }
 
 

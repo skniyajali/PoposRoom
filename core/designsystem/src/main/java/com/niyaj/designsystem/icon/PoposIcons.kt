@@ -45,6 +45,7 @@ import androidx.compose.material.icons.filled.Approval
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.AutoGraph
 import androidx.compose.material.icons.filled.BluetoothConnected
@@ -170,6 +171,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
  */
 object PoposIcons {
 
+    val ArrowUpward: ImageVector = Icons.Filled.ArrowUpward
     val ManageAccounts: ImageVector = Icons.Filled.ManageAccounts
     val ImageSearch: ImageVector = Icons.Default.Search
     val AddToPhotos: ImageVector = Icons.Default.AddAPhoto

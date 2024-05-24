@@ -30,6 +30,7 @@ import com.niyaj.common.utils.saveImageToInternalStorage
 import com.niyaj.data.repository.AccountRepository
 import com.niyaj.data.repository.ProfileRepository
 import com.niyaj.data.repository.QRCodeScanner
+import com.niyaj.data.repository.UserDataRepository
 import com.niyaj.data.repository.validation.ProfileValidationRepository
 import com.niyaj.feature.account.register.components.basic_info.BasicInfoEvent
 import com.niyaj.feature.account.register.components.basic_info.BasicInfoState
@@ -42,6 +43,8 @@ import com.niyaj.model.RESTAURANT_LOGO_NAME
 import com.niyaj.model.RESTAURANT_PRINT_LOGO_NAME
 import com.niyaj.ui.utils.QRCodeEncoder
 import com.niyaj.ui.utils.UiEvent
+import com.samples.apps.core.analytics.AnalyticsEvent
+import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -64,10 +67,12 @@ class RegisterViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val restaurantInfoRepository: ProfileRepository,
     private val validation: ProfileValidationRepository,
+    private val userDataRepository: UserDataRepository,
     private val scanner: QRCodeScanner,
     private val application: Application,
     @Dispatcher(PoposDispatchers.IO)
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
     private val _scannedBitmap = MutableStateFlow<Bitmap?>(null)
@@ -174,9 +179,6 @@ class RegisterViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5_000),
     )
 
-    /**
-     * Returns true if the ViewModel handled the back press (i.e., it went back one question)
-     */
     fun onBackPressed(): Boolean {
         if (pageIndex == 0) {
             return false
@@ -196,16 +198,9 @@ class RegisterViewModel @Inject constructor(
         changePage(pageIndex + 1)
     }
 
-    private fun changePage(pageIndex: Int) {
-        this.pageIndex = pageIndex
-        _isNextEnabled.value = getIsNextEnabled()
-        _registerScreenData.value = createRegisterScreenData()
-    }
-
     fun onDonePressed() {
         viewModelScope.launch {
             val resInfo = Profile(
-                restaurantId = Profile.RESTAURANT_ID,
                 name = _loginInfoState.value.name,
                 email = _loginInfoState.value.email.lowercase(),
                 primaryPhone = _loginInfoState.value.phone,
@@ -218,12 +213,11 @@ class RegisterViewModel @Inject constructor(
                 paymentQrCode = _basicInfoState.value.paymentQrCode,
                 createdAt = System.currentTimeMillis().toString(),
             )
-
-            when (restaurantInfoRepository.insertOrUpdateProfile(resInfo)) {
+            when (val profileRes = restaurantInfoRepository.insertOrUpdateProfile(resInfo)) {
                 is Resource.Success -> {
                     val result = accountRepository.register(
                         Account(
-                            restaurantId = Profile.RESTAURANT_ID,
+                            restaurantId = profileRes.data ?: 0,
                             email = _loginInfoState.value.email,
                             phone = _loginInfoState.value.phone,
                             password = _loginInfoState.value.password,
@@ -234,7 +228,9 @@ class RegisterViewModel @Inject constructor(
 
                     when (result) {
                         is Resource.Success -> {
+                            userDataRepository.setUserLoggedIn(profileRes.data ?: 0)
                             _eventFlow.emit(UiEvent.OnSuccess("Your restaurant profile has been created"))
+                            analyticsHelper.logUserProfileCreated(resInfo)
                         }
 
                         is Resource.Error -> {
@@ -247,36 +243,7 @@ class RegisterViewModel @Inject constructor(
                     _eventFlow.emit(UiEvent.OnError("Unable to create restaurant profile"))
                 }
             }
-
         }
-    }
-
-    private fun getIsNextEnabled(): Boolean {
-        return when (pageOrder[pageIndex]) {
-            RegisterScreenPage.LOGIN_INFO -> listOf(
-                nameError.value,
-                secondaryPhoneError.value,
-                emailError.value,
-                passwordError.value,
-                phoneError.value,
-            ).all { it == null }
-
-            RegisterScreenPage.BASIC_INFO -> listOf(
-                taglineError.value,
-                addressError.value,
-                paymentQrCodeError.value,
-            ).all { it == null }
-        }
-    }
-
-    private fun createRegisterScreenData(): RegisterScreenState {
-        return RegisterScreenState(
-            pageIndex = pageIndex,
-            pageCount = pageOrder.size,
-            shouldShowPreviousButton = pageIndex > 0,
-            shouldShowDoneButton = pageIndex == pageOrder.size - 1,
-            screenPage = pageOrder[pageIndex],
-        )
     }
 
     fun onLoginInfoEvent(event: LoginInfoEvent) {
@@ -399,6 +366,40 @@ class RegisterViewModel @Inject constructor(
         }
     }
 
+    private fun changePage(pageIndex: Int) {
+        this.pageIndex = pageIndex
+        _isNextEnabled.value = getIsNextEnabled()
+        _registerScreenData.value = createRegisterScreenData()
+    }
+
+    private fun getIsNextEnabled(): Boolean {
+        return when (pageOrder[pageIndex]) {
+            RegisterScreenPage.LOGIN_INFO -> listOf(
+                nameError.value,
+                secondaryPhoneError.value,
+                emailError.value,
+                passwordError.value,
+                phoneError.value,
+            ).all { it == null }
+
+            RegisterScreenPage.BASIC_INFO -> listOf(
+                taglineError.value,
+                addressError.value,
+                paymentQrCodeError.value,
+            ).all { it == null }
+        }
+    }
+
+    private fun createRegisterScreenData(): RegisterScreenState {
+        return RegisterScreenState(
+            pageIndex = pageIndex,
+            pageCount = pageOrder.size,
+            shouldShowPreviousButton = pageIndex > 0,
+            shouldShowDoneButton = pageIndex == pageOrder.size - 1,
+            screenPage = pageOrder[pageIndex],
+        )
+    }
+
     private fun startScanning() {
         viewModelScope.launch {
             scanner.startScanning().collectLatest {
@@ -413,5 +414,16 @@ class RegisterViewModel @Inject constructor(
             }
         }
     }
+}
 
+
+internal fun AnalyticsHelper.logUserProfileCreated(profile: Profile) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "user_profile_created",
+            extras = listOf(
+                AnalyticsEvent.Param("user_profile_created", profile.toString()),
+            ),
+        ),
+    )
 }

@@ -37,6 +37,7 @@ import com.niyaj.order.OrderNavGraph
 import com.niyaj.printer_info.PrinterinfoNavGraph
 import com.niyaj.product.ProductNavGraph
 import com.niyaj.profile.ProfileNavGraph
+import com.niyaj.settings.SettingsNavGraph
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 
@@ -47,7 +48,7 @@ object RootNavGraph : NavGraphSpec {
 
     override val destinationsByRoute = emptyMap<String, DestinationSpec<*>>()
 
-    override val startRoute = AccountNavGraph
+    override val startRoute = HomeNavGraph
 
     override val nestedNavGraphs = listOf(
         AccountNavGraph,
@@ -69,6 +70,7 @@ object RootNavGraph : NavGraphSpec {
         ProfileNavGraph,
         PrinterinfoNavGraph,
         ReportsNavGraph,
-        DailymarketNavGraph
+        DailymarketNavGraph,
+        SettingsNavGraph,
     )
 }

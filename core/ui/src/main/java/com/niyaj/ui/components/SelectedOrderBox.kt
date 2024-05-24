@@ -51,14 +51,17 @@ fun SelectedOrderBox(
     text: String,
     onClick: () -> Unit,
     height: Dp = 35.dp,
-    borderColor: Color = MaterialTheme.colorScheme.secondary,
+    borderColor: Color = MaterialTheme.colorScheme.tertiary,
     shape: Shape = RoundedCornerShape(SpaceMini)
 ) {
     Surface(
         modifier = modifier,
         shape = shape,
-        border = BorderStroke(1.dp, borderColor),
         onClick = onClick,
+        border = BorderStroke(1.dp, borderColor),
+        shadowElevation = 0.dp,
+        tonalElevation = 0.dp,
+        color = MaterialTheme.colorScheme.surface,
     ) {
         Row(
             modifier = Modifier
@@ -70,9 +73,11 @@ fun SelectedOrderBox(
         ) {
             Text(
                 text = text,
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
                 overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colorScheme.tertiary,
+                maxLines = 1,
             )
             IconButton(
                 onClick = onClick,

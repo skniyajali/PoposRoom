@@ -26,8 +26,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -44,17 +42,21 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.metrics.performance.JankStats
 import androidx.profileinstaller.ProfileVerifier
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.common.utils.findActivity
 import com.niyaj.common.utils.openAppSettings
 import com.niyaj.common.utils.showToast
+import com.niyaj.data.repository.UserDataRepository
 import com.niyaj.data.utils.NetworkMonitor
+import com.niyaj.data.utils.WorkMonitor
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.model.DarkThemeConfig
 import com.niyaj.model.ThemeBrand
 import com.niyaj.poposroom.ui.PoposApp
+import com.niyaj.poposroom.ui.rememberPoposAppState
 import com.niyaj.ui.components.CustomPermissionDialog
 import com.samples.apps.core.analytics.AnalyticsHelper
 import com.samples.apps.core.analytics.LocalAnalyticsHelper
@@ -70,7 +72,6 @@ import javax.inject.Inject
 
 private const val TAG = "MainActivity"
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
@@ -81,10 +82,17 @@ class MainActivity : ComponentActivity() {
     lateinit var networkMonitor: NetworkMonitor
 
     @Inject
+    lateinit var workMonitor: WorkMonitor
+
+    @Inject
     lateinit var analyticsHelper: AnalyticsHelper
+
+    @Inject
+    lateinit var userDataRepository: UserDataRepository
 
     private val viewModel: MainActivityViewModel by viewModels()
 
+    @OptIn(ExperimentalMaterialNavigationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
@@ -122,13 +130,19 @@ class MainActivity : ComponentActivity() {
                         android.graphics.Color.TRANSPARENT,
                     ) { darkTheme },
                     navigationBarStyle = SystemBarStyle.auto(
-                        android.graphics.Color.TRANSPARENT,
-                        android.graphics.Color.TRANSPARENT,
+                        lightScrim,
+                        darkScrim,
                     ) { darkTheme },
                 )
 
                 onDispose {}
             }
+
+            val appState = rememberPoposAppState(
+                networkMonitor = networkMonitor,
+                workMonitor = workMonitor,
+                userDataRepository = userDataRepository,
+            )
 
             CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
                 PoposRoomTheme(
@@ -138,11 +152,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     RequestAllPermissions()
 
-                    PoposApp(
-                        viewModel = viewModel,
-                        windowSizeClass = calculateWindowSizeClass(activity = this),
-                        networkMonitor = networkMonitor,
-                    )
+                    PoposApp(appState = appState)
                 }
             }
         }

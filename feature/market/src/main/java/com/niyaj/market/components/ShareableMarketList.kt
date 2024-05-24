@@ -211,7 +211,7 @@ fun ShareableItemHeader(
             ) {
                 StandardOutlinedAssistChip(
                     text = marketDetail.typeName.uppercase(),
-                    containerColor = MaterialTheme.colorScheme.primary,
+                    borderColor = MaterialTheme.colorScheme.primary,
                     icon = PoposIcons.Category,
                     textStyle = TextStyle(
                         fontFamily = FontFamily.Cursive,
@@ -223,7 +223,7 @@ fun ShareableItemHeader(
                 StandardOutlinedAssistChip(
                     text = marketDetail.listType,
                     icon = PoposIcons.ListAlt,
-                    containerColor = MaterialTheme.colorScheme.secondary,
+                    borderColor = MaterialTheme.colorScheme.secondary,
                     textStyle = TextStyle(
                         fontFamily = FontFamily.Cursive,
                         fontWeight = FontWeight.SemiBold,

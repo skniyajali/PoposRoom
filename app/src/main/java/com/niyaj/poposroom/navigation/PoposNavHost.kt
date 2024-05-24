@@ -72,7 +72,8 @@ import com.ramcosta.composedestinations.spec.Route
  *  @param startRoute
  */
 @OptIn(
-    ExperimentalComposeUiApi::class, ExperimentalMaterialNavigationApi::class,
+    ExperimentalComposeUiApi::class,
+    ExperimentalMaterialNavigationApi::class,
     ExperimentalAnimationApi::class,
 )
 @Composable
@@ -83,7 +84,6 @@ fun PoposNavHost(
 ) {
     val bottomSheetNavigator = appState.bottomSheetNavigator
     appState.navController.navigatorProvider += bottomSheetNavigator
-
 
     val navHostEngine = rememberAnimatedNavHostEngine(
         navHostContentAlignment = Alignment.TopCenter,
@@ -114,7 +114,7 @@ fun PoposNavHost(
             manualComposableCallsBuilder = {
                 composable(CartOrderScreenDestination) {
                     CartOrderScreen(
-                        navigator = this.destinationsNavigator,
+                        navigator = destinationsNavigator,
                         onClickOrderDetails = {
                             navController.navigate(OrderDetailsScreenDestination(it))
                         },
@@ -124,7 +124,7 @@ fun PoposNavHost(
 
                 composable(CartScreenDestination) {
                     CartScreen(
-                        navigator = this.destinationsNavigator,
+                        navigator = destinationsNavigator,
                         onClickEditOrder = {
                             navController.navigate(AddEditCartOrderScreenDestination(it))
                         },
@@ -136,7 +136,7 @@ fun PoposNavHost(
 
                 composable(OrderScreenDestination) {
                     OrderScreen(
-                        navigator = this.destinationsNavigator,
+                        navigator = destinationsNavigator,
                         onClickEditOrder = {
                             navController.navigate(AddEditCartOrderScreenDestination(it))
                         },
@@ -145,7 +145,7 @@ fun PoposNavHost(
 
                 bottomSheetComposable(SelectOrderScreenDestination) {
                     SelectOrderScreen(
-                        navigator = this.destinationsNavigator,
+                        navigator = destinationsNavigator,
                         onEditClick = {
                             navController.navigate(AddEditCartOrderScreenDestination(it))
                         },
@@ -155,8 +155,8 @@ fun PoposNavHost(
 
                 composable(EmployeeDetailsScreenDestination) {
                     EmployeeDetailsScreen(
-                        employeeId = this.navBackStackEntry.arguments?.getInt("employeeId") ?: 0,
-                        navigator = this.destinationsNavigator,
+                        employeeId = navBackStackEntry.arguments?.getInt("employeeId") ?: 0,
+                        navigator = destinationsNavigator,
                         onClickAddPayment = {
                             navController.navigate(AddEditPaymentScreenDestination(employeeId = it))
                         },
@@ -168,8 +168,8 @@ fun PoposNavHost(
 
                 composable(AddressDetailsScreenDestination) {
                     AddressDetailsScreen(
-                        addressId = this.navBackStackEntry.arguments?.getInt("addressId") ?: 0,
-                        navigator = this.destinationsNavigator,
+                        addressId = navBackStackEntry.arguments?.getInt("addressId") ?: 0,
+                        navigator = destinationsNavigator,
                         onClickOrder = {
                             navController.navigate(OrderDetailsScreenDestination(it))
                         },
@@ -178,8 +178,8 @@ fun PoposNavHost(
 
                 composable(CustomerDetailsScreenDestination) {
                     CustomerDetailsScreen(
-                        customerId = this.navBackStackEntry.arguments?.getInt("customerId") ?: 0,
-                        navController = this.destinationsNavigator,
+                        customerId = navBackStackEntry.arguments?.getInt("customerId") ?: 0,
+                        navController = destinationsNavigator,
                         onClickOrder = {
                             navController.navigate(OrderDetailsScreenDestination(it))
                         },
@@ -188,8 +188,8 @@ fun PoposNavHost(
 
                 composable(ProductDetailsScreenDestination) {
                     ProductDetailsScreen(
-                        productId = this.navBackStackEntry.arguments?.getInt("productId") ?: 0,
-                        navigator = this.destinationsNavigator,
+                        productId = navBackStackEntry.arguments?.getInt("productId") ?: 0,
+                        navigator = destinationsNavigator,
                         onClickOrder = {
                             navController.navigate(OrderDetailsScreenDestination(it))
                         },
@@ -198,7 +198,7 @@ fun PoposNavHost(
 
                 composable(ReportScreenDestination) {
                     ReportScreen(
-                        navigator = this.destinationsNavigator,
+                        navigator = destinationsNavigator,
                         onClickAddress = {
                             navController.navigate(AddressDetailsScreenDestination(it))
                         },
@@ -213,7 +213,7 @@ fun PoposNavHost(
 
                 composable(PaymentScreenDestination) {
                     PaymentScreen(
-                        navigator = this.destinationsNavigator,
+                        navigator = destinationsNavigator,
                         onClickEmployee = {
                             navController.navigate(EmployeeDetailsScreenDestination(it))
                         },
@@ -225,8 +225,8 @@ fun PoposNavHost(
 
                 composable(OrderDetailsScreenDestination) {
                     OrderDetailsScreen(
-                        orderId = this.navBackStackEntry.arguments?.getInt("orderId") ?: 0,
-                        navigator = this.destinationsNavigator,
+                        orderId = navBackStackEntry.arguments?.getInt("orderId") ?: 0,
+                        navigator = destinationsNavigator,
                         onClickCustomer = {
                             navController.navigate(CustomerDetailsScreenDestination(it))
                         },

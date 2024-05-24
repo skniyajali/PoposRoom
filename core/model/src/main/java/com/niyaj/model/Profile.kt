@@ -1,10 +1,26 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.model
 
 const val RESTAURANT_LOGO_NAME = "reslogo"
 const val RESTAURANT_PRINT_LOGO_NAME = "printlogo"
 
 data class Profile(
-    val restaurantId: Int,
+    val restaurantId: Int = 0,
 
     val name: String,
 
@@ -31,7 +47,6 @@ data class Profile(
     val updatedAt: String? = null,
 ) {
     companion object {
-        const val RESTAURANT_ID = 2222
         private const val RESTAURANT_NAME = "Popos Highlight"
         private const val RESTAURANT_TAGLINE = "- Pure And Tasty -"
         private const val RESTAURANT_DESCRIPTION = "Multi Cuisine Veg & Non-Veg Restaurant"
@@ -44,7 +59,7 @@ data class Profile(
             "upi://pay?pa=paytmqr281005050101zry6uqipmngr@paytm&pn=Paytm%20Merchant&paytmqr=281005050101ZRY6UQIPMNGR"
 
         val defaultProfileInfo = Profile(
-            restaurantId = RESTAURANT_ID,
+            restaurantId = 0,
             name = RESTAURANT_NAME,
             email = RESTAURANT_EMAIL,
             primaryPhone = RESTAURANT_PRIMARY_PHONE,
@@ -57,7 +72,6 @@ data class Profile(
             paymentQrCode = RESTAURANT_PAYMENT_QR_DATA,
             createdAt = System.currentTimeMillis().toString(),
             updatedAt = null
-
         )
     }
 }

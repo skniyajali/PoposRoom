@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.order
 
 import android.Manifest
@@ -38,6 +54,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.common.tags.OrderTestTags.DELETE_ORDER
 import com.niyaj.common.tags.OrderTestTags.DELETE_ORDER_MESSAGE
 import com.niyaj.common.utils.findActivity
+import com.niyaj.common.utils.isToday
 import com.niyaj.common.utils.openAppSettings
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
@@ -54,7 +71,7 @@ import com.niyaj.ui.components.OrderTab
 import com.niyaj.ui.components.OrderTabs
 import com.niyaj.ui.components.OrderTabsContent
 import com.niyaj.ui.components.StandardOutlinedAssistChip
-import com.niyaj.ui.components.StandardScaffoldWithBottomNavigation
+import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
 import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -87,6 +104,74 @@ fun OrderScreen(
     val scope = rememberCoroutineScope()
     val captureController = rememberCaptureController()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        initialPageOffsetFraction = 0f,
+        pageCount = { 2 },
+    )
+
+    val orders = viewModel.cartOrders.collectAsStateWithLifecycle().value.orders
+    val isLoading: Boolean =
+        viewModel.cartOrders.collectAsStateWithLifecycle().value.isLoading
+
+    val dineInOrders by remember(orders) {
+        derivedStateOf {
+            orders.filter { order ->
+                order.orderType == OrderType.DineIn
+            }
+        }
+    }
+
+    val dineOutOrders by remember(orders) {
+        derivedStateOf {
+            orders.filter { order ->
+                order.orderType == OrderType.DineOut
+            }
+        }
+    }
+
+    val selectedDate = viewModel.selectedDate.collectAsStateWithLifecycle().value
+    val showIcon =
+        if (pagerState.currentPage == 1) dineInOrders.isNotEmpty() else dineOutOrders.isNotEmpty()
+
+
+    val enableBluetoothContract = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+    ) {}
+
+    // This intent will open the enable bluetooth dialog
+    val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+
+    val bluetoothManager = remember {
+        context.getSystemService(BluetoothManager::class.java)
+    }
+
+    val bluetoothAdapter: BluetoothAdapter? = remember {
+        bluetoothManager.adapter
+    }
+
+    val printOrder: (Int) -> Unit = {
+        if (bluetoothAdapter?.isEnabled == true) {
+            // Bluetooth is on print the receipt
+            printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
+        } else {
+            // Bluetooth is off, ask user to turn it on
+            enableBluetoothContract.launch(enableBluetoothIntent)
+            printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
+        }
+    }
+
+    val printDeliveryReport: () -> Unit = {
+        if (bluetoothAdapter?.isEnabled == true) {
+            // Bluetooth is on print the receipt
+            printViewModel.onPrintEvent(PrintEvent.PrintDeliveryReport(selectedDate))
+        } else {
+            // Bluetooth is off, ask user to turn it on
+            enableBluetoothContract.launch(enableBluetoothIntent)
+            printViewModel.onPrintEvent(PrintEvent.PrintDeliveryReport(selectedDate))
+        }
+    }
 
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
 
@@ -160,7 +245,7 @@ fun OrderScreen(
         if (showSearchBar) {
             viewModel.closeSearchBar()
         } else {
-            navigator.navigateUp()
+            navigator.popBackStack()
         }
     }
 
@@ -169,98 +254,25 @@ fun OrderScreen(
     HandleBluetoothPermissionState(
         multiplePermissionsState = bluetoothPermissionsState,
         onSuccessful = {
-            val pagerState = rememberPagerState(
-                initialPage = 0,
-                initialPageOffsetFraction = 0f,
-                pageCount = { 2 },
-            )
-
-            val orders = viewModel.cartOrders.collectAsStateWithLifecycle().value.orders
-            val isLoading: Boolean =
-                viewModel.cartOrders.collectAsStateWithLifecycle().value.isLoading
-
-            val dineInOrders by remember(orders) {
-                derivedStateOf {
-                    orders.filter { order ->
-                        order.orderType == OrderType.DineIn
-                    }
-                }
-            }
-
-            val dineOutOrders by remember(orders) {
-                derivedStateOf {
-                    orders.filter { order ->
-                        order.orderType == OrderType.DineOut
-                    }
-                }
-            }
-
-            val selectedDate = viewModel.selectedDate.collectAsStateWithLifecycle().value
-            val showIcon =
-                if (pagerState.currentPage == 1) dineInOrders.isNotEmpty() else dineOutOrders.isNotEmpty()
-
-
-            val enableBluetoothContract = rememberLauncherForActivityResult(
-                ActivityResultContracts.StartActivityForResult(),
-            ) {}
-
-            // This intent will open the enable bluetooth dialog
-            val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-
-            val bluetoothManager = remember {
-                context.getSystemService(BluetoothManager::class.java)
-            }
-
-            val bluetoothAdapter: BluetoothAdapter? = remember {
-                bluetoothManager.adapter
-            }
-
-            val printOrder: (Int) -> Unit = {
-                if (bluetoothAdapter?.isEnabled == true) {
-                    // Bluetooth is on print the receipt
-                    printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
-                } else {
-                    // Bluetooth is off, ask user to turn it on
-                    enableBluetoothContract.launch(enableBluetoothIntent)
-                    printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
-                }
-            }
-
-            val printDeliveryReport: () -> Unit = {
-                if (bluetoothAdapter?.isEnabled == true) {
-                    // Bluetooth is on print the receipt
-                    printViewModel.onPrintEvent(PrintEvent.PrintDeliveryReport(selectedDate))
-                } else {
-                    // Bluetooth is off, ask user to turn it on
-                    enableBluetoothContract.launch(enableBluetoothIntent)
-                    printViewModel.onPrintEvent(PrintEvent.PrintDeliveryReport(selectedDate))
-                }
-            }
-
-            StandardScaffoldWithBottomNavigation(
-                currentRoute = Screens.ORDER_SCREEN,
-                title = if (selectedDate.isEmpty()) "Orders" else "",
-                snackbarHostState = snackbarHostState,
-                showBackButton = true,
-                showBottomBar = !showSearchBar,
-                showSearchIcon = showIcon,
-                openSearchBar = viewModel::openSearchBar,
-                closeSearchBar = viewModel::closeSearchBar,
+            StandardScaffoldWithOutDrawer(
+                title = if (selectedDate.isNotEmpty() && !selectedDate.isToday) "" else "Orders",
                 showSearchBar = showSearchBar,
+                showSearchIcon = showIcon,
                 searchText = viewModel.searchText.value,
                 searchPlaceholderText = "Search for orders...",
-                onClearClick = viewModel::clearSearchText,
+                openSearchBar = viewModel::openSearchBar,
                 onSearchTextChanged = viewModel::searchTextChanged,
-                onNavigateToScreen = navigator::navigate,
+                onClearClick = viewModel::clearSearchText,
                 onBackClick = {
                     if (showSearchBar) {
                         viewModel.closeSearchBar()
                     } else {
-                        navigator.navigateUp()
+                        navigator.popBackStack()
                     }
                 },
+                snackbarHostState = snackbarHostState,
                 navActions = {
-                    if (selectedDate.isNotEmpty()) {
+                    if (selectedDate.isNotEmpty() && !selectedDate.isToday) {
                         StandardOutlinedAssistChip(
                             text = selectedDate.toPrettyDate(),
                             icon = PoposIcons.CalenderMonth,

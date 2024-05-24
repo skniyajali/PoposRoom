@@ -647,7 +647,7 @@ fun PoposDrawer(
                                     PoposIcons.Settings else PoposIcons.OutlinedSettings,
                                 selected = currentRoute == Screens.SETTINGS_SCREEN,
                                 onClick = {
-//                                    onNavigateToScreen(SettingsScreenDestination())
+                                    onNavigateToScreen(Screens.SETTINGS_SCREEN)
                                 },
                             )
                             Spacer(modifier = Modifier.height(SpaceSmall))
