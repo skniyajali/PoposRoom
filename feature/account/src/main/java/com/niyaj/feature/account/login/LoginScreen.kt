@@ -105,6 +105,9 @@ fun LoginScreen(
                 popUpTo(navController.graph.id) {
                     inclusive = true
                 }
+                launchSingleTop = true
+                // Restore state when reselecting a previously selected item
+                restoreState = true
             }
         }
     }
@@ -117,6 +120,9 @@ fun LoginScreen(
                         popUpTo(navController.graph.id) {
                             inclusive = true
                         }
+                        launchSingleTop = true
+                        // Restore state when reselecting a previously selected item
+                        restoreState = true
                     }
                 }
 
@@ -264,6 +270,9 @@ fun LoginForm(
                 errorText = emailError,
                 label = stringResource(R.string.email_phone),
                 onValueChange = onEmailOrPhoneChanged,
+                textStyle = LocalTextStyle.current.copy(
+                    fontFamily = FontFamily.Cursive,
+                ),
             )
         }
 

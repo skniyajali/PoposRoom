@@ -159,7 +159,7 @@ fun MarketTypeScreen(
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
         } else {
-            navigator.navigateUp()
+            navigator.popBackStack()
         }
     }
 
@@ -170,8 +170,6 @@ fun MarketTypeScreen(
         title = if (selectedItems.isEmpty()) MARKET_TYPE_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
-                showScrollToTop = lazyGridState.isScrolled,
-                fabText = CREATE_NEW_TYPE,
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
                 onFabClick = {
                     navigator.navigate(AddEditMarketTypeScreenDestination())
@@ -181,6 +179,8 @@ fun MarketTypeScreen(
                         lazyGridState.animateScrollToItem(0)
                     }
                 },
+                showScrollToTop = lazyGridState.isScrolled,
+                fabText = CREATE_NEW_TYPE,
             )
         },
         navActions = {

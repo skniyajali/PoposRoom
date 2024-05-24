@@ -70,16 +70,13 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.Constants.DRAWER_ICON
 import com.niyaj.common.utils.Constants.STANDARD_BACK_BUTTON
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor6
-import com.niyaj.designsystem.theme.Parchment
 import com.niyaj.designsystem.theme.RoyalPurple
-import com.niyaj.designsystem.theme.SeaShell
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,14 +116,9 @@ fun StandardScaffoldRoute(
     val selectedState = updateTransition(targetState = selectionCount, label = "selection count")
 
     SideEffect {
-        systemUiController.setStatusBarColor(
-            color = color.value,
-            darkIcons = false,
-        )
+        systemUiController.setStatusBarColor(color = color.value)
 
-        systemUiController.setNavigationBarColor(
-            color = navColor,
-        )
+        systemUiController.setNavigationBarColor(color = navColor)
     }
 
     ModalNavigationDrawer(
@@ -277,12 +269,11 @@ fun StandardScaffoldRouteNew(
     val colorTransitionFraction = scrollBehavior.state.collapsedFraction
 
     val color = rememberUpdatedState(newValue = containerColorForSecondary(colorTransitionFraction))
-    val boxColor = rememberUpdatedState(newValue = containerColor(colorTransitionFraction))
     val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
     val navColor = MaterialTheme.colorScheme.surface
 
     SideEffect {
-        systemUiController.setStatusBarColor(color = color.value, darkIcons = true)
+        systemUiController.setStatusBarColor(color = color.value)
 
         systemUiController.setNavigationBarColor(color = navColor)
     }
@@ -311,7 +302,6 @@ fun StandardScaffoldRouteNew(
                                 Icon(
                                     imageVector = PoposIcons.Back,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.scrim,
                                 )
                             }
                         } else navigationIcon()
@@ -320,8 +310,8 @@ fun StandardScaffoldRouteNew(
                 actions = navActions,
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = color.value,
-                    scrolledContainerColor = color.value,
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                 ),
             )
         },
@@ -367,12 +357,8 @@ fun StandardScaffoldRouteNew(
             .testTag(title)
             .fillMaxSize()
             .imePadding(),
-        containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
         Surface(
-            color = boxColor.value,
-            tonalElevation = 2.dp,
-            shadowElevation = 2.dp,
             shape = shape.value,
             modifier = Modifier
                 .fillMaxSize()
@@ -395,8 +381,8 @@ internal fun containerColorForPrimary(colorTransitionFraction: Float): Color {
 @Composable
 internal fun containerColorForSecondary(colorTransitionFraction: Float): Color {
     return lerp(
-        SeaShell,
-        Parchment,
+        MaterialTheme.colorScheme.surfaceContainerLowest,
+        MaterialTheme.colorScheme.surfaceContainerLowest,
         FastOutLinearInEasing.transform(colorTransitionFraction),
     )
 }

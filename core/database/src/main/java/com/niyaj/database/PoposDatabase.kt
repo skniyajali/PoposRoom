@@ -112,7 +112,7 @@ import com.niyaj.database.util.TimestampConverters
         MarketListWithItemsEntity::class,
         MeasureUnitEntity::class,
     ],
-    version = 22,
+    version = 23,
     autoMigrations = [],
     exportSchema = true,
     views = [

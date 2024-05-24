@@ -167,7 +167,7 @@ fun CartOrderScreen(
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
         } else {
-            navigator.navigateUp()
+            navigator.popBackStack()
         }
     }
 
@@ -193,8 +193,6 @@ fun CartOrderScreen(
         title = if (selectedItems.isEmpty()) CART_ORDER_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
-                showScrollToTop = lazyGridState.isScrolled,
-                fabText = CREATE_NEW_CART_ORDER,
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
                 onFabClick = {
                     navigator.navigate(AddEditCartOrderScreenDestination())
@@ -204,6 +202,8 @@ fun CartOrderScreen(
                         lazyGridState.animateScrollToItem(0)
                     }
                 },
+                showScrollToTop = lazyGridState.isScrolled,
+                fabText = CREATE_NEW_CART_ORDER,
             )
         },
         navActions = {

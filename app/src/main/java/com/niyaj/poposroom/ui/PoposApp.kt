@@ -17,124 +17,94 @@
 package com.niyaj.poposroom.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.niyaj.data.utils.NetworkMonitor
 import com.niyaj.designsystem.components.PoposBackground
-import com.niyaj.designsystem.components.PoposGradientBackground
-import com.niyaj.designsystem.theme.LocalGradientColors
+import com.niyaj.feature.account.AccountNavGraph
 import com.niyaj.home.HomeNavGraph
-import com.niyaj.poposroom.MainActivityViewModel
 import com.niyaj.poposroom.navigation.PoposNavHost
-import com.niyaj.poposroom.navigation.RootNavGraph
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialNavigationApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PoposApp(
     modifier: Modifier = Modifier,
-    viewModel: MainActivityViewModel,
-    windowSizeClass: WindowSizeClass,
-    networkMonitor: NetworkMonitor,
-    appState: PoposAppState = rememberPoposAppState(
-        networkMonitor = networkMonitor,
-        windowSizeClass = windowSizeClass,
-    ),
+    appState: PoposAppState,
 ) {
     PoposBackground(modifier) {
-        PoposGradientBackground(
-            gradientColors = LocalGradientColors.current,
-        ) {
-//            val scope = rememberCoroutineScope()
-//            val drawerState = rememberDrawerState(DrawerValue.Closed)
-            val snackbarHostState = remember { SnackbarHostState() }
-//            val layoutDirection = LocalLayoutDirection.current
+        val snackbarHostState = remember { SnackbarHostState() }
 
-            val isOffline by appState.isOffline.collectAsStateWithLifecycle()
-            val reportState = viewModel.reportState.collectAsStateWithLifecycle().value
-            val deleteState = viewModel.deleteState.collectAsStateWithLifecycle().value
-            val isLoggedIn = viewModel.isLoggedIn.collectAsStateWithLifecycle().value
+        val isOffline by appState.isOffline.collectAsStateWithLifecycle()
+        val reportState = appState.reportState.collectAsStateWithLifecycle().value
+        val deleteState = appState.deleteState.collectAsStateWithLifecycle().value
+        val isLoggedIn = appState.isLoggedIn.collectAsStateWithLifecycle().value
 
-            LaunchedEffect(key1 = deleteState, key2 = reportState) {
-                if (deleteState) {
-                    snackbarHostState.showSnackbar("Data Deletion Running")
-                }
-
-                if (reportState) {
-                    snackbarHostState.showSnackbar("Generating Reports")
-                }
+        LaunchedEffect(key1 = deleteState, key2 = reportState) {
+            if (deleteState) {
+                snackbarHostState.showSnackbar("Data Deletion Running")
             }
 
-            // If user is not connected to the internet show a snack bar to inform them.
-            LaunchedEffect(isOffline) {
-                if (isOffline) {
-                    snackbarHostState.showSnackbar(message = "You are not connected to the internet")
-                }
+            if (reportState) {
+                snackbarHostState.showSnackbar("Generating Reports")
             }
-
-            /*
-            ModalNavigationDrawer(
-                drawerState = drawerState,
-                drawerContent = {
-                    StandardDrawer(
-                        currentRoute = appState.currentRouteOrDefault,
-                        onNavigateToScreen = {
-                            appState.navigateToScreen(it)
-
-                            scope.launch {
-                                drawerState.close()
-                            }
-                        }
-                    )
-                },
-                gesturesEnabled = true
-            ) {
-                Scaffold(
-                    modifier = Modifier.semantics {
-                        testTagsAsResourceId = true
-                    },
-                    containerColor = Color.Transparent,
-                    contentColor = MaterialTheme.colorScheme.onBackground,
-                    contentWindowInsets = WindowInsets(0, 0, 0, 0),
-                    snackbarHost = { SnackbarHost(snackbarHostState) },
-                    bottomBar = {
-                        if (appState.shouldShowBottomBar) {
-                            StandardBottomNavigation(
-                                destinations = appState.topLevelDestinations,
-                                onNavigateToDestination = appState::navigateToTopLevelDestination,
-                                currentDestination = appState.currentDestination,
-                                modifier = Modifier.testTag("PoposBottomBar"),
-                            )
-                        }
-                    },
-                ) {
-                    PoposNavHost(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        appState = appState,
-                        startRoute = RootNavGraph.startRoute,
-                    )
-                }
-            }
-            */
-
-            PoposNavHost(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .navigationBarsPadding(),
-                appState = appState,
-                startRoute = if (isLoggedIn) HomeNavGraph else RootNavGraph.startRoute,
-            )
         }
+
+        // If user is not connected to the internet show a snack bar to inform them.
+        LaunchedEffect(isOffline) {
+            if (isOffline) {
+                snackbarHostState.showSnackbar(message = "You are not connected to the internet")
+            }
+        }
+
+        Scaffold(
+            modifier = Modifier.semantics {
+                testTagsAsResourceId = true
+            },
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.onBackground,
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+        ) { padding ->
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .consumeWindowInsets(padding)
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing.only(
+                            WindowInsetsSides.Horizontal,
+                        ),
+                    ),
+            ) {
+                PoposNavHost(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    appState = appState,
+                    startRoute = if (isLoggedIn) HomeNavGraph else AccountNavGraph,
+                )
+            }
+        }
+
     }
 }

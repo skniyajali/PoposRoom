@@ -30,6 +30,7 @@ import com.niyaj.common.utils.saveImageToInternalStorage
 import com.niyaj.data.repository.AccountRepository
 import com.niyaj.data.repository.ProfileRepository
 import com.niyaj.data.repository.QRCodeScanner
+import com.niyaj.data.repository.UserDataRepository
 import com.niyaj.data.repository.validation.ProfileValidationRepository
 import com.niyaj.model.Profile
 import com.niyaj.model.RESTAURANT_LOGO_NAME
@@ -57,16 +58,17 @@ class ProfileViewModel @Inject constructor(
     private val repository: ProfileRepository,
     private val validation: ProfileValidationRepository,
     private val accountRepository: AccountRepository,
+    private val userDataRepository: UserDataRepository,
     private val scanner: QRCodeScanner,
     private val application: Application,
     @Dispatcher(PoposDispatchers.IO)
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
 
-    private val resId = accountRepository.getCurrentLoggedInResId().stateIn(
+    private val resId = userDataRepository.loggedInUserId.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = Profile.RESTAURANT_ID,
+        initialValue = 0,
     )
 
     var updateState by mutableStateOf(UpdateProfileState())

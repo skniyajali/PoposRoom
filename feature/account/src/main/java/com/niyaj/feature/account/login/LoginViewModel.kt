@@ -23,7 +23,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.data.repository.AccountRepository
-import com.niyaj.model.Profile
+import com.niyaj.data.repository.UserDataRepository
 import com.niyaj.ui.utils.UiEvent
 import com.samples.apps.core.analytics.AnalyticsEvent
 import com.samples.apps.core.analytics.AnalyticsHelper
@@ -38,6 +38,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
+    private val userDataRepository: UserDataRepository,
     private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
@@ -46,8 +47,8 @@ class LoginViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    val isLoggedIn = accountRepository
-        .checkIsLoggedIn(resId = Profile.RESTAURANT_ID)
+    val isLoggedIn = userDataRepository
+        .isUserLoggedIn
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -93,6 +94,7 @@ class LoginViewModel @Inject constructor(
 
                     when (result) {
                         is Resource.Success -> {
+                            userDataRepository.setUserLoggedIn(result.data ?: 0)
                             _eventFlow.emit(UiEvent.OnSuccess("Login Successfully"))
                             analyticsHelper.logUserLoggedIn(state.emailOrPhone, "success")
                         }

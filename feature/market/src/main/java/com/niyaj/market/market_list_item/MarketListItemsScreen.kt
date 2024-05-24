@@ -120,7 +120,7 @@ fun MarketListItemsScreen(
         if(showSearchBar) {
             viewModel.closeSearchBar()
         } else {
-            navigator.navigateUp()
+            navigator.popBackStack()
         }
     }
 

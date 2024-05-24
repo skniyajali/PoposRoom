@@ -169,7 +169,7 @@ fun StandardOutlinedAssistChip(
     text: String,
     icon: ImageVector,
     trailingIcon: ImageVector? = null,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
+    borderColor: Color =  MaterialTheme.colorScheme.tertiary,
     textStyle: TextStyle = MaterialTheme.typography.labelSmall,
     onClick: () -> Unit = {},
 ) {
@@ -193,12 +193,12 @@ fun StandardOutlinedAssistChip(
                 Icon(imageVector = it, contentDescription = "chip icon")
             }
         },
-        border = AssistChipDefaults.assistChipBorder(
+        border = assistChipBorder(
             enabled = true,
-            borderColor = containerColor
+            borderColor = borderColor
         ),
         colors = AssistChipDefaults.assistChipColors(
-            leadingIconContentColor = containerColor,
+            leadingIconContentColor = borderColor,
         ),
     )
 }

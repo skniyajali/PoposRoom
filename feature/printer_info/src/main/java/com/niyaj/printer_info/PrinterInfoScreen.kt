@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.printer_info
 
 import android.Manifest
@@ -5,6 +21,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Intent
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.Crossfade
@@ -100,23 +117,16 @@ fun PrinterInfoScreen(
     val lazyListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
+    val enableBluetoothContract = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {}
 
-    LaunchedEffect(key1 = event) {
-        event?.let {
-            when(event) {
-                is UiEvent.OnError -> {
-                    scope.launch {
-                        snackbarHostState.showSnackbar(event.errorMessage)
-                    }
-                }
-                is UiEvent.OnSuccess -> {
-                    scope.launch {
-                        snackbarHostState.showSnackbar(event.successMessage)
-                    }
-                }
-            }
-        }
+    val bluetoothManager = remember {
+        context.getSystemService(BluetoothManager::class.java)
+    }
+
+    val bluetoothAdapter: BluetoothAdapter? = remember {
+        bluetoothManager.adapter
     }
 
     val bluetoothPermissionsState =
@@ -139,48 +149,59 @@ fun PrinterInfoScreen(
             )
         }
 
+    LaunchedEffect(key1 = bluetoothPermissionsState, key2 = true) {
+        if (bluetoothPermissionsState.allPermissionsGranted) {
+            if (bluetoothAdapter?.isEnabled == false) {
+                // This intent will open the enable bluetooth dialog
+                val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+
+                enableBluetoothContract.launch(enableBluetoothIntent)
+            }
+        }
+    }
+
+    val uiState = viewModel.info.collectAsStateWithLifecycle().value
+    val printers = viewModel.printers.collectAsStateWithLifecycle().value
+
+    resultRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
+
+    BackHandler {
+        navigator.popBackStack()
+    }
+
+    LaunchedEffect(key1 = event) {
+        event?.let {
+            when(event) {
+                is UiEvent.OnError -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(event.errorMessage)
+                    }
+                }
+                is UiEvent.OnSuccess -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(event.successMessage)
+                    }
+                }
+            }
+        }
+    }
+
     TrackScreenViewEvent(screenName = Screens.PRINTER_INFO_SCREEN)
 
     HandleBluetoothPermissionState(
         multiplePermissionsState = bluetoothPermissionsState,
         onSuccessful = {
-            val enableBluetoothContract = rememberLauncherForActivityResult(
-                ActivityResultContracts.StartActivityForResult()
-            ) {}
-
-            val bluetoothManager = remember {
-                context.getSystemService(BluetoothManager::class.java)
-            }
-
-            val bluetoothAdapter: BluetoothAdapter? = remember {
-                bluetoothManager.adapter
-            }
-
-            LaunchedEffect(key1 = bluetoothPermissionsState, key2 = true) {
-                if (bluetoothPermissionsState.allPermissionsGranted) {
-                    if (bluetoothAdapter?.isEnabled == false) {
-                        // This intent will open the enable bluetooth dialog
-                        val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-
-                        enableBluetoothContract.launch(enableBluetoothIntent)
-                    }
-                }
-            }
-
-            val uiState = viewModel.info.collectAsStateWithLifecycle().value
-            val printers = viewModel.printers.collectAsStateWithLifecycle().value
-
-            resultRecipient.onNavResult { result ->
-                when (result) {
-                    is NavResult.Canceled -> {}
-                    is NavResult.Value -> {
-                        scope.launch {
-                            snackbarHostState.showSnackbar(result.value)
-                        }
-                    }
-                }
-            }
-
             StandardScaffoldRoute(
                 currentRoute = Screens.PRINTER_INFO_SCREEN,
                 snackbarHostState = snackbarHostState,

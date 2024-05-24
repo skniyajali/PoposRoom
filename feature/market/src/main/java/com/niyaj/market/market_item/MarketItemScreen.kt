@@ -140,7 +140,7 @@ fun MarketItemScreen(
         } else if (showSearchBar) {
             viewModel.closeSearchBar()
         } else {
-            navigator.navigateUp()
+            navigator.popBackStack()
         }
     }
 
@@ -151,8 +151,6 @@ fun MarketItemScreen(
         title = if (selectedItems.isEmpty()) MARKET_ITEM_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
-                showScrollToTop = lazyGridState.isScrolled,
-                fabText = CREATE_NEW_ITEM,
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
                 onFabClick = {
                     navigator.navigate(AddEditMarketItemScreenDestination())
@@ -162,6 +160,8 @@ fun MarketItemScreen(
                         lazyGridState.animateScrollToItem(0)
                     }
                 },
+                showScrollToTop = lazyGridState.isScrolled,
+                fabText = CREATE_NEW_ITEM,
             )
         },
         navActions = {

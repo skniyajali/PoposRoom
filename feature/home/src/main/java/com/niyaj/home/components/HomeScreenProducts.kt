@@ -39,7 +39,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -57,10 +56,9 @@ import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.ProductWithQuantity
 import com.niyaj.ui.components.CircularBoxWithQty
+import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.ItemNotFound
-import com.niyaj.ui.components.TitleWithIcon
 import com.niyaj.ui.utils.TrackScrollJank
-import com.niyaj.ui.utils.isScrolled
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
@@ -81,11 +79,9 @@ fun HomeScreenProducts(
             .padding(SpaceSmall),
         verticalArrangement = Arrangement.spacedBy(SpaceSmall),
     ) {
-        TitleWithIcon(
+        IconWithText(
             text = "Products",
-            icon = PoposIcons.Dns,
-            showScrollToTop = lazyListState.isScrolled,
-            onClickScrollToTop = onClickScrollToTop,
+            icon = PoposIcons.Dns
         )
 
         LazyColumn(
@@ -93,9 +89,9 @@ fun HomeScreenProducts(
         ) {
             items(
                 items = products,
-//                key = {
-//                    it.productId
-//                },
+                key = {
+                    it.productId
+                },
             ) { product ->
                 HomeScreenProductCard(
                     product = product,
@@ -130,9 +126,6 @@ fun HomeScreenProductCard(
             .testTag(ProductTestTags.PRODUCT_TAG.plus(product.productId))
             .fillMaxWidth()
             .clip(RoundedCornerShape(SpaceMini)),
-        colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
-        ),
         headlineContent = {
             Text(
                 text = product.productName,
@@ -212,5 +205,8 @@ fun HomeScreenProductCard(
                 }
             }
         },
+        colors = ListItemDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.background
+        ),
     )
 }

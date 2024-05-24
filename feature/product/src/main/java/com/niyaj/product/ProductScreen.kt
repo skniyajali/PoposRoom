@@ -201,7 +201,7 @@ fun ProductScreen(
         } else if (selectedCategory != 0) {
             viewModel.selectCategory(selectedCategory)
         } else {
-            navigator.navigateUp()
+            navigator.popBackStack()
         }
     }
 
@@ -212,8 +212,6 @@ fun ProductScreen(
         title = if (selectedItems.isEmpty()) PRODUCT_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
-                showScrollToTop = lazyListState.isScrolled,
-                fabText = CREATE_NEW_PRODUCT,
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
                 onFabClick = {
                     navigator.navigate(AddEditProductScreenDestination())
@@ -223,6 +221,8 @@ fun ProductScreen(
                         lazyListState.animateScrollToItem(0)
                     }
                 },
+                showScrollToTop = lazyListState.isScrolled,
+                fabText = CREATE_NEW_PRODUCT,
             )
         },
         navActions = {

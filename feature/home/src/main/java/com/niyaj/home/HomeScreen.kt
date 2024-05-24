@@ -17,32 +17,49 @@
 package com.niyaj.home
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.common.tags.HomeScreenTestTags
 import com.niyaj.common.tags.HomeScreenTestTags.HOME_SEARCH_PLACEHOLDER
+import com.niyaj.common.utils.Constants
 import com.niyaj.core.ui.R
-import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.home.components.HomeScreenProducts
 import com.niyaj.model.Category
 import com.niyaj.model.ProductWithQuantity
 import com.niyaj.ui.components.CategoriesData
+import com.niyaj.ui.components.HomeScreenScaffold
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
-import com.niyaj.ui.components.StandardScaffoldWithBottomNavigation
+import com.niyaj.ui.components.SelectedOrderBox
+import com.niyaj.ui.components.StandardFABIcon
+import com.niyaj.ui.components.StandardFilledTonalIconButton
+import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -78,10 +95,6 @@ fun HomeScreen(
     val selectedCategory = viewModel.selectedCategory.collectAsStateWithLifecycle().value
     val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
-
-    val doesStateIsEmpty = productState is UiState.Empty
-
-    val showFab = !doesStateIsEmpty && selectedCategory == 0 && lazyListState.isScrollingUp()
 
     val eventFlow = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
@@ -134,20 +147,17 @@ fun HomeScreen(
         snackbarState = snackbarState,
         lazyRowState = lazyRowState,
         lazyListState = lazyListState,
+        productState = productState,
+        categoryState = categoriesState,
+        selectedCategory = selectedCategory,
         selectedId = selectedId,
-        showFab = showFab,
-        showSearchIcon = !doesStateIsEmpty,
         showSearchBar = showSearchBar,
         searchText = searchText,
         onOpenSearchBar = viewModel::openSearchBar,
         onCloseSearchBar = viewModel::closeSearchBar,
         onSearchTextChanged = viewModel::searchTextChanged,
         onClearClick = viewModel::clearSearchText,
-        onBackClick = onBackClick,
         onNavigateToScreen = navigator::navigate,
-        productState = productState,
-        categoryState = categoriesState,
-        selectedCategory = selectedCategory,
         onSelectCategory = viewModel::selectCategory,
         onIncreaseQuantity = {
             if (selectedOrder.orderId != 0) {
@@ -167,6 +177,12 @@ fun HomeScreen(
         onClickCreateProduct = {
             navigator.navigate(Screens.ADD_EDIT_PRODUCT_SCREEN)
         },
+        onCartClick = {
+            navigator.navigate(Screens.CART_SCREEN)
+        },
+        onOrderClick = {
+            navigator.navigate(Screens.ORDER_SCREEN)
+        }
     )
 }
 
@@ -176,54 +192,136 @@ fun HomeScreenContent(
     snackbarState: SnackbarHostState,
     lazyRowState: LazyListState,
     lazyListState: LazyListState,
+    productState: UiState<ImmutableList<ProductWithQuantity>>,
+    categoryState: UiState<ImmutableList<Category>>,
+    selectedCategory: Int,
     selectedId: String,
-    showFab: Boolean,
-    showBottomBar: Boolean = showFab,
-    showSearchIcon: Boolean,
     showSearchBar: Boolean,
     searchText: String,
     onOpenSearchBar: () -> Unit,
     onCloseSearchBar: () -> Unit,
     onSearchTextChanged: (String) -> Unit,
     onClearClick: () -> Unit,
-    onBackClick: () -> Unit,
     onNavigateToScreen: (String) -> Unit,
-    productState: UiState<ImmutableList<ProductWithQuantity>>,
-    categoryState: UiState<ImmutableList<Category>>,
-    selectedCategory: Int,
     onSelectCategory: (Int) -> Unit,
     onIncreaseQuantity: (Int) -> Unit,
     onDecreaseQuantity: (Int) -> Unit,
     onClickScrollToTop: () -> Unit,
     onClickCreateProduct: () -> Unit,
+    onCartClick: () -> Unit,
+    onOrderClick: () -> Unit,
     currentRoute: String = Screens.HOME_SCREEN,
 ) {
-    StandardScaffoldWithBottomNavigation(
+    val scope = rememberCoroutineScope()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val showSearchIcon = productState is UiState.Success
+    val showFab = showSearchIcon && selectedCategory == 0
+
+    HomeScreenScaffold(
+        modifier = modifier,
         currentRoute = currentRoute,
-        snackbarHostState = snackbarState,
-        selectedId = selectedId,
-        showFab = showFab,
-        showBottomBar = showBottomBar,
-        showSearchIcon = showSearchIcon,
-        showSearchBar = showSearchBar,
-        searchText = searchText,
-        openSearchBar = onOpenSearchBar,
-        closeSearchBar = onCloseSearchBar,
-        onSearchTextChanged = onSearchTextChanged,
-        onClearClick = onClearClick,
-        searchPlaceholderText = HOME_SEARCH_PLACEHOLDER,
-        showBackButton = showSearchBar,
-        onBackClick = onBackClick,
+        drawerState = drawerState,
         onNavigateToScreen = onNavigateToScreen,
-    ) {
-        Crossfade(
-            targetState = productState,
-            label = "MainFeedState",
-            modifier = modifier
+        snackbarHostState = snackbarState,
+        title = {
+            if (selectedId != "0" && !showSearchBar) {
+                SelectedOrderBox(
+                    modifier = Modifier
+                        .padding(horizontal = SpaceMedium),
+                    text = selectedId,
+                    height = 40.dp,
+                    onClick = {
+                        onNavigateToScreen(Screens.SELECT_ORDER_SCREEN)
+                    },
+                )
+            }
+        },
+        navigationIcon = {
+            if (showSearchBar) {
+                IconButton(
+                    onClick = onCloseSearchBar,
+                    modifier = Modifier.testTag(Constants.STANDARD_BACK_BUTTON),
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.Back,
+                        contentDescription = Constants.STANDARD_BACK_BUTTON,
+                    )
+                }
+            } else {
+                IconButton(
+                    onClick = {
+                        scope.launch {
+                            drawerState.open()
+                        }
+                    },
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.App,
+                        contentDescription = null,
+                    )
+                }
+            }
+        },
+        navActions = {
+            if (showSearchBar) {
+                StandardSearchBar(
+                    searchText = searchText,
+                    placeholderText = HOME_SEARCH_PLACEHOLDER,
+                    onClearClick = onClearClick,
+                    onSearchTextChanged = onSearchTextChanged,
+                )
+            } else {
+                AnimatedVisibility(showSearchIcon) {
+                    Row {
+                        StandardFilledTonalIconButton(
+                            onClick = onCartClick,
+                            icon = PoposIcons.OutlinedCart,
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.tertiary
+                        )
+
+                        StandardFilledTonalIconButton(
+                            onClick = onOrderClick,
+                            icon = PoposIcons.OutlinedOrder,
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.tertiary
+
+                        )
+
+                        StandardFilledTonalIconButton(
+                            onClick = onOpenSearchBar,
+                            icon = PoposIcons.Search,
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                }
+            }
+        },
+        floatingActionButton = {
+            StandardFABIcon(
+                fabVisible = showFab,
+                onFabClick = {
+                    onNavigateToScreen(Screens.ADD_EDIT_CART_ORDER_SCREEN)
+                },
+                onClickScroll = onClickScrollToTop,
+                showScrollToTop = !lazyListState.isScrollingUp(),
+                fabText = "Create an Order",
+                scrollText = "Scroll to Top",
+            )
+        },
+        fabPosition = FabPosition.Center,
+    ) { padding ->
+        ElevatedCard(
+            modifier = Modifier
                 .fillMaxSize()
-                .padding(SpaceSmall),
-        ) { state ->
-            when (state) {
+                .padding(padding),
+            elevation = CardDefaults.cardElevation(),
+            colors = CardDefaults.elevatedCardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+            ),
+        ) {
+            when (productState) {
                 is UiState.Empty -> {
                     ItemNotAvailable(
                         text = HomeScreenTestTags.PRODUCT_NOT_AVAILABLE,
@@ -249,7 +347,7 @@ fun HomeScreenContent(
 
                         HomeScreenProducts(
                             lazyListState = lazyListState,
-                            products = state.data,
+                            products = productState.data,
                             onIncrease = onIncreaseQuantity,
                             onDecrease = onDecreaseQuantity,
                             onCreateProduct = onClickCreateProduct,
