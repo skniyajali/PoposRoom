@@ -29,7 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.niyaj.addonitem.AddOnItemData
+import com.niyaj.addonitem.components.AddOnItemData
 import com.niyaj.addonitem.destinations.AddEditAddOnItemScreenDestination
 import com.niyaj.common.tags.AddOnTestTags
 import com.niyaj.common.tags.AddOnTestTags.EXPORT_ADDON_BTN
@@ -236,7 +236,7 @@ fun AddOnExportScreen(
     ) { paddingValues ->
         if (addOnItems.isEmpty()) {
             ItemNotAvailable(
-                text = if (searchText.isEmpty()) AddOnTestTags.ADDON_NOT_AVAIlABLE else Constants.SEARCH_ITEM_NOT_FOUND,
+                text = if (searchText.isEmpty()) AddOnTestTags.ADDON_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND,
                 buttonText = AddOnTestTags.CREATE_NEW_ADD_ON,
                 onClick = {
                     navigator.navigate(AddEditAddOnItemScreenDestination())

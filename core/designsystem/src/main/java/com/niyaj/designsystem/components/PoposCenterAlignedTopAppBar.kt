@@ -25,6 +25,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,7 +41,8 @@ fun PoposCenterAlignedTopAppBar(
     ),
 ) {
     CenterAlignedTopAppBar(
-        modifier = modifier,
+        modifier = modifier
+            .testTag("homeTopAppBar"),
         title = title,
         navigationIcon = navigationIcon,
         actions = actions,

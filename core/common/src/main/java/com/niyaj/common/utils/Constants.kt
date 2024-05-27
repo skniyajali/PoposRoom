@@ -6,7 +6,6 @@ object Constants {
     const val PAID = "Paid"
 
     const val NOT_PAID = "Not Paid"
-    const val RESTAURANT_ID = 2222
 
     const val TEXT_FIELD_LEADING_ICON = "TextFieldLeadingIcon"
     const val TEXT_FIELD_TRAILING_ICON = "TextFieldLeadingIcon"
@@ -18,7 +17,6 @@ object Constants {
     const val SEARCH_BAR_CLEAR_BUTTON = "SearchBarClearButton"
     const val STANDARD_SEARCH_BAR = "StandardSearchBar"
     const val FAB_TEXT = "Create New"
-    const val LOADING_INDICATION = "loadingIndicator"
     const val SEARCH_ICON = "SearchIcon"
     const val SEARCH_PLACEHOLDER = "SearchPlaceHolder"
     const val SETTINGS_ICON = "SettingsIcon"

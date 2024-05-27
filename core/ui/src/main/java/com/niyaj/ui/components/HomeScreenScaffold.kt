@@ -32,6 +32,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.designsystem.components.PoposCenterAlignedTopAppBar
 
@@ -65,6 +66,7 @@ fun HomeScreenScaffold(
         drawerState = drawerState,
         drawerContent = {
             PoposDrawer(
+                modifier = Modifier.testTag("homeAppDrawer"),
                 currentRoute = currentRoute,
                 onNavigateToScreen = onNavigateToScreen,
             )

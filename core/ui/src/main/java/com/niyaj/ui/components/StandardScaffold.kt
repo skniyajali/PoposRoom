@@ -72,7 +72,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.utils.Constants
-import com.niyaj.common.utils.Constants.DRAWER_ICON
 import com.niyaj.common.utils.Constants.STANDARD_BACK_BUTTON
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor6
@@ -125,6 +124,7 @@ fun StandardScaffoldRoute(
         drawerState = drawerState,
         drawerContent = {
             PoposDrawer(
+                modifier = Modifier.testTag("primaryAppDrawer"),
                 currentRoute = currentRoute,
                 onNavigateToScreen = onNavigateToScreen,
             )
@@ -180,7 +180,7 @@ fun StandardScaffoldRoute(
                                     ) {
                                         Icon(
                                             imageVector = PoposIcons.App,
-                                            contentDescription = DRAWER_ICON,
+                                            contentDescription = "primaryAppDrawerIcon",
                                         )
                                     }
                                 }
@@ -224,7 +224,8 @@ fun StandardScaffoldRoute(
                 .testTag(title)
                 .fillMaxSize()
                 .navigationBarsPadding()
-                .imePadding(),
+                .imePadding()
+                .testTag("primaryScaffold"),
         ) { padding ->
             ElevatedCard(
                 modifier = Modifier
@@ -313,6 +314,8 @@ fun StandardScaffoldRouteNew(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                     scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                 ),
+                modifier = Modifier
+                    .testTag("secondaryTopAppBar")
             )
         },
         bottomBar = {
@@ -356,7 +359,8 @@ fun StandardScaffoldRouteNew(
         modifier = modifier
             .testTag(title)
             .fillMaxSize()
-            .imePadding(),
+            .imePadding()
+            .testTag("secondaryScaffold"),
     ) { padding ->
         Surface(
             shape = shape.value,

@@ -5,7 +5,7 @@ object AddOnTestTags {
     const val ADDON_WHITELIST_ITEM = "Cold"
 
     const val ADDON_SCREEN_TITLE = "AddOn Items"
-    const val ADDON_NOT_AVAIlABLE = "AddOn Not Available"
+    const val ADDON_NOT_AVAILABLE = "AddOn Not Available"
     const val ADDON_SEARCH_PLACEHOLDER = "Search for AddOn Items..."
 
     const val ADD_EDIT_ADDON_SCREEN = "Create New Addon Screen"

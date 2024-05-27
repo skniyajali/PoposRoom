@@ -257,7 +257,7 @@ fun HomeScreenContent(
                 ) {
                     Icon(
                         imageVector = PoposIcons.App,
-                        contentDescription = null,
+                        contentDescription = "app:drawer",
                     )
                 }
             }

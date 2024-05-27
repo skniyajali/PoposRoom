@@ -31,7 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.niyaj.addonitem.AddOnItemData
+import com.niyaj.addonitem.components.AddOnItemData
 import com.niyaj.common.tags.AddOnTestTags.IMPORT_ADDON_BTN_TEXT
 import com.niyaj.common.tags.AddOnTestTags.IMPORT_ADDON_NOTE_TEXT
 import com.niyaj.common.tags.AddOnTestTags.IMPORT_ADDON_OPN_FILE
