@@ -24,11 +24,12 @@ plugins {
     alias(libs.plugins.popos.android.application.jacoco)
     alias(libs.plugins.popos.android.hilt)
     alias(libs.plugins.popos.android.application.firebase)
-    id("com.google.android.gms.oss-licenses-plugin")
     alias(libs.plugins.androidx.baselineprofile)
     alias(libs.plugins.roborazzi)
     alias(libs.plugins.appsweep)
     alias(libs.plugins.sentry)
+    id("com.google.android.gms.oss-licenses-plugin")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -209,6 +210,10 @@ android {
         //
         includeDependenciesReport.set(true)
     }
+}
+
+secrets {
+    defaultPropertiesFileName = "secrets.defaults.properties"
 }
 
 dependencies {

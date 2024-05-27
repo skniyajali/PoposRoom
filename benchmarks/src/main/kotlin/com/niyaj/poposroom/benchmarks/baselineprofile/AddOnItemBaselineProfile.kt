@@ -14,22 +14,22 @@
  *      limitations under the License.
  */
 
+package com.niyaj.poposroom.benchmarks.baselineprofile
 
-import com.android.build.gradle.LibraryExtension
-import com.niyaj.samples.apps.popos.configureAndroidCompose
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.getByType
+import androidx.benchmark.macro.junit4.BaselineProfileRule
+import com.niyaj.poposroom.benchmarks.PACKAGE_NAME
+import com.niyaj.poposroom.benchmarks.addonitem.goToAddOnScreenScreen
+import org.junit.Rule
+import org.junit.Test
 
-class AndroidLibraryComposeConventionPlugin : Plugin<Project> {
-    override fun apply(target: Project) {
-        with(target) {
-            apply(plugin = "com.android.library")
-            apply(plugin = "org.jetbrains.kotlin.plugin.compose")
+class AddOnItemBaselineProfile {
+    @get:Rule
+    val baselineProfileRule = BaselineProfileRule()
 
-            val extension = extensions.getByType<LibraryExtension>()
-            configureAndroidCompose(extension)
+    @Test
+    fun generate() =
+        baselineProfileRule.collect(PACKAGE_NAME) {
+            goToAddOnScreenScreen()
         }
-    }
+
 }
