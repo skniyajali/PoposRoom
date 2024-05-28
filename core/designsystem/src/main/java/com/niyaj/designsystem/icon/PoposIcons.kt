@@ -19,7 +19,7 @@ package com.niyaj.designsystem.icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.automirrored.filled.ArrowRight
+import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material.icons.automirrored.filled.Feed
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.Login
@@ -136,6 +136,7 @@ import androidx.compose.material.icons.filled.ViewHeadline
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.WidthNormal
 import androidx.compose.material.icons.filled.WorkOutline
+import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.AddCircleOutline
 import androidx.compose.material.icons.outlined.AllInbox
@@ -145,6 +146,7 @@ import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.BreakfastDining
 import androidx.compose.material.icons.outlined.Business
 import androidx.compose.material.icons.outlined.Category
+import androidx.compose.material.icons.outlined.CurrencyRupee
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.EventBusy
 import androidx.compose.material.icons.outlined.Home
@@ -155,6 +157,8 @@ import androidx.compose.material.icons.outlined.Money
 import androidx.compose.material.icons.outlined.MonitorWeight
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.PeopleAlt
+import androidx.compose.material.icons.outlined.PhoneAndroid
+import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.RemoveCircleOutline
 import androidx.compose.material.icons.outlined.Settings
@@ -162,7 +166,9 @@ import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material.icons.outlined.SwitchAccount
+import androidx.compose.material.icons.outlined.Tag
 import androidx.compose.material.icons.outlined.Today
+import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -171,6 +177,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
  */
 object PoposIcons {
 
+    val OutlinedTag: ImageVector = Icons.Outlined.Tag
+    val OutlinedPhoneAndroid: ImageVector = Icons.Outlined.PhoneAndroid
+    val OutlinedAccessTime: ImageVector = Icons.Outlined.AccessTime
+    val OutlinedPlace: ImageVector = Icons.Outlined.Place
+    val OutlinedCurrencyRupee: ImageVector = Icons.Outlined.CurrencyRupee
+    val OutlinedShare: ImageVector = Icons.Outlined.Share
     val ArrowUpward: ImageVector = Icons.Filled.ArrowUpward
     val ManageAccounts: ImageVector = Icons.Filled.ManageAccounts
     val ImageSearch: ImageVector = Icons.Default.Search
@@ -320,6 +332,7 @@ object PoposIcons {
     val OpenInNew: ImageVector = Icons.AutoMirrored.Filled.OpenInNew
     val TaskAlt: ImageVector = Icons.Default.TaskAlt
     val Visibility: ImageVector = Icons.Default.Visibility
+    val OutlinedVisibility: ImageVector = Icons.Outlined.Visibility
     val MoreVert: ImageVector = Icons.Default.MoreVert
     val Delete: ImageVector = Icons.Default.Delete
     val Tag: ImageVector = Icons.Default.Tag
@@ -327,7 +340,7 @@ object PoposIcons {
     val Description: ImageVector = Icons.Default.Description
     val CalenderMonth: ImageVector = Icons.Default.CalendarMonth
     val CalenderToday: ImageVector = Icons.Default.CalendarToday
-    val ArrowRightAlt: ImageVector = Icons.AutoMirrored.Filled.ArrowRight
+    val ArrowRightAlt: ImageVector = Icons.AutoMirrored.Filled.ArrowRightAlt
     val Person4: ImageVector = Icons.Default.Person4
     val EditCalender: ImageVector = Icons.Default.EditCalendar
     val Address: ImageVector = Icons.Default.Business

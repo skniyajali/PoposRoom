@@ -1,14 +1,30 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
 import androidx.room.Upsert
 import com.niyaj.database.model.CustomerEntity
-import com.niyaj.database.model.CustomerWiseOrderDto
+import com.niyaj.model.CustomerWiseOrder
+import com.niyaj.model.OrderStatus
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -78,11 +94,20 @@ interface CustomerDao {
     )
     fun findCustomerByPhone(customerPhone: String, customerId: Int?): CustomerEntity?
 
-    @Transaction
     @Query(
-        value = """
-            SELECT orderId, createdAt, updatedAt, addressId FROM cartorder WHERE customerId = :customerId ORDER BY updatedAt DESC
+        """
+            SELECT co.orderId, ad.addressName as customerAddress,
+            COALESCE(co.updatedAt, co.createdAt) as updatedAt,
+            cp.totalPrice
+            FROM cartorder co
+            JOIN cart_price cp ON cp.orderId = co.orderId
+            INNER JOIN address ad ON ad.addressId = co.addressId
+            WHERE co.customerId = :customerId AND co.orderStatus = :orderStatus
+            ORDER BY co.updatedAt DESC
         """
     )
-    fun getCustomerWiseOrders(customerId: Int): Flow<List<CustomerWiseOrderDto>>
+    fun getCustomerWiseOrder(
+        customerId: Int,
+        orderStatus: OrderStatus = OrderStatus.PLACED
+    ): Flow<List<CustomerWiseOrder>>
 }

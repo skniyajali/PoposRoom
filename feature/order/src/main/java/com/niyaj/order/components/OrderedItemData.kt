@@ -1,6 +1,21 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.order.components
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,50 +23,39 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccessTime
-import androidx.compose.material.icons.outlined.CurrencyRupee
-import androidx.compose.material.icons.outlined.PhoneAndroid
-import androidx.compose.material.icons.outlined.Place
-import androidx.compose.material.icons.outlined.Print
-import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material.icons.outlined.Tag
-import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toTime
-import com.niyaj.designsystem.theme.LightColor8
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Order
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.StandardFilledTonalIconButton
 
-// TODO:: Fix Linting Issue after migrating all icons to Outlined icons.
-
-@SuppressLint("DesignSystem")
 @Composable
 fun OrderedItemData(
     modifier: Modifier = Modifier,
     shape: Shape,
     order: Order,
-    onClickViewDetails: (Int) -> Unit,
     onClickPrintOrder: (Int) -> Unit,
     onClickShareOrder: (Int) -> Unit,
+    containerColor: Color,
 ) = trace("OrderedItemData") {
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth(),
         shape = shape,
         colors = CardDefaults.elevatedCardColors(
-            containerColor = LightColor8,
+            containerColor = containerColor,
         ),
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 2.dp,
@@ -74,7 +78,7 @@ fun OrderedItemData(
                 ) {
                     IconWithText(
                         text = order.orderId.toString(),
-                        icon = Icons.Outlined.Tag,
+                        icon = PoposIcons.OutlinedTag,
                     )
 
                     order.customerPhone?.let {
@@ -82,7 +86,7 @@ fun OrderedItemData(
 
                         IconWithText(
                             text = it,
-                            icon = Icons.Outlined.PhoneAndroid,
+                            icon = PoposIcons.OutlinedPhoneAndroid,
                         )
                     }
 
@@ -90,7 +94,7 @@ fun OrderedItemData(
 
                     IconWithText(
                         text = order.orderDate.toTime,
-                        icon = Icons.Outlined.AccessTime,
+                        icon = PoposIcons.OutlinedAccessTime,
                     )
                 }
 
@@ -100,15 +104,14 @@ fun OrderedItemData(
                     order.customerAddress?.let {
                         IconWithText(
                             text = it,
-                            icon = Icons.Outlined.Place,
+                            icon = PoposIcons.OutlinedPlace,
                         )
                         Spacer(modifier = Modifier.height(SpaceSmall))
                     }
 
                     IconWithText(
-                        text = order.orderPrice.basePrice.minus(order.orderPrice.discountPrice)
-                            .toString(),
-                        icon = Icons.Outlined.CurrencyRupee,
+                        text = order.orderPrice.toString(),
+                        icon = PoposIcons.OutlinedCurrencyRupee,
                     )
                 }
 
@@ -117,23 +120,16 @@ fun OrderedItemData(
                     horizontalArrangement = Arrangement.spacedBy(SpaceMini),
                 ) {
                     StandardFilledTonalIconButton(
-                        icon = Icons.Outlined.Visibility,
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.secondary,
-                        onClick = { onClickViewDetails(order.orderId) },
-                    )
-
-                    StandardFilledTonalIconButton(
-                        icon = Icons.Outlined.Share,
+                        icon = PoposIcons.OutlinedShare,
                         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                         contentColor = MaterialTheme.colorScheme.tertiary,
                         onClick = { onClickShareOrder(order.orderId) },
                     )
 
                     StandardFilledTonalIconButton(
-                        icon = Icons.Outlined.Print,
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.primary,
+                        icon = PoposIcons.OutlinedPrint,
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.secondary,
                         onClick = { onClickPrintOrder(order.orderId) },
                     )
                 }

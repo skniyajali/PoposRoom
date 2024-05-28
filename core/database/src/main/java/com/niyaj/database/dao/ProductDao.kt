@@ -1,3 +1,19 @@
+/*
+ *      Copyright 2024 Sk Niyaj Ali
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 package com.niyaj.database.dao
 
 import androidx.room.Dao
@@ -9,8 +25,8 @@ import androidx.room.Upsert
 import com.niyaj.database.model.CategoryEntity
 import com.niyaj.database.model.CategoryWithProductCrossRef
 import com.niyaj.database.model.ProductEntity
-import com.niyaj.database.model.ProductWiseOrderDetailsDto
 import com.niyaj.model.OrderStatus
+import com.niyaj.model.ProductWiseOrder
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -90,20 +106,26 @@ interface ProductDao {
             SELECT orderId FROM cart WHERE productId = :productId ORDER BY updatedAt DESC
         """,
     )
-    fun getOrderIdsAndQuantity(productId: Int): Flow<List<Int>>
+    fun getOrderIdByProductIdFromCart(productId: Int): Flow<List<Int>>
 
-
-    @Transaction
     @Query(
         value = """
-            SELECT * FROM cartorder WHERE orderId IN (:orderIds) AND orderStatus = :orderStatus ORDER BY updatedAt DESC
-        """,
+            SELECT c.orderId, co.orderType, c.quantity, 
+            COALESCE(ad.addressName, null) as customerAddress,
+            COALESCE(cu.customerPhone, null) as customerPhone,
+            COALESCE(co.updatedAt, co.createdAt) as orderedDate
+            FROM cart c
+            JOIN cartorder co ON co.orderId = c.orderId
+            LEFT JOIN address ad ON ad.addressId = co.addressId
+            LEFT JOIN customer cu ON cu.customerId = co.customerId
+            WHERE c.productId = :productId AND co.orderStatus = :orderStatus
+            ORDER BY co.updatedAt DESC
+        """
     )
-    fun getProductWiseOrders(
-        orderIds: List<Int>,
-        orderStatus: OrderStatus = OrderStatus.PLACED,
-    ): Flow<List<ProductWiseOrderDetailsDto>>
-
+    fun getProductWiseOrder(
+        productId: Int,
+        orderStatus: OrderStatus = OrderStatus.PLACED
+    ): Flow<List<ProductWiseOrder>>
 
     @Query(
         value = """

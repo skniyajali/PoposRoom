@@ -148,17 +148,7 @@ class AddressRepositoryImpl(
 
     override suspend fun getAddressWiseOrders(addressId: Int): Flow<List<AddressWiseOrder>> {
         return withContext(ioDispatcher) {
-            addressDao.getAddressOrderDetails(addressId).mapLatest { list ->
-                list.map {
-                    AddressWiseOrder(
-                        orderId = it.orderId,
-                        customerPhone = it.customer.customerPhone,
-                        totalPrice = it.orderPrice.totalPrice,
-                        updatedAt = (it.updatedAt ?: it.createdAt).toString(),
-                        customerName = it.customer.customerName,
-                    )
-                }
-            }
+            addressDao.getAddressWiseOrder(addressId)
         }
     }
 

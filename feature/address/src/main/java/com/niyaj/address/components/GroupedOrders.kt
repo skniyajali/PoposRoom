@@ -16,6 +16,7 @@
 
 package com.niyaj.address.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -23,7 +24,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
@@ -43,7 +43,6 @@ import com.niyaj.model.AddressWiseOrder
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.StandardRoundedFilterChip
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GroupedOrders(
     customerPhone: String,
@@ -52,12 +51,12 @@ fun GroupedOrders(
 ) = trace("Address::GroupedOrders") {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(SpaceSmall),
+            .fillMaxWidth(),
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(SpaceSmall),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
@@ -79,45 +78,53 @@ fun GroupedOrders(
                     style = MaterialTheme.typography.labelMedium,
                 )
 
-                Spacer(modifier = Modifier.width(SpaceMini))
-                Icon(
-                    imageVector = PoposIcons.ArrowRightAlt,
-                    contentDescription = "DatePeriod",
-                )
-                Spacer(modifier = Modifier.width(SpaceMini))
-                Text(
-                    text = startDate.toTime,
-                    style = MaterialTheme.typography.labelMedium,
-                )
+                if (endDate.toTime != startDate.toTime) {
+                    Spacer(modifier = Modifier.width(SpaceMini))
+                    Icon(
+                        imageVector = PoposIcons.ArrowRightAlt,
+                        contentDescription = "DatePeriod",
+                    )
+                    Spacer(modifier = Modifier.width(SpaceMini))
+                    Text(
+                        text = startDate.toTime,
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(SpaceMini))
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
-        Spacer(modifier = Modifier.height(SpaceMini))
 
-        FlowRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
-            verticalArrangement = Arrangement.Center,
-            horizontalArrangement = Arrangement.Center,
-            maxItemsInEachRow = 2,
-        ) {
-            orderDetails.forEach { order ->
-                StandardRoundedFilterChip(
-                    text = order.totalPrice.toRupee,
-                    icon = PoposIcons.Tag,
-                    onClick = {
-                        onClickOrder(order.orderId)
-                    },
-                )
+        GroupedOrderDetails(
+            orderDetails = orderDetails,
+            onClickOrder = onClickOrder
+        )
+    }
+}
 
-                Spacer(modifier = Modifier.width(SpaceSmall))
-            }
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun GroupedOrderDetails(
+    modifier: Modifier = Modifier,
+    orderDetails: List<AddressWiseOrder>,
+    onClickOrder: (Int) -> Unit,
+) {
+    FlowRow(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.tertiaryContainer)
+            .padding(horizontal = SpaceSmall),
+        verticalArrangement = Arrangement.spacedBy(SpaceSmall, Alignment.CenterVertically),
+        horizontalArrangement = Arrangement.spacedBy(SpaceSmall, Alignment.Start),
+    ) {
+        orderDetails.forEach { order ->
+            StandardRoundedFilterChip(
+                text = order.totalPrice.toRupee,
+                icon = PoposIcons.Tag,
+                onClick = {
+                    onClickOrder(order.orderId)
+                },
+            )
         }
-
-        Spacer(modifier = Modifier.height(SpaceMini))
-        HorizontalDivider(modifier = Modifier.fillMaxWidth())
     }
 }
