@@ -18,6 +18,8 @@ package com.niyaj.home
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,9 +37,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -56,6 +61,7 @@ import com.niyaj.ui.components.CategoriesData
 import com.niyaj.ui.components.HomeScreenScaffold
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.SelectedOrderBox
 import com.niyaj.ui.components.StandardFABIcon
 import com.niyaj.ui.components.StandardFilledTonalIconButton
@@ -64,7 +70,7 @@ import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
-import com.niyaj.ui.utils.isScrollingUp
+import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -182,7 +188,7 @@ fun HomeScreen(
         },
         onOrderClick = {
             navigator.navigate(Screens.ORDER_SCREEN)
-        }
+        },
     )
 }
 
@@ -216,146 +222,164 @@ fun HomeScreenContent(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val showSearchIcon = productState is UiState.Success
     val showFab = showSearchIcon && selectedCategory == 0
+    val animatedColor by animateColorAsState(
+        targetValue = if (selectedId != "0") {
+            MaterialTheme.colorScheme.tertiaryContainer
+        } else Color.Transparent,
+        label = "",
+    )
 
-    HomeScreenScaffold(
-        modifier = modifier,
-        currentRoute = currentRoute,
-        drawerState = drawerState,
-        onNavigateToScreen = onNavigateToScreen,
-        snackbarHostState = snackbarState,
-        title = {
-            if (selectedId != "0" && !showSearchBar) {
-                SelectedOrderBox(
-                    modifier = Modifier
-                        .padding(horizontal = SpaceMedium),
-                    text = selectedId,
-                    height = 40.dp,
-                    onClick = {
-                        onNavigateToScreen(Screens.SELECT_ORDER_SCREEN)
-                    },
-                )
-            }
-        },
-        navigationIcon = {
-            if (showSearchBar) {
-                IconButton(
-                    onClick = onCloseSearchBar,
-                    modifier = Modifier.testTag(Constants.STANDARD_BACK_BUTTON),
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.Back,
-                        contentDescription = Constants.STANDARD_BACK_BUTTON,
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        HomeScreenScaffold(
+            modifier = modifier,
+            currentRoute = currentRoute,
+            drawerState = drawerState,
+            onNavigateToScreen = onNavigateToScreen,
+            snackbarHostState = snackbarState,
+            title = {
+                if (selectedId != "0" && !showSearchBar) {
+                    SelectedOrderBox(
+                        modifier = Modifier
+                            .padding(horizontal = SpaceMedium),
+                        text = selectedId,
+                        height = 40.dp,
+                        onClick = {
+                            onNavigateToScreen(Screens.SELECT_ORDER_SCREEN)
+                        },
                     )
                 }
-            } else {
-                IconButton(
-                    onClick = {
-                        scope.launch {
-                            drawerState.open()
-                        }
-                    },
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.App,
-                        contentDescription = "app:drawer",
-                    )
-                }
-            }
-        },
-        navActions = {
-            if (showSearchBar) {
-                StandardSearchBar(
-                    searchText = searchText,
-                    placeholderText = HOME_SEARCH_PLACEHOLDER,
-                    onClearClick = onClearClick,
-                    onSearchTextChanged = onSearchTextChanged,
-                )
-            } else {
-                AnimatedVisibility(showSearchIcon) {
-                    Row {
-                        StandardFilledTonalIconButton(
-                            onClick = onCartClick,
-                            icon = PoposIcons.OutlinedCart,
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.tertiary
+            },
+            navigationIcon = {
+                if (showSearchBar) {
+                    IconButton(
+                        onClick = onCloseSearchBar,
+                        modifier = Modifier.testTag(Constants.STANDARD_BACK_BUTTON),
+                    ) {
+                        Icon(
+                            imageVector = PoposIcons.Back,
+                            contentDescription = Constants.STANDARD_BACK_BUTTON,
                         )
-
-                        StandardFilledTonalIconButton(
-                            onClick = onOrderClick,
-                            icon = PoposIcons.OutlinedOrder,
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.tertiary
-
-                        )
-
-                        StandardFilledTonalIconButton(
-                            onClick = onOpenSearchBar,
-                            icon = PoposIcons.Search,
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.tertiary
+                    }
+                } else {
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                drawerState.open()
+                            }
+                        },
+                    ) {
+                        Icon(
+                            imageVector = PoposIcons.App,
+                            contentDescription = "app:drawer",
                         )
                     }
                 }
-            }
-        },
-        floatingActionButton = {
-            StandardFABIcon(
-                fabVisible = showFab,
-                onFabClick = {
-                    onNavigateToScreen(Screens.ADD_EDIT_CART_ORDER_SCREEN)
-                },
-                onClickScroll = onClickScrollToTop,
-                showScrollToTop = !lazyListState.isScrollingUp(),
-                fabText = "Create an Order",
-                scrollText = "Scroll to Top",
-            )
-        },
-        fabPosition = FabPosition.Center,
-    ) { padding ->
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            elevation = CardDefaults.cardElevation(),
-            colors = CardDefaults.elevatedCardColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-            ),
-        ) {
-            when (productState) {
-                is UiState.Empty -> {
-                    ItemNotAvailable(
-                        text = HomeScreenTestTags.PRODUCT_NOT_AVAILABLE,
-                        image = painterResource(id = R.drawable.nothinghere),
-                        buttonText = HomeScreenTestTags.CREATE_NEW_PRODUCT,
-                        onClick = onClickCreateProduct,
+            },
+            navActions = {
+                if (showSearchBar) {
+                    StandardSearchBar(
+                        searchText = searchText,
+                        placeholderText = HOME_SEARCH_PLACEHOLDER,
+                        onClearClick = onClearClick,
+                        onSearchTextChanged = onSearchTextChanged,
                     )
+                } else {
+                    AnimatedVisibility(showSearchIcon) {
+                        Row {
+                            StandardFilledTonalIconButton(
+                                onClick = onCartClick,
+                                icon = PoposIcons.OutlinedCart,
+                                containerColor = animatedColor,
+                                contentColor = MaterialTheme.colorScheme.tertiary,
+                            )
+
+                            StandardFilledTonalIconButton(
+                                onClick = onOrderClick,
+                                icon = PoposIcons.OutlinedOrder,
+                                containerColor = animatedColor,
+                                contentColor = MaterialTheme.colorScheme.tertiary,
+                            )
+
+                            StandardFilledTonalIconButton(
+                                onClick = onOpenSearchBar,
+                                icon = PoposIcons.Search,
+                                containerColor = animatedColor,
+                                contentColor = MaterialTheme.colorScheme.tertiary,
+                            )
+                        }
+                    }
                 }
-
-                is UiState.Loading -> LoadingIndicator()
-
-                is UiState.Success -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                    ) {
-                        CategoriesData(
-                            lazyRowState = lazyRowState,
-                            uiState = categoryState,
-                            selectedCategory = selectedCategory,
-                            onSelect = onSelectCategory,
+            },
+            floatingActionButton = {
+                StandardFABIcon(
+                    fabVisible = showFab,
+                    onFabClick = {
+                        onNavigateToScreen(Screens.ADD_EDIT_CART_ORDER_SCREEN)
+                    },
+                    fabText = "Create an Order",
+                )
+            },
+            fabPosition = FabPosition.Center,
+        ) { padding ->
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                elevation = CardDefaults.cardElevation(),
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ),
+            ) {
+                when (productState) {
+                    is UiState.Empty -> {
+                        ItemNotAvailable(
+                            text = HomeScreenTestTags.PRODUCT_NOT_AVAILABLE,
+                            image = painterResource(id = R.drawable.nothinghere),
+                            buttonText = HomeScreenTestTags.CREATE_NEW_PRODUCT,
+                            onClick = onClickCreateProduct,
                         )
+                    }
 
-                        HomeScreenProducts(
-                            lazyListState = lazyListState,
-                            products = productState.data,
-                            onIncrease = onIncreaseQuantity,
-                            onDecrease = onDecreaseQuantity,
-                            onCreateProduct = onClickCreateProduct,
-                            onClickScrollToTop = onClickScrollToTop,
-                        )
+                    is UiState.Loading -> LoadingIndicator()
+
+                    is UiState.Success -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                        ) {
+                            CategoriesData(
+                                lazyRowState = lazyRowState,
+                                uiState = categoryState,
+                                selectedCategory = selectedCategory,
+                                onSelect = onSelectCategory,
+                            )
+
+                            HomeScreenProducts(
+                                lazyListState = lazyListState,
+                                products = productState.data,
+                                onIncrease = onIncreaseQuantity,
+                                onDecrease = onDecreaseQuantity,
+                                onCreateProduct = onClickCreateProduct,
+                                onClickScrollToTop = onClickScrollToTop,
+                            )
+                        }
                     }
                 }
             }
         }
+
+        ScrollToTop(
+            modifier = Modifier
+                .padding(bottom = 40.dp, end = 16.dp)
+                .align(Alignment.BottomEnd),
+            visible = lazyListState.isScrolled,
+            onClick = {
+                scope.launch {
+                    lazyListState.animateScrollToItem(0)
+                }
+            }
+        )
     }
 }
