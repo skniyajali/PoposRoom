@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -75,7 +76,7 @@ fun RecentOrders(
                     icon = PoposIcons.Order,
                 )
             },
-            rowClickable = true,
+            rowClickable = false,
             expand = { modifier: Modifier ->
                 IconButton(
                     modifier = modifier,
@@ -95,6 +96,7 @@ fun RecentOrders(
                 ) { orders ->
                     when (orders) {
                         is UiState.Loading -> LoadingIndicator()
+
                         is UiState.Empty -> {
                             ItemNotAvailable(text = "No orders made using this address.")
                         }
@@ -124,6 +126,8 @@ fun RecentOrders(
                                                 orderDetails = orderDetails,
                                                 onClickOrder = onClickOrder,
                                             )
+
+                                            HorizontalDivider()
                                         } else {
                                             ListOfOrders(
                                                 orderSize = orders.size,

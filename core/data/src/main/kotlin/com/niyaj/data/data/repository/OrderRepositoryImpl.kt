@@ -63,9 +63,7 @@ class OrderRepositoryImpl(
                 calculateEndDate(date)
             } else getEndDateLong
 
-            orderDao.getAllOrders(startDate, endDate).mapLatest { list ->
-                list.map { it.toExternalModel() }
-            }.mapLatest {
+            orderDao.getAllOrder(startDate, endDate).mapLatest {
                 it.searchOrder(searchText)
             }
         }

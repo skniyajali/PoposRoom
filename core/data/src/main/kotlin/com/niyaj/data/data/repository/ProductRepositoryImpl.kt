@@ -42,7 +42,6 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 
@@ -231,20 +230,7 @@ class ProductRepositoryImpl(
 
     override suspend fun getProductWiseOrderDetails(productId: Int): Flow<List<ProductWiseOrder>> {
         return withContext(ioDispatcher) {
-            productDao.getOrderIdsAndQuantity(productId).flatMapLatest { list ->
-                productDao.getProductWiseOrders(list)
-            }.mapLatest { items ->
-                items.map {
-                    ProductWiseOrder(
-                        orderId = it.cartOrder.orderId,
-                        orderedDate = it.cartOrder.updatedAt ?: it.cartOrder.createdAt,
-                        orderType = it.cartOrder.orderType,
-                        quantity = it.productQuantity.quantity,
-                        customerPhone = it.customer?.customerPhone,
-                        customerAddress = it.address?.addressName,
-                    )
-                }
-            }
+            productDao.getProductWiseOrder(productId)
         }
     }
 

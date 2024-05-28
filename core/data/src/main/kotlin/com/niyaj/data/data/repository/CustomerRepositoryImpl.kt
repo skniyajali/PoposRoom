@@ -175,16 +175,7 @@ class CustomerRepositoryImpl(
 
     override suspend fun getCustomerWiseOrders(customerId: Int): Flow<List<CustomerWiseOrder>> {
         return withContext(ioDispatcher) {
-            customerDao.getCustomerWiseOrders(customerId).mapLatest { orders ->
-                orders.map {
-                    CustomerWiseOrder(
-                        orderId = it.orderId,
-                        totalPrice = it.orderPrice.totalPrice,
-                        updatedAt = (it.updatedAt ?: it.createdAt).toString(),
-                        customerAddress = it.address.addressName,
-                    )
-                }
-            }
+            customerDao.getCustomerWiseOrder(customerId)
         }
     }
 

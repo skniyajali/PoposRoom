@@ -24,7 +24,6 @@ import com.niyaj.common.utils.getEndDateLong
 import com.niyaj.common.utils.getStartDateLong
 import com.niyaj.data.repository.PrintRepository
 import com.niyaj.database.dao.PrintDao
-import com.niyaj.database.model.DeliveryReportDto
 import com.niyaj.database.model.OrderDetailsDto
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.database.model.toExternalModel
@@ -63,7 +62,7 @@ class PrintRepositoryImpl(
                 calculateEndDate(date)
             } else getEndDateLong
 
-            printDao.getDeliveryReports(startDate, endDate).map(DeliveryReportDto::toExternalModel)
+            printDao.getDeliveryReport(startDate, endDate)
         }
     }
 
