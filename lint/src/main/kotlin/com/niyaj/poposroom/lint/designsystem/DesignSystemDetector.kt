@@ -65,7 +65,7 @@ class DesignSystemDetector : Detector(), Detector.UastScanner {
                 "module.",
             category = Category.CUSTOM_LINT_CHECKS,
             priority = 7,
-            severity = Severity.ERROR,
+            severity = Severity.WARNING,
             implementation = Implementation(
                 DesignSystemDetector::class.java,
                 Scope.JAVA_FILE_SCOPE,
