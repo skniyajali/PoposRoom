@@ -19,7 +19,6 @@ package com.niyaj.market.market_list_item
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -180,60 +179,55 @@ fun MarketListItemScreen(
                 MarketListItemHeader(marketList = marketDetail)
             }
 
-            Crossfade(
-                targetState = uiState,
-                label = "MarketListItems::State",
-            ) { state ->
-                when (state) {
-                    is UiState.Loading -> LoadingIndicator()
+            when (uiState) {
+                is UiState.Loading -> LoadingIndicator()
 
-                    is UiState.Empty -> {
-                        ItemNotAvailable(
-                            text = MARKET_ITEM_NOT_AVAILABLE,
-                            buttonText = CREATE_NEW_ITEM,
-                            onClick = {
-                                navigator.navigate(AddEditMarketItemScreenDestination())
+                is UiState.Empty -> {
+                    ItemNotAvailable(
+                        text = MARKET_ITEM_NOT_AVAILABLE,
+                        buttonText = CREATE_NEW_ITEM,
+                        onClick = {
+                            navigator.navigate(AddEditMarketItemScreenDestination())
+                        },
+                    )
+                }
+
+                is UiState.Success -> {
+                    TrackScrollJank(scrollableState = lazyListState, stateName = "MarketListItem::State")
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentPadding = PaddingValues(SpaceSmall),
+                        state = lazyListState,
+                        verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+                    ) {
+                        items(
+                            items = uiState.data,
+                            key = {
+                                it.itemId
                             },
-                        )
-                    }
+                        ) { item ->
+                            MarketItemWithQuantityCard(
+                                item = item,
+                                onAddItem = viewModel::onAddItem,
+                                onRemoveItem = viewModel::onRemoveItem,
+                                onDecreaseQuantity = viewModel::onDecreaseQuantity,
+                                onIncreaseQuantity = viewModel::onIncreaseQuantity,
+                            )
 
-                    is UiState.Success -> {
-                        TrackScrollJank(scrollableState = lazyListState, stateName = "MarketListItem::State")
+                            Spacer(modifier = Modifier.height(SpaceMini))
+                        }
 
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                            contentPadding = PaddingValues(SpaceSmall),
-                            state = lazyListState,
-                            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-                        ) {
-                            items(
-                                items = state.data,
-                                key = {
-                                    it.itemId
+                        item {
+                            Spacer(modifier = Modifier.height(SpaceSmall))
+
+                            ItemNotFound(
+                                onBtnClick = {
+                                    navigator.navigate(AddEditMarketItemScreenDestination())
                                 },
-                            ) { item ->
-                                MarketItemWithQuantityCard(
-                                    item = item,
-                                    onAddItem = viewModel::onAddItem,
-                                    onRemoveItem = viewModel::onRemoveItem,
-                                    onDecreaseQuantity = viewModel::onDecreaseQuantity,
-                                    onIncreaseQuantity = viewModel::onIncreaseQuantity,
-                                )
-
-                                Spacer(modifier = Modifier.height(SpaceMini))
-                            }
-
-                            item {
-                                Spacer(modifier = Modifier.height(SpaceSmall))
-
-                                ItemNotFound(
-                                    onBtnClick = {
-                                        navigator.navigate(AddEditMarketItemScreenDestination())
-                                    },
-                                )
-                                Spacer(modifier = Modifier.height(SpaceSmall))
-                            }
+                            )
+                            Spacer(modifier = Modifier.height(SpaceSmall))
                         }
                     }
                 }

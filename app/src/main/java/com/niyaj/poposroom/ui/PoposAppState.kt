@@ -87,6 +87,7 @@ class PoposAppState @OptIn(ExperimentalMaterialNavigationApi::class) constructor
 
     val isLoggedIn = userDataRepository
         .isUserLoggedIn
+        .map(Boolean::not)
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000),

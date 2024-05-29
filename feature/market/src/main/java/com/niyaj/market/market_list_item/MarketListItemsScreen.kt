@@ -19,7 +19,6 @@ package com.niyaj.market.market_list_item
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -181,72 +180,67 @@ fun MarketListItemsScreen(
                 MarketListItemHeader(marketDate = marketDetail.marketDate)
             }
 
-            Crossfade(
-                targetState = uiState,
-                label = "MarketListItems::State",
-            ) { state ->
-                when (state) {
-                    is UiState.Loading -> LoadingIndicator()
+            when (uiState) {
+                is UiState.Loading -> LoadingIndicator()
 
-                    is UiState.Empty -> {
-                        ItemNotAvailable(
-                            text = MARKET_ITEM_NOT_AVAILABLE,
-                            buttonText = CREATE_NEW_ITEM,
-                            onClick = {
-                                navigator.navigate(AddEditMarketItemScreenDestination())
-                            },
-                        )
-                    }
+                is UiState.Empty -> {
+                    ItemNotAvailable(
+                        text = MARKET_ITEM_NOT_AVAILABLE,
+                        buttonText = CREATE_NEW_ITEM,
+                        onClick = {
+                            navigator.navigate(AddEditMarketItemScreenDestination())
+                        },
+                    )
+                }
 
-                    is UiState.Success -> {
-                        TrackScrollJank(scrollableState = lazyListState, stateName = "MarketListItem::State")
+                is UiState.Success -> {
+                    TrackScrollJank(scrollableState = lazyListState, stateName = "MarketListItem::State")
 
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(SpaceSmall)
-                                .verticalScroll(lazyListState),
-                            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-                        ) {
-                            groupByType.forEach { (itemType, groupedByType) ->
-                                val groupByListType = remember(groupedByType) {
-                                    groupedByType.groupBy { it.listType }
-                                }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(SpaceSmall)
+                            .verticalScroll(lazyListState),
+                        verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+                    ) {
+                        groupByType.forEach { (itemType, groupedByType) ->
+                            val groupByListType = remember(groupedByType) {
+                                groupedByType.groupBy { it.listType }
+                            }
 
-                                groupByListType.forEach { (listType, groupedByList) ->
-                                    ListTypeHeader(
-                                        itemType = itemType,
-                                        listType = listType,
-                                        listCount = groupedByList.size,
-                                    )
+                            groupByListType.forEach { (listType, groupedByList) ->
+                                ListTypeHeader(
+                                    itemType = itemType,
+                                    listType = listType,
+                                    listCount = groupedByList.size,
+                                )
 
-                                    groupedByList.fastForEachIndexed { i, item ->
-                                        key("${item.listType}(${item.listWithTypeId}, ${item.itemId})") {
-                                            MarketItemWithQuantityCard(
-                                                item = item,
-                                                onAddItem = viewModel::onAddItem,
-                                                onRemoveItem = viewModel::onRemoveItem,
-                                                onDecreaseQuantity = viewModel::onDecreaseQuantity,
-                                                onIncreaseQuantity = viewModel::onIncreaseQuantity,
-                                            )
-                                        }
+                                groupedByList.fastForEachIndexed { i, item ->
+                                    key("${item.listType}(${item.listWithTypeId}, ${item.itemId})") {
+                                        MarketItemWithQuantityCard(
+                                            item = item,
+                                            onAddItem = viewModel::onAddItem,
+                                            onRemoveItem = viewModel::onRemoveItem,
+                                            onDecreaseQuantity = viewModel::onDecreaseQuantity,
+                                            onIncreaseQuantity = viewModel::onIncreaseQuantity,
+                                        )
+                                    }
 
-                                        if (i != groupedByList.size - 1) {
-                                            Spacer(modifier = Modifier.height(SpaceMini))
-                                        }
+                                    if (i != groupedByList.size - 1) {
+                                        Spacer(modifier = Modifier.height(SpaceMini))
                                     }
                                 }
                             }
-
-                            Spacer(modifier = Modifier.height(SpaceSmall))
-
-                            ItemNotFound(
-                                onBtnClick = {
-                                    navigator.navigate(AddEditMarketItemScreenDestination())
-                                },
-                            )
-                            Spacer(modifier = Modifier.height(SpaceSmall))
                         }
+
+                        Spacer(modifier = Modifier.height(SpaceSmall))
+
+                        ItemNotFound(
+                            onBtnClick = {
+                                navigator.navigate(AddEditMarketItemScreenDestination())
+                            },
+                        )
+                        Spacer(modifier = Modifier.height(SpaceSmall))
                     }
                 }
             }

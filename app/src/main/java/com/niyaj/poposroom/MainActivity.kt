@@ -34,10 +34,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.metrics.performance.JankStats
@@ -53,6 +54,8 @@ import com.niyaj.data.utils.NetworkMonitor
 import com.niyaj.data.utils.WorkMonitor
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.feature.account.AccountNavGraph
+import com.niyaj.home.HomeNavGraph
 import com.niyaj.model.DarkThemeConfig
 import com.niyaj.model.ThemeBrand
 import com.niyaj.poposroom.ui.PoposApp
@@ -94,8 +97,8 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterialNavigationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-        installSplashScreen()
 
         var uiState: MainActivityUiState by mutableStateOf(MainActivityUiState.Loading)
 
@@ -103,9 +106,15 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState
-                    .onEach {
-                        uiState = it
-                    }.collect()
+                    .onEach { uiState = it }
+                    .collect()
+            }
+        }
+
+        splashScreen.setKeepOnScreenCondition {
+            when (uiState) {
+                MainActivityUiState.Loading -> true
+                is MainActivityUiState.Success -> false
             }
         }
 
@@ -143,6 +152,7 @@ class MainActivity : ComponentActivity() {
                 workMonitor = workMonitor,
                 userDataRepository = userDataRepository,
             )
+            val isLoggedIn by appState.isLoggedIn.collectAsStateWithLifecycle()
 
             CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
                 PoposRoomTheme(
@@ -152,7 +162,10 @@ class MainActivity : ComponentActivity() {
                 ) {
                     RequestAllPermissions()
 
-                    PoposApp(appState = appState)
+                    PoposApp(
+                        appState = appState,
+                        startRoute = if (isLoggedIn) HomeNavGraph else AccountNavGraph,
+                    )
                 }
             }
         }
@@ -251,6 +264,7 @@ private fun RequestAllPermissions() {
     val showDialog = remember { mutableStateOf(false) }
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+
     val allPermissionState = rememberMultiplePermissionsState(
         permissions = allPermissions,
         onPermissionsResult = { permissions ->
@@ -291,10 +305,6 @@ private fun RequestAllPermissions() {
                 showDialog.value = false
             },
         )
-    }
-
-    allPermissionState.permissions.forEach {
-        Timber.tag("Permissions").d("Permissions - ${it.permission} - ${it.status}")
     }
 }
 
