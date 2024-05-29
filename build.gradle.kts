@@ -46,7 +46,6 @@ plugins {
     alias(libs.plugins.roborazzi) apply false
     alias(libs.plugins.room) apply false
     alias(libs.plugins.module.graph) apply true // Plugin applied to allow module graph generation
-    alias(libs.plugins.appsweep) apply false
 }
 
 // Task to print all the module paths in the project e.g. :core:data

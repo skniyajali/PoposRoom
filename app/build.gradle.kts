@@ -26,7 +26,6 @@ plugins {
     alias(libs.plugins.popos.android.application.firebase)
     alias(libs.plugins.androidx.baselineprofile)
     alias(libs.plugins.roborazzi)
-    alias(libs.plugins.appsweep)
     alias(libs.plugins.sentry)
     id("com.google.android.gms.oss-licenses-plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
@@ -90,10 +89,6 @@ android {
         }
     }
 
-    appsweep {
-        apiKey = "gs_appsweep_yj39WiQ_eZrOIfJnUYYf1KkUkC97yiIO0npd0q6f"
-    }
-
     sentry {
         // Disables or enables debug log output, e.g. for for sentry-cli.
         // Default is disabled.
@@ -127,10 +122,10 @@ android {
         // Default is enabled.
         autoUploadProguardMapping.set(true)
 
-        // Experimental flag to turn on support for GuardSquare's tools integration (Dexguard and External Proguard).
-        // If enabled, the plugin will try to consume and upload the mapping file produced by Dexguard and External Proguard.
-        // Default is disabled.
-        experimentalGuardsquareSupport.set(true)
+//        // Experimental flag to turn on support for GuardSquare's tools integration (Dexguard and External Proguard).
+//        // If enabled, the plugin will try to consume and upload the mapping file produced by Dexguard and External Proguard.
+//        // Default is disabled.
+        dexguardEnabled = false
 
         // Disables or enables the automatic configuration of Native Symbols
         // for Sentry. This executes sentry-cli automatically so
@@ -198,7 +193,7 @@ android {
             // as Gradle will resolve it to the latest version.
             //
             // Defaults to the latest published Sentry version.
-            sentryVersion.set("6.33.0")
+            sentryVersion.set("7.9.0")
         }
 
         // Disables or enables dependencies metadata reporting for Sentry.
@@ -209,6 +204,12 @@ android {
         // Default is enabled.
         //
         includeDependenciesReport.set(true)
+
+        // List the build types that should be ignored (e.g. "release").
+//        ignoredBuildTypes.set(setOf("debug"))
+
+        // List the build flavors that should be ignored (e.g. "production").
+        ignoredFlavors.set(setOf("demo"))
     }
 }
 
