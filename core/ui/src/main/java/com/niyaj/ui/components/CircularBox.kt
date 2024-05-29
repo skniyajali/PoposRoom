@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.ui.components
@@ -60,7 +61,7 @@ fun CircularBox(
     unselectedTint: Color = MaterialTheme.colorScheme.secondary,
     borderStroke: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
 ) {
-    val availBorder = if (showBorder) borderStroke  else null
+    val availBorder = if (showBorder) borderStroke else null
 
     val textStyle =
         if (size < 40.dp) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelMedium
@@ -71,9 +72,11 @@ fun CircularBox(
             .size(size)
             .clip(CircleShape)
             .background(backgroundColor)
-            .then(availBorder?.let {
-                Modifier.border(it, CircleShape)
-            } ?: Modifier),
+            .then(
+                availBorder?.let {
+                    Modifier.border(it, CircleShape)
+                } ?: Modifier,
+            ),
         contentAlignment = Alignment.Center,
     ) {
         if (text.isNullOrEmpty()) {
@@ -81,7 +84,7 @@ fun CircularBox(
                 imageVector = if (doesSelected) selectedIcon else icon,
                 contentDescription = "",
                 tint = if (doesSelected) selectedTint else unselectedTint,
-                modifier = Modifier.size(iconSize)
+                modifier = Modifier.size(iconSize),
             )
         } else {
             if (doesSelected) {
@@ -89,12 +92,12 @@ fun CircularBox(
                     imageVector = selectedIcon,
                     contentDescription = "",
                     tint = selectedTint,
-                    modifier = Modifier.size(iconSize)
+                    modifier = Modifier.size(iconSize),
                 )
             } else {
                 Text(
                     text = getAllCapitalizedLetters(text).take(2),
-                    style = textStyle
+                    style = textStyle,
                 )
             }
         }
@@ -112,8 +115,11 @@ fun CircularBoxWithQty(
 ) {
     val quantity = rememberUpdatedState(newValue = qty)
 
-    val textStyle = if (qty == 0) MaterialTheme.typography.labelSmall
-    else MaterialTheme.typography.labelLarge
+    val textStyle = if (qty == 0) {
+        MaterialTheme.typography.labelSmall
+    } else {
+        MaterialTheme.typography.labelLarge
+    }
 
     val availBorder = if (showBorder && qty != 0) BorderStroke(1.dp, borderColor) else null
 
@@ -122,15 +128,17 @@ fun CircularBoxWithQty(
             .size(size)
             .clip(CircleShape)
             .background(backgroundColor)
-            .then(availBorder?.let {
-                Modifier.border(it, CircleShape)
-            } ?: Modifier),
+            .then(
+                availBorder?.let {
+                    Modifier.border(it, CircleShape)
+                } ?: Modifier,
+            ),
         contentAlignment = Alignment.Center,
     ) {
         if (quantity.value == 0) {
             Text(
                 text = getAllCapitalizedLetters(text).take(2),
-                style = textStyle
+                style = textStyle,
             )
         } else {
             AnimatedContent(
@@ -139,13 +147,12 @@ fun CircularBoxWithQty(
             ) {
                 Text(
                     text = it.toString(),
-                    style = textStyle
+                    style = textStyle,
                 )
             }
         }
     }
 }
-
 
 @Composable
 fun CircularBoxWithIcon(
@@ -170,9 +177,11 @@ fun CircularBoxWithIcon(
             .size(size)
             .clip(CircleShape)
             .background(backgroundColor)
-            .then(availBorder?.let {
-                Modifier.border(it, CircleShape)
-            } ?: Modifier),
+            .then(
+                availBorder?.let {
+                    Modifier.border(it, CircleShape)
+                } ?: Modifier,
+            ),
         contentAlignment = Alignment.Center,
     ) {
         Row(
@@ -185,19 +194,18 @@ fun CircularBoxWithIcon(
                     imageVector = selectedIcon,
                     contentDescription = "",
                     tint = selectedTint,
-                    modifier = Modifier.size(iconSize)
+                    modifier = Modifier.size(iconSize),
                 )
             } else {
                 Icon(
                     imageVector = icon,
                     contentDescription = "",
                     tint = unselectedTint,
-                    modifier = Modifier.size(iconSize)
+                    modifier = Modifier.size(iconSize),
                 )
 
                 Text(text = text, style = textStyle)
             }
-
         }
     }
 }

@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.expenses
@@ -34,7 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.common.tags.ExpenseTestTags.CREATE_NEW_EXPENSE
 import com.niyaj.common.tags.ExpenseTestTags.DELETE_EXPENSE_MESSAGE
 import com.niyaj.common.tags.ExpenseTestTags.DELETE_EXPENSE_TITLE
-import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NOT_AVAIlABLE
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NOT_AVAILABLE
 import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_SCREEN_TITLE
 import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.ExpenseTestTags.NO_ITEMS_IN_EXPENSE
@@ -50,10 +51,10 @@ import com.niyaj.expenses.destinations.ExpensesImportScreenDestination
 import com.niyaj.expenses.destinations.ExpensesSettingsScreenDestination
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.PoposPrimaryScaffold
 import com.niyaj.ui.components.ScaffoldNavActions
 import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardFAB
-import com.niyaj.ui.components.StandardScaffoldRoute
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -170,7 +171,7 @@ fun ExpensesScreen(
 
     TrackScreenViewEvent(screenName = Screens.EXPENSES_SCREEN)
 
-    StandardScaffoldRoute(
+    PoposPrimaryScaffold(
         currentRoute = Screens.EXPENSES_SCREEN,
         title = if (selectedItems.isEmpty()) EXPENSE_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
@@ -237,7 +238,7 @@ fun ExpensesScreen(
 
                 is UiState.Empty -> {
                     ItemNotAvailable(
-                        text = if (searchText.isEmpty()) EXPENSE_NOT_AVAIlABLE else NO_ITEMS_IN_EXPENSE,
+                        text = if (searchText.isEmpty()) EXPENSE_NOT_AVAILABLE else NO_ITEMS_IN_EXPENSE,
                         buttonText = CREATE_NEW_EXPENSE,
                         onClick = {
                             navigator.navigate(AddEditExpenseScreenDestination())
@@ -294,7 +295,6 @@ fun ExpensesScreen(
             }
         }
     }
-
 
     MaterialDialog(
         dialogState = dialogState,

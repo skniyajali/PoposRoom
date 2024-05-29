@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.expenses.settings
 
 import android.Manifest
@@ -29,7 +46,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.common.tags.ExpenseTestTags
-import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NOT_AVAIlABLE
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NOT_AVAILABLE
 import com.niyaj.common.tags.ExpenseTestTags.EXPORT_EXPENSE_BTN
 import com.niyaj.common.tags.ExpenseTestTags.EXPORT_EXPENSE_BTN_TEXT
 import com.niyaj.common.tags.ExpenseTestTags.EXPORT_EXPENSE_FILE_NAME
@@ -45,9 +62,9 @@ import com.niyaj.expenses.destinations.AddEditExpenseScreenDestination
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
+import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -141,7 +158,7 @@ fun ExpensesExportScreen(
         onBackClick()
     }
 
-    StandardScaffoldRouteNew(
+    PoposSecondaryScaffold(
         title = if (selectedItems.isEmpty()) EXPORT_EXPENSE_TITLE else "${selectedItems.size} Selected",
         showBackButton = selectedItems.isEmpty() || showSearchBar,
         showBottomBar = expenseList.isNotEmpty(),
@@ -234,7 +251,7 @@ fun ExpensesExportScreen(
     ) { paddingValues ->
         if (expenseList.isEmpty()) {
             ItemNotAvailable(
-                text = if (searchText.isEmpty()) EXPENSE_NOT_AVAIlABLE else NO_ITEMS_IN_EXPENSE,
+                text = if (searchText.isEmpty()) EXPENSE_NOT_AVAILABLE else NO_ITEMS_IN_EXPENSE,
                 buttonText = ExpenseTestTags.CREATE_NEW_EXPENSE,
                 onClick = {
                     navigator.navigate(AddEditExpenseScreenDestination())

@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.cartorder
@@ -89,11 +90,11 @@ import com.niyaj.model.OrderType
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.PoposPrimaryScaffold
 import com.niyaj.ui.components.ScaffoldNavActions
 import com.niyaj.ui.components.StandardChip
 import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardFAB
-import com.niyaj.ui.components.StandardScaffoldRoute
 import com.niyaj.ui.components.TextWithCount
 import com.niyaj.ui.components.stickyHeader
 import com.niyaj.ui.event.UiState
@@ -188,7 +189,7 @@ fun CartOrderScreen(
 
     TrackScreenViewEvent(screenName = Screens.CART_ORDER_SCREEN)
 
-    StandardScaffoldRoute(
+    PoposPrimaryScaffold(
         currentRoute = Screens.CART_ORDER_SCREEN,
         title = if (selectedItems.isEmpty()) CART_ORDER_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
@@ -302,9 +303,11 @@ fun CartOrderScreen(
                             TextWithCount(
                                 modifier = Modifier
                                     .background(
-                                        if (lazyGridState.isScrollingUp())
+                                        if (lazyGridState.isScrollingUp()) {
                                             MaterialTheme.colorScheme.background
-                                        else Color.Transparent,
+                                        } else {
+                                            Color.Transparent
+                                        },
                                     )
                                     .clip(
                                         RoundedCornerShape(if (lazyGridState.isScrollingUp()) 4.dp else 0.dp),
@@ -346,7 +349,6 @@ fun CartOrderScreen(
         }
     }
 
-
     if (openDialog.value) {
         StandardDialog(
             title = DELETE_CART_ORDER_ITEM_TITLE,
@@ -358,12 +360,10 @@ fun CartOrderScreen(
             onDismiss = {
                 openDialog.value = false
                 viewModel.deselectItems()
-
             },
         )
     }
 }
-
 
 /**
  * [ScaffoldNavActions] for [CartOrderScreen]

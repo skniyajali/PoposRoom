@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.employee.settings
 
 import android.Manifest
@@ -45,9 +62,9 @@ import com.niyaj.model.Employee
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
+import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardScaffoldRouteNew
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -66,7 +83,6 @@ fun EmployeeExportScreen(
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: EmployeeSettingsViewModel = hiltViewModel(),
 ) {
-
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
 
@@ -142,7 +158,7 @@ fun EmployeeExportScreen(
 
     TrackScreenViewEvent(screenName = "Employee Export Screen")
 
-    StandardScaffoldRouteNew(
+    PoposSecondaryScaffold(
         title = if (selectedItems.isEmpty()) EXPORT_EMPLOYEE_TITLE else "${selectedItems.size} Selected",
         showBackButton = selectedItems.isEmpty() || showSearchBar,
         showBottomBar = employees.isNotEmpty(),

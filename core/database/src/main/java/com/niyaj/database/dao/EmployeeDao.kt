@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.database.dao
 
 import androidx.room.Dao
@@ -16,14 +33,14 @@ interface EmployeeDao {
     @Query(
         value = """
         SELECT * FROM employee ORDER BY createdAt DESC
-    """
+    """,
     )
     fun getAllEmployee(): Flow<List<EmployeeEntity>>
 
     @Query(
         value = """
         SELECT * FROM employee WHERE employeeId = :employeeId
-    """
+    """,
     )
     fun getEmployeeById(employeeId: Int): EmployeeEntity?
 
@@ -48,7 +65,7 @@ interface EmployeeDao {
     @Query(
         value = """
         DELETE FROM employee WHERE employeeId = :employeeId
-    """
+    """,
     )
     suspend fun deleteEmployee(employeeId: Int): Int
 
@@ -70,7 +87,7 @@ interface EmployeeDao {
             THEN employeePhone = :employeePhone
             ELSE employeeId != :employeeId AND employeePhone = :employeePhone
             END LIMIT 1
-    """
+    """,
     )
     fun findEmployeeByPhone(employeePhone: String, employeeId: Int?): Int?
 
@@ -81,43 +98,42 @@ interface EmployeeDao {
             THEN employeeName = :employeeName
             ELSE employeeId != :employeeId AND employeeName = :employeeName
             END LIMIT 1
-    """
+    """,
     )
     fun findEmployeeByName(employeeName: String, employeeId: Int?): Int?
 
     @Query(
         value = """
             SELECT * FROM payment WHERE employeeId = :employeeId
-        """
+        """,
     )
     suspend fun getEmployeePaymentById(employeeId: Int): PaymentEntity?
 
     @Query(
         value = """
             SELECT * FROM absent WHERE employeeId = :employeeId
-        """
+        """,
     )
     suspend fun getEmployeeAbsentById(employeeId: Int): AbsentEntity?
 
     @Query(
         value = """
             SELECT employeeJoinedDate FROM employee WHERE employeeId = :employeeId
-        """
+        """,
     )
     suspend fun getEmployeeJoinedDate(employeeId: Int): String?
 
     @Query(
         value = """
             SELECT employeeSalary FROM employee WHERE employeeId = :employeeId
-        """
+        """,
     )
     suspend fun getEmployeeSalary(employeeId: Int): String?
-
 
     @Query(
         value = """
             SELECT absentDate FROM absent WHERE employeeId = :employeeId AND absentDate >= :startDate AND absentDate <= :endDate ORDER BY absentDate DESC
-        """
+        """,
     )
     fun getEmployeeAbsentDatesByDate(
         employeeId: Int,
@@ -128,7 +144,7 @@ interface EmployeeDao {
     @Query(
         value = """
             SELECT * FROM payment WHERE employeeId = :employeeId AND paymentDate >= :startDate AND paymentDate <= :endDate ORDER BY paymentDate DESC
-        """
+        """,
     )
     fun getEmployeePaymentsByDate(
         employeeId: Int,
@@ -136,11 +152,10 @@ interface EmployeeDao {
         endDate: String,
     ): Flow<List<PaymentEntity>>
 
-
     @Query(
         value = """
             SELECT paymentAmount FROM payment WHERE employeeId = :employeeId AND paymentDate >= :startDate AND paymentDate <= :endDate ORDER BY paymentDate DESC
-        """
+        """,
     )
     fun getEmployeePaymentAmountsByDate(
         employeeId: Int,
@@ -148,19 +163,17 @@ interface EmployeeDao {
         endDate: String,
     ): Flow<List<String>>
 
-
     @Query(
         value = """
             SELECT absentDate FROM absent WHERE CASE WHEN :absentId IS NULL OR :absentId = 0
             THEN absentDate = :absentDate AND employeeId = :employeeId
             ELSE absentId != :absentId AND absentDate = :absentDate AND employeeId = :employeeId
             END LIMIT 1
-        """
+        """,
     )
     suspend fun findEmployeeAbsentDateByIdAndDate(
         absentDate: String,
         employeeId: Int,
         absentId: Int? = null,
     ): String?
-
 }

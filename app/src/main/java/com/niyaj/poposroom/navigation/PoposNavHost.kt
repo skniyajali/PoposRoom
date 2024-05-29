@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.poposroom.navigation
@@ -30,8 +31,8 @@ import com.niyaj.address.destinations.AddressDetailsScreenDestination
 import com.niyaj.address.details.AddressDetailsScreen
 import com.niyaj.cart.CartScreen
 import com.niyaj.cart.destinations.CartScreenDestination
-import com.niyaj.cart_selected.SelectOrderScreen
-import com.niyaj.cart_selected.destinations.SelectOrderScreenDestination
+import com.niyaj.cartSelected.SelectOrderScreen
+import com.niyaj.cartSelected.destinations.SelectOrderScreenDestination
 import com.niyaj.cartorder.CartOrderScreen
 import com.niyaj.cartorder.destinations.AddEditCartOrderScreenDestination
 import com.niyaj.cartorder.destinations.CartOrderScreenDestination
@@ -39,10 +40,10 @@ import com.niyaj.customer.destinations.CustomerDetailsScreenDestination
 import com.niyaj.customer.details.CustomerDetailsScreen
 import com.niyaj.employee.destinations.EmployeeDetailsScreenDestination
 import com.niyaj.employee.details.EmployeeDetailsScreen
-import com.niyaj.employee_absent.destinations.AddEditAbsentScreenDestination
-import com.niyaj.employee_payment.PaymentScreen
-import com.niyaj.employee_payment.destinations.AddEditPaymentScreenDestination
-import com.niyaj.employee_payment.destinations.PaymentScreenDestination
+import com.niyaj.employeeAbsent.destinations.AddEditAbsentScreenDestination
+import com.niyaj.employeePayment.PaymentScreen
+import com.niyaj.employeePayment.destinations.AddEditPaymentScreenDestination
+import com.niyaj.employeePayment.destinations.PaymentScreenDestination
 import com.niyaj.feature.reports.ReportScreen
 import com.niyaj.feature.reports.destinations.ReportScreenDestination
 import com.niyaj.order.OrderScreen
@@ -87,7 +88,7 @@ fun PoposNavHost(
 
     val navHostEngine = rememberAnimatedNavHostEngine(
         navHostContentAlignment = Alignment.TopCenter,
-        //default `rootDefaultAnimations` means no animations
+        // default `rootDefaultAnimations` means no animations
         rootDefaultAnimations = RootNavGraphDefaultAnimations.ACCOMPANIST_FADING,
         // all other nav graphs not specified in this map,
         // will get their animations from the `rootDefaultAnimations` above.
@@ -239,5 +240,3 @@ fun PoposNavHost(
         )
     }
 }
-
-

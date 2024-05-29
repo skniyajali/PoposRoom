@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.ui.components
@@ -232,8 +233,11 @@ fun PoposDrawer(
                         ) {
                             PoposDrawerItem(
                                 text = "Orders",
-                                icon = if (currentRoute == Screens.ORDER_SCREEN)
-                                    PoposIcons.Order else PoposIcons.OutlinedOrder,
+                                icon = if (currentRoute == Screens.ORDER_SCREEN) {
+                                    PoposIcons.Order
+                                } else {
+                                    PoposIcons.OutlinedOrder
+                                },
                                 selected = currentRoute == Screens.ORDER_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.ORDER_SCREEN)
@@ -242,8 +246,11 @@ fun PoposDrawer(
                             Spacer(modifier = Modifier.height(SpaceSmall))
                             PoposDrawerItem(
                                 text = "Cart Orders",
-                                icon = if (currentRoute == Screens.CART_ORDER_SCREEN)
-                                    PoposIcons.BreakfastDining else PoposIcons.OutlinedBreakfastDining,
+                                icon = if (currentRoute == Screens.CART_ORDER_SCREEN) {
+                                    PoposIcons.BreakfastDining
+                                } else {
+                                    PoposIcons.OutlinedBreakfastDining
+                                },
                                 selected = currentRoute == Screens.CART_ORDER_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.CART_ORDER_SCREEN)
@@ -304,8 +311,11 @@ fun PoposDrawer(
                         ) {
                             PoposDrawerItem(
                                 text = "Market Types",
-                                icon = if (currentRoute == Screens.MARKET_TYPE_SCREEN)
-                                    PoposIcons.Category else PoposIcons.OutlinedCategory,
+                                icon = if (currentRoute == Screens.MARKET_TYPE_SCREEN) {
+                                    PoposIcons.Category
+                                } else {
+                                    PoposIcons.OutlinedCategory
+                                },
                                 selected = currentRoute == Screens.MARKET_TYPE_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.MARKET_TYPE_SCREEN)
@@ -314,8 +324,11 @@ fun PoposDrawer(
 
                             PoposDrawerItem(
                                 text = "Market Item",
-                                icon = if (currentRoute == Screens.MARKET_ITEM_SCREEN)
-                                    PoposIcons.Kitchen else PoposIcons.OutlinedKitchen,
+                                icon = if (currentRoute == Screens.MARKET_ITEM_SCREEN) {
+                                    PoposIcons.Kitchen
+                                } else {
+                                    PoposIcons.OutlinedKitchen
+                                },
                                 selected = currentRoute == Screens.MARKET_ITEM_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.MARKET_ITEM_SCREEN)
@@ -324,8 +337,11 @@ fun PoposDrawer(
 
                             PoposDrawerItem(
                                 text = "Measure Units",
-                                icon = if (currentRoute == Screens.MEASURE_UNIT_SCREEN)
-                                    PoposIcons.MonitorWeight else PoposIcons.OutlinedMonitorWeight,
+                                icon = if (currentRoute == Screens.MEASURE_UNIT_SCREEN) {
+                                    PoposIcons.MonitorWeight
+                                } else {
+                                    PoposIcons.OutlinedMonitorWeight
+                                },
                                 selected = currentRoute == Screens.MEASURE_UNIT_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.MEASURE_UNIT_SCREEN)
@@ -383,8 +399,11 @@ fun PoposDrawer(
                         ) {
                             PoposDrawerItem(
                                 text = "Customers",
-                                icon = if (currentRoute == Screens.CUSTOMER_SCREEN)
-                                    PoposIcons.PeopleAlt else PoposIcons.OutlinedPeopleAlt,
+                                icon = if (currentRoute == Screens.CUSTOMER_SCREEN) {
+                                    PoposIcons.PeopleAlt
+                                } else {
+                                    PoposIcons.OutlinedPeopleAlt
+                                },
                                 selected = currentRoute == Screens.CUSTOMER_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.CUSTOMER_SCREEN)
@@ -395,8 +414,11 @@ fun PoposDrawer(
 
                             PoposDrawerItem(
                                 text = "Addresses",
-                                icon = if (currentRoute == Screens.ADDRESS_SCREEN)
-                                    PoposIcons.Address else PoposIcons.OutlinedAddress,
+                                icon = if (currentRoute == Screens.ADDRESS_SCREEN) {
+                                    PoposIcons.Address
+                                } else {
+                                    PoposIcons.OutlinedAddress
+                                },
                                 selected = currentRoute == Screens.ADDRESS_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.ADDRESS_SCREEN)
@@ -455,8 +477,11 @@ fun PoposDrawer(
                         ) {
                             PoposDrawerItem(
                                 text = "Employees",
-                                icon = if (currentRoute == Screens.EMPLOYEE_SCREEN)
-                                    PoposIcons.SwitchAccount else PoposIcons.OutlinedSwitchAccount,
+                                icon = if (currentRoute == Screens.EMPLOYEE_SCREEN) {
+                                    PoposIcons.SwitchAccount
+                                } else {
+                                    PoposIcons.OutlinedSwitchAccount
+                                },
                                 selected = currentRoute == Screens.EMPLOYEE_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.EMPLOYEE_SCREEN)
@@ -467,8 +492,11 @@ fun PoposDrawer(
 
                             PoposDrawerItem(
                                 text = "Employee Absent Report",
-                                icon = if (currentRoute == Screens.ABSENT_SCREEN)
-                                    PoposIcons.EventBusy else PoposIcons.OutlinedEventBusy,
+                                icon = if (currentRoute == Screens.ABSENT_SCREEN) {
+                                    PoposIcons.EventBusy
+                                } else {
+                                    PoposIcons.OutlinedEventBusy
+                                },
                                 selected = currentRoute == Screens.ABSENT_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.ABSENT_SCREEN)
@@ -479,8 +507,11 @@ fun PoposDrawer(
 
                             PoposDrawerItem(
                                 text = "Employee Payments",
-                                icon = if (currentRoute == Screens.PAYMENT_SCREEN)
-                                    PoposIcons.Money else PoposIcons.OutlinedMoney,
+                                icon = if (currentRoute == Screens.PAYMENT_SCREEN) {
+                                    PoposIcons.Money
+                                } else {
+                                    PoposIcons.OutlinedMoney
+                                },
                                 selected = currentRoute == Screens.PAYMENT_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.PAYMENT_SCREEN)
@@ -539,11 +570,13 @@ fun PoposDrawer(
                         Column(
                             modifier = Modifier.padding(SpaceSmall),
                         ) {
-
                             PoposDrawerItem(
                                 text = "Categories",
-                                icon = if (currentRoute == Screens.CATEGORY_SCREEN)
-                                    PoposIcons.Category else PoposIcons.OutlinedCategory,
+                                icon = if (currentRoute == Screens.CATEGORY_SCREEN) {
+                                    PoposIcons.Category
+                                } else {
+                                    PoposIcons.OutlinedCategory
+                                },
                                 selected = currentRoute == Screens.CATEGORY_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.CATEGORY_SCREEN)
@@ -554,8 +587,11 @@ fun PoposDrawer(
 
                             PoposDrawerItem(
                                 text = "Products",
-                                icon = if (currentRoute == Screens.PRODUCT_SCREEN)
-                                    PoposIcons.Dns else PoposIcons.OutlinedDns,
+                                icon = if (currentRoute == Screens.PRODUCT_SCREEN) {
+                                    PoposIcons.Dns
+                                } else {
+                                    PoposIcons.OutlinedDns
+                                },
                                 selected = currentRoute == Screens.PRODUCT_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.PRODUCT_SCREEN)
@@ -566,8 +602,11 @@ fun PoposDrawer(
 
                             PoposDrawerItem(
                                 text = "AddOn Item",
-                                icon = if (currentRoute == Screens.ADD_ON_ITEM_SCREEN)
-                                    PoposIcons.InsertLink else PoposIcons.OutlinedInsertLink,
+                                icon = if (currentRoute == Screens.ADD_ON_ITEM_SCREEN) {
+                                    PoposIcons.InsertLink
+                                } else {
+                                    PoposIcons.OutlinedInsertLink
+                                },
                                 selected = currentRoute == Screens.ADD_ON_ITEM_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.ADD_ON_ITEM_SCREEN)
@@ -578,14 +617,16 @@ fun PoposDrawer(
 
                             PoposDrawerItem(
                                 text = "Charges Item",
-                                icon = if (currentRoute == Screens.CHARGES_SCREEN)
-                                    PoposIcons.Bolt else PoposIcons.OutlinedBolt,
+                                icon = if (currentRoute == Screens.CHARGES_SCREEN) {
+                                    PoposIcons.Bolt
+                                } else {
+                                    PoposIcons.OutlinedBolt
+                                },
                                 selected = currentRoute == Screens.CHARGES_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.CHARGES_SCREEN)
                                 },
                             )
-
                         }
                     },
                 )
@@ -633,8 +674,11 @@ fun PoposDrawer(
                         ) {
                             PoposDrawerItem(
                                 text = "Reminders",
-                                icon = if (currentRoute == Screens.REMINDER_SCREEN)
-                                    PoposIcons.Notifications else PoposIcons.OutlinedNotifications,
+                                icon = if (currentRoute == Screens.REMINDER_SCREEN) {
+                                    PoposIcons.Notifications
+                                } else {
+                                    PoposIcons.OutlinedNotifications
+                                },
                                 selected = currentRoute == Screens.REMINDER_SCREEN,
                                 onClick = {
 //                                    onNavigateToScreen(ReminderScreenDestination())
@@ -643,8 +687,11 @@ fun PoposDrawer(
                             Spacer(modifier = Modifier.height(SpaceSmall))
                             PoposDrawerItem(
                                 text = "App Settings",
-                                icon = if (currentRoute == Screens.SETTINGS_SCREEN)
-                                    PoposIcons.Settings else PoposIcons.OutlinedSettings,
+                                icon = if (currentRoute == Screens.SETTINGS_SCREEN) {
+                                    PoposIcons.Settings
+                                } else {
+                                    PoposIcons.OutlinedSettings
+                                },
                                 selected = currentRoute == Screens.SETTINGS_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.SETTINGS_SCREEN)
@@ -654,8 +701,11 @@ fun PoposDrawer(
 
                             PoposDrawerItem(
                                 text = "Printer Information",
-                                icon = if (currentRoute == Screens.PRINTER_INFO_SCREEN)
-                                    PoposIcons.Print else PoposIcons.OutlinedPrint,
+                                icon = if (currentRoute == Screens.PRINTER_INFO_SCREEN) {
+                                    PoposIcons.Print
+                                } else {
+                                    PoposIcons.OutlinedPrint
+                                },
                                 selected = currentRoute == Screens.PRINTER_INFO_SCREEN,
                                 onClick = {
                                     onNavigateToScreen(Screens.PRINTER_INFO_SCREEN)
@@ -679,7 +729,6 @@ fun PoposDrawer(
                 icon = PoposIcons.OutlinedLogout,
                 selected = false,
                 onClick = {
-
                 },
             )
         }
@@ -729,7 +778,6 @@ fun PoposDrawerHeader(
             }
         }
 
-
         IconButton(
             onClick = {
                 onNavigateToScreen(Screens.PROFILE_SCREEN)
@@ -745,7 +793,6 @@ fun PoposDrawerHeader(
         }
     }
 }
-
 
 @Composable
 fun PoposDrawerItem(
@@ -772,4 +819,3 @@ fun PoposDrawerItem(
             .padding(NavigationDrawerItemDefaults.ItemPadding),
     )
 }
-

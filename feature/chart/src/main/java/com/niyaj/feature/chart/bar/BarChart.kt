@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.feature.chart.bar
 
 import androidx.compose.foundation.Canvas
@@ -38,7 +55,7 @@ fun BarChart(
     modifier: Modifier = Modifier,
     chartDimens: ChartDimens = ChartDimensDefaults.chartDimesDefaults(),
     axisConfig: AxisConfig = AxisConfigDefaults.axisConfigDefaults(isSystemInDarkTheme()),
-    barConfig: BarConfig = BarConfigDefaults.barConfigDimesDefaults()
+    barConfig: BarConfig = BarConfigDefaults.barConfigDimesDefaults(),
 ) {
     BarChart(
         barData = barData,
@@ -47,7 +64,7 @@ fun BarChart(
         modifier = modifier,
         chartDimens = chartDimens,
         axisConfig = axisConfig,
-        barConfig = barConfig
+        barConfig = barConfig,
     )
 }
 
@@ -59,7 +76,7 @@ fun BarChart(
     modifier: Modifier = Modifier,
     chartDimens: ChartDimens = ChartDimensDefaults.chartDimesDefaults(),
     axisConfig: AxisConfig = AxisConfigDefaults.axisConfigDefaults(isSystemInDarkTheme()),
-    barConfig: BarConfig = BarConfigDefaults.barConfigDimesDefaults()
+    barConfig: BarConfig = BarConfigDefaults.barConfigDimesDefaults(),
 ) {
     val maxYValueState = rememberSaveable { mutableFloatStateOf(barData.maxYValue()) }
     val clickedBar = remember { mutableStateOf(Offset(-10F, -10F)) }
@@ -76,7 +93,7 @@ fun BarChart(
                     drawYAxisWithLabels(
                         axisConfig = axisConfig,
                         maxValue = maxYValue,
-                        textColor = axisConfig.textColor
+                        textColor = axisConfig.textColor,
                     )
                 }
             }
@@ -85,7 +102,7 @@ fun BarChart(
                 detectTapGestures(onPress = { offset ->
                     clickedBar.value = offset
                 })
-            }
+            },
     ) {
         barWidth.floatValue = size.width.div(barData.count().times(1.2F))
         val yScalableFactor = size.height.div(maxYValue)
@@ -101,10 +118,10 @@ fun BarChart(
 
             drawRoundRect(
 //                cornerRadius = CornerRadius(if (barConfig.hasRoundedCorner) barHeight else 0F),
-                cornerRadius = CornerRadius(x = 4F, y =  4F),
+                cornerRadius = CornerRadius(x = 4F, y = 4F),
                 topLeft = topLeft,
                 brush = Brush.linearGradient(colors),
-                size = Size(barWidth.floatValue, barHeight)
+                size = Size(barWidth.floatValue, barHeight),
             )
 
 //            drawText(
@@ -120,7 +137,6 @@ fun BarChart(
 //                maxSize = IntSize(barWidth.value.toInt(), barHeight.toInt())
 //            )
 
-
             if (axisConfig.showXLabels) {
                 drawBarLabel(
                     data.xValue,
@@ -128,7 +144,7 @@ fun BarChart(
                     barHeight,
                     topLeft,
                     barData.count(),
-                    axisConfig.textColor
+                    axisConfig.textColor,
                 )
             }
         }

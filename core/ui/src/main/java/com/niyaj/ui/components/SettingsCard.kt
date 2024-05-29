@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.ui.components
@@ -56,29 +57,35 @@ fun SettingsCard(
         headlineContent = {
             Text(
                 text = title,
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
             )
         },
-        supportingContent = if (subtitle.isEmpty()) null else ({
-            Text(
-                text = subtitle,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }),
+        supportingContent = if (subtitle.isEmpty()) {
+            null
+        } else {
+            (
+                {
+                    Text(
+                        text = subtitle,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                )
+        },
         leadingContent = {
             CircularBox(
                 icon = icon,
                 doesSelected = false,
                 showBorder = false,
                 backgroundColor = leadingColor,
-                unselectedTint = leadingTint
+                unselectedTint = leadingTint,
             )
         },
         trailingContent = {
             Icon(
                 imageVector = PoposIcons.ArrowRightAlt,
-                contentDescription = "Arrow right icon"
+                contentDescription = "Arrow right icon",
             )
         },
         tonalElevation = 1.dp,
@@ -88,7 +95,7 @@ fun SettingsCard(
             headlineColor = contentColorFor(backgroundColor = containerColor),
             supportingColor = contentColorFor(backgroundColor = containerColor),
             overlineColor = contentColorFor(backgroundColor = containerColor),
-            trailingIconColor = contentColorFor(backgroundColor = containerColor)
+            trailingIconColor = contentColorFor(backgroundColor = containerColor),
         ),
     )
 }

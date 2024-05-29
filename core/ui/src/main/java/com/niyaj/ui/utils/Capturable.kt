@@ -1,27 +1,20 @@
 /*
-* MIT License
-*
-* Copyright (c) 2022 Shreyas Patil
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in all
-* copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
-*
-*/
+ * Copyright 2022 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.ui.utils
 
 import android.graphics.Bitmap
@@ -86,14 +79,14 @@ import kotlinx.coroutines.withContext
 @Deprecated(
     "This Composable method has been deprecated & will be removed in the future releases. " +
         "Use Modifier `capturable()` directly.",
-    level = DeprecationLevel.WARNING
+    level = DeprecationLevel.WARNING,
 )
 @Composable
 fun Capturable(
     controller: CaptureController,
     modifier: Modifier = Modifier,
     onCaptured: (ImageBitmap?, Throwable?) -> Unit,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val updatedOnCaptured by rememberUpdatedState(newValue = onCaptured)
 
@@ -113,7 +106,6 @@ fun Capturable(
     }
 }
 
-
 /**
  * @param controller A [CaptureController] which gives control to capture the [content].
  * @param modifier The [Modifier] to be applied to the layout.
@@ -129,7 +121,7 @@ fun ScrollableCapturable(
     modifier: Modifier = Modifier,
     controller: CaptureController,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     AndroidView(
         factory = { context ->
@@ -158,7 +150,7 @@ fun ScrollableCapturable(
                 controller.captured()
             }
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
@@ -170,13 +162,12 @@ private fun loadBitmapFromScrollView(scrollView: ScrollView): Bitmap {
     val bitmap = Bitmap.createBitmap(
         scrollView.width,
         scrollView.getChildAt(0).height,
-        Bitmap.Config.ARGB_8888
+        Bitmap.Config.ARGB_8888,
     )
     val canvas = android.graphics.Canvas(bitmap)
     scrollView.draw(canvas)
     return bitmap
 }
-
 
 /**
  * Adds a capture-ability on the Composable which can draw Bitmap from the Composable component.
@@ -217,7 +208,7 @@ fun Modifier.capturable(controller: CaptureController): Modifier {
  * Modifier implementation of Capturable
  */
 private data class CapturableModifierNodeElement(
-    private val controller: CaptureController
+    private val controller: CaptureController,
 ) : ModifierNodeElement<CapturableModifierNode>() {
     override fun create(): CapturableModifierNode {
         return CapturableModifierNode(controller)
@@ -234,7 +225,7 @@ private data class CapturableModifierNodeElement(
  */
 @Suppress("unused")
 private class CapturableModifierNode(
-    var controller: CaptureController
+    var controller: CaptureController,
 ) : DelegatingNode(), DelegatableNode {
 
     val picture = Picture()
@@ -260,7 +251,7 @@ private class CapturableModifierNode(
 
                 drawIntoCanvas { canvas -> canvas.nativeCanvas.drawPicture(picture) }
             }
-        }
+        },
     )
 
     override fun onAttach() {
@@ -294,7 +285,7 @@ private fun Picture.asBitmap(config: Bitmap.Config): Bitmap {
             /* height = */
             this@asBitmap.height,
             /* config = */
-            config
+            config,
         )
         val canvas = android.graphics.Canvas(bitmap)
         canvas.drawColor(android.graphics.Color.WHITE)

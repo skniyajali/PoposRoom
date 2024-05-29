@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.order.details
 
 import android.Manifest
@@ -51,7 +68,7 @@ import com.niyaj.ui.components.BluetoothPermissionDialog
 import com.niyaj.ui.components.HandleBluetoothPermissionState
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
-import com.niyaj.ui.components.StandardScaffoldRouteNew
+import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -145,7 +162,6 @@ fun OrderDetailsScreen(
 
             val printOrder: (Int) -> Unit = {
                 if (bluetoothPermissions.allPermissionsGranted) {
-
                     if (bluetoothAdapter?.isEnabled == true) {
                         // Bluetooth is on print the receipt
                         printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
@@ -162,7 +178,7 @@ fun OrderDetailsScreen(
                 }
             }
 
-            StandardScaffoldRouteNew(
+            PoposSecondaryScaffold(
                 title = "Order Details",
                 showBackButton = true,
                 showBottomBar = false,
@@ -289,7 +305,9 @@ fun OrderDetailsScreen(
                                     orderDetails = orderDetails,
                                     charges = if (orderDetails.cartOrder.orderType == OrderType.DineOut) {
                                         charges.filterNot { !it.isApplicable }
-                                    } else emptyList(),
+                                    } else {
+                                        emptyList()
+                                    },
                                     onDismiss = viewModel::onDismissDialog,
                                     onClickShare = captureController::captureLongScreenshot,
                                     onCaptured = { bitmap, error ->

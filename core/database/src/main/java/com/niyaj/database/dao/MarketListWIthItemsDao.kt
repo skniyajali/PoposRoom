@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.database.dao
@@ -111,7 +112,7 @@ interface MarketListWIthItemsDao {
             JOIN market_list_with_type mlt ON mlt.listWithTypeId = :listTypeId
             JOIN market_type mt ON mlt.typeId = mt.typeId
             WHERE ml.marketId = mlt.marketId
-        """
+        """,
     )
     fun getMarketDetailsById(listTypeId: Int): Flow<MarketListAndType>
 
@@ -121,7 +122,7 @@ interface MarketListWIthItemsDao {
             FROM market_item mi
             JOIN measure_unit mu ON mi.unitId = mu.unitId
             WHERE mi.itemId = :itemId
-        """
+        """,
     )
     fun getUnitValueByItemId(itemId: Int): Double
 
@@ -130,7 +131,7 @@ interface MarketListWIthItemsDao {
             SELECT itemQuantity
             FROM market_list_with_items
             WHERE listWithTypeId = :listId AND itemId = :itemId
-        """
+        """,
     )
     fun getItemQuantityByListIdItemId(listId: Int, itemId: Int): Double?
 
@@ -139,7 +140,7 @@ interface MarketListWIthItemsDao {
             UPDATE market_list_with_items
             SET itemQuantity = :itemQuantity
             WHERE listWithTypeId = :listId AND itemId = :itemId
-        """
+        """,
     )
     fun updateItemQuantityByListIdItemId(listId: Int, itemId: Int, itemQuantity: Double): Int
 
@@ -148,7 +149,7 @@ interface MarketListWIthItemsDao {
             SELECT listWithTypeId
             FROM market_list_with_items
             WHERE listWithTypeId = :listId AND itemId = :itemId
-        """
+        """,
     )
     fun findMarketListItem(listId: Int, itemId: Int): Int?
 
@@ -156,7 +157,7 @@ interface MarketListWIthItemsDao {
         value = """
             INSERT INTO market_list_with_items (listWithTypeId, itemId, itemQuantity)
             VALUES (:listId, :itemId, :itemQuantity)
-        """
+        """,
     )
     fun addMarketListItem(listId: Int, itemId: Int, itemQuantity: Double): Long
 
@@ -164,7 +165,7 @@ interface MarketListWIthItemsDao {
         value = """
             DELETE FROM market_list_with_items
             WHERE listWithTypeId = :listId AND itemId = :itemId
-        """
+        """,
     )
     fun removeMarketListItem(listId: Int, itemId: Int): Int
 }

@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.ui.components
 
 import androidx.compose.animation.AnimatedContent
@@ -21,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.Constants.SEARCH_ITEM_PLACEHOLDER
-
 
 /**
  * @param placeholderText: Show placeholder text into search bar
@@ -65,7 +81,7 @@ fun ScaffoldNavActions(
         if (selectionCount == 1) {
             IconButton(
                 onClick = onEditClick,
-                modifier = Modifier.testTag(NAV_EDIT_BTN)
+                modifier = Modifier.testTag(NAV_EDIT_BTN),
             ) {
                 Icon(
                     imageVector = Icons.Default.Edit,
@@ -76,7 +92,7 @@ fun ScaffoldNavActions(
 
         IconButton(
             onClick = onDeleteClick,
-            modifier = Modifier.testTag(NAV_DELETE_BTN)
+            modifier = Modifier.testTag(NAV_DELETE_BTN),
         ) {
             Icon(
                 imageVector = Icons.Default.Delete,
@@ -86,7 +102,7 @@ fun ScaffoldNavActions(
 
         IconButton(
             onClick = onSelectAllClick,
-            modifier = Modifier.testTag(NAV_SELECT_ALL_BTN)
+            modifier = Modifier.testTag(NAV_SELECT_ALL_BTN),
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.Rule,
@@ -100,7 +116,7 @@ fun ScaffoldNavActions(
             searchText = searchText,
             placeholderText = placeholderText,
             onClearClick = onClearClick,
-            onSearchTextChanged = onSearchTextChanged
+            onSearchTextChanged = onSearchTextChanged,
         )
     } else {
         if (showSearchIcon) {
@@ -110,7 +126,7 @@ fun ScaffoldNavActions(
             ) {
                 Icon(
                     imageVector = Icons.Default.Search,
-                    contentDescription = "Search Icon"
+                    contentDescription = "Search Icon",
                 )
             }
         }
@@ -118,11 +134,11 @@ fun ScaffoldNavActions(
         if (showSettingsIcon) {
             IconButton(
                 onClick = onSettingsClick,
-                modifier = Modifier.testTag(NAV_SETTING_BTN)
+                modifier = Modifier.testTag(NAV_SETTING_BTN),
             ) {
                 Icon(
                     imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings"
+                    contentDescription = "Settings",
                 )
             }
         }
@@ -130,7 +146,6 @@ fun ScaffoldNavActions(
         content()
     }
 }
-
 
 /**
  * @param placeholderText: Show placeholder text into search bar
@@ -176,14 +191,14 @@ fun ScaffoldNavActions(
             searchText = searchText,
             placeholderText = placeholderText,
             onClearClick = onClearClick,
-            onSearchTextChanged = onSearchTextChanged
+            onSearchTextChanged = onSearchTextChanged,
         )
     } else {
         AnimatedContent(
             targetState = selectedState,
             transitionSpec = {
                 (fadeIn()).togetherWith(
-                    fadeOut(animationSpec = tween(200))
+                    fadeOut(animationSpec = tween(200)),
                 )
             },
             label = "navActions",
@@ -197,7 +212,7 @@ fun ScaffoldNavActions(
                             IconButton(onClick = onEditClick) {
                                 Icon(
                                     imageVector = Icons.Default.Edit,
-                                    contentDescription = Constants.EDIT_ICON
+                                    contentDescription = Constants.EDIT_ICON,
                                 )
                             }
                         }
@@ -205,14 +220,14 @@ fun ScaffoldNavActions(
                         IconButton(onClick = onDeleteClick) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                contentDescription = Constants.DELETE_ICON
+                                contentDescription = Constants.DELETE_ICON,
                             )
                         }
 
                         IconButton(onClick = onSelectAllClick) {
                             Icon(
                                 imageVector = Icons.Default.Checklist,
-                                contentDescription = Constants.SELECT_ALL_ICON
+                                contentDescription = Constants.SELECT_ALL_ICON,
                             )
                         }
 
@@ -222,11 +237,11 @@ fun ScaffoldNavActions(
                     if (showSearchIcon) {
                         IconButton(
                             onClick = onSearchClick,
-                            modifier = Modifier.testTag(NAV_SEARCH_BTN)
+                            modifier = Modifier.testTag(NAV_SEARCH_BTN),
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Search,
-                                contentDescription = "Search Icon"
+                                contentDescription = "Search Icon",
                             )
                         }
                     }
@@ -234,11 +249,11 @@ fun ScaffoldNavActions(
                     if (showSettings) {
                         IconButton(
                             onClick = onSettingsClick,
-                            modifier = Modifier.testTag(NAV_SETTING_BTN)
+                            modifier = Modifier.testTag(NAV_SETTING_BTN),
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
-                                contentDescription = "Settings"
+                                contentDescription = "Settings",
                             )
                         }
                     }
@@ -249,7 +264,6 @@ fun ScaffoldNavActions(
         }
     }
 }
-
 
 const val NAV_SEARCH_BTN = "navigation_search_icon"
 const val NAV_SELECT_ALL_BTN = "navigation_select_all"

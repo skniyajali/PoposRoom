@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.ui.components
 
 import androidx.compose.foundation.background
@@ -48,9 +65,8 @@ fun ReportBox(
     elevation: Dp = 1.dp,
     minusWidth: Dp = 15.dp,
     containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
-    boxColor: Color = Color.White
+    boxColor: Color = Color.White,
 ) {
-
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
 
@@ -63,15 +79,15 @@ fun ReportBox(
         colors = CardDefaults.elevatedCardColors(
             containerColor = containerColor,
             disabledContainerColor = CardDefaults.elevatedCardColors().containerColor,
-            disabledContentColor = CardDefaults.elevatedCardColors().contentColor
-        )
+            disabledContentColor = CardDefaults.elevatedCardColors().contentColor,
+        ),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(SpaceSmallMax),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
@@ -101,13 +117,12 @@ fun ReportBox(
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = MaterialTheme.colorScheme.secondary
+                    tint = MaterialTheme.colorScheme.secondary,
                 )
             }
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,7 +137,7 @@ fun ReportCardBox(
     minusWidth: Dp = 20.dp,
     containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
     boxColor: Color = Color.White,
-    iconTint: Color = MaterialTheme.colorScheme.secondary
+    iconTint: Color = MaterialTheme.colorScheme.secondary,
 ) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -135,15 +150,15 @@ fun ReportCardBox(
         colors = CardDefaults.elevatedCardColors(
             containerColor = containerColor,
             disabledContainerColor = CardDefaults.elevatedCardColors().containerColor,
-            disabledContentColor = CardDefaults.elevatedCardColors().contentColor
-        )
+            disabledContentColor = CardDefaults.elevatedCardColors().contentColor,
+        ),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(SpaceSmallMax),
             horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
                 modifier = Modifier
@@ -155,12 +170,12 @@ fun ReportCardBox(
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = iconTint
+                    tint = iconTint,
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(SpaceSmall))
-            
+
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
@@ -184,7 +199,6 @@ fun ReportCardBox(
     }
 }
 
-
 @Composable
 fun ReportCardBox(
     modifier: Modifier = Modifier,
@@ -196,7 +210,7 @@ fun ReportCardBox(
     minusWidth: Dp = 20.dp,
     containerColor: Brush,
     boxColor: Color = Color.White,
-    iconTint: Color = MaterialTheme.colorScheme.secondary
+    iconTint: Color = MaterialTheme.colorScheme.secondary,
 ) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -213,7 +227,7 @@ fun ReportCardBox(
                 .fillMaxSize()
                 .padding(SpaceSmallMax),
             horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
                 modifier = Modifier
@@ -225,7 +239,7 @@ fun ReportCardBox(
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = iconTint
+                    tint = iconTint,
                 )
             }
 

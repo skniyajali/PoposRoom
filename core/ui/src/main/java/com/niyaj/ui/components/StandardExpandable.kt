@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.ui.components
 
 import androidx.compose.animation.animateContentSize
@@ -50,19 +67,19 @@ fun StandardExpandable(
     contentDesc: String = "Item",
     contentAnimation: FiniteAnimationSpec<IntSize> = spring(
         dampingRatio = Spring.DampingRatioLowBouncy,
-        stiffness = Spring.StiffnessVeryLow
+        stiffness = Spring.StiffnessVeryLow,
     ),
     expandAnimation: State<Float> = animateFloatAsState(
         targetValue = if (expanded) 180f else 0f,
         animationSpec = tween(1000, easing = FastOutSlowInEasing),
-        label = "expandAnimation"
-    )
+        label = "expandAnimation",
+    ),
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(4.dp))
-            .animateContentSize(animationSpec = contentAnimation)
+            .animateContentSize(animationSpec = contentAnimation),
     ) {
         Row(
             modifier = Modifier
@@ -107,12 +124,12 @@ fun StandardExpandable(
                             .rotate(expandAnimation.value),
                         onClick = {
                             onExpandChanged(!expanded)
-                        }
+                        },
                     ) {
                         Icon(
                             imageVector = Icons.Filled.ArrowDropDown,
                             contentDescription = contentDesc.plus("Expand Less"),
-                            tint = iconTint
+                            tint = iconTint,
                         )
                     }
                 }
@@ -125,5 +142,4 @@ fun StandardExpandable(
             content()
         }
     }
-
 }

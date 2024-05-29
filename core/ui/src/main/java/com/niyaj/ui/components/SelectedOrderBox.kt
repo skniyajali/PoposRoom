@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.ui.components
@@ -52,7 +53,7 @@ fun SelectedOrderBox(
     onClick: () -> Unit,
     height: Dp = 35.dp,
     borderColor: Color = MaterialTheme.colorScheme.tertiary,
-    shape: Shape = RoundedCornerShape(SpaceMini)
+    shape: Shape = RoundedCornerShape(SpaceMini),
 ) {
     Surface(
         modifier = modifier,
@@ -69,7 +70,7 @@ fun SelectedOrderBox(
                 .height(height)
                 .padding(SpaceSmall),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
                 text = text,
@@ -81,15 +82,15 @@ fun SelectedOrderBox(
             )
             IconButton(
                 onClick = onClick,
-                modifier = Modifier.size(IconSizeLarge)
+                modifier = Modifier.size(IconSizeLarge),
             ) {
                 Icon(
                     imageVector = PoposIcons.ExpandMore,
-                    contentDescription = null
+                    contentDescription = null,
                 )
             }
         }
-        
+
         Spacer(modifier = Modifier.width(SpaceSmall))
     }
 }

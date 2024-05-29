@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.ui.components
 
 import androidx.compose.foundation.Canvas
@@ -30,8 +47,8 @@ fun TwoGridTexts(
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ){
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
         Text(
             modifier = Modifier.weight(2.5f, true),
             text = textOne,
@@ -44,24 +61,23 @@ fun TwoGridTexts(
             text = textTwo,
             style = textStyle,
             textAlign = TextAlign.End,
-            fontWeight = if(isTitle) FontWeight.SemiBold else FontWeight.Normal,
+            fontWeight = if (isTitle) FontWeight.SemiBold else FontWeight.Normal,
         )
     }
 }
 
-
 @Composable
 fun TwoGridText(
-    modifier : Modifier = Modifier,
+    modifier: Modifier = Modifier,
     textOne: String,
     textTwo: String,
-    textColor: Color = Color.Black
+    textColor: Color = Color.Black,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ){
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
         Text(
             modifier = Modifier,
             text = textOne,
@@ -81,7 +97,6 @@ fun TwoGridText(
     }
 }
 
-
 @Composable
 fun ThreeGridTexts(
     modifier: Modifier = Modifier,
@@ -94,8 +109,8 @@ fun ThreeGridTexts(
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ){
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
         Text(
             modifier = Modifier.weight(2f),
             text = textOne,
@@ -108,7 +123,7 @@ fun ThreeGridTexts(
             text = textTwo,
             style = textStyle,
             textAlign = TextAlign.Start,
-            fontWeight = if(isTitle) FontWeight.SemiBold else FontWeight.Normal,
+            fontWeight = if (isTitle) FontWeight.SemiBold else FontWeight.Normal,
         )
 
         Text(
@@ -116,7 +131,7 @@ fun ThreeGridTexts(
             text = textThree,
             style = textStyle,
             textAlign = TextAlign.End,
-            fontWeight = if(isTitle) FontWeight.SemiBold else FontWeight.Normal,
+            fontWeight = if (isTitle) FontWeight.SemiBold else FontWeight.Normal,
         )
     }
 }
@@ -131,11 +146,11 @@ fun TextDivider(
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         HorizontalDivider(
             modifier = Modifier
-                .weight(1f, true)
+                .weight(1f, true),
         )
 
         Text(
@@ -143,12 +158,12 @@ fun TextDivider(
             style = textStyle,
             fontWeight = fontWeight,
             textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
 
         HorizontalDivider(
             modifier = Modifier
-                .weight(1f, true)
+                .weight(1f, true),
         )
     }
 }
@@ -163,12 +178,12 @@ fun AnimatedTextDivider(
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         HorizontalDivider(
             modifier = Modifier
                 .weight(1f, true)
-                .drawRainbowBorder(1.dp, durationMillis = 5000)
+                .drawRainbowBorder(1.dp, durationMillis = 5000),
         )
 
         Text(
@@ -176,17 +191,16 @@ fun AnimatedTextDivider(
             style = textStyle,
             fontWeight = fontWeight,
             textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
 
         HorizontalDivider(
             modifier = Modifier
                 .weight(1f, true)
-                .drawRainbowBorder(1.dp, durationMillis = 5000)
+                .drawRainbowBorder(1.dp, durationMillis = 5000),
         )
     }
 }
-
 
 @Composable
 fun AnimatedTextDividerDashed(
@@ -198,12 +212,12 @@ fun AnimatedTextDividerDashed(
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         DashedDivider(
             modifier = Modifier
                 .weight(1f, true),
-            gapWidth = 4.dp
+            gapWidth = 4.dp,
         )
 
         Text(
@@ -211,17 +225,16 @@ fun AnimatedTextDividerDashed(
             style = textStyle,
             fontWeight = fontWeight,
             textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
 
         DashedDivider(
             modifier = Modifier
                 .weight(1f, true),
-            gapWidth = 4.dp
+            gapWidth = 4.dp,
         )
     }
 }
-
 
 @Composable
 fun DashedDivider(
@@ -232,10 +245,9 @@ fun DashedDivider(
     color: Color = Color.Gray,
 ) {
     Canvas(modifier) {
-
         val pathEffect = PathEffect.dashPathEffect(
             intervals = floatArrayOf(dashWidth.toPx(), gapWidth.toPx()),
-            phase = 0f
+            phase = 0f,
         )
 
         drawLine(
@@ -243,7 +255,7 @@ fun DashedDivider(
             start = Offset(0f, 0f),
             end = Offset(size.width, 0f),
             pathEffect = pathEffect,
-            strokeWidth = dashHeight.toPx()
+            strokeWidth = dashHeight.toPx(),
         )
     }
 }

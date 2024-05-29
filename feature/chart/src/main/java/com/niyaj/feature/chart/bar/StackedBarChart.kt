@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.feature.chart.bar
 
 import androidx.compose.foundation.Canvas
@@ -41,7 +58,7 @@ fun StackedBarChart(
     onBarClick: (StackedBarData) -> Unit = {},
     chartDimens: ChartDimens = ChartDimensDefaults.chartDimesDefaults(),
     axisConfig: AxisConfig = AxisConfigDefaults.axisConfigDefaults(isSystemInDarkTheme()),
-    barConfig: BarConfig = BarConfigDefaults.barConfigDimesDefaults()
+    barConfig: BarConfig = BarConfigDefaults.barConfigDimesDefaults(),
 ) {
     if (stackBarData.isValid(colors.count()).not()) {
         throw IllegalArgumentException("Colors count should be total to number of values in StackedBarData's yValue")
@@ -64,14 +81,19 @@ fun StackedBarChart(
                 detectTapGestures(onPress = { offset ->
                     clickedBar.value = offset
                 })
-            }
+            },
     ) {
         barWidth.floatValue = size.width.div(stackBarData.count().times(1.2F))
         val yScalableFactor = size.height.div(maxYValue)
 
         stackBarData.reversed().forEachIndexed { index, stackBarDataIndividual ->
             drawIndividualStackedBar(
-                index, stackBarDataIndividual, barWidth.floatValue, yScalableFactor, barConfig, colors
+                index,
+                stackBarDataIndividual,
+                barWidth.floatValue,
+                yScalableFactor,
+                barConfig,
+                colors,
             )
         }
         drawLabels(
@@ -81,7 +103,7 @@ fun StackedBarChart(
             axisConfig,
             clickedBar.value,
             onBarClick,
-            axisConfig.textColor
+            axisConfig.textColor,
         )
     }
 }
@@ -98,10 +120,18 @@ private fun DrawScope.drawLabels(
     stackBarData.forEachIndexed { index, stackBarDataIndividual ->
         val barHeight = stackBarDataIndividual.yValue.sum().times(yScalableFactor)
         val barTopLeft = getTopLeft(
-            index, width, size, stackBarDataIndividual.yValue.sum(), yScalableFactor
+            index,
+            width,
+            size,
+            stackBarDataIndividual.yValue.sum(),
+            yScalableFactor,
         )
         val barTopRight = getTopRight(
-            index, width, size, stackBarDataIndividual.yValue.sum(), yScalableFactor
+            index,
+            width,
+            size,
+            stackBarDataIndividual.yValue.sum(),
+            yScalableFactor,
         )
         if (clickedBarValue.x in (barTopLeft.x..barTopRight.x)) {
             onBarClick(stackBarDataIndividual)
@@ -113,7 +143,7 @@ private fun DrawScope.drawLabels(
                 barHeight,
                 barTopLeft,
                 stackBarData.count(),
-                labelTextColor
+                labelTextColor,
             )
         }
     }
@@ -127,7 +157,6 @@ private fun DrawScope.drawIndividualStackedBar(
     barConfig: BarConfig,
     colors: List<Color>,
 ) {
-
     var individualHeight = 0F
     stackBarData.yValue.forEachIndexed { individualIndex, value ->
         val individualBarHeight = value.times(yScalableFactor)
@@ -141,7 +170,7 @@ private fun DrawScope.drawIndividualStackedBar(
                 cornerRadius = CornerRadius(if (barConfig.hasRoundedCorner) individualBarHeight else 0F),
                 topLeft = topLeft,
                 color = colors[individualIndex],
-                size = Size(barWidth, individualBarHeight)
+                size = Size(barWidth, individualBarHeight),
             )
         }
 

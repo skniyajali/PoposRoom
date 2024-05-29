@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.ui.components
@@ -55,16 +56,20 @@ fun ItemNotAvailable(
     text: String = "",
     buttonText: String = "",
     showImage: Boolean = true,
-    icon: ImageVector = if (buttonText.contains("CREATE", true)
-        || buttonText.contains("ADD", true)
-    ) Icons.Default.Add else Icons.Default.Edit,
+    icon: ImageVector = if (buttonText.contains("CREATE", true) ||
+        buttonText.contains("ADD", true)
+    ) {
+        Icons.Default.Add
+    } else {
+        Icons.Default.Edit
+    },
     image: Painter = painterResource(id = R.drawable.emptystate),
     onClick: () -> Unit = {},
 ) {
     Box(
         modifier = modifier
             .fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             modifier = Modifier
@@ -99,7 +104,7 @@ fun ItemNotAvailable(
                     onClick = onClick,
                     colors = ButtonDefaults.elevatedButtonColors(
                         containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onSecondary
+                        contentColor = MaterialTheme.colorScheme.onSecondary,
                     ),
                     shape = CutCornerShape(4.dp),
                 )
@@ -115,9 +120,13 @@ fun ItemNotAvailableHalf(
     text: String = "",
     buttonText: String = "",
     showImage: Boolean = true,
-    icon: ImageVector = if (buttonText.contains("CREATE", true)
-        || buttonText.contains("ADD", true)
-    ) Icons.Default.Add else Icons.Default.Edit,
+    icon: ImageVector = if (buttonText.contains("CREATE", true) ||
+        buttonText.contains("ADD", true)
+    ) {
+        Icons.Default.Add
+    } else {
+        Icons.Default.Edit
+    },
     image: Painter = painterResource(id = R.drawable.emptystate),
     onClick: () -> Unit = {},
 ) {
@@ -140,7 +149,7 @@ fun ItemNotAvailableHalf(
             fontWeight = FontWeight.Normal,
             style = MaterialTheme.typography.bodySmall,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.error
+            color = MaterialTheme.colorScheme.error,
         )
 
         if (buttonText.isNotEmpty()) {
@@ -152,14 +161,13 @@ fun ItemNotAvailableHalf(
                 onClick = onClick,
                 colors = ButtonDefaults.elevatedButtonColors(
                     containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = MaterialTheme.colorScheme.onSecondary
+                    contentColor = MaterialTheme.colorScheme.onSecondary,
                 ),
                 shape = CutCornerShape(4.dp),
             )
         }
     }
 }
-
 
 @Composable
 fun EmptyImportScreen(
@@ -175,7 +183,7 @@ fun EmptyImportScreen(
     Box(
         modifier = modifier
             .fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             modifier = Modifier
@@ -199,7 +207,7 @@ fun EmptyImportScreen(
                 fontWeight = FontWeight.Normal,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.error
+                color = MaterialTheme.colorScheme.error,
             )
 
             if (buttonText.isNotEmpty()) {
@@ -211,7 +219,7 @@ fun EmptyImportScreen(
                     onClick = onClick,
                     colors = ButtonDefaults.elevatedButtonColors(
                         containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onSecondary
+                        contentColor = MaterialTheme.colorScheme.onSecondary,
                     ),
                     shape = CutCornerShape(4.dp),
                 )

@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.data.data.repository
@@ -48,7 +49,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
-
 
 class CartRepositoryImpl(
     private val cartDao: CartDao,
@@ -291,8 +291,10 @@ class CartRepositoryImpl(
                         charges = order.charges.toImmutableList(),
                         customerPhone = order.customerPhone,
                         customerAddress = order.customerAddress,
-                        updatedAt = (order.cartOrder.updatedAt
-                            ?: order.cartOrder.createdAt).toTimeSpan,
+                        updatedAt = (
+                            order.cartOrder.updatedAt
+                                ?: order.cartOrder.createdAt
+                            ).toTimeSpan,
                         orderPrice = order.orderPrice.totalPrice,
                     )
                 }
@@ -326,8 +328,10 @@ class CartRepositoryImpl(
                 charges = itemDto.charges.toImmutableList(),
                 customerPhone = itemDto.customerPhone,
                 customerAddress = itemDto.customerAddress,
-                updatedAt = (itemDto.cartOrder.updatedAt
-                    ?: itemDto.cartOrder.createdAt).toTimeSpan,
+                updatedAt = (
+                    itemDto.cartOrder.updatedAt
+                        ?: itemDto.cartOrder.createdAt
+                    ).toTimeSpan,
                 orderPrice = itemDto.orderPrice.totalPrice,
             )
         }
@@ -350,7 +354,6 @@ class CartRepositoryImpl(
 
     private suspend fun increaseCartProductPrice(orderId: Int, productId: Int): Int {
         return withContext(ioDispatcher) {
-
             val productPrice = async(ioDispatcher) {
                 cartOrderDao.getProductPrice(productId)
             }.await()
@@ -413,7 +416,9 @@ class CartRepositoryImpl(
 
             val discountPrice = if (!addOnPrice.isApplicable) {
                 cartPrice.discountPrice + addOnPrice.itemPrice
-            } else cartPrice.discountPrice
+            } else {
+                cartPrice.discountPrice
+            }
 
             val totalPrice = basePrice - discountPrice
 
@@ -443,7 +448,9 @@ class CartRepositoryImpl(
 
             val discountPrice = if (!addOnPrice.isApplicable) {
                 cartPrice.discountPrice - addOnPrice.itemPrice
-            } else cartPrice.discountPrice
+            } else {
+                cartPrice.discountPrice
+            }
 
             val totalPrice = basePrice - discountPrice
 

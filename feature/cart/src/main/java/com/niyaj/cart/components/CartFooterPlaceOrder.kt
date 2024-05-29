@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.cart.components
@@ -70,18 +71,23 @@ fun CartFooterPlaceOrder(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(
-                    onClick = onClickSelectAll
+                    onClick = onClickSelectAll,
                 ) {
                     Icon(
-                        imageVector = if (countTotalItems == countSelectedItem)
+                        imageVector = if (countTotalItems == countSelectedItem) {
                             PoposIcons.CheckCircle
-                        else PoposIcons.CheckCircleOutline,
+                        } else {
+                            PoposIcons.CheckCircleOutline
+                        },
                         contentDescription = "Select All Order",
-                        tint = if (countTotalItems == countSelectedItem) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.secondary
+                        tint = if (countTotalItems == countSelectedItem) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.secondary
+                        },
                     )
                 }
                 Text(
@@ -89,8 +95,8 @@ fun CartFooterPlaceOrder(
                         withStyle(
                             style = SpanStyle(
                                 color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Bold
-                            )
+                                fontWeight = FontWeight.Bold,
+                            ),
                         ) {
                             append("$countTotalItems")
                             append(" - ")
@@ -104,13 +110,13 @@ fun CartFooterPlaceOrder(
                     modifier = Modifier.clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
-                        onClick = onClickSelectAll
-                    )
+                        onClick = onClickSelectAll,
+                    ),
                 )
             }
 
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 val text =
                     if (countSelectedItem == 0) " " else if (countSelectedItem < countTotalItems) " $countSelectedItem " else " All "
@@ -121,7 +127,7 @@ fun CartFooterPlaceOrder(
                     enabled = countSelectedItem > 0,
                     shape = CutCornerShape(4.dp),
                     style = MaterialTheme.typography.labelSmall,
-                    btnHeight = ButtonDefaults.MinHeight
+                    btnHeight = ButtonDefaults.MinHeight,
                 )
 
                 if (showPrintBtn) {
@@ -135,7 +141,7 @@ fun CartFooterPlaceOrder(
                         btnHeight = 30.dp,
                         shape = CutCornerShape(4.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondary
+                            containerColor = MaterialTheme.colorScheme.secondary,
                         ),
                     )
                 }

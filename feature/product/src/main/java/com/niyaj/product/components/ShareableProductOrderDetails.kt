@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.product.components
 
 import android.annotation.SuppressLint
@@ -79,13 +96,13 @@ import com.niyaj.ui.utils.ScrollableCapturable
 fun ShareableProductOrderDetails(
     modifier: Modifier = Modifier,
     captureController: CaptureController,
-    productState: UiState<Product>  ,
+    productState: UiState<Product>,
     totalOrderDetails: ProductTotalOrderDetails,
     ordersState: UiState<List<ProductWiseOrder>>,
     onDismiss: () -> Unit,
     onClickShare: () -> Unit,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
-    onClickPrintOrder: () -> Unit
+    onClickPrintOrder: () -> Unit,
 ) = trace("ShareableProductOrderDetails") {
     BasicAlertDialog(
         onDismissRequest = onDismiss,
@@ -95,14 +112,14 @@ fun ShareableProductOrderDetails(
             dismissOnClickOutside = true,
             dismissOnBackPress = true,
             usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false
-        )
+            decorFitsSystemWindows = false,
+        ),
     ) {
         Card(
             modifier = Modifier
                 .fillMaxSize(),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.background
+                containerColor = MaterialTheme.colorScheme.background,
             ),
         ) {
             Crossfade(
@@ -116,7 +133,7 @@ fun ShareableProductOrderDetails(
                                 Column(
                                     modifier = Modifier
                                         .fillMaxSize(),
-                                    verticalArrangement = Arrangement.SpaceBetween
+                                    verticalArrangement = Arrangement.SpaceBetween,
                                 ) {
                                     CapturableOrderDetailsCard(
                                         modifier = Modifier.weight(3f),
@@ -124,9 +141,8 @@ fun ShareableProductOrderDetails(
                                         totalOrder = totalOrderDetails,
                                         orders = ordersState.data,
                                         captureController = captureController,
-                                        onCaptured = onCaptured
+                                        onCaptured = onCaptured,
                                     )
-
 
                                     DialogButtons(
                                         modifier = Modifier,
@@ -162,13 +178,13 @@ fun CapturableOrderDetailsCard(
         controller = captureController,
         onCaptured = onCaptured,
         modifier = modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth(),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.background
+                containerColor = MaterialTheme.colorScheme.background,
             ),
         ) {
             ElevatedCard(
@@ -176,16 +192,16 @@ fun CapturableOrderDetailsCard(
                     .fillMaxWidth()
                     .padding(SpaceSmall),
                 colors = CardDefaults.elevatedCardColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
                 ),
                 elevation = CardDefaults.elevatedCardElevation(
-                    defaultElevation = 2.dp
+                    defaultElevation = 2.dp,
                 ),
-                shape = RoundedCornerShape(SpaceSmall)
+                shape = RoundedCornerShape(SpaceSmall),
             ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
                 ) {
                     BoxWithConstraints(
                         modifier = Modifier
@@ -195,7 +211,7 @@ fun CapturableOrderDetailsCard(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(120.dp)
-                                .background(gradient6)
+                                .background(gradient6),
                         )
 
                         CircularBox(
@@ -213,7 +229,7 @@ fun CapturableOrderDetailsCard(
 
                     ShareableProductDetails(
                         modifier = Modifier.padding(top = 40.dp),
-                        product = product
+                        product = product,
                     )
 
                     ProductTotalOrdersDetails(details = totalOrder)
@@ -245,7 +261,7 @@ fun ShareableOrderDetails(
                 ShareableProductOrderDetailsCard(
                     date = date,
                     orders = groupedOrders[date] ?: emptyList(),
-                    productPrice = productPrice
+                    productPrice = productPrice,
                 )
             }
         }
@@ -262,7 +278,7 @@ fun ShareableOrderDetails(
                 if (remainingDates.isNotEmpty()) {
                     loadedDates = loadedDates + remainingDates.take(1)
                 }
-            }
+            },
         )
     }
 }
@@ -278,10 +294,16 @@ fun ShareableProductOrderDetailsCard(
     val totalSales = remember { orders.sumOf { it.quantity }.times(productPrice) }.toString()
 
     Column(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
     ) {
-        TextWithCount(modifier = Modifier
-                .background(Color.Transparent), text = date, trailingText = totalSales.toRupee, count = orders.size, leadingIcon = PoposIcons.CalenderMonth)
+        TextWithCount(
+            modifier = Modifier
+                .background(Color.Transparent),
+            text = date,
+            trailingText = totalSales.toRupee,
+            count = orders.size,
+            leadingIcon = PoposIcons.CalenderMonth,
+        )
 
         grpByOrderType.forEach { (orderType, grpOrders) ->
             val totalPrice =
@@ -291,7 +313,7 @@ fun ShareableProductOrderDetailsCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Pewter)
-                    .align(Alignment.CenterHorizontally)
+                    .align(Alignment.CenterHorizontally),
             ) {
                 Text(
                     text = "$orderType - ${totalPrice.toRupee}",
@@ -300,7 +322,7 @@ fun ShareableProductOrderDetailsCard(
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .padding(SpaceMini)
-                        .align(Alignment.Center)
+                        .align(Alignment.Center),
                 )
             }
 
@@ -312,17 +334,17 @@ fun ShareableProductOrderDetailsCard(
                         .fillMaxWidth()
                         .padding(SpaceSmall),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(SpaceSmall)
+                    horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
                 ) {
                     IconWithText(
                         text = "${order.orderId}",
                         icon = PoposIcons.Tag,
                         isTitle = true,
-                        modifier = Modifier.weight(0.5f)
+                        modifier = Modifier.weight(0.5f),
                     )
 
                     Column(
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     ) {
                         order.customerPhone?.let {
                             Text(text = it)
@@ -338,13 +360,13 @@ fun ShareableProductOrderDetailsCard(
                         text = "${order.quantity} Qty",
                         textAlign = TextAlign.End,
                         fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.weight(0.7f)
+                        modifier = Modifier.weight(0.7f),
                     )
 
                     Text(
                         text = order.orderedDate.toTime,
                         textAlign = TextAlign.End,
-                        modifier = Modifier.weight(0.8f)
+                        modifier = Modifier.weight(0.8f),
                     )
                 }
 
@@ -375,13 +397,13 @@ fun PaginationButtons(
         AnimatedVisibility(
             visible = showViewLessBtn,
             enter = fadeIn(),
-            exit = fadeOut(tween(500))
+            exit = fadeOut(tween(500)),
         ) {
             FilledTonalButton(
                 onClick = onClickViewLess,
                 colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                ),
             ) {
                 Icon(imageVector = PoposIcons.ArrowDropUp, contentDescription = "View Less")
                 Text("View Less")

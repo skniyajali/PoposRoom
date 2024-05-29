@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.print
 
 import android.util.Log
@@ -10,7 +27,7 @@ import com.niyaj.common.utils.createDottedString
 import com.niyaj.common.utils.toFormattedTime
 import com.niyaj.common.utils.toTime
 import com.niyaj.data.repository.PrintRepository
-import com.niyaj.feature.printer.bluetooth_printer.BluetoothPrinter
+import com.niyaj.feature.printer.bluetoothPrinter.BluetoothPrinter
 import com.niyaj.model.AddOnItem
 import com.niyaj.model.CartOrder
 import com.niyaj.model.CartProductItem
@@ -59,7 +76,6 @@ class OrderPrintViewModel @Inject constructor(
             }
 
             is PrintEvent.PrintAllExpenses -> {
-
             }
 
             is PrintEvent.PrintDeliveryReport -> {
@@ -117,7 +133,6 @@ class OrderPrintViewModel @Inject constructor(
                     }
 
                     printer.printFormattedText(printItems)
-
                 } ?: run {
                     _eventFlow.emit(UiEvent.OnError("Printer not connected"))
                 }
@@ -163,12 +178,11 @@ class OrderPrintViewModel @Inject constructor(
 
         products += "[L]-------------------------------\n"
 
-
         orderedProduct.forEach {
             val productName =
                 createDottedString(it.productName, printerInfo.productNameLength)
 
-            products += "[L]${productName}[R]${it.productQuantity}[R]${it.productPrice}\n"
+            products += "[L]$productName[R]${it.productQuantity}[R]${it.productPrice}\n"
         }
 
         return products
@@ -176,8 +190,8 @@ class OrderPrintViewModel @Inject constructor(
 
     private fun printTotalPrice(orderPrice: Long): String {
         return "[L]-------------------------------\n" +
-                "[L]Total[R] Rs. ${orderPrice}\n" +
-                "[L]-------------------------------\n\n"
+            "[L]Total[R] Rs. ${orderPrice}\n" +
+            "[L]-------------------------------\n\n"
     }
 
     private fun printAddOnItems(addOnItemList: List<AddOnItem>): String {
@@ -220,7 +234,6 @@ class OrderPrintViewModel @Inject constructor(
             charges += "[C] Additional Charges \n"
             charges += "[L]-------------------------------\n"
 
-
             for (charge in additionalCharges) {
                 charges += "[L]${charge.chargesName}[R]${charge.chargesPrice}\n"
             }
@@ -231,8 +244,8 @@ class OrderPrintViewModel @Inject constructor(
 
     private fun printSubTotalAndDiscount(orderPrice: OrderPrice): String {
         return "[L]-------------------------------\n" +
-                "[L]Sub Total[R]${orderPrice.basePrice}\n" +
-                "[L]Discount[R]${orderPrice.discountPrice}\n"
+            "[L]Sub Total[R]${orderPrice.basePrice}\n" +
+            "[L]Discount[R]${orderPrice.discountPrice}\n"
     }
 
     private fun printDeliveryReport(date: String) {
@@ -267,7 +280,7 @@ class OrderPrintViewModel @Inject constructor(
             deliveryReports.forEach { cart ->
                 val orderDate = (cart.updatedAt ?: cart.createdAt).toTime
 
-                order += "[L]${cart.orderId}[C]${cart.addressName}[R]${orderDate}[R]${cart.orderPrice}\n"
+                order += "[L]${cart.orderId}[C]${cart.addressName}[R]$orderDate[R]${cart.orderPrice}\n"
                 order += "[L]-------------------------------\n"
             }
         } else {

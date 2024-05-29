@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.product.details
 
 import androidx.compose.runtime.snapshotFlow
@@ -10,7 +27,7 @@ import com.niyaj.common.utils.isSameDay
 import com.niyaj.common.utils.toBarDate
 import com.niyaj.common.utils.toMillis
 import com.niyaj.data.repository.ProductRepository
-import com.niyaj.feature.printer.bluetooth_printer.BluetoothPrinter
+import com.niyaj.feature.printer.bluetoothPrinter.BluetoothPrinter
 import com.niyaj.model.OrderType
 import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.event.UiState
@@ -66,10 +83,11 @@ class ProductDetailsViewModel @Inject constructor(
         initialValue = UiState.Loading,
     )
 
-
     val orderDetails = snapshotFlow { productId }.flatMapLatest { productId ->
         productRepository.getProductWiseOrderDetails(productId).mapLatest { orders ->
-            if (orders.isEmpty()) UiState.Empty else {
+            if (orders.isEmpty()) {
+                UiState.Empty
+            } else {
 
                 val groupByDate = orders.groupBy { it.orderedDate.toBarDate }
                 val grpByOrderType = orders.groupBy { it.orderType }
@@ -183,7 +201,6 @@ class ProductDetailsViewModel @Inject constructor(
         boxReport += "[L]Total - [R]Rs.${report.totalAmount}\n"
         boxReport += "[L]-------------------------------\n"
 
-
         return boxReport
     }
 
@@ -213,16 +230,14 @@ class ProductDetailsViewModel @Inject constructor(
                 details += "[L]$date --> [R][${orderList.size}]|[${orderList.sumOf { it.quantity }}]|Rs.${totalSales}\n"
                 details += "[L]-------------------------------\n"
 
-
                 orderList.forEach { productWiseOrder ->
                     val customerAddress =
                         productWiseOrder.customerAddress?.getCapitalWord() ?: "N/A"
                     val customerPhone = productWiseOrder.customerPhone ?: "N/A"
 
-                    details += "[L]#${productWiseOrder.orderId}[L]${productWiseOrder.quantity}[L]${customerPhone}[R]${customerAddress}\n\n"
+                    details += "[L]#${productWiseOrder.orderId}[L]${productWiseOrder.quantity}[L]$customerPhone[R]${customerAddress}\n\n"
                 }
             }
-
         } else {
             details += "[C]No orders found for this product\n"
         }

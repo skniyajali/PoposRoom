@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.designsystem.theme
 
 import androidx.compose.ui.graphics.Brush
@@ -23,7 +40,7 @@ val light_background = Color(0xFFF3FFFA)
 val light_onBackground = Color(0xFF00201A)
 val light_surface = Color(0xFFF5F5F5)
 val light_onSurface = Color(0xFF00201A)
-val light_surfaceVariant = Color(0xFFF3FFFA)// 0xFFE7E0EB
+val light_surfaceVariant = Color(0xFFF3FFFA) // 0xFFE7E0EB
 val light_onSurfaceVariant = Color(0xFF49454E)
 val light_outline = Color(0xFF7A757F)
 val light_inverseOnSurface = Color(0xFFB7FFEC)
@@ -65,7 +82,6 @@ val dark_surfaceTint = Color(0xFFD4BBFF)
 val dark_outlineVariant = Color(0xFF49454E)
 val dark_scrim = Color(0xFF000000)
 
-
 val seed = Color(0xFF76B947)
 
 val BackgroundColor = Color(0xFFfafafa)
@@ -95,7 +111,6 @@ val BoneWhite = Color(0xFFF9F6EE)
 
 internal val DarkGreenGray95 = Color(0xFFF0F1EC)
 
-
 val ElectricViolet = Color(0xFF7D26FE)
 val Purple = Color(0xFF742DF6)
 val LightPurple = Color(0xFFBCA1E7)
@@ -113,10 +128,9 @@ val rainbowColorsBrush = Brush.sweepGradient(
         Color(0xFFFFF176),
         Color(0xFFAED581),
         Color(0xFF4DD0E1),
-        Color(0xFF9575CD)
-    )
+        Color(0xFF9575CD),
+    ),
 )
-
 
 val gradient1 = Brush.linearGradient(listOf(Color(0xFF00ff87), Color(0xFF60efff)))
 
@@ -134,4 +148,3 @@ val gradient7 = Brush.linearGradient(listOf(Color(0xFFfe8c00), Color(0xFFf9bc2c)
 
 //    background: linear-gradient(90deg, #FC466B 0%, #3F5EFB 100%);
 val gradient8 = Brush.linearGradient(listOf(Color(0xFFFC466B), Color(0xFF3F5EFB)))
-

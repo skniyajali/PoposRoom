@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.market.components
@@ -46,17 +47,16 @@ import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.StandardFilterChip
 import com.niyaj.ui.components.StandardOutlinedAssistChip
 
-
 @Composable
 fun MarketListItemHeader(
-    marketList: MarketListAndType
+    marketList: MarketListAndType,
 ) = trace("MarketListItemHeader") {
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(SpaceSmall),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
         ),
     ) {
         Row(
@@ -64,11 +64,11 @@ fun MarketListItemHeader(
                 .fillMaxWidth()
                 .padding(SpaceSmall),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(SpaceSmall)
+                horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
                 CircularBox(
                     icon = PoposIcons.CalenderMonth,
@@ -77,16 +77,16 @@ fun MarketListItemHeader(
 
                 Column(
                     horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(SpaceMini)
+                    verticalArrangement = Arrangement.spacedBy(SpaceMini),
                 ) {
                     Text(
                         text = "Market Date".uppercase(),
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
                     )
 
                     Text(
                         text = marketList.marketDate.toPrettyDate(),
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.titleLarge,
                     )
                 }
             }
@@ -101,9 +101,9 @@ fun MarketListItemHeader(
                     textStyle = TextStyle(
                         fontFamily = FontFamily.Cursive,
                         fontWeight = FontWeight.SemiBold,
-                        letterSpacing = 2.sp
+                        letterSpacing = 2.sp,
                     ),
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
                 )
 
                 StandardOutlinedAssistChip(
@@ -113,8 +113,8 @@ fun MarketListItemHeader(
                     textStyle = TextStyle(
                         fontFamily = FontFamily.Cursive,
                         fontWeight = FontWeight.SemiBold,
-                        fontStyle = FontStyle.Italic
-                    )
+                        fontStyle = FontStyle.Italic,
+                    ),
                 )
             }
         }
@@ -123,14 +123,14 @@ fun MarketListItemHeader(
 
 @Composable
 fun MarketListItemHeader(
-    marketDate: Long
+    marketDate: Long,
 ) = trace("MarketListItemHeader") {
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(SpaceSmall),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
         ),
     ) {
         Row(
@@ -138,11 +138,11 @@ fun MarketListItemHeader(
                 .fillMaxWidth()
                 .padding(SpaceSmall),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(SpaceSmall)
+                horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
                 CircularBox(
                     icon = PoposIcons.CalenderMonth,
@@ -151,7 +151,7 @@ fun MarketListItemHeader(
                 Text(
                     text = "Market Date".uppercase(),
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
                 )
             }
 
@@ -159,7 +159,7 @@ fun MarketListItemHeader(
                 text = marketDate.toFormattedDate,
                 icon = PoposIcons.CalenderMonth,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
             )
         }
     }

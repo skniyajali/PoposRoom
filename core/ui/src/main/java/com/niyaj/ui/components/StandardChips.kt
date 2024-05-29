@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.ui.components
@@ -58,20 +59,20 @@ fun StandardAssistChip(
         label = {
             Text(
                 text = text,
-                style = MaterialTheme.typography.labelSmall
+                style = MaterialTheme.typography.labelSmall,
             )
         },
         leadingIcon = {
             Icon(
                 imageVector = icon,
                 contentDescription = text,
-                tint = borderColor
+                tint = borderColor,
             )
         },
         border = assistChipBorder(
             enabled = true,
-            borderColor
-        )
+            borderColor,
+        ),
     )
 }
 
@@ -142,14 +143,14 @@ fun StandardRoundedFilterChip(
                     modifier = Modifier
                         .size(24.dp)
                         .background(MaterialTheme.colorScheme.background, CircleShape),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         imageVector = icon,
                         contentDescription = text.plus("icon"),
                         modifier = Modifier
                             .size(IconSizeMini)
-                            .align(Alignment.Center)
+                            .align(Alignment.Center),
                     )
                 }
             }
@@ -162,14 +163,13 @@ fun StandardRoundedFilterChip(
     )
 }
 
-
 @Composable
 fun StandardOutlinedAssistChip(
     modifier: Modifier = Modifier,
     text: String,
     icon: ImageVector,
     trailingIcon: ImageVector? = null,
-    borderColor: Color =  MaterialTheme.colorScheme.tertiary,
+    borderColor: Color = MaterialTheme.colorScheme.tertiary,
     textStyle: TextStyle = MaterialTheme.typography.labelSmall,
     onClick: () -> Unit = {},
 ) {
@@ -179,13 +179,13 @@ fun StandardOutlinedAssistChip(
         label = {
             Text(
                 text = text,
-                style = textStyle
+                style = textStyle,
             )
         },
         leadingIcon = {
             Icon(
                 imageVector = icon,
-                contentDescription = "$text Leading Icon"
+                contentDescription = "$text Leading Icon",
             )
         },
         trailingIcon = {
@@ -195,7 +195,7 @@ fun StandardOutlinedAssistChip(
         },
         border = assistChipBorder(
             enabled = true,
-            borderColor = borderColor
+            borderColor = borderColor,
         ),
         colors = AssistChipDefaults.assistChipColors(
             leadingIconContentColor = borderColor,
@@ -216,7 +216,7 @@ fun StandardSuggestionChip(
     ),
     colors: ChipColors = SuggestionChipDefaults.suggestionChipColors(
         labelColor = labelColor,
-        iconContentColor = labelColor
+        iconContentColor = labelColor,
     ),
     onClick: () -> Unit = {},
 ) {
@@ -228,7 +228,7 @@ fun StandardSuggestionChip(
         icon = {
             Icon(
                 imageVector = icon,
-                contentDescription = "Order Type"
+                contentDescription = "Order Type",
             )
         },
         label = {

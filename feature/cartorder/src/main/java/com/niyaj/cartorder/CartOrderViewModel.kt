@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.cartorder
 
 import androidx.compose.runtime.snapshotFlow
@@ -29,7 +46,7 @@ class CartOrderViewModel @Inject constructor(
 
     override var totalItems: List<Int> = emptyList()
 
-    private val _viewAll = MutableStateFlow(false)
+    private val showAllOrders = MutableStateFlow(false)
 
     val selectedId = cartOrderRepository.getSelectedCartOrder()
         .mapLatest {
@@ -41,7 +58,7 @@ class CartOrderViewModel @Inject constructor(
             initialValue = 0,
         )
 
-    val cartOrders = snapshotFlow { mSearchText.value }.combine(_viewAll) { text, viewAll ->
+    val cartOrders = snapshotFlow { mSearchText.value }.combine(showAllOrders) { text, viewAll ->
         cartOrderRepository.getAllCartOrders(text, viewAll)
     }
         .flatMapLatest { listFlow ->
@@ -59,7 +76,6 @@ class CartOrderViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = UiState.Loading,
         )
-
 
     fun selectCartOrder() {
         viewModelScope.launch {
@@ -83,7 +99,7 @@ class CartOrderViewModel @Inject constructor(
 
     fun onClickViewAllOrder() {
         viewModelScope.launch {
-            _viewAll.value = !_viewAll.value
+            showAllOrders.value = !showAllOrders.value
         }
     }
 
@@ -110,7 +126,6 @@ class CartOrderViewModel @Inject constructor(
         }
     }
 }
-
 
 internal fun AnalyticsHelper.logSelectedCartOrder(cartOrderId: Int) {
     logEvent(

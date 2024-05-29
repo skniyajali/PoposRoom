@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.feature.account.register
@@ -42,11 +43,11 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.feature.account.destinations.RegistrationResultScreenDestination
 import com.niyaj.feature.account.register.components.RegistrationScaffold
-import com.niyaj.feature.account.register.components.basic_info.BasicInfo
-import com.niyaj.feature.account.register.components.basic_info.BasicInfoEvent
-import com.niyaj.feature.account.register.components.login_info.LoginInfo
-import com.niyaj.feature.account.register.components.login_info.LoginInfoEvent
-import com.niyaj.feature.account.register.registration_result.RegistrationResult
+import com.niyaj.feature.account.register.components.basicInfo.BasicInfo
+import com.niyaj.feature.account.register.components.basicInfo.BasicInfoEvent
+import com.niyaj.feature.account.register.components.loginInfo.LoginInfo
+import com.niyaj.feature.account.register.components.loginInfo.LoginInfoEvent
+import com.niyaj.feature.account.register.registrationResult.RegistrationResult
 import com.niyaj.feature.account.register.utils.RegisterScreenPage
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
@@ -54,7 +55,6 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
 
 private const val CONTENT_ANIMATION_DURATION = 300
-
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Destination(route = Screens.REGISTER_SCREEN)
@@ -245,7 +245,6 @@ fun RegisterScreen(
         }
     }
 }
-
 
 private fun getTransitionDirection(
     initialIndex: Int,

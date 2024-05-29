@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.common.tags
 
 object PrinterInfoTestTags {
@@ -12,7 +29,6 @@ object PrinterInfoTestTags {
     const val PRINTER_INFO_NOTES_TWO = "Do not worry about connection status, click on test print button to print test data."
     const val PRINTER_INFO_NOTES_THREE = "If you did not uploaded the print logo then default logo will be used for printing."
     const val PRINTER_INFO_NOTES_FOUR = "Print some order bill and check how it's look, if it's look weird then change printer info accordingly."
-
 
     const val PRINTER_DPI_FIELD = "Printer DPI"
     const val PRINTER_DPI_MESSAGE = "Usually found in the back side of the printer"
@@ -53,10 +69,9 @@ object PrinterInfoTestTags {
     const val PRODUCT_REPORT_LIMIT_IS_REQUIRED = "Product report limit is required."
     const val PRODUCT_REPORT_LENGTH_ERROR = "Product name limit must be more than 20."
 
-    const val ADDRESS_REPORT_LIMIT_IS_REQUIRED =  "Address report limit is required."
+    const val ADDRESS_REPORT_LIMIT_IS_REQUIRED = "Address report limit is required."
     const val ADDRESS_REPORT_LENGTH_ERROR = "Address name limit must be more than 10."
 
     const val CUSTOM_REPORT_LIMIT_IS_REQUIRED = "Customer report limit is required."
     const val CUSTOM_REPORT_LENGTH_ERROR = "Customer name limit must be more than 10."
-
 }

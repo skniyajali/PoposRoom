@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.home
@@ -225,12 +226,14 @@ fun HomeScreenContent(
     val animatedColor by animateColorAsState(
         targetValue = if (selectedId != "0") {
             MaterialTheme.colorScheme.tertiaryContainer
-        } else Color.Transparent,
+        } else {
+            Color.Transparent
+        },
         label = "",
     )
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     ) {
         HomeScreenScaffold(
             modifier = modifier,
@@ -375,7 +378,7 @@ fun HomeScreenContent(
                 .padding(bottom = 32.dp, end = 16.dp)
                 .align(Alignment.BottomEnd),
             visible = lazyListState.isScrolled,
-            onClick = onClickScrollToTop
+            onClick = onClickScrollToTop,
         )
     }
 }

@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.feature.reports
 
 import android.util.Log
@@ -7,7 +24,7 @@ import com.niyaj.common.utils.getStartTime
 import com.niyaj.common.utils.toBarDate
 import com.niyaj.data.repository.ReportsRepository
 import com.niyaj.feature.chart.horizontalbar.model.HorizontalBarData
-import com.niyaj.feature.printer.bluetooth_printer.BluetoothPrinter
+import com.niyaj.feature.printer.bluetoothPrinter.BluetoothPrinter
 import com.niyaj.model.TotalExpenses
 import com.niyaj.model.TotalOrders
 import com.niyaj.ui.event.UiState
@@ -301,7 +318,6 @@ class ReportsViewModel @Inject constructor(
         printableString += "[L]Total - [R]Rs.₹${totalAmount}\n"
         printableString += "[L]-------------------------------\n"
 
-
         return printableString
     }
 
@@ -339,7 +355,6 @@ class ReportsViewModel @Inject constructor(
         printableString += "[L]-------------------------------\n"
         printableString += "[C]TOP SALES PRODUCTS\n"
 
-
         val categoryWiseReports = try {
             (categoryWiseData.value as UiState.Success).data
         } catch (e: Exception) {
@@ -352,7 +367,7 @@ class ReportsViewModel @Inject constructor(
                     val totalQuantity = products.sumOf { it.quantity }.toString()
 
                     printableString += "[L]-------------------------------\n"
-                    printableString += "[L]${categoryName} [R]${totalQuantity}\n"
+                    printableString += "[L]$categoryName [R]${totalQuantity}\n"
                     printableString += "[L]-------------------------------\n"
 
                     products.forEachIndexed { _, product ->

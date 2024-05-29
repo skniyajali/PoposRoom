@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.database.dao
 
 import androidx.room.Dao
@@ -17,31 +34,39 @@ import kotlinx.coroutines.flow.Flow
 interface PaymentDao {
 
     @Transaction
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM employee
-    """)
+    """,
+    )
     fun getAllEmployeePayment(): Flow<List<EmployeeWithPaymentsDto>>
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM employee
-    """)
+    """,
+    )
     fun getAllEmployee(): Flow<List<EmployeeEntity>>
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM employee WHERE employeeId = :employeeId
-    """
+    """,
     )
     suspend fun getEmployeeById(employeeId: Int): EmployeeEntity?
 
-
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM payment ORDER BY createdAt DESC
-    """)
+    """,
+    )
     fun getAllPayment(): Flow<List<PaymentEntity>>
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM payment WHERE paymentId = :paymentId
-    """)
+    """,
+    )
     suspend fun getPaymentById(paymentId: Int): PaymentEntity?
 
     /**
@@ -65,9 +90,11 @@ interface PaymentDao {
     @Insert(entity = EmployeeWithPaymentCrossRef::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertEmployeeWithPaymentCrossReference(employeeWithPayment: EmployeeWithPaymentCrossRef)
 
-    @Query(value = """
+    @Query(
+        value = """
         DELETE FROM payment WHERE paymentId = :paymentId
-    """)
+    """,
+    )
     suspend fun deletePayment(paymentId: Int): Int
 
     /**
@@ -84,7 +111,7 @@ interface PaymentDao {
     @Query(
         value = """
         SELECT employeeId FROM employee WHERE employeeId == :employeeId OR employeeName = :employeeName
-    """
+    """,
     )
     fun findEmployeeByName(employeeName: String, employeeId: Int?): Int?
 
