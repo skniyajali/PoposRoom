@@ -28,7 +28,8 @@ class TestMethodNameDetectorTest {
 
     @Test
     fun `detect prefix`() {
-        lint().issues(PREFIX)
+        lint()
+            .issues(PREFIX)
             .files(
                 JUNIT_TEST_STUB,
                 kotlin(
