@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.feature.account.register
@@ -32,10 +33,10 @@ import com.niyaj.data.repository.ProfileRepository
 import com.niyaj.data.repository.QRCodeScanner
 import com.niyaj.data.repository.UserDataRepository
 import com.niyaj.data.repository.validation.ProfileValidationRepository
-import com.niyaj.feature.account.register.components.basic_info.BasicInfoEvent
-import com.niyaj.feature.account.register.components.basic_info.BasicInfoState
-import com.niyaj.feature.account.register.components.login_info.LoginInfoEvent
-import com.niyaj.feature.account.register.components.login_info.LoginInfoState
+import com.niyaj.feature.account.register.components.basicInfo.BasicInfoEvent
+import com.niyaj.feature.account.register.components.basicInfo.BasicInfoState
+import com.niyaj.feature.account.register.components.loginInfo.LoginInfoEvent
+import com.niyaj.feature.account.register.components.loginInfo.LoginInfoState
 import com.niyaj.feature.account.register.utils.RegisterScreenPage
 import com.niyaj.model.Account
 import com.niyaj.model.Profile
@@ -98,10 +99,9 @@ class RegisterViewModel @Inject constructor(
     val basicInfoState: BasicInfoState
         get() = _basicInfoState.value
 
-    private val _registerScreenData = mutableStateOf(createRegisterScreenData())
+    private val _registerScreenState = mutableStateOf(createRegisterScreenData())
     val registerScreenState: RegisterScreenState
-        get() = _registerScreenData.value
-
+        get() = _registerScreenState.value
 
     private val _isNextEnabled = mutableStateOf(false)
     val isNextEnabled: Boolean
@@ -369,7 +369,7 @@ class RegisterViewModel @Inject constructor(
     private fun changePage(pageIndex: Int) {
         this.pageIndex = pageIndex
         _isNextEnabled.value = getIsNextEnabled()
-        _registerScreenData.value = createRegisterScreenData()
+        _registerScreenState.value = createRegisterScreenData()
     }
 
     private fun getIsNextEnabled(): Boolean {
@@ -410,12 +410,10 @@ class RegisterViewModel @Inject constructor(
                         paymentQrCode = it,
                     )
                 }
-
             }
         }
     }
 }
-
 
 internal fun AnalyticsHelper.logUserProfileCreated(profile: Profile) {
     logEvent(

@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.ui.components
@@ -61,8 +62,12 @@ fun StandardTextField(
     isPasswordVisible: Boolean = false,
     errorTextTag: String = label.plus("Error"),
     onPasswordToggleClick: (Boolean) -> Unit = {},
-    prefix: @Composable() (() -> Unit)? = null,
-    suffix: @Composable() (() -> Unit)? = null,
+    prefix:
+    @Composable()
+    (() -> Unit)? = null,
+    suffix:
+    @Composable()
+    (() -> Unit)? = null,
     onTrailingIconClick: () -> Unit = {},
 ) {
     TextField(
@@ -88,7 +93,7 @@ fun StandardTextField(
                     onClick = {
                         onPasswordToggleClick(!isPasswordVisible)
                     },
-                    modifier = Modifier
+                    modifier = Modifier,
                 ) {
                     Icon(
                         imageVector = if (isPasswordVisible) {
@@ -100,7 +105,7 @@ fun StandardTextField(
                             PASSWORD_HIDDEN_ICON
                         } else {
                             PASSWORD_SHOWN_ICON
-                        }
+                        },
                     )
                 }
             } else {
@@ -121,7 +126,7 @@ fun StandardTextField(
                     modifier = Modifier.testTag(errorTextTag),
                     text = it,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
         },
@@ -140,7 +145,6 @@ fun StandardTextField(
     )
 }
 
-
 @Composable
 fun StandardOutlinedTextField(
     modifier: Modifier = Modifier,
@@ -151,7 +155,9 @@ fun StandardOutlinedTextField(
     singleLine: Boolean = true,
     maxLines: Int = 1,
     leadingIcon: ImageVector,
-    trailingIcon: @Composable() (() -> Unit)? = null,
+    trailingIcon:
+    @Composable()
+    (() -> Unit)? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     readOnly: Boolean = false,
     enabled: Boolean = true,
@@ -161,8 +167,12 @@ fun StandardOutlinedTextField(
     isPasswordToggleDisplayed: Boolean = keyboardType == KeyboardType.Password,
     isPasswordVisible: Boolean = false,
     onPasswordToggleClick: (Boolean) -> Unit = {},
-    prefix: @Composable() (() -> Unit)? = null,
-    suffix: @Composable() (() -> Unit)? = null,
+    prefix:
+    @Composable()
+    (() -> Unit)? = null,
+    suffix:
+    @Composable()
+    (() -> Unit)? = null,
     onValueChange: (String) -> Unit,
 ) {
     OutlinedTextField(
@@ -189,7 +199,7 @@ fun StandardOutlinedTextField(
                     onClick = {
                         onPasswordToggleClick(!isPasswordVisible)
                     },
-                    modifier = Modifier
+                    modifier = Modifier,
                 ) {
                     Icon(
                         imageVector = if (isPasswordVisible) {
@@ -202,12 +212,14 @@ fun StandardOutlinedTextField(
                             PASSWORD_HIDDEN_ICON
                         } else {
                             PASSWORD_SHOWN_ICON
-                        }
+                        },
                     )
                 }
             }
             icon
-        } else trailingIcon,
+        } else {
+            trailingIcon
+        },
         prefix = prefix,
         suffix = suffix,
         supportingText = {
@@ -216,14 +228,14 @@ fun StandardOutlinedTextField(
                     modifier = Modifier.testTag(errorTextTag),
                     text = errorText,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
                 )
             } else if (message != null) {
                 Text(
                     modifier = Modifier.testTag(errorTextTag),
                     text = message,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
         },

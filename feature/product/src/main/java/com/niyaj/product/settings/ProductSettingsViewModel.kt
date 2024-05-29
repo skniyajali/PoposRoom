@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.product.settings
 
 import androidx.compose.runtime.State
@@ -41,7 +58,7 @@ class ProductSettingsViewModel @Inject constructor(
     val categories = productRepository.getAllCategory().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = persistentListOf()
+        initialValue = persistentListOf(),
     )
 
     val products = snapshotFlow { mSearchText.value }.flatMapLatest { searchText ->
@@ -52,7 +69,7 @@ class ProductSettingsViewModel @Inject constructor(
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
-        emptyList()
+        emptyList(),
     )
 
     private val _exportedProducts = MutableStateFlow<List<Product>>(emptyList())
@@ -73,7 +90,6 @@ class ProductSettingsViewModel @Inject constructor(
      */
     fun onEvent(event: ProductSettingsEvent) {
         when (event) {
-
             is ProductSettingsEvent.OnSelectCategory -> {
                 viewModelScope.launch {
                     val products = getProducts(event.categoryId)
@@ -142,16 +158,16 @@ class ProductSettingsViewModel @Inject constructor(
                         is Resource.Error -> {
                             mEventFlow.emit(
                                 UiEvent.OnError(
-                                    result.message ?: "Unable to import products"
-                                )
+                                    result.message ?: "Unable to import products",
+                                ),
                             )
                         }
 
                         is Resource.Success -> {
                             mEventFlow.emit(
                                 UiEvent.OnSuccess(
-                                    "${data.size} Products has been imported."
-                                )
+                                    "${data.size} Products has been imported.",
+                                ),
                             )
 
                             analyticsHelper.logImportedProductToDatabase(data.size)
@@ -171,7 +187,7 @@ class ProductSettingsViewModel @Inject constructor(
                             products.value.filter { it.productId == productId }.map {
                                 ProductIdWithPrice(
                                     productId = productId,
-                                    productPrice = it.productPrice + _productPrice.intValue
+                                    productPrice = it.productPrice + _productPrice.intValue,
                                 )
                             }
                         }
@@ -179,7 +195,7 @@ class ProductSettingsViewModel @Inject constructor(
                         products.value.map {
                             ProductIdWithPrice(
                                 productId = it.productId,
-                                productPrice = it.productPrice + _productPrice.intValue
+                                productPrice = it.productPrice + _productPrice.intValue,
                             )
                         }
                     }
@@ -204,7 +220,7 @@ class ProductSettingsViewModel @Inject constructor(
                             products.value.filter { it.productId == productId }.map {
                                 ProductIdWithPrice(
                                     productId = productId,
-                                    productPrice = it.productPrice - _productPrice.intValue
+                                    productPrice = it.productPrice - _productPrice.intValue,
                                 )
                             }
                         }
@@ -212,7 +228,7 @@ class ProductSettingsViewModel @Inject constructor(
                         products.value.map {
                             ProductIdWithPrice(
                                 productId = it.productId,
-                                productPrice = it.productPrice - _productPrice.intValue
+                                productPrice = it.productPrice - _productPrice.intValue,
                             )
                         }
                     }
@@ -244,7 +260,6 @@ class ProductSettingsViewModel @Inject constructor(
         }
     }
 }
-
 
 internal fun AnalyticsHelper.logImportedProductFromFile(totalProduct: Int) {
     logEvent(

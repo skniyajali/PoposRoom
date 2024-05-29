@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.feature.chart.horizontalbar
 
 import androidx.compose.foundation.Canvas
@@ -47,7 +64,7 @@ fun HorizontalBarChart(
     modifier: Modifier = Modifier,
     barDimens: ChartDimens = ChartDimensDefaults.horizontalChartDimesDefaults(),
     horizontalAxisConfig: HorizontalAxisConfig = HorizontalAxisConfigDefaults.axisConfigDefaults(),
-    horizontalBarConfig: HorizontalBarConfig = HorizontalBarConfigDefaults.horizontalBarConfig()
+    horizontalBarConfig: HorizontalBarConfig = HorizontalBarConfigDefaults.horizontalBarConfig(),
 ) {
     HorizontalBarChart(
         horizontalBarData = horizontalBarData,
@@ -56,7 +73,7 @@ fun HorizontalBarChart(
         modifier = modifier,
         barDimens = barDimens,
         horizontalAxisConfig = horizontalAxisConfig,
-        horizontalBarConfig = horizontalBarConfig
+        horizontalBarConfig = horizontalBarConfig,
     )
 }
 
@@ -68,7 +85,7 @@ fun HorizontalBarChart(
     modifier: Modifier = Modifier,
     barDimens: ChartDimens = ChartDimensDefaults.horizontalChartDimesDefaults(),
     horizontalAxisConfig: HorizontalAxisConfig = HorizontalAxisConfigDefaults.axisConfigDefaults(),
-    horizontalBarConfig: HorizontalBarConfig = HorizontalBarConfigDefaults.horizontalBarConfig()
+    horizontalBarConfig: HorizontalBarConfig = HorizontalBarConfigDefaults.horizontalBarConfig(),
 ) {
     val labelTextColor = if (isSystemInDarkTheme()) Color.White else Color.Black
     val startAngle = if (horizontalBarConfig.startDirection == StartDirection.Left) 180F else 0F
@@ -92,7 +109,7 @@ fun HorizontalBarChart(
                 detectTapGestures(onPress = { offset ->
                     clickedBar.value = offset
                 })
-            }
+            },
     ) {
         barHeight.floatValue = size.height.div(horizontalBarData.count().times(1.2F))
         chartBound.floatValue = size.width.div(horizontalBarData.count().times(1.2F))
@@ -118,7 +135,7 @@ fun HorizontalBarChart(
                         barWidth = barWidth,
                         labelTextColor = labelTextColor,
                         textMeasurer = textMeasurer,
-                        isProductReport = productReport
+                        isProductReport = productReport,
                     )
                 }
             }
@@ -141,7 +158,7 @@ fun HorizontalBarChart(
                         barWidth = barWidth,
                         labelTextColor = labelTextColor,
                         textMeasurer = textMeasurer,
-                        isProductReport = productReport
+                        isProductReport = productReport,
                     )
                 }
             }
@@ -160,7 +177,6 @@ private fun DrawScope.drawBars(
     textMeasurer: TextMeasurer,
     isProductReport: Boolean,
 ) {
-
     val drawableText = if (isProductReport) {
         "${horizontalBarData.yValue} - ${horizontalBarData.xValue.toString().substringBefore(".")} Qty"
     } else {
@@ -171,23 +187,23 @@ private fun DrawScope.drawBars(
 
     val value = textMeasurer.measure(AnnotatedString(drawableText)).size.width
 
-    val textColor = if(horizontalBarData.xValue.toString().substringBefore(".").toLong() <= 0) {
+    val textColor = if (horizontalBarData.xValue.toString().substringBefore(".").toLong() <= 0) {
         Color.Black
-    } else if(isProductReport) {
+    } else if (isProductReport) {
         Color.Black
     } else {
-        if(value > intSize){
+        if (value > intSize) {
             Color.Black
-        }else {
+        } else {
             Color.White
         }
     }
 
     drawRoundRect(
-        cornerRadius = CornerRadius(x = 4F, y =  4F),
+        cornerRadius = CornerRadius(x = 4F, y = 4F),
         topLeft = topLeft,
         brush = Brush.linearGradient(colors),
-        size = Size(barWidth, barHeight)
+        size = Size(barWidth, barHeight),
     )
 
     drawText(

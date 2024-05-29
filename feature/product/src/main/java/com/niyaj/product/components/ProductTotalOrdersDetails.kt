@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.product.components
 
 import androidx.compose.foundation.layout.Arrangement
@@ -52,8 +69,8 @@ fun ProductTotalOrdersDetails(
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.background
-        )
+            containerColor = MaterialTheme.colorScheme.background,
+        ),
     ) {
         Column(
             modifier = Modifier
@@ -71,13 +88,13 @@ fun ProductTotalOrdersDetails(
                 Text(
                     text = "Total Orders",
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
                 )
 
                 Text(
                     text = (details.dineInQty + details.dineOutQty).toString(),
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
             }
 
@@ -91,7 +108,7 @@ fun ProductTotalOrdersDetails(
                     text = details.totalAmount.toRupee,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.testTag("ProductTotalAmount")
+                    modifier = Modifier.testTag("ProductTotalAmount"),
                 )
 
                 val startDate = details.datePeriod.first
@@ -100,14 +117,14 @@ fun ProductTotalOrdersDetails(
                 if (startDate.isNotEmpty()) {
                     Card(
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                         ),
-                        modifier = Modifier.testTag("DatePeriod")
+                        modifier = Modifier.testTag("DatePeriod"),
                     ) {
                         Row(
                             modifier = Modifier
                                 .padding(SpaceMini),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
                                 text = startDate.toBarDate,
@@ -119,7 +136,7 @@ fun ProductTotalOrdersDetails(
                                     Spacer(modifier = Modifier.width(SpaceMini))
                                     Icon(
                                         imageVector = PoposIcons.ArrowRightAlt,
-                                        contentDescription = "DatePeriod"
+                                        contentDescription = "DatePeriod",
                                     )
                                     Spacer(modifier = Modifier.width(SpaceMini))
                                     Text(
@@ -136,7 +153,6 @@ fun ProductTotalOrdersDetails(
             Spacer(modifier = Modifier.height(SpaceMini))
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(SpaceMini))
-
 
             FlowRow(
                 modifier = Modifier
@@ -164,7 +180,7 @@ fun ProductTotalOrdersDetails(
                     iconTint = MaterialTheme.colorScheme.tertiary,
                     containerColor = LightColor2,
                     minusWidth = 30.dp,
-                    onClick = {}
+                    onClick = {},
                 )
 
                 if (details.mostOrderQtyDate.isNotEmpty()) {
@@ -176,7 +192,7 @@ fun ProductTotalOrdersDetails(
                         minusWidth = 30.dp,
                         iconTint = MaterialTheme.colorScheme.secondary,
                         containerColor = LightColor3,
-                        onClick = {}
+                        onClick = {},
                     )
                 }
 
@@ -190,7 +206,7 @@ fun ProductTotalOrdersDetails(
                         iconTint = MaterialTheme.colorScheme.primary,
                         containerColor = LightColor4,
                         boxColor = Color.White,
-                        onClick = {}
+                        onClick = {},
                     )
                 }
             }

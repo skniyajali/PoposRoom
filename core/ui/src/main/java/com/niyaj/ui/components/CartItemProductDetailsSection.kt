@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.ui.components
@@ -68,13 +69,13 @@ fun CartItemProductDetailsSection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(4.dp))
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(4.dp)),
     ) {
         cartProducts.forEach { cartProduct ->
             CartProduct(
                 cartProduct = cartProduct,
                 decreaseQuantity = decreaseQuantity,
-                increaseQuantity = increaseQuantity
+                increaseQuantity = increaseQuantity,
             )
         }
     }
@@ -93,20 +94,20 @@ fun CartProduct(
                 .height(48.dp)
                 .padding(SpaceMini),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
                     .background(LightColor9, RoundedCornerShape(4.dp))
-                    .weight(2f, true)
+                    .weight(2f, true),
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(SpaceMini),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         modifier = Modifier.weight(2.2f, true),
@@ -120,11 +121,10 @@ fun CartProduct(
                     Text(
                         text = cartProduct.productPrice.toString().toRupee,
                         modifier = Modifier.weight(0.8f, true),
-                        textAlign = TextAlign.End
+                        textAlign = TextAlign.End,
                     )
                 }
             }
-
 
             key(cartProduct.productQuantity) {
                 Box(
@@ -132,22 +132,25 @@ fun CartProduct(
                         .fillMaxHeight()
                         .background(LightColor8)
                         .weight(1f, true),
-                    contentAlignment = Alignment.CenterEnd
+                    contentAlignment = Alignment.CenterEnd,
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxSize(),
                         Arrangement.SpaceBetween,
-                        Alignment.CenterVertically
+                        Alignment.CenterVertically,
                     ) {
                         IconButton(
                             onClick = { decreaseQuantity(cartProduct.productId) },
                         ) {
                             Icon(
-                                imageVector = if (cartProduct.productQuantity > 1)
-                                    PoposIcons.Remove else PoposIcons.Delete,
+                                imageVector = if (cartProduct.productQuantity > 1) {
+                                    PoposIcons.Remove
+                                } else {
+                                    PoposIcons.Delete
+                                },
                                 contentDescription = "Decrease quantity",
-                                tint = MaterialTheme.colorScheme.error
+                                tint = MaterialTheme.colorScheme.error,
                             )
                         }
 
@@ -159,7 +162,7 @@ fun CartProduct(
                             Icon(
                                 imageVector = PoposIcons.Add,
                                 contentDescription = "Increase quantity",
-                                tint = MaterialTheme.colorScheme.primary
+                                tint = MaterialTheme.colorScheme.primary,
                             )
                         }
                     }
@@ -173,7 +176,7 @@ fun CartProduct(
 fun AnimatedCounter(
     count: Int,
     modifier: Modifier = Modifier,
-    style: TextStyle = MaterialTheme.typography.labelLarge
+    style: TextStyle = MaterialTheme.typography.labelLarge,
 ) = trace("AnimatedCounter") {
     var oldCount by remember {
         mutableIntStateOf(count)
@@ -197,13 +200,14 @@ fun AnimatedCounter(
                 targetState = char,
                 transitionSpec = {
                     slideInVertically { it } togetherWith slideOutVertically { -it }
-                }, label = "Animated Counter::State"
+                },
+                label = "Animated Counter::State",
             ) { newCount ->
                 Text(
                     text = newCount.toString(),
                     style = style,
                     softWrap = false,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
                 )
             }
         }

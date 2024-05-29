@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.ui.components
 
 import android.view.animation.OvershootInterpolator
@@ -36,7 +53,6 @@ import com.niyaj.core.ui.R
 import com.niyaj.designsystem.theme.LightColor8
 import com.niyaj.designsystem.theme.Purple
 import com.niyaj.ui.utils.Screens
-
 
 @Stable
 internal data class NavigationItem(
@@ -110,12 +126,12 @@ fun AnimatedBottomNavigationBar(
         cornerRadius = shapeCornerRadius(0.dp),
         barColor = LightColor8,
         ballColor = MaterialTheme.colorScheme.secondary,
-        ballAnimation = Teleport(tween(Duration, easing = LinearOutSlowInEasing)),
+        ballAnimation = Teleport(tween(DURATION, easing = LinearOutSlowInEasing)),
         indentAnimation = Height(
             indentWidth = 56.dp,
             indentHeight = 15.dp,
             animationSpec = tween(
-                DoubleDuration,
+                DOUBLE_DURATION,
                 easing = { OvershootInterpolator().getInterpolation(it) },
             ),
         ),
@@ -135,7 +151,7 @@ fun AnimatedBottomNavigationBar(
                         dropletColor = Purple,
                         iconColor = MaterialTheme.colorScheme.tertiary,
                         size = 24.dp,
-                        animationSpec = tween(durationMillis = Duration, easing = LinearEasing),
+                        animationSpec = tween(durationMillis = DURATION, easing = LinearEasing),
                     )
 
                     Spacer(modifier = Modifier.height(3.dp))
@@ -151,7 +167,6 @@ fun AnimatedBottomNavigationBar(
         }
     }
 }
-
 
 @Composable
 fun AnimatedBottomNavigationBar(
@@ -177,12 +192,12 @@ fun AnimatedBottomNavigationBar(
         cornerRadius = shapeCornerRadius(0.dp),
         barColor = LightColor8,
         ballColor = MaterialTheme.colorScheme.secondary,
-        ballAnimation = Teleport(tween(Duration, easing = LinearOutSlowInEasing)),
+        ballAnimation = Teleport(tween(DURATION, easing = LinearOutSlowInEasing)),
         indentAnimation = Height(
             indentWidth = 56.dp,
             indentHeight = 15.dp,
             animationSpec = tween(
-                DoubleDuration,
+                DOUBLE_DURATION,
                 easing = { OvershootInterpolator().getInterpolation(it) },
             ),
         ),
@@ -206,7 +221,7 @@ fun AnimatedBottomNavigationBar(
                         dropletColor = Purple,
                         iconColor = MaterialTheme.colorScheme.tertiary,
                         size = 24.dp,
-                        animationSpec = tween(durationMillis = Duration, easing = LinearEasing),
+                        animationSpec = tween(durationMillis = DURATION, easing = LinearEasing),
                     )
 
                     Spacer(modifier = Modifier.height(3.dp))
@@ -222,7 +237,6 @@ fun AnimatedBottomNavigationBar(
         }
     }
 }
-
 
 internal fun NavDestination?.isTopLevelDestinationInHierarchy(destination: TopLevelDestination) =
     this?.hierarchy?.any {

@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.address.settings
 
 import androidx.compose.runtime.snapshotFlow
@@ -19,8 +36,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddressSettingsViewModel @Inject constructor(
-    private val addressRepository: AddressRepository
-): BaseViewModel() {
+    private val addressRepository: AddressRepository,
+) : BaseViewModel() {
 
     val addresses = snapshotFlow { mSearchText.value }.flatMapLatest {
         addressRepository.getAllAddress(it)
@@ -30,7 +47,7 @@ class AddressSettingsViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
+        initialValue = emptyList(),
     )
 
     private val _exportedItems = MutableStateFlow<List<Address>>(emptyList())
@@ -40,7 +57,7 @@ class AddressSettingsViewModel @Inject constructor(
     val importedItems = _importedItems.asStateFlow()
 
     fun onEvent(event: AddressSettingsEvent) {
-        when(event) {
+        when (event) {
             is AddressSettingsEvent.GetExportedItems -> {
                 viewModelScope.launch {
                     if (mSelectedItems.isEmpty()) {
@@ -75,14 +92,14 @@ class AddressSettingsViewModel @Inject constructor(
             is AddressSettingsEvent.ImportAddressItemsToDatabase -> {
                 viewModelScope.launch {
                     val data = if (mSelectedItems.isNotEmpty()) {
-                        mSelectedItems.flatMap {addressId ->
+                        mSelectedItems.flatMap { addressId ->
                             _importedItems.value.filter { it.addressId == addressId }
                         }
-                    }else {
+                    } else {
                         _importedItems.value
                     }
 
-                    when(val result = addressRepository.importAddressesToDatabase(data)) {
+                    when (val result = addressRepository.importAddressesToDatabase(data)) {
                         is Resource.Error -> {
                             mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
                         }

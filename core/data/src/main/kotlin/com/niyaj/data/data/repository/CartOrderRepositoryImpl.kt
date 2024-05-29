@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.data.data.repository
@@ -67,7 +68,6 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-
 class CartOrderRepositoryImpl(
     private val cartDao: CartDao,
     private val cartOrderDao: CartOrderDao,
@@ -88,13 +88,17 @@ class CartOrderRepositoryImpl(
                         withContext(ioDispatcher) {
                             addressDao.getAddressById(cartOrder.addressId)?.asExternalModel()
                         }
-                    } else null
+                    } else {
+                        null
+                    }
 
                     val customer = if (cartOrder.orderType != OrderType.DineIn) {
                         withContext(ioDispatcher) {
                             customerDao.getCustomerById(cartOrder.customerId)?.asExternalModel()
                         }
-                    } else null
+                    } else {
+                        null
+                    }
 
                     CartOrder(
                         orderId = cartOrder.orderId,
@@ -104,7 +108,7 @@ class CartOrderRepositoryImpl(
                         customer = customer ?: Customer(),
                         address = address ?: Address(),
                         createdAt = cartOrder.createdAt,
-                        updatedAt = cartOrder.updatedAt
+                        updatedAt = cartOrder.updatedAt,
                     )
                 }
             }
@@ -135,7 +139,6 @@ class CartOrderRepositoryImpl(
                 val checkStatus = cartOrderDao.getOrderStatus(selected.orderId)
 
                 if (checkStatus == OrderStatus.PROCESSING) {
-
                     val result = selectedDao.insertOrUpdateSelectedOrder(selected.toEntity())
 
                     Resource.Success(result > 0)
@@ -184,7 +187,9 @@ class CartOrderRepositoryImpl(
         return withContext(ioDispatcher) {
             val result = if (viewAll) {
                 cartOrderDao.getAllCartOrders()
-            } else cartOrderDao.getProcessingCartOrders()
+            } else {
+                cartOrderDao.getProcessingCartOrders()
+            }
 
             result.mapLatest { list ->
                 list.map { cartOrder ->
@@ -192,13 +197,17 @@ class CartOrderRepositoryImpl(
                         withContext(ioDispatcher) {
                             addressDao.getAddressById(cartOrder.addressId)?.asExternalModel()
                         }
-                    } else null
+                    } else {
+                        null
+                    }
 
                     val customer = if (cartOrder.orderType != OrderType.DineIn) {
                         withContext(ioDispatcher) {
                             customerDao.getCustomerById(cartOrder.customerId)?.asExternalModel()
                         }
-                    } else null
+                    } else {
+                        null
+                    }
 
                     CartOrder(
                         orderId = cartOrder.orderId,
@@ -208,7 +217,7 @@ class CartOrderRepositoryImpl(
                         customer = customer ?: Customer(),
                         address = address ?: Address(),
                         createdAt = cartOrder.createdAt,
-                        updatedAt = cartOrder.updatedAt
+                        updatedAt = cartOrder.updatedAt,
                     )
                 }
             }.mapLatest {
@@ -227,13 +236,17 @@ class CartOrderRepositoryImpl(
                         withContext(ioDispatcher) {
                             addressDao.getAddressById(cartOrder.addressId)?.asExternalModel()
                         }
-                    } else null
+                    } else {
+                        null
+                    }
 
                     val customer = if (cartOrder.orderType != OrderType.DineIn) {
                         withContext(ioDispatcher) {
                             customerDao.getCustomerById(cartOrder.customerId)?.asExternalModel()
                         }
-                    } else null
+                    } else {
+                        null
+                    }
 
                     val cartOrderItem = CartOrder(
                         orderId = cartOrder.orderId,
@@ -243,13 +256,13 @@ class CartOrderRepositoryImpl(
                         customer = customer ?: Customer(),
                         address = address ?: Address(),
                         createdAt = cartOrder.createdAt,
-                        updatedAt = cartOrder.updatedAt
+                        updatedAt = cartOrder.updatedAt,
                     )
 
                     CartOrderWithAddOnAndCharges(
                         cartOrder = cartOrderItem,
                         addOnItems = result.addOnItems.toImmutableList(),
-                        charges = result.charges.toImmutableList()
+                        charges = result.charges.toImmutableList(),
                     )
                 }
 
@@ -266,7 +279,9 @@ class CartOrderRepositoryImpl(
                 val result = cartOrderDao.getLastCreatedOrderId()
 
                 if (result == null) 1 else result + 1
-            } else orderId
+            } else {
+                orderId
+            }
         }
     }
 
@@ -320,16 +335,24 @@ class CartOrderRepositoryImpl(
                     if (isDineOut) {
                         if (cartOrder.address.addressId == 0) {
                             addOrIgnoreAddress(cartOrder.address)
-                        } else cartOrder.address.addressId
-                    } else 0
+                        } else {
+                            cartOrder.address.addressId
+                        }
+                    } else {
+                        0
+                    }
                 }.await()
 
                 val customerId = async {
                     if (isDineOut) {
                         if (cartOrder.customer.customerId == 0) {
                             addOrIgnoreCustomer(cartOrder.customer)
-                        } else cartOrder.customer.customerId
-                    } else 0
+                        } else {
+                            cartOrder.customer.customerId
+                        }
+                    } else {
+                        0
+                    }
                 }.await()
 
                 val validatedCustomer = validateCustomerPhone(cartOrder.orderType, customerId)
@@ -348,7 +371,7 @@ class CartOrderRepositoryImpl(
                         addressId = addressId,
                         customerId = customerId,
                         createdAt = cartOrder.createdAt,
-                        updatedAt = cartOrder.updatedAt
+                        updatedAt = cartOrder.updatedAt,
                     )
 
                     val result = cartOrderDao.createOrUpdateCartOrder(newOrder)
@@ -357,7 +380,7 @@ class CartOrderRepositoryImpl(
                         async(ioDispatcher) {
                             insertOrIgnoreCartPrice(
                                 result.toInt(),
-                                newOrder.doesChargesIncluded
+                                newOrder.doesChargesIncluded,
                             )
                         }.await()
 
@@ -365,8 +388,8 @@ class CartOrderRepositoryImpl(
                             selectedDao.insertOrUpdateSelectedOrder(
                                 SelectedEntity(
                                     selectedId = SELECTED_ID,
-                                    orderId = result.toInt()
-                                )
+                                    orderId = result.toInt(),
+                                ),
                             )
                         }.await()
 
@@ -446,14 +469,14 @@ class CartOrderRepositoryImpl(
         if (customerPhone.isEmpty()) {
             return ValidationResult(
                 successful = false,
-                errorMessage = CART_ORDER_PHONE_EMPTY_ERROR
+                errorMessage = CART_ORDER_PHONE_EMPTY_ERROR,
             )
         }
 
         if (customerPhone.length < 10 || customerPhone.length > 10) {
             return ValidationResult(
                 successful = false,
-                errorMessage = CUSTOMER_PHONE_LENGTH_ERROR
+                errorMessage = CUSTOMER_PHONE_LENGTH_ERROR,
             )
         }
 
@@ -462,12 +485,12 @@ class CartOrderRepositoryImpl(
         if (containsLetters) {
             return ValidationResult(
                 successful = false,
-                errorMessage = CUSTOMER_PHONE_LETTER_ERROR
+                errorMessage = CUSTOMER_PHONE_LETTER_ERROR,
             )
         }
 
         return ValidationResult(
-            successful = true
+            successful = true,
         )
     }
 
@@ -482,12 +505,12 @@ class CartOrderRepositoryImpl(
         if (addressName.length < 2) {
             return ValidationResult(
                 successful = false,
-                errorMessage = ADDRESS_NAME_LENGTH_ERROR
+                errorMessage = ADDRESS_NAME_LENGTH_ERROR,
             )
         }
 
         return ValidationResult(
-            successful = true
+            successful = true,
         )
     }
 
@@ -495,19 +518,19 @@ class CartOrderRepositoryImpl(
         if (addressShortName.isEmpty()) {
             return ValidationResult(
                 successful = false,
-                errorMessage = ORDER_SHORT_NAME_EMPTY_ERROR
+                errorMessage = ORDER_SHORT_NAME_EMPTY_ERROR,
             )
         }
 
         if (addressShortName.length < 2) {
             return ValidationResult(
                 successful = false,
-                errorMessage = ORDER_PRICE_LESS_THAN_TWO_ERROR
+                errorMessage = ORDER_PRICE_LESS_THAN_TWO_ERROR,
             )
         }
 
         return ValidationResult(
-            successful = true
+            successful = true,
         )
     }
 
@@ -516,20 +539,20 @@ class CartOrderRepositoryImpl(
             if (addressId == 0) {
                 return ValidationResult(
                     successful = false,
-                    errorMessage = CART_ORDER_NAME_EMPTY_ERROR
+                    errorMessage = CART_ORDER_NAME_EMPTY_ERROR,
                 )
             }
 
             if (addressId < 0) {
                 return ValidationResult(
                     successful = false,
-                    errorMessage = CART_ORDER_NAME_ERROR
+                    errorMessage = CART_ORDER_NAME_ERROR,
                 )
             }
         }
 
         return ValidationResult(
-            successful = true
+            successful = true,
         )
     }
 
@@ -538,20 +561,20 @@ class CartOrderRepositoryImpl(
             if (customerId == 0) {
                 return ValidationResult(
                     successful = false,
-                    errorMessage = CART_ORDER_PHONE_EMPTY_ERROR
+                    errorMessage = CART_ORDER_PHONE_EMPTY_ERROR,
                 )
             }
 
             if (customerId < 0) {
                 return ValidationResult(
                     successful = false,
-                    errorMessage = CART_ORDER_PHONE_ERROR
+                    errorMessage = CART_ORDER_PHONE_ERROR,
                 )
             }
         }
 
         return ValidationResult(
-            successful = true
+            successful = true,
         )
     }
 
@@ -563,8 +586,8 @@ class CartOrderRepositoryImpl(
                 selectedDao.insertOrUpdateSelectedOrder(
                     SelectedEntity(
                         selectedId = SELECTED_ID,
-                        orderId = it
-                    )
+                        orderId = it,
+                    ),
                 )
             } ?: selectedDao.deleteSelectedOrder(SELECTED_ID)
         }
@@ -586,8 +609,8 @@ class CartOrderRepositoryImpl(
                         selectedDao.insertOrUpdateSelectedOrder(
                             SelectedEntity(
                                 SELECTED_ID,
-                                orderId = it
-                            )
+                                orderId = it,
+                            ),
                         )
                     }
                 } else {
@@ -599,8 +622,8 @@ class CartOrderRepositoryImpl(
                     selectedDao.insertOrUpdateSelectedOrder(
                         SelectedEntity(
                             SELECTED_ID,
-                            orderId = it
-                        )
+                            orderId = it,
+                        ),
                     )
                 }
             }
@@ -609,7 +632,7 @@ class CartOrderRepositoryImpl(
 
     private suspend fun insertOrIgnoreCartPrice(
         orderId: Int,
-        included: Boolean
+        included: Boolean,
     ) {
         return withContext(ioDispatcher) {
             var basePrice = 0
@@ -629,8 +652,8 @@ class CartOrderRepositoryImpl(
                     orderId = orderId,
                     basePrice = basePrice.toLong(),
                     discountPrice = discountPrice.toLong(),
-                    totalPrice = (basePrice - discountPrice).toLong()
-                )
+                    totalPrice = (basePrice - discountPrice).toLong(),
+                ),
             )
         }
     }
@@ -718,7 +741,9 @@ class CartOrderRepositoryImpl(
 
             val discountPrice = if (!addOnPrice.isApplicable) {
                 cartPrice.discountPrice + addOnPrice.itemPrice
-            } else cartPrice.discountPrice
+            } else {
+                cartPrice.discountPrice
+            }
 
             val totalPrice = basePrice - discountPrice
 
@@ -726,7 +751,7 @@ class CartOrderRepositoryImpl(
                 orderId = orderId,
                 basePrice = basePrice,
                 discountPrice = discountPrice,
-                totalPrice = totalPrice
+                totalPrice = totalPrice,
             )
 
             cartPriceDao.updateCartPrice(priceEntity)
@@ -747,7 +772,9 @@ class CartOrderRepositoryImpl(
 
             val discountPrice = if (!addOnPrice.isApplicable) {
                 cartPrice.discountPrice - addOnPrice.itemPrice
-            } else cartPrice.discountPrice
+            } else {
+                cartPrice.discountPrice
+            }
 
             val totalPrice = basePrice - discountPrice
 
@@ -755,7 +782,7 @@ class CartOrderRepositoryImpl(
                 orderId = orderId,
                 basePrice = basePrice,
                 discountPrice = discountPrice,
-                totalPrice = totalPrice
+                totalPrice = totalPrice,
             )
 
             cartPriceDao.updateCartPrice(priceEntity)
@@ -782,7 +809,7 @@ class CartOrderRepositoryImpl(
                 orderId = orderId,
                 basePrice = basePrice,
                 discountPrice = discountPrice,
-                totalPrice = totalPrice
+                totalPrice = totalPrice,
             )
 
             cartPriceDao.updateCartPrice(priceEntity)
@@ -809,7 +836,7 @@ class CartOrderRepositoryImpl(
                 orderId = orderId,
                 basePrice = basePrice,
                 discountPrice = discountPrice,
-                totalPrice = totalPrice
+                totalPrice = totalPrice,
             )
 
             cartPriceDao.updateCartPrice(priceEntity)

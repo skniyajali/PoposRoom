@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.feature.chart.horizontalbar
 
 import androidx.compose.foundation.Canvas
@@ -32,7 +49,6 @@ import com.niyaj.feature.chart.horizontalbar.model.HorizontalBarData
 import com.niyaj.feature.chart.horizontalbar.model.maxXValue
 import com.niyaj.feature.chart.horizontalbar.model.totalItems
 
-
 @Composable
 fun GroupedHorizontalBarChart(
     groupedBarData: List<GroupedHorizontalBarData>,
@@ -40,9 +56,8 @@ fun GroupedHorizontalBarChart(
     onBarClick: (HorizontalBarData) -> Unit = {},
     barDimens: ChartDimens = ChartDimensDefaults.horizontalChartDimesDefaults(),
     horizontalAxisConfig: HorizontalAxisConfig = HorizontalAxisConfigDefaults.axisConfigDefaults(),
-    horizontalBarConfig: HorizontalBarConfig = HorizontalBarConfigDefaults.horizontalBarConfig()
+    horizontalBarConfig: HorizontalBarConfig = HorizontalBarConfigDefaults.horizontalBarConfig(),
 ) {
-
     val startAngle = if (horizontalBarConfig.startDirection == StartDirection.Left) 180F else 0F
     val maxXValueState = rememberSaveable { mutableFloatStateOf(groupedBarData.maxXValue()) }
     val clickedBar = remember { mutableStateOf(Offset(-10F, -10F)) }
@@ -63,7 +78,7 @@ fun GroupedHorizontalBarChart(
                 detectTapGestures(onPress = { offset ->
                     clickedBar.value = offset
                 })
-            }
+            },
     ) {
         barHeight.floatValue = size.height.div(totalItems.times(1.2F))
         val xScalableFactor = size.width.div(maxXValue)
@@ -90,7 +105,7 @@ fun GroupedHorizontalBarChart(
                             horizontalBarConfig.showLabels,
                             topLeft,
                             barWidth,
-                            labelTextColor
+                            labelTextColor,
                         )
                     }
                     else -> {
@@ -109,7 +124,7 @@ fun GroupedHorizontalBarChart(
                             horizontalBarConfig.showLabels,
                             topLeft = topLeft,
                             barWidth = barWidth,
-                            labelTextColor = labelTextColor
+                            labelTextColor = labelTextColor,
                         )
                     }
                 }
@@ -129,14 +144,14 @@ private fun DrawScope.drawBars(
     drawRoundRect(
         topLeft = topLeft,
         color = color,
-        size = Size(barWidth, barHeight)
+        size = Size(barWidth, barHeight),
     )
     if (showLabels) {
         drawHorizontalBarLabel(
             horizontalBarData = horizontalBarData,
             barHeight = barHeight,
             topLeft = topLeft,
-            labelTextColor = labelTextColor
+            labelTextColor = labelTextColor,
         )
     }
 }

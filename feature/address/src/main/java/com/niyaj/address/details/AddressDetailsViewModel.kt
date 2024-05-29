@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.address.details
 
 import androidx.compose.runtime.snapshotFlow
@@ -36,12 +53,14 @@ class AddressDetailsViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = UiState.Loading
+        initialValue = UiState.Loading,
     )
 
     val orderDetails = snapshotFlow { addressId }.flatMapLatest { addressId ->
         addressRepository.getAddressWiseOrders(addressId).mapLatest { orders ->
-            if (orders.isEmpty()) UiState.Empty else {
+            if (orders.isEmpty()) {
+                UiState.Empty
+            } else {
                 val startDate = orders.first().updatedAt
                 val endDate = orders.last().updatedAt
                 val repeatedOrder = orders.groupingBy { it.customerPhone }
@@ -52,7 +71,7 @@ class AddressDetailsViewModel @Inject constructor(
                     totalAmount = orders.sumOf { it.totalPrice },
                     totalOrder = orders.size,
                     repeatedOrder = repeatedOrder,
-                    datePeriod = Pair(startDate, endDate)
+                    datePeriod = Pair(startDate, endDate),
                 )
 
                 UiState.Success(orders)
@@ -61,14 +80,13 @@ class AddressDetailsViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = UiState.Loading
+        initialValue = UiState.Loading,
     )
 
     init {
         analyticsHelper.logAddressDetailsViewed(addressId)
     }
 }
-
 
 internal fun AnalyticsHelper.logAddressDetailsViewed(addressId: Int) {
     logEvent(

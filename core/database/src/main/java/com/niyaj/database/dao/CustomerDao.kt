@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.database.dao
@@ -30,23 +31,27 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CustomerDao {
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM customer ORDER BY createdAt DESC
-    """)
+    """,
+    )
     fun getAllCustomer(): Flow<List<CustomerEntity>>
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM customer WHERE customerId = :customerId
-    """)
+    """,
+    )
     fun getCustomerById(customerId: Int): CustomerEntity?
-
 
     /**
      * Get customerId from database if it exist by [customerPhone]
      */
-    @Query(value = """
+    @Query(
+        value = """
         SELECT customerId FROM customer WHERE customerPhone = :customerPhone
-    """
+    """,
     )
     suspend fun getCustomerByPhone(customerPhone: String): Int?
 
@@ -68,9 +73,11 @@ interface CustomerDao {
     @Upsert
     suspend fun upsertCustomer(customer: CustomerEntity): Long
 
-    @Query(value = """
+    @Query(
+        value = """
         DELETE FROM customer WHERE customerId = :customerId
-    """)
+    """,
+    )
     suspend fun deleteCustomer(customerId: Int): Int
 
     /**
@@ -84,13 +91,14 @@ interface CustomerDao {
     )
     suspend fun deleteCustomer(customerIds: List<Int>): Int
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM customer WHERE
             CASE WHEN :customerId IS NULL OR :customerId = 0
             THEN customerPhone = :customerPhone
             ELSE customerId != :customerId AND customerPhone = :customerPhone
             END LIMIT 1
-    """
+    """,
     )
     fun findCustomerByPhone(customerPhone: String, customerId: Int?): CustomerEntity?
 
@@ -104,10 +112,10 @@ interface CustomerDao {
             INNER JOIN address ad ON ad.addressId = co.addressId
             WHERE co.customerId = :customerId AND co.orderStatus = :orderStatus
             ORDER BY co.updatedAt DESC
-        """
+        """,
     )
     fun getCustomerWiseOrder(
         customerId: Int,
-        orderStatus: OrderStatus = OrderStatus.PLACED
+        orderStatus: OrderStatus = OrderStatus.PLACED,
     ): Flow<List<CustomerWiseOrder>>
 }

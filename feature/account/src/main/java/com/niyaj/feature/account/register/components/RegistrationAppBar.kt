@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.feature.account.register.components
@@ -50,7 +51,6 @@ import com.niyaj.feature.account.R
 import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedButton
 
-
 @Composable
 private fun TopAppBarTitle(
     questionIndex: Int,
@@ -70,7 +70,6 @@ private fun TopAppBarTitle(
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterTopAppBar(
@@ -80,7 +79,8 @@ fun RegisterTopAppBar(
 ) = trace("RegisterTopAppBar") {
     val animatedProgress by animateFloatAsState(
         targetValue = (questionIndex + 1) / totalQuestionsCount.toFloat(),
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec, label = "",
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+        label = "",
     )
 
     Column(
@@ -141,7 +141,7 @@ fun RegisterBottomBar(
             modifier = Modifier.fillMaxWidth(),
             tonalElevation = 4.dp,
             shadowElevation = 4.dp,
-            color = MaterialTheme.colorScheme.surfaceContainerLow
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
         ) {
             Row(
                 modifier = Modifier

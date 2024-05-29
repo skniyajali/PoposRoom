@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.cart.components
 
 import androidx.compose.foundation.clickable
@@ -25,7 +42,6 @@ import com.niyaj.model.AddOnItem
 import com.niyaj.model.CartItem
 import com.niyaj.model.OrderType
 import com.niyaj.ui.components.CartAddOnItems
-
 
 @Composable
 fun CartItems(
@@ -55,7 +71,7 @@ fun CartItems(
             items = cartItems,
             key = { _, cartItem ->
                 cartItem.orderId
-            }
+            },
         ) { index, cartItem ->
             if (cartItem.cartProducts.isNotEmpty()) {
                 CartItem(
@@ -70,7 +86,7 @@ fun CartItems(
                     onClickIncreaseQty = onClickIncreaseQty,
                     onClickAddOnItem = onClickAddOnItem,
                     onClickPlaceOrder = onClickPlaceOrder,
-                    onClickPrintOrder = onClickPrintOrder
+                    onClickPrintOrder = onClickPrintOrder,
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
@@ -117,7 +133,7 @@ fun CartItem(
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = MaterialTheme.colorScheme.background,
         ),
         shape = RoundedCornerShape(6.dp),
     ) {
@@ -134,7 +150,7 @@ fun CartItem(
             },
             onViewClick = {
                 onClickViewOrder(cartItem.orderId)
-            }
+            },
         )
 
         CartItemProductDetailsSection(
@@ -144,14 +160,15 @@ fun CartItem(
             },
             increaseQuantity = {
                 onClickIncreaseQty(cartItem.orderId, it)
-            }
+            },
         )
-
 
         if (addOnItems.isNotEmpty()) {
             val addOnSelectedColor = if (cartItem.orderType == OrderType.DineIn) {
                 MaterialTheme.colorScheme.secondary
-            } else MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.primary
+            }
 
             CartAddOnItems(
                 addOnItems = addOnItems,
@@ -173,7 +190,7 @@ fun CartItem(
             },
             onClickPrintOrder = {
                 onClickPrintOrder(cartItem.orderId)
-            }
+            },
         )
     }
 }

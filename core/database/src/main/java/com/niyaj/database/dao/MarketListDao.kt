@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.database.dao
@@ -38,10 +39,9 @@ interface MarketListDao {
         JOIN market_list_with_type mlwt ON ml.marketId = mlwt.marketId
         JOIN market_type mt ON mlwt.typeId = mt.typeId
         WHERE ml.marketId = :marketId
-        """
+        """,
     )
     fun getMarketListByMarketId(marketId: Int): Flow<List<MarketListAndType>?>
-
 
     @Transaction
     @Query(
@@ -52,7 +52,7 @@ interface MarketListDao {
             JOIN market_list_with_type mlt ON mlt.marketId = ml.marketId
             JOIN market_type mt ON mlt.typeId = mt.typeId
             WHERE ml.marketId = :marketId
-        """
+        """,
     )
     fun getMarketDetailsById(marketId: Int): Flow<MarketListAndType>
 
@@ -84,18 +84,16 @@ interface MarketListDao {
         JOIN market_list_with_type mlwt ON ml.marketId = mlwt.marketId
         JOIN market_type mt ON mlwt.typeId = mt.typeId
         ORDER BY ml.marketId DESC
-        """
+        """,
     )
     fun getMarketItems(): Flow<List<MarketListAndType>>
-
 
     @Query(
         value = """
         SELECT typeId, typeName, listTypes FROM market_type ORDER BY typeId DESC
-    """
+    """,
     )
     fun getAllMarketTypes(): Flow<List<MarketTypeIdAndListTypes>>
-
 
     /**
      * Inserts or updates [MarketListEntity] in the db under the specified primary keys
@@ -113,5 +111,4 @@ interface MarketListDao {
         """,
     )
     suspend fun deleteMarketLists(marketIds: List<Int>): Int
-
 }

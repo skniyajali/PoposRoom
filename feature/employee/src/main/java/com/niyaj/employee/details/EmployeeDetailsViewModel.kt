@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.employee.details
 
 import androidx.compose.runtime.State
@@ -17,7 +34,6 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
-
 /**
  * Employee Details view model class
  *
@@ -29,12 +45,12 @@ class EmployeeDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val _employeeId = savedStateHandle.get<Int>("employeeId") ?: 0
+    private val employeeId = savedStateHandle.get<Int>("employeeId") ?: 0
 
     private val _selectedSalaryDate = mutableStateOf<Pair<String, String>?>(null)
     val selectedSalaryDate: State<Pair<String, String>?> = _selectedSalaryDate
 
-    val employeeDetails = snapshotFlow { _employeeId }.mapLatest {
+    val employeeDetails = snapshotFlow { employeeId }.mapLatest {
         val data = employeeRepository.getEmployeeById(it)
 
         if (data == null) UiState.Empty else UiState.Success(data)
@@ -44,7 +60,7 @@ class EmployeeDetailsViewModel @Inject constructor(
         initialValue = UiState.Loading,
     )
 
-    val salaryDates = snapshotFlow { _employeeId }.mapLatest {
+    val salaryDates = snapshotFlow { employeeId }.mapLatest {
         employeeRepository.getSalaryCalculableDate(it)
     }.stateIn(
         scope = viewModelScope,
@@ -52,7 +68,7 @@ class EmployeeDetailsViewModel @Inject constructor(
         initialValue = emptyList(),
     )
 
-    val employeeAbsentDates = snapshotFlow { _employeeId }.flatMapLatest { employeeId ->
+    val employeeAbsentDates = snapshotFlow { employeeId }.flatMapLatest { employeeId ->
         employeeRepository.getEmployeeAbsentDates(employeeId).mapLatest {
             if (it.isEmpty()) UiState.Empty else UiState.Success(it)
         }
@@ -63,7 +79,7 @@ class EmployeeDetailsViewModel @Inject constructor(
     )
 
     val salaryEstimation = snapshotFlow { _selectedSalaryDate.value }.flatMapLatest { date ->
-        employeeRepository.getEmployeeSalaryEstimation(_employeeId, date).mapLatest { result ->
+        employeeRepository.getEmployeeSalaryEstimation(employeeId, date).mapLatest { result ->
             UiState.Success(result)
         }
     }.stateIn(
@@ -72,7 +88,7 @@ class EmployeeDetailsViewModel @Inject constructor(
         initialValue = UiState.Loading,
     )
 
-    val payments = snapshotFlow { _employeeId }.flatMapLatest { employeeId ->
+    val payments = snapshotFlow { employeeId }.flatMapLatest { employeeId ->
         employeeRepository.getEmployeePayments(employeeId).mapLatest { result ->
             if (result.isEmpty()) UiState.Empty else UiState.Success(result)
         }
@@ -87,7 +103,6 @@ class EmployeeDetailsViewModel @Inject constructor(
             analyticsHelper.logEmployeeDetailsViewed(it)
         }
     }
-
 
     /**
      *

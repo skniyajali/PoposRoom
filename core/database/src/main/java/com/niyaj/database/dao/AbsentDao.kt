@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.database.dao
 
 import androidx.room.Dao
@@ -17,30 +34,39 @@ import kotlinx.coroutines.flow.Flow
 interface AbsentDao {
 
     @Transaction
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM employee
-    """)
+    """,
+    )
     fun getAllAbsentEmployee(): Flow<List<EmployeeWithAbsentsDto>>
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM employee
-    """)
+    """,
+    )
     fun getAllEmployee(): Flow<List<EmployeeEntity>>
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM employee WHERE employeeId = :employeeId
-    """
+    """,
     )
     suspend fun getEmployeeById(employeeId: Int): EmployeeEntity?
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM absent ORDER BY createdAt DESC
-    """)
+    """,
+    )
     fun getAllAbsent(): Flow<List<AbsentEntity>>
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM absent WHERE absentId = :absentId
-    """)
+    """,
+    )
     suspend fun getAbsentById(absentId: Int): AbsentEntity?
 
     /**
@@ -70,9 +96,11 @@ interface AbsentDao {
     @Insert(entity = EmployeeWithAbsentCrossRef::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertEmployeeWithAbsentCrossReference(employeeWithAbsent: EmployeeWithAbsentCrossRef)
 
-    @Query(value = """
+    @Query(
+        value = """
         DELETE FROM absent WHERE absentId = :absentId
-    """)
+    """,
+    )
     suspend fun deleteAbsent(absentId: Int): Int
 
     /**
@@ -86,19 +114,21 @@ interface AbsentDao {
     )
     suspend fun deleteAbsents(absentIds: List<Int>): Int
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT absentId FROM absent WHERE
             CASE WHEN :absentId IS NULL OR :absentId = 0
             THEN absentDate = :absentDate AND employeeId = :employeeId
             ELSE absentId != :absentId AND absentDate = :absentDate AND employeeId = :employeeId
             END LIMIT 1
-    """)
+    """,
+    )
     fun findEmployeeByDate(absentDate: String, employeeId: Int, absentId: Int?): Int?
 
     @Query(
         value = """
         SELECT employeeId FROM employee WHERE employeeId == :employeeId OR employeeName = :employeeName
-    """
+    """,
     )
     fun findEmployeeByName(employeeName: String, employeeId: Int?): Int?
 }

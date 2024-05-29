@@ -1,20 +1,46 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.database.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
+import androidx.room.Upsert
 import com.niyaj.database.model.ChargesEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ChargesDao {
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM charges ORDER BY createdAt DESC
-    """)
+    """,
+    )
     fun getAllCharges(): Flow<List<ChargesEntity>>
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM charges WHERE chargesId = :chargesId
-    """)
+    """,
+    )
     fun getChargesById(chargesId: Int): ChargesEntity?
 
     /**
@@ -35,9 +61,11 @@ interface ChargesDao {
     @Upsert
     suspend fun upsertCharges(charges: ChargesEntity): Long
 
-    @Query(value = """
+    @Query(
+        value = """
         DELETE FROM charges WHERE chargesId = :chargesId
-    """)
+    """,
+    )
     suspend fun deleteCharges(chargesId: Int): Int
 
     /**
@@ -51,12 +79,14 @@ interface ChargesDao {
     )
     suspend fun deleteCharges(chargesIds: List<Int>): Int
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM charges WHERE
             CASE WHEN :chargesId IS NULL OR :chargesId = 0
             THEN chargesName = :chargesName
             ELSE chargesId != :chargesId AND chargesName = :chargesName
             END LIMIT 1
-    """)
+    """,
+    )
     fun findChargesByName(chargesId: Int?, chargesName: String): ChargesEntity?
 }

@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.database.dao
 
 import androidx.room.Dao
@@ -23,21 +40,21 @@ interface CartOrderDao {
     @Query(
         value = """
         SELECT orderId FROM cartorder ORDER BY orderId DESC LIMIT 1
-    """
+    """,
     )
     suspend fun getLastCreatedOrderId(): Int?
 
     @Query(
         value = """
         SELECT orderId FROM cartorder WHERE orderStatus = :orderStatus ORDER BY orderId DESC LIMIT 1
-    """
+    """,
     )
     suspend fun getLastProcessingId(orderStatus: OrderStatus = OrderStatus.PROCESSING): Int?
 
     @Query(
         value = """
         SELECT orderStatus FROM cartorder WHERE orderId = :cartOrderId
-    """
+    """,
     )
     suspend fun getOrderStatus(cartOrderId: Int): OrderStatus
 
@@ -45,21 +62,21 @@ interface CartOrderDao {
     @Query(
         value = """
         SELECT * FROM addonitem
-    """
+    """,
     )
     fun getAllAddOnItems(): Flow<List<AddOnItemEntity>>
 
     @Query(
         value = """
         SELECT * FROM charges
-    """
+    """,
     )
     fun getAllCharges(): Flow<List<ChargesEntity>>
 
     @Query(
         value = """
         SELECT chargesPrice, isApplicable FROM charges
-    """
+    """,
     )
     fun getAllChargesPrice(): List<ChargesPriceWithApplicable>
 
@@ -68,21 +85,21 @@ interface CartOrderDao {
     @Query(
         value = """
         SELECT itemId FROM cart_addon_items WHERE orderId = :orderId
-    """
+    """,
     )
     suspend fun getCartAddOnItems(orderId: Int): List<Int>
 
     @Query(
         value = """
         SELECT chargesId FROM cart_charges WHERE orderId = :orderId
-    """
+    """,
     )
     suspend fun getCartCharges(orderId: Int): List<Int>
 
     @Query(
         value = """
         SELECT * FROM cart_addon_items WHERE orderId = :orderId AND itemId = :itemId
-    """
+    """,
     )
     suspend fun getCartAddOnItemById(orderId: Int, itemId: Int): CartAddOnItemsEntity?
 
@@ -92,14 +109,14 @@ interface CartOrderDao {
     @Query(
         value = """
         SELECT * FROM cart_charges WHERE orderId = :orderId AND chargesId = :chargesId
-    """
+    """,
     )
     suspend fun getCartChargesById(orderId: Int, chargesId: Int): CartChargesEntity?
 
     @Query(
         value = """
         DELETE FROM cart_charges WHERE orderId = :orderId AND chargesId = :chargesId
-    """
+    """,
     )
     suspend fun deleteCartCharges(orderId: Int, chargesId: Int): Int
 
@@ -108,7 +125,7 @@ interface CartOrderDao {
     @Query(
         value = """
             SELECT productPrice FROM product WHERE productId = :productId
-        """
+        """,
     )
     fun getProductPrice(productId: Int): Int
 
@@ -117,14 +134,14 @@ interface CartOrderDao {
     @Query(
         value = """
         SELECT * FROM cartorder WHERE orderStatus = :orderStatus ORDER BY createdAt DESC
-    """
+    """,
     )
     fun getProcessingCartOrders(orderStatus: OrderStatus = OrderStatus.PROCESSING): Flow<List<CartOrderEntity>>
 
     @Query(
         value = """
         SELECT * FROM cartorder ORDER BY createdAt DESC
-    """
+    """,
     )
     fun getAllCartOrders(): Flow<List<CartOrderEntity>>
 
@@ -132,7 +149,7 @@ interface CartOrderDao {
     @Query(
         value = """
         SELECT * FROM cartorder WHERE orderId = :orderId
-    """
+    """,
     )
     suspend fun getCartOrderById(orderId: Int): CartOrderWithAddOnAndChargesDto?
 
@@ -142,7 +159,7 @@ interface CartOrderDao {
     @Query(
         value = """
         DELETE FROM cartorder WHERE orderId = :orderId
-    """
+    """,
     )
     suspend fun deleteCartOrder(orderId: Int): Int
 
@@ -159,7 +176,7 @@ interface CartOrderDao {
     @Query(
         value = """
         UPDATE cartorder SET updatedAt = :updatedAt, orderStatus = :status WHERE orderId = :orderId
-    """
+    """,
     )
     suspend fun markAsProcessing(
         orderId: Int,
@@ -170,7 +187,7 @@ interface CartOrderDao {
     @Query(
         value = """
         UPDATE cartorder SET updatedAt = :updatedAt, orderStatus = :status WHERE orderId = :orderId
-    """
+    """,
     )
     suspend fun placeOrder(
         orderId: Int,
@@ -181,7 +198,7 @@ interface CartOrderDao {
     @Query(
         value = """
         UPDATE cartorder SET orderStatus = :status, updatedAt = :updatedAt WHERE orderId IN (:orderIds)
-    """
+    """,
     )
     suspend fun placeAllOrder(
         orderIds: List<Int>,
@@ -192,14 +209,14 @@ interface CartOrderDao {
     @Query(
         value = """
             SELECT orderId FROM cartorder WHERE addressId = :addressId
-        """
+        """,
     )
     fun getCartOrdersByAddressId(addressId: Int): List<Int>
 
     @Query(
         value = """
             SELECT orderId FROM cartorder WHERE customerId = :customerId
-        """
+        """,
     )
     fun getCartOrdersByCustomerId(customerId: Int): List<Int>
 }

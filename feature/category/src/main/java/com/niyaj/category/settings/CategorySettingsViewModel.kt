@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.category.settings
 
 import androidx.compose.runtime.snapshotFlow
@@ -23,7 +40,7 @@ import javax.inject.Inject
 class CategorySettingsViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val analyticsHelper: AnalyticsHelper,
-): BaseViewModel() {
+) : BaseViewModel() {
 
     val categories = snapshotFlow { mSearchText.value }.flatMapLatest {
         categoryRepository.getAllCategory(it)
@@ -33,7 +50,7 @@ class CategorySettingsViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
+        initialValue = emptyList(),
     )
 
     private val _exportedCategories = MutableStateFlow<List<Category>>(emptyList())
@@ -43,7 +60,7 @@ class CategorySettingsViewModel @Inject constructor(
     val importedCategories = _importedCategories.asStateFlow()
 
     fun onEvent(event: CategorySettingsEvent) {
-        when(event) {
+        when (event) {
             is CategorySettingsEvent.GetExportedCategory -> {
                 viewModelScope.launch {
                     if (mSelectedItems.isEmpty()) {
@@ -82,14 +99,14 @@ class CategorySettingsViewModel @Inject constructor(
             is CategorySettingsEvent.ImportCategoriesToDatabase -> {
                 viewModelScope.launch {
                     val data = if (mSelectedItems.isNotEmpty()) {
-                        mSelectedItems.flatMap {categoryId ->
+                        mSelectedItems.flatMap { categoryId ->
                             _importedCategories.value.filter { it.categoryId == categoryId }
                         }
-                    }else {
+                    } else {
                         _importedCategories.value
                     }
 
-                    when(val result = categoryRepository.importCategoriesToDatabase(data)) {
+                    when (val result = categoryRepository.importCategoriesToDatabase(data)) {
                         is Resource.Error -> {
                             mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
                         }

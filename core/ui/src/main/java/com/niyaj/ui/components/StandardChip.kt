@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.ui.components
 
 import androidx.compose.foundation.BorderStroke
@@ -52,19 +69,19 @@ fun StandardOutlinedChip(
         onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(SpaceMini),
-        border = borderStroke
+        border = borderStroke,
     ) {
         Row(
             modifier = Modifier
                 .padding(SpaceMini),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if(isSelected){
+            if (isSelected) {
                 Icon(
                     imageVector = Icons.Default.Done,
                     contentDescription = "$text added",
                     tint = dissectedColor,
-                    modifier = Modifier.size(IconSizeSmall)
+                    modifier = Modifier.size(IconSizeSmall),
                 )
 
                 Spacer(modifier = Modifier.width(SpaceSmall))
@@ -77,7 +94,7 @@ fun StandardOutlinedChip(
                 color = if (isSelected) dissectedColor else selectedColor,
             )
 
-            if(!secondaryText.isNullOrEmpty() && text.startsWith("Cold")){
+            if (!secondaryText.isNullOrEmpty() && text.startsWith("Cold")) {
                 Text(
                     text = " Rs. $secondaryText",
                     style = MaterialTheme.typography.labelSmall,
@@ -88,7 +105,6 @@ fun StandardOutlinedChip(
         }
     }
 }
-
 
 @Composable
 fun PaymentStatusChip(
@@ -102,31 +118,30 @@ fun PaymentStatusChip(
         modifier = modifier
             .clip(RoundedCornerShape(2.dp))
             .background(if (isPaid) paidColor else notPaidColor),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Row(
             modifier = Modifier
                 .padding(SpaceMini),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if(isPaid){
+            if (isPaid) {
                 Icon(
                     imageVector = Icons.Default.Done,
                     contentDescription = text,
                     tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(IconSizeSmall)
+                    modifier = Modifier.size(IconSizeSmall),
                 )
             } else {
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = text,
                     tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(IconSizeSmall)
+                    modifier = Modifier.size(IconSizeSmall),
                 )
             }
 
             Spacer(modifier = Modifier.width(SpaceSmall))
-
 
             Text(
                 text = text,
@@ -167,7 +182,7 @@ fun StandardChip(
                     imageVector = it,
                     contentDescription = "$text icon",
                     tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(IconSizeSmall)
+                    modifier = Modifier.size(IconSizeSmall),
                 )
 
                 Spacer(modifier = Modifier.width(SpaceSmall))

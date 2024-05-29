@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.common.utils
 
 import android.content.ContentUris
@@ -24,7 +41,6 @@ import kotlin.coroutines.resume
 const val FALLBACK_COPY_FOLDER = "upload_part"
 const val TAG = "FileUtils"
 
-
 class FileUtils(var context: Context?) {
 
     fun getFile(uri: Uri): File? {
@@ -33,7 +49,9 @@ class FileUtils(var context: Context?) {
 
             if (path != null) {
                 File(path)
-            } else null
+            } else {
+                null
+            }
         } catch (e: Exception) {
             null
         }
@@ -64,9 +82,11 @@ class FileUtils(var context: Context?) {
             var cursor: Cursor? = null
             try {
                 cursor = context!!.contentResolver.query(
-                    uri, arrayOf(
-                        MediaStore.MediaColumns.DISPLAY_NAME
-                    ), null, null, null
+                    uri,
+                    arrayOf(
+                        MediaStore.MediaColumns.DISPLAY_NAME,
+                    ),
+                    null, null, null,
                 )
                 if (cursor != null && cursor.moveToFirst()) {
                     val fileName = cursor.getString(0)
@@ -86,17 +106,17 @@ class FileUtils(var context: Context?) {
                 }
                 val contentUriPrefixesToTry = arrayOf(
                     "content://downloads/public_downloads",
-                    "content://downloads/my_downloads"
+                    "content://downloads/my_downloads",
                 )
                 for (contentUriPrefix in contentUriPrefixesToTry) {
                     return try {
                         val contentUri = ContentUris.withAppendedId(
                             Uri.parse(contentUriPrefix),
-                            id.toLong()
+                            id.toLong(),
                         )
                         getDataColumn(context, contentUri, null, null)
                     } catch (e: NumberFormatException) {
-                        //In Android 8 and Android P the id is not a number
+                        // In Android 8 and Android P the id is not a number
                         uri.path!!.replaceFirst("^/document/raw:".toRegex(), "")
                             .replaceFirst("^raw:".toRegex(), "")
                     }
@@ -133,7 +153,7 @@ class FileUtils(var context: Context?) {
             }
             selection = "_id=?"
             selectionArgs = arrayOf(
-                split[1]
+                split[1],
             )
             return getDataColumn(context, contentUri, selection, selectionArgs)
         }
@@ -179,7 +199,6 @@ class FileUtils(var context: Context?) {
         val relativePath = File.separator + pathData[1]
         var fullPath: String
 
-
         // on my Sony devices (4.4.4 & 5.1.1), `type` is a dynamic string
         // something like "71F8-2C0A", some kind of unique id per storage
         // don't know any API that can get the root path of that storage based on its id.
@@ -213,7 +232,9 @@ class FileUtils(var context: Context?) {
 
         return if (fileExists(fullPath)) {
             fullPath
-        } else null
+        } else {
+            null
+        }
     }
 
     private fun getDriveFilePath(uri: Uri): String? {
@@ -234,7 +255,7 @@ class FileUtils(var context: Context?) {
             val maxBufferSize = 1 * 1024 * 1024
             val bytesAvailable = inputStream!!.available()
 
-            //int bufferSize = 1024;
+            // int bufferSize = 1024;
             val bufferSize = bytesAvailable.coerceAtMost(maxBufferSize)
             val buffers = ByteArray(bufferSize)
             while (inputStream.read(buffers).also { read = it } != -1) {
@@ -258,9 +279,14 @@ class FileUtils(var context: Context?) {
      */
     private fun copyFileToInternalStorage(uri: Uri, newDirName: String): String? {
         val returnCursor = context!!.contentResolver.query(
-            uri, arrayOf(
-                OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE
-            ), null, null, null
+            uri,
+            arrayOf(
+                OpenableColumns.DISPLAY_NAME,
+                OpenableColumns.SIZE,
+            ),
+            null,
+            null,
+            null,
         )
 
         /*
@@ -313,17 +339,17 @@ class FileUtils(var context: Context?) {
         context: Context?,
         uri: Uri?,
         selection: String?,
-        selectionArgs: Array<String>?
+        selectionArgs: Array<String>?,
     ): String? {
         var cursor: Cursor? = null
         val column = "_data"
         val projection = arrayOf(
-            column
+            column,
         )
         try {
             cursor = context!!.contentResolver.query(
                 uri!!, projection,
-                selection, selectionArgs, null
+                selection, selectionArgs, null,
             )
             if (cursor != null && cursor.moveToFirst()) {
                 val index = cursor.getColumnIndexOrThrow(column)
@@ -360,11 +386,10 @@ class FileUtils(var context: Context?) {
     }
 }
 
-
 suspend fun Bitmap.saveToDisk(context: Context): Uri {
     val file = File(
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-        "screenshot-${System.currentTimeMillis()}.png"
+        "screenshot-${System.currentTimeMillis()}.png",
     )
 
     file.writeBitmap(this, Bitmap.CompressFormat.PNG, 100)
@@ -381,7 +406,7 @@ suspend fun scanFilePath(context: Context, filePath: String): Uri? {
         MediaScannerConnection.scanFile(
             context,
             arrayOf(filePath),
-            arrayOf("image/png")
+            arrayOf("image/png"),
         ) { _, scannedUri ->
             if (scannedUri == null) {
                 continuation.cancel(Exception("File $filePath could not be scanned"))
@@ -408,19 +433,18 @@ fun shareBitmap(context: Context, uri: Uri) {
     ContextCompat.startActivity(context, Intent.createChooser(intent, "Share your image"), null)
 }
 
-
-//val writeStorageAccessState = rememberMultiplePermissionsState(
+// val writeStorageAccessState = rememberMultiplePermissionsState(
 //    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 //        // No permissions are needed on Android 10+ to add files in the shared storage
 //        emptyList()
 //    } else {
 //        listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 //    }
-//)
-//// This logic should live in your ViewModel - trigger a side effect to invoke URI sharing.
-//// checks permissions granted, and then saves the bitmap from a Picture that is already capturing content
-//// and shares it with the default share sheet.
-//fun shareBitmapFromComposable(bitmap: Bitmap) {
+// )
+// // This logic should live in your ViewModel - trigger a side effect to invoke URI sharing.
+// // checks permissions granted, and then saves the bitmap from a Picture that is already capturing content
+// // and shares it with the default share sheet.
+// fun shareBitmapFromComposable(bitmap: Bitmap) {
 //    if (writeStorageAccessState.allPermissionsGranted) {
 //        scope.launch {
 //            val uri = bitmap.saveToDisk(context)
@@ -440,4 +464,4 @@ fun shareBitmap(context: Context, uri: Uri) {
 //    } else {
 //        writeStorageAccessState.launchMultiplePermissionRequest()
 //    }
-//}
+// }

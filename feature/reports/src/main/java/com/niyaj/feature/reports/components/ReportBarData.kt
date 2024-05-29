@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.feature.reports.components
 
 import androidx.compose.animation.Crossfade
@@ -44,13 +61,13 @@ fun ReportBarData(
         modifier = Modifier
             .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(2.dp),
-        colors = CardDefaults.cardColors()
+        colors = CardDefaults.cardColors(),
     ) {
         Crossfade(
             targetState = reportBarState,
-            label = "ReportBarState"
+            label = "ReportBarState",
         ) { state ->
-            when(state) {
+            when (state) {
                 is UiState.Loading -> LoadingIndicator()
 
                 is UiState.Empty -> {
@@ -64,7 +81,7 @@ fun ReportBarData(
                 is UiState.Success -> {
                     Column(
                         modifier = Modifier
-                            .padding(SpaceSmall)
+                            .padding(SpaceSmall),
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -74,15 +91,15 @@ fun ReportBarData(
                             IconWithText(
                                 text = "Last ${state.data.size} Days Reports",
                                 icon = PoposIcons.AutoGraph,
-                                secondaryText = selectedBarData.ifEmpty { null }
+                                secondaryText = selectedBarData.ifEmpty { null },
                             )
 
                             IconButton(
-                                onClick = onClickViewMore
+                                onClick = onClickViewMore,
                             ) {
                                 Icon(
                                     imageVector = PoposIcons.ArrowRightAlt,
-                                    contentDescription = "View more"
+                                    contentDescription = "View more",
                                 )
                             }
                         }
@@ -102,22 +119,22 @@ fun ReportBarData(
                                 onBarClick(
                                     "${it.yValue} - ${
                                         it.xValue.toString().substringBefore(".").toRupee
-                                    }"
+                                    }",
                                 )
                             },
                             colors = listOf(
                                 MaterialTheme.colorScheme.secondary,
-                                MaterialTheme.colorScheme.primaryContainer
+                                MaterialTheme.colorScheme.primaryContainer,
                             ),
                             barDimens = ChartDimens(2.dp),
                             horizontalBarConfig = HorizontalBarConfig(
                                 showLabels = false,
                                 startDirection = StartDirection.Left,
-                                productReport = false
+                                productReport = false,
                             ),
                             horizontalAxisConfig = HorizontalAxisConfig(
                                 showAxes = true,
-                                showUnitLabels = false
+                                showUnitLabels = false,
                             ),
                             horizontalBarData = state.data,
                         )

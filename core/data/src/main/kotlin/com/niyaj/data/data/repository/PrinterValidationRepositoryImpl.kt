@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.data.data.repository
@@ -36,7 +37,7 @@ class PrinterValidationRepositoryImpl : PrinterValidationRepository {
         if (dpi <= 0) {
             return ValidationResult(
                 successful = false,
-                errorMessage = DPI_IS_REQUIRED
+                errorMessage = DPI_IS_REQUIRED,
             )
         }
 
@@ -47,7 +48,7 @@ class PrinterValidationRepositoryImpl : PrinterValidationRepository {
         if (width <= 0f) {
             return ValidationResult(
                 successful = false,
-                errorMessage = WIDTH_IS_REQUIRED
+                errorMessage = WIDTH_IS_REQUIRED,
             )
         }
 
@@ -58,7 +59,7 @@ class PrinterValidationRepositoryImpl : PrinterValidationRepository {
         if (lines <= 0) {
             return ValidationResult(
                 successful = false,
-                errorMessage = NBR_LINES_IS_REQUIRED
+                errorMessage = NBR_LINES_IS_REQUIRED,
             )
         }
 
@@ -69,14 +70,14 @@ class PrinterValidationRepositoryImpl : PrinterValidationRepository {
         if (length <= 0) {
             return ValidationResult(
                 successful = false,
-                errorMessage = PRODUCT_NAME_LENGTH_IS_REQUIRED
+                errorMessage = PRODUCT_NAME_LENGTH_IS_REQUIRED,
             )
         }
 
         if (length <= 10) {
             return ValidationResult(
                 successful = false,
-                errorMessage = PRODUCT_NAME_LENGTH_IS_ERROR
+                errorMessage = PRODUCT_NAME_LENGTH_IS_ERROR,
             )
         }
 
@@ -87,14 +88,14 @@ class PrinterValidationRepositoryImpl : PrinterValidationRepository {
         if (limit <= 0) {
             return ValidationResult(
                 successful = false,
-                errorMessage = PRODUCT_REPORT_LIMIT_IS_REQUIRED
+                errorMessage = PRODUCT_REPORT_LIMIT_IS_REQUIRED,
             )
         }
 
         if (limit < 20) {
             return ValidationResult(
                 successful = false,
-                errorMessage = PRODUCT_REPORT_LENGTH_ERROR
+                errorMessage = PRODUCT_REPORT_LENGTH_ERROR,
             )
         }
 
@@ -105,14 +106,14 @@ class PrinterValidationRepositoryImpl : PrinterValidationRepository {
         if (limit <= 0) {
             return ValidationResult(
                 successful = false,
-                errorMessage = ADDRESS_REPORT_LIMIT_IS_REQUIRED
+                errorMessage = ADDRESS_REPORT_LIMIT_IS_REQUIRED,
             )
         }
 
         if (limit < 10) {
             return ValidationResult(
                 successful = false,
-                errorMessage = ADDRESS_REPORT_LENGTH_ERROR
+                errorMessage = ADDRESS_REPORT_LENGTH_ERROR,
             )
         }
 
@@ -123,14 +124,14 @@ class PrinterValidationRepositoryImpl : PrinterValidationRepository {
         if (limit <= 0) {
             return ValidationResult(
                 successful = false,
-                errorMessage = CUSTOM_REPORT_LIMIT_IS_REQUIRED
+                errorMessage = CUSTOM_REPORT_LIMIT_IS_REQUIRED,
             )
         }
 
         if (limit < 10) {
             return ValidationResult(
                 successful = false,
-                errorMessage = CUSTOM_REPORT_LENGTH_ERROR
+                errorMessage = CUSTOM_REPORT_LENGTH_ERROR,
             )
         }
 

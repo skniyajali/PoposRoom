@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.designsystem.theme
 
 import android.os.Build
@@ -14,7 +31,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-
 
 private val lightColorScheme = lightColorScheme(
     primary = light_primary,
@@ -48,7 +64,6 @@ private val lightColorScheme = lightColorScheme(
     scrim = light_scrim,
 )
 
-
 private val darkColorScheme = darkColorScheme(
     primary = dark_primary,
     onPrimary = dark_onPrimary,
@@ -81,7 +96,6 @@ private val darkColorScheme = darkColorScheme(
     scrim = dark_scrim,
 )
 
-
 /**
  * Light Android gradient colors
  */
@@ -109,7 +123,6 @@ fun PoposRoomTheme(
     disableDynamicTheming: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-
     // Color scheme
     val colorScheme = when {
         androidTheme -> if (darkTheme) darkColorScheme else lightColorScheme

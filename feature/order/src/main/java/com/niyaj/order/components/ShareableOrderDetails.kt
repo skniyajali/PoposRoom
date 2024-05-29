@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.order.components
 
 import android.annotation.SuppressLint
@@ -120,14 +137,20 @@ fun ShareableOrderDetails(
             ) {
                 val icon = if (orderDetails.cartOrder.orderType == OrderType.DineIn) {
                     PoposIcons.DinnerDining
-                } else PoposIcons.DeliveryDining
+                } else {
+                    PoposIcons.DeliveryDining
+                }
                 val containerColor = if (orderDetails.cartOrder.orderType == OrderType.DineIn) {
                     MaterialTheme.colorScheme.tertiary
-                } else MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.primary
+                }
 
                 val backgroundColor = if (orderDetails.cartOrder.orderType == OrderType.DineIn) {
                     gradient6
-                } else gradient7
+                } else {
+                    gradient7
+                }
 
                 CapturableCard(
                     modifier = Modifier.weight(2.5f),
@@ -203,16 +226,22 @@ fun ShareableOrderDetails(
                         ) {
                             val icon = if (state.data.cartOrder.orderType == OrderType.DineIn) {
                                 PoposIcons.DinnerDining
-                            } else PoposIcons.DeliveryDining
+                            } else {
+                                PoposIcons.DeliveryDining
+                            }
                             val containerColor =
                                 if (state.data.cartOrder.orderType == OrderType.DineIn) {
                                     MaterialTheme.colorScheme.tertiary
-                                } else MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.primary
+                                }
 
                             val backgroundColor =
                                 if (state.data.cartOrder.orderType == OrderType.DineIn) {
                                     gradient6
-                                } else gradient7
+                                } else {
+                                    gradient7
+                                }
 
                             CapturableCard(
                                 modifier = Modifier.weight(2.5f),
@@ -461,8 +490,10 @@ fun ShareableCartOrderDetailsCard(
 
             StandardSuggestionChip(
                 icon = PoposIcons.CalenderMonth,
-                text = (cartOrder.updatedAt
-                    ?: cartOrder.createdAt).toFormattedDateAndTime,
+                text = (
+                    cartOrder.updatedAt
+                        ?: cartOrder.createdAt
+                    ).toFormattedDateAndTime,
                 borderColor = color,
             )
         }
@@ -559,12 +590,13 @@ fun ShareableCartOrderDetails(
 
             StandardSuggestionChip(
                 icon = PoposIcons.CalenderMonth,
-                text = (cartOrder.updatedAt
-                    ?: cartOrder.createdAt).toFormattedDateAndTime,
+                text = (
+                    cartOrder.updatedAt
+                        ?: cartOrder.createdAt
+                    ).toFormattedDateAndTime,
                 borderColor = color,
             )
         }
-
 
         if (cartOrder.address.addressName.isNotEmpty()) {
             Row(
@@ -587,7 +619,6 @@ fun ShareableCartOrderDetails(
                 )
             }
         }
-
 
         HorizontalDivider(
             modifier = Modifier

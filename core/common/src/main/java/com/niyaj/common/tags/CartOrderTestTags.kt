@@ -1,8 +1,25 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.common.tags
 
 object CartOrderTestTags {
 
-    //Cart Order Screen
+    // Cart Order Screen
 
     const val CART_ORDER_SCREEN_TITLE = "Cart Orders"
     const val CART_ORDER_NOT_AVAILABLE = "Cart Order Not Available"
@@ -11,7 +28,7 @@ object CartOrderTestTags {
     const val CREATE_NEW_CART_ORDER = "Create New Order"
     const val EDIT_CART_ORDER = "Update Cart Order"
 
-    //Add Edit Cart Order Screen Tags
+    // Add Edit Cart Order Screen Tags
 
     const val ORDER_TYPE_FIELD = "Order Type"
     const val ORDER_ID_FIELD = "Order ID"

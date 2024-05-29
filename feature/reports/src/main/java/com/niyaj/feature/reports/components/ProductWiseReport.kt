@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.feature.reports.components
 
 import androidx.compose.animation.Crossfade
@@ -44,7 +61,7 @@ fun ProductWiseReport(
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(
             containerColor = LightColor3,
-        )
+        ),
     ) {
         StandardExpandable(
             modifier = Modifier
@@ -64,7 +81,7 @@ fun ProductWiseReport(
             trailing = {
                 OrderTypeDropdown(
                     text = orderType.ifEmpty { "All" },
-                    onItemClick = onClickOrderType
+                    onItemClick = onClickOrderType,
                 )
             },
             expand = null,
@@ -72,9 +89,9 @@ fun ProductWiseReport(
             content = {
                 Crossfade(
                     targetState = productState,
-                    label = "ProductState"
+                    label = "ProductState",
                 ) { state ->
-                    when(state) {
+                    when (state) {
                         is UiState.Empty -> {
                             ItemNotAvailable(
                                 text = "Product wise report not available",
@@ -96,21 +113,21 @@ fun ProductWiseReport(
                                     onBarClick(
                                         "${it.yValue} - ${
                                             it.xValue.toString().substringBefore(".")
-                                        } Qty"
+                                        } Qty",
                                     )
                                 },
                                 colors = listOf(
                                     MaterialTheme.colorScheme.primaryContainer,
-                                    MaterialTheme.colorScheme.secondaryContainer
+                                    MaterialTheme.colorScheme.secondaryContainer,
                                 ),
                                 barDimens = ChartDimens(2.dp),
                                 horizontalBarConfig = HorizontalBarConfig(
                                     showLabels = false,
-                                    startDirection = StartDirection.Left
+                                    startDirection = StartDirection.Left,
                                 ),
                                 horizontalAxisConfig = HorizontalAxisConfig(
                                     showAxes = true,
-                                    showUnitLabels = false
+                                    showUnitLabels = false,
                                 ),
                                 horizontalBarData = state.data,
                             )

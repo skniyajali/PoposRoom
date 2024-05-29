@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.common.utils
@@ -78,7 +79,6 @@ val Int.toRupee
         .format(this.toLong())
         .substringBefore(".")
 
-
 val String.isContainsArithmeticCharacter: Boolean
     get() = this.any { str ->
         (str == '%' || str == '/' || str == '*' || str == '+' || str == '-')
@@ -120,7 +120,6 @@ val zoneId: ZoneId = ZoneId.of("Asia/Kolkata")
 val Date.toMillis: String
     get() = this.time.toString()
 
-
 val LocalDate.toMilliSecond: String
     get() = this.atStartOfDay(zoneId)
         .toLocalDateTime()
@@ -138,7 +137,7 @@ val LocalDate.toCurrentMilliSecond: String
 val String.toJoinedDate
     get() = SimpleDateFormat(
         "dd-MM-yyyy",
-        Locale.getDefault()
+        Locale.getDefault(),
     ).format(this.toLong()).toString()
 
 fun toMonthAndYear(date: String): String {
@@ -161,7 +160,6 @@ val Date.toDate
 val Long.toDateString
     get() = SimpleDateFormat("dd", Locale.getDefault()).format(this).toString()
 
-
 val String.toTime
     get() = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(this.toLong()).toString()
 
@@ -171,61 +169,61 @@ val Date.toTime
 val String.toBarDate
     get() = SimpleDateFormat(
         "dd MMM",
-        Locale.getDefault()
+        Locale.getDefault(),
     ).format(this.toLong()).toString()
 
 val Date.toBarDate
     get() = SimpleDateFormat(
         "dd MMM",
-        Locale.getDefault()
+        Locale.getDefault(),
     ).format(this).toString()
 
 val Long.toBarDate
     get() = SimpleDateFormat(
         "dd MMM",
-        Locale.getDefault()
+        Locale.getDefault(),
     ).format(this).toString()
 
 val String.toFormattedDate
     get() = SimpleDateFormat(
         "dd MMM yy",
-        Locale.getDefault()
+        Locale.getDefault(),
     ).format(this.toLong()).toString()
 
 val Long.toFormattedDate
     get() = SimpleDateFormat(
         "dd MMM yy",
-        Locale.getDefault()
+        Locale.getDefault(),
     ).format(this.toLong()).toString()
 
 val String.toFormattedTime
     get() = SimpleDateFormat(
         "hh:mm a",
-        Locale.getDefault()
+        Locale.getDefault(),
     ).format(this.toLong()).toString()
 
 val String.toFormattedDateAndTime
     get() = SimpleDateFormat(
         "dd MMM, hh:mm a",
-        Locale.getDefault()
+        Locale.getDefault(),
     ).format(this.toLong()).toString()
 
 val Date.toFormattedDateAndTime
     get() = SimpleDateFormat(
         "dd MMM, hh:mm a",
-        Locale.getDefault()
+        Locale.getDefault(),
     ).format(this).toString()
 
 val Long.toFormattedDateAndTime
     get() = SimpleDateFormat(
         "dd MMM, hh:mm a",
-        Locale.getDefault()
+        Locale.getDefault(),
     ).format(this).toString()
 
 val String.toYearAndMonth
     get() = SimpleDateFormat(
         "MMM yyyy",
-        Locale.getDefault()
+        Locale.getDefault(),
     ).format(this.toLong()).toString()
 
 val Long.toDate
@@ -240,31 +238,31 @@ fun String.toPrettyDate(): String {
         if (neededTime[Calendar.MONTH] == nowTime[Calendar.MONTH]) {
             when {
                 neededTime[Calendar.DATE] - nowTime[Calendar.DATE] == 1 -> {
-                    //here return like "Tomorrow at 12:00"
+                    // here return like "Tomorrow at 12:00"
                     "Tomorrow"
                 }
 
                 nowTime[Calendar.DATE] == neededTime[Calendar.DATE] -> {
-                    //here return like "Today at 12:00"
+                    // here return like "Today at 12:00"
                     "Today"
                 }
 
                 nowTime[Calendar.DATE] - neededTime[Calendar.DATE] == 1 -> {
-                    //here return like "Yesterday at 12:00"
+                    // here return like "Yesterday at 12:00"
                     "Yesterday"
                 }
 
                 else -> {
-                    //here return like "May 31, 12:00"
+                    // here return like "May 31, 12:00"
                     SimpleDateFormat("MMMM dd", Locale.getDefault()).format(Date(this.toLong()))
                 }
             }
         } else {
-            //here return like "May 31, 12:00"
+            // here return like "May 31, 12:00"
             SimpleDateFormat("MMMM dd", Locale.getDefault()).format(Date(this.toLong()))
         }
     } else {
-        //here return like "May 31 2022, 12:00" - it's a different year we need to show it
+        // here return like "May 31 2022, 12:00" - it's a different year we need to show it
         SimpleDateFormat("MMMM dd yyyy", Locale.getDefault()).format(Date(this.toLong()))
     }
 }
@@ -278,31 +276,31 @@ fun Long.toPrettyDate(): String {
         if (neededTime[Calendar.MONTH] == nowTime[Calendar.MONTH]) {
             when {
                 neededTime[Calendar.DATE] - nowTime[Calendar.DATE] == 1 -> {
-                    //here return like "Tomorrow at 12:00"
+                    // here return like "Tomorrow at 12:00"
                     "Tomorrow"
                 }
 
                 nowTime[Calendar.DATE] == neededTime[Calendar.DATE] -> {
-                    //here return like "Today at 12:00"
+                    // here return like "Today at 12:00"
                     "Today"
                 }
 
                 nowTime[Calendar.DATE] - neededTime[Calendar.DATE] == 1 -> {
-                    //here return like "Yesterday at 12:00"
+                    // here return like "Yesterday at 12:00"
                     "Yesterday"
                 }
 
                 else -> {
-                    //here return like "May 31, 12:00"
+                    // here return like "May 31, 12:00"
                     SimpleDateFormat("MMMM dd", Locale.getDefault()).format(Date(this))
                 }
             }
         } else {
-            //here return like "May 31, 12:00"
+            // here return like "May 31, 12:00"
             SimpleDateFormat("MMMM dd", Locale.getDefault()).format(Date(this))
         }
     } else {
-        //here return like "May 31 2022, 12:00" - it's a different year we need to show it
+        // here return like "May 31 2022, 12:00" - it's a different year we need to show it
         SimpleDateFormat("MMMM dd yyyy", Locale.getDefault()).format(Date(this))
     }
 }
@@ -316,31 +314,31 @@ fun Date.toPrettyDate(): String {
         if (neededTime[Calendar.MONTH] == nowTime[Calendar.MONTH]) {
             when {
                 neededTime[Calendar.DATE] - nowTime[Calendar.DATE] == 1 -> {
-                    //here return like "Tomorrow at 12:00"
+                    // here return like "Tomorrow at 12:00"
                     "Tomorrow"
                 }
 
                 nowTime[Calendar.DATE] == neededTime[Calendar.DATE] -> {
-                    //here return like "Today at 12:00"
+                    // here return like "Today at 12:00"
                     "Today"
                 }
 
                 nowTime[Calendar.DATE] - neededTime[Calendar.DATE] == 1 -> {
-                    //here return like "Yesterday at 12:00"
+                    // here return like "Yesterday at 12:00"
                     "Yesterday"
                 }
 
                 else -> {
-                    //here return like "May 31, 12:00"
+                    // here return like "May 31, 12:00"
                     SimpleDateFormat("MMMM dd", Locale.getDefault()).format(this)
                 }
             }
         } else {
-            //here return like "May 31, 12:00"
+            // here return like "May 31, 12:00"
             SimpleDateFormat("MMMM dd", Locale.getDefault()).format(this)
         }
     } else {
-        //here return like "May 31 2022, 12:00" - it's a different year we need to show it
+        // here return like "May 31 2022, 12:00" - it's a different year we need to show it
         SimpleDateFormat("MMMM dd yyyy", Locale.getDefault()).format(this)
     }
 }
@@ -574,8 +572,12 @@ fun createDottedString(name: String, limit: Int): String {
             if (index != 0) {
                 val wordLen = name1.length.minus(remLength.plus(1))
                 val dottedName =
-                    if (wordLen <= 0) name1.substring(0, 1) else name1.substring(0, wordLen)
-                        .plus(".")
+                    if (wordLen <= 0) {
+                        name1.substring(0, 1)
+                    } else {
+                        name1.substring(0, wordLen)
+                            .plus(".")
+                    }
                 newName += " $dottedName"
             } else {
                 newName = name1
@@ -583,7 +585,9 @@ fun createDottedString(name: String, limit: Int): String {
         }
 
         return newName
-    } else return name
+    } else {
+        return name
+    }
 }
 
 fun createLineString(name: String, limit: Int): String {
@@ -605,7 +609,6 @@ fun createLineString(name: String, limit: Int): String {
 }
 
 fun getSalaryDates(joinedDate: String): List<Pair<String, String>> {
-
     val currentYearAndMonth = YearMonth.now()
 
     val salaryDates = mutableListOf<Pair<String, String>>()
@@ -629,7 +632,7 @@ fun getSalaryDates(joinedDate: String): List<Pair<String, String>> {
 
         val comparePreDate = compareSalaryDates(
             getStartDate(formattedDate, previousMonth, previousYear),
-            Calendar.getInstance().timeInMillis.toString()
+            Calendar.getInstance().timeInMillis.toString(),
         )
 
         if (comparePreDate) {
@@ -639,8 +642,8 @@ fun getSalaryDates(joinedDate: String): List<Pair<String, String>> {
                     currentMonth = currentMonth,
                     currentYear = currentYear,
                     previousMonth = previousMonth,
-                    previousYear = previousYear
-                )
+                    previousYear = previousYear,
+                ),
             )
         }
     }
@@ -663,7 +666,6 @@ private fun getStartAndEndDate(
     startCalender[Calendar.MINUTE] = 0
     startCalender[Calendar.SECOND] = 0
     startCalender[Calendar.MILLISECOND] = 0
-
 
     val endCalender = Calendar.getInstance()
     endCalender[Calendar.DATE] = date
@@ -722,13 +724,11 @@ val Pair<String, String>.isSameDay: Boolean
 val String.isToday: Boolean
     get() = DateUtils.isToday(this.toLong())
 
-
 // Create a list of all measure units.
 val measureUnitLists = listOf(
     "kg", "gm", "li", "bottle", "packet",
-    "tsp", "tbsp", "cup", "pcs"
+    "tsp", "tbsp", "cup", "pcs",
 )
-
 
 fun List<Int>.toListString(): String {
     val sb = StringBuilder()
@@ -747,7 +747,6 @@ fun String.toListString(): MutableList<Int> {
         .filter { it.isNotEmpty() } // Filter out empty strings
         .map { it.toInt() }.toMutableList()
 }
-
 
 fun Double.toSafeString(): String {
     return when {
@@ -800,7 +799,7 @@ suspend fun Context.saveImageToInternalStorage(
 
 private fun InputStream.copyTo(
     outputStream: OutputStream,
-    bufferSize: Int = 1024
+    bufferSize: Int = 1024,
 ) {
     val buffer = ByteArray(bufferSize)
     var bytesRead: Int
@@ -817,7 +816,7 @@ fun drawableToByteArray(context: Context, imageRes: Int): ByteArray {
     val bitmap = Bitmap.createBitmap(
         drawable?.intrinsicWidth ?: 0,
         drawable?.intrinsicHeight ?: 0,
-        Bitmap.Config.ARGB_8888
+        Bitmap.Config.ARGB_8888,
     )
     val canvas = Canvas(bitmap)
     drawable?.setBounds(0, 0, canvas.width, canvas.height)
@@ -841,23 +840,23 @@ fun drawableToByteArray(context: Context, imageRes: Int): ByteArray {
  * Convert bitmap to byte array using ByteBuffer.
  */
 fun Bitmap.convertToByteArray(): ByteArray {
-    //minimum number of bytes that can be used to store this bitmaps pixels
+    // minimum number of bytes that can be used to store this bitmaps pixels
     val size = this.byteCount
 
-    //allocate new instances which will hold bitmap
+    // allocate new instances which will hold bitmap
     val buffer = ByteBuffer.allocate(size)
     val bytes = ByteArray(size)
 
-    //copy the bitmap's pixels into the specified buffer
+    // copy the bitmap's pixels into the specified buffer
     this.copyPixelsToBuffer(buffer)
 
-    //rewinds buffer (buffer position is set to zero and the mark is discarded)
+    // rewinds buffer (buffer position is set to zero and the mark is discarded)
     buffer.rewind()
 
-    //transfer bytes from buffer into the given destination array
+    // transfer bytes from buffer into the given destination array
     buffer.get(bytes)
 
-    //return bitmaps pixels
+    // return bitmaps pixels
     return bytes
 }
 

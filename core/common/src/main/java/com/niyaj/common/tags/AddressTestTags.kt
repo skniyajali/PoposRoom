@@ -1,8 +1,25 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.common.tags
 
 object AddressTestTags {
 
-    //Address Screen
+    // Address Screen
 
     const val ADDRESS_SCREEN_TITLE = "Addresses"
     const val ADDRESS_NOT_AVAILABLE = "Address Not Available"
@@ -15,7 +32,7 @@ object AddressTestTags {
     const val CREATE_NEW_ADDRESS = "Create New Address"
     const val EDIT_ADDRESS = "Update Address"
 
-    //Add Edit Address Screen Tags
+    // Add Edit Address Screen Tags
     const val ADDRESS_SHORT_NAME_FIELD = "Short Name"
     const val ADDRESS_SHORT_NAME_ERROR = "Short Name Error"
 

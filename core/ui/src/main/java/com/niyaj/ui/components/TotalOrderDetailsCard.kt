@@ -1,3 +1,20 @@
+/*
+ * Copyright 2024 Sk Niyaj Ali
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.niyaj.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
@@ -45,8 +62,8 @@ fun TotalOrderDetailsCard(
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.background
-        )
+            containerColor = MaterialTheme.colorScheme.background,
+        ),
     ) {
         Column(
             modifier = Modifier
@@ -58,7 +75,7 @@ fun TotalOrderDetailsCard(
             Text(
                 text = "Total Orders",
                 style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
             )
 
             Spacer(modifier = Modifier.height(SpaceSmall))
@@ -76,7 +93,7 @@ fun TotalOrderDetailsCard(
                     text = details.totalAmount.toRupee,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.testTag(REMAINING_AMOUNT_TEXT)
+                    modifier = Modifier.testTag(REMAINING_AMOUNT_TEXT),
                 )
 
                 val startDate = details.datePeriod.first
@@ -85,14 +102,14 @@ fun TotalOrderDetailsCard(
                 if (startDate.isNotEmpty()) {
                     Card(
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
                         ),
-                        modifier = Modifier.testTag("DatePeriod")
+                        modifier = Modifier.testTag("DatePeriod"),
                     ) {
                         Row(
                             modifier = Modifier
                                 .padding(SpaceMini),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
                                 text = startDate.toBarDate,
@@ -104,7 +121,7 @@ fun TotalOrderDetailsCard(
                                     Spacer(modifier = Modifier.width(SpaceMini))
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
-                                        contentDescription = "DatePeriod"
+                                        contentDescription = "DatePeriod",
                                     )
                                     Spacer(modifier = Modifier.width(SpaceMini))
                                     Text(
@@ -130,24 +147,23 @@ fun TotalOrderDetailsCard(
             ) {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     ),
-                    modifier = Modifier.testTag("TotalOrders")
+                    modifier = Modifier.testTag("TotalOrders"),
                 ) {
                     val string = AnnotatedString.Builder()
                     string.append("Total ")
                     string.withStyle(
-                        SpanStyle(fontWeight = FontWeight.SemiBold)
+                        SpanStyle(fontWeight = FontWeight.SemiBold),
                     ) {
                         append("${details.totalOrder}")
                     }
                     string.append(" Order")
 
-
                     Text(
                         text = string.toAnnotatedString(),
                         style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.padding(SpaceSmall)
+                        modifier = Modifier.padding(SpaceSmall),
                     )
                 }
 
@@ -155,13 +171,13 @@ fun TotalOrderDetailsCard(
 
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
                     ),
-                    modifier = Modifier.testTag("RepeatedCustomer")
+                    modifier = Modifier.testTag("RepeatedCustomer"),
                 ) {
                     val string = AnnotatedString.Builder()
                     string.withStyle(
-                        SpanStyle(fontWeight = FontWeight.SemiBold)
+                        SpanStyle(fontWeight = FontWeight.SemiBold),
                     ) {
                         append("${details.repeatedOrder}")
                     }
@@ -170,9 +186,8 @@ fun TotalOrderDetailsCard(
                     Text(
                         text = string.toAnnotatedString(),
                         style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.padding(SpaceSmall)
+                        modifier = Modifier.padding(SpaceSmall),
                     )
-
                 }
             }
 

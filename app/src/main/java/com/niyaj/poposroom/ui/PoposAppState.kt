@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.poposroom.ui
@@ -46,7 +47,7 @@ fun rememberPoposAppState(
     workMonitor: WorkMonitor,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     navController: NavHostController = rememberNavController(),
-    bottomSheetNavigator: BottomSheetNavigator = rememberBottomSheetNavigator()
+    bottomSheetNavigator: BottomSheetNavigator = rememberBottomSheetNavigator(),
 ): PoposAppState {
     NavigationTrackingSideEffect(navController)
     return remember(
@@ -69,7 +70,9 @@ fun rememberPoposAppState(
 }
 
 @Stable
-class PoposAppState @OptIn(ExperimentalMaterialNavigationApi::class) constructor(
+class PoposAppState
+@OptIn(ExperimentalMaterialNavigationApi::class)
+constructor(
     val navController: NavHostController,
     val bottomSheetNavigator: BottomSheetNavigator,
     coroutineScope: CoroutineScope,
@@ -151,8 +154,3 @@ private fun NavigationTrackingSideEffect(navController: NavHostController) {
         }
     }
 }
-
-
-
-
-
