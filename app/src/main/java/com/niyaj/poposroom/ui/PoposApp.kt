@@ -41,9 +41,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.designsystem.components.PoposBackground
-import com.niyaj.feature.account.AccountNavGraph
-import com.niyaj.home.HomeNavGraph
 import com.niyaj.poposroom.navigation.PoposNavHost
+import com.ramcosta.composedestinations.spec.Route
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalComposeUiApi::class)
@@ -51,6 +50,7 @@ import com.niyaj.poposroom.navigation.PoposNavHost
 fun PoposApp(
     modifier: Modifier = Modifier,
     appState: PoposAppState,
+    startRoute: Route,
 ) {
     PoposBackground(modifier) {
         val snackbarHostState = remember { SnackbarHostState() }
@@ -58,7 +58,6 @@ fun PoposApp(
         val isOffline by appState.isOffline.collectAsStateWithLifecycle()
         val reportState = appState.reportState.collectAsStateWithLifecycle().value
         val deleteState = appState.deleteState.collectAsStateWithLifecycle().value
-        val isLoggedIn = appState.isLoggedIn.collectAsStateWithLifecycle().value
 
         LaunchedEffect(key1 = deleteState, key2 = reportState) {
             if (deleteState) {
@@ -101,7 +100,7 @@ fun PoposApp(
                     modifier = Modifier
                         .fillMaxSize(),
                     appState = appState,
-                    startRoute = if (isLoggedIn) HomeNavGraph else AccountNavGraph,
+                    startRoute = startRoute,
                 )
             }
         }

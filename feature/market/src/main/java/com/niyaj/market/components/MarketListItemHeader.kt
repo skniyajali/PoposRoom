@@ -38,7 +38,6 @@ import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toFormattedDate
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.Ivory
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.MarketListAndType
@@ -57,7 +56,7 @@ fun MarketListItemHeader(
             .fillMaxWidth(),
         shape = RoundedCornerShape(SpaceSmall),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = Ivory
+            containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
     ) {
         Row(
@@ -131,7 +130,7 @@ fun MarketListItemHeader(
             .fillMaxWidth(),
         shape = RoundedCornerShape(SpaceSmall),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = Ivory
+            containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
     ) {
         Row(

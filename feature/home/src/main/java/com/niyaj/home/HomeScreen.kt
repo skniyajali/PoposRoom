@@ -372,14 +372,10 @@ fun HomeScreenContent(
 
         ScrollToTop(
             modifier = Modifier
-                .padding(bottom = 40.dp, end = 16.dp)
+                .padding(bottom = 32.dp, end = 16.dp)
                 .align(Alignment.BottomEnd),
             visible = lazyListState.isScrolled,
-            onClick = {
-                scope.launch {
-                    lazyListState.animateScrollToItem(0)
-                }
-            }
+            onClick = onClickScrollToTop
         )
     }
 }
