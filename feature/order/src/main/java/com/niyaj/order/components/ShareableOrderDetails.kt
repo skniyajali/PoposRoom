@@ -66,6 +66,9 @@ import androidx.compose.ui.util.trace
 import androidx.compose.ui.window.DialogProperties
 import com.niyaj.common.utils.toFormattedDateAndTime
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.components.PoposButton
+import com.niyaj.designsystem.components.PoposOutlinedIconButton
+import com.niyaj.designsystem.components.PoposSuggestionChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.ButtonSize
 import com.niyaj.designsystem.theme.LightColor10
@@ -90,9 +93,6 @@ import com.niyaj.ui.components.CartAddOnItems
 import com.niyaj.ui.components.CartChargesItem
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.LoadingIndicator
-import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardOutlinedIconButton
-import com.niyaj.ui.components.StandardSuggestionChip
 import com.niyaj.ui.components.drawRainbowBorder
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.CaptureController
@@ -345,7 +345,7 @@ fun CartItemOrderDetails(
             ShareableCartOrderDetails(
                 cartOrder = orderDetails.cartOrder,
                 icon = icon,
-                color = containerColor,
+                color = containerColor
             )
 
             if (orderDetails.cartProducts.isNotEmpty()) {
@@ -419,7 +419,7 @@ fun CartItemOrderDetailsCard(
                 modifier = Modifier.padding(top = 40.dp),
                 cartOrder = orderDetails.cartOrder,
                 icon = icon,
-                color = containerColor,
+                color = containerColor
             )
 
             ShareableCartProductsDetails(
@@ -428,6 +428,8 @@ fun CartItemOrderDetailsCard(
                 additionalCharges = orderDetails.charges,
                 addOnItems = orderDetails.addOnItems,
                 orderPrice = orderDetails.orderPrice,
+                doesChargesIncluded = orderDetails.cartOrder.doesChargesIncluded,
+                orderType = orderDetails.cartOrder.orderType
             )
         }
     }
@@ -462,13 +464,13 @@ fun ShareableCartOrderDetailsCard(
                 .spacedBy(SpaceSmall, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            StandardSuggestionChip(
+            PoposSuggestionChip(
                 icon = PoposIcons.Tag,
                 text = cartOrder.orderId.toString(),
                 borderColor = color,
             )
 
-            StandardSuggestionChip(
+            PoposSuggestionChip(
                 icon = icon,
                 text = cartOrder.orderType.name,
                 borderColor = color,
@@ -482,13 +484,13 @@ fun ShareableCartOrderDetailsCard(
                 .spacedBy(SpaceSmall, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            StandardSuggestionChip(
+            PoposSuggestionChip(
                 icon = PoposIcons.ModeStandby,
                 text = cartOrder.orderStatus.name,
                 borderColor = color,
             )
 
-            StandardSuggestionChip(
+            PoposSuggestionChip(
                 icon = PoposIcons.CalenderMonth,
                 text = (
                     cartOrder.updatedAt
@@ -506,13 +508,13 @@ fun ShareableCartOrderDetailsCard(
                     .spacedBy(SpaceSmall, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                StandardSuggestionChip(
+                PoposSuggestionChip(
                     text = cartOrder.customer.customerPhone,
                     icon = PoposIcons.Phone,
                     borderColor = color,
                 )
 
-                StandardSuggestionChip(
+                PoposSuggestionChip(
                     text = cartOrder.address.addressName,
                     icon = PoposIcons.LocationOn,
                     borderColor = color,
@@ -562,13 +564,13 @@ fun ShareableCartOrderDetails(
                 .spacedBy(SpaceSmall, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            StandardSuggestionChip(
+            PoposSuggestionChip(
                 icon = PoposIcons.Tag,
                 text = cartOrder.orderId.toString(),
                 borderColor = color,
             )
 
-            StandardSuggestionChip(
+            PoposSuggestionChip(
                 icon = icon,
                 text = cartOrder.orderType.name,
                 borderColor = color,
@@ -582,13 +584,13 @@ fun ShareableCartOrderDetails(
                 .spacedBy(SpaceSmall, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            StandardSuggestionChip(
+            PoposSuggestionChip(
                 icon = PoposIcons.ModeStandby,
                 text = cartOrder.orderStatus.name,
                 borderColor = color,
             )
 
-            StandardSuggestionChip(
+            PoposSuggestionChip(
                 icon = PoposIcons.CalenderMonth,
                 text = (
                     cartOrder.updatedAt
@@ -606,13 +608,13 @@ fun ShareableCartOrderDetails(
                     .spacedBy(SpaceSmall, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                StandardSuggestionChip(
+                PoposSuggestionChip(
                     text = cartOrder.customer.customerPhone,
                     icon = PoposIcons.Phone,
                     borderColor = color,
                 )
 
-                StandardSuggestionChip(
+                PoposSuggestionChip(
                     text = cartOrder.address.addressName,
                     icon = PoposIcons.LocationOn,
                     borderColor = color,
@@ -638,6 +640,8 @@ fun ShareableCartProductsDetails(
     additionalCharges: List<Charges>,
     addOnItems: List<AddOnItem>,
     orderPrice: OrderPrice,
+    doesChargesIncluded: Boolean,
+    orderType: OrderType,
 ) = trace("ShareableCartProductsDetails") {
     Card(
         modifier = modifier
@@ -702,9 +706,11 @@ fun ShareableCartProductsDetails(
             }
 
             if (charges.isNotEmpty()) {
-                AnimatedTextDividerDashed(text = "Charges")
+                if (doesChargesIncluded && orderType == OrderType.DineOut) {
+                    AnimatedTextDividerDashed(text = "Charges")
 
-                CartChargesItem(chargesList = charges)
+                    CartChargesItem(chargesList = charges)
+                }
             }
 
             if (additionalCharges.isNotEmpty()) {
@@ -880,7 +886,7 @@ fun DialogButtons(
         horizontalArrangement = Arrangement.spacedBy(SpaceMedium),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        StandardOutlinedIconButton(
+        PoposOutlinedIconButton(
             modifier = Modifier
                 .size(ButtonSize),
             icon = PoposIcons.Close,
@@ -888,7 +894,7 @@ fun DialogButtons(
             borderColor = MaterialTheme.colorScheme.error,
         )
 
-        StandardOutlinedIconButton(
+        PoposOutlinedIconButton(
             modifier = Modifier
                 .size(ButtonSize),
             icon = PoposIcons.Print,
@@ -896,7 +902,7 @@ fun DialogButtons(
             borderColor = MaterialTheme.colorScheme.secondary,
         )
 
-        StandardOutlinedIconButton(
+        PoposOutlinedIconButton(
             modifier = Modifier
                 .size(ButtonSize),
             icon = if (layoutChanged) PoposIcons.ViewAgenda else PoposIcons.CalendarViewDay,
@@ -904,7 +910,7 @@ fun DialogButtons(
             borderColor = MaterialTheme.colorScheme.primary,
         )
 
-        StandardButton(
+        PoposButton(
             modifier = Modifier
                 .heightIn(ButtonSize)
                 .weight(1f),

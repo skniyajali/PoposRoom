@@ -17,6 +17,7 @@
 
 package com.niyaj.cartorder.createOrUpdate
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
@@ -53,6 +54,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -67,6 +69,7 @@ import com.niyaj.common.tags.CartOrderTestTags.ADDRESS_NAME_FIELD
 import com.niyaj.common.tags.CartOrderTestTags.ADD_EDIT_CART_ORDER_SCREEN
 import com.niyaj.common.tags.CartOrderTestTags.CART_ADD_ON_ITEMS
 import com.niyaj.common.tags.CartOrderTestTags.CART_CHARGES_ITEMS
+import com.niyaj.common.tags.CartOrderTestTags.CART_PARTNER_ITEMS
 import com.niyaj.common.tags.CartOrderTestTags.CHARGES_INCLUDED_FIELD
 import com.niyaj.common.tags.CartOrderTestTags.CREATE_NEW_CART_ORDER
 import com.niyaj.common.tags.CartOrderTestTags.CUSTOMER_PHONE_ERROR_FIELD
@@ -75,20 +78,26 @@ import com.niyaj.common.tags.CartOrderTestTags.EDIT_CART_ORDER
 import com.niyaj.common.tags.CartOrderTestTags.ORDER_ID_FIELD
 import com.niyaj.common.tags.CartOrderTestTags.ORDER_TYPE_FIELD
 import com.niyaj.common.tags.ProductTestTags.ADD_EDIT_PRODUCT_BUTTON
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor6
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.model.AddOnItem
+import com.niyaj.model.Address
+import com.niyaj.model.Charges
+import com.niyaj.model.Customer
+import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.OrderType
 import com.niyaj.ui.components.AnimatedTextDividerDashed
 import com.niyaj.ui.components.CartAddOnItems
 import com.niyaj.ui.components.CartChargesItem
+import com.niyaj.ui.components.CartDeliveryPartners
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.LoadingIndicatorHalf
 import com.niyaj.ui.components.MultiSelector
 import com.niyaj.ui.components.PhoneNoCountBox
 import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
@@ -99,7 +108,6 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Destination(route = Screens.ADD_EDIT_CART_ORDER_SCREEN)
 @Composable
 fun AddEditCartOrderScreen(
@@ -108,30 +116,18 @@ fun AddEditCartOrderScreen(
     viewModel: AddEditCartOrderViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
-    val lazyListState = rememberLazyListState()
+    val customers by viewModel.customers.collectAsStateWithLifecycle()
+    val addresses by viewModel.addresses.collectAsStateWithLifecycle()
 
-    val customers = viewModel.customers.collectAsStateWithLifecycle().value
-    val addresses = viewModel.addresses.collectAsStateWithLifecycle().value
+    val addressError by viewModel.addressError.collectAsStateWithLifecycle()
+    val customerError by viewModel.customerError.collectAsStateWithLifecycle()
+    val orderId by viewModel.orderId.collectAsStateWithLifecycle()
 
-    val newAddress = viewModel.newAddress.collectAsStateWithLifecycle().value
-    val newCustomer = viewModel.newCustomer.collectAsStateWithLifecycle().value
+    val addOnState by viewModel.addOnItems.collectAsStateWithLifecycle()
+    val chargesState by viewModel.charges.collectAsStateWithLifecycle()
+    val partnerState by viewModel.deliveryPartners.collectAsStateWithLifecycle()
 
-    val addressError = viewModel.addressError.collectAsStateWithLifecycle().value
-    val customerError = viewModel.customerError.collectAsStateWithLifecycle().value
-    val orderId = viewModel.orderId.collectAsStateWithLifecycle().value
-
-    val addOnState = viewModel.addOnItems.collectAsStateWithLifecycle().value
-    val selectedAddOns = viewModel.selectedAddOnItems.toList()
-
-    val chargesState = viewModel.charges.collectAsStateWithLifecycle().value
-    val selectedCharges = viewModel.selectedCharges.toList()
-
-    val enableBtn = listOf(
-        addressError,
-        customerError,
-    ).all { it == null }
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -147,16 +143,62 @@ fun AddEditCartOrderScreen(
         }
     }
 
+    val title = if (cartOrderId == 0) CREATE_NEW_CART_ORDER else EDIT_CART_ORDER
+    val icon = if (cartOrderId == 0) PoposIcons.Add else PoposIcons.Edit
+
+    TrackScreenViewEvent(screenName = Screens.ADD_EDIT_CART_ORDER_SCREEN)
+
+    AddEditCartOrderScreenContent(
+        modifier = Modifier,
+        title = title,
+        icon = icon,
+        orderId = orderId.toString(),
+        state = viewModel.state,
+        addresses = addresses,
+        customers = customers,
+        addressError = addressError,
+        customerError = customerError,
+        addOnState = addOnState,
+        chargesState = chargesState,
+        partnerState = partnerState,
+        onBackClick = navigator::navigateUp,
+        onEvent = viewModel::onEvent,
+    )
+}
+
+
+@VisibleForTesting
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun AddEditCartOrderScreenContent(
+    modifier: Modifier = Modifier,
+    title: String,
+    icon: ImageVector,
+    orderId: String,
+    state: AddEditCartOrderState,
+    addresses: List<Address>,
+    customers: List<Customer>,
+    addressError: String? = null,
+    customerError: String? = null,
+    addOnState: UiState<List<AddOnItem>>,
+    chargesState: UiState<List<Charges>>,
+    partnerState: UiState<List<EmployeeNameAndId>>,
+    onBackClick: () -> Unit,
+    onEvent: (AddEditCartOrderEvent) -> Unit,
+) {
+    val lazyListState = rememberLazyListState()
+    val enableBtn = listOf(
+        addressError,
+        customerError,
+    ).all { it == null }
+
     var addressToggled by remember { mutableStateOf(false) }
     var customerToggled by remember { mutableStateOf(false) }
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
-    val title = if (cartOrderId == 0) CREATE_NEW_CART_ORDER else EDIT_CART_ORDER
-
-    TrackScreenViewEvent(screenName = Screens.ADD_EDIT_CART_ORDER_SCREEN)
-
     PoposSecondaryScaffold(
+        modifier = modifier,
         title = title,
         showBackButton = true,
         showBottomBar = true,
@@ -164,21 +206,21 @@ fun AddEditCartOrderScreen(
             BottomAppBar(
                 containerColor = LightColor6,
             ) {
-                StandardButton(
+                PoposButton(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag(ADD_EDIT_PRODUCT_BUTTON)
                         .padding(SpaceSmall),
                     enabled = enableBtn,
                     text = title,
-                    icon = if (cartOrderId == 0) PoposIcons.Add else PoposIcons.Edit,
+                    icon = icon,
                     onClick = {
-                        viewModel.onEvent(AddEditCartOrderEvent.CreateOrUpdateCartOrder(cartOrderId))
+                        onEvent(AddEditCartOrderEvent.CreateOrUpdateCartOrder)
                     },
                 )
             }
         },
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
     ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "CreateOrUpdate Cart Order")
 
@@ -203,10 +245,10 @@ fun AddEditCartOrderScreen(
                 MultiSelector(
                     options = orderTypes,
                     icons = icons,
-                    selectedOption = viewModel.state.orderType.name,
+                    selectedOption = state.orderType.name,
                     onOptionSelect = { option ->
-                        viewModel.onEvent(
-                            AddEditCartOrderEvent.OrderTypeChanged(OrderType.valueOf(option)),
+                        onEvent(
+                            AddEditCartOrderEvent.OrderTypeChanged(OrderType.valueOf(option))
                         )
                     },
                     modifier = Modifier
@@ -220,7 +262,7 @@ fun AddEditCartOrderScreen(
 
             item(ORDER_ID_FIELD) {
                 StandardOutlinedTextField(
-                    value = orderId.toString(),
+                    value = orderId,
                     label = ORDER_ID_FIELD,
                     leadingIcon = PoposIcons.Tag,
                     readOnly = true,
@@ -232,7 +274,7 @@ fun AddEditCartOrderScreen(
                 Spacer(modifier = Modifier.height(SpaceSmall))
 
                 AnimatedVisibility(
-                    visible = viewModel.state.orderType != OrderType.DineIn,
+                    visible = state.orderType != OrderType.DineIn,
                     enter = fadeIn(tween(500)),
                     exit = fadeOut(tween(600)),
                 ) {
@@ -250,14 +292,14 @@ fun AddEditCartOrderScreen(
                                     textFieldSize = coordinates.size.toSize()
                                 }
                                 .menuAnchor(),
-                            value = newAddress.addressName,
+                            value = state.address.addressName,
                             label = ADDRESS_NAME_FIELD,
                             leadingIcon = PoposIcons.Address,
                             isError = addressError != null,
                             errorText = addressError,
                             errorTextTag = ADDRESS_NAME_ERROR_FIELD,
                             onValueChange = {
-                                viewModel.onEvent(
+                                onEvent(
                                     AddEditCartOrderEvent.AddressNameChanged(it),
                                 )
                                 addressToggled = true
@@ -290,7 +332,7 @@ fun AddEditCartOrderScreen(
                                             .testTag(address.addressName)
                                             .fillMaxWidth(),
                                         onClick = {
-                                            viewModel.onEvent(
+                                            onEvent(
                                                 AddEditCartOrderEvent.AddressChanged(address),
                                             )
                                             addressToggled = false
@@ -327,7 +369,7 @@ fun AddEditCartOrderScreen(
 
             item(CUSTOMER_PHONE_FIELD) {
                 AnimatedVisibility(
-                    visible = viewModel.state.orderType != OrderType.DineIn,
+                    visible = state.orderType != OrderType.DineIn,
                     enter = fadeIn(tween(500)),
                     exit = fadeOut(tween(600)),
                 ) {
@@ -345,7 +387,7 @@ fun AddEditCartOrderScreen(
                                     textFieldSize = coordinates.size.toSize()
                                 }
                                 .menuAnchor(),
-                            value = newCustomer.customerPhone,
+                            value = state.customer.customerPhone,
                             label = CUSTOMER_PHONE_FIELD,
                             leadingIcon = PoposIcons.PhoneAndroid,
                             isError = customerError != null,
@@ -353,7 +395,7 @@ fun AddEditCartOrderScreen(
                             errorTextTag = CUSTOMER_PHONE_ERROR_FIELD,
                             keyboardType = KeyboardType.Number,
                             onValueChange = {
-                                viewModel.onEvent(
+                                onEvent(
                                     AddEditCartOrderEvent.CustomerPhoneChanged(it),
                                 )
                                 customerToggled = true
@@ -363,7 +405,7 @@ fun AddEditCartOrderScreen(
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
                                     PhoneNoCountBox(
-                                        count = newCustomer.customerPhone.length,
+                                        count = state.customer.customerPhone.length,
                                     )
 
                                     Spacer(modifier = Modifier.width(1.dp))
@@ -397,7 +439,7 @@ fun AddEditCartOrderScreen(
                                             .testTag(customer.customerPhone)
                                             .fillMaxWidth(),
                                         onClick = {
-                                            viewModel.onEvent(
+                                            onEvent(
                                                 AddEditCartOrderEvent.CustomerChanged(customer),
                                             )
                                             customerToggled = false
@@ -438,14 +480,14 @@ fun AddEditCartOrderScreen(
                 ) {
                     Checkbox(
                         modifier = Modifier.testTag(CHARGES_INCLUDED_FIELD),
-                        checked = viewModel.state.doesChargesIncluded,
+                        checked = state.doesChargesIncluded,
                         onCheckedChange = {
-                            viewModel.onEvent(AddEditCartOrderEvent.DoesChargesIncluded)
+                            onEvent(AddEditCartOrderEvent.DoesChargesIncluded)
                         },
                     )
                     Spacer(modifier = Modifier.width(SpaceSmall))
                     Text(
-                        text = if (viewModel.state.doesChargesIncluded) {
+                        text = if (state.doesChargesIncluded) {
                             "Charges included"
                         } else {
                             "Charges not included"
@@ -455,6 +497,46 @@ fun AddEditCartOrderScreen(
                 }
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
+            }
+
+            item(CART_PARTNER_ITEMS) {
+                AnimatedVisibility(
+                    visible = state.orderType != OrderType.DineIn,
+                    enter = fadeIn(tween(500)),
+                    exit = fadeOut(tween(600)),
+                ) {
+                    Crossfade(
+                        targetState = partnerState,
+                        label = "DeliveryPartner",
+                    ) { uiState ->
+                        when (uiState) {
+                            is UiState.Loading -> LoadingIndicatorHalf()
+                            is UiState.Empty -> {}
+                            is UiState.Success -> {
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) {
+                                    AnimatedTextDividerDashed(text = "Delivery Partner")
+
+                                    Spacer(modifier = Modifier.height(SpaceSmall))
+
+                                    CartDeliveryPartners(
+                                        partners = uiState.data,
+                                        doesSelected = {
+                                            state.deliveryPartnerId == it
+                                        },
+                                        onClick = {
+                                            onEvent(AddEditCartOrderEvent.SelectDeliveryPartner(it))
+                                        },
+                                        backgroundColor = Color.Transparent
+                                    )
+
+                                    Spacer(modifier = Modifier.height(SpaceSmall))
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             item(CART_ADD_ON_ITEMS) {
@@ -475,18 +557,18 @@ fun AddEditCartOrderScreen(
 
                                 CartAddOnItems(
                                     addOnItems = items.data,
-                                    selectedAddOnItem = selectedAddOns,
+                                    selectedAddOnItem = state.selectedAddOnItems.toList(),
                                     backgroundColor = Color.Transparent,
                                     onClick = {
-                                        viewModel.onEvent(AddEditCartOrderEvent.SelectAddOnItem(it))
+                                        onEvent(AddEditCartOrderEvent.SelectAddOnItem(it))
                                     },
                                 )
+
+                                Spacer(modifier = Modifier.height(SpaceSmall))
                             }
                         }
                     }
                 }
-
-                Spacer(modifier = Modifier.height(SpaceSmall))
             }
 
             item(CART_CHARGES_ITEMS) {
@@ -507,17 +589,20 @@ fun AddEditCartOrderScreen(
 
                                 CartChargesItem(
                                     chargesList = items.data,
-                                    selectedItem = selectedCharges,
+                                    selectedItem = state.selectedCharges.toList(),
                                     backgroundColor = Color.Transparent,
                                     onClick = {
-                                        viewModel.onEvent(AddEditCartOrderEvent.SelectCharges(it))
+                                        onEvent(AddEditCartOrderEvent.SelectCharges(it))
                                     },
                                 )
+
+                                Spacer(modifier = Modifier.height(SpaceSmall))
                             }
                         }
                     }
                 }
             }
+
         }
     }
 }

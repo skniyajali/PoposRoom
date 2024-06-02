@@ -59,6 +59,7 @@ import com.niyaj.common.utils.isToday
 import com.niyaj.common.utils.openAppSettings
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.components.PoposOutlinedAssistChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.model.OrderType
 import com.niyaj.order.components.OrderedItemLayout
@@ -71,7 +72,6 @@ import com.niyaj.ui.components.HandleBluetoothPermissionState
 import com.niyaj.ui.components.OrderTab
 import com.niyaj.ui.components.OrderTabs
 import com.niyaj.ui.components.OrderTabsContent
-import com.niyaj.ui.components.StandardOutlinedAssistChip
 import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
 import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.utils.Screens
@@ -273,7 +273,7 @@ fun OrderScreen(
                 snackbarHostState = snackbarHostState,
                 navActions = {
                     if (selectedDate.isNotEmpty() && !selectedDate.isToday) {
-                        StandardOutlinedAssistChip(
+                        PoposOutlinedAssistChip(
                             text = selectedDate.toPrettyDate(),
                             icon = PoposIcons.CalenderMonth,
                             onClick = {

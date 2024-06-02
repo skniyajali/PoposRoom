@@ -51,6 +51,7 @@ import com.niyaj.model.CartOrder
 import com.niyaj.model.CartOrderWithAddOnAndCharges
 import com.niyaj.model.Charges
 import com.niyaj.model.Customer
+import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.OrderStatus
 import com.niyaj.model.OrderType
 import com.niyaj.model.SELECTED_ID
@@ -105,6 +106,7 @@ class CartOrderRepositoryImpl(
                         orderType = cartOrder.orderType,
                         orderStatus = cartOrder.orderStatus,
                         doesChargesIncluded = cartOrder.doesChargesIncluded,
+                        deliveryPartnerId = cartOrder.deliveryPartnerId,
                         customer = customer ?: Customer(),
                         address = address ?: Address(),
                         createdAt = cartOrder.createdAt,
@@ -130,6 +132,12 @@ class CartOrderRepositoryImpl(
     override suspend fun getAllCharges(): Flow<List<Charges>> {
         return withContext(ioDispatcher) {
             cartOrderDao.getAllCharges().mapLatest { list -> list.map { it.asExternalModel() } }
+        }
+    }
+
+    override suspend fun getDeliveryPartners(): Flow<List<EmployeeNameAndId>> {
+        return withContext(ioDispatcher) {
+            cartOrderDao.getDeliveryPartners()
         }
     }
 
@@ -214,6 +222,7 @@ class CartOrderRepositoryImpl(
                         orderType = cartOrder.orderType,
                         orderStatus = cartOrder.orderStatus,
                         doesChargesIncluded = cartOrder.doesChargesIncluded,
+                        deliveryPartnerId = cartOrder.deliveryPartnerId,
                         customer = customer ?: Customer(),
                         address = address ?: Address(),
                         createdAt = cartOrder.createdAt,
@@ -253,6 +262,7 @@ class CartOrderRepositoryImpl(
                         orderType = cartOrder.orderType,
                         orderStatus = cartOrder.orderStatus,
                         doesChargesIncluded = cartOrder.doesChargesIncluded,
+                        deliveryPartnerId = cartOrder.deliveryPartnerId,
                         customer = customer ?: Customer(),
                         address = address ?: Address(),
                         createdAt = cartOrder.createdAt,
@@ -368,6 +378,7 @@ class CartOrderRepositoryImpl(
                         orderType = cartOrder.orderType,
                         orderStatus = cartOrder.orderStatus,
                         doesChargesIncluded = cartOrder.doesChargesIncluded,
+                        deliveryPartnerId = cartOrder.deliveryPartnerId,
                         addressId = addressId,
                         customerId = customerId,
                         createdAt = cartOrder.createdAt,

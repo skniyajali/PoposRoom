@@ -245,6 +245,7 @@ fun OrderDetailsScreen(
                                 item("Order Details") {
                                     CartOrderDetails(
                                         cartOrder = orderDetails.cartOrder,
+                                        deliveryPartner = orderDetails.deliveryPartner,
                                         doesExpanded = cartOrderExpended,
                                         onExpandChanged = {
                                             cartOrderExpended = !cartOrderExpended

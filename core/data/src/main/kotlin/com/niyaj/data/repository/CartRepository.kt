@@ -20,12 +20,15 @@ package com.niyaj.data.repository
 import com.niyaj.common.result.Resource
 import com.niyaj.model.AddOnItem
 import com.niyaj.model.CartItem
+import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.OrderWithCartItems
 import kotlinx.coroutines.flow.Flow
 
 interface CartRepository {
 
     fun getAllAddOnItems(): Flow<List<AddOnItem>>
+
+    suspend fun getDeliveryPartners(): Flow<List<EmployeeNameAndId>>
 
     suspend fun getAllCartOrders(): Flow<List<OrderWithCartItems>>
 
@@ -46,6 +49,8 @@ interface CartRepository {
     suspend fun updateAddOnItem(orderId: Int, itemId: Int): Resource<Boolean>
 
     suspend fun updateCharges(orderId: Int, chargesId: Int): Resource<Boolean>
+
+    suspend fun updateDeliveryPartner(orderId: Int, deliveryPartnerId: Int): Resource<Boolean>
 
     suspend fun deleteProductFromCart(orderId: Int, productId: Int): Resource<Boolean>
 

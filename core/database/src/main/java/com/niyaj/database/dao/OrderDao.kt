@@ -34,12 +34,14 @@ interface OrderDao {
             SELECT co.orderId, co.orderType,
             COALESCE(cu.customerPhone, null) as customerPhone,
             COALESCE(ad.shortName, null) as customerAddress,
+            COALESCE(em.employeeName, null) as deliveryPartnerName,
             COALESCE(co.updatedAt, co.createdAt) as orderDate,
             cp.totalPrice as orderPrice
             FROM cartorder co
             JOIN cart_price cp ON cp.orderId = co.orderId
             LEFT JOIN customer cu ON cu.customerId = co.customerId
             LEFT JOIN address ad ON ad.addressId = co.addressId
+            LEFT JOIN employee em ON em.employeeId = co.deliveryPartnerId
             WHERE (co.updatedAt BETWEEN :startDate AND :endDate) AND co.orderStatus = :orderStatus
             ORDER BY co.updatedAt DESC
         """,

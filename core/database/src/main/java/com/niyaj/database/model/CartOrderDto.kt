@@ -38,6 +38,8 @@ data class CartOrderDto(
 
     val addressId: Int? = null,
 
+    val deliveryPartnerId: Int = 0,
+
     @Relation(
         parentColumn = "customerId",
         entity = CustomerEntity::class,

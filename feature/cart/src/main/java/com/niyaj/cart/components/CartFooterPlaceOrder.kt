@@ -53,10 +53,10 @@ fun CartFooterPlaceOrder(
     modifier: Modifier = Modifier,
     countTotalItems: Int,
     countSelectedItem: Int,
-    showPrintBtn: Boolean = true,
-    onClickSelectAll: () -> Unit = {},
-    onClickPlaceAllOrder: () -> Unit = {},
-    onClickPrintAllOrder: () -> Unit = {},
+    showPrintBtn: Boolean,
+    onClickSelectAll: () -> Unit,
+    onClickPlaceAllOrder: () -> Unit,
+    onClickPrintAllOrder: () -> Unit,
 ) = trace("CartFooterPlaceOrder") {
     Surface(
         modifier = modifier

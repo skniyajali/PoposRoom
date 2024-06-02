@@ -18,12 +18,12 @@
 package com.niyaj.cart.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,10 +31,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
@@ -52,70 +54,77 @@ fun CartItemTotalPriceSection(
     totalPrice: Long,
     orderType: OrderType,
     showPrintBtn: Boolean = true,
-    onClickPlaceOrder: () -> Unit = {},
-    onClickPrintOrder: () -> Unit = {},
+    onClickPlaceOrder: () -> Unit,
+    onClickPrintOrder: () -> Unit,
+    containerColor: Color = LightColor8,
+    shape: RoundedCornerShape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp),
 ) = trace("CartItemTotalPriceSection") {
-    val shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
-    val containerColor = LightColor8
-    val color = if (orderType == OrderType.DineOut) {
+    val contentColor = if (orderType == OrderType.DineOut) {
         MaterialTheme.colorScheme.primary
     } else {
         MaterialTheme.colorScheme.secondary
     }
 
-    Row(
+    Surface(
         modifier = modifier
             .fillMaxWidth()
-            .height(60.dp)
-            .background(containerColor, shape)
-            .padding(SpaceSmall),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+            .height(60.dp),
+        color = containerColor,
+        shape = shape,
+        contentColor = contentColor,
+        shadowElevation = 2.dp,
+        tonalElevation = 1.dp
     ) {
-        Column(
-            modifier = Modifier.fillMaxHeight(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start,
-        ) {
-            Text(
-                text = "Total",
-                style = MaterialTheme.typography.labelMedium,
-                color = color,
-            )
-
-            Text(
-                modifier = Modifier.weight(0.8f),
-                text = "Rs. $totalPrice",
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                color = color,
-            )
-        }
-
         Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(SpaceSmall),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            PoposOutlinedButton(
-                text = "Place Order",
-                onClick = onClickPlaceOrder,
-                enabled = itemCount > 0,
-                shape = CutCornerShape(4.dp),
-                border = BorderStroke(1.dp, color),
-                textColor = color,
-            )
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start,
+            ) {
+                Text(
+                    text = "Total",
+                    style = MaterialTheme.typography.labelMedium,
+                )
 
-            if (showPrintBtn) {
-                Spacer(modifier = Modifier.width(SpaceSmall))
+                Text(
+                    modifier = Modifier.weight(0.8f),
+                    text = "Rs. $totalPrice",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
 
-                PoposIconButton(
-                    icon = PoposIcons.Print,
-                    onClick = onClickPrintOrder,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                PoposOutlinedButton(
+                    text = "Place Order",
+                    onClick = onClickPlaceOrder,
                     enabled = itemCount > 0,
                     shape = CutCornerShape(4.dp),
-                    btnHeight = 30.dp,
-                    containerColor = color,
-                    contentColor = MaterialTheme.colorScheme.primaryContainer,
+                    border = BorderStroke(1.dp, contentColor),
+                    textColor = contentColor,
                 )
+
+                if (showPrintBtn) {
+                    Spacer(modifier = Modifier.width(SpaceSmall))
+
+                    PoposIconButton(
+                        icon = PoposIcons.Print,
+                        onClick = onClickPrintOrder,
+                        enabled = itemCount > 0,
+                        shape = CutCornerShape(4.dp),
+                        btnHeight = 30.dp,
+                        containerColor = contentColor,
+                        contentColor = MaterialTheme.colorScheme.primaryContainer,
+                    )
+                }
             }
         }
     }

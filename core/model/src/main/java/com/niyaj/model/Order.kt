@@ -25,6 +25,7 @@ data class Order(
     val orderType: OrderType = OrderType.DineIn,
     val customerPhone: String? = null,
     val customerAddress: String? = null,
+    val deliveryPartnerName: String? = null,
     val orderDate: Date = Date(),
     val orderPrice: Long = 0,
 )

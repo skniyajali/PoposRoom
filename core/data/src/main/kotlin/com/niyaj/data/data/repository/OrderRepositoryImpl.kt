@@ -141,6 +141,7 @@ class OrderRepositoryImpl(
                 addOnItems = order.addOnItems.map { it.asExternalModel() }.toImmutableList(),
                 charges = order.charges.map { it.asExternalModel() }.toImmutableList(),
                 orderPrice = order.orderPrice,
+                deliveryPartner = order.deliveryPartner
             )
         }
     }

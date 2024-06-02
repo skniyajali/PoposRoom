@@ -35,13 +35,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor3
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Address
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardExpandable
 
 /**
@@ -144,7 +144,7 @@ fun AddressDetails(
 
                     Spacer(modifier = Modifier.height(SpaceMedium))
 
-                    StandardButton(
+                    PoposButton(
                         onClick = {
                             onClickViewDetails(address.addressId)
                         },

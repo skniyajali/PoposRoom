@@ -30,6 +30,7 @@ import com.niyaj.database.model.CartOrderEntity
 import com.niyaj.database.model.CartOrderWithAddOnAndChargesDto
 import com.niyaj.database.model.ChargesEntity
 import com.niyaj.model.ChargesPriceWithApplicable
+import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.OrderStatus
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
@@ -219,4 +220,11 @@ interface CartOrderDao {
         """,
     )
     fun getCartOrdersByCustomerId(customerId: Int): List<Int>
+
+    @Query(
+        value = """
+        SELECT employeeId, employeeName FROM employee WHERE isDeliveryPartner = :isDeliveryPartner
+    """,
+    )
+    fun getDeliveryPartners(isDeliveryPartner: Boolean = true): Flow<List<EmployeeNameAndId>>
 }

@@ -42,4 +42,6 @@ interface AccountRepository {
     ): Resource<Boolean>
 
     fun checkIsLoggedIn(resId: Int): Flow<Boolean>
+
+    suspend fun checkUserLoggedIn(resId: Int): Boolean
 }

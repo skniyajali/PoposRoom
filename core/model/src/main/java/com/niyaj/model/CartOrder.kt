@@ -33,6 +33,8 @@ data class CartOrder(
 
     val address: Address = Address(),
 
+    val deliveryPartnerId: Int = 0,
+
     val createdAt: Date = Date(),
 
     val updatedAt: Date? = null,
