@@ -28,11 +28,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonElevation
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.contentColorFor
@@ -129,6 +133,41 @@ fun PoposButton(
         Text(
             text = text.uppercase(),
             style = style,
+        )
+    }
+}
+
+@Composable
+fun PoposElevatedButton(
+    modifier: Modifier = Modifier,
+    iconModifier: Modifier = Modifier,
+    text: String,
+    icon: ImageVector? = null,
+    enabled: Boolean = true,
+    shape: Shape = RoundedCornerShape(SpaceMini),
+    colors: ButtonColors = ButtonDefaults.elevatedButtonColors(),
+    onClick: () -> Unit,
+) {
+    ElevatedButton(
+        onClick = onClick,
+        enabled = enabled,
+        shape = shape,
+        colors = colors,
+        modifier = modifier
+            .testTag(text)
+            .heightIn(ButtonSize),
+    ) {
+        icon?.let {
+            Icon(
+                imageVector = icon,
+                contentDescription = text.plus("button"),
+                modifier = iconModifier,
+            )
+            Spacer(modifier = Modifier.width(SpaceMini))
+        }
+        Text(
+            text = text.uppercase(),
+            style = MaterialTheme.typography.labelLarge,
         )
     }
 }
@@ -243,6 +282,62 @@ fun PoposIconButton(
             contentDescription = contentDescription,
             modifier = iconModifier,
             tint = contentColor,
+        )
+    }
+}
+
+@Composable
+fun PoposTonalIconButton(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    containerColor: Color = MaterialTheme.colorScheme.outlineVariant,
+    contentColor: Color = contentColorFor(backgroundColor = containerColor),
+    shape: Shape = RoundedCornerShape(SpaceMini),
+    contentDescription: String = "iconDesc",
+) {
+    FilledTonalIconButton(
+        modifier = modifier,
+        onClick = onClick,
+        shape = shape,
+        enabled = enabled,
+        colors = IconButtonDefaults.filledTonalIconButtonColors(
+            containerColor = containerColor,
+            contentColor = contentColor,
+        ),
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+        )
+    }
+}
+
+@Composable
+fun PoposOutlinedIconButton(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    borderColor: Color = MaterialTheme.colorScheme.outlineVariant,
+    colors: IconButtonColors = IconButtonDefaults.outlinedIconButtonColors(
+        contentColor = borderColor,
+    ),
+    shape: Shape = RoundedCornerShape(SpaceMini),
+    contentDescription: String = "iconDesc"
+) {
+    OutlinedIconButton(
+        modifier = modifier,
+        onClick = onClick,
+        shape = shape,
+        enabled = enabled,
+        colors = colors,
+        border = BorderStroke(1.dp, borderColor),
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
         )
     }
 }

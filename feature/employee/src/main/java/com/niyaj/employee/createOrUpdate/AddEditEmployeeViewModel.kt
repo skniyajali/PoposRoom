@@ -52,7 +52,7 @@ class AddEditEmployeeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private var employeeId = savedStateHandle.get<Int>("employeeId")
+    private var employeeId = savedStateHandle.get<Int>("employeeId") ?: 0
 
     var state by mutableStateOf(AddEditEmployeeState())
 
@@ -135,9 +135,16 @@ class AddEditEmployeeViewModel @Inject constructor(
                 state = state.copy(employeeType = event.employeeType)
             }
 
-            is AddEditEmployeeEvent.CreateOrUpdateEmployee -> {
-                createOrUpdateEmployee(event.employeeId)
+            is AddEditEmployeeEvent.UpdateDeliveryPartner -> {
+                state = state.copy(
+                    isDeliveryPartner = !state.isDeliveryPartner
+                )
             }
+
+            is AddEditEmployeeEvent.CreateOrUpdateEmployee -> {
+                createOrUpdateEmployee(employeeId)
+            }
+
         }
     }
 
@@ -153,6 +160,7 @@ class AddEditEmployeeViewModel @Inject constructor(
                     employeeSalaryType = employee.employeeSalaryType,
                     employeeType = employee.employeeType,
                     employeeJoinedDate = employee.employeeJoinedDate,
+                    isDeliveryPartner = employee.isDeliveryPartner
                 )
             }
         }
@@ -175,6 +183,7 @@ class AddEditEmployeeViewModel @Inject constructor(
                     employeeSalaryType = state.employeeSalaryType,
                     employeeType = state.employeeType,
                     employeeJoinedDate = state.employeeJoinedDate,
+                    isDeliveryPartner = state.isDeliveryPartner,
                     createdAt = System.currentTimeMillis(),
                     updatedAt = if (employeeId != 0) System.currentTimeMillis() else null,
                 )

@@ -31,7 +31,7 @@ import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toYearAndMonth
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.model.EmployeeMonthlyDate
-import com.niyaj.ui.components.StandardOutlinedAssistChip
+import com.niyaj.designsystem.components.PoposOutlinedAssistChip
 
 @Composable
 fun SalaryDateDropdown(
@@ -42,7 +42,7 @@ fun SalaryDateDropdown(
     var menuExpanded by remember { mutableStateOf(false) }
 
     Column {
-        StandardOutlinedAssistChip(
+        PoposOutlinedAssistChip(
             text = text,
             icon = PoposIcons.CalenderMonth,
             onClick = {

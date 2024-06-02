@@ -62,7 +62,7 @@ import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
-import com.niyaj.ui.components.StandardButton
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
@@ -171,7 +171,7 @@ fun EmployeeImportScreen(
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} addon item will be imported.")
 
-                StandardButton(
+                PoposButton(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag(IMPORT_EMPLOYEE_BTN_TEXT),

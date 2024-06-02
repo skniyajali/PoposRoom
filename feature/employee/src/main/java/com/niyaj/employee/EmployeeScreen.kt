@@ -18,10 +18,13 @@
 package com.niyaj.employee
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -41,6 +44,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
@@ -70,6 +74,7 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.PoposPrimaryScaffold
 import com.niyaj.ui.components.ScaffoldNavActions
+import com.niyaj.designsystem.components.StandardAssistChip
 import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.event.UiState
@@ -272,7 +277,9 @@ fun EmployeeScreen(
         }
     }
 
-    if (openDialog.value) {
+    AnimatedVisibility(
+        visible = openDialog.value
+    ) {
         StandardDialog(
             title = DELETE_EMPLOYEE_TITLE,
             message = DELETE_EMPLOYEE_MESSAGE,
@@ -336,10 +343,22 @@ fun EmployeeData(
             )
         },
         trailingContent = {
-            Icon(
-                PoposIcons.ArrowRightAlt,
-                contentDescription = "Localized description",
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(SpaceMini),
+            ) {
+                if (item.isDeliveryPartner) {
+                    StandardAssistChip(
+                        text = "Delivery Partner",
+                        icon = PoposIcons.DeliveryDining,
+                    )
+                }
+
+                Icon(
+                    PoposIcons.ArrowRightAlt,
+                    contentDescription = "Localized description",
+                )
+            }
         },
         shadowElevation = 1.dp,
         tonalElevation = 1.dp,

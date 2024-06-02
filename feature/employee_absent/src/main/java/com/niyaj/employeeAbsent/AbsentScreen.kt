@@ -73,7 +73,7 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.PoposPrimaryScaffold
 import com.niyaj.ui.components.ScaffoldNavActions
-import com.niyaj.ui.components.StandardAssistChip
+import com.niyaj.designsystem.components.StandardAssistChip
 import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardElevatedCard
 import com.niyaj.ui.components.StandardExpandable

@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.niyaj.core.ui.R
+import com.niyaj.designsystem.components.PoposElevatedButton
 import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceMedium
 
@@ -97,7 +98,7 @@ fun ItemNotAvailable(
 
             if (buttonText.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(SpaceMedium))
-                StandardElevatedButton(
+                PoposElevatedButton(
                     modifier = btnModifier,
                     text = buttonText,
                     icon = icon,
@@ -154,7 +155,7 @@ fun ItemNotAvailableHalf(
 
         if (buttonText.isNotEmpty()) {
             Spacer(modifier = Modifier.height(SpaceMedium))
-            StandardElevatedButton(
+            PoposElevatedButton(
                 modifier = btnModifier,
                 text = buttonText,
                 icon = icon,
@@ -212,7 +213,7 @@ fun EmptyImportScreen(
 
             if (buttonText.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(SpaceMedium))
-                StandardElevatedButton(
+                PoposElevatedButton(
                     modifier = btnModifier,
                     text = buttonText,
                     icon = icon,

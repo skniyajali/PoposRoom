@@ -50,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -65,6 +66,9 @@ import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_EMAIL_FIELD
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_JOINED_DATE_FIELD
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_NAME_ERROR
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_NAME_FIELD
+import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_PARTNER_CHECKED_FIELD
+import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_PARTNER_FIELD
+import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_PARTNER_UNCHECKED_FIELD
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_PHONE_ERROR
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_PHONE_FIELD
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_POSITION_ERROR
@@ -84,9 +88,11 @@ import com.niyaj.model.EmployeeType
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.PhoneNoCountBox
 import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.StandardButton
+import com.niyaj.designsystem.components.PoposButton
+import com.niyaj.ui.components.StandardCheckboxWithText
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardRoundedFilterChip
+import com.niyaj.designsystem.components.StandardRoundedFilterChip
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -99,7 +105,6 @@ import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.time.LocalDate
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Destination(route = Screens.ADD_EDIT_EMPLOYEE_SCREEN)
 fun AddEditEmployeeScreen(
@@ -108,15 +113,10 @@ fun AddEditEmployeeScreen(
     viewModel: AddEditEmployeeViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
-    val lazyListState = rememberLazyListState()
     val phoneError = viewModel.phoneError.collectAsStateWithLifecycle().value
     val nameError = viewModel.nameError.collectAsStateWithLifecycle().value
     val salaryError = viewModel.salaryError.collectAsStateWithLifecycle().value
     val positionError = viewModel.positionError.collectAsStateWithLifecycle().value
-
-    val enableBtn = listOf(phoneError, nameError, salaryError, positionError).all {
-        it == null
-    }
 
     val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
@@ -135,66 +135,99 @@ fun AddEditEmployeeScreen(
     }
 
     val title = if (employeeId == 0) CREATE_NEW_EMPLOYEE else EDIT_EMPLOYEE
-
-    var expanded by remember { mutableStateOf(false) }
-
-    val dialogState = rememberMaterialDialogState()
-
-    var textFieldSize by remember { mutableStateOf(Size.Zero) }
+    val icon = if (employeeId == 0) PoposIcons.Add else PoposIcons.Edit
 
     TrackScreenViewEvent(screenName = Screens.ADD_EDIT_EMPLOYEE_SCREEN)
 
+    AddEditEmployeeScreenContent(
+        title = title,
+        icon = icon,
+        state = viewModel.state,
+        phoneError = phoneError,
+        nameError = nameError,
+        salaryError = salaryError,
+        positionError = positionError,
+        onBackClick = navigator::navigateUp,
+        onEvent = viewModel::onEvent,
+    )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddEditEmployeeScreenContent(
+    modifier: Modifier = Modifier,
+    title: String,
+    icon: ImageVector,
+    state: AddEditEmployeeState,
+    phoneError: String? = null,
+    nameError: String? = null,
+    salaryError: String? = null,
+    positionError: String? = null,
+    onBackClick: () -> Unit,
+    onEvent: (AddEditEmployeeEvent) -> Unit,
+) {
+    val lazyListState = rememberLazyListState()
+    val dialogState = rememberMaterialDialogState()
+
+    var expanded by remember { mutableStateOf(false) }
+    var textFieldSize by remember { mutableStateOf(Size.Zero) }
+    val enableBtn = listOf(phoneError, nameError, salaryError, positionError).all {
+        it == null
+    }
+
     PoposSecondaryScaffold(
+        modifier = modifier,
         title = title,
         showBackButton = true,
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
         showBottomBar = true,
         bottomBar = {
             BottomAppBar(
                 containerColor = Color.White,
             ) {
-                StandardButton(
+                PoposButton(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag(ADD_EDIT_EMPLOYEE_BUTTON)
                         .padding(SpaceSmall),
-                    text = if (employeeId == 0) CREATE_NEW_EMPLOYEE else EDIT_EMPLOYEE,
-                    icon = if (employeeId == 0) PoposIcons.Add else PoposIcons.Edit,
+                    text = title,
+                    icon = icon,
                     enabled = enableBtn,
                     onClick = {
-                        viewModel.onEvent(AddEditEmployeeEvent.CreateOrUpdateEmployee(employeeId))
+                        onEvent(AddEditEmployeeEvent.CreateOrUpdateEmployee)
                     },
                 )
             }
         },
-    ) {
+    ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "Add/Edit Employee::Fields")
 
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it),
+                .padding(paddingValues),
             contentPadding = PaddingValues(SpaceMedium),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
             item(EMPLOYEE_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.employeeName,
+                    value = state.employeeName,
                     label = EMPLOYEE_NAME_FIELD,
                     leadingIcon = PoposIcons.Person,
                     isError = nameError != null,
                     errorText = nameError,
                     errorTextTag = EMPLOYEE_NAME_ERROR,
                     onValueChange = {
-                        viewModel.onEvent(AddEditEmployeeEvent.EmployeeNameChanged(it))
+                        onEvent(AddEditEmployeeEvent.EmployeeNameChanged(it))
                     },
                 )
             }
 
             item(EMPLOYEE_PHONE_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.employeePhone,
+                    value = state.employeePhone,
                     label = EMPLOYEE_PHONE_FIELD,
                     leadingIcon = PoposIcons.PhoneAndroid,
                     isError = phoneError != null,
@@ -203,18 +236,18 @@ fun AddEditEmployeeScreen(
                     keyboardType = KeyboardType.Number,
                     trailingIcon = {
                         PhoneNoCountBox(
-                            count = viewModel.state.employeePhone.length,
+                            count = state.employeePhone.length,
                         )
                     },
                     onValueChange = {
-                        viewModel.onEvent(AddEditEmployeeEvent.EmployeePhoneChanged(it))
+                        onEvent(AddEditEmployeeEvent.EmployeePhoneChanged(it))
                     },
                 )
             }
 
             item(EMPLOYEE_SALARY_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.employeeSalary,
+                    value = state.employeeSalary,
                     label = EMPLOYEE_SALARY_FIELD,
                     leadingIcon = PoposIcons.Money,
                     keyboardType = KeyboardType.Number,
@@ -222,7 +255,7 @@ fun AddEditEmployeeScreen(
                     errorText = salaryError,
                     errorTextTag = EMPLOYEE_SALARY_ERROR,
                     onValueChange = {
-                        viewModel.onEvent(AddEditEmployeeEvent.EmployeeSalaryChanged(it))
+                        onEvent(AddEditEmployeeEvent.EmployeeSalaryChanged(it))
                     },
                 )
             }
@@ -241,7 +274,7 @@ fun AddEditEmployeeScreen(
                                 textFieldSize = coordinates.size.toSize()
                             }
                             .menuAnchor(),
-                        value = viewModel.state.employeePosition,
+                        value = state.employeePosition,
                         label = EMPLOYEE_POSITION_FIELD,
                         leadingIcon = PoposIcons.Radar,
                         isError = positionError != null,
@@ -271,7 +304,7 @@ fun AddEditEmployeeScreen(
                                     text = { Text(position) },
                                     onClick = {
                                         expanded = false
-                                        viewModel.onEvent(
+                                        onEvent(
                                             AddEditEmployeeEvent.EmployeePositionChanged(position),
                                         )
                                     },
@@ -295,18 +328,18 @@ fun AddEditEmployeeScreen(
 
             item(EMPLOYEE_EMAIL_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.employeeEmail ?: "",
+                    value = state.employeeEmail ?: "",
                     label = EMPLOYEE_EMAIL_FIELD,
                     leadingIcon = PoposIcons.Email,
                     onValueChange = {
-                        viewModel.onEvent(AddEditEmployeeEvent.EmployeeEmailChanged(it))
+                        onEvent(AddEditEmployeeEvent.EmployeeEmailChanged(it))
                     },
                 )
             }
 
             item(EMPLOYEE_JOINED_DATE_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.employeeJoinedDate.toJoinedDate,
+                    value = state.employeeJoinedDate.toJoinedDate,
                     label = EMPLOYEE_JOINED_DATE_FIELD,
                     leadingIcon = PoposIcons.CalenderToday,
                     trailingIcon = {
@@ -354,9 +387,9 @@ fun AddEditEmployeeScreen(
                             StandardRoundedFilterChip(
                                 modifier = Modifier.testTag(EMPLOYEE_TYPE_FIELD.plus(type.name)),
                                 text = type.name,
-                                selected = viewModel.state.employeeType == type,
+                                selected = state.employeeType == type,
                                 onClick = {
-                                    viewModel.onEvent(
+                                    onEvent(
                                         AddEditEmployeeEvent.EmployeeTypeChanged(type),
                                     )
                                 },
@@ -387,9 +420,9 @@ fun AddEditEmployeeScreen(
                             StandardRoundedFilterChip(
                                 modifier = Modifier.testTag(EMPLOYEE_SALARY_TYPE_FIELD.plus(type.name)),
                                 text = type.name,
-                                selected = viewModel.state.employeeSalaryType == type,
+                                selected = state.employeeSalaryType == type,
                                 onClick = {
-                                    viewModel.onEvent(
+                                    onEvent(
                                         AddEditEmployeeEvent.EmployeeSalaryTypeChanged(type),
                                     )
                                 },
@@ -399,6 +432,17 @@ fun AddEditEmployeeScreen(
                         }
                     }
                 }
+            }
+
+            item(EMPLOYEE_PARTNER_FIELD) {
+                StandardCheckboxWithText(
+                    text = if(state.isDeliveryPartner) EMPLOYEE_PARTNER_CHECKED_FIELD
+                        else EMPLOYEE_PARTNER_UNCHECKED_FIELD,
+                    checked = state.isDeliveryPartner,
+                    onCheckedChange = {
+                        onEvent(AddEditEmployeeEvent.UpdateDeliveryPartner)
+                    },
+                )
             }
         }
     }
@@ -415,7 +459,23 @@ fun AddEditEmployeeScreen(
                 date <= LocalDate.now()
             },
         ) { date ->
-            viewModel.onEvent(AddEditEmployeeEvent.EmployeeJoinedDateChanged(date.toMilliSecond))
+            onEvent(AddEditEmployeeEvent.EmployeeJoinedDateChanged(date.toMilliSecond))
         }
     }
+}
+
+@DevicePreviews
+@Composable
+fun AddEditEmployeeScreenContentPreview() {
+    AddEditEmployeeScreenContent(
+        title = CREATE_NEW_EMPLOYEE,
+        icon = PoposIcons.Add,
+        state = AddEditEmployeeState(),
+        phoneError = null,
+        nameError = null,
+        salaryError = null,
+        positionError = null,
+        onBackClick = {},
+        onEvent = {},
+    )
 }

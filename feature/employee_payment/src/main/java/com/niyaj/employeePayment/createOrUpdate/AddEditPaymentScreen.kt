@@ -81,9 +81,9 @@ import com.niyaj.model.PaymentType
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.StandardButton
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardRoundedFilterChip
+import com.niyaj.designsystem.components.StandardRoundedFilterChip
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -161,7 +161,7 @@ fun AddEditPaymentScreen(
         showBackButton = true,
         showBottomBar = lazyListState.isScrollingUp(),
         bottomBar = {
-            StandardButton(
+            PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag(ADD_EDIT_PAYMENT_ENTRY_BUTTON)

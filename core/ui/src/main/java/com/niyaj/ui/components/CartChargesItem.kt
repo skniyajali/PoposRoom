@@ -21,15 +21,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.niyaj.designsystem.theme.SpaceMini
+import com.niyaj.designsystem.components.StandardRoundedFilterChip
+import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.Charges
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -45,20 +44,18 @@ fun CartChargesItem(
         modifier = modifier
             .fillMaxWidth()
             .background(backgroundColor),
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.spacedBy(SpaceSmallMax, Alignment.CenterHorizontally),
         verticalArrangement = Arrangement.Center,
     ) {
         for (charges in chargesList) {
             StandardRoundedFilterChip(
-                modifier = Modifier
-                    .padding(SpaceMini),
+                modifier = Modifier,
                 text = charges.chargesName,
                 selected = selectedItem.contains(charges.chargesId),
                 onClick = {
                     onClick(charges.chargesId)
                 },
             )
-            Spacer(modifier = Modifier.width(SpaceMini))
         }
     }
 }

@@ -21,15 +21,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.niyaj.designsystem.theme.SpaceMini
+import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.components.StandardRoundedFilterChip
+import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.AddOnItem
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -46,22 +47,22 @@ fun CartAddOnItems(
         modifier = modifier
             .fillMaxWidth()
             .background(backgroundColor),
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.spacedBy(SpaceSmallMax, Alignment.CenterHorizontally),
         verticalArrangement = Arrangement.Center,
     ) {
-        for (addOnItem in addOnItems) {
-            StandardRoundedFilterChip(
-                modifier = Modifier
-                    .padding(SpaceMini),
-                text = addOnItem.itemName,
-//                    secondaryText = if(addOnItem.itemName.startsWith("Cold")) addOnItem.itemPrice.toString() else null,
-                selected = selectedAddOnItem.contains(addOnItem.itemId),
-                selectedColor = selectedColor,
-                onClick = {
-                    onClick(addOnItem.itemId)
-                },
-            )
-            Spacer(modifier = Modifier.width(SpaceMini))
+        addOnItems.forEach { addOnItem ->
+            key(addOnItem.itemId) {
+                val text = if (addOnItem.itemName.startsWith("Cold"))
+                    "${addOnItem.itemName}-${addOnItem.itemPrice.toRupee}" else addOnItem.itemName
+                StandardRoundedFilterChip(
+                    text = text,
+                    selected = selectedAddOnItem.contains(addOnItem.itemId),
+                    selectedColor = selectedColor,
+                    onClick = {
+                        onClick(addOnItem.itemId)
+                    },
+                )
+            }
         }
     }
 }

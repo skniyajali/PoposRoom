@@ -27,10 +27,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -45,11 +41,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.niyaj.common.utils.Constants.NOT_PAID
 import com.niyaj.common.utils.Constants.PAID
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.IconSizeSmall
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StandardOutlinedChip(
     modifier: Modifier = Modifier,
@@ -78,7 +74,7 @@ fun StandardOutlinedChip(
         ) {
             if (isSelected) {
                 Icon(
-                    imageVector = Icons.Default.Done,
+                    imageVector = PoposIcons.Done,
                     contentDescription = "$text added",
                     tint = dissectedColor,
                     modifier = Modifier.size(IconSizeSmall),
@@ -127,14 +123,14 @@ fun PaymentStatusChip(
         ) {
             if (isPaid) {
                 Icon(
-                    imageVector = Icons.Default.Done,
+                    imageVector = PoposIcons.Done,
                     contentDescription = text,
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(IconSizeSmall),
                 )
             } else {
                 Icon(
-                    imageVector = Icons.Default.Close,
+                    imageVector = PoposIcons.Close,
                     contentDescription = text,
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(IconSizeSmall),
