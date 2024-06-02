@@ -17,6 +17,7 @@
 
 package com.niyaj.order.components
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -33,7 +34,7 @@ import com.niyaj.common.tags.OrderTestTags.ORDER_NOT_AVAILABLE
 import com.niyaj.common.tags.OrderTestTags.SEARCH_ORDER_NOT_AVAILABLE
 import com.niyaj.core.ui.R
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.model.Order
+import com.niyaj.order.OrderState
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.utils.TrackScrollJank
@@ -41,8 +42,7 @@ import com.niyaj.ui.utils.TrackScrollJank
 @Composable
 fun OrderedItemLayout(
     modifier: Modifier = Modifier,
-    orders: List<Order>,
-    isLoading: Boolean = false,
+    orderState: OrderState,
     showSearchBar: Boolean = false,
     onClickPrintOrder: (Int) -> Unit,
     onClickDelete: (Int) -> Unit,
@@ -54,43 +54,52 @@ fun OrderedItemLayout(
 ) {
     val lazyListState = rememberLazyListState()
 
-    if (orders.isEmpty()) {
-        ItemNotAvailable(
-            text = if (showSearchBar) SEARCH_ORDER_NOT_AVAILABLE else ORDER_NOT_AVAILABLE,
-            buttonText = ADD_ITEM_TO_CART,
-            image = painterResource(R.drawable.emptycarttwo),
-            onClick = {
-                onNavigateToHomeScreen()
-            },
-        )
-    } else if (isLoading) {
-        LoadingIndicator()
-    } else {
-        TrackScrollJank(scrollableState = lazyListState, stateName = "Order::List")
+    Crossfade(
+        targetState = orderState,
+        label = "Order State",
+    ) { state ->
+        when (state) {
+            is OrderState.Loading -> LoadingIndicator()
 
-        LazyColumn(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(SpaceSmall),
-            horizontalAlignment = Alignment.Start,
-            state = lazyListState,
-        ) {
-            items(
-                items = orders,
-                key = {
-                    it.orderId
-                },
-            ) { order ->
-                OrderedItem(
-                    order = order,
-                    onClickPrintOrder = onClickPrintOrder,
-                    onMarkedAsProcessing = onMarkedAsProcessing,
-                    onClickDelete = onClickDelete,
-                    onClickViewDetails = onClickOrderDetails,
-                    onClickEdit = onClickEditOrder,
-                    onClickShareOrder = onClickShareOrder,
+            is OrderState.Empty -> {
+                ItemNotAvailable(
+                    text = if (showSearchBar) SEARCH_ORDER_NOT_AVAILABLE else ORDER_NOT_AVAILABLE,
+                    buttonText = ADD_ITEM_TO_CART,
+                    image = painterResource(R.drawable.emptycarttwo),
+                    onClick = {
+                        onNavigateToHomeScreen()
+                    },
                 )
-                Spacer(modifier = Modifier.height(SpaceSmall))
+            }
+
+            is OrderState.Success -> {
+                TrackScrollJank(scrollableState = lazyListState, stateName = "Order::List")
+
+                LazyColumn(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(SpaceSmall),
+                    horizontalAlignment = Alignment.Start,
+                    state = lazyListState,
+                ) {
+                    items(
+                        items = state.data,
+                        key = {
+                            it.orderId
+                        },
+                    ) { order ->
+                        OrderedItem(
+                            order = order,
+                            onClickPrintOrder = onClickPrintOrder,
+                            onMarkedAsProcessing = onMarkedAsProcessing,
+                            onClickDelete = onClickDelete,
+                            onClickViewDetails = onClickOrderDetails,
+                            onClickEdit = onClickEditOrder,
+                            onClickShareOrder = onClickShareOrder,
+                        )
+                        Spacer(modifier = Modifier.height(SpaceSmall))
+                    }
+                }
             }
         }
     }

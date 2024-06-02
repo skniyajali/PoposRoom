@@ -54,6 +54,7 @@ import com.niyaj.common.utils.calculateStartOfDayTime
 import com.niyaj.common.utils.isToday
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.components.PoposOutlinedAssistChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
@@ -69,7 +70,6 @@ import com.niyaj.feature.reports.destinations.ViewLastSevenDaysReportsDestinatio
 import com.niyaj.ui.components.ItemNotFound
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
-import com.niyaj.ui.components.StandardOutlinedAssistChip
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -201,7 +201,7 @@ fun ReportScreen(
         title = "Reports",
         navActions = {
             if (!selectedDate.isToday) {
-                StandardOutlinedAssistChip(
+                PoposOutlinedAssistChip(
                     text = selectedDate.toPrettyDate(),
                     icon = PoposIcons.ArrowDropDown,
                     onClick = dialogState::show,

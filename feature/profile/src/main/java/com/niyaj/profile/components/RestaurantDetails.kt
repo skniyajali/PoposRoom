@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.niyaj.core.ui.R
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.components.PoposOutlinedButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor6
@@ -51,7 +52,6 @@ import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Profile
 import com.niyaj.ui.components.NoteText
-import com.niyaj.ui.components.StandardButton
 import java.io.File
 
 @Composable
@@ -159,7 +159,7 @@ fun RestaurantDetails(
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
 
-                StandardButton(
+                PoposButton(
                     text = "Set Image",
                     icon = PoposIcons.AddAPhoto,
                     onClick = onClickChangePrintLogo,
@@ -195,7 +195,7 @@ fun RestaurantDetails(
 
                     Spacer(modifier = Modifier.width(SpaceSmall))
 
-                    StandardButton(
+                    PoposButton(
                         text = if (!showPrintLogo) "View Image" else "Hide Image",
                         icon = PoposIcons.ImageSearch,
                         onClick = onClickViewPrintLogo,

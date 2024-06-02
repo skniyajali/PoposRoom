@@ -25,7 +25,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface OrderRepository {
 
-    suspend fun getAllOrders(date: String, searchText: String): Flow<List<Order>>
+    suspend fun getDineInOrders(date: String, searchText: String): Flow<List<Order>>
+
+    suspend fun getDineOutOrders(date: String, searchText: String): Flow<List<Order>>
 
     suspend fun getAllCharges(): Flow<List<Charges>>
 

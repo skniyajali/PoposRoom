@@ -125,7 +125,7 @@ fun CartProduct(
                         modifier = Modifier.weight(2.2f, true),
                         text = cartProduct.productName,
                         style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -135,7 +135,7 @@ fun CartProduct(
                         modifier = Modifier.weight(0.8f, true),
                         textAlign = TextAlign.End,
                         style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
             }

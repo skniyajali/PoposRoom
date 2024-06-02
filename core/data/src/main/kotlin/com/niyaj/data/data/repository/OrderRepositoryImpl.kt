@@ -36,6 +36,7 @@ import com.niyaj.model.CartProductItem
 import com.niyaj.model.Charges
 import com.niyaj.model.Order
 import com.niyaj.model.OrderDetails
+import com.niyaj.model.OrderType
 import com.niyaj.model.SELECTED_ID
 import com.niyaj.model.searchOrder
 import kotlinx.collections.immutable.toImmutableList
@@ -53,7 +54,7 @@ class OrderRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher,
 ) : OrderRepository {
 
-    override suspend fun getAllOrders(date: String, searchText: String): Flow<List<Order>> {
+    override suspend fun getDineInOrders(date: String, searchText: String): Flow<List<Order>> {
         return withContext(ioDispatcher) {
             val startDate = if (date.isNotEmpty()) {
                 calculateStartDate(date)
@@ -67,7 +68,27 @@ class OrderRepositoryImpl(
                 getEndDateLong
             }
 
-            orderDao.getAllOrder(startDate, endDate).mapLatest {
+            orderDao.getAllOrder(startDate, endDate, OrderType.DineIn).mapLatest {
+                it.searchOrder(searchText)
+            }
+        }
+    }
+
+    override suspend fun getDineOutOrders(date: String, searchText: String): Flow<List<Order>> {
+        return withContext(ioDispatcher) {
+            val startDate = if (date.isNotEmpty()) {
+                calculateStartDate(date)
+            } else {
+                getStartDateLong
+            }
+
+            val endDate = if (date.isNotEmpty()) {
+                calculateEndDate(date)
+            } else {
+                getEndDateLong
+            }
+
+            orderDao.getAllOrder(startDate, endDate, OrderType.DineOut).mapLatest {
                 it.searchOrder(searchText)
             }
         }
@@ -141,7 +162,7 @@ class OrderRepositoryImpl(
                 addOnItems = order.addOnItems.map { it.asExternalModel() }.toImmutableList(),
                 charges = order.charges.map { it.asExternalModel() }.toImmutableList(),
                 orderPrice = order.orderPrice,
-                deliveryPartner = order.deliveryPartner
+                deliveryPartner = order.deliveryPartner,
             )
         }
     }

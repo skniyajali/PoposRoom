@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.components.PoposTextButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.Ivory
@@ -64,7 +65,6 @@ import com.niyaj.designsystem.theme.gradient6
 import com.niyaj.feature.account.R
 import com.niyaj.feature.account.destinations.RegisterScreenDestination
 import com.niyaj.ui.components.NoteCard
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -303,7 +303,8 @@ fun LoginForm(
         item("Login_Button") {
             Spacer(modifier = Modifier.height(SpaceSmall))
 
-            StandardButton(
+            PoposButton(
+                modifier = Modifier.fillMaxWidth(),
                 text = stringResource(id = R.string.login),
                 icon = PoposIcons.Login,
                 onClick = onClickLogin,

@@ -29,12 +29,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.trace
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.model.Reports
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ReportBox
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.event.UiState
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -115,7 +115,7 @@ fun TotalReports(
             }
         }
 
-        StandardButton(
+        PoposButton(
             modifier = Modifier.fillMaxWidth(),
             text = "Re-Generate Report",
             icon = PoposIcons.Sync,

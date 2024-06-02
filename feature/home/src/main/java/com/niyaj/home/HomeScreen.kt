@@ -53,6 +53,7 @@ import com.niyaj.common.tags.HomeScreenTestTags
 import com.niyaj.common.tags.HomeScreenTestTags.HOME_SEARCH_PLACEHOLDER
 import com.niyaj.common.utils.Constants
 import com.niyaj.core.ui.R
+import com.niyaj.designsystem.components.PoposTonalIconButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.home.components.HomeScreenProducts
@@ -65,7 +66,6 @@ import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.SelectedOrderBox
 import com.niyaj.ui.components.StandardFABIcon
-import com.niyaj.ui.components.StandardFilledTonalIconButton
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
@@ -291,21 +291,21 @@ fun HomeScreenContent(
                 } else {
                     AnimatedVisibility(showSearchIcon) {
                         Row {
-                            StandardFilledTonalIconButton(
+                            PoposTonalIconButton(
                                 onClick = onCartClick,
                                 icon = PoposIcons.OutlinedCart,
                                 containerColor = animatedColor,
                                 contentColor = MaterialTheme.colorScheme.tertiary,
                             )
 
-                            StandardFilledTonalIconButton(
+                            PoposTonalIconButton(
                                 onClick = onOrderClick,
                                 icon = PoposIcons.OutlinedOrder,
                                 containerColor = animatedColor,
                                 contentColor = MaterialTheme.colorScheme.tertiary,
                             )
 
-                            StandardFilledTonalIconButton(
+                            PoposTonalIconButton(
                                 onClick = onOpenSearchBar,
                                 icon = PoposIcons.Search,
                                 containerColor = animatedColor,
@@ -317,7 +317,7 @@ fun HomeScreenContent(
             },
             floatingActionButton = {
                 StandardFABIcon(
-                    fabVisible = showFab,
+                    fabVisible = showFab && !showSearchBar,
                     onFabClick = {
                         onNavigateToScreen(Screens.ADD_EDIT_CART_ORDER_SCREEN)
                     },

@@ -36,7 +36,7 @@ object Screens {
     const val CART_SCREEN = "cart_screen"
 
     const val ORDER_SCREEN = "order_screen"
-
+    const val DELIVERY_REPORT_SCREEN = "order_screen"
     const val ORDER_DETAILS_SCREEN = "order_details_screen"
 
     const val NOTIFICATION_SCREEN = "notification"

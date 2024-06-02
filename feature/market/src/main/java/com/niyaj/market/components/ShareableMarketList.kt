@@ -57,6 +57,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.niyaj.common.utils.toFormattedDate
 import com.niyaj.common.utils.toSafeString
 import com.niyaj.designsystem.components.PoposButton
+import com.niyaj.designsystem.components.PoposOutlinedAssistChip
 import com.niyaj.designsystem.components.PoposOutlinedButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.ButtonSize
@@ -67,7 +68,6 @@ import com.niyaj.model.MarketItemAndQuantity
 import com.niyaj.model.MarketListAndType
 import com.niyaj.ui.components.CountBox
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.StandardOutlinedAssistChip
 import com.niyaj.ui.components.TwoGridTexts
 import com.niyaj.ui.utils.CaptureController
 import com.niyaj.ui.utils.ScrollableCapturable
@@ -210,7 +210,7 @@ fun ShareableItemHeader(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
-                StandardOutlinedAssistChip(
+                PoposOutlinedAssistChip(
                     text = marketDetail.typeName.uppercase(),
                     borderColor = MaterialTheme.colorScheme.primary,
                     icon = PoposIcons.Category,
@@ -221,7 +221,7 @@ fun ShareableItemHeader(
                     ),
                 )
 
-                StandardOutlinedAssistChip(
+                PoposOutlinedAssistChip(
                     text = marketDetail.listType,
                     icon = PoposIcons.ListAlt,
                     borderColor = MaterialTheme.colorScheme.secondary,

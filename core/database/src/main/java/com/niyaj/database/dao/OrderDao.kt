@@ -25,6 +25,7 @@ import com.niyaj.database.model.OrderDetailsDto
 import com.niyaj.database.model.ProductEntity
 import com.niyaj.model.Order
 import com.niyaj.model.OrderStatus
+import com.niyaj.model.OrderType
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -42,13 +43,15 @@ interface OrderDao {
             LEFT JOIN customer cu ON cu.customerId = co.customerId
             LEFT JOIN address ad ON ad.addressId = co.addressId
             LEFT JOIN employee em ON em.employeeId = co.deliveryPartnerId
-            WHERE (co.updatedAt BETWEEN :startDate AND :endDate) AND co.orderStatus = :orderStatus
+            WHERE (co.updatedAt BETWEEN :startDate AND :endDate)
+            AND co.orderStatus = :orderStatus AND co.orderType = :orderType
             ORDER BY co.updatedAt DESC
         """,
     )
     fun getAllOrder(
         startDate: Long,
         endDate: Long,
+        orderType: OrderType,
         orderStatus: OrderStatus = OrderStatus.PLACED,
     ): Flow<List<Order>>
 

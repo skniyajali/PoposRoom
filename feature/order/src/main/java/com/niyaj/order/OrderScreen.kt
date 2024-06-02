@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarDuration
@@ -39,7 +40,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -61,7 +62,7 @@ import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.components.PoposOutlinedAssistChip
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.model.OrderType
+import com.niyaj.model.Order
 import com.niyaj.order.components.OrderedItemLayout
 import com.niyaj.order.components.ShareableOrderDetails
 import com.niyaj.order.destinations.OrderDetailsScreenDestination
@@ -74,6 +75,8 @@ import com.niyaj.ui.components.OrderTabs
 import com.niyaj.ui.components.OrderTabsContent
 import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
 import com.niyaj.ui.event.ShareViewModel
+import com.niyaj.ui.parameterProvider.OrderPreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
@@ -92,7 +95,7 @@ import java.time.LocalDate
 
 @RootNavGraph(start = true)
 @Destination(route = Screens.ORDER_SCREEN)
-@OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun OrderScreen(
     navigator: DestinationsNavigator,
@@ -106,35 +109,9 @@ fun OrderScreen(
     val captureController = rememberCaptureController()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val pagerState = rememberPagerState(
-        initialPage = 0,
-        initialPageOffsetFraction = 0f,
-        pageCount = { 2 },
-    )
-
-    val orders = viewModel.cartOrders.collectAsStateWithLifecycle().value.orders
-    val isLoading: Boolean =
-        viewModel.cartOrders.collectAsStateWithLifecycle().value.isLoading
-
-    val dineInOrders by remember(orders) {
-        derivedStateOf {
-            orders.filter { order ->
-                order.orderType == OrderType.DineIn
-            }
-        }
-    }
-
-    val dineOutOrders by remember(orders) {
-        derivedStateOf {
-            orders.filter { order ->
-                order.orderType == OrderType.DineOut
-            }
-        }
-    }
-
-    val selectedDate = viewModel.selectedDate.collectAsStateWithLifecycle().value
-    val showIcon =
-        if (pagerState.currentPage == 1) dineInOrders.isNotEmpty() else dineOutOrders.isNotEmpty()
+    val dineInOrders by viewModel.dineInOrders.collectAsStateWithLifecycle()
+    val dineOutOrders by viewModel.dineOutOrders.collectAsStateWithLifecycle()
+    val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
 
     val enableBluetoothContract = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
@@ -197,11 +174,6 @@ fun OrderScreen(
             )
         }
 
-    val dialogState = rememberMaterialDialogState()
-    val deleteOrderState = rememberMaterialDialogState()
-
-    var deletableOrder by remember { mutableIntStateOf(0) }
-
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
@@ -254,13 +226,15 @@ fun OrderScreen(
     HandleBluetoothPermissionState(
         multiplePermissionsState = bluetoothPermissionsState,
         onSuccessful = {
-            StandardScaffoldWithOutDrawer(
-                title = if (selectedDate.isNotEmpty() && !selectedDate.isToday) "" else "Orders",
+            OrderScreenContent(
+                modifier = Modifier,
+                dineInOrders = dineInOrders,
+                dineOutOrders = dineOutOrders,
+                selectedDate = selectedDate,
+                snackbarHostState = snackbarHostState,
                 showSearchBar = showSearchBar,
-                showSearchIcon = showIcon,
                 searchText = viewModel.searchText.value,
-                searchPlaceholderText = "Search for orders...",
-                openSearchBar = viewModel::openSearchBar,
+                onOpenSearchBar = viewModel::openSearchBar,
                 onSearchTextChanged = viewModel::searchTextChanged,
                 onClearClick = viewModel::clearSearchText,
                 onBackClick = {
@@ -270,116 +244,24 @@ fun OrderScreen(
                         navigator.popBackStack()
                     }
                 },
-                snackbarHostState = snackbarHostState,
-                navActions = {
-                    if (selectedDate.isNotEmpty() && !selectedDate.isToday) {
-                        PoposOutlinedAssistChip(
-                            text = selectedDate.toPrettyDate(),
-                            icon = PoposIcons.CalenderMonth,
-                            onClick = {
-                                dialogState.show()
-                            },
-                            trailingIcon = PoposIcons.ArrowDown,
-                        )
-                    } else {
-                        IconButton(
-                            onClick = { dialogState.show() },
-                        ) {
-                            Icon(
-                                imageVector = PoposIcons.Today,
-                                contentDescription = "Choose Date",
-                            )
-                        }
-                    }
+                onClickPrintDeliveryReport = {
 
-                    if (showIcon) {
-                        if (pagerState.currentPage == 0) {
-                            IconButton(
-                                onClick = {
-                                    printDeliveryReport()
-                                },
-                            ) {
-                                Icon(
-                                    imageVector = PoposIcons.DeliveryDining,
-                                    contentDescription = "Print Delivery Reports",
-                                )
-                            }
-                        }
-                    }
                 },
-            ) {
-                val tabs = listOf(
-                    OrderTab.DineOutOrder {
-                        OrderedItemLayout(
-                            orders = dineOutOrders,
-                            isLoading = isLoading,
-                            showSearchBar = showSearchBar,
-                            onClickPrintOrder = printOrder,
-                            onClickDelete = {
-                                deleteOrderState.show()
-                                deletableOrder = it
-                            },
-                            onMarkedAsProcessing = {
-                                viewModel.onOrderEvent(OrderEvent.MarkedAsProcessing(it))
-                            },
-                            onNavigateToHomeScreen = {
-                                navigator.navigate(Screens.HOME_SCREEN)
-                            },
-                            onClickOrderDetails = {
-                                navigator.navigate(OrderDetailsScreenDestination(it))
-                            },
-                            onClickEditOrder = onClickEditOrder,
-                            onClickShareOrder = {
-                                shareViewModel.onShowDialog()
-                                viewModel.onOrderEvent(OrderEvent.GetShareableDetails(it))
-                            },
-                        )
-                    },
+                onClickPrintOrder = printOrder,
+                onOrderEvent = viewModel::onOrderEvent,
+                onNavigateToHomeScreen = {
+                    navigator.navigate(Screens.HOME_SCREEN)
+                },
+                onClickOrderDetails = {
+                    navigator.navigate(OrderDetailsScreenDestination(it))
+                },
+                onClickEditOrder = onClickEditOrder,
+                onClickShareOrder = {
+                    shareViewModel.onShowDialog()
+                    viewModel.onOrderEvent(OrderEvent.GetShareableDetails(it))
+                },
+            )
 
-                    OrderTab.DineInOrder(dineInOrders.isNotEmpty()) {
-                        OrderedItemLayout(
-                            orders = dineInOrders,
-                            isLoading = isLoading,
-                            showSearchBar = showSearchBar,
-                            onClickPrintOrder = printOrder,
-                            onClickDelete = {
-                                deleteOrderState.show()
-                                deletableOrder = it
-                            },
-                            onMarkedAsProcessing = {
-                                viewModel.onOrderEvent(OrderEvent.MarkedAsProcessing(it))
-                            },
-                            onNavigateToHomeScreen = {
-                                navigator.navigate(Screens.HOME_SCREEN)
-                            },
-                            onClickOrderDetails = {
-                                navigator.navigate(OrderDetailsScreenDestination(it))
-                            },
-                            onClickEditOrder = onClickEditOrder,
-                            onClickShareOrder = {
-                                shareViewModel.onShowDialog()
-                                viewModel.onOrderEvent(OrderEvent.GetShareableDetails(it))
-                            },
-                        )
-                    },
-                )
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Top,
-                ) {
-                    OrderTabs(
-                        tabs = listOf(
-                            OrderTab.DineOutOrder(dineOutOrders.isNotEmpty()),
-                            OrderTab.DineInOrder(dineInOrders.isNotEmpty()),
-                        ),
-                        pagerState = pagerState,
-                    )
-                    OrderTabsContent(tabs = tabs, pagerState = pagerState)
-                }
-            }
         },
         onError = { shouldShowRationale ->
             BluetoothPermissionDialog(
@@ -394,45 +276,6 @@ fun OrderScreen(
             )
         },
     )
-
-    MaterialDialog(
-        dialogState = deleteOrderState,
-        buttons = {
-            positiveButton(
-                text = "Delete",
-                onClick = {
-                    viewModel.onOrderEvent(OrderEvent.DeleteOrder(deletableOrder))
-                    deletableOrder = 0
-                },
-            )
-            negativeButton(
-                text = "Cancel",
-                onClick = {
-                    deleteOrderState.hide()
-                    deletableOrder = 0
-                },
-            )
-        },
-    ) {
-        title(text = DELETE_ORDER)
-        message(text = DELETE_ORDER_MESSAGE)
-    }
-
-    MaterialDialog(
-        dialogState = dialogState,
-        buttons = {
-            positiveButton("Ok")
-            negativeButton("Cancel")
-        },
-    ) {
-        datepicker(
-            allowedDateValidator = { date ->
-                date <= LocalDate.now()
-            },
-        ) { date ->
-            viewModel.onOrderEvent(OrderEvent.SelectDate(date.toMilliSecond))
-        }
-    }
 
     AnimatedVisibility(
         visible = showShareDialog,
@@ -467,4 +310,269 @@ fun OrderScreen(
             },
         )
     }
+}
+
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+internal fun OrderScreenContent(
+    modifier: Modifier = Modifier,
+    dineInOrders: OrderState,
+    dineOutOrders: OrderState,
+    selectedDate: String,
+    showSearchBar: Boolean,
+    searchText: String,
+    onOpenSearchBar: () -> Unit,
+    onSearchTextChanged: (String) -> Unit,
+    onClearClick: () -> Unit,
+    onBackClick: () -> Unit,
+    onClickPrintDeliveryReport: () -> Unit,
+    onClickPrintOrder: (Int) -> Unit,
+    onOrderEvent: (OrderEvent) -> Unit,
+    onNavigateToHomeScreen: () -> Unit,
+    onClickOrderDetails: (Int) -> Unit,
+    onClickEditOrder: (Int) -> Unit,
+    onClickShareOrder: (Int) -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+) {
+    val dialogState = rememberMaterialDialogState()
+    val deleteOrderState = rememberMaterialDialogState()
+
+    var deletableOrder by remember { mutableIntStateOf(0) }
+
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        initialPageOffsetFraction = 0f,
+        pageCount = { 2 },
+    )
+
+    val showSearchIcon = if (pagerState.currentPage == 0) {
+        if (dineOutOrders is OrderState.Success) dineOutOrders.data.isNotEmpty() else false
+    } else {
+        if (dineInOrders is OrderState.Success) dineInOrders.data.isNotEmpty() else false
+    }
+
+    StandardScaffoldWithOutDrawer(
+        modifier = modifier,
+        title = if (selectedDate.isNotEmpty() && !selectedDate.isToday) "" else "Orders",
+        showSearchBar = showSearchBar,
+        showSearchIcon = showSearchIcon,
+        searchText = searchText,
+        searchPlaceholderText = "Search for orders...",
+        openSearchBar = onOpenSearchBar,
+        onSearchTextChanged = onSearchTextChanged,
+        onClearClick = onClearClick,
+        onBackClick = onBackClick,
+        snackbarHostState = snackbarHostState,
+        navActions = {
+            if (selectedDate.isNotEmpty() && !selectedDate.isToday) {
+                PoposOutlinedAssistChip(
+                    text = selectedDate.toPrettyDate(),
+                    icon = PoposIcons.CalenderMonth,
+                    onClick = {
+                        dialogState.show()
+                    },
+                    trailingIcon = PoposIcons.ArrowDown,
+                )
+            } else {
+                IconButton(
+                    onClick = {
+                        dialogState.show()
+                    },
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.Today,
+                        contentDescription = "Choose Date",
+                    )
+                }
+            }
+
+            if (showSearchIcon) {
+                if (pagerState.currentPage == 0) {
+                    IconButton(
+                        onClick = onClickPrintDeliveryReport,
+                    ) {
+                        Icon(
+                            imageVector = PoposIcons.DeliveryDining,
+                            contentDescription = "Print Delivery Reports",
+                        )
+                    }
+                }
+            }
+        },
+    ) {
+        val showDineOutBadge = if (dineOutOrders is OrderState.Success)
+            dineOutOrders.data.isNotEmpty() else false
+
+        val showDineInBadge = if (dineInOrders is OrderState.Success)
+            dineInOrders.data.isNotEmpty() else false
+
+        val tabs = listOf(
+            OrderTab.DineOutOrder {
+                OrderedItemLayout(
+                    orderState = dineOutOrders,
+                    showSearchBar = showSearchBar,
+                    onClickPrintOrder = onClickPrintOrder,
+                    onClickDelete = {
+                        deleteOrderState.show()
+                        deletableOrder = it
+                    },
+                    onMarkedAsProcessing = {
+                        onOrderEvent(OrderEvent.MarkedAsProcessing(it))
+                    },
+                    onNavigateToHomeScreen = onNavigateToHomeScreen,
+                    onClickOrderDetails = onClickOrderDetails,
+                    onClickEditOrder = onClickEditOrder,
+                    onClickShareOrder = onClickShareOrder,
+                )
+            },
+
+            OrderTab.DineInOrder {
+                OrderedItemLayout(
+                    orderState = dineInOrders,
+                    showSearchBar = showSearchBar,
+                    onClickPrintOrder = onClickPrintOrder,
+                    onClickDelete = {
+                        deleteOrderState.show()
+                        deletableOrder = it
+                    },
+                    onMarkedAsProcessing = {
+                        onOrderEvent(OrderEvent.MarkedAsProcessing(it))
+                    },
+                    onNavigateToHomeScreen = onNavigateToHomeScreen,
+                    onClickOrderDetails = onClickOrderDetails,
+                    onClickEditOrder = onClickEditOrder,
+                    onClickShareOrder = onClickShareOrder,
+                )
+            },
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Top,
+        ) {
+            OrderTabs(
+                tabs = listOf(
+                    OrderTab.DineOutOrder(showDineOutBadge),
+                    OrderTab.DineInOrder(showDineInBadge),
+                ),
+                pagerState = pagerState,
+            )
+            OrderTabsContent(tabs = tabs, pagerState = pagerState)
+        }
+    }
+
+    MaterialDialog(
+        dialogState = deleteOrderState,
+        buttons = {
+            positiveButton(
+                text = "Delete",
+                onClick = {
+                    onOrderEvent(OrderEvent.DeleteOrder(deletableOrder))
+                    deletableOrder = 0
+                },
+            )
+            negativeButton(
+                text = "Cancel",
+                onClick = {
+                    deleteOrderState.hide()
+                    deletableOrder = 0
+                },
+            )
+        },
+    ) {
+        title(text = DELETE_ORDER)
+        message(text = DELETE_ORDER_MESSAGE)
+    }
+
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            positiveButton("Ok")
+            negativeButton("Cancel")
+        },
+    ) {
+        datepicker(
+            allowedDateValidator = { date ->
+                date <= LocalDate.now()
+            },
+        ) { date ->
+            onOrderEvent(OrderEvent.SelectDate(date.toMilliSecond))
+        }
+    }
+}
+
+
+@DevicePreviews
+@Composable
+private fun OrderScreenContentLoadingPreview() {
+    OrderScreenContent(
+        dineInOrders = OrderState.Loading,
+        dineOutOrders = OrderState.Loading,
+        selectedDate = "",
+        showSearchBar = false,
+        searchText = "",
+        onOpenSearchBar = {},
+        onSearchTextChanged = {},
+        onClearClick = {},
+        onBackClick = {},
+        onClickPrintDeliveryReport = {},
+        onClickPrintOrder = {},
+        onOrderEvent = {},
+        onNavigateToHomeScreen = {},
+        onClickOrderDetails = {},
+        onClickEditOrder = {},
+        onClickShareOrder = {},
+    )
+}
+
+@DevicePreviews
+@Composable
+private fun OrderScreenContentEmptyPreview() {
+    OrderScreenContent(
+        dineInOrders = OrderState.Empty,
+        dineOutOrders = OrderState.Empty,
+        selectedDate = "",
+        showSearchBar = false,
+        searchText = "",
+        onOpenSearchBar = {},
+        onSearchTextChanged = {},
+        onClearClick = {},
+        onBackClick = {},
+        onClickPrintDeliveryReport = {},
+        onClickPrintOrder = {},
+        onOrderEvent = {},
+        onNavigateToHomeScreen = {},
+        onClickOrderDetails = {},
+        onClickEditOrder = {},
+        onClickShareOrder = {},
+    )
+}
+
+@DevicePreviews
+@Composable
+private fun OrderScreenContentSuccessPreview(
+    @PreviewParameter(OrderPreviewParameter::class)
+    orders: Pair<List<Order>, List<Order>>,
+) {
+    OrderScreenContent(
+        dineInOrders = OrderState.Success(orders.first),
+        dineOutOrders = OrderState.Success(orders.second),
+        selectedDate = "",
+        showSearchBar = false,
+        searchText = "",
+        onOpenSearchBar = {},
+        onSearchTextChanged = {},
+        onClearClick = {},
+        onBackClick = {},
+        onClickPrintDeliveryReport = {},
+        onClickPrintOrder = {},
+        onOrderEvent = {},
+        onNavigateToHomeScreen = {},
+        onClickOrderDetails = {},
+        onClickEditOrder = {},
+        onClickShareOrder = {},
+    )
 }

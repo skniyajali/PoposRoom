@@ -27,9 +27,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.niyaj.designsystem.components.PoposOutlinedAssistChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.model.OrderType
-import com.niyaj.ui.components.StandardOutlinedAssistChip
 
 @Composable
 fun OrderTypeDropdown(
@@ -39,7 +39,7 @@ fun OrderTypeDropdown(
     var menuExpanded by remember { mutableStateOf(false) }
 
     Column {
-        StandardOutlinedAssistChip(
+        PoposOutlinedAssistChip(
             text = text,
             icon = PoposIcons.CalenderMonth,
             onClick = {

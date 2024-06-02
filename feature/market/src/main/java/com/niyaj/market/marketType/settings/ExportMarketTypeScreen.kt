@@ -68,7 +68,7 @@ import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
-import com.niyaj.ui.components.StandardButton
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -208,7 +208,7 @@ fun ExportMarketTypeScreen(
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} items will be exported.")
 
-                StandardButton(
+                PoposButton(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag(EXPORT_MARKET_BTN),
