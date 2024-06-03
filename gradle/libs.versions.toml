@@ -1,7 +1,7 @@
 [versions]
 accompanist = "0.34.0"
 accompanistSwipeRefresh = '0.27.0'
-acraVersion = '5.9.7'
+acraVersion = '5.11.3'
 appsweep = '1.5.7'
 androidDesugarJdkLibs = "2.0.4"
 androidGradlePlugin = "8.4.1"
