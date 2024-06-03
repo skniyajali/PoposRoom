@@ -32,11 +32,11 @@ androidx.compose.material:material-icons-extended:1.6.7
 androidx.compose.material:material-ripple-android:1.6.7
 androidx.compose.material:material-ripple:1.6.7
 androidx.compose.material:material:1.6.7
-androidx.compose.runtime:runtime-android:1.7.0-beta01
-androidx.compose.runtime:runtime-saveable-android:1.7.0-beta01
-androidx.compose.runtime:runtime-saveable:1.7.0-beta01
+androidx.compose.runtime:runtime-android:1.7.0-beta02
+androidx.compose.runtime:runtime-saveable-android:1.7.0-beta02
+androidx.compose.runtime:runtime-saveable:1.7.0-beta02
 androidx.compose.runtime:runtime-tracing:1.0.0-beta01
-androidx.compose.runtime:runtime:1.7.0-beta01
+androidx.compose.runtime:runtime:1.7.0-beta02
 androidx.compose.ui:ui-android:1.7.0-beta01
 androidx.compose.ui:ui-geometry-android:1.7.0-beta01
 androidx.compose.ui:ui-geometry:1.7.0-beta01
