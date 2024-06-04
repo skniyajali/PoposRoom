@@ -96,22 +96,12 @@ fun OrderDetailsScreen(
     val context = LocalContext.current
     val captureController = rememberCaptureController()
     val lazyListState = rememberLazyListState()
+
+    val state = viewModel.orderDetails.collectAsStateWithLifecycle().value
+    val charges = viewModel.charges.collectAsStateWithLifecycle().value
     val printError = printViewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
-    LaunchedEffect(key1 = printError) {
-        printError?.let {
-            when (printError) {
-                is UiEvent.OnError -> {
-                    snackbarHostState.showSnackbar(
-                        message = printError.errorMessage,
-                        duration = SnackbarDuration.Short,
-                    )
-                }
-
-                else -> {}
-            }
-        }
-    }
+    val showShareDialog = viewModel.showDialog.collectAsStateWithLifecycle().value
 
     val bluetoothPermissions =
         // Checks if the device has Android 12 or above
@@ -133,6 +123,51 @@ fun OrderDetailsScreen(
             )
         }
 
+    val enableBluetoothContract = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+    ) {}
+
+    val bluetoothManager = remember {
+        context.getSystemService(BluetoothManager::class.java)
+    }
+
+    val bluetoothAdapter: BluetoothAdapter? = remember {
+        bluetoothManager.adapter
+    }
+
+    val printOrder: (Int) -> Unit = {
+        if (bluetoothPermissions.allPermissionsGranted) {
+            if (bluetoothAdapter?.isEnabled == true) {
+                // Bluetooth is on print the receipt
+                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
+            } else {
+                // This intent will open the enable bluetooth dialog
+                val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+
+                // Bluetooth is off, ask user to turn it on
+                enableBluetoothContract.launch(enableBluetoothIntent)
+                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
+            }
+        } else {
+            bluetoothPermissions.launchMultiplePermissionRequest()
+        }
+    }
+
+    LaunchedEffect(key1 = printError) {
+        printError?.let {
+            when (printError) {
+                is UiEvent.OnError -> {
+                    snackbarHostState.showSnackbar(
+                        message = printError.errorMessage,
+                        duration = SnackbarDuration.Short,
+                    )
+                }
+
+                else -> {}
+            }
+        }
+    }
+
     var cartOrderExpended by remember { mutableStateOf(true) }
     var customerExpended by remember { mutableStateOf(false) }
     var addressExpended by remember { mutableStateOf(false) }
@@ -143,41 +178,6 @@ fun OrderDetailsScreen(
     HandleBluetoothPermissionState(
         multiplePermissionsState = bluetoothPermissions,
         onSuccessful = {
-            val state = viewModel.orderDetails.collectAsStateWithLifecycle().value
-            val charges = viewModel.charges.collectAsStateWithLifecycle().value
-
-            val showShareDialog = viewModel.showDialog.collectAsStateWithLifecycle().value
-
-            val enableBluetoothContract = rememberLauncherForActivityResult(
-                ActivityResultContracts.StartActivityForResult(),
-            ) {}
-
-            val bluetoothManager = remember {
-                context.getSystemService(BluetoothManager::class.java)
-            }
-
-            val bluetoothAdapter: BluetoothAdapter? = remember {
-                bluetoothManager.adapter
-            }
-
-            val printOrder: (Int) -> Unit = {
-                if (bluetoothPermissions.allPermissionsGranted) {
-                    if (bluetoothAdapter?.isEnabled == true) {
-                        // Bluetooth is on print the receipt
-                        printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
-                    } else {
-                        // This intent will open the enable bluetooth dialog
-                        val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-
-                        // Bluetooth is off, ask user to turn it on
-                        enableBluetoothContract.launch(enableBluetoothIntent)
-                        printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
-                    }
-                } else {
-                    bluetoothPermissions.launchMultiplePermissionRequest()
-                }
-            }
-
             PoposSecondaryScaffold(
                 title = "Order Details",
                 showBackButton = true,

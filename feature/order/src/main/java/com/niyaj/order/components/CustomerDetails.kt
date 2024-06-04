@@ -155,11 +155,12 @@ fun CustomerDetails(
                     Spacer(modifier = Modifier.height(SpaceMedium))
 
                     PoposButton(
+                        modifier = Modifier.fillMaxWidth(),
                         onClick = {
                             onClickViewDetails(customer.customerId)
                         },
                         text = "View Customer Details".uppercase(),
-                        icon = PoposIcons.OpenInNew,
+                        icon = PoposIcons.Person,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.tertiary,
                         ),

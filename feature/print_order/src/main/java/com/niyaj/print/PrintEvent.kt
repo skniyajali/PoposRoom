@@ -23,7 +23,7 @@ sealed interface PrintEvent {
 
     data class PrintOrders(val orderIds: List<Int>) : PrintEvent
 
-    data class PrintDeliveryReport(val date: String) : PrintEvent
+    data class PrintDeliveryReport(val date: String, val partnerId: Int? = null) : PrintEvent
 
     data class PrintAllExpenses(val date: String) : PrintEvent
 }

@@ -44,7 +44,7 @@ import com.niyaj.ui.utils.isScrollingUp
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun CartScreenContent(
+internal fun CartScreenContent(
     modifier: Modifier = Modifier,
     uiState: CartState,
     snackbarHostState: SnackbarHostState,
@@ -110,7 +110,7 @@ fun CartScreenContent(
             is CartState.Success -> {
                 TrackScrollJank(scrollableState = listState, stateName = "DineOut Orders::Cart")
 
-                CartItemsState(
+                CartItems(
                     modifier = Modifier,
                     listState = listState,
                     cartState = uiState,

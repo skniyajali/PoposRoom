@@ -52,7 +52,7 @@ class PrintRepositoryImpl(
         }
     }
 
-    override suspend fun getDeliveryReports(date: String): List<DeliveryReport> {
+    override suspend fun getDeliveryReports(date: String, partnerId: Int?): List<DeliveryReport> {
         return withContext(ioDispatcher) {
             val startDate = if (date.isNotEmpty()) {
                 calculateStartDate(date)
@@ -66,7 +66,7 @@ class PrintRepositoryImpl(
                 getEndDateLong
             }
 
-            printDao.getDeliveryReport(startDate, endDate)
+            printDao.getDeliveryReport(startDate, endDate, partnerId)
         }
     }
 

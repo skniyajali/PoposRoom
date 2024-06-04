@@ -17,7 +17,6 @@
 
 package com.niyaj.ui.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -97,11 +96,10 @@ fun CartItemTotalPriceSection(
         ) {
             PoposOutlinedButton(
                 text = "Place Order",
-                onClick = onClickPlaceOrder,
                 enabled = itemCount > 0,
                 shape = CutCornerShape(4.dp),
-                border = BorderStroke(1.dp, color),
-                textColor = color,
+                color = color,
+                onClick = onClickPlaceOrder,
             )
 
             if (showPrintBtn) {

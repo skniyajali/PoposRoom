@@ -57,10 +57,11 @@ import com.niyaj.ui.components.AnimatedTextDividerDashed
 import com.niyaj.ui.components.CartAddOnItems
 import com.niyaj.ui.components.CartDeliveryPartners
 import com.niyaj.ui.components.CartItemProductDetailsSection
+import com.niyaj.ui.components.CartItemTotalPriceSection
 
 
 @Composable
-fun CartItemsState(
+internal fun CartItems(
     modifier: Modifier = Modifier,
     listState: LazyListState,
     cartState: CartState.Success,
@@ -87,7 +88,7 @@ fun CartItemsState(
             },
         ) { index, cartItem ->
             if (cartItem.cartProducts.isNotEmpty()) {
-                CartItemState(
+                CartItem(
                     cartItem = cartItem,
                     doesSelected = selectedCartItems.contains(cartItem.orderId),
                     addOnItems = addOnItems,
@@ -110,7 +111,7 @@ fun CartItemsState(
 }
 
 @Composable
-fun CartItemState(
+private fun CartItem(
     cartItem: CartItem,
     doesSelected: Boolean,
     addOnItems: List<AddOnItem>,

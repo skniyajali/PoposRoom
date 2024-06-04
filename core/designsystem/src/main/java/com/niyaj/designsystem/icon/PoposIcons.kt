@@ -20,6 +20,7 @@ package com.niyaj.designsystem.icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material.icons.automirrored.filled.Feed
 import androidx.compose.material.icons.automirrored.filled.ListAlt
@@ -178,6 +179,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
  */
 object PoposIcons {
 
+    val ArrowRight: ImageVector = Icons.AutoMirrored.Filled.ArrowRight
     val OutlinedTag: ImageVector = Icons.Outlined.Tag
     val OutlinedPhoneAndroid: ImageVector = Icons.Outlined.PhoneAndroid
     val OutlinedAccessTime: ImageVector = Icons.Outlined.AccessTime

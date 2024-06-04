@@ -365,10 +365,10 @@ fun PoposSecondaryScaffold(
             .testTag("secondaryScaffold"),
     ) { padding ->
         Surface(
-            shape = shape.value,
             modifier = Modifier
                 .fillMaxSize()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
+            shape = shape.value,
         ) {
             content(padding)
         }

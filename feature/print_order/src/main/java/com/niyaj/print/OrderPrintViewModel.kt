@@ -24,6 +24,7 @@ import com.dantsu.escposprinter.exceptions.EscPosConnectionException
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.utils.createDottedString
+import com.niyaj.common.utils.toBarDate
 import com.niyaj.common.utils.toFormattedTime
 import com.niyaj.common.utils.toTime
 import com.niyaj.data.repository.PrintRepository
@@ -79,7 +80,7 @@ class OrderPrintViewModel @Inject constructor(
             }
 
             is PrintEvent.PrintDeliveryReport -> {
-                printDeliveryReport(event.date)
+                printDeliveryReport(event.date, event.partnerId)
             }
         }
     }
@@ -132,7 +133,7 @@ class OrderPrintViewModel @Inject constructor(
                         printItems += bluetoothPrinter.getPrintableQrCode()
                     }
 
-                    printer.printFormattedText(printItems)
+                    printer.printFormattedText(printItems, 10f)
                 } ?: run {
                     _eventFlow.emit(UiEvent.OnError("Printer not connected"))
                 }
@@ -190,8 +191,8 @@ class OrderPrintViewModel @Inject constructor(
 
     private fun printTotalPrice(orderPrice: Long): String {
         return "[L]-------------------------------\n" +
-            "[L]Total[R] Rs. ${orderPrice}\n" +
-            "[L]-------------------------------\n\n"
+                "[L]Total[R] Rs. ${orderPrice}\n" +
+                "[L]-------------------------------\n\n"
     }
 
     private fun printAddOnItems(addOnItemList: List<AddOnItem>): String {
@@ -244,24 +245,27 @@ class OrderPrintViewModel @Inject constructor(
 
     private fun printSubTotalAndDiscount(orderPrice: OrderPrice): String {
         return "[L]-------------------------------\n" +
-            "[L]Sub Total[R]${orderPrice.basePrice}\n" +
-            "[L]Discount[R]${orderPrice.discountPrice}\n"
+                "[L]Sub Total[R]${orderPrice.basePrice}\n" +
+                "[L]Discount[R]${orderPrice.discountPrice}\n"
     }
 
-    private fun printDeliveryReport(date: String) {
+    private fun printDeliveryReport(date: String, partnerId: Int? = null) {
         viewModelScope.launch {
             try {
                 bluetoothPrinter.connectBluetoothPrinter()
                 val printer = bluetoothPrinter.printer
 
                 printer?.let {
-                    val deliveryReports = printRepository.getDeliveryReports(date)
+                    val deliveryReports = printRepository.getDeliveryReports(date, partnerId)
 
                     var printItems = ""
                     printItems += bluetoothPrinter.getPrintableHeader("DELIVERY REPORTS", date)
                     printItems += getPrintableOrders(deliveryReports)
+                    printItems += "[L]-------------------------------\n"
+                    printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
+                    printItems += "[L]-------------------------------\n"
 
-                    printer.printFormattedText(printItems, 50)
+                    printer.printFormattedText(printItems, 10f)
                 }
             } catch (e: Exception) {
                 Log.d("Print", e.message ?: "Error printing delivery report")
@@ -271,24 +275,39 @@ class OrderPrintViewModel @Inject constructor(
     }
 
     private fun getPrintableOrders(deliveryReports: List<DeliveryReport>): String {
-        var order = ""
+        var printableText = ""
 
         if (deliveryReports.isNotEmpty()) {
-            order += "[L]ID[C]Address[R]Time[R]Price\n"
-            order += "[L]-------------------------------\n"
+            val totalAmt = deliveryReports.sumOf { it.orderPrice }
+            val date = deliveryReports.first().orderDate.toBarDate
 
-            deliveryReports.forEach { cart ->
-                val orderDate = (cart.updatedAt ?: cart.createdAt).toTime
+            val groupByPartner = deliveryReports.groupBy { it.partnerName ?: "Unmanaged" }
 
-                order += "[L]${cart.orderId}[C]${cart.addressName}[R]$orderDate[R]${cart.orderPrice}\n"
-                order += "[L]-------------------------------\n"
+            groupByPartner.forEach { (partnerName, orders) ->
+                val totalAmount = orders.sumOf { it.orderPrice }
+
+                printableText += "[L]-------------------------------\n"
+                printableText += "[L]<b>${partnerName.uppercase()}</b>[R]Rs.${totalAmount} | ${orders.size}\n"
+
+                printableText += "[L]-------------------------------\n"
+                printableText += "[L]ID[C]Address[R]Time[R]Price\n"
+                printableText += "[L]-------------------------------\n"
+
+                orders.forEach { cart ->
+                    printableText += "[L]${cart.orderId}[C]${cart.customerAddress}[R]${cart.orderDate.toTime}[R]${cart.orderPrice}\n"
+                    printableText += "[L]-------------------------------\n"
+                }
             }
+
+            printableText += "[L]<b>Total Orders</b>[R]${deliveryReports.size}\n"
+            printableText += "[L]Rs.${totalAmt}[R]${date}\n"
+            printableText += "[L]-------------------------------\n"
         } else {
-            order += "[C]You have not place any order.\n"
+            printableText += "[C]You have not place any order.\n"
         }
 
-        order += "[L]\n"
+        printableText += "[L]\n"
 
-        return order
+        return printableText
     }
 }

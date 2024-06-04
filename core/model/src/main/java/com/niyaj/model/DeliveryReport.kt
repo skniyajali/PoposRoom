@@ -22,11 +22,15 @@ import java.util.Date
 data class DeliveryReport(
     val orderId: Int,
 
-    val createdAt: Date,
+    val customerAddress: String,
 
-    val updatedAt: Date? = null,
-
-    val addressName: String,
+    val customerPhone: String,
 
     val orderPrice: Long,
+
+    val partnerId: Int = 0,
+
+    val partnerName: String? = null,
+
+    val orderDate: Date,
 )

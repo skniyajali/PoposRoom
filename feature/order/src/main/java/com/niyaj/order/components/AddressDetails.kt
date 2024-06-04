@@ -145,11 +145,12 @@ fun AddressDetails(
                     Spacer(modifier = Modifier.height(SpaceMedium))
 
                     PoposButton(
+                        modifier = Modifier.fillMaxWidth(),
                         onClick = {
                             onClickViewDetails(address.addressId)
                         },
                         text = "View Address Details".uppercase(),
-                        icon = PoposIcons.Details,
+                        icon = PoposIcons.Address,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.outline,
                         ),

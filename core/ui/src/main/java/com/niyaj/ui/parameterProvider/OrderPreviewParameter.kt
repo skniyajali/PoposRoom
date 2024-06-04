@@ -85,6 +85,7 @@ class OrderPreviewParameter : PreviewParameterProvider<Pair<List<Order>, List<Or
                         customerPhone = "1234567890",
                         customerAddress = "123 Main St",
                         deliveryPartnerName = "FoodDelivery",
+                        deliveryPartnerId = 1,
                         orderDate = Calendar.getInstance()
                             .apply { set(Calendar.HOUR_OF_DAY, 9); set(Calendar.MINUTE, 0) }.time,
                         orderPrice = 2000,
@@ -95,6 +96,7 @@ class OrderPreviewParameter : PreviewParameterProvider<Pair<List<Order>, List<Or
                         customerPhone = "9876543210",
                         customerAddress = "456 Oak St",
                         deliveryPartnerName = "FoodRunner",
+                        deliveryPartnerId = 2,
                         orderDate = Calendar.getInstance()
                             .apply { set(Calendar.HOUR_OF_DAY, 10); set(Calendar.MINUTE, 15) }.time,
                         orderPrice = 3500,
@@ -105,6 +107,7 @@ class OrderPreviewParameter : PreviewParameterProvider<Pair<List<Order>, List<Or
                         customerPhone = "5678901234",
                         customerAddress = "789 Elm St",
                         deliveryPartnerName = "FoodExpress",
+                        deliveryPartnerId = 3,
                         orderDate = Calendar.getInstance()
                             .apply { set(Calendar.HOUR_OF_DAY, 11); set(Calendar.MINUTE, 30) }.time,
                         orderPrice = 4200,
@@ -115,6 +118,7 @@ class OrderPreviewParameter : PreviewParameterProvider<Pair<List<Order>, List<Or
                         customerPhone = "1112223333",
                         customerAddress = "456 Pine St",
                         deliveryPartnerName = "FoodDelivery",
+                        deliveryPartnerId = 1,
                         orderDate = Calendar.getInstance()
                             .apply { set(Calendar.HOUR_OF_DAY, 12); set(Calendar.MINUTE, 45) }.time,
                         orderPrice = 5800,
@@ -125,6 +129,7 @@ class OrderPreviewParameter : PreviewParameterProvider<Pair<List<Order>, List<Or
                         customerPhone = "4445556666",
                         customerAddress = "789 Oak St",
                         deliveryPartnerName = "FoodRunner",
+                        deliveryPartnerId = 2,
                         orderDate = Calendar.getInstance()
                             .apply { set(Calendar.HOUR_OF_DAY, 13); set(Calendar.MINUTE, 0) }.time,
                         orderPrice = 6500,
@@ -135,6 +140,7 @@ class OrderPreviewParameter : PreviewParameterProvider<Pair<List<Order>, List<Or
                         customerPhone = "7778889999",
                         customerAddress = "321 Main St",
                         deliveryPartnerName = "FoodExpress",
+                        deliveryPartnerId = 3,
                         orderDate = Calendar.getInstance()
                             .apply { set(Calendar.HOUR_OF_DAY, 14); set(Calendar.MINUTE, 15) }.time,
                         orderPrice = 7200,
@@ -145,6 +151,7 @@ class OrderPreviewParameter : PreviewParameterProvider<Pair<List<Order>, List<Or
                         customerPhone = "9630258741",
                         customerAddress = "456 Elm St",
                         deliveryPartnerName = "FoodDelivery",
+                        deliveryPartnerId = 1,
                         orderDate = Calendar.getInstance()
                             .apply { set(Calendar.HOUR_OF_DAY, 15); set(Calendar.MINUTE, 30) }.time,
                         orderPrice = 8000,
@@ -155,6 +162,7 @@ class OrderPreviewParameter : PreviewParameterProvider<Pair<List<Order>, List<Or
                         customerPhone = "2586974135",
                         customerAddress = "789 Pine St",
                         deliveryPartnerName = "FoodRunner",
+                        deliveryPartnerId = 2,
                         orderDate = Calendar.getInstance()
                             .apply { set(Calendar.HOUR_OF_DAY, 16); set(Calendar.MINUTE, 45) }.time,
                         orderPrice = 9500,
@@ -165,6 +173,7 @@ class OrderPreviewParameter : PreviewParameterProvider<Pair<List<Order>, List<Or
                         customerPhone = "5678901234",
                         customerAddress = "456 Oak St",
                         deliveryPartnerName = "FoodDelivery",
+                        deliveryPartnerId = 1,
                         orderDate = Calendar.getInstance()
                             .apply { set(Calendar.HOUR_OF_DAY, 17); set(Calendar.MINUTE, 0) }.time,
                         orderPrice = 10000,
@@ -175,6 +184,7 @@ class OrderPreviewParameter : PreviewParameterProvider<Pair<List<Order>, List<Or
                         customerPhone = "9876543210",
                         customerAddress = "789 Elm St",
                         deliveryPartnerName = "FoodRunner",
+                        deliveryPartnerId = 2,
                         orderDate = Calendar.getInstance()
                             .apply { set(Calendar.HOUR_OF_DAY, 18); set(Calendar.MINUTE, 15) }.time,
                         orderPrice = 11000,

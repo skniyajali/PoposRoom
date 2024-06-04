@@ -18,7 +18,6 @@
 package com.niyaj.market.components
 
 import android.graphics.Bitmap
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -49,7 +48,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.util.trace
@@ -254,12 +252,11 @@ fun ShareableListBottomBar(
             modifier = Modifier
                 .heightIn(ButtonSize)
                 .weight(1.4f),
-            icon = PoposIcons.Close,
             text = "Close",
-            onClick = onDismiss,
+            icon = PoposIcons.Close,
             shape = RoundedCornerShape(SpaceMini),
             color = MaterialTheme.colorScheme.error,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+            onClick = onDismiss,
         )
 
         Spacer(modifier = Modifier.width(SpaceMedium))

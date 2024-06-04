@@ -44,6 +44,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
@@ -117,6 +118,46 @@ fun PoposButton(
         enabled = enabled,
         shape = shape,
         colors = colors,
+        modifier = modifier
+            .testTag(text)
+            .heightIn(btnHeight),
+    ) {
+        icon?.let {
+            Icon(
+                imageVector = icon,
+                contentDescription = text,
+                modifier = iconModifier,
+            )
+            Spacer(modifier = Modifier.width(SpaceMini))
+        }
+
+        Text(
+            text = text.uppercase(),
+            style = style,
+        )
+    }
+}
+
+@Composable
+fun PoposButton(
+    modifier: Modifier = Modifier,
+    iconModifier: Modifier = Modifier,
+    text: String,
+    icon: ImageVector? = null,
+    enabled: Boolean = true,
+    btnHeight: Dp = ButtonSize,
+    shape: Shape = RoundedCornerShape(SpaceMini),
+    color: Color,
+    style: TextStyle = MaterialTheme.typography.labelLarge,
+    onClick: () -> Unit,
+) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        shape = shape,
+        colors = ButtonDefaults.buttonColors().copy(
+            containerColor = color
+        ),
         modifier = modifier
             .testTag(text)
             .heightIn(btnHeight),
@@ -221,8 +262,6 @@ fun PoposOutlinedButton(
     btnHeight: Dp = ButtonSize,
     shape: Shape = RoundedCornerShape(SpaceMini),
     color: Color = MaterialTheme.colorScheme.secondary,
-    border: BorderStroke = BorderStroke(1.dp, color),
-    textColor: Color = color,
     style: TextStyle = MaterialTheme.typography.labelLarge,
     onClick: () -> Unit,
 ) {
@@ -232,8 +271,12 @@ fun PoposOutlinedButton(
         shape = shape,
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = color,
+            disabledContentColor = color.copy(0.38f)
         ),
-        border = border,
+        border = ButtonDefaults.outlinedButtonBorder.copy(
+            width = 1.dp,
+            brush = if(enabled) SolidColor(color) else SolidColor(color.copy(0.38f))
+        ),
         modifier = modifier
             .testTag(text)
             .heightIn(btnHeight),
@@ -249,7 +292,6 @@ fun PoposOutlinedButton(
         Text(
             text = text.uppercase(),
             style = style,
-            color = textColor,
         )
     }
 }

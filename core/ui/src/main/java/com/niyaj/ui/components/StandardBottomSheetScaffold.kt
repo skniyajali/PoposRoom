@@ -32,7 +32,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,16 +45,20 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceMedium
 
+@Suppress("DEPRECATION")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StandardBottomSheetScaffold(
@@ -67,6 +70,16 @@ fun StandardBottomSheetScaffold(
     bottomBar: @Composable () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
+    // Remember a SystemUiController
+    val systemUiController = rememberSystemUiController()
+    val containerColor = MaterialTheme.colorScheme.surface
+
+    SideEffect {
+        systemUiController.setStatusBarColor(color = containerColor)
+
+        systemUiController.setNavigationBarColor(color = containerColor)
+    }
+
     Scaffold(
         modifier = modifier
             .fillMaxWidth(),
@@ -86,6 +99,9 @@ fun StandardBottomSheetScaffold(
                         )
                     }
                 },
+                colors = TopAppBarDefaults.topAppBarColors().copy(
+                    containerColor = containerColor
+                )
             )
         },
         bottomBar = {
@@ -102,17 +118,16 @@ fun StandardBottomSheetScaffold(
                     },
                 ),
             ) {
-                BottomAppBar {
-                    bottomBar()
-                }
+                bottomBar()
             }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) {
-        Box(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(it),
+            color = MaterialTheme.colorScheme.surfaceContainerLowest,
         ) {
             content()
         }

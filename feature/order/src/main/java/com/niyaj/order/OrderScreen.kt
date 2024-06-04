@@ -32,7 +32,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarDuration
@@ -65,6 +64,7 @@ import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.model.Order
 import com.niyaj.order.components.OrderedItemLayout
 import com.niyaj.order.components.ShareableOrderDetails
+import com.niyaj.order.destinations.DeliveryPartnerScreenDestination
 import com.niyaj.order.destinations.OrderDetailsScreenDestination
 import com.niyaj.print.OrderPrintViewModel
 import com.niyaj.print.PrintEvent
@@ -95,7 +95,7 @@ import java.time.LocalDate
 
 @RootNavGraph(start = true)
 @Destination(route = Screens.ORDER_SCREEN)
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun OrderScreen(
     navigator: DestinationsNavigator,
@@ -136,17 +136,6 @@ fun OrderScreen(
             // Bluetooth is off, ask user to turn it on
             enableBluetoothContract.launch(enableBluetoothIntent)
             printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
-        }
-    }
-
-    val printDeliveryReport: () -> Unit = {
-        if (bluetoothAdapter?.isEnabled == true) {
-            // Bluetooth is on print the receipt
-            printViewModel.onPrintEvent(PrintEvent.PrintDeliveryReport(selectedDate))
-        } else {
-            // Bluetooth is off, ask user to turn it on
-            enableBluetoothContract.launch(enableBluetoothIntent)
-            printViewModel.onPrintEvent(PrintEvent.PrintDeliveryReport(selectedDate))
         }
     }
 
@@ -245,7 +234,7 @@ fun OrderScreen(
                     }
                 },
                 onClickPrintDeliveryReport = {
-
+                    navigator.navigate(DeliveryPartnerScreenDestination)
                 },
                 onClickPrintOrder = printOrder,
                 onOrderEvent = viewModel::onOrderEvent,

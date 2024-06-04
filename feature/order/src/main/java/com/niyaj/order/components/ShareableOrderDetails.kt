@@ -276,7 +276,7 @@ fun ShareableOrderDetails(
 }
 
 @Composable
-fun CapturableCard(
+private fun CapturableCard(
     modifier: Modifier,
     captureController: CaptureController,
     orderDetails: OrderDetails,
@@ -326,7 +326,7 @@ fun CapturableCard(
 }
 
 @Composable
-fun CartItemOrderDetails(
+private fun CartItemOrderDetails(
     modifier: Modifier = Modifier,
     orderDetails: OrderDetails,
     charges: List<Charges>,
@@ -367,7 +367,7 @@ fun CartItemOrderDetails(
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun CartItemOrderDetailsCard(
+private fun CartItemOrderDetailsCard(
     modifier: Modifier = Modifier,
     orderDetails: OrderDetails,
     charges: List<Charges>,
@@ -436,7 +436,7 @@ fun CartItemOrderDetailsCard(
 }
 
 @Composable
-fun ShareableCartOrderDetailsCard(
+private fun ShareableCartOrderDetailsCard(
     modifier: Modifier,
     cartOrder: CartOrder,
     icon: ImageVector,
@@ -527,7 +527,7 @@ fun ShareableCartOrderDetailsCard(
 }
 
 @Composable
-fun ShareableCartOrderDetails(
+private fun ShareableCartOrderDetails(
     modifier: Modifier = Modifier,
     cartOrder: CartOrder,
     icon: ImageVector,
@@ -633,7 +633,7 @@ fun ShareableCartOrderDetails(
 }
 
 @Composable
-fun ShareableCartProductsDetails(
+private fun ShareableCartProductsDetails(
     modifier: Modifier = Modifier,
     cartProducts: List<CartProductItem>,
     charges: List<Charges>,
@@ -808,7 +808,7 @@ fun ShareableCartProductsDetails(
 }
 
 @Composable
-fun CartProduct(
+private fun CartProduct(
     modifier: Modifier = Modifier,
     cartProduct: CartProductItem,
 ) = trace("CartProduct") {
@@ -869,7 +869,7 @@ fun CartProduct(
 }
 
 @Composable
-fun DialogButtons(
+private fun DialogButtons(
     modifier: Modifier = Modifier,
     layoutChanged: Boolean,
     shareButtonColor: Color,

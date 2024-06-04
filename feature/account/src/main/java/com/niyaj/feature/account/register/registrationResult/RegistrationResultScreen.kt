@@ -107,13 +107,13 @@ fun RegistrationResultScreen(
                                     NoteCard(text = message)
 
                                     PoposOutlinedButton(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
                                         text = stringResource(id = R.string.go_back),
                                         icon = PoposIcons.NavigateBefore,
                                         onClick = {
                                             navController.navigateUp()
                                         },
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
                                     )
                                 }
                             }

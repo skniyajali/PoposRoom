@@ -34,10 +34,12 @@ import com.niyaj.database.model.asExternalModel
 import com.niyaj.database.model.toExternalModel
 import com.niyaj.model.CartProductItem
 import com.niyaj.model.Charges
+import com.niyaj.model.DeliveryReport
 import com.niyaj.model.Order
 import com.niyaj.model.OrderDetails
 import com.niyaj.model.OrderType
 import com.niyaj.model.SELECTED_ID
+import com.niyaj.model.TotalDeliveryPartnerOrder
 import com.niyaj.model.searchOrder
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
@@ -91,6 +93,45 @@ class OrderRepositoryImpl(
             orderDao.getAllOrder(startDate, endDate, OrderType.DineOut).mapLatest {
                 it.searchOrder(searchText)
             }
+        }
+    }
+
+    override suspend fun getDeliveryPartnerOrders(date: String): Flow<List<TotalDeliveryPartnerOrder>> {
+        return withContext(ioDispatcher) {
+            val startDate = if (date.isNotEmpty()) {
+                calculateStartDate(date)
+            } else {
+                getStartDateLong
+            }
+
+            val endDate = if (date.isNotEmpty()) {
+                calculateEndDate(date)
+            } else {
+                getEndDateLong
+            }
+
+            orderDao.getDeliveryPartnerOrders(startDate, endDate)
+        }
+    }
+
+    override suspend fun getPartnerDeliveryReports(
+        date: String,
+        partnerId: Int?,
+    ): Flow<List<DeliveryReport>> {
+        return withContext(ioDispatcher) {
+            val startDate = if (date.isNotEmpty()) {
+                calculateStartDate(date)
+            } else {
+                getStartDateLong
+            }
+
+            val endDate = if (date.isNotEmpty()) {
+                calculateEndDate(date)
+            } else {
+                getEndDateLong
+            }
+
+            orderDao.getPartnerDeliveryReport(startDate, endDate, partnerId)
         }
     }
 
