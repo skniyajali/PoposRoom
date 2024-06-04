@@ -32,6 +32,7 @@ import androidx.compose.material.icons.automirrored.filled.Note
 import androidx.compose.material.icons.automirrored.filled.NoteAdd
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.automirrored.filled.ReceiptLong
+import androidx.compose.material.icons.automirrored.filled.Rule
 import androidx.compose.material.icons.automirrored.filled.StarHalf
 import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
@@ -85,10 +86,12 @@ import androidx.compose.material.icons.filled.EventBusy
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.HowToReg
 import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.InsertLink
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Kitchen
 import androidx.compose.material.icons.filled.LineWeight
 import androidx.compose.material.icons.filled.Link
@@ -136,6 +139,7 @@ import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material.icons.filled.ViewAgenda
 import androidx.compose.material.icons.filled.ViewHeadline
 import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.WidthNormal
 import androidx.compose.material.icons.filled.WorkOutline
 import androidx.compose.material.icons.outlined.AccessTime
@@ -179,6 +183,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
  */
 object PoposIcons {
 
+    val VisibilityOff: ImageVector = Icons.Default.VisibilityOff
+    val KeyboardArrowUp: ImageVector = Icons.Default.KeyboardArrowUp
+    val Rule: ImageVector = Icons.AutoMirrored.Filled.Rule
+    val HowToReg: ImageVector = Icons.Default.HowToReg
     val ArrowRight: ImageVector = Icons.AutoMirrored.Filled.ArrowRight
     val OutlinedTag: ImageVector = Icons.Outlined.Tag
     val OutlinedPhoneAndroid: ImageVector = Icons.Outlined.PhoneAndroid

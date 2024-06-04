@@ -225,44 +225,6 @@ fun TextWithIcon(
 }
 
 @Composable
-fun TextWithTitle(
-    modifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier,
-    text: String = "",
-    icon: ImageVector? = null,
-    style: TextStyle = MaterialTheme.typography.labelMedium,
-    fontWeight: FontWeight = FontWeight.SemiBold,
-    textColor: Color = MaterialTheme.colorScheme.onSurface,
-    tintColor: Color = MaterialTheme.colorScheme.primary,
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        if (text.isNotEmpty()) {
-            Text(
-                text = text,
-                style = style,
-                fontWeight = fontWeight,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = textColor,
-            )
-            icon?.let {
-                Spacer(modifier = Modifier.width(SpaceMini))
-
-                Icon(
-                    imageVector = icon,
-                    contentDescription = text,
-                    tint = tintColor,
-                    modifier = iconModifier,
-                )
-            }
-        }
-    }
-}
-
-@Composable
 fun NoteText(
     modifier: Modifier = Modifier,
     iconModifier: Modifier = Modifier.size(SpaceMedium),

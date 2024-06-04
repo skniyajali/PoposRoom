@@ -52,8 +52,11 @@ fun CartAddOnItems(
     ) {
         addOnItems.forEach { addOnItem ->
             key(addOnItem.itemId) {
-                val text = if (addOnItem.itemName.startsWith("Cold"))
-                    "${addOnItem.itemName}-${addOnItem.itemPrice.toRupee}" else addOnItem.itemName
+                val text = if (addOnItem.itemName.startsWith("Cold")) {
+                    "${addOnItem.itemName}-${addOnItem.itemPrice.toRupee}"
+                } else {
+                    addOnItem.itemName
+                }
                 StandardRoundedFilterChip(
                     text = text,
                     selected = selectedAddOnItem.contains(addOnItem.itemId),

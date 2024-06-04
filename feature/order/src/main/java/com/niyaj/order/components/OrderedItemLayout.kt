@@ -65,7 +65,7 @@ fun OrderedItemLayout(
                 ItemNotAvailable(
                     text = if (showSearchBar) SEARCH_ORDER_NOT_AVAILABLE else ORDER_NOT_AVAILABLE,
                     buttonText = ADD_ITEM_TO_CART,
-                    image = painterResource(R.drawable.emptycarttwo),
+                    image = painterResource(R.drawable.emptyorder),
                     onClick = {
                         onNavigateToHomeScreen()
                     },

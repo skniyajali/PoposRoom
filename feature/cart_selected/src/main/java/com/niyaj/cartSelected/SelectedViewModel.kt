@@ -85,6 +85,14 @@ class SelectedViewModel @Inject constructor(
         initialValue = emptyList(),
     )
 
+    val deliveryPartners = selectedId.flatMapLatest {
+        cartRepository.getDeliveryPartners()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList(),
+    )
+
     private val _cartOrders = MutableStateFlow<UiState<List<CartOrder>>>(UiState.Loading)
     val cartOrders = _cartOrders.asStateFlow()
 
@@ -200,6 +208,21 @@ class SelectedViewModel @Inject constructor(
             when (
                 val result =
                     cartRepository.updateAddOnItem(orderId, itemId)
+            ) {
+                is Resource.Error -> {
+                    _eventFlow.emit(UiEvent.OnError(result.message ?: "Unable to update"))
+                }
+
+                is Resource.Success -> {}
+            }
+        }
+    }
+
+    fun updateDeliveryPartner(orderId: Int, partnerId: Int) {
+        viewModelScope.launch {
+            when (
+                val result =
+                    cartRepository.updateDeliveryPartner(orderId, partnerId)
             ) {
                 is Resource.Error -> {
                     _eventFlow.emit(UiEvent.OnError(result.message ?: "Unable to update"))

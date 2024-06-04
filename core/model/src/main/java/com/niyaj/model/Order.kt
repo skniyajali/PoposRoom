@@ -40,7 +40,7 @@ fun List<Order>.searchOrder(searchText: String): List<Order> {
                 it.customerAddress?.contains(searchText, true) == true ||
                 it.orderDate.toTime.contains(searchText, true) ||
                 it.orderPrice.toString().contains(searchText, true) ||
-                    it.deliveryPartnerName?.contains(searchText, true) == true
+                it.deliveryPartnerName?.contains(searchText, true) == true
         }
     } else {
         this

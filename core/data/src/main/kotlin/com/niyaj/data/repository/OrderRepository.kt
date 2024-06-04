@@ -33,7 +33,7 @@ interface OrderRepository {
 
     suspend fun getDeliveryPartnerOrders(date: String): Flow<List<TotalDeliveryPartnerOrder>>
 
-    suspend fun getPartnerDeliveryReports(date: String, partnerId: Int?= null): Flow<List<DeliveryReport>>
+    suspend fun getPartnerDeliveryReports(date: String, partnerId: Int? = null): Flow<List<DeliveryReport>>
 
     suspend fun getAllCharges(): Flow<List<Charges>>
 

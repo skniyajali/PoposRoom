@@ -119,8 +119,14 @@ internal fun CartFooterPlaceOrder(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 val text =
-                    if (countSelectedItem == 0) " " else if
-                            (countSelectedItem < countTotalItems) " $countSelectedItem " else " All "
+                    if (countSelectedItem == 0) {
+                        " "
+                    } else if
+                        (countSelectedItem < countTotalItems) {
+                        " $countSelectedItem "
+                    } else {
+                        " All "
+                    }
 
                 PoposButton(
                     text = "Place${text}Order",

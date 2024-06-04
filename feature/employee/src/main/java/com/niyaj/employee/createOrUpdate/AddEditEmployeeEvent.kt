@@ -50,7 +50,7 @@ sealed interface AddEditEmployeeEvent {
 
     data class EmployeeJoinedDateChanged(val employeeJoinedDate: String) : AddEditEmployeeEvent
 
-    data object UpdateDeliveryPartner: AddEditEmployeeEvent
+    data object UpdateDeliveryPartner : AddEditEmployeeEvent
 
     data object CreateOrUpdateEmployee : AddEditEmployeeEvent
 }

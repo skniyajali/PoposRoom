@@ -156,7 +156,7 @@ fun PoposButton(
         enabled = enabled,
         shape = shape,
         colors = ButtonDefaults.buttonColors().copy(
-            containerColor = color
+            containerColor = color,
         ),
         modifier = modifier
             .testTag(text)
@@ -271,11 +271,11 @@ fun PoposOutlinedButton(
         shape = shape,
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = color,
-            disabledContentColor = color.copy(0.38f)
+            disabledContentColor = color.copy(0.38f),
         ),
         border = ButtonDefaults.outlinedButtonBorder.copy(
             width = 1.dp,
-            brush = if(enabled) SolidColor(color) else SolidColor(color.copy(0.38f))
+            brush = if (enabled) SolidColor(color) else SolidColor(color.copy(0.38f)),
         ),
         modifier = modifier
             .testTag(text)
@@ -367,7 +367,7 @@ fun PoposOutlinedIconButton(
         contentColor = borderColor,
     ),
     shape: Shape = RoundedCornerShape(SpaceMini),
-    contentDescription: String = "iconDesc"
+    contentDescription: String = "iconDesc",
 ) {
     OutlinedIconButton(
         modifier = modifier,

@@ -100,8 +100,8 @@ fun StandardBottomSheetScaffold(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors().copy(
-                    containerColor = containerColor
-                )
+                    containerColor = containerColor,
+                ),
             )
         },
         bottomBar = {

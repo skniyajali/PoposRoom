@@ -166,7 +166,6 @@ fun AddEditCartOrderScreen(
     )
 }
 
-
 @VisibleForTesting
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -248,7 +247,7 @@ internal fun AddEditCartOrderScreenContent(
                     selectedOption = state.orderType.name,
                     onOptionSelect = { option ->
                         onEvent(
-                            AddEditCartOrderEvent.OrderTypeChanged(OrderType.valueOf(option))
+                            AddEditCartOrderEvent.OrderTypeChanged(OrderType.valueOf(option)),
                         )
                     },
                     modifier = Modifier
@@ -528,7 +527,7 @@ internal fun AddEditCartOrderScreenContent(
                                         onClick = {
                                             onEvent(AddEditCartOrderEvent.SelectDeliveryPartner(it))
                                         },
-                                        backgroundColor = Color.Transparent
+                                        backgroundColor = Color.Transparent,
                                     )
 
                                     Spacer(modifier = Modifier.height(SpaceSmall))
@@ -602,7 +601,6 @@ internal fun AddEditCartOrderScreenContent(
                     }
                 }
             }
-
         }
     }
 }

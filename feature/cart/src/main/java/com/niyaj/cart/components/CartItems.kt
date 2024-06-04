@@ -59,7 +59,6 @@ import com.niyaj.ui.components.CartDeliveryPartners
 import com.niyaj.ui.components.CartItemProductDetailsSection
 import com.niyaj.ui.components.CartItemTotalPriceSection
 
-
 @Composable
 internal fun CartItems(
     modifier: Modifier = Modifier,
@@ -139,7 +138,7 @@ private fun CartItem(
             .clickable(interactionSource, indication = null) {
                 if (cartItem.orderType == OrderType.DineIn) {
                     onEvent(DineInEvent.SelectDineInCart(cartItem.orderId))
-                }else {
+                } else {
                     onEvent(DineOutEvent.SelectDineOutCart(cartItem.orderId))
                 }
             },
@@ -157,7 +156,7 @@ private fun CartItem(
             onClick = {
                 if (cartItem.orderType == OrderType.DineIn) {
                     onEvent(DineInEvent.SelectDineInCart(cartItem.orderId))
-                }else {
+                } else {
                     onEvent(DineOutEvent.SelectDineOutCart(cartItem.orderId))
                 }
             },

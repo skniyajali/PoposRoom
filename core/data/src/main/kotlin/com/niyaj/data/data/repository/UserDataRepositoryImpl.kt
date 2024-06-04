@@ -52,7 +52,7 @@ class UserDataRepositoryImpl @Inject constructor(
     override val isUserLoggedIn: Flow<Boolean>
         get() = combine(
             dataStore.loggedInUser,
-            dataStore.isUserLoggedIn
+            dataStore.isUserLoggedIn,
         ) { loggedInUser, isLoggedIn ->
             accountRepository.checkUserLoggedIn(loggedInUser) && isLoggedIn
         }

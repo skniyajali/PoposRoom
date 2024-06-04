@@ -137,14 +137,13 @@ class AddEditEmployeeViewModel @Inject constructor(
 
             is AddEditEmployeeEvent.UpdateDeliveryPartner -> {
                 state = state.copy(
-                    isDeliveryPartner = !state.isDeliveryPartner
+                    isDeliveryPartner = !state.isDeliveryPartner,
                 )
             }
 
             is AddEditEmployeeEvent.CreateOrUpdateEmployee -> {
                 createOrUpdateEmployee(employeeId)
             }
-
         }
     }
 
@@ -160,7 +159,7 @@ class AddEditEmployeeViewModel @Inject constructor(
                     employeeSalaryType = employee.employeeSalaryType,
                     employeeType = employee.employeeType,
                     employeeJoinedDate = employee.employeeJoinedDate,
-                    isDeliveryPartner = employee.isDeliveryPartner
+                    isDeliveryPartner = employee.isDeliveryPartner,
                 )
             }
         }

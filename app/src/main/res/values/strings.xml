@@ -18,15 +18,4 @@
 <resources>
     <string name="app_name">Popos</string>
     <string name="app_description">Restaurant POS Application.</string>
-    <string name="mail_subject">Popos Crash Report.</string>
-    <string name="mail_body">Your application has-been crashed, check out below attached file for more details.</string>
-    <string name="toast_text">Application has been crashed</string>
-    <string name="add_icon">Create New</string>
-    <string name="fab_text">Create</string>
-    <string name="password_visible_content_description">Show Password</string>
-    <string name="password_hidden_content_description">Hide Password</string>
-    <string name="order_details">Order Details Icon</string>
-    <string name="print_order">Print Order</string>
-    <string name="restaurant_name">Popos Highlight</string>
-    <string name="restaurant_slogan">- Pure And Tasty -</string>
 </resources>

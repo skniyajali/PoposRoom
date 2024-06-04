@@ -191,8 +191,8 @@ class OrderPrintViewModel @Inject constructor(
 
     private fun printTotalPrice(orderPrice: Long): String {
         return "[L]-------------------------------\n" +
-                "[L]Total[R] Rs. ${orderPrice}\n" +
-                "[L]-------------------------------\n\n"
+            "[L]Total[R] Rs. ${orderPrice}\n" +
+            "[L]-------------------------------\n\n"
     }
 
     private fun printAddOnItems(addOnItemList: List<AddOnItem>): String {
@@ -245,8 +245,8 @@ class OrderPrintViewModel @Inject constructor(
 
     private fun printSubTotalAndDiscount(orderPrice: OrderPrice): String {
         return "[L]-------------------------------\n" +
-                "[L]Sub Total[R]${orderPrice.basePrice}\n" +
-                "[L]Discount[R]${orderPrice.discountPrice}\n"
+            "[L]Sub Total[R]${orderPrice.basePrice}\n" +
+            "[L]Discount[R]${orderPrice.discountPrice}\n"
     }
 
     private fun printDeliveryReport(date: String, partnerId: Int? = null) {
@@ -287,7 +287,7 @@ class OrderPrintViewModel @Inject constructor(
                 val totalAmount = orders.sumOf { it.orderPrice }
 
                 printableText += "[L]-------------------------------\n"
-                printableText += "[L]<b>${partnerName.uppercase()}</b>[R]Rs.${totalAmount} | ${orders.size}\n"
+                printableText += "[L]<b>${partnerName.uppercase()}</b>[R]Rs.$totalAmount | ${orders.size}\n"
 
                 printableText += "[L]-------------------------------\n"
                 printableText += "[L]ID[C]Address[R]Time[R]Price\n"
@@ -300,7 +300,7 @@ class OrderPrintViewModel @Inject constructor(
             }
 
             printableText += "[L]<b>Total Orders</b>[R]${deliveryReports.size}\n"
-            printableText += "[L]Rs.${totalAmt}[R]${date}\n"
+            printableText += "[L]Rs.$totalAmt[R]${date}\n"
             printableText += "[L]-------------------------------\n"
         } else {
             printableText += "[C]You have not place any order.\n"

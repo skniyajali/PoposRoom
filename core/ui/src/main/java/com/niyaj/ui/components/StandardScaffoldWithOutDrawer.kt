@@ -15,6 +15,8 @@
  *
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.niyaj.ui.components
 
 import androidx.compose.foundation.layout.RowScope

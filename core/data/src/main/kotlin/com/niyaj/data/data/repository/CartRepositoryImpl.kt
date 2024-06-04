@@ -261,7 +261,7 @@ class CartRepositoryImpl(
                 val result = cartDao.updateDeliveryPartner(orderId, deliveryPartnerId)
 
                 Resource.Success(result > 0)
-            }catch (e: Exception) {
+            } catch (e: Exception) {
                 Resource.Error(e.message.toString())
             }
         }
@@ -318,7 +318,7 @@ class CartRepositoryImpl(
                                 ?: order.cartOrder.createdAt
                             ).toTimeSpan,
                         orderPrice = order.orderPrice.totalPrice,
-                        deliveryPartnerId = order.cartOrder.deliveryPartnerId
+                        deliveryPartnerId = order.cartOrder.deliveryPartnerId,
                     )
                 }
         }

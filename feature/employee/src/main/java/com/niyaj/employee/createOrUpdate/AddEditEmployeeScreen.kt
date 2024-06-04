@@ -79,6 +79,8 @@ import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SALARY_TYPE_FIELD
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_TYPE_FIELD
 import com.niyaj.common.utils.toJoinedDate
 import com.niyaj.common.utils.toMilliSecond
+import com.niyaj.designsystem.components.PoposButton
+import com.niyaj.designsystem.components.StandardRoundedFilterChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
@@ -88,10 +90,8 @@ import com.niyaj.model.EmployeeType
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.PhoneNoCountBox
 import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.ui.components.StandardCheckboxWithText
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.designsystem.components.StandardRoundedFilterChip
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -151,7 +151,6 @@ fun AddEditEmployeeScreen(
         onEvent = viewModel::onEvent,
     )
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -436,8 +435,11 @@ fun AddEditEmployeeScreenContent(
 
             item(EMPLOYEE_PARTNER_FIELD) {
                 StandardCheckboxWithText(
-                    text = if(state.isDeliveryPartner) EMPLOYEE_PARTNER_CHECKED_FIELD
-                        else EMPLOYEE_PARTNER_UNCHECKED_FIELD,
+                    text = if (state.isDeliveryPartner) {
+                        EMPLOYEE_PARTNER_CHECKED_FIELD
+                    } else {
+                        EMPLOYEE_PARTNER_UNCHECKED_FIELD
+                    },
                     checked = state.isDeliveryPartner,
                     onCheckedChange = {
                         onEvent(AddEditEmployeeEvent.UpdateDeliveryPartner)

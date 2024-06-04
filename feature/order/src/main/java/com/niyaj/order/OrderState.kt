@@ -24,5 +24,5 @@ sealed interface OrderState {
 
     data object Empty : OrderState
 
-    data class Success(val data: List<Order>): OrderState
+    data class Success(val data: List<Order>) : OrderState
 }

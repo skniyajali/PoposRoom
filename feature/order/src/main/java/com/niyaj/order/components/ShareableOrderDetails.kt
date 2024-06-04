@@ -345,7 +345,7 @@ private fun CartItemOrderDetails(
             ShareableCartOrderDetails(
                 cartOrder = orderDetails.cartOrder,
                 icon = icon,
-                color = containerColor
+                color = containerColor,
             )
 
             if (orderDetails.cartProducts.isNotEmpty()) {
@@ -419,7 +419,7 @@ private fun CartItemOrderDetailsCard(
                 modifier = Modifier.padding(top = 40.dp),
                 cartOrder = orderDetails.cartOrder,
                 icon = icon,
-                color = containerColor
+                color = containerColor,
             )
 
             ShareableCartProductsDetails(
@@ -429,7 +429,7 @@ private fun CartItemOrderDetailsCard(
                 addOnItems = orderDetails.addOnItems,
                 orderPrice = orderDetails.orderPrice,
                 doesChargesIncluded = orderDetails.cartOrder.doesChargesIncluded,
-                orderType = orderDetails.cartOrder.orderType
+                orderType = orderDetails.cartOrder.orderType,
             )
         }
     }

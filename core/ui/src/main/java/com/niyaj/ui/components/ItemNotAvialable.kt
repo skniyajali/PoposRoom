@@ -148,7 +148,7 @@ fun ItemNotAvailableHalf(
             style = MaterialTheme.typography.bodySmall,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.error,
-            modifier = Modifier.padding(horizontal = SpaceLarge)
+            modifier = Modifier.padding(horizontal = SpaceLarge),
         )
 
         if (buttonText.isNotEmpty()) {

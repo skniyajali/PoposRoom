@@ -65,5 +65,5 @@ data class OrderDetailsDto(
         entity = EmployeeEntity::class,
         projection = ["employeeId", "employeeName"],
     )
-    val deliveryPartner: EmployeeNameAndId? = null
+    val deliveryPartner: EmployeeNameAndId? = null,
 )

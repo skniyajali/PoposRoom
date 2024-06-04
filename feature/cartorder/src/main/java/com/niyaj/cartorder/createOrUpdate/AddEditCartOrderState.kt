@@ -29,5 +29,5 @@ data class AddEditCartOrderState(
     val customer: Customer = Customer(),
     val deliveryPartnerId: Int = 0,
     val selectedAddOnItems: MutableList<Int> = mutableStateListOf(),
-    val selectedCharges: MutableList<Int> = mutableStateListOf()
+    val selectedCharges: MutableList<Int> = mutableStateListOf(),
 )

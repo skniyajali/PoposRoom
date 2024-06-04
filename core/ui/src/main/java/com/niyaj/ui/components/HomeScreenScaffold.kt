@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.testTag
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.designsystem.components.PoposCenterAlignedTopAppBar
 
+@Suppress("DEPRECATION")
 @Stable
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)

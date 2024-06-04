@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.cart
@@ -92,8 +93,10 @@ class CartViewModel @Inject constructor(
         when (event) {
             is CartEvent.IncreaseQuantity -> {
                 viewModelScope.launch {
-                    when (val result =
-                        cartRepository.addProductToCart(event.orderId, event.productId)) {
+                    when (
+                        val result =
+                            cartRepository.addProductToCart(event.orderId, event.productId)
+                    ) {
                         is Resource.Error -> {
                             _eventFlow.emit(
                                 UiEvent.OnError(
@@ -109,8 +112,10 @@ class CartViewModel @Inject constructor(
 
             is CartEvent.DecreaseQuantity -> {
                 viewModelScope.launch {
-                    when (val result =
-                        cartRepository.removeProductFromCart(event.orderId, event.productId)) {
+                    when (
+                        val result =
+                            cartRepository.removeProductFromCart(event.orderId, event.productId)
+                    ) {
                         is Resource.Error -> {
                             _eventFlow.emit(
                                 UiEvent.OnError(
@@ -143,8 +148,10 @@ class CartViewModel @Inject constructor(
 
             is CartEvent.UpdateAddOnItemInCart -> {
                 viewModelScope.launch {
-                    when (val result =
-                        cartRepository.updateAddOnItem(event.orderId, event.itemId)) {
+                    when (
+                        val result =
+                            cartRepository.updateAddOnItem(event.orderId, event.itemId)
+                    ) {
                         is Resource.Error -> {
                             _eventFlow.emit(UiEvent.OnError(result.message ?: "Unable to update"))
                         }
@@ -153,7 +160,6 @@ class CartViewModel @Inject constructor(
                     }
                 }
             }
-
 
             is DineOutEvent.UpdateDeliveryPartner -> {
                 viewModelScope.launch {
@@ -184,8 +190,11 @@ class CartViewModel @Inject constructor(
                 viewModelScope.launch {
                     dineOutCount += 1
 
-                    val items = if (dineOutState.value is CartState.Success)
-                        (dineOutState.value as CartState.Success).items.map { it.orderId } else emptyList()
+                    val items = if (dineOutState.value is CartState.Success) {
+                        (dineOutState.value as CartState.Success).items.map { it.orderId }
+                    } else {
+                        emptyList()
+                    }
 
                     if (items.isNotEmpty()) {
                         if (items.size == _selectedDineOutOrder.size) {
@@ -201,7 +210,6 @@ class CartViewModel @Inject constructor(
                             }
                         }
                     }
-
                 }
             }
 
@@ -237,8 +245,11 @@ class CartViewModel @Inject constructor(
                 viewModelScope.launch {
                     dineInCount += 1
 
-                    val items = if (dineInState.value is CartState.Success)
-                        (dineInState.value as CartState.Success).items.map { it.orderId } else emptyList()
+                    val items = if (dineInState.value is CartState.Success) {
+                        (dineInState.value as CartState.Success).items.map { it.orderId }
+                    } else {
+                        emptyList()
+                    }
 
                     if (items.isNotEmpty()) {
                         if (items.size == _selectedDineInOrder.size) {
@@ -253,7 +264,6 @@ class CartViewModel @Inject constructor(
                             }
                         }
                     }
-
                 }
             }
 
@@ -277,7 +287,6 @@ class CartViewModel @Inject constructor(
         }
     }
 }
-
 
 internal fun AnalyticsHelper.logPlacedOrder(orderId: Int) {
     logEvent(

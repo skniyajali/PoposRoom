@@ -58,7 +58,6 @@ interface OrderDao {
         orderStatus: OrderStatus = OrderStatus.PLACED,
     ): Flow<List<Order>>
 
-
     @Query(
         """
             SELECT COUNT(co.orderId) as totalOrders, SUM(cp.totalPrice) as totalAmount,
@@ -81,7 +80,6 @@ interface OrderDao {
         orderType: OrderType = OrderType.DineOut,
         orderStatus: OrderStatus = OrderStatus.PLACED,
     ): Flow<List<TotalDeliveryPartnerOrder>>
-
 
     @Query(
         """
@@ -110,7 +108,6 @@ interface OrderDao {
         orderType: OrderType = OrderType.DineOut,
         orderStatus: OrderStatus = OrderStatus.PLACED,
     ): Flow<List<DeliveryReport>>
-
 
     @Transaction
     @Query(

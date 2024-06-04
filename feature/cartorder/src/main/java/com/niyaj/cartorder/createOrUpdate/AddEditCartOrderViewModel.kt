@@ -231,19 +231,20 @@ class AddEditCartOrderViewModel @Inject constructor(
             }
 
             is AddEditCartOrderEvent.SelectDeliveryPartner -> {
-                val newPartnerId = if (state.deliveryPartnerId == event.partnerId) 0
-                else event.partnerId
+                val newPartnerId = if (state.deliveryPartnerId == event.partnerId) {
+                    0
+                } else {
+                    event.partnerId
+                }
 
                 state = state.copy(
                     deliveryPartnerId = newPartnerId,
                 )
             }
 
-
             is AddEditCartOrderEvent.CreateOrUpdateCartOrder -> {
                 createOrUpdateCartOrder(cartOrderId)
             }
-
         }
     }
 

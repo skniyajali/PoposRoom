@@ -35,8 +35,6 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Business
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
@@ -70,6 +68,7 @@ import com.niyaj.common.tags.AddressTestTags.CREATE_NEW_ADDRESS
 import com.niyaj.common.tags.AddressTestTags.DELETE_ADDRESS_ITEM_MESSAGE
 import com.niyaj.common.tags.AddressTestTags.DELETE_ADDRESS_ITEM_TITLE
 import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Address
 import com.niyaj.ui.components.CircularBox
@@ -362,7 +361,7 @@ fun AddressData(
             }
 
             CircularBox(
-                icon = Icons.Default.Business,
+                icon = PoposIcons.Address,
                 doesSelected = doesSelected(item.addressId),
                 text = item.addressName,
             )

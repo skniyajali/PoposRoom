@@ -26,8 +26,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -47,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import com.niyaj.common.utils.isSameDay
 import com.niyaj.common.utils.toBarDate
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -120,7 +119,7 @@ fun TotalOrderDetailsCard(
                                 if (!details.datePeriod.isSameDay) {
                                     Spacer(modifier = Modifier.width(SpaceMini))
                                     Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
+                                        imageVector = PoposIcons.ArrowRightAlt,
                                         contentDescription = "DatePeriod",
                                     )
                                     Spacer(modifier = Modifier.width(SpaceMini))

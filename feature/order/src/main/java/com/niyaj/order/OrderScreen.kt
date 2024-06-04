@@ -250,7 +250,6 @@ fun OrderScreen(
                     viewModel.onOrderEvent(OrderEvent.GetShareableDetails(it))
                 },
             )
-
         },
         onError = { shouldShowRationale ->
             BluetoothPermissionDialog(
@@ -300,7 +299,6 @@ fun OrderScreen(
         )
     }
 }
-
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -390,11 +388,17 @@ internal fun OrderScreenContent(
             }
         },
     ) {
-        val showDineOutBadge = if (dineOutOrders is OrderState.Success)
-            dineOutOrders.data.isNotEmpty() else false
+        val showDineOutBadge = if (dineOutOrders is OrderState.Success) {
+            dineOutOrders.data.isNotEmpty()
+        } else {
+            false
+        }
 
-        val showDineInBadge = if (dineInOrders is OrderState.Success)
-            dineInOrders.data.isNotEmpty() else false
+        val showDineInBadge = if (dineInOrders is OrderState.Success) {
+            dineInOrders.data.isNotEmpty()
+        } else {
+            false
+        }
 
         val tabs = listOf(
             OrderTab.DineOutOrder {
@@ -492,7 +496,6 @@ internal fun OrderScreenContent(
         }
     }
 }
-
 
 @DevicePreviews
 @Composable

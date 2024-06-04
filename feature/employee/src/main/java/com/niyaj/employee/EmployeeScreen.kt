@@ -60,6 +60,7 @@ import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SCREEN_TITLE
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_TAG
 import com.niyaj.common.tags.EmployeeTestTags.NO_ITEMS_IN_EMPLOYEE
+import com.niyaj.designsystem.components.StandardAssistChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -74,7 +75,6 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.PoposPrimaryScaffold
 import com.niyaj.ui.components.ScaffoldNavActions
-import com.niyaj.designsystem.components.StandardAssistChip
 import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.event.UiState
@@ -278,7 +278,7 @@ fun EmployeeScreen(
     }
 
     AnimatedVisibility(
-        visible = openDialog.value
+        visible = openDialog.value,
     ) {
         StandardDialog(
             title = DELETE_EMPLOYEE_TITLE,

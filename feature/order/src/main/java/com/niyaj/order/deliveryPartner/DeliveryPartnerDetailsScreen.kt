@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.order.deliveryPartner
@@ -107,7 +108,7 @@ fun DeliveryPartnerDetailsScreen(
     val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
     val showShareDialog by shareViewModel.showDialog.collectAsStateWithLifecycle()
 
-    TrackScreenViewEvent("DeliveryPartnerDetailsScreen/${partnerId}")
+    TrackScreenViewEvent("DeliveryPartnerDetailsScreen/$partnerId")
 
     val enableBluetoothContract = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
@@ -207,14 +208,18 @@ private fun DeliveryPartnerDetailsScreenContent(
                 totalAmount = reportState.orders.sumOf { it.orderPrice },
             )
         }
-    } else TotalOrders()
+    } else {
+        TotalOrders()
+    }
     val title = if (reportState is PartnerReportState.Success) {
         remember {
             reportState.orders.first().partnerName?.let {
                 "$it Orders"
             } ?: "Unmanaged orders"
         }
-    } else "Partner Reports"
+    } else {
+        "Partner Reports"
+    }
 
     StandardBottomSheetScaffold(
         modifier = modifier,
@@ -308,7 +313,7 @@ internal fun DeliveryReportCard(
     ElevatedCard(
         modifier = modifier,
         colors = CardDefaults.elevatedCardColors().copy(
-            containerColor = containerColor
+            containerColor = containerColor,
         ),
         shape = RoundedCornerShape(SpaceMini),
         onClick = {
@@ -397,7 +402,7 @@ private fun DeliveryReportCardPreview(
 
 @DevicePreviews
 @Composable
-private fun DeliveryPartnerDetailsScreenLoadingState(){
+private fun DeliveryPartnerDetailsScreenLoadingState() {
     DeliveryPartnerDetailsScreenContent(
         modifier = Modifier,
         selectedDate = System.currentTimeMillis().toString(),
@@ -407,13 +412,13 @@ private fun DeliveryPartnerDetailsScreenLoadingState(){
         onBackClick = {},
         onNavigateToHomeScreen = {},
         onClickOrder = {},
-        onSelectDate = {}
+        onSelectDate = {},
     )
 }
 
 @DevicePreviews
 @Composable
-private fun DeliveryPartnerDetailsScreenEmptyState(){
+private fun DeliveryPartnerDetailsScreenEmptyState() {
     DeliveryPartnerDetailsScreenContent(
         modifier = Modifier,
         selectedDate = System.currentTimeMillis().toString(),
@@ -423,7 +428,7 @@ private fun DeliveryPartnerDetailsScreenEmptyState(){
         onBackClick = {},
         onNavigateToHomeScreen = {},
         onClickOrder = {},
-        onSelectDate = {}
+        onSelectDate = {},
     )
 }
 
@@ -431,8 +436,8 @@ private fun DeliveryPartnerDetailsScreenEmptyState(){
 @Composable
 private fun DeliveryPartnerDetailsScreenSuccessState(
     @PreviewParameter(DeliveryReportPreviewParameter::class)
-    orders: List<DeliveryReport>
-){
+    orders: List<DeliveryReport>,
+) {
     DeliveryPartnerDetailsScreenContent(
         modifier = Modifier,
         selectedDate = System.currentTimeMillis().toString(),
@@ -442,6 +447,6 @@ private fun DeliveryPartnerDetailsScreenSuccessState(
         onBackClick = {},
         onNavigateToHomeScreen = {},
         onClickOrder = {},
-        onSelectDate = {}
+        onSelectDate = {},
     )
 }
