@@ -24,8 +24,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -50,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import com.niyaj.common.utils.Constants.SEARCH_BAR_CLEAR_BUTTON
 import com.niyaj.common.utils.Constants.SEARCH_PLACEHOLDER
 import com.niyaj.common.utils.Constants.STANDARD_SEARCH_BAR
+import com.niyaj.designsystem.icon.PoposIcons
 
 @Composable
 fun StandardSearchBar(
@@ -108,7 +107,7 @@ fun StandardSearchBar(
                         modifier = Modifier.testTag(SEARCH_BAR_CLEAR_BUTTON),
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.Close,
+                            imageVector = PoposIcons.Close,
                             contentDescription = "Search Bar Clear Text",
                         )
                     }

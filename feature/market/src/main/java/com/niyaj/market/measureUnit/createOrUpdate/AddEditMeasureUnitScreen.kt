@@ -38,11 +38,11 @@ import com.niyaj.common.tags.MeasureUnitTestTags.UNIT_NAME_FIELD
 import com.niyaj.common.tags.MeasureUnitTestTags.UNIT_VALUE_ERROR_TAG
 import com.niyaj.common.tags.MeasureUnitTestTags.UNIT_VALUE_FIELD
 import com.niyaj.common.tags.MeasureUnitTestTags.UPDATE_UNIT
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -92,7 +92,7 @@ fun AddEditMeasureUnitScreen(
         showBottomBar = true,
         showBackButton = true,
         bottomBar = {
-            StandardButton(
+            PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag(ADD_EDIT_UNIT_BUTTON)

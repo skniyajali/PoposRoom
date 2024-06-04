@@ -25,6 +25,8 @@ data class Order(
     val orderType: OrderType = OrderType.DineIn,
     val customerPhone: String? = null,
     val customerAddress: String? = null,
+    val deliveryPartnerName: String? = null,
+    val deliveryPartnerId: Int = 0,
     val orderDate: Date = Date(),
     val orderPrice: Long = 0,
 )
@@ -37,7 +39,8 @@ fun List<Order>.searchOrder(searchText: String): List<Order> {
                 it.customerPhone?.contains(searchText, true) == true ||
                 it.customerAddress?.contains(searchText, true) == true ||
                 it.orderDate.toTime.contains(searchText, true) ||
-                it.orderPrice.toString().contains(searchText, true)
+                it.orderPrice.toString().contains(searchText, true) ||
+                it.deliveryPartnerName?.contains(searchText, true) == true
         }
     } else {
         this

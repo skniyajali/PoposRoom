@@ -31,21 +31,23 @@ data class EmployeeEntity(
     @ColumnInfo(index = true)
     val employeeId: Int = 0,
 
-    val employeeName: String = "",
+    val employeeName: String,
 
-    val employeePhone: String = "",
+    val employeePhone: String,
 
-    val employeeSalary: String = "",
+    val employeeSalary: String,
 
-    val employeePosition: String = "",
+    val employeePosition: String,
 
-    val employeeJoinedDate: String = "",
+    val employeeJoinedDate: String,
 
     val employeeEmail: String? = null,
 
-    val employeeSalaryType: EmployeeSalaryType = EmployeeSalaryType.Daily,
+    val employeeSalaryType: EmployeeSalaryType,
 
-    val employeeType: EmployeeType = EmployeeType.FullTime,
+    val employeeType: EmployeeType,
+
+    val isDeliveryPartner: Boolean,
 
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     val createdAt: Date = Date(),
@@ -65,6 +67,7 @@ fun EmployeeEntity.asExternalModel(): Employee {
         employeeEmail = this.employeeEmail,
         employeeSalaryType = this.employeeSalaryType,
         employeeType = this.employeeType,
+        isDeliveryPartner = this.isDeliveryPartner,
         createdAt = this.createdAt.time,
         updatedAt = this.updatedAt?.time,
     )

@@ -56,6 +56,7 @@ import com.niyaj.common.tags.CustomerTestTags.NO_ITEMS_IN_CUSTOMER
 import com.niyaj.common.utils.Constants
 import com.niyaj.customer.CustomerData
 import com.niyaj.customer.destinations.AddEditCustomerScreenDestination
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
@@ -66,7 +67,6 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -203,7 +203,7 @@ fun CustomerExportScreen(
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} customers will be exported.")
 
-                StandardButton(
+                PoposButton(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag(EXPORT_CUSTOMER_BTN),

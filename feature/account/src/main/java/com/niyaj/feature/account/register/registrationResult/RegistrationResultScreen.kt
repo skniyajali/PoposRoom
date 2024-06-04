@@ -46,13 +46,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.navigation.NavController
 import com.niyaj.core.ui.R.drawable
+import com.niyaj.designsystem.components.PoposButton
+import com.niyaj.designsystem.components.PoposOutlinedButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.feature.account.R
 import com.niyaj.ui.components.NoteCard
-import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardOutlinedButton
 import com.niyaj.ui.utils.Presets
 import com.niyaj.ui.utils.Screens
 import com.ramcosta.composedestinations.annotation.Destination
@@ -106,14 +106,14 @@ fun RegistrationResultScreen(
                                 ) {
                                     NoteCard(text = message)
 
-                                    StandardOutlinedButton(
+                                    PoposOutlinedButton(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
                                         text = stringResource(id = R.string.go_back),
                                         icon = PoposIcons.NavigateBefore,
                                         onClick = {
                                             navController.navigateUp()
                                         },
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
                                     )
                                 }
                             }
@@ -146,7 +146,7 @@ fun RegistrationResultScreen(
                             modifier = Modifier.fillMaxWidth(),
                             shadowElevation = 7.dp,
                         ) {
-                            StandardButton(
+                            PoposButton(
                                 text = stringResource(id = R.string.done),
                                 onClick = {
                                     navController.navigate(Screens.HOME_SCREEN) {

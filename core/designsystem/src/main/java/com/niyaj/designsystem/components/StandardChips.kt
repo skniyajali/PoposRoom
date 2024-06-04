@@ -15,7 +15,7 @@
  *
  */
 
-package com.niyaj.ui.components
+package com.niyaj.designsystem.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -112,6 +112,9 @@ fun StandardFilterChip(
             selectedContainerColor = selectedColor,
             labelColor = contentColorFor(backgroundColor = containerColor),
             iconColor = contentColorFor(backgroundColor = containerColor),
+            selectedLabelColor = contentColorFor(backgroundColor = selectedColor),
+            selectedLeadingIconColor = contentColorFor(backgroundColor = selectedColor),
+            selectedTrailingIconColor = contentColorFor(backgroundColor = selectedColor),
         ),
     )
 }
@@ -164,7 +167,7 @@ fun StandardRoundedFilterChip(
 }
 
 @Composable
-fun StandardOutlinedAssistChip(
+fun PoposOutlinedAssistChip(
     modifier: Modifier = Modifier,
     text: String,
     icon: ImageVector,
@@ -204,7 +207,7 @@ fun StandardOutlinedAssistChip(
 }
 
 @Composable
-fun StandardSuggestionChip(
+fun PoposSuggestionChip(
     modifier: Modifier = Modifier,
     text: String,
     icon: ImageVector,

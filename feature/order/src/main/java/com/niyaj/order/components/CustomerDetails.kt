@@ -35,13 +35,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor2
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Customer
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardExpandable
 
 /**
@@ -154,12 +154,13 @@ fun CustomerDetails(
 
                     Spacer(modifier = Modifier.height(SpaceMedium))
 
-                    StandardButton(
+                    PoposButton(
+                        modifier = Modifier.fillMaxWidth(),
                         onClick = {
                             onClickViewDetails(customer.customerId)
                         },
                         text = "View Customer Details".uppercase(),
-                        icon = PoposIcons.OpenInNew,
+                        icon = PoposIcons.Person,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.tertiary,
                         ),

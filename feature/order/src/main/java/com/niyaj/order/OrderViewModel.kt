@@ -52,16 +52,28 @@ class OrderViewModel @Inject constructor(
 
     val text = snapshotFlow { mSearchText.value }
 
-    val cartOrders = _selectedDate.combine(text) { date, text ->
-        orderRepository.getAllOrders(date, text)
+    val dineInOrders = _selectedDate.combine(text) { date, text ->
+        orderRepository.getDineInOrders(date, text)
     }.flatMapLatest {
         it.map { items ->
-            OrderState(items, false)
+            if (items.isEmpty()) OrderState.Empty else OrderState.Success(items)
         }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = OrderState(),
+        initialValue = OrderState.Loading,
+    )
+
+    val dineOutOrders = _selectedDate.combine(text) { date, text ->
+        orderRepository.getDineOutOrders(date, text)
+    }.flatMapLatest {
+        it.map { items ->
+            if (items.isEmpty()) OrderState.Empty else OrderState.Success(items)
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = OrderState.Loading,
     )
 
     fun onOrderEvent(event: OrderEvent) {

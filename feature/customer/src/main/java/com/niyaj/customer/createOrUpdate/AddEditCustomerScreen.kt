@@ -41,12 +41,12 @@ import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_NAME_FIELD
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_PHONE_ERROR
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_PHONE_FIELD
 import com.niyaj.common.tags.CustomerTestTags.EDIT_CUSTOMER_ITEM
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.PhoneNoCountBox
 import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
@@ -93,7 +93,7 @@ fun AddEditCustomerScreen(
         showBackButton = true,
         onBackClick = navigator::navigateUp,
         bottomBar = {
-            StandardButton(
+            PoposButton(
                 modifier = Modifier
                     .testTag(ADD_EDIT_CUSTOMER_BUTTON)
                     .padding(SpaceMedium),

@@ -18,27 +18,27 @@
 package com.niyaj.cart.components
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.designsystem.components.PoposIconButton
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.LightColor8
-import com.niyaj.designsystem.theme.Pewter
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.OrderType
@@ -58,9 +58,9 @@ fun CartItemOrderDetailsSection(
     val height = if (orderType == OrderType.DineIn) 56.dp else 64.dp
 
     val containerColor = if (orderType == OrderType.DineIn) {
-        Pewter
+        MaterialTheme.colorScheme.secondaryContainer
     } else {
-        LightColor8
+        MaterialTheme.colorScheme.primaryContainer
     }
 
     val iconColor = if (orderType == OrderType.DineIn) {
@@ -69,12 +69,17 @@ fun CartItemOrderDetailsSection(
         MaterialTheme.colorScheme.onSecondaryContainer
     }
 
-    key(orderId) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(height),
+        color = containerColor,
+        contentColor = contentColorFor(containerColor),
+        shape = RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp),
+    ) {
         Row(
             modifier = modifier
-                .fillMaxWidth()
-                .height(height)
-                .background(containerColor, RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
+                .fillMaxSize()
                 .padding(SpaceSmall),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
@@ -86,9 +91,9 @@ fun CartItemOrderDetailsSection(
                 IconWithText(
                     text = orderId,
                     icon = PoposIcons.Tag,
-                    isTitle = true,
                     textColor = iconColor,
                     tintColor = iconColor,
+                    fontWeight = FontWeight.Bold,
                 )
 
                 customerPhone?.let {
@@ -96,9 +101,9 @@ fun CartItemOrderDetailsSection(
                     IconWithText(
                         text = it,
                         icon = PoposIcons.PhoneAndroid,
-                        isTitle = true,
                         textColor = iconColor,
                         tintColor = iconColor,
+                        fontWeight = FontWeight.Bold,
                     )
                 }
             }

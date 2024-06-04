@@ -43,11 +43,11 @@ import com.niyaj.common.tags.CategoryConstants.CATEGORY_NAME_ERROR_TAG
 import com.niyaj.common.tags.CategoryConstants.CATEGORY_NAME_FIELD
 import com.niyaj.common.tags.CategoryConstants.CREATE_NEW_CATEGORY
 import com.niyaj.common.tags.CategoryConstants.UPDATE_CATEGORY
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -92,7 +92,7 @@ fun AddEditCategoryScreen(
         showBackButton = true,
         showBottomBar = true,
         bottomBar = {
-            StandardButton(
+            PoposButton(
                 modifier = Modifier
                     .testTag(AddressTestTags.ADD_EDIT_ADDRESS_BTN)
                     .padding(SpaceMedium),

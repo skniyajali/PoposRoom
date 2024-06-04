@@ -18,6 +18,7 @@
 package com.niyaj.data.data.repository
 
 import com.niyaj.core.datastore.PoposPreferencesDataSource
+import com.niyaj.data.repository.AccountRepository
 import com.niyaj.data.repository.UserDataRepository
 import com.niyaj.data.utils.logDarkThemeConfigChanged
 import com.niyaj.data.utils.logDeliveryPartnerQrCodePreferenceChanged
@@ -33,10 +34,12 @@ import com.niyaj.model.ThemeBrand
 import com.niyaj.model.UserData
 import com.samples.apps.core.analytics.AnalyticsHelper
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 class UserDataRepositoryImpl @Inject constructor(
     private val dataStore: PoposPreferencesDataSource,
+    private val accountRepository: AccountRepository,
     private val analyticsHelper: AnalyticsHelper,
 ) : UserDataRepository {
 
@@ -47,7 +50,12 @@ class UserDataRepositoryImpl @Inject constructor(
         get() = dataStore.loggedInUser
 
     override val isUserLoggedIn: Flow<Boolean>
-        get() = dataStore.isUserLoggedIn
+        get() = combine(
+            dataStore.loggedInUser,
+            dataStore.isUserLoggedIn,
+        ) { loggedInUser, isLoggedIn ->
+            accountRepository.checkUserLoggedIn(loggedInUser) && isLoggedIn
+        }
 
     override suspend fun setThemeBrand(themeBrand: ThemeBrand) {
         dataStore.setThemeBrand(themeBrand)

@@ -49,11 +49,11 @@ import com.niyaj.common.tags.ChargesTestTags.CHARGES_NAME_FIELD
 import com.niyaj.common.tags.ChargesTestTags.CREATE_NEW_CHARGES
 import com.niyaj.common.tags.ChargesTestTags.EDIT_CHARGES_ITEM
 import com.niyaj.common.utils.safeString
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -100,7 +100,7 @@ fun AddEditChargesScreen(
         showBackButton = true,
         showBottomBar = true,
         bottomBar = {
-            StandardButton(
+            PoposButton(
                 modifier = Modifier
                     .testTag(ADD_EDIT_CHARGES_BUTTON)
                     .padding(SpaceMedium),

@@ -74,12 +74,12 @@ import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NAME_FIELD
 import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NOTE_FIELD
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -145,7 +145,7 @@ fun AddEditExpenseScreen(
         showBottomBar = true,
         showBackButton = true,
         bottomBar = {
-            StandardButton(
+            PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag(ADD_EDIT_EXPENSE_BUTTON)

@@ -27,8 +27,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -161,7 +159,7 @@ fun CircularBoxWithIcon(
     doesSelected: Boolean,
     showBorder: Boolean = false,
     size: Dp = 40.dp,
-    selectedIcon: ImageVector = Icons.Default.Check,
+    selectedIcon: ImageVector = PoposIcons.Check,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     selectedTint: Color = MaterialTheme.colorScheme.primary,
     unselectedTint: Color = MaterialTheme.colorScheme.surfaceTint,

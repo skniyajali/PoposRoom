@@ -35,6 +35,9 @@ import javax.inject.Inject
 @HiltViewModel
 open class BaseViewModel @Inject constructor() : ViewModel() {
 
+    private val _fetchData = MutableStateFlow(false)
+    val fetchData = _fetchData.asStateFlow()
+
     private val _showSearchBar = MutableStateFlow(false)
     val showSearchBar = _showSearchBar.asStateFlow()
 

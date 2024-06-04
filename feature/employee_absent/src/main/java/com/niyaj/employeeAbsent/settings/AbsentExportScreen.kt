@@ -56,6 +56,7 @@ import com.niyaj.common.tags.AbsentScreenTags.EXPORT_ABSENT_BTN_TEXT
 import com.niyaj.common.tags.AbsentScreenTags.EXPORT_ABSENT_FILE_NAME
 import com.niyaj.common.tags.AbsentScreenTags.EXPORT_ABSENT_TITLE
 import com.niyaj.common.utils.Constants
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
@@ -67,7 +68,6 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -207,7 +207,7 @@ fun AbsentExportScreen(
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} items will be exported.")
 
-                StandardButton(
+                PoposButton(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag(EXPORT_ABSENT_BTN),

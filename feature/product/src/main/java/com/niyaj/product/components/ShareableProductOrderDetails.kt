@@ -69,6 +69,9 @@ import com.niyaj.common.utils.toFormattedDateAndTime
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
 import com.niyaj.common.utils.toTime
+import com.niyaj.designsystem.components.PoposButton
+import com.niyaj.designsystem.components.PoposOutlinedIconButton
+import com.niyaj.designsystem.components.PoposSuggestionChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.ButtonSize
 import com.niyaj.designsystem.theme.Pewter
@@ -83,9 +86,6 @@ import com.niyaj.product.details.ProductTotalOrderDetails
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.LoadingIndicator
-import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardOutlinedIconButton
-import com.niyaj.ui.components.StandardSuggestionChip
 import com.niyaj.ui.components.TextWithCount
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.CaptureController
@@ -447,18 +447,18 @@ fun ShareableProductDetails(
                 .spacedBy(SpaceSmall, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            StandardSuggestionChip(
+            PoposSuggestionChip(
                 icon = PoposIcons.CollectionsBookmark,
                 text = product.productName,
             )
 
-            StandardSuggestionChip(
+            PoposSuggestionChip(
                 icon = PoposIcons.Rupee,
                 text = product.productPrice.toString(),
             )
         }
 
-        StandardSuggestionChip(
+        PoposSuggestionChip(
             icon = PoposIcons.CalenderMonth,
             text = (product.updatedAt ?: product.createdAt).toFormattedDateAndTime,
         )
@@ -488,7 +488,7 @@ fun DialogButtons(
             horizontalArrangement = Arrangement.spacedBy(SpaceMedium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            StandardOutlinedIconButton(
+            PoposOutlinedIconButton(
                 modifier = Modifier
                     .size(ButtonSize),
                 icon = PoposIcons.Close,
@@ -496,7 +496,7 @@ fun DialogButtons(
                 borderColor = MaterialTheme.colorScheme.error,
             )
 
-            StandardOutlinedIconButton(
+            PoposOutlinedIconButton(
                 modifier = Modifier
                     .size(ButtonSize),
                 icon = PoposIcons.Print,
@@ -504,7 +504,7 @@ fun DialogButtons(
                 borderColor = MaterialTheme.colorScheme.secondary,
             )
 
-            StandardButton(
+            PoposButton(
                 modifier = Modifier
                     .weight(1f),
                 text = "Share",

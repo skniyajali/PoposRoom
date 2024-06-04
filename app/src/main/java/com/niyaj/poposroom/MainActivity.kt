@@ -20,6 +20,7 @@ package com.niyaj.poposroom
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -154,6 +155,8 @@ class MainActivity : ComponentActivity() {
                 userDataRepository = userDataRepository,
             )
             val isLoggedIn by appState.isLoggedIn.collectAsStateWithLifecycle()
+
+            Log.d("isLoggedIn", "$isLoggedIn")
 
             CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
                 PoposRoomTheme(

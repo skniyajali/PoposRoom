@@ -19,13 +19,21 @@ package com.niyaj.data.repository
 
 import com.niyaj.common.result.Resource
 import com.niyaj.model.Charges
+import com.niyaj.model.DeliveryReport
 import com.niyaj.model.Order
 import com.niyaj.model.OrderDetails
+import com.niyaj.model.TotalDeliveryPartnerOrder
 import kotlinx.coroutines.flow.Flow
 
 interface OrderRepository {
 
-    suspend fun getAllOrders(date: String, searchText: String): Flow<List<Order>>
+    suspend fun getDineInOrders(date: String, searchText: String): Flow<List<Order>>
+
+    suspend fun getDineOutOrders(date: String, searchText: String): Flow<List<Order>>
+
+    suspend fun getDeliveryPartnerOrders(date: String): Flow<List<TotalDeliveryPartnerOrder>>
+
+    suspend fun getPartnerDeliveryReports(date: String, partnerId: Int? = null): Flow<List<DeliveryReport>>
 
     suspend fun getAllCharges(): Flow<List<Charges>>
 

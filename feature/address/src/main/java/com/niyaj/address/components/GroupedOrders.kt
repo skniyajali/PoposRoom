@@ -37,12 +37,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toRupee
 import com.niyaj.common.utils.toTime
+import com.niyaj.designsystem.components.StandardRoundedFilterChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddressWiseOrder
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.StandardRoundedFilterChip
 
 @Composable
 fun GroupedOrders(

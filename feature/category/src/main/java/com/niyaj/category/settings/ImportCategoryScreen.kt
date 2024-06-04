@@ -54,6 +54,7 @@ import com.niyaj.common.tags.CategoryConstants.IMPORT_CATEGORY_NOTE_TEXT
 import com.niyaj.common.tags.CategoryConstants.IMPORT_CATEGORY_OPN_FILE
 import com.niyaj.common.tags.CategoryConstants.IMPORT_CATEGORY_TITLE
 import com.niyaj.common.utils.Constants
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
@@ -63,7 +64,6 @@ import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
@@ -172,7 +172,7 @@ fun ImportCategoryScreen(
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} category will be imported.")
 
-                StandardButton(
+                PoposButton(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag(IMPORT_CATEGORY_BTN_TEXT),

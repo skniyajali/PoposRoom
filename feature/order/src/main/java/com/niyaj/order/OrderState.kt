@@ -19,7 +19,10 @@ package com.niyaj.order
 
 import com.niyaj.model.Order
 
-data class OrderState(
-    val orders: List<Order> = emptyList(),
-    val isLoading: Boolean = true,
-)
+sealed interface OrderState {
+    data object Loading : OrderState
+
+    data object Empty : OrderState
+
+    data class Success(val data: List<Order>) : OrderState
+}

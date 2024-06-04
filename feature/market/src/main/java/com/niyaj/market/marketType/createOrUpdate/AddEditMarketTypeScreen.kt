@@ -49,16 +49,16 @@ import com.niyaj.common.tags.MarketTypeTags.MARKET_TYPE_LIST_TYPES
 import com.niyaj.common.tags.MarketTypeTags.MARKET_TYPE_SUPPLIER_FIELD
 import com.niyaj.common.tags.MarketTypeTags.UPDATE_TYPE
 import com.niyaj.common.utils.safeString
+import com.niyaj.designsystem.components.PoposButton
+import com.niyaj.designsystem.components.PoposTonalIconButton
+import com.niyaj.designsystem.components.StandardRoundedFilterChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.NoteText
 import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardFilledTonalIconButton
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.components.StandardRoundedFilterChip
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
@@ -111,7 +111,7 @@ fun AddEditMarketTypeScreen(
         showBottomBar = true,
         showBackButton = true,
         bottomBar = {
-            StandardButton(
+            PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag(ADD_EDIT_MARKET_TYPE_BUTTON)
@@ -210,7 +210,7 @@ fun AddEditMarketTypeScreen(
                             }
                         },
                         trailingIcon = {
-                            StandardFilledTonalIconButton(
+                            PoposTonalIconButton(
                                 icon = PoposIcons.Add,
                                 enabled = viewModel.state.listType.isNotEmpty() && listNameError == null,
                                 onClick = {

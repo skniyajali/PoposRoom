@@ -24,6 +24,7 @@ import com.niyaj.model.CartOrder
 import com.niyaj.model.CartOrderWithAddOnAndCharges
 import com.niyaj.model.Charges
 import com.niyaj.model.Customer
+import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.Selected
 import kotlinx.coroutines.flow.Flow
 
@@ -36,6 +37,8 @@ interface CartOrderRepository {
     suspend fun getAllAddOnItem(): Flow<List<AddOnItem>>
 
     suspend fun getAllCharges(): Flow<List<Charges>>
+
+    suspend fun getDeliveryPartners(): Flow<List<EmployeeNameAndId>>
 
     suspend fun insertOrUpdateSelectedOrder(selected: Selected): Resource<Boolean>
 

@@ -19,9 +19,6 @@ package com.niyaj.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -42,6 +39,7 @@ import com.niyaj.common.utils.Constants.PASSWORD_HIDDEN_ICON
 import com.niyaj.common.utils.Constants.PASSWORD_SHOWN_ICON
 import com.niyaj.common.utils.Constants.TEXT_FIELD_LEADING_ICON
 import com.niyaj.common.utils.Constants.TEXT_FIELD_TRAILING_ICON
+import com.niyaj.designsystem.icon.PoposIcons
 
 @Composable
 fun StandardTextField(
@@ -62,12 +60,8 @@ fun StandardTextField(
     isPasswordVisible: Boolean = false,
     errorTextTag: String = label.plus("Error"),
     onPasswordToggleClick: (Boolean) -> Unit = {},
-    prefix:
-    @Composable()
-    (() -> Unit)? = null,
-    suffix:
-    @Composable()
-    (() -> Unit)? = null,
+    prefix: @Composable (() -> Unit)? = null,
+    suffix: @Composable (() -> Unit)? = null,
     onTrailingIconClick: () -> Unit = {},
 ) {
     TextField(
@@ -97,9 +91,9 @@ fun StandardTextField(
                 ) {
                     Icon(
                         imageVector = if (isPasswordVisible) {
-                            Icons.Filled.VisibilityOff
+                            PoposIcons.VisibilityOff
                         } else {
-                            Icons.Filled.Visibility
+                            PoposIcons.Visibility
                         },
                         contentDescription = if (isPasswordVisible) {
                             PASSWORD_HIDDEN_ICON
@@ -155,9 +149,7 @@ fun StandardOutlinedTextField(
     singleLine: Boolean = true,
     maxLines: Int = 1,
     leadingIcon: ImageVector,
-    trailingIcon:
-    @Composable()
-    (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     readOnly: Boolean = false,
     enabled: Boolean = true,
@@ -167,12 +159,8 @@ fun StandardOutlinedTextField(
     isPasswordToggleDisplayed: Boolean = keyboardType == KeyboardType.Password,
     isPasswordVisible: Boolean = false,
     onPasswordToggleClick: (Boolean) -> Unit = {},
-    prefix:
-    @Composable()
-    (() -> Unit)? = null,
-    suffix:
-    @Composable()
-    (() -> Unit)? = null,
+    prefix: @Composable (() -> Unit)? = null,
+    suffix: @Composable (() -> Unit)? = null,
     onValueChange: (String) -> Unit,
 ) {
     OutlinedTextField(
@@ -203,9 +191,9 @@ fun StandardOutlinedTextField(
                 ) {
                     Icon(
                         imageVector = if (isPasswordVisible) {
-                            Icons.Filled.VisibilityOff
+                            PoposIcons.VisibilityOff
                         } else {
-                            Icons.Filled.Visibility
+                            PoposIcons.Visibility
                         },
                         tint = MaterialTheme.colorScheme.secondary,
                         contentDescription = if (isPasswordVisible) {

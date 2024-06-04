@@ -20,6 +20,7 @@ package com.niyaj.database.model
 import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
+import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.OrderPrice
 import com.niyaj.model.ProductAndQuantity
 
@@ -57,4 +58,12 @@ data class OrderDetailsDto(
         projection = ["productId", "quantity"],
     )
     val cartItems: List<ProductAndQuantity>,
+
+    @Relation(
+        parentColumn = "deliveryPartnerId",
+        entityColumn = "employeeId",
+        entity = EmployeeEntity::class,
+        projection = ["employeeId", "employeeName"],
+    )
+    val deliveryPartner: EmployeeNameAndId? = null,
 )

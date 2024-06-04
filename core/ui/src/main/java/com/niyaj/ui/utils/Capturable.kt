@@ -39,6 +39,7 @@ import androidx.compose.ui.node.DelegatableNode
 import androidx.compose.ui.node.DelegatingNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -216,6 +217,10 @@ private data class CapturableModifierNodeElement(
 
     override fun update(node: CapturableModifierNode) {
         node.controller = controller
+    }
+
+    override fun InspectorInfo.inspectableProperties() {
+        name = "capturable"
     }
 }
 

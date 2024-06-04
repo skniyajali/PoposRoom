@@ -18,49 +18,32 @@
 package com.niyaj.cart.dineOut
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Intent
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.niyaj.cart.components.CartFooterPlaceOrder
-import com.niyaj.cart.components.CartItems
-import com.niyaj.core.ui.R
+import com.niyaj.cart.CartViewModel
+import com.niyaj.cart.DineOutEvent
+import com.niyaj.cart.components.CartScreenContent
 import com.niyaj.print.OrderPrintViewModel
 import com.niyaj.print.PrintEvent
-import com.niyaj.ui.components.ItemNotAvailable
-import com.niyaj.ui.components.LoadingIndicator
-import com.niyaj.ui.utils.TrackScreenViewEvent
-import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
-import com.niyaj.ui.utils.isScrollingUp
-import kotlinx.coroutines.flow.collectLatest
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun DineOutScreen(
@@ -68,7 +51,7 @@ fun DineOutScreen(
     onClickEditOrder: (Int) -> Unit,
     onClickOrderDetails: (Int) -> Unit,
     onNavigateToOrderScreen: () -> Unit,
-    viewModel: DineOutViewModel = hiltViewModel(),
+    viewModel: CartViewModel = hiltViewModel(),
     printViewModel: OrderPrintViewModel = hiltViewModel(),
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -157,19 +140,14 @@ fun DineOutScreen(
         }
     }
 
-    val listState = rememberLazyListState()
+    val uiState by viewModel.dineOutState.collectAsStateWithLifecycle()
+    val selectedDineOutOrder = viewModel.selectedDineOutOrder.toList()
+    val addOnItems by viewModel.addOnItems.collectAsStateWithLifecycle()
+    val deliveryPartners by viewModel.deliveryPartners.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(null)
 
-    val dineOutOrders = viewModel.state.collectAsStateWithLifecycle().value.items
-    val isLoading = viewModel.state.collectAsStateWithLifecycle().value.isLoading
-
-    val countTotalDineOutItems = dineOutOrders.size
-    val selectedDineOutOrder = viewModel.selectedItems.toList()
-    val countSelectedDineOutItem = selectedDineOutOrder.size
-
-    val addOnItems = viewModel.addOnItems.collectAsStateWithLifecycle().value
-
-    LaunchedEffect(key1 = true) {
-        viewModel.eventFlow.collectLatest { event ->
+    LaunchedEffect(key1 = event) {
+        event?.let { event ->
             when (event) {
                 is UiEvent.OnSuccess -> {
                     val result = snackbarHostState.showSnackbar(
@@ -192,91 +170,28 @@ fun DineOutScreen(
         }
     }
 
-    TrackScreenViewEvent(screenName = "DineOut Tab::Cart")
-
-    Scaffold(
-        bottomBar = {
-            AnimatedVisibility(
-                visible = dineOutOrders.isNotEmpty() && listState.isScrollingUp(),
-                label = "BottomBar",
-                enter = fadeIn() + slideInVertically(
-                    initialOffsetY = { fullHeight ->
-                        fullHeight / 4
-                    },
-                ),
-                exit = fadeOut() + slideOutVertically(
-                    targetOffsetY = { fullHeight ->
-                        fullHeight / 4
-                    },
-                ),
-            ) {
-                CartFooterPlaceOrder(
-                    countTotalItems = countTotalDineOutItems,
-                    countSelectedItem = countSelectedDineOutItem,
-                    showPrintBtn = true,
-                    onClickSelectAll = {
-                        viewModel.onEvent(DineOutEvent.SelectAllDineOutOrder)
-                    },
-                    onClickPlaceAllOrder = {
-                        viewModel.onEvent(DineOutEvent.PlaceAllDineOutOrder)
-                    },
-                    onClickPrintAllOrder = {
-                        viewModel.onEvent(DineOutEvent.PlaceAllDineOutOrder)
-                        printAllOrder(selectedDineOutOrder)
-                    },
-                )
-            }
+    CartScreenContent(
+        modifier = Modifier,
+        uiState = uiState,
+        snackbarHostState = snackbarHostState,
+        selectedItems = selectedDineOutOrder,
+        addOnItems = addOnItems,
+        showPrintBtn = true,
+        deliveryPartners = deliveryPartners,
+        onClickCreateOrder = onClickCreateOrder,
+        onClickEditOrder = onClickEditOrder,
+        onClickOrderDetails = onClickOrderDetails,
+        onClickSelectAll = {
+            viewModel.onEvent(DineOutEvent.SelectAllDineOutCart)
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        if (isLoading) {
-            LoadingIndicator()
-        } else if (dineOutOrders.isEmpty()) {
-            ItemNotAvailable(
-                text = "DineOut orders are not available",
-                buttonText = "Add Item To Cart",
-                image = painterResource(R.drawable.emptycarttwo),
-                onClick = onClickCreateOrder,
-            )
-        } else {
-            TrackScrollJank(scrollableState = listState, stateName = "DineOut Orders::Cart")
-
-            CartItems(
-                modifier = Modifier.fillMaxSize(),
-                listState = listState,
-                cartItems = dineOutOrders,
-                selectedCartItems = selectedDineOutOrder,
-                addOnItems = addOnItems,
-                showPrintBtn = true,
-                onClickEditOrder = onClickEditOrder,
-                onClickViewOrder = onClickOrderDetails,
-                onSelectCartOrder = {
-                    viewModel.onEvent(DineOutEvent.SelectDineOutOrder(it))
-                },
-                onClickDecreaseQty = { cartOrderId, productId ->
-                    viewModel.onEvent(
-                        DineOutEvent.DecreaseQuantity(cartOrderId, productId),
-                    )
-                },
-                onClickIncreaseQty = { cartOrderId, productId ->
-                    viewModel.onEvent(
-                        DineOutEvent.IncreaseQuantity(cartOrderId, productId),
-                    )
-                },
-                onClickAddOnItem = { addOnItemId, cartOrderId ->
-                    viewModel.onEvent(
-                        DineOutEvent.UpdateAddOnItemInCart(addOnItemId, cartOrderId),
-                    )
-                },
-                onClickPlaceOrder = {
-                    viewModel.onEvent(DineOutEvent.PlaceDineOutOrder(it))
-                },
-                onClickPrintOrder = {
-                    printOrder(it)
-                    viewModel.onEvent(DineOutEvent.PlaceDineOutOrder(it))
-                },
-            )
-        }
-    }
+        onClickPlaceAllOrder = {
+            viewModel.onEvent(DineOutEvent.PlaceAllDineOutCart)
+        },
+        onEvent = viewModel::onEvent,
+        printOrder = printOrder,
+        onClickPrintAllOrder = {
+            printAllOrder(selectedDineOutOrder)
+            viewModel.onEvent(DineOutEvent.PlaceAllDineOutCart)
+        },
+    )
 }

@@ -48,11 +48,11 @@ import com.niyaj.common.tags.AddOnTestTags.ADD_EDIT_ADDON_SCREEN
 import com.niyaj.common.tags.AddOnTestTags.CREATE_NEW_ADD_ON
 import com.niyaj.common.tags.AddOnTestTags.EDIT_ADD_ON_ITEM
 import com.niyaj.common.utils.safeString
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -104,10 +104,11 @@ fun AddEditAddOnItemScreen(
         onBackClick = navigator::navigateUp,
         showBottomBar = true,
         bottomBar = {
-            StandardButton(
+            PoposButton(
                 modifier = Modifier
                     .testTag(AddOnTestTags.ADD_EDIT_ADDON_BUTTON)
-                    .padding(SpaceMedium),
+                    .padding(SpaceMedium)
+                    .fillMaxWidth(),
                 text = title,
                 enabled = enableBtn,
                 icon = if (itemId == 0) PoposIcons.Add else PoposIcons.Edit,

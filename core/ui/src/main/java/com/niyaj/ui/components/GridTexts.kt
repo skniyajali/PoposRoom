@@ -137,6 +137,54 @@ fun ThreeGridTexts(
 }
 
 @Composable
+fun FourGridTexts(
+    modifier: Modifier = Modifier,
+    textOne: String,
+    textTwo: String,
+    textThree: String,
+    textFour: String,
+    isTitle: Boolean = false,
+    textStyle: TextStyle = MaterialTheme.typography.labelMedium,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            modifier = Modifier.weight(0.5f),
+            text = textOne,
+            style = textStyle,
+            fontWeight = FontWeight.Bold,
+        )
+
+        Text(
+            modifier = Modifier.weight(0.5f, true),
+            text = textTwo,
+            style = textStyle,
+            textAlign = TextAlign.Start,
+            fontWeight = if (isTitle) FontWeight.Bold else FontWeight.Normal,
+        )
+
+        Text(
+            modifier = Modifier.weight(1f, true),
+            text = textThree,
+            style = textStyle,
+            textAlign = TextAlign.Start,
+            fontWeight = if (isTitle) FontWeight.Bold else FontWeight.Normal,
+        )
+
+        Text(
+            modifier = Modifier.weight(0.5f, true),
+            text = textFour,
+            style = textStyle,
+            textAlign = TextAlign.End,
+            fontWeight = if (isTitle) FontWeight.Bold else FontWeight.Normal,
+        )
+    }
+}
+
+@Composable
 fun TextDivider(
     modifier: Modifier = Modifier,
     text: String,

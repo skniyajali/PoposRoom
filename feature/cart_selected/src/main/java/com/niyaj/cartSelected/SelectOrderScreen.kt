@@ -26,6 +26,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -86,11 +89,14 @@ import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
 import com.niyaj.model.CartOrder
+import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.OrderType
 import com.niyaj.print.OrderPrintViewModel
 import com.niyaj.print.PrintEvent
+import com.niyaj.ui.components.AnimatedTextDividerDashed
 import com.niyaj.ui.components.BluetoothPermissionDialog
 import com.niyaj.ui.components.CartAddOnItems
+import com.niyaj.ui.components.CartDeliveryPartners
 import com.niyaj.ui.components.CartItemProductDetailsSection
 import com.niyaj.ui.components.CartItemTotalPriceSection
 import com.niyaj.ui.components.CircularBox
@@ -125,6 +131,7 @@ fun SelectOrderScreen(
     viewModel: SelectedViewModel = hiltViewModel(),
     printViewModel: OrderPrintViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val lazyListState = rememberLazyListState()
 
@@ -135,6 +142,7 @@ fun SelectOrderScreen(
 
     val orderDetails by viewModel.orderDetails.collectAsStateWithLifecycle()
     val addOnItems by viewModel.addOnItems.collectAsStateWithLifecycle()
+    val deliveryPartners by viewModel.deliveryPartners.collectAsStateWithLifecycle()
 
     var selectedId by remember {
         mutableIntStateOf(0)
@@ -153,8 +161,6 @@ fun SelectOrderScreen(
             }
         }
     }
-
-    val context = LocalContext.current
 
     val printError = printViewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
@@ -301,6 +307,7 @@ fun SelectOrderScreen(
                                             cartOrder = item,
                                             orderDetails = orderDetails,
                                             addOnItems = addOnItems,
+                                            deliveryPartners = deliveryPartners,
                                             onDeleteClick = {
                                                 selectedId = it
                                                 openDialog.value = true
@@ -309,6 +316,7 @@ fun SelectOrderScreen(
                                             onIncreaseQty = viewModel::increaseProductQuantity,
                                             onDecreaseQty = viewModel::decreaseProductQuantity,
                                             onUpdateAddOnItem = viewModel::updateCartAddOnItem,
+                                            onUpdateDeliveryPartner = viewModel::updateDeliveryPartner,
                                             onPlaceOrder = viewModel::placeOrder,
                                             onPrintOrder = printOrder,
                                         )
@@ -368,16 +376,18 @@ fun SelectOrderScreen(
 }
 
 @Composable
-fun SelectedCartOrderData(
+private fun SelectedCartOrderData(
     modifier: Modifier = Modifier,
     cartOrder: CartOrder,
     orderDetails: SelectedOrderDetails,
     addOnItems: List<AddOnItem>,
+    deliveryPartners: List<EmployeeNameAndId>,
     onDeleteClick: (Int) -> Unit,
     onEditClick: (Int) -> Unit,
     onIncreaseQty: (orderId: Int, productId: Int) -> Unit,
     onDecreaseQty: (orderId: Int, productId: Int) -> Unit,
     onUpdateAddOnItem: (orderId: Int, itemId: Int) -> Unit,
+    onUpdateDeliveryPartner: (orderId: Int, partnerId: Int) -> Unit,
     onPlaceOrder: (orderId: Int) -> Unit,
     onPrintOrder: (orderId: Int) -> Unit,
 ) = trace("CartOrders") {
@@ -502,13 +512,68 @@ fun SelectedCartOrderData(
                             },
                         )
 
-                        CartAddOnItems(
-                            addOnItems = addOnItems,
-                            selectedAddOnItem = orderDetails.cartItem.addOnItems,
-                            onClick = {
-                                onUpdateAddOnItem(orderDetails.cartItem.orderId, it)
-                            },
-                        )
+                        AnimatedVisibility(
+                            visible = deliveryPartners.isNotEmpty(),
+                            enter = fadeIn(tween(500)),
+                            exit = fadeOut(tween(600)),
+                        ) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Spacer(modifier = Modifier.height(SpaceSmall))
+
+                                AnimatedTextDividerDashed(text = "Delivery Partner")
+
+                                Spacer(modifier = Modifier.height(SpaceSmall))
+
+                                CartDeliveryPartners(
+                                    partners = deliveryPartners,
+                                    doesSelected = {
+                                        it == orderDetails.cartItem.deliveryPartnerId
+                                    },
+                                    onClick = {
+                                        val newId = if (it == orderDetails.cartItem.deliveryPartnerId) 0 else it
+                                        onUpdateDeliveryPartner(orderDetails.cartItem.orderId, newId)
+                                    },
+                                    backgroundColor = Color.Transparent,
+                                )
+                            }
+                        }
+
+                        AnimatedVisibility(
+                            visible = addOnItems.isNotEmpty(),
+                            enter = fadeIn(tween(500)),
+                            exit = fadeOut(tween(600)),
+                        ) {
+                            val addOnSelectedColor =
+                                if (orderDetails.cartItem.orderType == OrderType.DineIn) {
+                                    MaterialTheme.colorScheme.secondary
+                                } else {
+                                    MaterialTheme.colorScheme.primary
+                                }
+
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Spacer(modifier = Modifier.height(SpaceSmall))
+
+                                AnimatedTextDividerDashed(text = "AddOn Items")
+
+                                Spacer(modifier = Modifier.height(SpaceSmall))
+
+                                CartAddOnItems(
+                                    addOnItems = addOnItems,
+                                    selectedAddOnItem = orderDetails.cartItem.addOnItems,
+                                    selectedColor = addOnSelectedColor,
+                                    onClick = {
+                                        onUpdateAddOnItem(orderDetails.cartItem.orderId, it)
+                                    },
+                                    backgroundColor = Color.Transparent,
+                                )
+
+                                Spacer(modifier = Modifier.height(SpaceSmall))
+                            }
+                        }
 
                         CartItemTotalPriceSection(
                             itemCount = orderDetails.cartItem.cartProducts.size,
@@ -531,7 +596,7 @@ fun SelectedCartOrderData(
 }
 
 @Composable
-fun CartOrderData(
+private fun CartOrderData(
     modifier: Modifier = Modifier,
     cartOrder: CartOrder,
     doesSelected: (Int) -> Boolean,

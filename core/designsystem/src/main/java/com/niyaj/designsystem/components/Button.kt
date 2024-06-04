@@ -28,11 +28,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonElevation
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.contentColorFor
@@ -40,6 +44,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
@@ -134,6 +139,81 @@ fun PoposButton(
 }
 
 @Composable
+fun PoposButton(
+    modifier: Modifier = Modifier,
+    iconModifier: Modifier = Modifier,
+    text: String,
+    icon: ImageVector? = null,
+    enabled: Boolean = true,
+    btnHeight: Dp = ButtonSize,
+    shape: Shape = RoundedCornerShape(SpaceMini),
+    color: Color,
+    style: TextStyle = MaterialTheme.typography.labelLarge,
+    onClick: () -> Unit,
+) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        shape = shape,
+        colors = ButtonDefaults.buttonColors().copy(
+            containerColor = color,
+        ),
+        modifier = modifier
+            .testTag(text)
+            .heightIn(btnHeight),
+    ) {
+        icon?.let {
+            Icon(
+                imageVector = icon,
+                contentDescription = text,
+                modifier = iconModifier,
+            )
+            Spacer(modifier = Modifier.width(SpaceMini))
+        }
+
+        Text(
+            text = text.uppercase(),
+            style = style,
+        )
+    }
+}
+
+@Composable
+fun PoposElevatedButton(
+    modifier: Modifier = Modifier,
+    iconModifier: Modifier = Modifier,
+    text: String,
+    icon: ImageVector? = null,
+    enabled: Boolean = true,
+    shape: Shape = RoundedCornerShape(SpaceMini),
+    colors: ButtonColors = ButtonDefaults.elevatedButtonColors(),
+    onClick: () -> Unit,
+) {
+    ElevatedButton(
+        onClick = onClick,
+        enabled = enabled,
+        shape = shape,
+        colors = colors,
+        modifier = modifier
+            .testTag(text)
+            .heightIn(ButtonSize),
+    ) {
+        icon?.let {
+            Icon(
+                imageVector = icon,
+                contentDescription = text.plus("button"),
+                modifier = iconModifier,
+            )
+            Spacer(modifier = Modifier.width(SpaceMini))
+        }
+        Text(
+            text = text.uppercase(),
+            style = MaterialTheme.typography.labelLarge,
+        )
+    }
+}
+
+@Composable
 fun PoposIconTextButton(
     modifier: Modifier = Modifier,
     iconModifier: Modifier = Modifier,
@@ -182,8 +262,6 @@ fun PoposOutlinedButton(
     btnHeight: Dp = ButtonSize,
     shape: Shape = RoundedCornerShape(SpaceMini),
     color: Color = MaterialTheme.colorScheme.secondary,
-    border: BorderStroke = BorderStroke(1.dp, color),
-    textColor: Color = color,
     style: TextStyle = MaterialTheme.typography.labelLarge,
     onClick: () -> Unit,
 ) {
@@ -193,8 +271,12 @@ fun PoposOutlinedButton(
         shape = shape,
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = color,
+            disabledContentColor = color.copy(0.38f),
         ),
-        border = border,
+        border = ButtonDefaults.outlinedButtonBorder.copy(
+            width = 1.dp,
+            brush = if (enabled) SolidColor(color) else SolidColor(color.copy(0.38f)),
+        ),
         modifier = modifier
             .testTag(text)
             .heightIn(btnHeight),
@@ -210,7 +292,6 @@ fun PoposOutlinedButton(
         Text(
             text = text.uppercase(),
             style = style,
-            color = textColor,
         )
     }
 }
@@ -243,6 +324,62 @@ fun PoposIconButton(
             contentDescription = contentDescription,
             modifier = iconModifier,
             tint = contentColor,
+        )
+    }
+}
+
+@Composable
+fun PoposTonalIconButton(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    containerColor: Color = MaterialTheme.colorScheme.outlineVariant,
+    contentColor: Color = contentColorFor(backgroundColor = containerColor),
+    shape: Shape = RoundedCornerShape(SpaceMini),
+    contentDescription: String = "iconDesc",
+) {
+    FilledTonalIconButton(
+        modifier = modifier,
+        onClick = onClick,
+        shape = shape,
+        enabled = enabled,
+        colors = IconButtonDefaults.filledTonalIconButtonColors(
+            containerColor = containerColor,
+            contentColor = contentColor,
+        ),
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+        )
+    }
+}
+
+@Composable
+fun PoposOutlinedIconButton(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    borderColor: Color = MaterialTheme.colorScheme.outlineVariant,
+    colors: IconButtonColors = IconButtonDefaults.outlinedIconButtonColors(
+        contentColor = borderColor,
+    ),
+    shape: Shape = RoundedCornerShape(SpaceMini),
+    contentDescription: String = "iconDesc",
+) {
+    OutlinedIconButton(
+        modifier = modifier,
+        onClick = onClick,
+        shape = shape,
+        enabled = enabled,
+        colors = colors,
+        border = BorderStroke(1.dp, borderColor),
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
         )
     }
 }

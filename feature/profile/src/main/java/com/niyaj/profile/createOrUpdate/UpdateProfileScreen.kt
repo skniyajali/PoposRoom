@@ -84,12 +84,12 @@ import com.niyaj.common.tags.ProfileTestTags.S_PHONE_FIELD
 import com.niyaj.common.tags.ProfileTestTags.TAG_ERROR_FIELD
 import com.niyaj.common.tags.ProfileTestTags.TAG_FIELD
 import com.niyaj.common.tags.ProfileTestTags.UPDATE_PROFILE
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.profile.ProfileEvent
 import com.niyaj.profile.ProfileViewModel
 import com.niyaj.profile.components.UpdatedRestaurantCard
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -448,7 +448,7 @@ fun UpdateProfileScreen(
             item(ADD_EDIT_PROFILE_BTN) {
                 Spacer(modifier = Modifier.height(SpaceSmall))
 
-                StandardButton(
+                PoposButton(
                     modifier = Modifier
                         .padding(horizontal = SpaceSmall)
                         .testTag(ADD_EDIT_PROFILE_BTN),

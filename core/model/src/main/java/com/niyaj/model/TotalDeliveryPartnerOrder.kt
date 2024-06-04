@@ -15,11 +15,11 @@
  *
  */
 
-package com.niyaj.cart.dineIn
+package com.niyaj.model
 
-import com.niyaj.model.CartItem
-
-data class DineInState(
-    val isLoading: Boolean = true,
-    val items: List<CartItem> = emptyList(),
+data class TotalDeliveryPartnerOrder(
+    val partnerId: Int = 0,
+    val totalOrders: Int,
+    val totalAmount: Long,
+    val partnerName: String? = null,
 )

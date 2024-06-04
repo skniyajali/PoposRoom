@@ -51,6 +51,7 @@ import com.niyaj.common.tags.ProductTestTags
 import com.niyaj.common.tags.ProductTestTags.IMPORT_PRODUCTS_NOTE_TEXT
 import com.niyaj.common.tags.ProductTestTags.IMPORT_PRODUCTS_OPN_FILE
 import com.niyaj.common.utils.Constants
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
@@ -61,7 +62,6 @@ import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
@@ -167,7 +167,7 @@ fun ImportProductScreen(
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} products will be imported.")
 
-                StandardButton(
+                PoposButton(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag(ProductTestTags.IMPORT_PRODUCTS_BTN_TEXT),

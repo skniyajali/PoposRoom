@@ -59,6 +59,7 @@ import com.niyaj.common.tags.AbsentScreenTags.DELETE_ABSENT_TITLE
 import com.niyaj.common.tags.AbsentScreenTags.NO_ITEMS_IN_ABSENT
 import com.niyaj.common.utils.toDate
 import com.niyaj.common.utils.toMonthAndYear
+import com.niyaj.designsystem.components.StandardAssistChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -73,7 +74,6 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.PoposPrimaryScaffold
 import com.niyaj.ui.components.ScaffoldNavActions
-import com.niyaj.ui.components.StandardAssistChip
 import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardElevatedCard
 import com.niyaj.ui.components.StandardExpandable

@@ -50,12 +50,12 @@ import com.niyaj.common.tags.PrinterInfoTestTags.PRODUCT_REPORT_LIMIT_FIELD
 import com.niyaj.common.tags.PrinterInfoTestTags.PRODUCT_REPORT_LIMIT_MESSAGE
 import com.niyaj.common.tags.PrinterInfoTestTags.UPDATE_PRINTER_BUTTON
 import com.niyaj.common.tags.PrinterInfoTestTags.UPDATE_PRINTER_INFO
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardCheckboxWithText
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.utils.Screens
@@ -108,7 +108,7 @@ fun UpdatePrinterInfoScreen(
         onBackClick = navigator::navigateUp,
         showBottomBar = !hasError,
         bottomBar = {
-            StandardButton(
+            PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag(UPDATE_PRINTER_BUTTON)

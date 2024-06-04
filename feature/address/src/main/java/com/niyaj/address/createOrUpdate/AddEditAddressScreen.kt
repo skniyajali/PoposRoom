@@ -37,11 +37,11 @@ import com.niyaj.common.tags.AddressTestTags.CREATE_ADDRESS_SCREEN
 import com.niyaj.common.tags.AddressTestTags.CREATE_NEW_ADDRESS
 import com.niyaj.common.tags.AddressTestTags.EDIT_ADDRESS
 import com.niyaj.common.tags.AddressTestTags.UPDATE_ADDRESS_SCREEN
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
@@ -88,7 +88,7 @@ fun AddEditAddressScreen(
         showBottomBar = true,
         onBackClick = navigator::navigateUp,
         bottomBar = {
-            StandardButton(
+            PoposButton(
                 modifier = Modifier
                     .testTag(AddressTestTags.ADD_EDIT_ADDRESS_BTN)
                     .padding(SpaceMedium),

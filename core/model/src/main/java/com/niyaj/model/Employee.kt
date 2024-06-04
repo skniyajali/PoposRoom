@@ -39,6 +39,8 @@ data class Employee(
 
     val employeeType: EmployeeType = EmployeeType.FullTime,
 
+    val isDeliveryPartner: Boolean = false,
+
     val createdAt: Long = System.currentTimeMillis(),
 
     val updatedAt: Long? = null,
