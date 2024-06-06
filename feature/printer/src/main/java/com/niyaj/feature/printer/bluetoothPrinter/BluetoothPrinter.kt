@@ -30,6 +30,7 @@ import com.niyaj.data.repository.PrinterRepository
 import com.niyaj.data.repository.UserDataRepository
 import com.niyaj.feature.printer.bluetoothPrinter.utils.FileExtension.getImageFromDeviceOrDefault
 import com.niyaj.model.BluetoothDeviceState
+import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.Printer
 import com.niyaj.model.Profile
 import com.niyaj.ui.utils.UiEvent
@@ -230,6 +231,39 @@ class BluetoothPrinter @Inject constructor(
             "[C]Pay by scanning this QR code\n\n" +
                 "[L]\n" +
                 "[C]<qrcode size ='40'>${profileInfo.value.paymentQrCode}</qrcode>\n\n\n" +
+                "[C]$slogan \n\n" +
+                "[L]-------------------------------\n"
+        } else {
+            ""
+        }
+    }
+
+    fun getPrintableQrCode(
+        usePartnerQr: Boolean,
+        partner: EmployeeNameAndId? = null,
+        slogan: String = DEFAULT_SLOGAN,
+    ): String {
+        val data: String = partner?.let {
+            if (usePartnerQr) {
+                if (partner.partnerQRCode.isNullOrEmpty()) profileInfo.value.paymentQrCode else partner.partnerQRCode
+            } else {
+                profileInfo.value.paymentQrCode
+            }
+        } ?: profileInfo.value.paymentQrCode
+
+        val name = partner?.let {
+            if (usePartnerQr) {
+                if (partner.partnerQRCode.isNullOrEmpty()) profileInfo.value.name else partner.employeeName
+            } else {
+                profileInfo.value.name
+            }
+        } ?: profileInfo.value.name
+
+        return if (printerInfo.value.printQRCode) {
+            "[C]Pay by scanning this QR code\n" +
+                "[C]${name}\n" +
+                "[L]\n" +
+                "[C]<qrcode size ='40'>$data</qrcode>\n\n\n" +
                 "[C]$slogan \n\n" +
                 "[L]-------------------------------\n"
         } else {

@@ -21,6 +21,7 @@ import androidx.datastore.core.DataStore
 import com.niyaj.model.DarkThemeConfig
 import com.niyaj.model.ThemeBrand
 import com.niyaj.model.UserData
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -62,6 +63,8 @@ class PoposPreferencesDataSource @Inject constructor(
     val loggedInUser = userPreferences.data.map { it.loggedInUserId }
 
     val isUserLoggedIn = userPreferences.data.map { it.userLoggedIn }
+
+    suspend fun usePartnerQrCode() = userPreferences.data.first().useDeliveryPartnerQrCode
 
     suspend fun setThemeBrand(themeBrand: ThemeBrand) {
         userPreferences.updateData {

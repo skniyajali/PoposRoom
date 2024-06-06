@@ -20,4 +20,5 @@ package com.niyaj.model
 data class EmployeeNameAndId(
     val employeeId: Int,
     val employeeName: String,
+    val partnerQRCode: String? = null,
 )

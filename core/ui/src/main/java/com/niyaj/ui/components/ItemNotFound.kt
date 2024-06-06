@@ -72,7 +72,7 @@ fun ItemNotFound(
 @DevicePreviews
 @Composable
 fun ItemNotFoundPreview(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    ItemNotFound {  }
+    ItemNotFound { }
 }

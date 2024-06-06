@@ -49,6 +49,8 @@ data class EmployeeEntity(
 
     val isDeliveryPartner: Boolean,
 
+    val partnerQRCode: String? = null,
+
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     val createdAt: Date = Date(),
 
@@ -68,6 +70,7 @@ fun EmployeeEntity.asExternalModel(): Employee {
         employeeSalaryType = this.employeeSalaryType,
         employeeType = this.employeeType,
         isDeliveryPartner = this.isDeliveryPartner,
+        partnerQRCode = this.partnerQRCode,
         createdAt = this.createdAt.time,
         updatedAt = this.updatedAt?.time,
     )

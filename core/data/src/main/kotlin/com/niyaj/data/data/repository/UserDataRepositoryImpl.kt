@@ -57,6 +57,8 @@ class UserDataRepositoryImpl @Inject constructor(
             accountRepository.checkUserLoggedIn(loggedInUser) && isLoggedIn
         }
 
+    override suspend fun usePartnerQRCode(): Boolean = dataStore.usePartnerQrCode()
+
     override suspend fun setThemeBrand(themeBrand: ThemeBrand) {
         dataStore.setThemeBrand(themeBrand)
         analyticsHelper.logThemeChanged(themeBrand.name)

@@ -35,6 +35,7 @@ import com.niyaj.database.model.toExternalModel
 import com.niyaj.model.CartProductItem
 import com.niyaj.model.Charges
 import com.niyaj.model.DeliveryReport
+import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.Order
 import com.niyaj.model.OrderDetails
 import com.niyaj.model.OrderType
@@ -92,6 +93,27 @@ class OrderRepositoryImpl(
 
             orderDao.getAllOrder(startDate, endDate, OrderType.DineOut).mapLatest {
                 it.searchOrder(searchText)
+            }
+        }
+    }
+
+    override suspend fun getDeliveryPartners(): Flow<List<EmployeeNameAndId>> {
+        return withContext(ioDispatcher) {
+            cartOrderDao.getDeliveryPartners()
+        }
+    }
+
+    override suspend fun updateDeliveryPartner(
+        orderId: Int,
+        deliveryPartnerId: Int,
+    ): Resource<Boolean> {
+        return withContext(ioDispatcher) {
+            try {
+                val result = orderDao.updateDeliveryPartner(orderId, deliveryPartnerId)
+
+                Resource.Success(result > 0)
+            } catch (e: Exception) {
+                Resource.Error(e.message.toString())
             }
         }
     }

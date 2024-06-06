@@ -33,6 +33,7 @@ fun Employee.toEntity(): EmployeeEntity {
         employeeSalaryType = this.employeeSalaryType,
         employeeType = this.employeeType,
         isDeliveryPartner = this.isDeliveryPartner,
+        partnerQRCode = this.partnerQRCode,
         createdAt = this.createdAt.toDate,
         updatedAt = this.updatedAt?.toDate,
     )

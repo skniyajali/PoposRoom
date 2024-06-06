@@ -63,7 +63,7 @@ data class OrderDetailsDto(
         parentColumn = "deliveryPartnerId",
         entityColumn = "employeeId",
         entity = EmployeeEntity::class,
-        projection = ["employeeId", "employeeName"],
+        projection = ["employeeId", "employeeName", "partnerQRCode"],
     )
     val deliveryPartner: EmployeeNameAndId? = null,
 )

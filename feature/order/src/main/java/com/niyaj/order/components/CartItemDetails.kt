@@ -60,7 +60,7 @@ import com.niyaj.ui.components.TwoGridTexts
  * This composable displays the cart items
  */
 @Composable
-fun CartItemDetails(
+internal fun CartItemDetails(
     modifier: Modifier = Modifier,
     orderType: OrderType,
     doesChargesIncluded: Boolean,
@@ -71,6 +71,7 @@ fun CartItemDetails(
     orderPrice: OrderPrice,
     doesExpanded: Boolean,
     onExpandChanged: () -> Unit,
+    containerColor: Color = LightColor6,
 ) = trace("CartItemDetails") {
     ElevatedCard(
         modifier = modifier
@@ -81,7 +82,7 @@ fun CartItemDetails(
             },
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = LightColor6,
+            containerColor = containerColor,
         ),
     ) {
         StandardExpandable(
