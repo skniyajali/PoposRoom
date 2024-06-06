@@ -22,18 +22,23 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
+import com.niyaj.common.result.Resource
 import com.niyaj.data.repository.OrderRepository
 import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.utils.UiEvent
 import com.samples.apps.core.analytics.AnalyticsEvent
 import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,6 +52,9 @@ class OrderDetailsViewModel @Inject constructor(
 ) : ShareViewModel(ioDispatcher, analyticsHelper) {
 
     private val orderId = savedStateHandle.get<Int>("orderId") ?: 0
+
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
 
     val orderDetails = snapshotFlow { orderId }.flatMapLatest { it ->
         orderRepository.getOrderDetails(it).map {
@@ -69,6 +77,31 @@ class OrderDetailsViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = emptyList(),
     )
+
+    val deliveryPartners = snapshotFlow { orderId }.flatMapLatest {
+        orderRepository.getDeliveryPartners()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList(),
+    )
+
+    fun updateDeliveryPartner(partnerId: Int) {
+        viewModelScope.launch {
+            when (val result = orderRepository.updateDeliveryPartner(orderId, partnerId)) {
+                is Resource.Error -> {
+                    _eventFlow.emit(
+                        UiEvent.OnError(result.message.toString()),
+                    )
+                }
+                is Resource.Success -> {
+                    _eventFlow.emit(
+                        UiEvent.OnSuccess("Partner Updated Successfully"),
+                    )
+                }
+            }
+        }
+    }
 
     init {
         savedStateHandle.get<Int>("orderId")?.let {

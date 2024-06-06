@@ -38,6 +38,8 @@ interface UserDataRepository {
      */
     val isUserLoggedIn: Flow<Boolean>
 
+    suspend fun usePartnerQRCode(): Boolean
+
     /**
      * Sets the desired theme brand.
      */

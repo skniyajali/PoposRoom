@@ -132,4 +132,11 @@ interface OrderDao {
     """,
     )
     fun getAllCharges(): Flow<List<ChargesEntity>>
+
+    @Query(
+        value = """
+        UPDATE cartorder SET deliveryPartnerId = :deliveryPartnerId WHERE orderId = :orderId
+    """,
+    )
+    suspend fun updateDeliveryPartner(orderId: Int, deliveryPartnerId: Int): Int
 }

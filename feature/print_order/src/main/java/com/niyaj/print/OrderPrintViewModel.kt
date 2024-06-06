@@ -28,6 +28,7 @@ import com.niyaj.common.utils.toBarDate
 import com.niyaj.common.utils.toFormattedTime
 import com.niyaj.common.utils.toTime
 import com.niyaj.data.repository.PrintRepository
+import com.niyaj.data.repository.UserDataRepository
 import com.niyaj.feature.printer.bluetoothPrinter.BluetoothPrinter
 import com.niyaj.model.AddOnItem
 import com.niyaj.model.CartOrder
@@ -35,6 +36,7 @@ import com.niyaj.model.CartProductItem
 import com.niyaj.model.Charges
 import com.niyaj.model.ChargesNameAndPrice
 import com.niyaj.model.DeliveryReport
+import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.OrderPrice
 import com.niyaj.model.OrderType
 import com.niyaj.ui.utils.UiEvent
@@ -60,7 +62,9 @@ class OrderPrintViewModel @Inject constructor(
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
     private val bluetoothPrinter: BluetoothPrinter,
+    private val userDataRepository: UserDataRepository,
 ) : ViewModel() {
+
     private val printerInfo = bluetoothPrinter.printerInfo.value
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
@@ -108,9 +112,11 @@ class OrderPrintViewModel @Inject constructor(
 
                     withContext(ioDispatcher) {
                         val orderDetails = printRepository.getOrderDetails(orderId)
+                        val usePartnerQr = userDataRepository.usePartnerQRCode()
+                        val partner = orderDetails.deliveryPartner
 
                         printItems += bluetoothPrinter.getPrintableRestaurantDetails(it)
-                        printItems += printOrderDetails(orderDetails.cartOrder)
+                        printItems += printOrderDetails(orderDetails.cartOrder, partner)
                         printItems += printProductDetails(orderDetails.cartProducts.toList())
 
                         if (orderDetails.addOnItems.isNotEmpty()) {
@@ -130,7 +136,7 @@ class OrderPrintViewModel @Inject constructor(
                         printItems += printSubTotalAndDiscount(orderDetails.orderPrice)
                         printItems += printTotalPrice(orderDetails.orderPrice.totalPrice)
                         printItems += bluetoothPrinter.getPrintableFooterInfo()
-                        printItems += bluetoothPrinter.getPrintableQrCode()
+                        printItems += bluetoothPrinter.getPrintableQrCode(usePartnerQr, partner)
                     }
 
                     printer.printFormattedText(printItems, 10f)
@@ -150,7 +156,7 @@ class OrderPrintViewModel @Inject constructor(
         }
     }
 
-    private fun printOrderDetails(cartOrder: CartOrder): String {
+    private fun printOrderDetails(cartOrder: CartOrder, partner: EmployeeNameAndId?): String {
         var order = ""
 
         order += "[L]ID - [R]${cartOrder.orderId}\n"
@@ -165,6 +171,10 @@ class OrderPrintViewModel @Inject constructor(
 
         if (cartOrder.address.addressName.isNotEmpty()) {
             order += "[L]Address - [R]${cartOrder.address.addressName}\n"
+        }
+
+        if (partner != null) {
+            order += "[L]Partner - [R]${partner.employeeName}\n"
         }
 
         return order

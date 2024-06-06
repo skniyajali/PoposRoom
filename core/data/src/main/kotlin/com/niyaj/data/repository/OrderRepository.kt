@@ -20,6 +20,7 @@ package com.niyaj.data.repository
 import com.niyaj.common.result.Resource
 import com.niyaj.model.Charges
 import com.niyaj.model.DeliveryReport
+import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.Order
 import com.niyaj.model.OrderDetails
 import com.niyaj.model.TotalDeliveryPartnerOrder
@@ -30,6 +31,10 @@ interface OrderRepository {
     suspend fun getDineInOrders(date: String, searchText: String): Flow<List<Order>>
 
     suspend fun getDineOutOrders(date: String, searchText: String): Flow<List<Order>>
+
+    suspend fun getDeliveryPartners(): Flow<List<EmployeeNameAndId>>
+
+    suspend fun updateDeliveryPartner(orderId: Int, deliveryPartnerId: Int): Resource<Boolean>
 
     suspend fun getDeliveryPartnerOrders(date: String): Flow<List<TotalDeliveryPartnerOrder>>
 

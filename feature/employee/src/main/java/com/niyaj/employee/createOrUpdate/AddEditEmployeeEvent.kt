@@ -52,5 +52,7 @@ sealed interface AddEditEmployeeEvent {
 
     data object UpdateDeliveryPartner : AddEditEmployeeEvent
 
+    data object ScanQRCode : AddEditEmployeeEvent
+
     data object CreateOrUpdateEmployee : AddEditEmployeeEvent
 }

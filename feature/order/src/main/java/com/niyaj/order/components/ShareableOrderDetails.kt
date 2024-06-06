@@ -17,14 +17,12 @@
 
 package com.niyaj.order.components
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -103,87 +101,6 @@ import com.niyaj.ui.utils.ScrollableCapturable
 fun ShareableOrderDetails(
     modifier: Modifier = Modifier,
     captureController: CaptureController,
-    orderDetails: OrderDetails,
-    charges: List<Charges>,
-    onDismiss: () -> Unit,
-    onClickShare: () -> Unit,
-    onCaptured: (Bitmap?, Throwable?) -> Unit,
-    onClickPrintOrder: () -> Unit,
-) = trace("ShareableOrderDetails") {
-    var changeLayout by remember { mutableStateOf(false) }
-
-    BasicAlertDialog(
-        onDismissRequest = onDismiss,
-        modifier = modifier
-            .fillMaxSize(),
-        properties = DialogProperties(
-            dismissOnClickOutside = true,
-            dismissOnBackPress = true,
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false,
-        ),
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.background,
-            ),
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween,
-            ) {
-                val icon = if (orderDetails.cartOrder.orderType == OrderType.DineIn) {
-                    PoposIcons.DinnerDining
-                } else {
-                    PoposIcons.DeliveryDining
-                }
-                val containerColor = if (orderDetails.cartOrder.orderType == OrderType.DineIn) {
-                    MaterialTheme.colorScheme.tertiary
-                } else {
-                    MaterialTheme.colorScheme.primary
-                }
-
-                val backgroundColor = if (orderDetails.cartOrder.orderType == OrderType.DineIn) {
-                    gradient6
-                } else {
-                    gradient7
-                }
-
-                CapturableCard(
-                    modifier = Modifier.weight(2.5f),
-                    captureController = captureController,
-                    orderDetails = orderDetails,
-                    charges = charges,
-                    containerColor = containerColor,
-                    backgroundColor = backgroundColor,
-                    icon = icon,
-                    onCaptured = onCaptured,
-                    layoutChanged = changeLayout,
-                )
-
-                DialogButtons(
-                    shareButtonColor = containerColor,
-                    layoutChanged = changeLayout,
-                    onDismiss = onDismiss,
-                    onClickShare = onClickShare,
-                    onClickChangeLayout = {
-                        changeLayout = !changeLayout
-                    },
-                    onClickPrintOrder = onClickPrintOrder,
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ShareableOrderDetails(
-    modifier: Modifier = Modifier,
-    captureController: CaptureController,
     orderDetails: UiState<OrderDetails>,
     charges: List<Charges>,
     onDismiss: () -> Unit,
@@ -219,6 +136,12 @@ fun ShareableOrderDetails(
                     UiState.Empty -> LoadingIndicator()
                     UiState.Loading -> LoadingIndicator()
                     is UiState.Success -> {
+                        val chargesList = if (state.data.cartOrder.orderType == OrderType.DineOut) {
+                            charges.filterNot { !it.isApplicable }
+                        } else {
+                            emptyList()
+                        }
+
                         Column(
                             modifier = Modifier
                                 .fillMaxSize(),
@@ -247,7 +170,7 @@ fun ShareableOrderDetails(
                                 modifier = Modifier.weight(2.5f),
                                 captureController = captureController,
                                 orderDetails = state.data,
-                                charges = charges,
+                                charges = chargesList,
                                 containerColor = containerColor,
                                 backgroundColor = backgroundColor,
                                 icon = icon,
@@ -365,7 +288,6 @@ private fun CartItemOrderDetails(
     }
 }
 
-@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 private fun CartItemOrderDetailsCard(
     modifier: Modifier = Modifier,
@@ -391,7 +313,7 @@ private fun CartItemOrderDetailsCard(
             modifier = Modifier
                 .fillMaxWidth(),
         ) {
-            BoxWithConstraints(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth(),
             ) {

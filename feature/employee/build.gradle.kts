@@ -35,6 +35,7 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.dialog.core)
     implementation(libs.dialog.datetime)
+    implementation(libs.zxing.core)
 
     //RaamCosta Library
     implementation(libs.raamcosta.animation.core)

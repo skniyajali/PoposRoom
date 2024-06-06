@@ -32,6 +32,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toPrettyDate
@@ -43,17 +44,19 @@ import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Customer
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.StandardExpandable
+import com.niyaj.ui.utils.DevicePreviews
 
 /**
  * This composable displays the customer details
  */
 @Composable
-fun CustomerDetails(
+internal fun CustomerDetails(
     modifier: Modifier = Modifier,
     customer: Customer,
     doesExpanded: Boolean,
     onExpandChanged: () -> Unit,
     onClickViewDetails: (Int) -> Unit,
+    containerColor: Color = LightColor2,
 ) = trace("CustomerDetails") {
     ElevatedCard(
         modifier = modifier
@@ -64,7 +67,7 @@ fun CustomerDetails(
             },
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = LightColor2,
+            containerColor = containerColor,
         ),
     ) {
         StandardExpandable(
@@ -127,11 +130,20 @@ fun CustomerDetails(
                         icon = PoposIcons.PhoneAndroid,
                     )
 
-                    customer.customerEmail?.let {
+                    customer.customerName?.let {
                         Spacer(modifier = Modifier.height(SpaceSmall))
 
                         IconWithText(
                             text = "Name: $it",
+                            icon = PoposIcons.Email,
+                        )
+                    }
+
+                    customer.customerEmail?.let {
+                        Spacer(modifier = Modifier.height(SpaceSmall))
+
+                        IconWithText(
+                            text = "Email: $it",
                             icon = PoposIcons.Email,
                         )
                     }
@@ -169,4 +181,25 @@ fun CustomerDetails(
             },
         )
     }
+}
+
+@DevicePreviews
+@Composable
+private fun CustomerDetailsPreview(
+    modifier: Modifier = Modifier,
+) {
+    CustomerDetails(
+        modifier = Modifier,
+        customer = Customer(
+            customerId = 1,
+            customerPhone = "9876543211",
+            customerName = "Niyaj",
+            customerEmail = "niyaj@gmail.com",
+            createdAt = System.currentTimeMillis(),
+            updatedAt = null,
+        ),
+        doesExpanded = true,
+        onExpandChanged = {},
+        onClickViewDetails = {},
+    )
 }

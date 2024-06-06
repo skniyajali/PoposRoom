@@ -17,7 +17,10 @@
 
 package com.niyaj.employee.createOrUpdate
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -50,6 +53,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -77,6 +82,7 @@ import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SALARY_ERROR
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SALARY_FIELD
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SALARY_TYPE_FIELD
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_TYPE_FIELD
+import com.niyaj.common.tags.EmployeeTestTags.QR_CODE_NOTE
 import com.niyaj.common.utils.toJoinedDate
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.designsystem.components.PoposButton
@@ -88,6 +94,7 @@ import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.EmployeeSalaryType
 import com.niyaj.model.EmployeeType
 import com.niyaj.ui.components.IconWithText
+import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.PhoneNoCountBox
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.StandardCheckboxWithText
@@ -113,10 +120,11 @@ fun AddEditEmployeeScreen(
     viewModel: AddEditEmployeeViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
-    val phoneError = viewModel.phoneError.collectAsStateWithLifecycle().value
-    val nameError = viewModel.nameError.collectAsStateWithLifecycle().value
-    val salaryError = viewModel.salaryError.collectAsStateWithLifecycle().value
-    val positionError = viewModel.positionError.collectAsStateWithLifecycle().value
+    val phoneError by viewModel.phoneError.collectAsStateWithLifecycle()
+    val nameError by viewModel.nameError.collectAsStateWithLifecycle()
+    val salaryError by viewModel.salaryError.collectAsStateWithLifecycle()
+    val positionError by viewModel.positionError.collectAsStateWithLifecycle()
+    val scannedBitmap by viewModel.scannedBitmap.collectAsStateWithLifecycle()
 
     val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
@@ -147,6 +155,7 @@ fun AddEditEmployeeScreen(
         nameError = nameError,
         salaryError = salaryError,
         positionError = positionError,
+        scannedBitmap = scannedBitmap?.asImageBitmap(),
         onBackClick = navigator::navigateUp,
         onEvent = viewModel::onEvent,
     )
@@ -163,6 +172,7 @@ fun AddEditEmployeeScreenContent(
     nameError: String? = null,
     salaryError: String? = null,
     positionError: String? = null,
+    scannedBitmap: ImageBitmap? = null,
     onBackClick: () -> Unit,
     onEvent: (AddEditEmployeeEvent) -> Unit,
 ) {
@@ -434,17 +444,76 @@ fun AddEditEmployeeScreenContent(
             }
 
             item(EMPLOYEE_PARTNER_FIELD) {
-                StandardCheckboxWithText(
-                    text = if (state.isDeliveryPartner) {
-                        EMPLOYEE_PARTNER_CHECKED_FIELD
-                    } else {
-                        EMPLOYEE_PARTNER_UNCHECKED_FIELD
-                    },
-                    checked = state.isDeliveryPartner,
-                    onCheckedChange = {
-                        onEvent(AddEditEmployeeEvent.UpdateDeliveryPartner)
-                    },
-                )
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        StandardCheckboxWithText(
+                            text = if (state.isDeliveryPartner) {
+                                EMPLOYEE_PARTNER_CHECKED_FIELD
+                            } else {
+                                EMPLOYEE_PARTNER_UNCHECKED_FIELD
+                            },
+                            checked = state.isDeliveryPartner,
+                            onCheckedChange = {
+                                onEvent(AddEditEmployeeEvent.UpdateDeliveryPartner)
+                            },
+                        )
+
+                        AnimatedVisibility(
+                            visible = state.isDeliveryPartner,
+                        ) {
+                            StandardRoundedFilterChip(
+                                text = if (scannedBitmap != null) "Scanned" else "Scan QR Code",
+                                icon = PoposIcons.QrCodeScanner,
+                                selected = scannedBitmap != null,
+                                onClick = {
+                                    onEvent(AddEditEmployeeEvent.ScanQRCode)
+                                },
+                            )
+                        }
+                    }
+
+                    AnimatedVisibility(
+                        visible = state.isDeliveryPartner && scannedBitmap == null,
+                    ) {
+                        NoteCard(
+                            text = QR_CODE_NOTE,
+                            onClick = { onEvent(AddEditEmployeeEvent.ScanQRCode) },
+                        )
+                    }
+                }
+            }
+
+            item("scannedBitmap") {
+                AnimatedVisibility(
+                    visible = scannedBitmap != null,
+                ) {
+                    Spacer(modifier = Modifier.height(SpaceSmall))
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        if (scannedBitmap != null) {
+                            Image(
+                                bitmap = scannedBitmap,
+                                contentDescription = "QR Code",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .align(Alignment.Center),
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(SpaceSmall))
+                }
             }
         }
     }
