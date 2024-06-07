@@ -20,9 +20,11 @@ package com.niyaj.profile.createOrUpdate
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -54,17 +56,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.offset
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.tags.ProfileTestTags.ADDRESS_ERROR_FIELD
 import com.niyaj.common.tags.ProfileTestTags.ADDRESS_FIELD
@@ -75,10 +74,12 @@ import com.niyaj.common.tags.ProfileTestTags.EMAIL_ERROR_FIELD
 import com.niyaj.common.tags.ProfileTestTags.EMAIL_FIELD
 import com.niyaj.common.tags.ProfileTestTags.NAME_ERROR_FIELD
 import com.niyaj.common.tags.ProfileTestTags.NAME_FIELD
+import com.niyaj.common.tags.ProfileTestTags.PRINT_LOGO_NOTE
 import com.niyaj.common.tags.ProfileTestTags.P_PHONE_ERROR_FIELD
 import com.niyaj.common.tags.ProfileTestTags.P_PHONE_FIELD
 import com.niyaj.common.tags.ProfileTestTags.QR_CODE_ERROR_TAG
 import com.niyaj.common.tags.ProfileTestTags.QR_CODE_FIELD
+import com.niyaj.common.tags.ProfileTestTags.RES_LOGO_NOTE
 import com.niyaj.common.tags.ProfileTestTags.S_PHONE_ERROR_FIELD
 import com.niyaj.common.tags.ProfileTestTags.S_PHONE_FIELD
 import com.niyaj.common.tags.ProfileTestTags.TAG_ERROR_FIELD
@@ -86,33 +87,35 @@ import com.niyaj.common.tags.ProfileTestTags.TAG_FIELD
 import com.niyaj.common.tags.ProfileTestTags.UPDATE_PROFILE
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.profile.ProfileEvent
-import com.niyaj.profile.ProfileViewModel
+import com.niyaj.model.Profile
 import com.niyaj.profile.components.UpdatedRestaurantCard
+import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.StandardOutlinedTextField
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import kotlinx.coroutines.launch
 
 @Suppress("DEPRECATION")
-@OptIn(ExperimentalMaterial3Api::class)
 @Destination(route = Screens.UPDATE_PROFILE_SCREEN)
 @Composable
 fun UpdateProfileScreen(
-    navController: NavController = rememberNavController(),
-    viewModel: ProfileViewModel = hiltViewModel(),
+    resId: Int,
+    navigator: DestinationsNavigator,
+    viewModel: UpdateProfileViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
     val systemUiController = rememberSystemUiController()
     val statusBarColor = MaterialTheme.colorScheme.primary
 
     val snackbarHostState = remember { SnackbarHostState() }
-    val lazyListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
     SideEffect {
@@ -123,19 +126,14 @@ fun UpdateProfileScreen(
     }
 
     val info = viewModel.info.collectAsStateWithLifecycle().value
-
     val scannedBitmap = viewModel.scannedBitmap.collectAsStateWithLifecycle().value
-
-    var showPrintLogo by rememberSaveable {
-        mutableStateOf(false)
-    }
 
     val resLogoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
     ) { uri ->
         uri?.let {
             scope.launch {
-                viewModel.onEvent(ProfileEvent.LogoChanged(uri = it))
+                viewModel.onEvent(UpdateProfileEvent.LogoChanged(uri = it))
             }
         }
     }
@@ -145,7 +143,7 @@ fun UpdateProfileScreen(
     ) { uri ->
         uri?.let {
             scope.launch {
-                viewModel.onEvent(ProfileEvent.PrintLogoChanged(uri = it))
+                viewModel.onEvent(UpdateProfileEvent.PrintLogoChanged(uri = it))
             }
         }
     }
@@ -164,29 +162,50 @@ fun UpdateProfileScreen(
         }
     }
 
-    LaunchedEffect(key1 = true) {
-        viewModel.onEvent(ProfileEvent.SetProfileInfo)
+    TrackScreenViewEvent(screenName = Screens.UPDATE_PROFILE_SCREEN + "resId?=$resId")
+
+    UpdateProfileScreenContent(
+        modifier = Modifier,
+        profile = info,
+        state = viewModel.updateState,
+        scannedBitmap = scannedBitmap?.asImageBitmap(),
+        onEvent = viewModel::onEvent,
+        onBackClick = navigator::navigateUp,
+        onClickChangeResLogo = {
+            resLogoLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+            )
+        },
+        onClickChangePrintLogo = {
+            printLogoLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+            )
+        },
+        statusBarColor = statusBarColor,
+        snackbarHostState = snackbarHostState,
+    )
+}
+
+@VisibleForTesting
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun UpdateProfileScreenContent(
+    modifier: Modifier = Modifier,
+    profile: Profile,
+    state: UpdateProfileState,
+    scannedBitmap: ImageBitmap? = null,
+    onEvent: (UpdateProfileEvent) -> Unit,
+    onBackClick: () -> Unit,
+    onClickChangeResLogo: () -> Unit,
+    onClickChangePrintLogo: () -> Unit,
+    statusBarColor: Color = MaterialTheme.colorScheme.primary,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+) {
+    val lazyListState = rememberLazyListState()
+
+    var showPrintLogo by rememberSaveable {
+        mutableStateOf(false)
     }
-
-    LaunchedEffect(key1 = true) {
-        viewModel.eventFlow.collect { event ->
-            when (event) {
-                is UiEvent.OnSuccess -> {
-                    snackbarHostState.showSnackbar(
-                        message = event.successMessage,
-                    )
-                }
-
-                is UiEvent.OnError -> {
-                    snackbarHostState.showSnackbar(
-                        message = event.errorMessage,
-                    )
-                }
-            }
-        }
-    }
-
-    TrackScreenViewEvent(screenName = Screens.UPDATE_PROFILE_SCREEN)
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -197,7 +216,7 @@ fun UpdateProfileScreen(
                 title = { Text(text = UPDATE_PROFILE) },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.navigateUp() },
+                        onClick = onBackClick,
                     ) {
                         Icon(
                             imageVector = PoposIcons.ArrowBack,
@@ -217,53 +236,31 @@ fun UpdateProfileScreen(
         TrackScrollJank(scrollableState = lazyListState, stateName = "UpdateProfile::Fields")
 
         LazyColumn(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .padding(paddingValues),
             state = lazyListState,
             contentPadding = PaddingValues(SpaceSmall),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
-            val sidePadding = (-8).dp
-
             item("UpdatedRestaurantCard") {
-                UpdatedRestaurantCard(
-                    modifier = Modifier
-                        .layout { measurable, constraints ->
-                            // Measure the composable adding the side padding*2 (left+right)
-                            val placeable =
-                                measurable.measure(
-                                    constraints.offset(
-                                        horizontal = -sidePadding.roundToPx() * 2,
-                                        vertical = -sidePadding.roundToPx(),
-                                    ),
-                                )
-
-                            // increase the width adding the side padding*2
-                            layout(
-                                placeable.width + sidePadding.roundToPx() * 2,
-                                placeable.height,
-                            ) {
-                                // Where the composable gets placed
-                                placeable.place(+sidePadding.roundToPx(), +sidePadding.roundToPx())
-                            }
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    UpdatedRestaurantCard(
+                        modifier = Modifier,
+                        info = profile,
+                        showPrintLogo = showPrintLogo,
+                        onClickChangeResLogo = onClickChangeResLogo,
+                        onClickChangePrintLogo = onClickChangePrintLogo,
+                        onClickViewPrintLogo = {
+                            showPrintLogo = !showPrintLogo
                         },
-                    info = info,
-                    showPrintLogo = showPrintLogo,
-                    onClickEdit = {
-                        resLogoLauncher.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
-                        )
-                    },
-                    onClickChangePrintLogo = {
-                        printLogoLauncher.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
-                        )
-                    },
-                    onClickViewPrintLogo = {
-                        showPrintLogo = !showPrintLogo
-                    },
-                )
+                    )
+                    NoteCard(text = RES_LOGO_NOTE)
+                    Spacer(modifier = Modifier.height(SpaceMini))
+                    NoteCard(text = PRINT_LOGO_NOTE)
+                }
             }
 
             item(NAME_FIELD) {
@@ -271,14 +268,14 @@ fun UpdateProfileScreen(
                     modifier = Modifier
                         .padding(horizontal = SpaceSmall)
                         .testTag(NAME_FIELD),
-                    value = viewModel.updateState.name,
+                    value = state.name,
                     label = NAME_FIELD,
                     leadingIcon = PoposIcons.Restaurant,
-                    isError = viewModel.updateState.nameError != null,
-                    errorText = viewModel.updateState.nameError,
+                    isError = state.nameError != null,
+                    errorText = state.nameError,
                     errorTextTag = NAME_ERROR_FIELD,
                     onValueChange = {
-                        viewModel.onEvent(ProfileEvent.NameChanged(it))
+                        onEvent(UpdateProfileEvent.NameChanged(it))
                     },
                 )
             }
@@ -288,14 +285,14 @@ fun UpdateProfileScreen(
                     modifier = Modifier
                         .padding(horizontal = SpaceSmall)
                         .testTag(EMAIL_FIELD),
-                    value = viewModel.updateState.email,
+                    value = state.email,
                     label = EMAIL_FIELD,
                     leadingIcon = PoposIcons.Email,
                     errorTextTag = EMAIL_ERROR_FIELD,
-                    isError = viewModel.updateState.emailError != null,
-                    errorText = viewModel.updateState.emailError,
+                    isError = state.emailError != null,
+                    errorText = state.emailError,
                     onValueChange = {
-                        viewModel.onEvent(ProfileEvent.NameChanged(it))
+                        onEvent(UpdateProfileEvent.NameChanged(it))
                     },
                     textStyle = LocalTextStyle.current.copy(
                         fontFamily = FontFamily.Cursive,
@@ -309,14 +306,14 @@ fun UpdateProfileScreen(
                     modifier = Modifier
                         .padding(horizontal = SpaceSmall)
                         .testTag(P_PHONE_FIELD),
-                    value = viewModel.updateState.primaryPhone,
+                    value = state.primaryPhone,
                     label = P_PHONE_FIELD,
                     leadingIcon = PoposIcons.PhoneAndroid,
                     errorTextTag = P_PHONE_ERROR_FIELD,
-                    isError = viewModel.updateState.primaryPhoneError != null,
-                    errorText = viewModel.updateState.primaryPhoneError,
+                    isError = state.primaryPhoneError != null,
+                    errorText = state.primaryPhoneError,
                     onValueChange = {
-                        viewModel.onEvent(ProfileEvent.PrimaryPhoneChanged(it))
+                        onEvent(UpdateProfileEvent.PrimaryPhoneChanged(it))
                     },
                     keyboardType = KeyboardType.Number,
                 )
@@ -327,14 +324,14 @@ fun UpdateProfileScreen(
                     modifier = Modifier
                         .padding(horizontal = SpaceSmall)
                         .testTag(S_PHONE_FIELD),
-                    value = viewModel.updateState.secondaryPhone,
+                    value = state.secondaryPhone,
                     label = S_PHONE_FIELD,
                     leadingIcon = PoposIcons.Phone,
                     errorTextTag = S_PHONE_ERROR_FIELD,
-                    isError = viewModel.updateState.secondaryPhoneError != null,
-                    errorText = viewModel.updateState.secondaryPhoneError,
+                    isError = state.secondaryPhoneError != null,
+                    errorText = state.secondaryPhoneError,
                     onValueChange = {
-                        viewModel.onEvent(ProfileEvent.SecondaryPhoneChanged(it))
+                        onEvent(UpdateProfileEvent.SecondaryPhoneChanged(it))
                     },
                     keyboardType = KeyboardType.Number,
                 )
@@ -345,14 +342,14 @@ fun UpdateProfileScreen(
                     modifier = Modifier
                         .padding(horizontal = SpaceSmall)
                         .testTag(TAG_FIELD),
-                    value = viewModel.updateState.tagline,
+                    value = state.tagline,
                     label = TAG_FIELD,
                     errorTextTag = TAG_ERROR_FIELD,
                     leadingIcon = PoposIcons.StarHalf,
-                    isError = viewModel.updateState.taglineError != null,
-                    errorText = viewModel.updateState.taglineError,
+                    isError = state.taglineError != null,
+                    errorText = state.taglineError,
                     onValueChange = {
-                        viewModel.onEvent(ProfileEvent.TaglineChanged(it))
+                        onEvent(UpdateProfileEvent.TaglineChanged(it))
                     },
                 )
             }
@@ -362,15 +359,15 @@ fun UpdateProfileScreen(
                     modifier = Modifier
                         .padding(horizontal = SpaceSmall)
                         .testTag(ADDRESS_FIELD),
-                    value = viewModel.updateState.address,
+                    value = state.address,
                     label = ADDRESS_FIELD,
                     maxLines = 2,
                     leadingIcon = PoposIcons.LocationOn,
                     errorTextTag = ADDRESS_ERROR_FIELD,
-                    isError = viewModel.updateState.addressError != null,
-                    errorText = viewModel.updateState.addressError,
+                    isError = state.addressError != null,
+                    errorText = state.addressError,
                     onValueChange = {
-                        viewModel.onEvent(ProfileEvent.AddressChanged(it))
+                        onEvent(UpdateProfileEvent.AddressChanged(it))
                     },
                 )
             }
@@ -380,16 +377,16 @@ fun UpdateProfileScreen(
                     modifier = Modifier
                         .padding(horizontal = SpaceSmall)
                         .testTag(DESC_FIELD),
-                    value = viewModel.updateState.description,
+                    value = state.description,
                     label = DESC_FIELD,
                     singleLine = false,
                     maxLines = 2,
                     leadingIcon = PoposIcons.Note,
-                    isError = viewModel.updateState.descriptionError != null,
-                    errorText = viewModel.updateState.descriptionError,
+                    isError = state.descriptionError != null,
+                    errorText = state.descriptionError,
                     errorTextTag = DESC_ERROR_FIELD,
                     onValueChange = {
-                        viewModel.onEvent(ProfileEvent.DescriptionChanged(it))
+                        onEvent(UpdateProfileEvent.DescriptionChanged(it))
                     },
                 )
             }
@@ -399,13 +396,13 @@ fun UpdateProfileScreen(
                     modifier = Modifier
                         .padding(horizontal = SpaceSmall)
                         .testTag(QR_CODE_FIELD),
-                    value = viewModel.updateState.paymentQrCode,
+                    value = state.paymentQrCode,
                     label = QR_CODE_FIELD,
                     leadingIcon = PoposIcons.QrCode,
                     trailingIcon = {
                         IconButton(
                             onClick = {
-                                viewModel.onEvent(ProfileEvent.StartScanning)
+                                onEvent(UpdateProfileEvent.StartScanning)
                             },
                         ) {
                             Icon(
@@ -414,13 +411,13 @@ fun UpdateProfileScreen(
                             )
                         }
                     },
-                    isError = viewModel.updateState.paymentQrCodeError != null,
-                    errorText = viewModel.updateState.paymentQrCodeError,
+                    isError = state.paymentQrCodeError != null,
+                    errorText = state.paymentQrCodeError,
                     errorTextTag = QR_CODE_ERROR_TAG,
                     singleLine = false,
                     maxLines = 4,
                     onValueChange = {
-                        viewModel.onEvent(ProfileEvent.PaymentQrCodeChanged(it))
+                        onEvent(UpdateProfileEvent.PaymentQrCodeChanged(it))
                     },
                 )
             }
@@ -433,7 +430,7 @@ fun UpdateProfileScreen(
                         contentAlignment = Alignment.Center,
                     ) {
                         Image(
-                            bitmap = scannedBitmap.asImageBitmap(),
+                            bitmap = scannedBitmap,
                             contentDescription = "QR Code",
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -450,12 +447,13 @@ fun UpdateProfileScreen(
 
                 PoposButton(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(horizontal = SpaceSmall)
                         .testTag(ADD_EDIT_PROFILE_BTN),
                     text = UPDATE_PROFILE,
                     icon = PoposIcons.Edit,
                     onClick = {
-                        viewModel.onEvent(ProfileEvent.UpdateProfile)
+                        onEvent(UpdateProfileEvent.UpdateUpdateProfile)
                     },
                 )
 
@@ -463,4 +461,22 @@ fun UpdateProfileScreen(
             }
         }
     }
+}
+
+@DevicePreviews
+@Composable
+private fun UpdateProfileScreenContentPreview(
+    modifier: Modifier = Modifier,
+    profile: Profile = Profile.defaultProfileInfo,
+) {
+    UpdateProfileScreenContent(
+        modifier = modifier,
+        profile = profile,
+        state = UpdateProfileState(),
+        scannedBitmap = null,
+        onEvent = {},
+        onBackClick = {},
+        onClickChangeResLogo = {},
+        onClickChangePrintLogo = {},
+    )
 }

@@ -80,6 +80,7 @@ import com.niyaj.designsystem.theme.ProfilePictureSizeMedium
 import com.niyaj.designsystem.theme.ProfilePictureSizeSmall
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.designsystem.utils.drawAnimatedBorder
 import com.niyaj.printerInfo.destinations.UpdatePrinterInfoScreenDestination
 import com.niyaj.ui.components.BluetoothPermissionDialog
 import com.niyaj.ui.components.HandleBluetoothPermissionState
@@ -91,7 +92,6 @@ import com.niyaj.ui.components.PoposPrimaryScaffold
 import com.niyaj.ui.components.StandardChip
 import com.niyaj.ui.components.StandardOutlinedChip
 import com.niyaj.ui.components.TwoGridText
-import com.niyaj.ui.components.drawAnimatedBorder
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent

@@ -79,6 +79,7 @@ import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.gradient6
 import com.niyaj.designsystem.theme.gradient7
 import com.niyaj.designsystem.theme.rainbowColorsBrush
+import com.niyaj.designsystem.utils.drawRainbowBorder
 import com.niyaj.model.AddOnItem
 import com.niyaj.model.CartOrder
 import com.niyaj.model.CartProductItem
@@ -91,7 +92,6 @@ import com.niyaj.ui.components.CartAddOnItems
 import com.niyaj.ui.components.CartChargesItem
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.LoadingIndicator
-import com.niyaj.ui.components.drawRainbowBorder
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.CaptureController
 import com.niyaj.ui.utils.ScrollableCapturable

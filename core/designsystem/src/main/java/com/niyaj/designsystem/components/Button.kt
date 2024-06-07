@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.theme.ButtonSize
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.designsystem.utils.drawAnimatedBorder
 
 @Composable
 fun PoposTextButton(
@@ -311,6 +312,7 @@ fun PoposOutlinedDropdownButton(
     trailingIcon: ImageVector,
     enabled: Boolean = true,
     btnHeight: Dp = ButtonSize,
+    showAnimatedBorder: Boolean = false,
     shape: Shape = RoundedCornerShape(SpaceMini),
     color: Color = MaterialTheme.colorScheme.secondary,
     style: TextStyle = MaterialTheme.typography.labelLarge,
@@ -324,14 +326,25 @@ fun PoposOutlinedDropdownButton(
             contentColor = color,
             disabledContentColor = color.copy(0.38f),
         ),
-        border = ButtonDefaults.outlinedButtonBorder.copy(
-            width = 1.dp,
-            brush = if (enabled) SolidColor(color) else SolidColor(color.copy(0.38f)),
-        ),
+        border = if (showAnimatedBorder) {
+            null
+        } else {
+            ButtonDefaults.outlinedButtonBorder.copy(
+                width = 1.dp,
+                brush = if (enabled) SolidColor(color) else SolidColor(color.copy(0.38f)),
+            )
+        },
         modifier = modifier
             .testTag(text)
             .fillMaxWidth()
-            .heightIn(btnHeight),
+            .heightIn(btnHeight)
+            .then(
+                if (showAnimatedBorder) {
+                    Modifier.drawAnimatedBorder(1.dp, durationMillis = 200, shape = shape)
+                } else {
+                    Modifier
+                },
+            ),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

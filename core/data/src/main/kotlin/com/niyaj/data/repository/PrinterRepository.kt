@@ -31,5 +31,7 @@ interface PrinterRepository {
 
     suspend fun addOrUpdatePrinterInfo(printer: Printer): Resource<Boolean>
 
-    fun getProfileInfo(restaurantId: Int): Flow<Profile>
+    fun getProfileInfo(): Flow<Profile>
+
+    fun getProfileInfo(resId: Int): Flow<Profile>
 }
