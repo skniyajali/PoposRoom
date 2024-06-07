@@ -50,7 +50,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Get the module paths
-module_paths=$(./gradlew -q printModulePaths --no-configuration-cache)
+module_paths=$(grep -oP 'include\("\K[^"]+' settings.gradle.kts)
 
 # Ensure the output directory exists
 mkdir -p docs/images/graphs/
