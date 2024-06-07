@@ -32,28 +32,31 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor3
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Address
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardExpandable
+import com.niyaj.ui.utils.DevicePreviews
 
 /**
  * This composable displays the address details
  */
 @Composable
-fun AddressDetails(
+internal fun AddressDetails(
     modifier: Modifier = Modifier,
     address: Address,
     doesExpanded: Boolean,
     onExpandChanged: () -> Unit,
     onClickViewDetails: (Int) -> Unit,
+    containerColor: Color = LightColor3,
 ) = trace("AddressDetails") {
     ElevatedCard(
         modifier = modifier
@@ -64,7 +67,7 @@ fun AddressDetails(
             },
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = LightColor3,
+            containerColor = containerColor,
         ),
     ) {
         StandardExpandable(
@@ -144,12 +147,13 @@ fun AddressDetails(
 
                     Spacer(modifier = Modifier.height(SpaceMedium))
 
-                    StandardButton(
+                    PoposButton(
+                        modifier = Modifier.fillMaxWidth(),
                         onClick = {
                             onClickViewDetails(address.addressId)
                         },
                         text = "View Address Details".uppercase(),
-                        icon = PoposIcons.Details,
+                        icon = PoposIcons.Address,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.outline,
                         ),
@@ -158,4 +162,24 @@ fun AddressDetails(
             },
         )
     }
+}
+
+@DevicePreviews
+@Composable
+private fun AddressDetailsPreview(
+    modifier: Modifier = Modifier,
+) {
+    AddressDetails(
+        modifier = modifier,
+        address = Address(
+            addressId = 5729,
+            addressName = "Francisca Osborn",
+            shortName = "Russel Garcia",
+            createdAt = System.currentTimeMillis(),
+            updatedAt = null,
+        ),
+        doesExpanded = true,
+        onExpandChanged = {},
+        onClickViewDetails = {},
+    )
 }

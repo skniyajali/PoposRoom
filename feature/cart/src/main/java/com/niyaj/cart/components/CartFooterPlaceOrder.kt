@@ -49,14 +49,14 @@ import com.niyaj.designsystem.theme.LightColor10
 import com.niyaj.designsystem.theme.SpaceSmall
 
 @Composable
-fun CartFooterPlaceOrder(
+internal fun CartFooterPlaceOrder(
     modifier: Modifier = Modifier,
     countTotalItems: Int,
     countSelectedItem: Int,
-    showPrintBtn: Boolean = true,
-    onClickSelectAll: () -> Unit = {},
-    onClickPlaceAllOrder: () -> Unit = {},
-    onClickPrintAllOrder: () -> Unit = {},
+    showPrintBtn: Boolean,
+    onClickSelectAll: () -> Unit,
+    onClickPlaceAllOrder: () -> Unit,
+    onClickPrintAllOrder: () -> Unit,
 ) = trace("CartFooterPlaceOrder") {
     Surface(
         modifier = modifier
@@ -119,7 +119,14 @@ fun CartFooterPlaceOrder(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 val text =
-                    if (countSelectedItem == 0) " " else if (countSelectedItem < countTotalItems) " $countSelectedItem " else " All "
+                    if (countSelectedItem == 0) {
+                        " "
+                    } else if
+                        (countSelectedItem < countTotalItems) {
+                        " $countSelectedItem "
+                    } else {
+                        " All "
+                    }
 
                 PoposButton(
                     text = "Place${text}Order",

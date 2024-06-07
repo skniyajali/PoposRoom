@@ -35,13 +35,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.util.trace
+import com.niyaj.designsystem.components.PoposOutlinedAssistChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.NoteText
-import com.niyaj.ui.components.StandardOutlinedAssistChip
 
 @Composable
 fun TotalExpenses(
@@ -82,7 +82,7 @@ fun TotalExpenses(
                     )
                 }
 
-                StandardOutlinedAssistChip(
+                PoposOutlinedAssistChip(
                     text = selectedDate,
                     icon = PoposIcons.CalenderMonth,
                     onClick = onDateClick,

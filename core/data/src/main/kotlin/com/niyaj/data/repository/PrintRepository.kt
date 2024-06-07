@@ -27,7 +27,7 @@ interface PrintRepository {
 
     suspend fun getOrderDetails(orderId: Int): OrderDetails
 
-    suspend fun getDeliveryReports(date: String): List<DeliveryReport>
+    suspend fun getDeliveryReports(date: String, partnerId: Int? = null): List<DeliveryReport>
 
     suspend fun getCharges(): List<ChargesNameAndPrice>
 

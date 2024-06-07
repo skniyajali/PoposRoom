@@ -20,9 +20,7 @@ package com.niyaj.order.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -35,12 +33,12 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toTime
+import com.niyaj.designsystem.components.PoposTonalIconButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Order
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.StandardFilledTonalIconButton
 
 @Composable
 fun OrderedItemData(
@@ -75,7 +73,7 @@ fun OrderedItemData(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(
-                    verticalArrangement = Arrangement.SpaceBetween,
+                    verticalArrangement = Arrangement.spacedBy(SpaceSmall),
                 ) {
                     IconWithText(
                         text = order.orderId.toString(),
@@ -83,15 +81,11 @@ fun OrderedItemData(
                     )
 
                     order.customerPhone?.let {
-                        Spacer(modifier = Modifier.height(SpaceSmall))
-
                         IconWithText(
                             text = it,
                             icon = PoposIcons.OutlinedPhoneAndroid,
                         )
                     }
-
-                    Spacer(modifier = Modifier.height(SpaceSmall))
 
                     IconWithText(
                         text = order.orderDate.toTime,
@@ -100,34 +94,40 @@ fun OrderedItemData(
                 }
 
                 Column(
-                    verticalArrangement = Arrangement.SpaceBetween,
+                    verticalArrangement = Arrangement.spacedBy(SpaceSmall),
                 ) {
                     order.customerAddress?.let {
                         IconWithText(
                             text = it,
                             icon = PoposIcons.OutlinedPlace,
                         )
-                        Spacer(modifier = Modifier.height(SpaceSmall))
                     }
 
                     IconWithText(
                         text = order.orderPrice.toString(),
                         icon = PoposIcons.OutlinedCurrencyRupee,
                     )
+
+                    order.deliveryPartnerName?.let {
+                        IconWithText(
+                            text = it,
+                            icon = PoposIcons.DeliveryDining,
+                        )
+                    }
                 }
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(SpaceMini),
                 ) {
-                    StandardFilledTonalIconButton(
+                    PoposTonalIconButton(
                         icon = PoposIcons.OutlinedShare,
                         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                         contentColor = MaterialTheme.colorScheme.tertiary,
                         onClick = { onClickShareOrder(order.orderId) },
                     )
 
-                    StandardFilledTonalIconButton(
+                    PoposTonalIconButton(
                         icon = PoposIcons.OutlinedPrint,
                         containerColor = MaterialTheme.colorScheme.errorContainer,
                         contentColor = MaterialTheme.colorScheme.secondary,

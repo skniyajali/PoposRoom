@@ -22,7 +22,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
 import kotlinx.coroutines.Dispatchers
@@ -124,13 +123,10 @@ object ImportExport {
 
                 Result.success("Data written successfully")
             } catch (e: FileNotFoundException) {
-                Log.d("Exception", e.message.toString())
                 Result.failure(e)
             } catch (e: IOException) {
-                Log.d("Exception", e.message.toString())
                 Result.failure(e)
             } catch (e: Exception) {
-                Log.d("Exception", e.message.toString())
                 Result.failure(e)
             }
         }
@@ -148,7 +144,7 @@ object ImportExport {
                 val jsonData = moshi.toJson(data)
 
                 val contentResolver = context.applicationContext.contentResolver
-                val outputStream = contentResolver.openOutputStream(uri, "rwt")?.let { stream ->
+                contentResolver.openOutputStream(uri, "rwt")?.let { stream ->
                     stream.bufferedWriter().apply {
                         write(jsonData)
                         flush()

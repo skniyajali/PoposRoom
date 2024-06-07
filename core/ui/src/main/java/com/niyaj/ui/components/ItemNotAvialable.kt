@@ -28,10 +28,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -46,6 +42,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.niyaj.core.ui.R
+import com.niyaj.designsystem.components.PoposElevatedButton
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceMedium
 
@@ -59,9 +57,9 @@ fun ItemNotAvailable(
     icon: ImageVector = if (buttonText.contains("CREATE", true) ||
         buttonText.contains("ADD", true)
     ) {
-        Icons.Default.Add
+        PoposIcons.Add
     } else {
-        Icons.Default.Edit
+        PoposIcons.Edit
     },
     image: Painter = painterResource(id = R.drawable.emptystate),
     onClick: () -> Unit = {},
@@ -97,7 +95,7 @@ fun ItemNotAvailable(
 
             if (buttonText.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(SpaceMedium))
-                StandardElevatedButton(
+                PoposElevatedButton(
                     modifier = btnModifier,
                     text = buttonText,
                     icon = icon,
@@ -123,9 +121,9 @@ fun ItemNotAvailableHalf(
     icon: ImageVector = if (buttonText.contains("CREATE", true) ||
         buttonText.contains("ADD", true)
     ) {
-        Icons.Default.Add
+        PoposIcons.Add
     } else {
-        Icons.Default.Edit
+        PoposIcons.Edit
     },
     image: Painter = painterResource(id = R.drawable.emptystate),
     onClick: () -> Unit = {},
@@ -150,11 +148,12 @@ fun ItemNotAvailableHalf(
             style = MaterialTheme.typography.bodySmall,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.padding(horizontal = SpaceLarge),
         )
 
         if (buttonText.isNotEmpty()) {
             Spacer(modifier = Modifier.height(SpaceMedium))
-            StandardElevatedButton(
+            PoposElevatedButton(
                 modifier = btnModifier,
                 text = buttonText,
                 icon = icon,
@@ -176,7 +175,7 @@ fun EmptyImportScreen(
     text: String,
     buttonText: String,
     showImage: Boolean = true,
-    icon: ImageVector = Icons.Default.FileOpen,
+    icon: ImageVector = PoposIcons.FileOpen,
     image: Painter = painterResource(id = R.drawable.openfile),
     onClick: () -> Unit = {},
 ) {
@@ -212,7 +211,7 @@ fun EmptyImportScreen(
 
             if (buttonText.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(SpaceMedium))
-                StandardElevatedButton(
+                PoposElevatedButton(
                     modifier = btnModifier,
                     text = buttonText,
                     icon = icon,

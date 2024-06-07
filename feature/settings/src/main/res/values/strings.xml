@@ -17,7 +17,6 @@
 -->
 <resources>
     <string name="feature_settings_top_app_bar_action_icon_description">Settings</string>
-    <string name="feature_settings_top_app_bar_navigation_icon_description">Search</string>
     <string name="feature_settings_title">Settings</string>
     <string name="feature_settings_loading">Loading…</string>
     <string name="feature_settings_privacy_policy">Privacy policy</string>

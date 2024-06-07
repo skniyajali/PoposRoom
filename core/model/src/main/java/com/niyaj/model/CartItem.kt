@@ -30,4 +30,5 @@ data class CartItem(
     val customerAddress: String? = null,
     val updatedAt: String = "",
     val orderPrice: Long = 0,
+    val deliveryPartnerId: Int,
 )

@@ -17,9 +17,17 @@
 
 package com.niyaj.cartorder.createOrUpdate
 
+import androidx.compose.runtime.mutableStateListOf
+import com.niyaj.model.Address
+import com.niyaj.model.Customer
 import com.niyaj.model.OrderType
 
 data class AddEditCartOrderState(
     val orderType: OrderType = OrderType.DineIn,
     val doesChargesIncluded: Boolean = false,
+    val address: Address = Address(),
+    val customer: Customer = Customer(),
+    val deliveryPartnerId: Int = 0,
+    val selectedAddOnItems: MutableList<Int> = mutableStateListOf(),
+    val selectedCharges: MutableList<Int> = mutableStateListOf(),
 )

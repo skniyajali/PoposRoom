@@ -42,6 +42,12 @@ object EmployeeTestTags {
 
     const val EMPLOYEE_TYPE_FIELD = "Employee Type"
 
+    const val EMPLOYEE_PARTNER_FIELD = "Delivery Partner"
+
+    const val EMPLOYEE_PARTNER_CHECKED_FIELD = "Marked as a Delivery Partner"
+    const val EMPLOYEE_PARTNER_UNCHECKED_FIELD = "Mark as a Delivery Partner"
+    const val QR_CODE_NOTE = "Please scan a QR code for this partner, otherwise restaurant QR code will be shown on order bill."
+
     const val EMPLOYEE_POSITION_FIELD = "Employee Position"
     const val EMPLOYEE_POSITION_ERROR = "Employee PositionError"
 

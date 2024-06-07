@@ -28,9 +28,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.EventBusy
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -47,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toFormattedDate
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor6
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -90,7 +88,7 @@ fun AbsentDetails(
             title = {
                 IconWithText(
                     text = "Absent Details",
-                    icon = Icons.Default.EventBusy,
+                    icon = PoposIcons.EventBusy,
                 )
             },
             rowClickable = true,
@@ -100,7 +98,7 @@ fun AbsentDetails(
                     onClick = onExpanded,
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.KeyboardArrowDown,
+                        imageVector = PoposIcons.ArrowDown,
                         contentDescription = "Expand Absent Details",
                         tint = MaterialTheme.colorScheme.secondary,
                     )

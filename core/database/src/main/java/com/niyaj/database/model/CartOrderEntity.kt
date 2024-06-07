@@ -41,6 +41,8 @@ data class CartOrderEntity(
     @ColumnInfo(index = true)
     val customerId: Int,
 
+    val deliveryPartnerId: Int = 0,
+
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     val createdAt: Date = Date(),
 

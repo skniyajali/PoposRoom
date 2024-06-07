@@ -17,6 +17,7 @@
 
 package com.niyaj.employee.createOrUpdate
 
+import android.graphics.Bitmap
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -28,16 +29,21 @@ import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.data.repository.EmployeeRepository
 import com.niyaj.data.repository.EmployeeValidationRepository
+import com.niyaj.data.repository.QRCodeScanner
 import com.niyaj.model.Employee
+import com.niyaj.ui.utils.QRCodeEncoder
 import com.niyaj.ui.utils.UiEvent
 import com.samples.apps.core.analytics.AnalyticsEvent
 import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -49,12 +55,16 @@ class AddEditEmployeeViewModel @Inject constructor(
     private val employeeRepository: EmployeeRepository,
     private val validationRepository: EmployeeValidationRepository,
     private val analyticsHelper: AnalyticsHelper,
+    private val scanner: QRCodeScanner,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private var employeeId = savedStateHandle.get<Int>("employeeId")
+    private var employeeId = savedStateHandle.get<Int>("employeeId") ?: 0
 
     var state by mutableStateOf(AddEditEmployeeState())
+
+    private val _scannedBitmap = MutableStateFlow<Bitmap?>(null)
+    val scannedBitmap = _scannedBitmap.asStateFlow()
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -135,8 +145,20 @@ class AddEditEmployeeViewModel @Inject constructor(
                 state = state.copy(employeeType = event.employeeType)
             }
 
+            is AddEditEmployeeEvent.UpdateDeliveryPartner -> {
+                state = state.copy(
+                    isDeliveryPartner = !state.isDeliveryPartner,
+                )
+            }
+
+            is AddEditEmployeeEvent.ScanQRCode -> {
+                viewModelScope.launch {
+                    startScanning()
+                }
+            }
+
             is AddEditEmployeeEvent.CreateOrUpdateEmployee -> {
-                createOrUpdateEmployee(event.employeeId)
+                createOrUpdateEmployee(employeeId)
             }
         }
     }
@@ -153,7 +175,23 @@ class AddEditEmployeeViewModel @Inject constructor(
                     employeeSalaryType = employee.employeeSalaryType,
                     employeeType = employee.employeeType,
                     employeeJoinedDate = employee.employeeJoinedDate,
+                    isDeliveryPartner = employee.isDeliveryPartner,
+                    partnerQRCode = employee.partnerQRCode,
                 )
+            }
+        }
+    }
+
+    private fun startScanning() {
+        viewModelScope.launch {
+            scanner.startScanning().collectLatest {
+                if (!it.isNullOrEmpty()) {
+                    _scannedBitmap.value = QRCodeEncoder().encodeBitmap(it)
+
+                    state = state.copy(
+                        partnerQRCode = it,
+                    )
+                }
             }
         }
     }
@@ -175,6 +213,8 @@ class AddEditEmployeeViewModel @Inject constructor(
                     employeeSalaryType = state.employeeSalaryType,
                     employeeType = state.employeeType,
                     employeeJoinedDate = state.employeeJoinedDate,
+                    isDeliveryPartner = state.isDeliveryPartner,
+                    partnerQRCode = state.partnerQRCode,
                     createdAt = System.currentTimeMillis(),
                     updatedAt = if (employeeId != 0) System.currentTimeMillis() else null,
                 )

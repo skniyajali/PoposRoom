@@ -15,11 +15,10 @@
  *
  */
 
-package com.niyaj.cart.dineOut
+package com.niyaj.model
 
-import com.niyaj.model.CartItem
-
-data class DineOutState(
-    val isLoading: Boolean = true,
-    val items: List<CartItem> = emptyList(),
+data class EmployeeNameAndId(
+    val employeeId: Int,
+    val employeeName: String,
+    val partnerQRCode: String? = null,
 )

@@ -25,6 +25,7 @@ import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.PaddingValues
@@ -56,7 +57,9 @@ import com.niyaj.common.utils.findActivity
 import com.niyaj.common.utils.openAppSettings
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.model.OrderType
+import com.niyaj.model.Charges
+import com.niyaj.model.EmployeeNameAndId
+import com.niyaj.model.OrderDetails
 import com.niyaj.order.components.AddressDetails
 import com.niyaj.order.components.CartItemDetails
 import com.niyaj.order.components.CartOrderDetails
@@ -95,23 +98,14 @@ fun OrderDetailsScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val captureController = rememberCaptureController()
-    val lazyListState = rememberLazyListState()
-    val printError = printViewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
-    LaunchedEffect(key1 = printError) {
-        printError?.let {
-            when (printError) {
-                is UiEvent.OnError -> {
-                    snackbarHostState.showSnackbar(
-                        message = printError.errorMessage,
-                        duration = SnackbarDuration.Short,
-                    )
-                }
+    val state by viewModel.orderDetails.collectAsStateWithLifecycle()
+    val charges by viewModel.charges.collectAsStateWithLifecycle()
+    val deliveryPartners by viewModel.deliveryPartners.collectAsStateWithLifecycle()
+    val showShareDialog by viewModel.showDialog.collectAsStateWithLifecycle()
 
-                else -> {}
-            }
-        }
-    }
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(null)
+    val printError by printViewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     val bluetoothPermissions =
         // Checks if the device has Android 12 or above
@@ -133,213 +127,89 @@ fun OrderDetailsScreen(
             )
         }
 
-    var cartOrderExpended by remember { mutableStateOf(true) }
-    var customerExpended by remember { mutableStateOf(false) }
-    var addressExpended by remember { mutableStateOf(false) }
-    var cartExpended by remember { mutableStateOf(true) }
+    val enableBluetoothContract = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+    ) {}
+
+    val bluetoothManager = remember {
+        context.getSystemService(BluetoothManager::class.java)
+    }
+
+    val bluetoothAdapter: BluetoothAdapter? = remember {
+        bluetoothManager.adapter
+    }
+
+    val printOrder: () -> Unit = {
+        if (bluetoothPermissions.allPermissionsGranted) {
+            if (bluetoothAdapter?.isEnabled == true) {
+                // Bluetooth is on print the receipt
+                printViewModel.onPrintEvent(PrintEvent.PrintOrder(orderId))
+            } else {
+                // This intent will open the enable bluetooth dialog
+                val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+
+                // Bluetooth is off, ask user to turn it on
+                enableBluetoothContract.launch(enableBluetoothIntent)
+                printViewModel.onPrintEvent(PrintEvent.PrintOrder(orderId))
+            }
+        } else {
+            bluetoothPermissions.launchMultiplePermissionRequest()
+        }
+    }
+
+    LaunchedEffect(key1 = printError) {
+        printError?.let { event ->
+            when (event) {
+                is UiEvent.OnError -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.errorMessage,
+                        duration = SnackbarDuration.Short,
+                    )
+                }
+
+                else -> {}
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = event) {
+        event?.let { data ->
+            when (data) {
+                is UiEvent.OnError -> {
+                    snackbarHostState.showSnackbar(
+                        message = data.errorMessage,
+                        duration = SnackbarDuration.Short,
+                    )
+                }
+
+                is UiEvent.OnSuccess -> {
+                    snackbarHostState.showSnackbar(
+                        message = data.successMessage,
+                        duration = SnackbarDuration.Short,
+                    )
+                }
+            }
+        }
+    }
 
     TrackScreenViewEvent(screenName = Screens.ORDER_DETAILS_SCREEN)
 
     HandleBluetoothPermissionState(
         multiplePermissionsState = bluetoothPermissions,
         onSuccessful = {
-            val state = viewModel.orderDetails.collectAsStateWithLifecycle().value
-            val charges = viewModel.charges.collectAsStateWithLifecycle().value
-
-            val showShareDialog = viewModel.showDialog.collectAsStateWithLifecycle().value
-
-            val enableBluetoothContract = rememberLauncherForActivityResult(
-                ActivityResultContracts.StartActivityForResult(),
-            ) {}
-
-            val bluetoothManager = remember {
-                context.getSystemService(BluetoothManager::class.java)
-            }
-
-            val bluetoothAdapter: BluetoothAdapter? = remember {
-                bluetoothManager.adapter
-            }
-
-            val printOrder: (Int) -> Unit = {
-                if (bluetoothPermissions.allPermissionsGranted) {
-                    if (bluetoothAdapter?.isEnabled == true) {
-                        // Bluetooth is on print the receipt
-                        printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
-                    } else {
-                        // This intent will open the enable bluetooth dialog
-                        val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-
-                        // Bluetooth is off, ask user to turn it on
-                        enableBluetoothContract.launch(enableBluetoothIntent)
-                        printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
-                    }
-                } else {
-                    bluetoothPermissions.launchMultiplePermissionRequest()
-                }
-            }
-
-            PoposSecondaryScaffold(
-                title = "Order Details",
-                showBackButton = true,
-                showBottomBar = false,
-                navActions = {
-                    IconButton(
-                        onClick = viewModel::onShowDialog,
-                    ) {
-                        Icon(
-                            imageVector = PoposIcons.Share,
-                            contentDescription = "Share Order Details",
-                        )
-                    }
-
-                    IconButton(
-                        onClick = {
-                            printOrder(orderId)
-                        },
-                    ) {
-                        Icon(
-                            imageVector = PoposIcons.Print,
-                            contentDescription = "Print Order Details",
-                        )
-                    }
-                },
-                showFab = lazyListState.isScrollingUp(),
-                fabPosition = FabPosition.EndOverlay,
-                floatingActionButton = {
-                    FloatingActionButton(
-                        onClick = viewModel::onShowDialog,
-                        containerColor = MaterialTheme.colorScheme.primary,
-                    ) {
-                        Icon(imageVector = PoposIcons.Share, contentDescription = "Share List")
-                    }
-                },
+            OrderDetailsContent(
+                modifier = Modifier,
+                state = state,
+                charges = charges,
+                partners = deliveryPartners,
                 onBackClick = navigator::navigateUp,
+                onClickShare = viewModel::onShowDialog,
+                onClickPrint = printOrder,
+                onChangePartner = viewModel::updateDeliveryPartner,
+                onClickCustomer = onClickCustomer,
+                onClickAddress = onClickAddress,
                 snackbarHostState = snackbarHostState,
-            ) {
-                Crossfade(
-                    targetState = state,
-                    label = "Order Details..",
-                ) { newState ->
-                    when (newState) {
-                        is UiState.Loading -> LoadingIndicator()
-
-                        is UiState.Empty -> {
-                            ItemNotAvailable(text = "Order Details not available")
-                        }
-
-                        is UiState.Success -> {
-                            TrackScrollJank(
-                                scrollableState = lazyListState,
-                                stateName = "Order Details::List",
-                            )
-
-                            val orderDetails = newState.data
-
-                            LazyColumn(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(it),
-                                contentPadding = PaddingValues(SpaceSmall),
-                                state = lazyListState,
-                            ) {
-                                item("Order Details") {
-                                    CartOrderDetails(
-                                        cartOrder = orderDetails.cartOrder,
-                                        doesExpanded = cartOrderExpended,
-                                        onExpandChanged = {
-                                            cartOrderExpended = !cartOrderExpended
-                                        },
-                                    )
-                                }
-
-                                item("Customer Details") {
-                                    if (orderDetails.cartOrder.customer.customerId != 0) {
-                                        CustomerDetails(
-                                            customer = orderDetails.cartOrder.customer,
-                                            doesExpanded = customerExpended,
-                                            onExpandChanged = {
-                                                customerExpended = !customerExpended
-                                            },
-                                            onClickViewDetails = onClickCustomer,
-                                        )
-                                    }
-                                }
-
-                                item("Address Details") {
-                                    if (orderDetails.cartOrder.address.addressId != 0) {
-                                        AddressDetails(
-                                            address = orderDetails.cartOrder.address,
-                                            doesExpanded = addressExpended,
-                                            onExpandChanged = {
-                                                addressExpended = !addressExpended
-                                            },
-                                            onClickViewDetails = onClickAddress,
-                                        )
-                                    }
-                                }
-
-                                item("Order Products") {
-                                    if (orderDetails.cartProducts.isNotEmpty()) {
-                                        CartItemDetails(
-                                            orderType = orderDetails.cartOrder.orderType,
-                                            doesChargesIncluded = orderDetails.cartOrder.doesChargesIncluded,
-                                            addOnItems = orderDetails.addOnItems,
-                                            cartProducts = orderDetails.cartProducts,
-                                            charges = charges,
-                                            additionalCharges = orderDetails.charges,
-                                            orderPrice = orderDetails.orderPrice,
-                                            doesExpanded = cartExpended,
-                                            onExpandChanged = {
-                                                cartExpended = !cartExpended
-                                            },
-                                        )
-                                    }
-                                }
-                            }
-
-                            AnimatedVisibility(
-                                visible = showShareDialog,
-                            ) {
-                                ShareableOrderDetails(
-                                    captureController = captureController,
-                                    orderDetails = orderDetails,
-                                    charges = if (orderDetails.cartOrder.orderType == OrderType.DineOut) {
-                                        charges.filterNot { !it.isApplicable }
-                                    } else {
-                                        emptyList()
-                                    },
-                                    onDismiss = viewModel::onDismissDialog,
-                                    onClickShare = captureController::captureLongScreenshot,
-                                    onCaptured = { bitmap, error ->
-                                        bitmap?.let {
-                                            scope.launch {
-                                                val uri = viewModel.saveImage(it, context)
-                                                uri?.let {
-                                                    viewModel.shareContent(
-                                                        context,
-                                                        "Share Image",
-                                                        uri,
-                                                    )
-                                                }
-                                            }
-                                        }
-                                        error?.let {
-                                            Log.d(
-                                                "Capturable",
-                                                "Error: ${it.message}\n${it.stackTrace.joinToString()}",
-                                            )
-                                        }
-                                    },
-                                    onClickPrintOrder = {
-                                        viewModel.onDismissDialog()
-                                        printOrder(orderId)
-                                    },
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+            )
         },
         onError = { shouldShowRationale ->
             BluetoothPermissionDialog(
@@ -354,4 +224,194 @@ fun OrderDetailsScreen(
             )
         },
     )
+
+    AnimatedVisibility(
+        visible = showShareDialog,
+    ) {
+        if (state is UiState.Success) {
+            val orderDetails = state as UiState.Success<OrderDetails>
+
+            ShareableOrderDetails(
+                captureController = captureController,
+                orderDetails = orderDetails,
+                charges = charges,
+                onDismiss = viewModel::onDismissDialog,
+                onClickShare = captureController::captureLongScreenshot,
+                onCaptured = { bitmap, error ->
+                    bitmap?.let {
+                        scope.launch {
+                            val uri = viewModel.saveImage(it, context)
+                            uri?.let {
+                                viewModel.shareContent(
+                                    context,
+                                    "Share Image",
+                                    uri,
+                                )
+                            }
+                        }
+                    }
+                    error?.let {
+                        Log.d(
+                            "Capturable",
+                            "Error: ${it.message}\n${it.stackTrace.joinToString()}",
+                        )
+                    }
+                },
+                onClickPrintOrder = {
+                    viewModel.onDismissDialog()
+                    printOrder()
+                },
+            )
+        }
+    }
+}
+
+@VisibleForTesting
+@Composable
+internal fun OrderDetailsContent(
+    modifier: Modifier = Modifier,
+    state: UiState<OrderDetails>,
+    charges: List<Charges>,
+    partners: List<EmployeeNameAndId>,
+    onBackClick: () -> Unit,
+    onClickShare: () -> Unit,
+    onClickPrint: () -> Unit,
+    onChangePartner: (Int) -> Unit,
+    onClickCustomer: (customerId: Int) -> Unit,
+    onClickAddress: (addressId: Int) -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+) {
+    val lazyListState = rememberLazyListState()
+
+    var cartOrderExpended by remember { mutableStateOf(true) }
+    var customerExpended by remember { mutableStateOf(false) }
+    var addressExpended by remember { mutableStateOf(false) }
+    var cartExpended by remember { mutableStateOf(true) }
+
+    PoposSecondaryScaffold(
+        modifier = modifier,
+        title = "Order Details",
+        showBackButton = true,
+        showBottomBar = false,
+        navActions = {
+            IconButton(
+                onClick = onClickShare,
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Share,
+                    contentDescription = "Share Order Details",
+                )
+            }
+
+            IconButton(
+                onClick = {
+                    onClickPrint()
+                },
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Print,
+                    contentDescription = "Print Order Details",
+                )
+            }
+        },
+        showFab = lazyListState.isScrollingUp(),
+        fabPosition = FabPosition.EndOverlay,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onClickShare,
+                containerColor = MaterialTheme.colorScheme.primary,
+            ) {
+                Icon(imageVector = PoposIcons.Share, contentDescription = "Share List")
+            }
+        },
+        onBackClick = onBackClick,
+        snackbarHostState = snackbarHostState,
+    ) {
+        Crossfade(
+            targetState = state,
+            label = "Order Details..",
+        ) { newState ->
+            when (newState) {
+                is UiState.Loading -> LoadingIndicator()
+
+                is UiState.Empty -> {
+                    ItemNotAvailable(text = "Order Details not available")
+                }
+
+                is UiState.Success -> {
+                    TrackScrollJank(
+                        scrollableState = lazyListState,
+                        stateName = "Order Details::List",
+                    )
+
+                    val orderDetails = newState.data
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(it),
+                        contentPadding = PaddingValues(SpaceSmall),
+                        state = lazyListState,
+                    ) {
+                        item("Order Details") {
+                            CartOrderDetails(
+                                cartOrder = orderDetails.cartOrder,
+                                deliveryPartner = orderDetails.deliveryPartner,
+                                partners = partners,
+                                doesExpanded = cartOrderExpended,
+                                onExpandChanged = {
+                                    cartOrderExpended = !cartOrderExpended
+                                },
+                                onChangePartner = onChangePartner,
+                            )
+                        }
+
+                        item("Customer Details") {
+                            if (orderDetails.cartOrder.customer.customerId != 0) {
+                                CustomerDetails(
+                                    customer = orderDetails.cartOrder.customer,
+                                    doesExpanded = customerExpended,
+                                    onExpandChanged = {
+                                        customerExpended = !customerExpended
+                                    },
+                                    onClickViewDetails = onClickCustomer,
+                                )
+                            }
+                        }
+
+                        item("Address Details") {
+                            if (orderDetails.cartOrder.address.addressId != 0) {
+                                AddressDetails(
+                                    address = orderDetails.cartOrder.address,
+                                    doesExpanded = addressExpended,
+                                    onExpandChanged = {
+                                        addressExpended = !addressExpended
+                                    },
+                                    onClickViewDetails = onClickAddress,
+                                )
+                            }
+                        }
+
+                        item("Order Products") {
+                            if (orderDetails.cartProducts.isNotEmpty()) {
+                                CartItemDetails(
+                                    orderType = orderDetails.cartOrder.orderType,
+                                    doesChargesIncluded = orderDetails.cartOrder.doesChargesIncluded,
+                                    addOnItems = orderDetails.addOnItems,
+                                    cartProducts = orderDetails.cartProducts,
+                                    charges = charges,
+                                    additionalCharges = orderDetails.charges,
+                                    orderPrice = orderDetails.orderPrice,
+                                    doesExpanded = cartExpended,
+                                    onExpandChanged = {
+                                        cartExpended = !cartExpended
+                                    },
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

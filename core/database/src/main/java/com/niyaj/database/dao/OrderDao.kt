@@ -23,8 +23,11 @@ import androidx.room.Transaction
 import com.niyaj.database.model.ChargesEntity
 import com.niyaj.database.model.OrderDetailsDto
 import com.niyaj.database.model.ProductEntity
+import com.niyaj.model.DeliveryReport
 import com.niyaj.model.Order
 import com.niyaj.model.OrderStatus
+import com.niyaj.model.OrderType
+import com.niyaj.model.TotalDeliveryPartnerOrder
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -34,21 +37,77 @@ interface OrderDao {
             SELECT co.orderId, co.orderType,
             COALESCE(cu.customerPhone, null) as customerPhone,
             COALESCE(ad.shortName, null) as customerAddress,
+            COALESCE(em.employeeName, null) as deliveryPartnerName,
+            COALESCE(em.employeeId, 0) as deliveryPartnerId,
             COALESCE(co.updatedAt, co.createdAt) as orderDate,
             cp.totalPrice as orderPrice
             FROM cartorder co
             JOIN cart_price cp ON cp.orderId = co.orderId
             LEFT JOIN customer cu ON cu.customerId = co.customerId
             LEFT JOIN address ad ON ad.addressId = co.addressId
-            WHERE (co.updatedAt BETWEEN :startDate AND :endDate) AND co.orderStatus = :orderStatus
+            LEFT JOIN employee em ON em.employeeId = co.deliveryPartnerId
+            WHERE (co.updatedAt BETWEEN :startDate AND :endDate)
+            AND co.orderStatus = :orderStatus AND co.orderType = :orderType
             ORDER BY co.updatedAt DESC
         """,
     )
     fun getAllOrder(
         startDate: Long,
         endDate: Long,
+        orderType: OrderType,
         orderStatus: OrderStatus = OrderStatus.PLACED,
     ): Flow<List<Order>>
+
+    @Query(
+        """
+            SELECT COUNT(co.orderId) as totalOrders, SUM(cp.totalPrice) as totalAmount,
+            COALESCE(em.employeeId, 0) as partnerId,
+            COALESCE(em.employeeName, null) as partnerName
+            FROM cartorder co
+            JOIN cart_price cp ON cp.orderId = co.orderId
+            LEFT JOIN customer cu ON cu.customerId = co.customerId
+            LEFT JOIN address ad ON ad.addressId = co.addressId
+            LEFT JOIN employee em ON em.employeeId = co.deliveryPartnerId
+            WHERE (co.updatedAt BETWEEN :startDate AND :endDate)
+            AND co.orderStatus = :orderStatus AND co.orderType = :orderType
+            GROUP BY co.deliveryPartnerId
+            ORDER BY co.updatedAt DESC 
+        """,
+    )
+    fun getDeliveryPartnerOrders(
+        startDate: Long,
+        endDate: Long,
+        orderType: OrderType = OrderType.DineOut,
+        orderStatus: OrderStatus = OrderStatus.PLACED,
+    ): Flow<List<TotalDeliveryPartnerOrder>>
+
+    @Query(
+        """
+            SELECT co.orderId,
+            COALESCE(cu.customerPhone, null) as customerPhone,
+            COALESCE(ad.addressName, null) as customerAddress,
+            COALESCE(em.employeeName, null) as partnerName,
+            COALESCE(em.employeeId, 0) as partnerId,
+            COALESCE(co.updatedAt, co.createdAt) as orderDate,
+            cp.totalPrice as orderPrice
+            FROM cartorder co
+            JOIN cart_price cp ON cp.orderId = co.orderId
+            LEFT JOIN customer cu ON cu.customerId = co.customerId
+            LEFT JOIN address ad ON ad.addressId = co.addressId
+            LEFT JOIN employee em ON em.employeeId = co.deliveryPartnerId
+            WHERE (co.updatedAt BETWEEN :startDate AND :endDate)
+            AND co.orderStatus = :orderStatus AND co.orderType = :orderType AND
+            CASE WHEN :partnerId IS NOT NULL THEN co.deliveryPartnerId = :partnerId ELSE 1 END
+            ORDER BY co.updatedAt DESC
+        """,
+    )
+    fun getPartnerDeliveryReport(
+        startDate: Long,
+        endDate: Long,
+        partnerId: Int? = null,
+        orderType: OrderType = OrderType.DineOut,
+        orderStatus: OrderStatus = OrderStatus.PLACED,
+    ): Flow<List<DeliveryReport>>
 
     @Transaction
     @Query(
@@ -73,4 +132,11 @@ interface OrderDao {
     """,
     )
     fun getAllCharges(): Flow<List<ChargesEntity>>
+
+    @Query(
+        value = """
+        UPDATE cartorder SET deliveryPartnerId = :deliveryPartnerId WHERE orderId = :orderId
+    """,
+    )
+    suspend fun updateDeliveryPartner(orderId: Int, deliveryPartnerId: Int): Int
 }

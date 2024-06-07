@@ -39,5 +39,7 @@ sealed interface AddEditCartOrderEvent {
 
     data class SelectCharges(val chargesId: Int) : AddEditCartOrderEvent
 
-    data class CreateOrUpdateCartOrder(val cartOrderId: Int = 0) : AddEditCartOrderEvent
+    data class SelectDeliveryPartner(val partnerId: Int) : AddEditCartOrderEvent
+
+    data object CreateOrUpdateCartOrder : AddEditCartOrderEvent
 }

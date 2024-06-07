@@ -33,8 +33,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -49,6 +47,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 
 @Composable
@@ -127,7 +126,7 @@ fun StandardExpandable(
                         },
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowDropDown,
+                            imageVector = PoposIcons.ArrowDropDown,
                             contentDescription = contentDesc.plus("Expand Less"),
                             tint = iconTint,
                         )

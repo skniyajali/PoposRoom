@@ -39,6 +39,10 @@ data class Employee(
 
     val employeeType: EmployeeType = EmployeeType.FullTime,
 
+    val isDeliveryPartner: Boolean = false,
+
+    val partnerQRCode: String? = null,
+
     val createdAt: Long = System.currentTimeMillis(),
 
     val updatedAt: Long? = null,

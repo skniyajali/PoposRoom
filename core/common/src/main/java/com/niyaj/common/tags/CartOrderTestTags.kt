@@ -43,6 +43,7 @@ object CartOrderTestTags {
 
     const val CART_ADD_ON_ITEMS = "Cart Order AddOns"
     const val CART_CHARGES_ITEMS = "Cart Order Charges"
+    const val CART_PARTNER_ITEMS = "Delivery Partner"
 
     const val CART_ORDER_NAME_EMPTY_ERROR = "Address name must not be empty."
     const val ADDRESS_NAME_LENGTH_ERROR = "The address name must be more than 2 characters long."

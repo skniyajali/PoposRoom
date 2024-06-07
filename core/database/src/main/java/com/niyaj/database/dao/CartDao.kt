@@ -154,4 +154,11 @@ interface CartDao {
        """,
     )
     suspend fun getProductsById(productIds: List<Int>): List<ProductEntity>
+
+    @Query(
+        value = """
+        UPDATE cartorder SET deliveryPartnerId = :deliveryPartnerId WHERE orderId = :orderId
+    """,
+    )
+    suspend fun updateDeliveryPartner(orderId: Int, deliveryPartnerId: Int): Int
 }

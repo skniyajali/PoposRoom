@@ -41,13 +41,13 @@ import androidx.compose.ui.util.trace
 import com.niyaj.common.tags.EmployeeTestTags
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.EmployeeMonthlyDate
 import com.niyaj.model.EmployeeSalaryEstimation
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.PaymentStatusChip
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.event.UiState
 
 /**
@@ -181,7 +181,7 @@ fun SalaryEstimationCard(
                         Spacer(modifier = Modifier.height(SpaceSmall))
                         Spacer(modifier = Modifier.height(SpaceSmall))
 
-                        StandardButton(
+                        PoposButton(
                             text = "Add Absent Entry",
                             icon = PoposIcons.EventBusy,
                             onClick = onClickAbsentEntry,
@@ -193,7 +193,7 @@ fun SalaryEstimationCard(
 
                         Spacer(modifier = Modifier.height(SpaceSmall))
 
-                        StandardButton(
+                        PoposButton(
                             text = "Add Payment Entry",
                             icon = PoposIcons.Money,
                             onClick = onClickSalaryEntry,

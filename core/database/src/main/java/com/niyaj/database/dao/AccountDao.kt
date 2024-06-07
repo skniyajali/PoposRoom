@@ -55,4 +55,7 @@ interface AccountDao {
 
     @Query("SELECT isLoggedIn FROM account WHERE restaurantId = :resId")
     fun checkIsLoggedIn(resId: Int): Flow<Boolean?>
+
+    @Query("SELECT isLoggedIn FROM account WHERE restaurantId = :resId")
+    fun checkUserIsLoggedIn(resId: Int): Boolean?
 }

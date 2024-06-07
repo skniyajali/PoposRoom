@@ -17,13 +17,19 @@
 
 package com.niyaj.cart.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -34,41 +40,48 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.cart.CartEvent
+import com.niyaj.cart.CartState
+import com.niyaj.cart.DineInEvent
+import com.niyaj.cart.DineOutEvent
 import com.niyaj.designsystem.theme.ProfilePictureSizeSmall
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
 import com.niyaj.model.CartItem
+import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.OrderType
+import com.niyaj.ui.components.AnimatedTextDividerDashed
 import com.niyaj.ui.components.CartAddOnItems
+import com.niyaj.ui.components.CartDeliveryPartners
+import com.niyaj.ui.components.CartItemProductDetailsSection
+import com.niyaj.ui.components.CartItemTotalPriceSection
 
 @Composable
-fun CartItems(
+internal fun CartItems(
     modifier: Modifier = Modifier,
     listState: LazyListState,
-    cartItems: List<CartItem>,
+    cartState: CartState.Success,
     selectedCartItems: List<Int>,
     addOnItems: List<AddOnItem>,
-    showPrintBtn: Boolean = false,
-    onSelectCartOrder: (Int) -> Unit,
+    deliveryPartners: List<EmployeeNameAndId>,
+    showPrintBtn: Boolean,
     onClickEditOrder: (Int) -> Unit,
     onClickViewOrder: (Int) -> Unit,
-    onClickDecreaseQty: (orderId: Int, productId: Int) -> Unit,
-    onClickIncreaseQty: (orderId: Int, productId: Int) -> Unit,
-    onClickAddOnItem: (addOnItemId: Int, orderId: Int) -> Unit,
-    onClickPlaceOrder: (orderId: Int) -> Unit,
-    onClickPrintOrder: (orderId: Int) -> Unit = {},
+    onClickPrintOrder: (orderId: Int) -> Unit,
+    onEvent: (CartEvent) -> Unit,
 ) = trace("CartItems") {
     LazyColumn(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(start = SpaceSmall, top = SpaceSmall, end = SpaceSmall, bottom = 0.dp),
+            .fillMaxSize(),
+        contentPadding = PaddingValues(SpaceSmall),
         verticalArrangement = Arrangement.Top,
         state = listState,
     ) {
         itemsIndexed(
-            items = cartItems,
+            items = cartState.items,
             key = { _, cartItem ->
                 cartItem.orderId
             },
@@ -78,20 +91,17 @@ fun CartItems(
                     cartItem = cartItem,
                     doesSelected = selectedCartItems.contains(cartItem.orderId),
                     addOnItems = addOnItems,
+                    deliveryPartners = deliveryPartners,
                     showPrintBtn = showPrintBtn,
-                    onSelectCartOrder = onSelectCartOrder,
                     onClickEditOrder = onClickEditOrder,
                     onClickViewOrder = onClickViewOrder,
-                    onClickDecreaseQty = onClickDecreaseQty,
-                    onClickIncreaseQty = onClickIncreaseQty,
-                    onClickAddOnItem = onClickAddOnItem,
-                    onClickPlaceOrder = onClickPlaceOrder,
                     onClickPrintOrder = onClickPrintOrder,
+                    onEvent = onEvent,
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
 
-                if (index == cartItems.size - 1) {
+                if (index == cartState.items.size - 1) {
                     Spacer(modifier = Modifier.height(ProfilePictureSizeSmall))
                 }
             }
@@ -100,19 +110,16 @@ fun CartItems(
 }
 
 @Composable
-fun CartItem(
+private fun CartItem(
     cartItem: CartItem,
     doesSelected: Boolean,
     addOnItems: List<AddOnItem>,
-    showPrintBtn: Boolean = false,
-    onSelectCartOrder: (Int) -> Unit,
+    deliveryPartners: List<EmployeeNameAndId>,
+    showPrintBtn: Boolean,
     onClickEditOrder: (Int) -> Unit,
     onClickViewOrder: (Int) -> Unit,
-    onClickDecreaseQty: (orderId: Int, productId: Int) -> Unit,
-    onClickIncreaseQty: (orderId: Int, productId: Int) -> Unit,
-    onClickAddOnItem: (addOnItemId: Int, orderId: Int) -> Unit,
-    onClickPlaceOrder: (orderId: Int) -> Unit,
-    onClickPrintOrder: (orderId: Int) -> Unit = {},
+    onClickPrintOrder: (orderId: Int) -> Unit,
+    onEvent: (CartEvent) -> Unit,
 ) = trace("CartItem") {
     val interactionSource = remember {
         MutableInteractionSource()
@@ -129,7 +136,11 @@ fun CartItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(interactionSource, indication = null) {
-                onSelectCartOrder(cartItem.orderId)
+                if (cartItem.orderType == OrderType.DineIn) {
+                    onEvent(DineInEvent.SelectDineInCart(cartItem.orderId))
+                } else {
+                    onEvent(DineOutEvent.SelectDineOutCart(cartItem.orderId))
+                }
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         colors = CardDefaults.cardColors(
@@ -143,7 +154,11 @@ fun CartItem(
             customerPhone = cartItem.customerPhone,
             selected = doesSelected,
             onClick = {
-                onSelectCartOrder(cartItem.orderId)
+                if (cartItem.orderType == OrderType.DineIn) {
+                    onEvent(DineInEvent.SelectDineInCart(cartItem.orderId))
+                } else {
+                    onEvent(DineOutEvent.SelectDineOutCart(cartItem.orderId))
+                }
             },
             onEditClick = {
                 onClickEditOrder(cartItem.orderId)
@@ -156,28 +171,72 @@ fun CartItem(
         CartItemProductDetailsSection(
             cartProducts = cartItem.cartProducts,
             decreaseQuantity = {
-                onClickDecreaseQty(cartItem.orderId, it)
+                onEvent(CartEvent.DecreaseQuantity(cartItem.orderId, it))
             },
             increaseQuantity = {
-                onClickIncreaseQty(cartItem.orderId, it)
+                onEvent(CartEvent.IncreaseQuantity(cartItem.orderId, it))
             },
         )
 
-        if (addOnItems.isNotEmpty()) {
+        AnimatedVisibility(
+            visible = deliveryPartners.isNotEmpty(),
+            enter = fadeIn(tween(500)),
+            exit = fadeOut(tween(600)),
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Spacer(modifier = Modifier.height(SpaceSmall))
+
+                AnimatedTextDividerDashed(text = "Delivery Partner")
+
+                Spacer(modifier = Modifier.height(SpaceSmall))
+
+                CartDeliveryPartners(
+                    partners = deliveryPartners,
+                    doesSelected = {
+                        it == cartItem.deliveryPartnerId
+                    },
+                    onClick = {
+                        val newId = if (it == cartItem.deliveryPartnerId) 0 else it
+                        onEvent(DineOutEvent.UpdateDeliveryPartner(cartItem.orderId, newId))
+                    },
+                    backgroundColor = Color.Transparent,
+                )
+            }
+        }
+
+        AnimatedVisibility(
+            visible = addOnItems.isNotEmpty(),
+            enter = fadeIn(tween(500)),
+            exit = fadeOut(tween(600)),
+        ) {
             val addOnSelectedColor = if (cartItem.orderType == OrderType.DineIn) {
                 MaterialTheme.colorScheme.secondary
             } else {
                 MaterialTheme.colorScheme.primary
             }
 
-            CartAddOnItems(
-                addOnItems = addOnItems,
-                selectedAddOnItem = cartItem.addOnItems,
-                selectedColor = addOnSelectedColor,
-                onClick = {
-                    onClickAddOnItem(it, cartItem.orderId)
-                },
-            )
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Spacer(modifier = Modifier.height(SpaceSmall))
+
+                AnimatedTextDividerDashed(text = "AddOn Items")
+
+                Spacer(modifier = Modifier.height(SpaceSmall))
+
+                CartAddOnItems(
+                    addOnItems = addOnItems,
+                    selectedAddOnItem = cartItem.addOnItems,
+                    selectedColor = addOnSelectedColor,
+                    onClick = {
+                        onEvent(CartEvent.UpdateAddOnItemInCart(cartItem.orderId, it))
+                    },
+                )
+
+                Spacer(modifier = Modifier.height(SpaceSmall))
+            }
         }
 
         CartItemTotalPriceSection(
@@ -186,10 +245,11 @@ fun CartItem(
             showPrintBtn = showPrintBtn,
             totalPrice = cartItem.orderPrice,
             onClickPlaceOrder = {
-                onClickPlaceOrder(cartItem.orderId)
+                onEvent(CartEvent.PlaceCartOrder(cartItem.orderId))
             },
             onClickPrintOrder = {
                 onClickPrintOrder(cartItem.orderId)
+                onEvent(CartEvent.PlaceCartOrder(cartItem.orderId))
             },
         )
     }

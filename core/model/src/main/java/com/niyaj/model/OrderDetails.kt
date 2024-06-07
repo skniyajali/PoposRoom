@@ -26,4 +26,5 @@ data class OrderDetails(
     val addOnItems: ImmutableList<AddOnItem> = persistentListOf(),
     val charges: ImmutableList<Charges> = persistentListOf(),
     val orderPrice: OrderPrice = OrderPrice(),
+    val deliveryPartner: EmployeeNameAndId? = null,
 )

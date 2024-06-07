@@ -31,6 +31,8 @@ data class AddEditEmployeeState(
     val employeeSalaryType: EmployeeSalaryType = EmployeeSalaryType.Monthly,
     val employeeType: EmployeeType = EmployeeType.FullTime,
     val employeeJoinedDate: String = LocalDate.now().toMilliSecond,
+    val isDeliveryPartner: Boolean = false,
+    val partnerQRCode: String? = null,
 )
 
 val positions = listOf(

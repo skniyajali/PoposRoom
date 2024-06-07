@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import com.niyaj.common.tags.MarketListTestTags
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toTimeSpan
+import com.niyaj.designsystem.components.PoposOutlinedIconButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -57,7 +58,6 @@ import com.niyaj.model.MarketListWithType
 import com.niyaj.model.MarketListWithTypes
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.StandardOutlinedIconButton
 import com.niyaj.ui.components.TextWithIcon
 import com.niyaj.ui.components.drawAnimatedBorder
 
@@ -131,7 +131,7 @@ fun MarketListItemCard(
                             Alignment.CenterHorizontally,
                         ),
                     ) {
-                        StandardOutlinedIconButton(
+                        PoposOutlinedIconButton(
                             icon = PoposIcons.Print,
                             onClick = {
                                 onClickPrint(listIds)
@@ -140,7 +140,7 @@ fun MarketListItemCard(
                             borderColor = MaterialTheme.colorScheme.secondary,
                         )
 
-                        StandardOutlinedIconButton(
+                        PoposOutlinedIconButton(
                             icon = PoposIcons.Share,
                             onClick = {
                                 onClickShare(listIds)
@@ -149,7 +149,7 @@ fun MarketListItemCard(
                             borderColor = MaterialTheme.colorScheme.secondary,
                         )
 
-                        StandardOutlinedIconButton(
+                        PoposOutlinedIconButton(
                             icon = PoposIcons.OpenInNew,
                             onClick = {
                                 onClickViewDetails(listIds)

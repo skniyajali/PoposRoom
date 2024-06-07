@@ -24,13 +24,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Rule
-import androidx.compose.material.icons.filled.Checklist
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -38,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.Constants.SEARCH_ITEM_PLACEHOLDER
+import com.niyaj.designsystem.icon.PoposIcons
 
 /**
  * @param placeholderText: Show placeholder text into search bar
@@ -84,7 +78,7 @@ fun ScaffoldNavActions(
                 modifier = Modifier.testTag(NAV_EDIT_BTN),
             ) {
                 Icon(
-                    imageVector = Icons.Default.Edit,
+                    imageVector = PoposIcons.Edit,
                     contentDescription = "Edit Item",
                 )
             }
@@ -95,7 +89,7 @@ fun ScaffoldNavActions(
             modifier = Modifier.testTag(NAV_DELETE_BTN),
         ) {
             Icon(
-                imageVector = Icons.Default.Delete,
+                imageVector = PoposIcons.Delete,
                 contentDescription = "Delete Item",
             )
         }
@@ -105,7 +99,7 @@ fun ScaffoldNavActions(
             modifier = Modifier.testTag(NAV_SELECT_ALL_BTN),
         ) {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.Rule,
+                imageVector = PoposIcons.Rule,
                 contentDescription = "Select All Item",
             )
         }
@@ -125,7 +119,7 @@ fun ScaffoldNavActions(
                 modifier = Modifier.testTag(NAV_SEARCH_BTN),
             ) {
                 Icon(
-                    imageVector = Icons.Default.Search,
+                    imageVector = PoposIcons.Search,
                     contentDescription = "Search Icon",
                 )
             }
@@ -137,7 +131,7 @@ fun ScaffoldNavActions(
                 modifier = Modifier.testTag(NAV_SETTING_BTN),
             ) {
                 Icon(
-                    imageVector = Icons.Default.Settings,
+                    imageVector = PoposIcons.Settings,
                     contentDescription = "Settings",
                 )
             }
@@ -211,7 +205,7 @@ fun ScaffoldNavActions(
                         if (state.currentState == 1) {
                             IconButton(onClick = onEditClick) {
                                 Icon(
-                                    imageVector = Icons.Default.Edit,
+                                    imageVector = PoposIcons.Edit,
                                     contentDescription = Constants.EDIT_ICON,
                                 )
                             }
@@ -219,14 +213,14 @@ fun ScaffoldNavActions(
 
                         IconButton(onClick = onDeleteClick) {
                             Icon(
-                                imageVector = Icons.Default.Delete,
+                                imageVector = PoposIcons.Delete,
                                 contentDescription = Constants.DELETE_ICON,
                             )
                         }
 
                         IconButton(onClick = onSelectAllClick) {
                             Icon(
-                                imageVector = Icons.Default.Checklist,
+                                imageVector = PoposIcons.Checklist,
                                 contentDescription = Constants.SELECT_ALL_ICON,
                             )
                         }
@@ -240,7 +234,7 @@ fun ScaffoldNavActions(
                             modifier = Modifier.testTag(NAV_SEARCH_BTN),
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Search,
+                                imageVector = PoposIcons.Search,
                                 contentDescription = "Search Icon",
                             )
                         }
@@ -252,7 +246,7 @@ fun ScaffoldNavActions(
                             modifier = Modifier.testTag(NAV_SETTING_BTN),
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Settings,
+                                imageVector = PoposIcons.Settings,
                                 contentDescription = "Settings",
                             )
                         }

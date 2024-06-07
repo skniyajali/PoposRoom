@@ -53,6 +53,7 @@ import com.niyaj.common.tags.ExpenseTestTags.EXPORT_EXPENSE_FILE_NAME
 import com.niyaj.common.tags.ExpenseTestTags.EXPORT_EXPENSE_TITLE
 import com.niyaj.common.tags.ExpenseTestTags.NO_ITEMS_IN_EXPENSE
 import com.niyaj.common.utils.Constants
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
@@ -64,7 +65,6 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -202,7 +202,7 @@ fun ExpensesExportScreen(
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} expenses will be exported.")
 
-                StandardButton(
+                PoposButton(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag(EXPORT_EXPENSE_BTN),

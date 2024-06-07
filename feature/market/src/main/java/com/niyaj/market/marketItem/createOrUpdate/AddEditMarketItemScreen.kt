@@ -67,6 +67,7 @@ import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_TYPE_ERROR_TAG
 import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_TYPE_FIELD
 import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_ITEM_DESC
 import com.niyaj.common.tags.MarketListTestTags.UPDATE_ITEM
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -74,7 +75,6 @@ import com.niyaj.market.destinations.AddEditMarketTypeScreenDestination
 import com.niyaj.market.destinations.AddEditMeasureUnitScreenDestination
 import com.niyaj.model.MarketTypeIdAndName
 import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -135,7 +135,7 @@ fun AddEditMarketItemScreen(
         showBottomBar = true,
         showBackButton = true,
         bottomBar = {
-            StandardButton(
+            PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag(ADD_EDIT_MARKET_ITEM_BUTTON)

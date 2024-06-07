@@ -46,6 +46,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.common.tags.ProductTestTags
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.safeString
+import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -58,7 +59,6 @@ import com.niyaj.ui.components.ItemNotAvailableHalf
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
-import com.niyaj.ui.components.StandardButton
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.components.StandardTextField
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -180,7 +180,7 @@ fun DecreaseProductPriceScreen(
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} products price will be decreased.")
 
-                StandardButton(
+                PoposButton(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag(ProductTestTags.DECREASE_PRODUCTS_BTN_TEXT),

@@ -771,7 +771,7 @@ fun PoposDrawerHeader(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = stringResource(id = R.string.restaurant_slogan),
+                    text = stringResource(id = R.string.restaurant_tag),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Medium,
                 )

@@ -131,4 +131,10 @@ class AccountRepositoryImpl(
     override fun checkIsLoggedIn(resId: Int): Flow<Boolean> {
         return accountDao.checkIsLoggedIn(resId).map { it ?: false }
     }
+
+    override suspend fun checkUserLoggedIn(resId: Int): Boolean {
+        return withContext(ioDispatcher) {
+            accountDao.checkUserIsLoggedIn(resId) ?: false
+        }
+    }
 }

@@ -35,19 +35,28 @@ interface PrintDao {
 
     @Query(
         """
-            SELECT co.orderId, co.createdAt, co.updatedAt, ad.shortName as addressName,
+            SELECT co.orderId,
+            COALESCE(cu.customerPhone, null) as customerPhone,
+            COALESCE(ad.shortName, null) as customerAddress,
+            COALESCE(em.employeeName, null) as partnerName,
+            COALESCE(em.employeeId, 0) as partnerId,
+            COALESCE(co.updatedAt, co.createdAt) as orderDate,
             cp.totalPrice as orderPrice
             FROM cartorder co
             JOIN cart_price cp ON cp.orderId = co.orderId
-            JOIN address ad ON ad.addressId = co.addressId
-            WHERE (co.updatedAt BETWEEN :startDate AND :endDate) 
-                AND co.orderType = :orderType AND co.orderStatus = :orderStatus
-            ORDER BY co.orderId DESC
+            LEFT JOIN customer cu ON cu.customerId = co.customerId
+            LEFT JOIN address ad ON ad.addressId = co.addressId
+            LEFT JOIN employee em ON em.employeeId = co.deliveryPartnerId
+            WHERE (co.updatedAt BETWEEN :startDate AND :endDate)
+            AND co.orderStatus = :orderStatus AND co.orderType = :orderType AND
+            CASE WHEN :partnerId IS NOT NULL THEN co.deliveryPartnerId = :partnerId ELSE 1 END
+            ORDER BY co.updatedAt DESC
         """,
     )
     suspend fun getDeliveryReport(
         startDate: Long,
         endDate: Long,
+        partnerId: Int? = null,
         orderType: OrderType = OrderType.DineOut,
         orderStatus: OrderStatus = OrderStatus.PLACED,
     ): List<DeliveryReport>

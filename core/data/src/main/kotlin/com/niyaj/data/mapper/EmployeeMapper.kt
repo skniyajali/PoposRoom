@@ -32,6 +32,8 @@ fun Employee.toEntity(): EmployeeEntity {
         employeeEmail = this.employeeEmail,
         employeeSalaryType = this.employeeSalaryType,
         employeeType = this.employeeType,
+        isDeliveryPartner = this.isDeliveryPartner,
+        partnerQRCode = this.partnerQRCode,
         createdAt = this.createdAt.toDate,
         updatedAt = this.updatedAt?.toDate,
     )

@@ -37,6 +37,7 @@ import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.AddOnItem
 import com.niyaj.model.CartItem
 import com.niyaj.model.CartProductItem
+import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.OrderType
 import com.niyaj.model.OrderWithCartItems
 import com.niyaj.model.SELECTED_ID
@@ -64,6 +65,12 @@ class CartRepositoryImpl(
             list.map {
                 it.asExternalModel()
             }
+        }
+    }
+
+    override suspend fun getDeliveryPartners(): Flow<List<EmployeeNameAndId>> {
+        return withContext(ioDispatcher) {
+            cartOrderDao.getDeliveryPartners()
         }
     }
 
@@ -245,6 +252,21 @@ class CartRepositoryImpl(
         }
     }
 
+    override suspend fun updateDeliveryPartner(
+        orderId: Int,
+        deliveryPartnerId: Int,
+    ): Resource<Boolean> {
+        return withContext(ioDispatcher) {
+            try {
+                val result = cartDao.updateDeliveryPartner(orderId, deliveryPartnerId)
+
+                Resource.Success(result > 0)
+            } catch (e: Exception) {
+                Resource.Error(e.message.toString())
+            }
+        }
+    }
+
     override suspend fun deleteProductFromCart(orderId: Int, productId: Int): Resource<Boolean> {
         return try {
             val result = cartDao.deleteProductFromCart(orderId, productId)
@@ -296,6 +318,7 @@ class CartRepositoryImpl(
                                 ?: order.cartOrder.createdAt
                             ).toTimeSpan,
                         orderPrice = order.orderPrice.totalPrice,
+                        deliveryPartnerId = order.cartOrder.deliveryPartnerId,
                     )
                 }
         }
@@ -333,6 +356,7 @@ class CartRepositoryImpl(
                         ?: itemDto.cartOrder.createdAt
                     ).toTimeSpan,
                 orderPrice = itemDto.orderPrice.totalPrice,
+                deliveryPartnerId = itemDto.cartOrder.deliveryPartnerId,
             )
         }
     }

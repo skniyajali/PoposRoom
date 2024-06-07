@@ -52,6 +52,8 @@ import com.niyaj.common.tags.MarketListTestTags.TYPES_NOTE_TEXT
 import com.niyaj.common.tags.MarketListTestTags.UPDATE_LIST
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.components.PoposButton
+import com.niyaj.designsystem.components.PoposOutlinedAssistChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
@@ -61,8 +63,6 @@ import com.niyaj.model.MarketTypeIdAndListTypes
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.StandardBottomSheet
-import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardOutlinedAssistChip
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
@@ -153,7 +153,7 @@ fun AddEditMarketListScreen(
                     }
                 }
 
-                StandardOutlinedAssistChip(
+                PoposOutlinedAssistChip(
                     text = "Change Date",
                     icon = PoposIcons.CalenderMonth,
                     onClick = dialogState::show,
@@ -189,7 +189,7 @@ fun AddEditMarketListScreen(
                 NoteCard(text = TYPES_NOTE_TEXT)
             }
 
-            StandardButton(
+            PoposButton(
                 text = title,
                 enabled = !isError,
                 icon = if (marketId == 0) PoposIcons.Add else PoposIcons.Edit,

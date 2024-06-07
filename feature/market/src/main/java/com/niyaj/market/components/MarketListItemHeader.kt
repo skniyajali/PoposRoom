@@ -38,14 +38,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toFormattedDate
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.designsystem.components.PoposOutlinedAssistChip
+import com.niyaj.designsystem.components.StandardFilterChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.MarketListAndType
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.StandardFilterChip
-import com.niyaj.ui.components.StandardOutlinedAssistChip
 
 @Composable
 fun MarketListItemHeader(
@@ -106,7 +106,7 @@ fun MarketListItemHeader(
                     fontWeight = FontWeight.SemiBold,
                 )
 
-                StandardOutlinedAssistChip(
+                PoposOutlinedAssistChip(
                     text = marketList.listType,
                     icon = PoposIcons.ListAlt,
                     borderColor = MaterialTheme.colorScheme.secondary,

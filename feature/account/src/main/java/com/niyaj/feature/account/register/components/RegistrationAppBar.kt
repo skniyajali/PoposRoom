@@ -46,10 +46,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.designsystem.components.PoposButton
+import com.niyaj.designsystem.components.PoposOutlinedButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.feature.account.R
-import com.niyaj.ui.components.StandardButton
-import com.niyaj.ui.components.StandardOutlinedButton
 
 @Composable
 private fun TopAppBarTitle(
@@ -149,7 +149,7 @@ fun RegisterBottomBar(
                     .padding(horizontal = 16.dp, vertical = 20.dp),
             ) {
                 if (shouldShowPreviousButton) {
-                    StandardOutlinedButton(
+                    PoposOutlinedButton(
                         modifier = Modifier
                             .weight(1f)
                             .height(48.dp),
@@ -160,7 +160,7 @@ fun RegisterBottomBar(
                     Spacer(modifier = Modifier.width(16.dp))
                 }
                 if (shouldShowDoneButton) {
-                    StandardButton(
+                    PoposButton(
                         modifier = Modifier
                             .weight(1f)
                             .height(48.dp),
@@ -170,7 +170,7 @@ fun RegisterBottomBar(
                         enabled = isNextButtonEnabled,
                     )
                 } else {
-                    StandardButton(
+                    PoposButton(
                         modifier = Modifier
                             .weight(1f)
                             .height(48.dp),
