@@ -50,7 +50,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Get the module paths
-module_paths=$(./gradlew -q printModulePaths --no-configuration-cache)
+module_paths=$(grep -oP 'include\("\K[^"]+' settings.gradle.kts)
 
 # Ensure the output directory exists
 mkdir -p docs/images/graphs/
@@ -103,6 +103,6 @@ echo "$module_paths" | while read -r module_path; do
         # Convert to SVG using dot
         dot -Tsvg "/tmp/${file_name}.gv" > "docs/images/graphs/${file_name}.svg"
         # Remove the temporary .gv file
-        rm "/tmp/${file_name}.gv"
+#        rm "/tmp/${file_name}.gv"
     fi
 done

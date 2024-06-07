@@ -94,7 +94,7 @@ android {
     sentry {
         // Disables or enables debug log output, e.g. for for sentry-cli.
         // Default is disabled.
-        debug.set(true)
+        debug.set(false)
 
         // The slug of the Sentry organization to use for uploading proguard mappings/source contexts.
         org.set("skniyajali")
