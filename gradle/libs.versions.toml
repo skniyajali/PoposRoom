@@ -86,7 +86,7 @@ vanpraComposeVersion = '0.9.0'
 zxing = "3.5.1"
 saketSwipe = "1.2.0"
 capturable = "1.0.3"
-fragula-compose = "2.10"
+fragula-compose = "2.10.1"
 konfetti-compose = "2.0.4"
 
 # App Version
