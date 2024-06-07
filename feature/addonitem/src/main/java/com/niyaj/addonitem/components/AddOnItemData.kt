@@ -43,9 +43,9 @@ import com.niyaj.common.tags.AddOnTestTags.ADDON_ITEM_TAG
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.designsystem.utils.drawAnimatedBorder
 import com.niyaj.model.AddOnItem
 import com.niyaj.ui.components.CircularBox
-import com.niyaj.ui.components.drawAnimatedBorder
 import com.niyaj.ui.utils.DevicePreviews
 
 @OptIn(ExperimentalFoundationApi::class)
