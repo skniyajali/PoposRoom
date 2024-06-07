@@ -147,7 +147,9 @@ fun EmployeeScreen(
 
     resultRecipient.onNavResult { result ->
         when (result) {
-            is NavResult.Canceled -> {}
+            is NavResult.Canceled -> {
+                viewModel.deselectItems()
+            }
             is NavResult.Value -> {
                 scope.launch {
                     snackbarState.showSnackbar(result.value)

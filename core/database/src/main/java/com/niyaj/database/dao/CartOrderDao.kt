@@ -223,7 +223,7 @@ interface CartOrderDao {
 
     @Query(
         value = """
-        SELECT employeeId, employeeName FROM employee WHERE isDeliveryPartner = :isDeliveryPartner
+        SELECT employeeId, employeeName, partnerQRCode FROM employee WHERE isDeliveryPartner = :isDeliveryPartner
     """,
     )
     fun getDeliveryPartners(isDeliveryPartner: Boolean = true): Flow<List<EmployeeNameAndId>>
