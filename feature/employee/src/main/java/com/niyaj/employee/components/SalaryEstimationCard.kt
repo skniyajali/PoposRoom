@@ -182,6 +182,7 @@ fun SalaryEstimationCard(
                         Spacer(modifier = Modifier.height(SpaceSmall))
 
                         PoposButton(
+                            modifier = Modifier.fillMaxWidth(),
                             text = "Add Absent Entry",
                             icon = PoposIcons.EventBusy,
                             onClick = onClickAbsentEntry,
@@ -194,6 +195,7 @@ fun SalaryEstimationCard(
                         Spacer(modifier = Modifier.height(SpaceSmall))
 
                         PoposButton(
+                            modifier = Modifier.fillMaxWidth(),
                             text = "Add Payment Entry",
                             icon = PoposIcons.Money,
                             onClick = onClickSalaryEntry,

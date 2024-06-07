@@ -178,6 +178,10 @@ class AddEditEmployeeViewModel @Inject constructor(
                     isDeliveryPartner = employee.isDeliveryPartner,
                     partnerQRCode = employee.partnerQRCode,
                 )
+
+                employee.partnerQRCode?.let {
+                    _scannedBitmap.value = QRCodeEncoder().encodeBitmap(it)
+                }
             }
         }
     }

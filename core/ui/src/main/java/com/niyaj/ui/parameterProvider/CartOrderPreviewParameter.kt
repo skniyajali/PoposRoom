@@ -23,7 +23,6 @@ import com.niyaj.model.CartOrder
 import com.niyaj.model.Customer
 import com.niyaj.model.OrderStatus
 import com.niyaj.model.OrderType
-import java.util.Date
 
 class CartOrderPreviewParameter : PreviewParameterProvider<List<CartOrder>> {
     override val values: Sequence<List<CartOrder>>
@@ -46,7 +45,6 @@ class CartOrderPreviewParameter : PreviewParameterProvider<List<CartOrder>> {
                         shortName = "Main St",
                     ),
                     deliveryPartnerId = 0,
-                    createdAt = Date(2023, 5, 1),
                 ),
                 CartOrder(
                     orderId = 2,
@@ -65,7 +63,6 @@ class CartOrderPreviewParameter : PreviewParameterProvider<List<CartOrder>> {
                         shortName = "Oak Ave",
                     ),
                     deliveryPartnerId = 1,
-                    createdAt = Date(2023, 5, 2),
                 ),
                 CartOrder(
                     orderId = 3,
@@ -84,7 +81,6 @@ class CartOrderPreviewParameter : PreviewParameterProvider<List<CartOrder>> {
                         shortName = "Maple Ln",
                     ),
                     deliveryPartnerId = 0,
-                    createdAt = Date(2023, 5, 3),
                 ),
                 CartOrder(
                     orderId = 4,
@@ -103,7 +99,6 @@ class CartOrderPreviewParameter : PreviewParameterProvider<List<CartOrder>> {
                         shortName = "Pine Rd",
                     ),
                     deliveryPartnerId = 2,
-                    createdAt = Date(2023, 5, 4),
                 ),
                 CartOrder(
                     orderId = 5,
@@ -122,7 +117,6 @@ class CartOrderPreviewParameter : PreviewParameterProvider<List<CartOrder>> {
                         shortName = "Cedar Blvd",
                     ),
                     deliveryPartnerId = 0,
-                    createdAt = Date(2023, 5, 5),
                 ),
                 CartOrder(
                     orderId = 6,
@@ -141,7 +135,6 @@ class CartOrderPreviewParameter : PreviewParameterProvider<List<CartOrder>> {
                         shortName = "Elm St",
                     ),
                     deliveryPartnerId = 3,
-                    createdAt = Date(2023, 5, 6),
                 ),
                 CartOrder(
                     orderId = 7,
@@ -160,7 +153,6 @@ class CartOrderPreviewParameter : PreviewParameterProvider<List<CartOrder>> {
                         shortName = "Birch Ave",
                     ),
                     deliveryPartnerId = 0,
-                    createdAt = Date(2023, 5, 7),
                 ),
                 CartOrder(
                     orderId = 8,
@@ -179,7 +171,6 @@ class CartOrderPreviewParameter : PreviewParameterProvider<List<CartOrder>> {
                         shortName = "Oak Dr",
                     ),
                     deliveryPartnerId = 4,
-                    createdAt = Date(2023, 5, 8),
                 ),
                 CartOrder(
                     orderId = 9,
@@ -198,7 +189,6 @@ class CartOrderPreviewParameter : PreviewParameterProvider<List<CartOrder>> {
                         shortName = "Maple Ct",
                     ),
                     deliveryPartnerId = 0,
-                    createdAt = Date(2023, 5, 9),
                 ),
                 CartOrder(
                     orderId = 10,
@@ -217,7 +207,6 @@ class CartOrderPreviewParameter : PreviewParameterProvider<List<CartOrder>> {
                         shortName = "Pine Ln",
                     ),
                     deliveryPartnerId = 5,
-                    createdAt = Date(2023, 5, 10),
                 ),
             ),
         )
