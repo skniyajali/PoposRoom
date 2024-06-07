@@ -103,6 +103,6 @@ echo "$module_paths" | while read -r module_path; do
         # Convert to SVG using dot
         dot -Tsvg "/tmp/${file_name}.gv" > "docs/images/graphs/${file_name}.svg"
         # Remove the temporary .gv file
-#        rm "/tmp/${file_name}.gv"
+        rm "/tmp/${file_name}.gv"
     fi
 done
