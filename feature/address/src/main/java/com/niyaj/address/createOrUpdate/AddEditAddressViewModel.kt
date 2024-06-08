@@ -27,12 +27,12 @@ import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.common.utils.getAllCapitalizedLetters
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.AddressRepository
 import com.niyaj.data.repository.validation.AddressValidationRepository
 import com.niyaj.model.Address
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -160,7 +160,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateAddress(addressId: Int, message: 
         event = AnalyticsEvent(
             type = "address_$message",
             extras = listOf(
-                AnalyticsEvent.Param("address_$message", addressId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("address_$message", addressId.toString()),
             ),
         ),
     )

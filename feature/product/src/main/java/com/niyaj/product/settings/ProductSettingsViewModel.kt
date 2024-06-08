@@ -25,13 +25,13 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.safeInt
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.ProductRepository
 import com.niyaj.model.Product
 import com.niyaj.model.ProductIdWithPrice
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -266,7 +266,7 @@ internal fun AnalyticsHelper.logImportedProductFromFile(totalProduct: Int) {
         event = AnalyticsEvent(
             type = "products_imported_from_file",
             extras = listOf(
-                AnalyticsEvent.Param("products_imported_from_file", totalProduct.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("products_imported_from_file", totalProduct.toString()),
             ),
         ),
     )
@@ -277,7 +277,7 @@ internal fun AnalyticsHelper.logImportedProductToDatabase(totalProduct: Int) {
         event = AnalyticsEvent(
             type = "products_imported_to_database",
             extras = listOf(
-                AnalyticsEvent.Param("products_imported_to_database", totalProduct.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("products_imported_to_database", totalProduct.toString()),
             ),
         ),
     )
@@ -288,7 +288,7 @@ internal fun AnalyticsHelper.logExportedProductToFile(totalProduct: Int) {
         event = AnalyticsEvent(
             type = "products_exported_to_file",
             extras = listOf(
-                AnalyticsEvent.Param("products_exported_to_file", totalProduct.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("products_exported_to_file", totalProduct.toString()),
             ),
         ),
     )
@@ -299,7 +299,7 @@ internal fun AnalyticsHelper.logProductPriceIncreased(totalProduct: Int) {
         event = AnalyticsEvent(
             type = "products_price_increased",
             extras = listOf(
-                AnalyticsEvent.Param("products_price_increased", totalProduct.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("products_price_increased", totalProduct.toString()),
             ),
         ),
     )
@@ -310,7 +310,7 @@ internal fun AnalyticsHelper.logProductPriceDecreased(totalProduct: Int) {
         event = AnalyticsEvent(
             type = "products_price_decreased",
             extras = listOf(
-                AnalyticsEvent.Param("products_price_decreased", totalProduct.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("products_price_decreased", totalProduct.toString()),
             ),
         ),
     )

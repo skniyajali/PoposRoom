@@ -58,13 +58,13 @@ class BluetoothPrinter @Inject constructor(
         repository.getProfileInfo(it)
     }.stateIn(
         scope = externalScope,
-        started = SharingStarted.Eagerly,
+        started = SharingStarted.WhileSubscribed(5_000),
         initialValue = Profile.defaultProfileInfo,
     )
 
     val printerInfo = repository.getPrinter(Printer.PRINTER_ID).stateIn(
         scope = externalScope,
-        started = SharingStarted.Eagerly,
+        started = SharingStarted.WhileSubscribed(5_000),
         initialValue = Printer.defaultPrinterInfo,
     )
 

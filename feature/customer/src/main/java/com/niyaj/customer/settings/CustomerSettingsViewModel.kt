@@ -20,12 +20,12 @@ package com.niyaj.customer.settings
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CustomerRepository
 import com.niyaj.model.Customer
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -127,7 +127,7 @@ internal fun AnalyticsHelper.logImportedCustomersFromFile(totalCustomers: Int) {
         event = AnalyticsEvent(
             type = "customer_imported_from_file",
             extras = listOf(
-                AnalyticsEvent.Param("customer_imported_from_file", totalCustomers.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("customer_imported_from_file", totalCustomers.toString()),
             ),
         ),
     )
@@ -138,7 +138,7 @@ internal fun AnalyticsHelper.logImportedCustomersToDatabase(totalCustomers: Int)
         event = AnalyticsEvent(
             type = "customer_imported_to_database",
             extras = listOf(
-                AnalyticsEvent.Param("customer_imported_to_database", totalCustomers.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("customer_imported_to_database", totalCustomers.toString()),
             ),
         ),
     )
@@ -149,7 +149,7 @@ internal fun AnalyticsHelper.logExportedCustomersToFile(totalCustomers: Int) {
         event = AnalyticsEvent(
             type = "customer_exported_to_file",
             extras = listOf(
-                AnalyticsEvent.Param("customer_exported_to_file", totalCustomers.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("customer_exported_to_file", totalCustomers.toString()),
             ),
         ),
     )

@@ -25,11 +25,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.AccountRepository
 import com.niyaj.data.repository.validation.ProfileValidationRepository
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -140,7 +140,7 @@ internal fun AnalyticsHelper.logUserPasswordChanged(resId: Int, status: String) 
         event = AnalyticsEvent(
             type = "user_password_changed",
             extras = listOf(
-                AnalyticsEvent.Param("user_password_changed", "$resId - $status"),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("user_password_changed", "$resId - $status"),
             ),
         ),
     )

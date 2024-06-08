@@ -21,12 +21,12 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.startOfDayTime
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.ExpenseRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -106,7 +106,7 @@ internal fun AnalyticsHelper.logDeletedExpenses(data: List<Int>) {
         event = AnalyticsEvent(
             type = "expenses_deleted",
             extras = listOf(
-                AnalyticsEvent.Param("expenses_deleted", data.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("expenses_deleted", data.toString()),
             ),
         ),
     )

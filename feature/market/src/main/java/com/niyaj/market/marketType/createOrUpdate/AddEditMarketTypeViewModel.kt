@@ -27,12 +27,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.capitalizeWords
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.MarketTypeRepository
 import com.niyaj.data.repository.validation.MarketTypeValidationRepository
 import com.niyaj.model.MarketType
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -216,7 +216,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateMarketType(data: Int, message: St
         event = AnalyticsEvent(
             type = "market_type_$message",
             extras = listOf(
-                AnalyticsEvent.Param("market_type_$message", data.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("market_type_$message", data.toString()),
             ),
         ),
     )

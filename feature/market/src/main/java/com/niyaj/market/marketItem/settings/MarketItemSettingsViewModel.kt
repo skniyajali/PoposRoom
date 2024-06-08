@@ -20,12 +20,12 @@ package com.niyaj.market.marketItem.settings
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.MarketItemRepository
 import com.niyaj.model.MarketItem
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -132,7 +132,7 @@ internal fun AnalyticsHelper.logImportedItemsFromFile(totalItems: Int) {
         event = AnalyticsEvent(
             type = "market_item_imported_from_file",
             extras = listOf(
-                AnalyticsEvent.Param("market_item_imported_from_file", totalItems.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("market_item_imported_from_file", totalItems.toString()),
             ),
         ),
     )
@@ -143,7 +143,7 @@ internal fun AnalyticsHelper.logImportedItemsToDatabase(totalItems: Int) {
         event = AnalyticsEvent(
             type = "market_item_imported_to_database",
             extras = listOf(
-                AnalyticsEvent.Param("market_item_imported_to_database", totalItems.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("market_item_imported_to_database", totalItems.toString()),
             ),
         ),
     )
@@ -154,7 +154,7 @@ internal fun AnalyticsHelper.logExportedItemsToFile(totalItems: Int) {
         event = AnalyticsEvent(
             type = "market_item_exported_to_file",
             extras = listOf(
-                AnalyticsEvent.Param("market_item_exported_to_file", totalItems.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("market_item_exported_to_file", totalItems.toString()),
             ),
         ),
     )

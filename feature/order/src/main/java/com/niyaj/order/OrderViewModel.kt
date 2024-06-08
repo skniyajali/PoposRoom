@@ -20,14 +20,14 @@ package com.niyaj.order
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.OrderRepository
 import com.niyaj.model.Charges
 import com.niyaj.model.OrderDetails
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -155,7 +155,7 @@ internal fun AnalyticsHelper.logDeletedOrder(orderId: Int) {
         event = AnalyticsEvent(
             type = "order_has_been_deleted",
             extras = listOf(
-                AnalyticsEvent.Param("order_has_been_deleted", orderId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("order_has_been_deleted", orderId.toString()),
             ),
         ),
     )
@@ -166,7 +166,7 @@ internal fun AnalyticsHelper.logOrderMarkedAsProcessing(orderId: Int) {
         event = AnalyticsEvent(
             type = "order_marked_as_processing",
             extras = listOf(
-                AnalyticsEvent.Param("order_marked_as_processing", orderId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("order_marked_as_processing", orderId.toString()),
             ),
         ),
     )

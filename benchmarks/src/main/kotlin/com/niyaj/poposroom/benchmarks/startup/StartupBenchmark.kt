@@ -25,8 +25,6 @@ import androidx.benchmark.macro.StartupTimingMetric
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.niyaj.poposroom.benchmarks.PACKAGE_NAME
-import com.niyaj.poposroom.benchmarks.addonitem.goToAddOnScreenScreen
-import com.niyaj.poposroom.benchmarks.startActivityAndAllowNotifications
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -67,8 +65,9 @@ class StartupBenchmark {
             pressHome()
         },
     ) {
-        startActivityAndAllowNotifications()
+        startActivityAndWait()
+//        startActivityAndAllowNotifications()
         // Waits until the content is ready to capture Time To Full Display
-        goToAddOnScreenScreen()
+//        goToAddOnScreenScreen()
     }
 }

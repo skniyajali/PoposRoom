@@ -28,7 +28,7 @@ import java.io.ByteArrayOutputStream
  * Convenience parameter to use proper package name with regards to build type and build flavor.
  */
 val PACKAGE_NAME = buildString {
-    append("com.niyaj.poposroom.benchmarks")
+    append("com.niyaj.poposroom")
     append(BuildConfig.APP_FLAVOR_SUFFIX)
 }
 

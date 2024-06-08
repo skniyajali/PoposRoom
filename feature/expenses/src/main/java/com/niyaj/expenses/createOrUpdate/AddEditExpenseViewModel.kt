@@ -27,12 +27,12 @@ import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.common.tags.ExpenseTestTags.EXPENSES_AMOUNT_ALREADY_EXISTS
 import com.niyaj.common.utils.capitalizeWords
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.ExpenseRepository
 import com.niyaj.data.repository.ExpenseValidationRepository
 import com.niyaj.model.Expense
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -202,7 +202,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateExpenses(data: Int, message: Stri
         event = AnalyticsEvent(
             type = "expenses_$message",
             extras = listOf(
-                AnalyticsEvent.Param("expenses_$message", data.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("expenses_$message", data.toString()),
             ),
         ),
     )

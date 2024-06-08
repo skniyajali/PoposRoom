@@ -20,12 +20,12 @@ package com.niyaj.employee.settings
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.EmployeeRepository
 import com.niyaj.model.Employee
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -127,7 +127,7 @@ internal fun AnalyticsHelper.logImportedEmployeeFromFile(totalEmployee: Int) {
         event = AnalyticsEvent(
             type = "employee_imported_from_file",
             extras = listOf(
-                AnalyticsEvent.Param("employee_imported_from_file", totalEmployee.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("employee_imported_from_file", totalEmployee.toString()),
             ),
         ),
     )
@@ -138,7 +138,7 @@ internal fun AnalyticsHelper.logImportedEmployeeToDatabase(totalEmployee: Int) {
         event = AnalyticsEvent(
             type = "employee_imported_to_database",
             extras = listOf(
-                AnalyticsEvent.Param("employee_imported_to_database", totalEmployee.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("employee_imported_to_database", totalEmployee.toString()),
             ),
         ),
     )
@@ -149,7 +149,7 @@ internal fun AnalyticsHelper.logExportedEmployeeToFile(totalEmployee: Int) {
         event = AnalyticsEvent(
             type = "employee_exported_to_file",
             extras = listOf(
-                AnalyticsEvent.Param("employee_exported_to_file", totalEmployee.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("employee_exported_to_file", totalEmployee.toString()),
             ),
         ),
     )

@@ -27,6 +27,8 @@ import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.common.utils.getCapitalWord
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CartOrderRepository
 import com.niyaj.data.repository.validation.CartOrderValidationRepository
 import com.niyaj.model.Address
@@ -37,8 +39,6 @@ import com.niyaj.model.OrderStatus
 import com.niyaj.model.OrderType
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -326,7 +326,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateOrder(cartOrderId: Int, message: 
         event = AnalyticsEvent(
             type = "cart_order_$message",
             extras = listOf(
-                AnalyticsEvent.Param("cart_order_$message", cartOrderId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("cart_order_$message", cartOrderId.toString()),
             ),
         ),
     )

@@ -23,11 +23,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.AccountRepository
 import com.niyaj.data.repository.UserDataRepository
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -116,7 +116,7 @@ internal fun AnalyticsHelper.logUserLoggedIn(emailOrPhone: String, status: Strin
         event = AnalyticsEvent(
             type = "user_logged_in",
             extras = listOf(
-                AnalyticsEvent.Param("user_logged_in", "$emailOrPhone - $status"),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("user_logged_in", "$emailOrPhone - $status"),
             ),
         ),
     )

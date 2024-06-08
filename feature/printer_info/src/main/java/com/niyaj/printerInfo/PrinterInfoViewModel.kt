@@ -19,10 +19,10 @@ package com.niyaj.printerInfo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.feature.printer.bluetoothPrinter.BluetoothPrinter
 import com.niyaj.ui.event.UiState
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.mapLatest
@@ -77,7 +77,7 @@ internal fun AnalyticsHelper.printedTestData() {
         event = AnalyticsEvent(
             type = "printed_test_data",
             extras = listOf(
-                AnalyticsEvent.Param("printed_test_data", "Yes"),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("printed_test_data", "Yes"),
             ),
         ),
     )
@@ -88,7 +88,7 @@ internal fun AnalyticsHelper.connectedBluetoothPrinter(address: String) {
         event = AnalyticsEvent(
             type = "connected_bluetooth_printer",
             extras = listOf(
-                AnalyticsEvent.Param("connected_bluetooth_printer", address),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("connected_bluetooth_printer", address),
             ),
         ),
     )

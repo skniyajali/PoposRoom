@@ -20,6 +20,8 @@ package com.niyaj.cartSelected
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CartOrderRepository
 import com.niyaj.data.repository.CartRepository
 import com.niyaj.model.CartItem
@@ -28,8 +30,6 @@ import com.niyaj.model.SELECTED_ID
 import com.niyaj.model.Selected
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -245,7 +245,7 @@ internal fun AnalyticsHelper.logSelectedCartOrder(cartOrderId: Int) {
         event = AnalyticsEvent(
             type = "cart_order_selected",
             extras = listOf(
-                AnalyticsEvent.Param("cart_order_selected", cartOrderId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("cart_order_selected", cartOrderId.toString()),
             ),
         ),
     )
@@ -256,7 +256,7 @@ internal fun AnalyticsHelper.logPlacedCartOrder(cartOrderId: Int) {
         event = AnalyticsEvent(
             type = "order_placed",
             extras = listOf(
-                AnalyticsEvent.Param("order_placed", cartOrderId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("order_placed", cartOrderId.toString()),
             ),
         ),
     )

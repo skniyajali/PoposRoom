@@ -24,12 +24,12 @@ import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.safeFloat
 import com.niyaj.common.utils.safeInt
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.PrinterRepository
 import com.niyaj.data.repository.validation.PrinterValidationRepository
 import com.niyaj.model.Printer
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -232,7 +232,7 @@ internal fun AnalyticsHelper.updatedPrinterInfo() {
         event = AnalyticsEvent(
             type = "updated_printer_info",
             extras = listOf(
-                AnalyticsEvent.Param("updated_printer_info", "Yes"),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("updated_printer_info", "Yes"),
             ),
         ),
     )

@@ -17,15 +17,15 @@
 
 package com.niyaj.data.utils
 
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 
 internal fun AnalyticsHelper.logThemeChanged(themeName: String) =
     logEvent(
         AnalyticsEvent(
             type = "theme_changed",
             extras = listOf(
-                AnalyticsEvent.Param(key = "theme_name", value = themeName),
+                com.niyaj.core.analytics.AnalyticsEvent.Param(key = "theme_name", value = themeName),
             ),
         ),
     )
@@ -35,7 +35,7 @@ internal fun AnalyticsHelper.logDarkThemeConfigChanged(darkThemeConfigName: Stri
         AnalyticsEvent(
             type = "dark_theme_config_changed",
             extras = listOf(
-                AnalyticsEvent.Param(key = "dark_theme_config", value = darkThemeConfigName),
+                com.niyaj.core.analytics.AnalyticsEvent.Param(key = "dark_theme_config", value = darkThemeConfigName),
             ),
         ),
     )
@@ -45,7 +45,7 @@ internal fun AnalyticsHelper.logDynamicColorPreferenceChanged(useDynamicColor: B
         AnalyticsEvent(
             type = "dynamic_color_preference_changed",
             extras = listOf(
-                AnalyticsEvent.Param(
+                com.niyaj.core.analytics.AnalyticsEvent.Param(
                     key = "dynamic_color_preference",
                     value = useDynamicColor.toString(),
                 ),
@@ -65,7 +65,7 @@ internal fun AnalyticsHelper.logUserLoggedIn(userId: Int) =
         AnalyticsEvent(
             type = "user_logged_in",
             extras = listOf(
-                AnalyticsEvent.Param(key = "user_id", value = userId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param(key = "user_id", value = userId.toString()),
             ),
         ),
     )
@@ -76,7 +76,7 @@ internal fun AnalyticsHelper.logOrderSmsPreferenceChanged(sendOrderSms: Boolean)
     AnalyticsEvent(
         type = "order_sms_preference_changed",
         extras = listOf(
-            AnalyticsEvent.Param(key = "send_order_sms", value = sendOrderSms.toString()),
+            com.niyaj.core.analytics.AnalyticsEvent.Param(key = "send_order_sms", value = sendOrderSms.toString()),
         ),
     ),
 )
@@ -86,7 +86,7 @@ internal fun AnalyticsHelper.logDeliveryPartnerQrCodePreferenceChanged(useDelive
         AnalyticsEvent(
             type = "delivery_partner_qr_code_preference_changed",
             extras = listOf(
-                AnalyticsEvent.Param(
+                com.niyaj.core.analytics.AnalyticsEvent.Param(
                     key = "use_delivery_partner_qr_code",
                     value = useDeliveryPartnerQrCode.toString(),
                 ),
@@ -98,7 +98,7 @@ internal fun AnalyticsHelper.logSelectedOrderIdChanged(selectedOrderId: Int) = l
     AnalyticsEvent(
         type = "selected_order_id_changed",
         extras = listOf(
-            AnalyticsEvent.Param(key = "selected_order_id", value = selectedOrderId.toString()),
+            com.niyaj.core.analytics.AnalyticsEvent.Param(key = "selected_order_id", value = selectedOrderId.toString()),
         ),
     ),
 )

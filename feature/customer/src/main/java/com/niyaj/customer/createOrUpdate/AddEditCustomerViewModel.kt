@@ -26,12 +26,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.capitalizeWords
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CustomerRepository
 import com.niyaj.data.repository.validation.CustomerValidationRepository
 import com.niyaj.model.Customer
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -172,7 +172,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateCustomer(data: Int, message: Stri
         event = AnalyticsEvent(
             type = "customer_$message",
             extras = listOf(
-                AnalyticsEvent.Param("customer_$message", data.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("customer_$message", data.toString()),
             ),
         ),
     )

@@ -21,11 +21,11 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CustomerRepository
 import com.niyaj.model.TotalOrderDetails
 import com.niyaj.ui.event.UiState
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -96,7 +96,7 @@ internal fun AnalyticsHelper.logViewCustomerDetails(customerId: Int) {
         event = AnalyticsEvent(
             type = "customer_details_viewed",
             extras = listOf(
-                AnalyticsEvent.Param("customer_details_viewed", customerId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("customer_details_viewed", customerId.toString()),
             ),
         ),
     )

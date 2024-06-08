@@ -27,12 +27,12 @@ import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.safeDouble
 import com.niyaj.common.utils.safeString
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.MeasureUnitRepository
 import com.niyaj.data.repository.validation.MeasureUnitValidationRepository
 import com.niyaj.model.MeasureUnit
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -135,7 +135,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateMeasureUnit(data: Int, message: S
         event = AnalyticsEvent(
             type = "measure_unit_$message",
             extras = listOf(
-                AnalyticsEvent.Param("measure_unit_$message", data.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("measure_unit_$message", data.toString()),
             ),
         ),
     )

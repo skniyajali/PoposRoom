@@ -23,12 +23,12 @@ import androidx.lifecycle.viewModelScope
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.OrderRepository
 import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -115,7 +115,7 @@ internal fun AnalyticsHelper.logOrderDetailsViewed(orderId: Int) {
         event = AnalyticsEvent(
             type = "order_details_viewed",
             extras = listOf(
-                AnalyticsEvent.Param("order_details_viewed", orderId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("order_details_viewed", orderId.toString()),
             ),
         ),
     )

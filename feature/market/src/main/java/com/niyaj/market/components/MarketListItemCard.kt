@@ -54,12 +54,12 @@ import com.niyaj.designsystem.components.PoposOutlinedIconButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.utils.drawAnimatedBorder
 import com.niyaj.model.MarketListWithType
 import com.niyaj.model.MarketListWithTypes
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.TextWithIcon
+import com.niyaj.ui.components.drawAnimatedBorder
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

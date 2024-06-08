@@ -51,6 +51,8 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.common.utils.findActivity
 import com.niyaj.common.utils.openAppSettings
 import com.niyaj.common.utils.showToast
+import com.niyaj.core.analytics.AnalyticsHelper
+import com.niyaj.core.analytics.LocalAnalyticsHelper
 import com.niyaj.data.repository.UserDataRepository
 import com.niyaj.data.utils.NetworkMonitor
 import com.niyaj.data.utils.WorkMonitor
@@ -63,8 +65,6 @@ import com.niyaj.model.ThemeBrand
 import com.niyaj.poposroom.ui.PoposApp
 import com.niyaj.poposroom.ui.rememberPoposAppState
 import com.niyaj.ui.components.CustomPermissionDialog
-import com.samples.apps.core.analytics.AnalyticsHelper
-import com.samples.apps.core.analytics.LocalAnalyticsHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect

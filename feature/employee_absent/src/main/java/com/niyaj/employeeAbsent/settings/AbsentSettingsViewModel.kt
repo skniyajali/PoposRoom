@@ -20,12 +20,12 @@ package com.niyaj.employeeAbsent.settings
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.AbsentRepository
 import com.niyaj.model.EmployeeWithAbsents
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -142,7 +142,7 @@ internal fun AnalyticsHelper.logImportedAbsentFromFile(totalAbsent: Int) {
         event = AnalyticsEvent(
             type = "absent_imported_from_file",
             extras = listOf(
-                AnalyticsEvent.Param("absent_imported_from_file", totalAbsent.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("absent_imported_from_file", totalAbsent.toString()),
             ),
         ),
     )
@@ -153,7 +153,7 @@ internal fun AnalyticsHelper.logImportedAbsentToDatabase(totalAbsent: Int) {
         event = AnalyticsEvent(
             type = "absent_imported_to_database",
             extras = listOf(
-                AnalyticsEvent.Param("absent_imported_to_database", totalAbsent.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("absent_imported_to_database", totalAbsent.toString()),
             ),
         ),
     )
@@ -164,7 +164,7 @@ internal fun AnalyticsHelper.logExportedAbsentToFile(totalAbsent: Int) {
         event = AnalyticsEvent(
             type = "absent_exported_to_file",
             extras = listOf(
-                AnalyticsEvent.Param("absent_exported_to_file", totalAbsent.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("absent_exported_to_file", totalAbsent.toString()),
             ),
         ),
     )

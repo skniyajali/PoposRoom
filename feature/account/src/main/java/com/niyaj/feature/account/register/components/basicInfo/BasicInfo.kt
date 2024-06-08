@@ -119,7 +119,9 @@ fun BasicInfo(
                     contentScale = ContentScale.Inside,
                 )
 
-                NoteCard(text = stringResource(R.string.print_logo_note))
+                NoteCard(
+                    text = "Please upload a logo with white background and 350x215 px size, for better print quality.",
+                )
             }
         }
 

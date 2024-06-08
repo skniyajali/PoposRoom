@@ -24,13 +24,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.getStartTime
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.MarketListRepository
 import com.niyaj.model.MarketList
 import com.niyaj.model.MarketListWithType
 import com.niyaj.model.MarketListWithTypes
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -168,7 +168,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateMarketList(data: Int, message: St
         event = AnalyticsEvent(
             type = "market_list_$message",
             extras = listOf(
-                AnalyticsEvent.Param("market_list_$message", data.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("market_list_$message", data.toString()),
             ),
         ),
     )

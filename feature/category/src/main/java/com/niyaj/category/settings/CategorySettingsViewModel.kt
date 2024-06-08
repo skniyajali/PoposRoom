@@ -20,12 +20,12 @@ package com.niyaj.category.settings
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CategoryRepository
 import com.niyaj.model.Category
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -126,7 +126,7 @@ internal fun AnalyticsHelper.logImportedCategoryFromFile(totalCategory: Int) {
         event = AnalyticsEvent(
             type = "category_imported_from_file",
             extras = listOf(
-                AnalyticsEvent.Param("category_imported_from_file", totalCategory.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("category_imported_from_file", totalCategory.toString()),
             ),
         ),
     )
@@ -137,7 +137,7 @@ internal fun AnalyticsHelper.logImportedCategoryToDatabase(totalCategory: Int) {
         event = AnalyticsEvent(
             type = "category_imported_to_database",
             extras = listOf(
-                AnalyticsEvent.Param("category_imported_to_database", totalCategory.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("category_imported_to_database", totalCategory.toString()),
             ),
         ),
     )
@@ -148,7 +148,7 @@ internal fun AnalyticsHelper.logExportedCategoryToFile(totalCategory: Int) {
         event = AnalyticsEvent(
             type = "category_exported_to_file",
             extras = listOf(
-                AnalyticsEvent.Param("category_exported_to_file", totalCategory.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("category_exported_to_file", totalCategory.toString()),
             ),
         ),
     )

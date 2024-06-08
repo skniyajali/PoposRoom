@@ -27,14 +27,14 @@ import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.toFormattedDate
 import com.niyaj.common.utils.toListString
 import com.niyaj.common.utils.toSafeString
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.MarketListItemRepository
 import com.niyaj.feature.printer.bluetoothPrinter.BluetoothPrinter
 import com.niyaj.model.MarketItemAndQuantity
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.SharingStarted
@@ -205,7 +205,7 @@ private fun AnalyticsHelper.logPrintMarketList(listTypeIds: List<Int>, marketDat
         event = AnalyticsEvent(
             type = "market_list_printed_for",
             extras = listOf(
-                AnalyticsEvent.Param("market_list_printed_for", "${marketDate.toFormattedDate} - ${listTypeIds.toListString()}"),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("market_list_printed_for", "${marketDate.toFormattedDate} - ${listTypeIds.toListString()}"),
             ),
         ),
     )

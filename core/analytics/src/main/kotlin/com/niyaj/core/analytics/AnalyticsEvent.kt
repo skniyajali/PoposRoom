@@ -15,7 +15,7 @@
  *
  */
 
-package com.samples.apps.core.analytics
+package com.niyaj.core.analytics
 
 /**
  * Represents an analytics event.

@@ -20,12 +20,12 @@ package com.niyaj.market.measureUnit
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.MeasureUnitRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
@@ -82,7 +82,7 @@ internal fun AnalyticsHelper.logDeletedMeasureUnits(data: List<Int>) {
         event = AnalyticsEvent(
             type = "measure_units_deleted",
             extras = listOf(
-                AnalyticsEvent.Param("measure_units_deleted", data.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("measure_units_deleted", data.toString()),
             ),
         ),
     )

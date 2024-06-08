@@ -41,5 +41,4 @@
     <string name="on_failure_register_desc">Please go back and check and verify your input data and try again.</string>
     <string name="go_back">Go Back</string>
     <string name="done">Done</string>
-    <string name="print_logo_note">Please upload a logo with white background and 350x215 px size, for better print quality.</string>
 </resources>

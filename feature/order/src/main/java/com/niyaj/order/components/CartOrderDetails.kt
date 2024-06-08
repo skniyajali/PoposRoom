@@ -203,7 +203,6 @@ internal fun CartOrderDetails(
                                     .menuAnchor(),
                                 text = "$text Delivery Partner",
                                 leadingIcon = icon,
-                                showAnimatedBorder = true,
                                 trailingIcon = if (expanded) PoposIcons.KeyboardArrowUp else PoposIcons.ArrowDown,
                                 onClick = {
                                     expanded = true

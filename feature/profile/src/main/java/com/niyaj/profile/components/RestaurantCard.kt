@@ -44,12 +44,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.offset
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.niyaj.designsystem.components.PoposButton
@@ -62,19 +59,17 @@ import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Profile
 import com.niyaj.ui.components.ImageCard
 import com.niyaj.ui.components.NoteText
-import com.niyaj.ui.utils.DevicePreviews
 import java.io.File
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-internal fun RestaurantCard(
+fun RestaurantCard(
     modifier: Modifier = Modifier,
     info: Profile,
     showPrintLogo: Boolean = false,
-    onClickChangeResLogo: () -> Unit,
+    onClickEdit: () -> Unit,
     onClickChangePrintLogo: () -> Unit,
     onClickViewPrintLogo: () -> Unit,
-    containerColor: Color = MaterialTheme.colorScheme.background,
 ) {
     Card(
         modifier = modifier
@@ -85,9 +80,6 @@ internal fun RestaurantCard(
             topEnd = 0.dp,
             bottomStart = SpaceSmall,
             bottomEnd = SpaceSmall,
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = containerColor,
         ),
     ) {
         Column(
@@ -112,7 +104,7 @@ internal fun RestaurantCard(
                         .offset(y = 30.dp),
                     defaultImage = com.niyaj.core.ui.R.drawable.popos,
                     imageName = info.logo,
-                    onEditClick = onClickChangeResLogo,
+                    onEditClick = onClickEdit,
                 )
             }
 
@@ -130,17 +122,15 @@ internal fun RestaurantCard(
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-internal fun UpdatedRestaurantCard(
+fun UpdatedRestaurantCard(
     modifier: Modifier = Modifier,
     info: Profile,
     showPrintLogo: Boolean = false,
-    onClickChangeResLogo: () -> Unit,
+    onClickEdit: () -> Unit,
     onClickChangePrintLogo: () -> Unit,
     onClickViewPrintLogo: () -> Unit,
-    containerColor: Color = MaterialTheme.colorScheme.background,
 ) {
     val context = LocalContext.current
-    val sidePadding = (-8).dp
 
     val printLogoRequest = ImageRequest
         .Builder(context)
@@ -153,32 +143,10 @@ internal fun UpdatedRestaurantCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.onPrimary)
-            .layout { measurable, constraints ->
-                // Measure the composable adding the side padding*2 (left+right)
-                val placeable =
-                    measurable.measure(
-                        constraints.offset(
-                            horizontal = -sidePadding.roundToPx() * 2,
-                            vertical = -sidePadding.roundToPx(),
-                        ),
-                    )
-
-                // increase the width adding the side padding*2
-                layout(
-                    placeable.width + sidePadding.roundToPx() * 2,
-                    placeable.height,
-                ) {
-                    // Where the composable gets placed
-                    placeable.place(+sidePadding.roundToPx(), +sidePadding.roundToPx())
-                }
-            },
+            .background(MaterialTheme.colorScheme.onPrimary),
         shape = RoundedCornerShape(
             bottomStart = SpaceSmall,
             bottomEnd = SpaceSmall,
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = containerColor,
         ),
     ) {
         Column(
@@ -203,7 +171,7 @@ internal fun UpdatedRestaurantCard(
                         .offset(y = 30.dp),
                     defaultImage = com.niyaj.core.ui.R.drawable.popos,
                     imageName = info.logo,
-                    onEditClick = onClickChangeResLogo,
+                    onEditClick = onClickEdit,
                 )
             }
 
@@ -319,49 +287,4 @@ internal fun UpdatedRestaurantCard(
             }
         }
     }
-}
-
-@DevicePreviews
-@Composable
-private fun RestaurantCardPreview(
-    modifier: Modifier = Modifier,
-    profile: Profile = Profile.defaultProfileInfo,
-) {
-    RestaurantCard(
-        modifier = modifier,
-        info = profile,
-        showPrintLogo = false,
-        onClickChangeResLogo = {},
-        onClickChangePrintLogo = {},
-        onClickViewPrintLogo = {},
-    )
-}
-
-@DevicePreviews
-@Composable
-private fun UpdatedRestaurantCardPreview(
-    modifier: Modifier = Modifier,
-) {
-    UpdatedRestaurantCard(
-        modifier = modifier,
-        info = Profile(
-            restaurantId = 9551,
-            name = "Virgil Guthrie",
-            email = "bennie.frazier@example.com",
-            primaryPhone = "(109) 112-3895",
-            secondaryPhone = "(863) 902-6761",
-            tagline = "esse",
-            description = "petentium",
-            address = "egestas",
-            logo = "quas",
-            printLogo = "habitasse",
-            paymentQrCode = "dictas",
-            createdAt = "duo",
-            updatedAt = null,
-        ),
-        showPrintLogo = false,
-        onClickChangeResLogo = {},
-        onClickChangePrintLogo = {},
-        onClickViewPrintLogo = {},
-    )
 }
