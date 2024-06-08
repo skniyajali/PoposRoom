@@ -21,13 +21,13 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CartOrderRepository
 import com.niyaj.model.Selected
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -132,7 +132,7 @@ internal fun AnalyticsHelper.logSelectedCartOrder(cartOrderId: Int) {
         event = AnalyticsEvent(
             type = "cart_order_selected",
             extras = listOf(
-                AnalyticsEvent.Param("cart_order_selected", cartOrderId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("cart_order_selected", cartOrderId.toString()),
             ),
         ),
     )
@@ -143,7 +143,7 @@ internal fun AnalyticsHelper.logDeletedCartOrder(cartOrderId: List<Int>) {
         event = AnalyticsEvent(
             type = "cart_order_deleted",
             extras = listOf(
-                AnalyticsEvent.Param("cart_order_deleted", cartOrderId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("cart_order_deleted", cartOrderId.toString()),
             ),
         ),
     )

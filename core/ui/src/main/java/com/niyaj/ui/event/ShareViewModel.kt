@@ -28,8 +28,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -107,7 +107,7 @@ internal fun AnalyticsHelper.logProductDetailsViewed(productId: Int) {
         event = AnalyticsEvent(
             type = "product_details_viewed",
             extras = listOf(
-                AnalyticsEvent.Param("product_details_viewed", productId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("product_details_viewed", productId.toString()),
             ),
         ),
     )

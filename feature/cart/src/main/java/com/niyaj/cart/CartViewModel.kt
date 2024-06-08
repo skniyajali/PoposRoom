@@ -21,10 +21,10 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CartRepository
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -293,7 +293,7 @@ internal fun AnalyticsHelper.logPlacedOrder(orderId: Int) {
         event = AnalyticsEvent(
             type = "order_placed",
             extras = listOf(
-                AnalyticsEvent.Param("order_placed", orderId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("order_placed", orderId.toString()),
             ),
         ),
     )
@@ -304,7 +304,7 @@ internal fun AnalyticsHelper.logPlacedDineOutOrder(orderId: List<Int>) {
         event = AnalyticsEvent(
             type = "dine_out_order_placed",
             extras = listOf(
-                AnalyticsEvent.Param("dine_out_order_placed", orderId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("dine_out_order_placed", orderId.toString()),
             ),
         ),
     )
@@ -315,7 +315,7 @@ internal fun AnalyticsHelper.logPlacedDineInOrder(orderId: List<Int>) {
         event = AnalyticsEvent(
             type = "dineIn_order_placed",
             extras = listOf(
-                AnalyticsEvent.Param("dine_in_order_placed", orderId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("dine_in_order_placed", orderId.toString()),
             ),
         ),
     )

@@ -15,15 +15,12 @@
  *
  */
 
-package com.samples.apps.core.analytics
-
-import androidx.compose.runtime.staticCompositionLocalOf
+package com.niyaj.core.analytics
 
 /**
- * Global key used to obtain access to the AnalyticsHelper through a CompositionLocal.
+ * Interface for logging analytics events. See `FirebaseAnalyticsHelper` and
+ * `StubAnalyticsHelper` for implementations.
  */
-val LocalAnalyticsHelper = staticCompositionLocalOf<AnalyticsHelper> {
-    // Provide a default AnalyticsHelper which does nothing. This is so that tests and previews
-    // do not have to provide one. For real app builds provide a different implementation.
-    NoOpAnalyticsHelper()
+interface AnalyticsHelper {
+    fun logEvent(event: AnalyticsEvent)
 }

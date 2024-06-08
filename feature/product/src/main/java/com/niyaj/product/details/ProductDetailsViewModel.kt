@@ -26,14 +26,14 @@ import com.niyaj.common.utils.getCapitalWord
 import com.niyaj.common.utils.isSameDay
 import com.niyaj.common.utils.toBarDate
 import com.niyaj.common.utils.toMillis
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.ProductRepository
 import com.niyaj.feature.printer.bluetoothPrinter.BluetoothPrinter
 import com.niyaj.model.OrderType
 import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -251,7 +251,7 @@ internal fun AnalyticsHelper.logProductDetailsViewed(productId: Int) {
         event = AnalyticsEvent(
             type = "product_details_viewed",
             extras = listOf(
-                AnalyticsEvent.Param("product_details_viewed", productId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("product_details_viewed", productId.toString()),
             ),
         ),
     )
@@ -262,7 +262,7 @@ internal fun AnalyticsHelper.logProductDetailsPrinted(productId: Int) {
         event = AnalyticsEvent(
             type = "product_details_printed",
             extras = listOf(
-                AnalyticsEvent.Param("product_details_printed", productId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("product_details_printed", productId.toString()),
             ),
         ),
     )

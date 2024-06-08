@@ -20,12 +20,12 @@ package com.niyaj.expenses.settings
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.ExpenseRepository
 import com.niyaj.model.Expense
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -128,7 +128,7 @@ internal fun AnalyticsHelper.logImportedExpensesFromFile(totalExpenses: Int) {
         event = AnalyticsEvent(
             type = "expenses_imported_from_file",
             extras = listOf(
-                AnalyticsEvent.Param("expenses_imported_from_file", totalExpenses.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("expenses_imported_from_file", totalExpenses.toString()),
             ),
         ),
     )
@@ -139,7 +139,7 @@ internal fun AnalyticsHelper.logImportedExpensesToDatabase(totalExpenses: Int) {
         event = AnalyticsEvent(
             type = "expenses_imported_to_database",
             extras = listOf(
-                AnalyticsEvent.Param("expenses_imported_to_database", totalExpenses.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("expenses_imported_to_database", totalExpenses.toString()),
             ),
         ),
     )
@@ -150,7 +150,7 @@ internal fun AnalyticsHelper.logExportedExpensesToFile(totalExpenses: Int) {
         event = AnalyticsEvent(
             type = "expenses_exported_to_file",
             extras = listOf(
-                AnalyticsEvent.Param("expenses_exported_to_file", totalExpenses.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("expenses_exported_to_file", totalExpenses.toString()),
             ),
         ),
     )

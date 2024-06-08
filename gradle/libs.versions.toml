@@ -98,6 +98,8 @@ versionCode = "1"
 versionName = "1.0.6"
 sourceCompatibility = "VERSION_11"
 targetCompatibility = "VERSION_11"
+junitVersion = "1.1.5"
+kotlinVersion = "1.9.0"
 
 [libraries]
 # ACRA Logger
@@ -312,6 +314,7 @@ room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", vers
 realm-gradlePlugin = { group = "io.realm.kotlin", name = "gradle-plugin", version.ref = "realmVersion" }
 detekt-gradlePlugin = { group = "io.gitlab.arturbosch.detekt", name = "detekt-gradle-plugin", version.ref = "detektVersion" }
 androidx-work-testing = { group = "androidx.work", name = "work-testing", version.ref = "androidxWork" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 
 
 [plugins]
@@ -354,3 +357,4 @@ popos-android-lint = { id = "popos.android.lint", version = "unspecified" }
 popos-android-room = { id = "popos.android.room", version = "unspecified" }
 popos-android-test = { id = "popos.android.test", version = "unspecified" }
 popos-jvm-library = { id = "popos.jvm.library", version = "unspecified" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }

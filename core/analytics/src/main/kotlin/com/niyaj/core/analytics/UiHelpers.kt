@@ -15,20 +15,15 @@
  *
  */
 
-package com.niyaj.model
+package com.niyaj.core.analytics
 
-data class Account(
-    val restaurantId: Int,
+import androidx.compose.runtime.staticCompositionLocalOf
 
-    val email: String,
-
-    val phone: String,
-
-    val password: String,
-
-    val isLoggedIn: Boolean,
-
-    val createdAt: Long,
-
-    val updatedAt: Long? = null,
-)
+/**
+ * Global key used to obtain access to the AnalyticsHelper through a CompositionLocal.
+ */
+val LocalAnalyticsHelper = staticCompositionLocalOf<AnalyticsHelper> {
+    // Provide a default AnalyticsHelper which does nothing. This is so that tests and previews
+    // do not have to provide one. For real app builds provide a different implementation.
+    NoOpAnalyticsHelper()
+}

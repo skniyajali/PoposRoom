@@ -15,7 +15,7 @@
  *
  */
 
-package com.niyaj.designsystem.utils
+package com.niyaj.ui.components
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.LinearEasing

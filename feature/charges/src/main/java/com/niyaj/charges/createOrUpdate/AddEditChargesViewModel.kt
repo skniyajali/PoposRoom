@@ -27,12 +27,12 @@ import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.common.utils.safeInt
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.ChargesRepository
 import com.niyaj.data.repository.validation.ChargesValidationRepository
 import com.niyaj.model.Charges
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -162,7 +162,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateCharges(chargesId: Int, message: 
         event = AnalyticsEvent(
             type = "charges_$message",
             extras = listOf(
-                AnalyticsEvent.Param("charges_$message", chargesId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("charges_$message", chargesId.toString()),
             ),
         ),
     )

@@ -61,15 +61,9 @@ class PrinterRepositoryImpl(
         }
     }
 
-    override fun getProfileInfo(): Flow<Profile> {
-        return printerDao.getProfileInfo().mapLatest {
+    override fun getProfileInfo(restaurantId: Int): Flow<Profile> {
+        return printerDao.getProfileInfo(restaurantId).mapLatest {
             it.asExternalModel()
-        }
-    }
-
-    override fun getProfileInfo(resId: Int): Flow<Profile> {
-        return printerDao.getProfileInfo(resId).mapLatest {
-            it?.asExternalModel() ?: Profile.defaultProfileInfo
         }
     }
 }

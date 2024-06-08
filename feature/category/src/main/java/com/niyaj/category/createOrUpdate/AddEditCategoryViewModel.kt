@@ -26,12 +26,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.capitalizeWords
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CategoryRepository
 import com.niyaj.data.repository.validation.CategoryValidationRepository
 import com.niyaj.model.Category
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -142,7 +142,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateCategory(categoryId: Int, message
         event = AnalyticsEvent(
             type = "category_$message",
             extras = listOf(
-                AnalyticsEvent.Param("category_$message", categoryId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("category_$message", categoryId.toString()),
             ),
         ),
     )

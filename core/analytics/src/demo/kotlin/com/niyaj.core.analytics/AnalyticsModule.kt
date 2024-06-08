@@ -15,11 +15,16 @@
  *
  */
 
-package com.samples.apps.core.analytics
+package com.niyaj.core.analytics
 
-/**
- * Implementation of AnalyticsHelper which does nothing. Useful for tests and previews.
- */
-class NoOpAnalyticsHelper : AnalyticsHelper {
-    override fun logEvent(event: AnalyticsEvent) = Unit
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class AnalyticsModule {
+    @Binds
+    abstract fun bindsAnalyticsHelper(analyticsHelperImpl: StubAnalyticsHelper): AnalyticsHelper
 }

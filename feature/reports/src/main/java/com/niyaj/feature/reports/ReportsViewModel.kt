@@ -22,6 +22,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.utils.getStartTime
 import com.niyaj.common.utils.toBarDate
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.ReportsRepository
 import com.niyaj.feature.chart.horizontalbar.model.HorizontalBarData
 import com.niyaj.feature.printer.bluetoothPrinter.BluetoothPrinter
@@ -30,8 +32,6 @@ import com.niyaj.model.TotalOrders
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.logScreenView
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -479,7 +479,7 @@ private fun AnalyticsHelper.logRegenerateReport() {
         event = AnalyticsEvent(
             type = "report_generated",
             extras = listOf(
-                AnalyticsEvent.Param("report_generated", "true"),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("report_generated", "true"),
             ),
         ),
     )
@@ -490,7 +490,7 @@ private fun AnalyticsHelper.logPrintReport() {
         event = AnalyticsEvent(
             type = "report_printed",
             extras = listOf(
-                AnalyticsEvent.Param("report_printed", "true"),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("report_printed", "true"),
             ),
         ),
     )

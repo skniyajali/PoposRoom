@@ -23,10 +23,10 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.EmployeeRepository
 import com.niyaj.ui.event.UiState
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
@@ -121,7 +121,7 @@ internal fun AnalyticsHelper.logEmployeeDetailsViewed(employeeId: Int) {
         event = AnalyticsEvent(
             type = "employee_details_viewed",
             extras = listOf(
-                AnalyticsEvent.Param("employee_details_viewed", employeeId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("employee_details_viewed", employeeId.toString()),
             ),
         ),
     )

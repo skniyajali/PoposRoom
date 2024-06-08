@@ -45,7 +45,8 @@ plugins {
     alias(libs.plugins.secrets) apply false
     alias(libs.plugins.roborazzi) apply false
     alias(libs.plugins.room) apply false
-    alias(libs.plugins.module.graph) apply true // Plugin applied to allow module graph generation
+    alias(libs.plugins.module.graph) apply true
+    alias(libs.plugins.jetbrains.kotlin.android) apply false // Plugin applied to allow module graph generation
 }
 
 // Task to print all the module paths in the project e.g. :core:data

@@ -21,11 +21,11 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.AddressRepository
 import com.niyaj.model.TotalOrderDetails
 import com.niyaj.ui.event.UiState
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -93,7 +93,7 @@ internal fun AnalyticsHelper.logAddressDetailsViewed(addressId: Int) {
         event = AnalyticsEvent(
             type = "address_details_viewed",
             extras = listOf(
-                AnalyticsEvent.Param("opened_address_details", addressId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("opened_address_details", addressId.toString()),
             ),
         ),
     )

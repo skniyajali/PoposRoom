@@ -39,9 +39,9 @@ import androidx.compose.ui.util.trace
 import com.niyaj.common.tags.MarketTypeTags.MARKET_TYPE_TAG
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.utils.drawAnimatedBorder
 import com.niyaj.model.MarketType
 import com.niyaj.ui.components.CircularBox
+import com.niyaj.ui.components.drawAnimatedBorder
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

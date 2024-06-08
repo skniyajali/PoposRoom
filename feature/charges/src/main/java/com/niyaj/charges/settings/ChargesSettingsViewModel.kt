@@ -20,12 +20,12 @@ package com.niyaj.charges.settings
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.ChargesRepository
 import com.niyaj.model.Charges
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -126,7 +126,7 @@ internal fun AnalyticsHelper.logImportedChargesFromFile(totalCharges: Int) {
         event = AnalyticsEvent(
             type = "charges_imported_from_file",
             extras = listOf(
-                AnalyticsEvent.Param("charges_imported_from_file", totalCharges.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("charges_imported_from_file", totalCharges.toString()),
             ),
         ),
     )
@@ -137,7 +137,7 @@ internal fun AnalyticsHelper.logImportedChargesToDatabase(totalCharges: Int) {
         event = AnalyticsEvent(
             type = "charges_imported_to_database",
             extras = listOf(
-                AnalyticsEvent.Param("charges_imported_to_database", totalCharges.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("charges_imported_to_database", totalCharges.toString()),
             ),
         ),
     )
@@ -148,7 +148,7 @@ internal fun AnalyticsHelper.logExportedChargesToFile(totalCharges: Int) {
         event = AnalyticsEvent(
             type = "charges_exported_to_file",
             extras = listOf(
-                AnalyticsEvent.Param("charges_exported_to_file", totalCharges.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("charges_exported_to_file", totalCharges.toString()),
             ),
         ),
     )

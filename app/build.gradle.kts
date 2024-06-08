@@ -52,6 +52,7 @@ android {
 
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             applicationIdSuffix = PoposBuildType.RELEASE.applicationIdSuffix
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

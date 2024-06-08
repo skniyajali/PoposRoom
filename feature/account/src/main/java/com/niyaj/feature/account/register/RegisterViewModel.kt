@@ -28,6 +28,8 @@ import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.common.utils.saveImageToInternalStorage
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.AccountRepository
 import com.niyaj.data.repository.ProfileRepository
 import com.niyaj.data.repository.QRCodeScanner
@@ -44,8 +46,6 @@ import com.niyaj.model.RESTAURANT_LOGO_NAME
 import com.niyaj.model.RESTAURANT_PRINT_LOGO_NAME
 import com.niyaj.ui.utils.QRCodeEncoder
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -420,7 +420,7 @@ internal fun AnalyticsHelper.logUserProfileCreated(profile: Profile) {
         event = AnalyticsEvent(
             type = "user_profile_created",
             extras = listOf(
-                AnalyticsEvent.Param("user_profile_created", profile.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("user_profile_created", profile.toString()),
             ),
         ),
     )

@@ -19,7 +19,6 @@
 
 package com.niyaj.ui.components
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutLinearInEasing
@@ -36,7 +35,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.only
@@ -53,10 +51,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
@@ -73,7 +71,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.Constants.STANDARD_BACK_BUTTON
@@ -249,7 +246,6 @@ fun PoposPrimaryScaffold(
     }
 }
 
-@SuppressLint("DesignSystem")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PoposSecondaryScaffold(
@@ -274,9 +270,8 @@ fun PoposSecondaryScaffold(
     val colorTransitionFraction = scrollBehavior.state.collapsedFraction
 
     val color = rememberUpdatedState(newValue = containerColorForSecondary(colorTransitionFraction))
-    val containerColor = rememberUpdatedState(newValue = containerColor(colorTransitionFraction))
     val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
-    val navColor = MaterialTheme.colorScheme.surfaceContainerLow
+    val navColor = MaterialTheme.colorScheme.surface
 
     SideEffect {
         systemUiController.setStatusBarColor(color = color.value)
@@ -318,8 +313,8 @@ fun PoposSecondaryScaffold(
                 actions = navActions,
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = color.value,
-                    scrolledContainerColor = color.value,
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                 ),
                 modifier = Modifier
                     .testTag("secondaryTopAppBar"),
@@ -340,11 +335,7 @@ fun PoposSecondaryScaffold(
                     },
                 ),
             ) {
-                NavigationBar(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    bottomBar()
-                }
+                bottomBar()
             }
         },
         floatingActionButton = {
@@ -372,23 +363,12 @@ fun PoposSecondaryScaffold(
             .fillMaxSize()
             .imePadding()
             .testTag("secondaryScaffold"),
-        containerColor = Color.Transparent,
     ) { padding ->
-        ElevatedCard(
+        Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .consumeWindowInsets(padding)
-                .windowInsetsPadding(
-                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
-                )
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             shape = shape.value,
-            elevation = CardDefaults.elevatedCardElevation(
-                defaultElevation = 2.dp,
-            ),
-            colors = CardDefaults.elevatedCardColors(
-                containerColor = containerColor.value,
-            ),
         ) {
             content(padding)
         }
@@ -407,7 +387,7 @@ internal fun containerColorForPrimary(colorTransitionFraction: Float): Color {
 @Composable
 internal fun containerColorForSecondary(colorTransitionFraction: Float): Color {
     return lerp(
-        MaterialTheme.colorScheme.surfaceContainerLow,
+        MaterialTheme.colorScheme.surfaceContainerLowest,
         MaterialTheme.colorScheme.surfaceContainerLowest,
         FastOutLinearInEasing.transform(colorTransitionFraction),
     )
@@ -417,7 +397,7 @@ internal fun containerColorForSecondary(colorTransitionFraction: Float): Color {
 internal fun containerColor(colorTransitionFraction: Float): Color {
     return lerp(
         LightColor6,
-        MaterialTheme.colorScheme.background,
+        MaterialTheme.colorScheme.surfaceContainerLowest,
         FastOutLinearInEasing.transform(colorTransitionFraction),
     )
 }

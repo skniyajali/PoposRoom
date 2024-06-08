@@ -22,7 +22,7 @@ plugins {
 }
 
 android {
-    namespace = "com.samples.apps.core.analytics"
+    namespace = "com.niyaj.core.analytics"
 }
 
 dependencies {

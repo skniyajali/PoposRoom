@@ -20,12 +20,12 @@ package com.niyaj.market.measureUnit.settings
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.MeasureUnitRepository
 import com.niyaj.model.MeasureUnit
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -132,7 +132,7 @@ private fun AnalyticsHelper.logImportedUnitsFromFile(totalUnits: Int) {
         event = AnalyticsEvent(
             type = "measure_unit_imported_from_file",
             extras = listOf(
-                AnalyticsEvent.Param("measure_unit_imported_from_file", totalUnits.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("measure_unit_imported_from_file", totalUnits.toString()),
             ),
         ),
     )
@@ -143,7 +143,7 @@ private fun AnalyticsHelper.logImportedUnitsToDatabase(totalUnits: Int) {
         event = AnalyticsEvent(
             type = "measure_unit_imported_to_database",
             extras = listOf(
-                AnalyticsEvent.Param("measure_unit_imported_to_database", totalUnits.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("measure_unit_imported_to_database", totalUnits.toString()),
             ),
         ),
     )
@@ -154,7 +154,7 @@ private fun AnalyticsHelper.logExportedUnitsToFile(totalItems: Int) {
         event = AnalyticsEvent(
             type = "measure_unit_exported_to_file",
             extras = listOf(
-                AnalyticsEvent.Param("measure_unit_exported_to_file", totalItems.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("measure_unit_exported_to_file", totalItems.toString()),
             ),
         ),
     )

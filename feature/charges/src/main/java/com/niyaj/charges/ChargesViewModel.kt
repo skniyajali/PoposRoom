@@ -20,12 +20,12 @@ package com.niyaj.charges
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.ChargesRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -88,7 +88,7 @@ internal fun AnalyticsHelper.logDeletedCharges(charges: List<Int>) {
         event = AnalyticsEvent(
             type = "charges_deleted",
             extras = listOf(
-                AnalyticsEvent.Param("charges_deleted", charges.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("charges_deleted", charges.toString()),
             ),
         ),
     )

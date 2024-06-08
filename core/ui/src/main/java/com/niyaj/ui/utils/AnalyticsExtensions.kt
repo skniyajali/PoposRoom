@@ -19,10 +19,10 @@ package com.niyaj.ui.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsEvent.Param
-import com.samples.apps.core.analytics.AnalyticsHelper
-import com.samples.apps.core.analytics.LocalAnalyticsHelper
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsEvent.Param
+import com.niyaj.core.analytics.AnalyticsHelper
+import com.niyaj.core.analytics.LocalAnalyticsHelper
 
 /**
  * Classes and functions associated with analytics events for the UI.
@@ -30,9 +30,9 @@ import com.samples.apps.core.analytics.LocalAnalyticsHelper
 fun AnalyticsHelper.logScreenView(screenName: String) {
     logEvent(
         AnalyticsEvent(
-            type = AnalyticsEvent.Types.SCREEN_VIEW,
+            type = com.niyaj.core.analytics.AnalyticsEvent.Types.SCREEN_VIEW,
             extras = listOf(
-                Param(AnalyticsEvent.ParamKeys.SCREEN_NAME, screenName),
+                Param(com.niyaj.core.analytics.AnalyticsEvent.ParamKeys.SCREEN_NAME, screenName),
             ),
         ),
     )

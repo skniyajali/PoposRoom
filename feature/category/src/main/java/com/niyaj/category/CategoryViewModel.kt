@@ -20,12 +20,12 @@ package com.niyaj.category
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CategoryRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
@@ -90,7 +90,7 @@ internal fun AnalyticsHelper.logDeletedCategories(categories: List<Int>) {
         event = AnalyticsEvent(
             type = "category_deleted",
             extras = listOf(
-                AnalyticsEvent.Param("category_deleted", categories.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("category_deleted", categories.toString()),
             ),
         ),
     )

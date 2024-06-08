@@ -20,12 +20,12 @@ package com.niyaj.employeeAbsent
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.AbsentRepository
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -104,7 +104,7 @@ internal fun AnalyticsHelper.logDeletedAbsentees(data: List<Int>) {
         event = AnalyticsEvent(
             type = "absent_employee_deleted",
             extras = listOf(
-                AnalyticsEvent.Param("absent_employee_deleted", data.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("absent_employee_deleted", data.toString()),
             ),
         ),
     )

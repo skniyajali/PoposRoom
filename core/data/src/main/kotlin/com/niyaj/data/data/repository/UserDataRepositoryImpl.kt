@@ -17,6 +17,7 @@
 
 package com.niyaj.data.data.repository
 
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.core.datastore.PoposPreferencesDataSource
 import com.niyaj.data.repository.AccountRepository
 import com.niyaj.data.repository.UserDataRepository
@@ -32,7 +33,6 @@ import com.niyaj.data.utils.logUserLoggedOut
 import com.niyaj.model.DarkThemeConfig
 import com.niyaj.model.ThemeBrand
 import com.niyaj.model.UserData
-import com.samples.apps.core.analytics.AnalyticsHelper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject

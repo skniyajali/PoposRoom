@@ -42,17 +42,8 @@ interface PrinterDao {
 
     @Query(
         value = """
-        SELECT * FROM profile p
-        LEFT JOIN account ac ON ac.isLoggedIn = :isLoggedIn
-        WHERE p.restaurantId = ac.restaurantId
-    """,
-    )
-    fun getProfileInfo(isLoggedIn: Boolean = true): Flow<ProfileEntity>
-
-    @Query(
-        value = """
         SELECT * FROM profile WHERE restaurantId = :restaurantId
     """,
     )
-    fun getProfileInfo(restaurantId: Int): Flow<ProfileEntity?>
+    fun getProfileInfo(restaurantId: Int): Flow<ProfileEntity>
 }

@@ -43,9 +43,9 @@ import com.niyaj.common.tags.MeasureUnitTestTags.UNIT_LIST_ITEM_TAG
 import com.niyaj.common.utils.safeString
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.utils.drawAnimatedBorder
 import com.niyaj.model.MeasureUnit
 import com.niyaj.ui.components.CircularBox
+import com.niyaj.ui.components.drawAnimatedBorder
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

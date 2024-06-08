@@ -28,13 +28,13 @@ import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.common.utils.safeInt
 import com.niyaj.common.utils.safeString
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.ProductRepository
 import com.niyaj.data.repository.validation.ProductValidationRepository
 import com.niyaj.model.Category
 import com.niyaj.model.Product
 import com.niyaj.ui.utils.UiEvent
-import com.samples.apps.core.analytics.AnalyticsEvent
-import com.samples.apps.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -224,7 +224,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateProduct(data: Int, message: Strin
         event = AnalyticsEvent(
             type = "product_$message",
             extras = listOf(
-                AnalyticsEvent.Param("product_$message", data.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param("product_$message", data.toString()),
             ),
         ),
     )
