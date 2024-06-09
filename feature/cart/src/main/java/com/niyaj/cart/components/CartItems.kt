@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -41,12 +42,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastAll
 import androidx.compose.ui.util.trace
 import com.niyaj.cart.CartEvent
 import com.niyaj.cart.CartState
 import com.niyaj.cart.DineInEvent
 import com.niyaj.cart.DineOutEvent
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.ProfilePictureSizeSmall
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
@@ -58,11 +62,15 @@ import com.niyaj.ui.components.CartAddOnItems
 import com.niyaj.ui.components.CartDeliveryPartners
 import com.niyaj.ui.components.CartItemProductDetailsSection
 import com.niyaj.ui.components.CartItemTotalPriceSection
+import com.niyaj.ui.parameterProvider.AddOnPreviewParameterData
+import com.niyaj.ui.parameterProvider.CardOrderPreviewData
+import com.niyaj.ui.parameterProvider.CartItemPreviewParameter
+import com.niyaj.ui.parameterProvider.CartItemsPreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 internal fun CartItems(
     modifier: Modifier = Modifier,
-    listState: LazyListState,
     cartState: CartState.Success,
     selectedCartItems: List<Int>,
     addOnItems: List<AddOnItem>,
@@ -72,6 +80,7 @@ internal fun CartItems(
     onClickViewOrder: (Int) -> Unit,
     onClickPrintOrder: (orderId: Int) -> Unit,
     onEvent: (CartEvent) -> Unit,
+    listState: LazyListState = rememberLazyListState(),
 ) = trace("CartItems") {
     LazyColumn(
         modifier = modifier
@@ -87,7 +96,7 @@ internal fun CartItems(
             },
         ) { index, cartItem ->
             if (cartItem.cartProducts.isNotEmpty()) {
-                CartItem(
+                CartItemData(
                     cartItem = cartItem,
                     doesSelected = selectedCartItems.contains(cartItem.orderId),
                     addOnItems = addOnItems,
@@ -110,7 +119,8 @@ internal fun CartItems(
 }
 
 @Composable
-private fun CartItem(
+private fun CartItemData(
+    modifier: Modifier = Modifier,
     cartItem: CartItem,
     doesSelected: Boolean,
     addOnItems: List<AddOnItem>,
@@ -133,7 +143,7 @@ private fun CartItem(
     }
 
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(interactionSource, indication = null) {
                 if (cartItem.orderType == OrderType.DineIn) {
@@ -251,6 +261,57 @@ private fun CartItem(
                 onClickPrintOrder(cartItem.orderId)
                 onEvent(CartEvent.PlaceCartOrder(cartItem.orderId))
             },
+        )
+    }
+}
+
+
+@DevicePreviews
+@Composable
+private fun CartItemPreview(
+    @PreviewParameter(CartItemPreviewParameter::class)
+    cartItem: CartItem,
+    modifier: Modifier = Modifier,
+    addOnItems: List<AddOnItem> = AddOnPreviewParameterData.items.take(5),
+    deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5),
+) {
+    PoposRoomTheme {
+        CartItemData(
+            modifier = modifier,
+            cartItem = cartItem,
+            doesSelected = false,
+            addOnItems = addOnItems,
+            deliveryPartners = deliveryPartners,
+            showPrintBtn = false,
+            onClickEditOrder = {},
+            onClickViewOrder = {},
+            onClickPrintOrder = {},
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CartItemsPreview(
+    @PreviewParameter(CartItemsPreviewParameter::class)
+    cartItems: List<CartItem>,
+    modifier: Modifier = Modifier,
+    addOnItems: List<AddOnItem> = AddOnPreviewParameterData.items.take(5),
+    deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5),
+) {
+    PoposRoomTheme {
+        CartItems(
+            modifier = modifier,
+            cartState = CartState.Success(items = cartItems),
+            selectedCartItems = listOf(),
+            addOnItems = addOnItems,
+            deliveryPartners = deliveryPartners,
+            showPrintBtn = cartItems.fastAll { it.orderType == OrderType.DineOut },
+            onClickEditOrder = {},
+            onClickViewOrder = {},
+            onClickPrintOrder = {},
+            onEvent = {},
         )
     }
 }

@@ -35,17 +35,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.designsystem.components.PoposIconButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.OrderType
 import com.niyaj.ui.components.IconWithText
+import com.niyaj.ui.parameterProvider.OrderTypePreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
-fun CartItemOrderDetailsSection(
+internal fun CartItemOrderDetailsSection(
     modifier: Modifier = Modifier,
     orderId: String = "",
     customerPhone: String? = "",
@@ -54,21 +59,18 @@ fun CartItemOrderDetailsSection(
     onClick: () -> Unit,
     onEditClick: () -> Unit,
     onViewClick: () -> Unit,
-) = trace("CartItemOrderDetailsSection") {
-    val height = if (orderType == OrderType.DineIn) 56.dp else 64.dp
-
-    val containerColor = if (orderType == OrderType.DineIn) {
+    containerColor: Color = if (orderType == OrderType.DineIn) {
         MaterialTheme.colorScheme.secondaryContainer
     } else {
         MaterialTheme.colorScheme.primaryContainer
-    }
-
-    val iconColor = if (orderType == OrderType.DineIn) {
+    },
+    iconColor: Color = if (orderType == OrderType.DineIn) {
         MaterialTheme.colorScheme.onPrimaryContainer
     } else {
         MaterialTheme.colorScheme.onSecondaryContainer
-    }
-
+    },
+    height: Dp = if (orderType == OrderType.DineIn) 56.dp else 64.dp
+) = trace("CartItemOrderDetailsSection") {
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -120,7 +122,7 @@ fun CartItemOrderDetailsSection(
 }
 
 @Composable
-fun CartOrderDetailsButtons(
+private fun CartOrderDetailsButtons(
     modifier: Modifier = Modifier,
     selected: Boolean,
     iconColor: Color,
@@ -154,5 +156,45 @@ fun CartOrderDetailsButtons(
                 contentDescription = "Select Cart",
             )
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CartItemOrderDetailsSectionPreview(
+    @PreviewParameter(OrderTypePreviewParameter::class)
+    orderType: OrderType,
+    modifier: Modifier = Modifier,
+    orderId: String = if (orderType == OrderType.DineIn) "DineIn-1" else "DineOut-2",
+    customerPhone: String? = if (orderType == OrderType.DineOut) "9078563421" else null
+) {
+    PoposRoomTheme {
+        CartItemOrderDetailsSection(
+            modifier = modifier,
+            orderId = orderId,
+            customerPhone = customerPhone,
+            orderType = orderType,
+            selected = false,
+            onClick = {},
+            onEditClick = {},
+            onViewClick = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CartOrderDetailsButtonsPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        CartOrderDetailsButtons(
+            modifier = modifier,
+            selected = false,
+            iconColor = MaterialTheme.colorScheme.primary,
+            onClick = {},
+            onEditClick = {},
+            onViewClick = {}
+        )
     }
 }

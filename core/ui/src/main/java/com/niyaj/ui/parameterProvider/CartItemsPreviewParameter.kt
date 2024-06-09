@@ -43,7 +43,7 @@ class CartItemPreviewParameter : PreviewParameterProvider<CartItem> {
 
 object CartPreviewParameterData {
     // Define sample data
-    private val sampleCartProductItems = listOf(
+    val sampleCartProductItems = listOf(
         CartProductItem(
             productId = 1,
             productName = "Burger",

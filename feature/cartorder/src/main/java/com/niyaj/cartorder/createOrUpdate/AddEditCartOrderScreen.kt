@@ -581,7 +581,7 @@ internal fun AddEditCartOrderScreenContent(
 
                                 CartChargesItem(
                                     chargesList = items.data,
-                                    selectedItem = state.selectedCharges.toList(),
+                                    selectedItems = state.selectedCharges.toList(),
                                     backgroundColor = Color.Transparent,
                                     onClick = {
                                         onEvent(AddEditCartOrderEvent.SelectCharges(it))

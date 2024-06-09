@@ -50,8 +50,11 @@ import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor8
 import com.niyaj.designsystem.theme.LightColor9
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.model.CartProductItem
+import com.niyaj.ui.parameterProvider.CartPreviewParameterData
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun CartItemProductDetailsSection(
@@ -83,7 +86,7 @@ fun CartItemProductDetailsSection(
 }
 
 @Composable
-fun CartProduct(
+private fun CartProduct(
     modifier: Modifier = Modifier,
     cartProduct: CartProductItem,
     decreaseQuantity: (Int) -> Unit,
@@ -188,5 +191,42 @@ fun CartProduct(
                 }
             }
         }
+    }
+}
+
+
+@DevicePreviews
+@Composable
+private fun CartItemProductDetailsSectionPreview(
+    modifier: Modifier = Modifier,
+    cartProducts: List<CartProductItem> = CartPreviewParameterData.sampleCartProductItems
+) {
+    PoposRoomTheme {
+        CartItemProductDetailsSection(
+            modifier = modifier,
+            cartProducts = cartProducts,
+            decreaseQuantity = {},
+            increaseQuantity = {}
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CartProductPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        CartProduct(
+            modifier = modifier,
+            cartProduct = CartProductItem(
+                productId = 1,
+                productName = "Pasta",
+                productPrice = 120,
+                productQuantity = 2,
+            ),
+            decreaseQuantity = {},
+            increaseQuantity = {},
+        )
     }
 }

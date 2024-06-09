@@ -30,8 +30,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.components.StandardRoundedFilterChip
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.AddOnItem
+import com.niyaj.ui.parameterProvider.AddOnPreviewParameterData
+import com.niyaj.ui.utils.DevicePreviews
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -67,5 +70,23 @@ fun CartAddOnItems(
                 )
             }
         }
+    }
+}
+
+
+@DevicePreviews
+@Composable
+private fun CartAddOnItemsPreview(
+    modifier: Modifier = Modifier,
+    addOnItems: List<AddOnItem> = AddOnPreviewParameterData.items,
+    selectedAddOnItem: List<Int> = addOnItems.filter { it.itemId % 2 == 0 }.map { it.itemId },
+) {
+    PoposRoomTheme {
+        CartAddOnItems(
+            modifier = modifier,
+            addOnItems = addOnItems,
+            selectedAddOnItem = selectedAddOnItem,
+            onClick = {}
+        )
     }
 }

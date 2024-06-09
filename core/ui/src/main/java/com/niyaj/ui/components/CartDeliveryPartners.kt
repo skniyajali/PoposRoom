@@ -31,8 +31,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import com.niyaj.designsystem.components.StandardFilterChip
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.EmployeeNameAndId
+import com.niyaj.ui.parameterProvider.CardOrderPreviewData
+import com.niyaj.ui.utils.DevicePreviews
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -72,5 +75,21 @@ fun CartDeliveryPartners(
                 )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CartDeliveryPartnersPreview(
+    modifier: Modifier = Modifier,
+    deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds
+) {
+    PoposRoomTheme {
+        CartDeliveryPartners(
+            modifier = modifier,
+            partners = deliveryPartners,
+            doesSelected = { it % 2 == 0 },
+            onClick = {},
+        )
     }
 }
