@@ -17,20 +17,27 @@
 
 package com.niyaj.address.settings
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.niyaj.address.destinations.AddressExportScreenDestination
 import com.niyaj.address.destinations.AddressImportScreenDestination
 import com.niyaj.common.tags.AddressTestTags.ADDRESS_SETTINGS_TITLE
+import com.niyaj.common.tags.AddressTestTags.EXPORT_ADDRESS_SUB_TITLE
+import com.niyaj.common.tags.AddressTestTags.EXPORT_ADDRESS_TITLE
+import com.niyaj.common.tags.AddressTestTags.IMPORT_ADDRESS_SUB_TITLE
+import com.niyaj.common.tags.AddressTestTags.IMPORT_ADDRESS_TITLE
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
@@ -40,15 +47,35 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 @Destination(style = DestinationStyleBottomSheet::class)
 @Composable
 fun AddressSettingsScreen(
-    navController: DestinationsNavigator,
+    navigator: DestinationsNavigator,
 ) {
     TrackScreenViewEvent(screenName = "AddressSettingsScreen")
 
-    val lazyListState = rememberLazyListState()
+    AddressSettingsScreenContent(
+        modifier = Modifier,
+        onBackClick = navigator::navigateUp,
+        onImportClick = {
+            navigator.navigate(AddressImportScreenDestination())
+        },
+        onExportClick = {
+            navigator.navigate(AddressExportScreenDestination())
+        },
+    )
+}
 
+@VisibleForTesting
+@Composable
+internal fun AddressSettingsScreenContent(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+    onImportClick: () -> Unit,
+    onExportClick: () -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
     StandardBottomSheet(
+        modifier = modifier,
         title = ADDRESS_SETTINGS_TITLE,
-        onBackClick = navController::navigateUp,
+        onBackClick = onBackClick,
     ) {
         TrackScrollJank(scrollableState = lazyListState, stateName = "Address Settings")
 
@@ -59,27 +86,34 @@ fun AddressSettingsScreen(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
-            item("ImportAddress") {
+            item(IMPORT_ADDRESS_TITLE) {
                 SettingsCard(
-                    title = "Import Address",
-                    subtitle = "Click here to import data from file.",
+                    title = IMPORT_ADDRESS_TITLE,
+                    subtitle = IMPORT_ADDRESS_SUB_TITLE,
                     icon = PoposIcons.Import,
-                    onClick = {
-                        navController.navigate(AddressImportScreenDestination())
-                    },
+                    onClick = onImportClick,
                 )
             }
 
-            item("ExportAddress") {
+            item(EXPORT_ADDRESS_TITLE) {
                 SettingsCard(
-                    title = "Export Address",
-                    subtitle = "Click here to export address to file.",
+                    title = EXPORT_ADDRESS_TITLE,
+                    subtitle = EXPORT_ADDRESS_SUB_TITLE,
                     icon = PoposIcons.Upload,
-                    onClick = {
-                        navController.navigate(AddressExportScreenDestination())
-                    },
+                    onClick = onExportClick,
                 )
             }
         }
     }
+}
+
+@DevicePreviews
+@Composable
+private fun AddressSettingsScreenContentPreview() {
+    AddressSettingsScreenContent(
+        modifier = Modifier,
+        onBackClick = {},
+        onImportClick = {},
+        onExportClick = {},
+    )
 }

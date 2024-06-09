@@ -195,17 +195,17 @@ fun StandardOutlinedTextField(
         leadingIcon = {
             Icon(imageVector = leadingIcon, contentDescription = TEXT_FIELD_LEADING_ICON)
         },
-        trailingIcon =  @Composable {
+        trailingIcon = @Composable {
             if (isPasswordToggleDisplayed) {
                 PasswordToggleIcon(
                     isPasswordVisible = isPasswordVisible,
-                    onPasswordToggleClick = onPasswordToggleClick
+                    onPasswordToggleClick = onPasswordToggleClick,
                 )
             } else if (showClearIcon && isFocused) {
                 ClearIconButton(
                     showClearIcon = true,
                     clearIcon = clearIcon,
-                    onClickClearIcon = onClickClearIcon
+                    onClickClearIcon = onClickClearIcon,
                 )
             } else {
                 trailingIcon?.invoke()
@@ -246,12 +246,11 @@ fun StandardOutlinedTextField(
     )
 }
 
-
 @Composable
 private fun PasswordToggleIcon(
     modifier: Modifier = Modifier,
     isPasswordVisible: Boolean,
-    onPasswordToggleClick: (Boolean) -> Unit
+    onPasswordToggleClick: (Boolean) -> Unit,
 ) {
     IconButton(
         onClick = {
@@ -283,7 +282,7 @@ private fun ClearIconButton(
     onClickClearIcon: () -> Unit,
 ) {
     AnimatedVisibility(
-        visible = showClearIcon
+        visible = showClearIcon,
     ) {
         IconButton(
             onClick = onClickClearIcon,
@@ -291,9 +290,8 @@ private fun ClearIconButton(
         ) {
             Icon(
                 imageVector = clearIcon,
-                contentDescription = "trailingIcon"
+                contentDescription = "trailingIcon",
             )
         }
     }
-
 }

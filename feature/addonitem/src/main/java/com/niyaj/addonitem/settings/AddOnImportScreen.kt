@@ -238,10 +238,11 @@ internal fun AddOnImportScreenContent(
                 )
             }
         },
-    ) {
+    ) { paddingValues ->
         Crossfade(
             targetState = importedItems.isEmpty(),
             label = "Imported Items",
+            modifier = Modifier.padding(paddingValues),
         ) { itemAvailable ->
             if (itemAvailable) {
                 EmptyImportScreen(
@@ -255,8 +256,7 @@ internal fun AddOnImportScreenContent(
 
                 LazyVerticalGrid(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(it),
+                        .fillMaxSize(),
                     contentPadding = PaddingValues(SpaceSmall),
                     columns = GridCells.Fixed(2),
                     state = lazyGridState,
@@ -280,7 +280,6 @@ internal fun AddOnImportScreenContent(
     }
 }
 
-
 @DevicePreviews
 @Composable
 private fun AddOnImportScreenEmptyContentPreview() {
@@ -294,7 +293,7 @@ private fun AddOnImportScreenEmptyContentPreview() {
             onClickDeselect = {},
             onClickImport = {},
             onClickOpenFile = {},
-            onBackClick = {}
+            onBackClick = {},
         )
     }
 }
@@ -302,7 +301,7 @@ private fun AddOnImportScreenEmptyContentPreview() {
 @DevicePreviews
 @Composable
 private fun AddOnImportScreenContentPreview(
-    items: ImmutableList<AddOnItem> = AddOnPreviewParameterData.items.toImmutableList()
+    items: ImmutableList<AddOnItem> = AddOnPreviewParameterData.items.toImmutableList(),
 ) {
     PoposRoomTheme {
         AddOnImportScreenContent(
@@ -314,7 +313,7 @@ private fun AddOnImportScreenContentPreview(
             onClickDeselect = {},
             onClickImport = {},
             onClickOpenFile = {},
-            onBackClick = {}
+            onBackClick = {},
         )
     }
 }

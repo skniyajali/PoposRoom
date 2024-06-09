@@ -253,7 +253,7 @@ fun PaymentScreen(
                 },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
-                onSearchClick = viewModel::openSearchBar,
+                onSearchIconClick = viewModel::openSearchBar,
                 onSearchTextChanged = viewModel::searchTextChanged,
                 content = {
                     if (showFab) {

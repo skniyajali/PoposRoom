@@ -15,10 +15,11 @@
  *
  */
 
-package com.niyaj.addonitem.components
+package com.niyaj.address.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -37,61 +39,54 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
-import com.niyaj.common.tags.AddOnTestTags.ADDON_ITEM_TAG
-import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.model.AddOnItem
+import com.niyaj.model.Address
 import com.niyaj.ui.components.CircularBox
-import com.niyaj.ui.components.drawAnimatedBorder
-import com.niyaj.ui.parameterProvider.AddOnPreviewParameterData
+import com.niyaj.ui.parameterProvider.AddressPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun AddOnItemData(
+internal fun AddressData(
     modifier: Modifier = Modifier,
-    item: AddOnItem,
+    item: Address,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
     containerColor: Color = MaterialTheme.colorScheme.background,
-) = trace("AddOnItemData") {
-    val borderStroke = if (doesSelected(item.itemId)) border else null
+) = trace("Address::Data") {
+    val borderStroke = if (doesSelected(item.addressId)) border else null
 
     ElevatedCard(
         modifier = modifier
+            .fillMaxWidth()
             .height(IntrinsicSize.Max)
-            .testTag(ADDON_ITEM_TAG.plus(item.itemId))
             .padding(SpaceSmall)
             .then(
                 borderStroke?.let {
-                    Modifier
-                        .drawAnimatedBorder(
-                            strokeWidth = 1.dp,
-                            durationMillis = 2000,
-                            shape = CardDefaults.elevatedShape,
-                        )
+                    Modifier.border(it, CardDefaults.elevatedShape)
                 } ?: Modifier,
             )
             .combinedClickable(
                 onClick = {
-                    onClick(item.itemId)
+                    onClick(item.addressId)
                 },
                 onLongClick = {
-                    onLongClick(item.itemId)
+                    onLongClick(item.addressId)
                 },
             ),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.elevatedCardColors().copy(
             containerColor = containerColor,
+        ),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 2.dp,
         ),
     ) {
         Row(
@@ -107,51 +102,53 @@ internal fun AddOnItemData(
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = item.itemName,
+                    text = item.addressName,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Spacer(modifier = Modifier.height(SpaceSmall))
-                Text(text = item.itemPrice.toRupee)
+                Text(text = item.shortName)
             }
 
             Spacer(modifier.width(SpaceSmall))
 
             CircularBox(
-                icon = PoposIcons.Link,
-                doesSelected = doesSelected(item.itemId),
-                showBorder = !item.isApplicable,
+                icon = PoposIcons.Address,
+                doesSelected = doesSelected(item.addressId),
+                text = item.addressName,
             )
         }
     }
 }
 
-@Composable
 @DevicePreviews
-private fun AddOnItemDataSelected(
-    addOnItem: AddOnItem = AddOnPreviewParameterData.items.first(),
+@Composable
+private fun AddressDataPreview(
+    item: Address = AddressPreviewData.items.first(),
 ) {
     PoposRoomTheme {
-        AddOnItemData(
-            item = addOnItem,
-            doesSelected = { true },
+        AddressData(
+            modifier = Modifier,
+            item = item,
+            doesSelected = { false },
             onClick = {},
             onLongClick = {},
         )
     }
 }
 
-@Composable
 @DevicePreviews
-private fun AddOnItemDataNotSelected(
-    addOnItem: AddOnItem = AddOnPreviewParameterData.items.last(),
+@Composable
+private fun AddressDataSelectedPreview(
+    item: Address = AddressPreviewData.items.last(),
 ) {
     PoposRoomTheme {
-        AddOnItemData(
-            item = addOnItem,
-            doesSelected = { false },
+        AddressData(
+            modifier = Modifier,
+            item = item,
+            doesSelected = { true },
             onClick = {},
             onLongClick = {},
         )

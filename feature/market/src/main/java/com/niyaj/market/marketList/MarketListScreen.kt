@@ -189,7 +189,7 @@ fun MarketListScreen(
                 },
                 onSelectAllClick = viewModel::selectAllItems,
                 onClearClick = viewModel::clearSearchText,
-                onSearchClick = viewModel::openSearchBar,
+                onSearchIconClick = viewModel::openSearchBar,
                 onSearchTextChanged = viewModel::searchTextChanged,
                 content = {
                     IconButton(

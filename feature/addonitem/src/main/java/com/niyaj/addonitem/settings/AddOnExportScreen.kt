@@ -134,22 +134,6 @@ fun AddOnExportScreen(
             }
         }
 
-    fun onBackClick() {
-        if (selectedItems.isNotEmpty()) {
-            viewModel.deselectItems()
-        } else if (showSearchBar) {
-            viewModel.closeSearchBar()
-        } else {
-            navigator.navigateUp()
-        }
-    }
-
-    BackHandler {
-        onBackClick()
-    }
-
-    TrackScreenViewEvent(screenName = ADD_ON_EXPORT_SCREEN)
-
     AddOnExportScreenContent(
         modifier = Modifier,
         addOnItems = addOnItems.toImmutableList(),
@@ -159,6 +143,7 @@ fun AddOnExportScreen(
         onClearClick = viewModel::clearSearchText,
         onSearchTextChanged = viewModel::searchTextChanged,
         onClickOpenSearch = viewModel::openSearchBar,
+        onClickCloseSearch = viewModel::closeSearchBar,
         onClickSelectAll = viewModel::selectAllItems,
         onClickDeselect = viewModel::deselectItems,
         onSelectItem = viewModel::selectItem,
@@ -172,13 +157,12 @@ fun AddOnExportScreen(
                 viewModel.onEvent(AddOnSettingsEvent.GetExportedItems)
             }
         },
-        onBackClick = { onBackClick() },
+        onBackClick = navigator::navigateUp,
         onClickToAddItem = {
             navigator.navigate(AddEditAddOnItemScreenDestination())
         },
     )
 }
-
 
 // TODO:: fix bottomBar padding issue
 @VisibleForTesting
@@ -192,6 +176,7 @@ internal fun AddOnExportScreenContent(
     onClearClick: () -> Unit,
     onSearchTextChanged: (String) -> Unit,
     onClickOpenSearch: () -> Unit,
+    onClickCloseSearch: () -> Unit,
     onClickSelectAll: () -> Unit,
     onClickDeselect: () -> Unit,
     onSelectItem: (Int) -> Unit,
@@ -199,9 +184,21 @@ internal fun AddOnExportScreenContent(
     onBackClick: () -> Unit,
     onClickToAddItem: () -> Unit,
 ) {
+    TrackScreenViewEvent(screenName = ADD_ON_EXPORT_SCREEN)
+
     val scope = rememberCoroutineScope()
     val lazyGridState = rememberLazyGridState()
     val emptyText = if (searchText.isEmpty()) ADDON_NOT_AVAILABLE else SEARCH_ITEM_NOT_FOUND
+
+    BackHandler {
+        if (selectedItems.isNotEmpty()) {
+            onClickDeselect()
+        } else if (showSearchBar) {
+            onClickCloseSearch()
+        } else {
+            onBackClick()
+        }
+    }
 
     PoposSecondaryScaffold(
         title = if (selectedItems.isEmpty()) EXPORT_ADDON_TITLE else "${selectedItems.size} Selected",
@@ -261,7 +258,7 @@ internal fun AddOnExportScreenContent(
                 )
             }
         },
-        onBackClick = onBackClick,
+        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
         fabPosition = FabPosition.End,
         floatingActionButton = {
             ScrollToTop(
@@ -286,13 +283,14 @@ internal fun AddOnExportScreenContent(
     ) { paddingValues ->
         AddOnExportScreenData(
             modifier = modifier
+                .fillMaxSize()
                 .padding(paddingValues),
             emptyText = emptyText,
             addOnItems = addOnItems,
-            lazyGridState = lazyGridState,
             onClickToAddItem = onClickToAddItem,
             onSelectItem = onSelectItem,
             doesSelected = selectedItems::contains,
+            lazyGridState = lazyGridState,
         )
     }
 }
@@ -302,10 +300,10 @@ private fun AddOnExportScreenData(
     modifier: Modifier = Modifier,
     emptyText: String = ADDON_NOT_AVAILABLE,
     addOnItems: ImmutableList<AddOnItem>,
-    lazyGridState: LazyGridState = rememberLazyGridState(),
     onClickToAddItem: () -> Unit,
     onSelectItem: (Int) -> Unit,
     doesSelected: (Int) -> Boolean,
+    lazyGridState: LazyGridState = rememberLazyGridState(),
 ) {
     if (addOnItems.isEmpty()) {
         ItemNotAvailable(
@@ -353,6 +351,7 @@ private fun AddOnExportScreenContentPreview(
             onClearClick = {},
             onSearchTextChanged = {},
             onClickOpenSearch = {},
+            onClickCloseSearch = {},
             onClickSelectAll = {},
             onClickDeselect = {},
             onSelectItem = {},

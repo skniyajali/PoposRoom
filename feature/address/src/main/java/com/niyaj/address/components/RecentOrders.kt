@@ -33,21 +33,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddressWiseOrder
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.ItemNotAvailable
-import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.ItemNotAvailableHalf
+import com.niyaj.ui.components.LoadingIndicatorHalf
 import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.components.TextWithCount
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.AddressWiseOrderPreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
-fun RecentOrders(
+internal fun RecentOrders(
     orderDetailsState: UiState<List<AddressWiseOrder>>,
     onExpanded: () -> Unit,
     doesExpanded: Boolean,
@@ -96,10 +100,10 @@ fun RecentOrders(
                     label = "Recent Orders State",
                 ) { orders ->
                     when (orders) {
-                        is UiState.Loading -> LoadingIndicator()
+                        is UiState.Loading -> LoadingIndicatorHalf()
 
                         is UiState.Empty -> {
-                            ItemNotAvailable(text = "No orders made using this address.")
+                            ItemNotAvailableHalf(text = "No orders made using this address.")
                         }
 
                         is UiState.Success -> {
@@ -143,6 +147,23 @@ fun RecentOrders(
                     }
                 }
             },
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun RecentOrdersPreview(
+    @PreviewParameter(AddressWiseOrderPreviewParameter::class)
+    orderDetailsState: UiState<List<AddressWiseOrder>>,
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        RecentOrders(
+            orderDetailsState = orderDetailsState,
+            onExpanded = {},
+            doesExpanded = true,
+            onClickOrder = {},
         )
     }
 }

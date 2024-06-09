@@ -28,15 +28,14 @@ import com.niyaj.ui.parameterProvider.AddOnPreviewParameterData.items
  * This [PreviewParameterProvider](https://developer.android.com/reference/kotlin/androidx/compose/ui/tooling/preview/PreviewParameterProvider)
  * provides list of [AddOnItem] for Composable previews.
  */
-class AddOnItemPreviewParameterProvider: PreviewParameterProvider<UiState<List<AddOnItem>>> {
+class AddOnItemPreviewParameterProvider : PreviewParameterProvider<UiState<List<AddOnItem>>> {
     override val values: Sequence<UiState<List<AddOnItem>>>
         get() = sequenceOf(
             UiState.Loading,
             UiState.Empty,
-            UiState.Success(items)
+            UiState.Success(items),
         )
 }
-
 
 object AddOnPreviewParameterData {
     val items: List<AddOnItem> = listOf(

@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -39,13 +40,16 @@ import com.niyaj.common.utils.toRupee
 import com.niyaj.common.utils.toTime
 import com.niyaj.designsystem.components.StandardRoundedFilterChip
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddressWiseOrder
 import com.niyaj.ui.components.IconWithText
+import com.niyaj.ui.parameterProvider.AddressPreviewData
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
-fun GroupedOrders(
+internal fun GroupedOrders(
     customerPhone: String,
     orderDetails: List<AddressWiseOrder>,
     onClickOrder: (Int) -> Unit,
@@ -105,18 +109,18 @@ fun GroupedOrders(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun GroupedOrderDetails(
+private fun GroupedOrderDetails(
     modifier: Modifier = Modifier,
     orderDetails: List<AddressWiseOrder>,
     onClickOrder: (Int) -> Unit,
-) {
+) = trace("GroupedOrderDetails") {
     FlowRow(
         modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.tertiaryContainer)
             .padding(horizontal = SpaceSmall),
-        verticalArrangement = Arrangement.spacedBy(SpaceSmall, Alignment.CenterVertically),
         horizontalArrangement = Arrangement.spacedBy(SpaceSmall, Alignment.Start),
+        verticalArrangement = Arrangement.Center,
     ) {
         orderDetails.forEach { order ->
             StandardRoundedFilterChip(
@@ -127,5 +131,41 @@ fun GroupedOrderDetails(
                 },
             )
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun GroupedOrdersPreview(
+    modifier: Modifier = Modifier,
+    orderDetails: List<AddressWiseOrder> = AddressPreviewData.groupedAddressWiseOrder,
+) {
+    PoposRoomTheme {
+        Surface {
+            Column {
+                orderDetails.groupBy { it.customerPhone }.forEach { (phone, orders) ->
+                    GroupedOrders(
+                        customerPhone = phone,
+                        orderDetails = orders,
+                        onClickOrder = {},
+                    )
+                }
+            }
+        }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun GroupedOrderDetailsPreview(
+    modifier: Modifier = Modifier,
+    orderDetails: List<AddressWiseOrder> = AddressPreviewData.groupedAddressWiseOrder,
+) {
+    PoposRoomTheme {
+        GroupedOrderDetails(
+            modifier = modifier,
+            orderDetails = orderDetails,
+            onClickOrder = {},
+        )
     }
 }

@@ -394,6 +394,15 @@ fun calculateEndOfDayTime(date: String = "", days: String = ""): String {
     return calendar.timeInMillis.toString()
 }
 
+fun getDateInMilliseconds(hour: Int, day: Int = 0, month: Int = 0): String {
+    val calendar = Calendar.getInstance()
+    if (day != 0) calendar.add(Calendar.DAY_OF_YEAR, day)
+    if (month != 0) calendar.add(Calendar.DAY_OF_MONTH, month)
+    calendar.add(Calendar.HOUR_OF_DAY, hour)
+
+    return calendar.timeInMillis.toString()
+}
+
 fun safeString(price: String): Int {
     return if (price.isEmpty()) {
         0

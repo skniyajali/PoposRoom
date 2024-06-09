@@ -208,7 +208,7 @@ private fun AddOnItemScreenContent(
                 onSettingsClick = onSettingsClick,
                 onSelectAllClick = onSelectAllClick,
                 onClearClick = onClearSearchClick,
-                onSearchClick = onSearchClick,
+                onSearchIconClick = onSearchClick,
                 onSearchTextChanged = onSearchTextChanged,
             )
         },
@@ -216,7 +216,7 @@ private fun AddOnItemScreenContent(
         selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
         onDeselect = onDeselect,
-        onBackClick = onBackClick,
+        onBackClick = if (showSearchBar) onCloseSearchBar else onBackClick,
         snackbarHostState = snackbarHostState,
         onNavigateToScreen = onNavigateToScreen,
     ) {
@@ -336,7 +336,7 @@ private fun HandleResultRecipients(
 @Composable
 private fun AddOnItemScreenPreview(
     @PreviewParameter(AddOnItemPreviewParameterProvider::class)
-    uiState: UiState<List<AddOnItem>>
+    uiState: UiState<List<AddOnItem>>,
 ) {
     PoposRoomTheme {
         AddOnItemScreenContent(

@@ -17,7 +17,6 @@
 
 package com.niyaj.address.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,8 +26,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -37,67 +38,101 @@ import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toRupee
 import com.niyaj.common.utils.toTime
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddressWiseOrder
 import com.niyaj.ui.components.IconWithText
+import com.niyaj.ui.parameterProvider.AddressPreviewData
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
-fun ListOfOrders(
+internal fun ListOfOrders(
+    modifier: Modifier = Modifier,
     orderSize: Int,
     orderDetails: List<AddressWiseOrder>,
     onClickOrder: (Int) -> Unit,
 ) = trace("Address::ListOfOrder") {
-    orderDetails.forEachIndexed { index, order ->
-        Row(
+    Surface(modifier) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    onClickOrder(order.orderId)
-                }
-                .padding(SpaceSmall),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .fillMaxWidth(),
         ) {
-            IconWithText(
-                text = "${order.orderId}",
-                icon = PoposIcons.Tag,
-                tintColor = MaterialTheme.colorScheme.tertiary,
-                isTitle = true,
-            )
+            orderDetails.forEachIndexed { index, order ->
+                key(order.orderId) {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        onClick = {
+                            onClickOrder(order.orderId)
+                        },
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(SpaceSmall),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            IconWithText(
+                                text = "${order.orderId}",
+                                icon = PoposIcons.Tag,
+                                tintColor = MaterialTheme.colorScheme.tertiary,
+                                isTitle = true,
+                            )
 
-            Column {
-                Text(
-                    text = order.customerPhone,
-                    textAlign = TextAlign.Start,
-                )
+                            Column {
+                                Text(
+                                    text = order.customerPhone,
+                                    textAlign = TextAlign.Start,
+                                )
 
-                order.customerName?.let {
-                    Spacer(
-                        modifier = Modifier.height(
-                            SpaceMini,
-                        ),
-                    )
-                    Text(text = it)
+                                order.customerName?.let {
+                                    Spacer(
+                                        modifier = Modifier.height(
+                                            SpaceMini,
+                                        ),
+                                    )
+                                    Text(text = it)
+                                }
+                            }
+
+                            Text(
+                                text = order.totalPrice.toRupee,
+                                textAlign = TextAlign.Start,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+
+                            Text(
+                                text = order.updatedAt.toTime,
+                                textAlign = TextAlign.End,
+                            )
+                        }
+                    }
+                }
+
+                if (index != orderSize - 1) {
+                    Spacer(modifier = Modifier.height(SpaceMini))
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                    Spacer(modifier = Modifier.height(SpaceMini))
                 }
             }
-
-            Text(
-                text = order.totalPrice.toRupee,
-                textAlign = TextAlign.Start,
-                fontWeight = FontWeight.SemiBold,
-            )
-
-            Text(
-                text = order.updatedAt.toTime,
-                textAlign = TextAlign.End,
-            )
         }
+    }
+}
 
-        if (index != orderSize - 1) {
-            Spacer(modifier = Modifier.height(SpaceMini))
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-            Spacer(modifier = Modifier.height(SpaceMini))
-        }
+@DevicePreviews
+@Composable
+private fun ListOfOrdersPreview(
+    modifier: Modifier = Modifier,
+    orders: List<AddressWiseOrder> = AddressPreviewData.sampleAddressWiseOrders,
+) {
+    PoposRoomTheme {
+        ListOfOrders(
+            modifier = modifier,
+            orderSize = orders.size,
+            orderDetails = orders,
+            onClickOrder = {},
+        )
     }
 }

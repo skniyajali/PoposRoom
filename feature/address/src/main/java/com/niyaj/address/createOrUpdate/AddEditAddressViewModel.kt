@@ -98,7 +98,7 @@ class AddEditAddressViewModel @Inject constructor(
             }
 
             is AddEditAddressEvent.CreateOrUpdateAddress -> {
-                createOrUpdateAddress(event.addressId)
+                createOrUpdateAddress(addressId)
             }
         }
     }

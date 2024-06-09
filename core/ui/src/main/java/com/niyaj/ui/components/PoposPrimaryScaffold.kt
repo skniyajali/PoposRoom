@@ -399,7 +399,7 @@ private fun PoposSecondaryScaffoldPreview() {
         navActions = {},
         floatingActionButton = {},
         bottomBar = {},
-        content = {}
+        content = {},
     )
 }
 

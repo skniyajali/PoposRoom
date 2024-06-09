@@ -56,7 +56,7 @@ fun AddOnSettingsScreen(
         },
         onExportClick = {
             navigator.navigate(AddOnExportScreenDestination())
-        }
+        },
     )
 }
 

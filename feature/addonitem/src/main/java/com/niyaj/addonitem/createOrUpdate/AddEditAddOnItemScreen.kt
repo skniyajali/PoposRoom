@@ -107,7 +107,7 @@ fun AddEditAddOnItemScreen(
         nameError = nameError,
         priceError = priceError,
         onEvent = viewModel::onEvent,
-        onBackClick = navigator::navigateUp
+        onBackClick = navigator::navigateUp,
     )
 }
 
@@ -147,7 +147,7 @@ internal fun AddEditAddOnItemScreenContent(
                 },
             )
         },
-        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "Create New Addon::Fields")
 
@@ -174,7 +174,7 @@ internal fun AddEditAddOnItemScreenContent(
                     },
                     onClickClearIcon = {
                         onEvent(AddEditAddOnItemEvent.ItemNameChanged(""))
-                    }
+                    },
                 )
             }
 
@@ -193,7 +193,7 @@ internal fun AddEditAddOnItemScreenContent(
                     },
                     onClickClearIcon = {
                         onEvent(AddEditAddOnItemEvent.ItemPriceChanged(""))
-                    }
+                    },
                 )
             }
 
@@ -233,12 +233,12 @@ private fun AddEditAddOnItemScreenContentPreview() {
             state = AddEditAddOnItemState(
                 itemName = "Lily McClure",
                 itemPrice = 6426,
-                isApplicable = false
+                isApplicable = false,
             ),
             nameError = null,
             priceError = null,
             onEvent = {},
-            onBackClick = {}
+            onBackClick = {},
         )
     }
 }
