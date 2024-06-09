@@ -29,6 +29,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -94,8 +95,8 @@ fun AddEditCategoryScreen(
         bottomBar = {
             PoposButton(
                 modifier = Modifier
-                    .testTag(AddressTestTags.ADD_EDIT_ADDRESS_BTN)
-                    .padding(SpaceMedium),
+                    .fillMaxWidth()
+                    .testTag(AddressTestTags.ADD_EDIT_ADDRESS_BTN),
                 text = title,
                 icon = if (categoryId == 0) PoposIcons.Add else PoposIcons.Edit,
                 enabled = enableBtn,
@@ -105,6 +106,7 @@ fun AddEditCategoryScreen(
             )
         },
         onBackClick = navigator::navigateUp,
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier

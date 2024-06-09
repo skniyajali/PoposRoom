@@ -31,6 +31,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -102,8 +103,8 @@ fun AddEditChargesScreen(
         bottomBar = {
             PoposButton(
                 modifier = Modifier
-                    .testTag(ADD_EDIT_CHARGES_BUTTON)
-                    .padding(SpaceMedium),
+                    .fillMaxWidth()
+                    .testTag(ADD_EDIT_CHARGES_BUTTON),
                 text = title,
                 icon = if (chargesId == 0) PoposIcons.Add else PoposIcons.Edit,
                 enabled = enableBtn,
@@ -113,6 +114,7 @@ fun AddEditChargesScreen(
             )
         },
         onBackClick = navigator::navigateUp,
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     ) { paddingValues ->
         TrackScrollJank(
             scrollableState = lazyListState,

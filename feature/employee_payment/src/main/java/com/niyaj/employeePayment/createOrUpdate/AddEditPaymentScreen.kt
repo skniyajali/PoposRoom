@@ -164,8 +164,7 @@ fun AddEditPaymentScreen(
             PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(ADD_EDIT_PAYMENT_ENTRY_BUTTON)
-                    .padding(SpaceMedium),
+                    .testTag(ADD_EDIT_PAYMENT_ENTRY_BUTTON),
                 enabled = enableBtn,
                 text = title,
                 icon = if (paymentId == 0) PoposIcons.Add else PoposIcons.Edit,

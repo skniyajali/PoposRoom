@@ -42,7 +42,6 @@ import com.niyaj.common.tags.AddressTestTags.CREATE_ADDRESS_SCREEN
 import com.niyaj.common.tags.AddressTestTags.UPDATE_ADDRESS_SCREEN
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.PoposSecondaryScaffold
@@ -121,8 +120,7 @@ internal fun AddEditAddressScreenContent(
             PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(AddressTestTags.ADD_EDIT_ADDRESS_BTN)
-                    .padding(horizontal = SpaceMedium, vertical = SpaceLarge),
+                    .testTag(AddressTestTags.ADD_EDIT_ADDRESS_BTN),
                 text = title,
                 enabled = enableBtn,
                 icon = icon,

@@ -32,7 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -52,6 +52,7 @@ fun CategoryData(
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
+    containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CategoryData") {
     val borderStroke = if (doesSelected(item.categoryId)) border else null
 
@@ -64,7 +65,6 @@ fun CategoryData(
                     Modifier.border(it, CardDefaults.elevatedShape)
                 } ?: Modifier,
             )
-            .clip(CardDefaults.elevatedShape)
             .combinedClickable(
                 onClick = {
                     onClick(item.categoryId)
@@ -73,6 +73,10 @@ fun CategoryData(
                     onLongClick(item.categoryId)
                 },
             ),
+        elevation = CardDefaults.elevatedCardElevation(2.dp),
+        colors = CardDefaults.elevatedCardColors().copy(
+            containerColor = containerColor,
+        ),
     ) {
         Row(
             modifier = Modifier

@@ -34,7 +34,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -80,7 +79,6 @@ import com.niyaj.common.tags.CartOrderTestTags.ORDER_TYPE_FIELD
 import com.niyaj.common.tags.ProductTestTags.ADD_EDIT_PRODUCT_BUTTON
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.LightColor6
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
@@ -202,22 +200,17 @@ internal fun AddEditCartOrderScreenContent(
         showBackButton = true,
         showBottomBar = true,
         bottomBar = {
-            BottomAppBar(
-                containerColor = LightColor6,
-            ) {
-                PoposButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag(ADD_EDIT_PRODUCT_BUTTON)
-                        .padding(SpaceSmall),
-                    enabled = enableBtn,
-                    text = title,
-                    icon = icon,
-                    onClick = {
-                        onEvent(AddEditCartOrderEvent.CreateOrUpdateCartOrder)
-                    },
-                )
-            }
+            PoposButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(ADD_EDIT_PRODUCT_BUTTON),
+                enabled = enableBtn,
+                text = title,
+                icon = icon,
+                onClick = {
+                    onEvent(AddEditCartOrderEvent.CreateOrUpdateCartOrder)
+                },
+            )
         },
         onBackClick = onBackClick,
     ) { paddingValues ->

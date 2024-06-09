@@ -131,13 +131,11 @@ internal fun AddEditAddOnItemScreenContent(
         title = title,
         showBackButton = true,
         onBackClick = onBackClick,
-        showBottomBar = false,
-        showFab = true,
-        floatingActionButton = {
+        showBottomBar = true,
+        bottomBar = {
             PoposButton(
                 modifier = Modifier
                     .testTag(AddOnTestTags.ADD_EDIT_ADDON_BUTTON)
-                    .padding(horizontal = SpaceMedium)
                     .fillMaxWidth(),
                 text = title,
                 enabled = enableBtn,

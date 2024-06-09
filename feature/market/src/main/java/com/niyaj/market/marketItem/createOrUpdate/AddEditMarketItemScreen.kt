@@ -138,8 +138,7 @@ fun AddEditMarketItemScreen(
             PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(ADD_EDIT_MARKET_ITEM_BUTTON)
-                    .padding(SpaceMedium),
+                    .testTag(ADD_EDIT_MARKET_ITEM_BUTTON),
                 text = if (itemId == 0) CREATE_NEW_ITEM else UPDATE_ITEM,
                 icon = if (itemId == 0) PoposIcons.Add else PoposIcons.Edit,
                 enabled = enableBtn,

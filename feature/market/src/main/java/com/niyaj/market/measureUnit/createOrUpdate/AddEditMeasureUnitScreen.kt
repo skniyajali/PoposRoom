@@ -95,8 +95,7 @@ fun AddEditMeasureUnitScreen(
             PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(ADD_EDIT_UNIT_BUTTON)
-                    .padding(SpaceMedium),
+                    .testTag(ADD_EDIT_UNIT_BUTTON),
                 text = title,
                 icon = if (unitId == 0) PoposIcons.Add else PoposIcons.Edit,
                 enabled = enableBtn,

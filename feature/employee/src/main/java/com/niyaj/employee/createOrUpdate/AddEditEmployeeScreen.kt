@@ -32,7 +32,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -192,22 +191,17 @@ fun AddEditEmployeeScreenContent(
         onBackClick = onBackClick,
         showBottomBar = true,
         bottomBar = {
-            BottomAppBar(
-                containerColor = Color.White,
-            ) {
-                PoposButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag(ADD_EDIT_EMPLOYEE_BUTTON)
-                        .padding(SpaceSmall),
-                    text = title,
-                    icon = icon,
-                    enabled = enableBtn,
-                    onClick = {
-                        onEvent(AddEditEmployeeEvent.CreateOrUpdateEmployee)
-                    },
-                )
-            }
+            PoposButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(ADD_EDIT_EMPLOYEE_BUTTON),
+                text = title,
+                icon = icon,
+                enabled = enableBtn,
+                onClick = {
+                    onEvent(AddEditEmployeeEvent.CreateOrUpdateEmployee)
+                },
+            )
         },
     ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "Add/Edit Employee::Fields")

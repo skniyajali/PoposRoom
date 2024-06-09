@@ -148,8 +148,7 @@ fun AddEditExpenseScreen(
             PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(ADD_EDIT_EXPENSE_BUTTON)
-                    .padding(SpaceMedium),
+                    .testTag(ADD_EDIT_EXPENSE_BUTTON),
                 text = if (expenseId == 0) CREATE_NEW_EXPENSE else EDIT_EXPENSE_ITEM,
                 icon = if (expenseId == 0) PoposIcons.Add else PoposIcons.Edit,
                 enabled = enableBtn,

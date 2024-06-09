@@ -72,7 +72,6 @@ import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.StandardOutlinedTextField
@@ -143,8 +142,7 @@ fun AddEditProductScreen(
             PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(ADD_EDIT_PRODUCT_BUTTON)
-                    .padding(SpaceSmallMax),
+                    .testTag(ADD_EDIT_PRODUCT_BUTTON),
                 enabled = enableBtn,
                 text = title,
                 icon = if (productId == 0) PoposIcons.Add else PoposIcons.Edit,

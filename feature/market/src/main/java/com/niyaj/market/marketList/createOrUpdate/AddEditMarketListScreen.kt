@@ -190,6 +190,7 @@ fun AddEditMarketListScreen(
             }
 
             PoposButton(
+                modifier = Modifier.fillMaxWidth(),
                 text = title,
                 enabled = !isError,
                 icon = if (marketId == 0) PoposIcons.Add else PoposIcons.Edit,

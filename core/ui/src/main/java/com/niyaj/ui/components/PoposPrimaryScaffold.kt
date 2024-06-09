@@ -42,6 +42,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedCard
@@ -84,6 +85,7 @@ import com.niyaj.designsystem.theme.LightColor13
 import com.niyaj.designsystem.theme.LightColor14
 import com.niyaj.designsystem.theme.Pewter
 import com.niyaj.designsystem.theme.RoyalPurple
+import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.ui.utils.DevicePreviews
 import kotlinx.coroutines.launch
 
@@ -341,7 +343,12 @@ fun PoposSecondaryScaffold(
                     },
                 ),
             ) {
-                bottomBar()
+                BottomAppBar(
+                    containerColor = statusColor,
+                    contentPadding = PaddingValues(SpaceMedium),
+                ) {
+                    bottomBar()
+                }
             }
         },
         floatingActionButton = {

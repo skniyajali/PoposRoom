@@ -141,8 +141,7 @@ fun AddEditAbsentScreen(
             PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(ADD_EDIT_ABSENT_ENTRY_BUTTON)
-                    .padding(SpaceMedium),
+                    .testTag(ADD_EDIT_ABSENT_ENTRY_BUTTON),
                 enabled = enableBtn,
                 text = title,
                 icon = if (absentId == 0) PoposIcons.Add else PoposIcons.EditCalender,
