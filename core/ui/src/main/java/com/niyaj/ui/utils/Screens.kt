@@ -31,6 +31,8 @@ object Screens {
     const val HOME_SCREEN = "home_screen"
 
     const val ADD_ON_ITEM_SCREEN = "add_on_item_screen"
+    const val ADD_ON_IMPORT_SCREEN = "add_on_import_screen"
+    const val ADD_ON_EXPORT_SCREEN = "add_on_export_screen"
     const val ADD_EDIT_ADD_ON_ITEM_SCREEN = "add_edit_add_on_item_screen"
 
     const val CART_SCREEN = "cart_screen"

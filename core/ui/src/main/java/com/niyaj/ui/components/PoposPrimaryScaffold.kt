@@ -57,6 +57,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -64,6 +65,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.lerp
 import androidx.compose.ui.graphics.Color
@@ -71,13 +73,18 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.Constants.STANDARD_BACK_BUTTON
 import com.niyaj.designsystem.components.PoposLargeTopAppBar
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.LightColor6
+import com.niyaj.designsystem.theme.BoneWhite
+import com.niyaj.designsystem.theme.LightColor13
+import com.niyaj.designsystem.theme.LightColor14
+import com.niyaj.designsystem.theme.Pewter
 import com.niyaj.designsystem.theme.RoyalPurple
+import com.niyaj.ui.utils.DevicePreviews
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -246,7 +253,6 @@ fun PoposPrimaryScaffold(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PoposSecondaryScaffold(
     modifier: Modifier = Modifier,
@@ -256,6 +262,7 @@ fun PoposSecondaryScaffold(
     showFab: Boolean = true,
     fabPosition: FabPosition = FabPosition.Center,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
     onBackClick: () -> Unit,
     navigationIcon: @Composable () -> Unit = {},
     navActions: @Composable RowScope.() -> Unit = {},
@@ -263,18 +270,16 @@ fun PoposSecondaryScaffold(
     bottomBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit = {},
 ) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     // Remember a SystemUiController
     val systemUiController = rememberSystemUiController()
 
     val colorTransitionFraction = scrollBehavior.state.collapsedFraction
-
-    val color = rememberUpdatedState(newValue = containerColorForSecondary(colorTransitionFraction))
     val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
+    val statusColor = LightColor13
     val navColor = MaterialTheme.colorScheme.surface
 
     SideEffect {
-        systemUiController.setStatusBarColor(color = color.value)
+        systemUiController.setStatusBarColor(color = statusColor)
 
         systemUiController.setNavigationBarColor(color = navColor)
     }
@@ -313,11 +318,12 @@ fun PoposSecondaryScaffold(
                 actions = navActions,
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+                    containerColor = statusColor,
+                    scrolledContainerColor = statusColor,
                 ),
                 modifier = Modifier
-                    .testTag("secondaryTopAppBar"),
+                    .testTag("secondaryTopAppBar")
+                    .shadow(2.dp, RoundedCornerShape(bottomStart = 24.dp)),
             )
         },
         bottomBar = {
@@ -363,16 +369,38 @@ fun PoposSecondaryScaffold(
             .fillMaxSize()
             .imePadding()
             .testTag("secondaryScaffold"),
+        containerColor = Color.Transparent,
     ) { padding ->
         Surface(
             modifier = Modifier
                 .fillMaxSize()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             shape = shape.value,
+            color = LightColor14,
         ) {
             content(padding)
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@DevicePreviews
+@Composable
+private fun PoposSecondaryScaffoldPreview() {
+    PoposSecondaryScaffold(
+        modifier = Modifier,
+        title = "Secondary Scaffold",
+        showBackButton = false,
+        showBottomBar = false,
+        showFab = false,
+        fabPosition = FabPosition.End,
+        onBackClick = {},
+        navigationIcon = {},
+        navActions = {},
+        floatingActionButton = {},
+        bottomBar = {},
+        content = {}
+    )
 }
 
 @Composable
@@ -388,7 +416,7 @@ internal fun containerColorForPrimary(colorTransitionFraction: Float): Color {
 internal fun containerColorForSecondary(colorTransitionFraction: Float): Color {
     return lerp(
         MaterialTheme.colorScheme.surfaceContainerLowest,
-        MaterialTheme.colorScheme.surfaceContainerLowest,
+        MaterialTheme.colorScheme.surfaceContainerLow,
         FastOutLinearInEasing.transform(colorTransitionFraction),
     )
 }
@@ -396,8 +424,8 @@ internal fun containerColorForSecondary(colorTransitionFraction: Float): Color {
 @Composable
 internal fun containerColor(colorTransitionFraction: Float): Color {
     return lerp(
-        LightColor6,
-        MaterialTheme.colorScheme.surfaceContainerLowest,
+        BoneWhite,
+        Pewter,
         FastOutLinearInEasing.transform(colorTransitionFraction),
     )
 }

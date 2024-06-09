@@ -25,6 +25,9 @@ object AddOnTestTags {
     const val ADDON_NOT_AVAILABLE = "AddOn Not Available"
     const val ADDON_SEARCH_PLACEHOLDER = "Search for AddOn Items..."
 
+    const val ADDON_LOADING_INDICATOR = "addonLoadingIndicator"
+    const val ADDON_ITEM_LIST = "addonItemsList"
+
     const val ADD_EDIT_ADDON_SCREEN = "Create New Addon Screen"
 
     const val ADD_EDIT_ADDON_BUTTON = "AddEdit Addon"

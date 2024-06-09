@@ -17,9 +17,10 @@
 
 package com.niyaj.addonitem.settings
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
@@ -27,10 +28,13 @@ import androidx.compose.ui.Modifier
 import com.niyaj.addonitem.destinations.AddOnExportScreenDestination
 import com.niyaj.addonitem.destinations.AddOnImportScreenDestination
 import com.niyaj.common.tags.AddOnTestTags.ADDON_SETTINGS_TITLE
+import com.niyaj.common.tags.AddOnTestTags.EXPORT_ADDON_TITLE
+import com.niyaj.common.tags.AddOnTestTags.IMPORT_ADDON_TITLE
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
@@ -44,40 +48,58 @@ fun AddOnSettingsScreen(
 ) {
     TrackScreenViewEvent(screenName = "AddOnSettingsScreen")
 
+    AddOnSettingsScreenContent(
+        modifier = Modifier,
+        onBackClick = navigator::navigateUp,
+        onImportClick = {
+            navigator.navigate(AddOnImportScreenDestination())
+        },
+        onExportClick = {
+            navigator.navigate(AddOnExportScreenDestination())
+        }
+    )
+}
+
+@VisibleForTesting
+@Composable
+@DevicePreviews
+internal fun AddOnSettingsScreenContent(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit = {},
+    onImportClick: () -> Unit = {},
+    onExportClick: () -> Unit = {},
+) {
     val lazyListState = rememberLazyListState()
 
     StandardBottomSheet(
+        modifier = modifier,
         title = ADDON_SETTINGS_TITLE,
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
     ) {
         TrackScrollJank(scrollableState = lazyListState, stateName = "addon:settings")
 
         LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceMedium),
+                .fillMaxWidth(),
+            contentPadding = PaddingValues(SpaceMedium),
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
-            item("ImportAddOn") {
+            item(IMPORT_ADDON_TITLE) {
                 SettingsCard(
-                    title = "Import AddOn",
+                    title = IMPORT_ADDON_TITLE,
                     subtitle = "Click here to import addon from file.",
                     icon = PoposIcons.Import,
-                    onClick = {
-                        navigator.navigate(AddOnImportScreenDestination())
-                    },
+                    onClick = onImportClick,
                 )
             }
 
-            item("ExportAddOn") {
+            item(EXPORT_ADDON_TITLE) {
                 SettingsCard(
-                    title = "Export AddOn",
+                    title = EXPORT_ADDON_TITLE,
                     subtitle = "Click here to export addon to file.",
                     icon = PoposIcons.Upload,
-                    onClick = {
-                        navigator.navigate(AddOnExportScreenDestination())
-                    },
+                    onClick = onExportClick,
                 )
             }
         }

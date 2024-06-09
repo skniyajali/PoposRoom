@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
@@ -35,17 +36,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.tags.AddOnTestTags.ADDON_ITEM_TAG
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.drawAnimatedBorder
+import com.niyaj.ui.parameterProvider.AddOnPreviewParameterData
 import com.niyaj.ui.utils.DevicePreviews
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -57,6 +62,7 @@ internal fun AddOnItemData(
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
+    containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("AddOnItemData") {
     val borderStroke = if (doesSelected(item.itemId)) border else null
 
@@ -75,7 +81,6 @@ internal fun AddOnItemData(
                         )
                 } ?: Modifier,
             )
-            .clip(CardDefaults.elevatedShape)
             .combinedClickable(
                 onClick = {
                     onClick(item.itemId)
@@ -85,6 +90,9 @@ internal fun AddOnItemData(
                 },
             ),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.elevatedCardColors().copy(
+            containerColor = containerColor
+        )
     ) {
         Row(
             modifier = Modifier
@@ -94,13 +102,22 @@ internal fun AddOnItemData(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(
+                modifier = Modifier.weight(2.5f, false),
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text(text = item.itemName)
+                Text(
+                    text = item.itemName,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
                 Spacer(modifier = Modifier.height(SpaceSmall))
                 Text(text = item.itemPrice.toRupee)
             }
+
+            Spacer(modifier.width(SpaceSmall))
 
             CircularBox(
                 icon = PoposIcons.Link,
@@ -114,39 +131,29 @@ internal fun AddOnItemData(
 @Composable
 @DevicePreviews
 fun AddOnItemDataSelected(
-    addOnItem: AddOnItem = AddOnItem(
-        itemId = 1,
-        itemName = "Extra Cheese",
-        itemPrice = 100,
-        isApplicable = true,
-        createdAt = 1621537200000,
-        updatedAt = null,
-    ),
+    addOnItem: AddOnItem = AddOnPreviewParameterData.items.first(),
 ) {
-    AddOnItemData(
-        item = addOnItem,
-        doesSelected = { true },
-        onClick = {},
-        onLongClick = {},
-    )
+    PoposRoomTheme {
+        AddOnItemData(
+            item = addOnItem,
+            doesSelected = { true },
+            onClick = {},
+            onLongClick = {},
+        )
+    }
 }
 
 @Composable
 @DevicePreviews
 fun AddOnItemDataNotSelected(
-    addOnItem: AddOnItem = AddOnItem(
-        itemId = 1,
-        itemName = "Extra Cheese",
-        itemPrice = 100,
-        isApplicable = true,
-        createdAt = 1621537200000,
-        updatedAt = null,
-    ),
+    addOnItem: AddOnItem = AddOnPreviewParameterData.items.last(),
 ) {
-    AddOnItemData(
-        item = addOnItem,
-        doesSelected = { false },
-        onClick = {},
-        onLongClick = {},
-    )
+    PoposRoomTheme {
+        AddOnItemData(
+            item = addOnItem,
+            doesSelected = { false },
+            onClick = {},
+            onLongClick = {},
+        )
+    }
 }

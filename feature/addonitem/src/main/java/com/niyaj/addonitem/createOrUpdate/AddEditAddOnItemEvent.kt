@@ -25,5 +25,5 @@ sealed class AddEditAddOnItemEvent {
 
     data object ItemApplicableChanged : AddEditAddOnItemEvent()
 
-    data class CreateUpdateAddOnItem(val addOnItemId: Int = 0) : AddEditAddOnItemEvent()
+    data object CreateUpdateAddOnItem : AddEditAddOnItemEvent()
 }
