@@ -177,6 +177,7 @@ internal fun AddressImportScreenContent(
         title = if (selectedItems.isEmpty()) IMPORT_ADDRESS_TITLE else "${selectedItems.size} Selected",
         showBackButton = selectedItems.isEmpty(),
         showBottomBar = importedItems.isNotEmpty(),
+        showSecondaryBottomBar = true,
         navActions = {
             AnimatedVisibility(
                 visible = importedItems.isNotEmpty(),

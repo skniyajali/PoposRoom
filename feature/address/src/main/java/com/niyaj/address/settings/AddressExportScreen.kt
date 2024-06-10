@@ -205,6 +205,7 @@ internal fun AddressExportScreenContent(
         title = if (selectedItems.isEmpty()) EXPORT_ADDRESS_TITLE else "${selectedItems.size} Selected",
         showBackButton = selectedItems.isEmpty() || showSearchBar,
         showBottomBar = items.isNotEmpty(),
+        showSecondaryBottomBar = true,
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(

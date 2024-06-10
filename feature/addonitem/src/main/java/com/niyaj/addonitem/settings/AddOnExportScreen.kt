@@ -204,6 +204,7 @@ internal fun AddOnExportScreenContent(
         title = if (selectedItems.isEmpty()) EXPORT_ADDON_TITLE else "${selectedItems.size} Selected",
         showBackButton = selectedItems.isEmpty() || showSearchBar,
         showBottomBar = addOnItems.isNotEmpty(),
+        showSecondaryBottomBar = true,
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(

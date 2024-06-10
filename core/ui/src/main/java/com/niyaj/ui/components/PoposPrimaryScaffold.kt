@@ -261,6 +261,7 @@ fun PoposSecondaryScaffold(
     title: String,
     showBackButton: Boolean = true,
     showBottomBar: Boolean = false,
+    showSecondaryBottomBar: Boolean = false,
     showFab: Boolean = true,
     fabPosition: FabPosition = FabPosition.Center,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
@@ -343,11 +344,17 @@ fun PoposSecondaryScaffold(
                     },
                 ),
             ) {
-                BottomAppBar(
-                    containerColor = statusColor,
-                    contentPadding = PaddingValues(SpaceMedium),
-                ) {
+                if(showSecondaryBottomBar) {
                     bottomBar()
+                }else {
+                    BottomAppBar(
+                        containerColor = statusColor,
+                        contentPadding = PaddingValues(SpaceMedium),
+                        modifier = Modifier
+                            .testTag("secondaryBottomAppBar"),
+                    ) {
+                        bottomBar()
+                    }
                 }
             }
         },

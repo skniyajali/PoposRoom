@@ -17,41 +17,68 @@
 
 package com.niyaj.category.settings
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import com.niyaj.category.destinations.ExportCategoryScreenDestination
 import com.niyaj.category.destinations.ImportCategoryScreenDestination
 import com.niyaj.common.tags.CategoryConstants.CATEGORY_SETTINGS_TITLE
+import com.niyaj.common.tags.CategoryConstants.EXPORT_CATEGORY_TITLE
+import com.niyaj.common.tags.CategoryConstants.EXPORT_CATEGORY_TITLE_NOTE
+import com.niyaj.common.tags.CategoryConstants.IMPORT_CATEGORY_NOTE
+import com.niyaj.common.tags.CategoryConstants.IMPORT_CATEGORY_TITLE
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 
 @Destination(style = DestinationStyleBottomSheet::class)
 @Composable
 fun CategorySettingsScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
+) {
+    CategorySettingsScreenContent(
+        modifier = Modifier,
+        onBackClick = navigator::navigateUp,
+        onImportClick = {
+            navigator.navigate(ImportCategoryScreenDestination())
+        },
+        onExportClick = {
+            navigator.navigate(ExportCategoryScreenDestination())
+        },
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun CategorySettingsScreenContent(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+    onImportClick: () -> Unit,
+    onExportClick: () -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
 ) {
     TrackScreenViewEvent(screenName = "Category Setting Screen")
-
-    val lazyListState = rememberLazyListState()
 
     TrackScrollJank(scrollableState = lazyListState, stateName = "Category Setting::Options")
 
     StandardBottomSheet(
+        modifier = modifier,
         title = CATEGORY_SETTINGS_TITLE,
-        onBackClick = { navController.navigateUp() },
+        onBackClick = onBackClick,
     ) {
         LazyColumn(
             modifier = Modifier
@@ -60,27 +87,38 @@ fun CategorySettingsScreen(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
-            item("ImportCategory") {
+            item(IMPORT_CATEGORY_TITLE) {
                 SettingsCard(
-                    title = "Import Category",
-                    subtitle = "Click here to import data from file.",
+                    title = IMPORT_CATEGORY_TITLE,
+                    subtitle = IMPORT_CATEGORY_NOTE,
                     icon = PoposIcons.Import,
-                    onClick = {
-                        navController.navigate(ImportCategoryScreenDestination())
-                    },
+                    onClick = onImportClick,
                 )
             }
 
-            item("ExportCategory") {
+            item(EXPORT_CATEGORY_TITLE) {
                 SettingsCard(
-                    title = "Export Category",
-                    subtitle = "Click here to export category to file.",
+                    title = EXPORT_CATEGORY_TITLE,
+                    subtitle = EXPORT_CATEGORY_TITLE_NOTE,
                     icon = PoposIcons.Upload,
-                    onClick = {
-                        navController.navigate(ExportCategoryScreenDestination())
-                    },
+                    onClick = onExportClick,
                 )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CategorySettingsScreenContentPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        CategorySettingsScreenContent(
+            modifier = modifier,
+            onBackClick = {},
+            onImportClick = {},
+            onExportClick = {},
+        )
     }
 }

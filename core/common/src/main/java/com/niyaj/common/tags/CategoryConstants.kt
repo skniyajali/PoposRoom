@@ -45,11 +45,15 @@ object CategoryConstants {
     const val CATEGORY_SETTINGS_TITLE = "Category Settings"
 
     const val IMPORT_CATEGORY_TITLE = "Import Categories"
+    const val IMPORT_CATEGORY_NOTE = "Click here to import data from file."
+
     const val IMPORT_CATEGORY_BTN_TEXT = "Import Categories"
     const val IMPORT_CATEGORY_OPN_FILE = "Open File"
     const val IMPORT_CATEGORY_NOTE_TEXT = "Make sure to open categories.json file."
 
     const val EXPORT_CATEGORY_TITLE = "Export Categories"
+    const val EXPORT_CATEGORY_TITLE_NOTE = "Click here to export category to file."
+    
     const val EXPORT_CATEGORY_BTN_TEXT = "Export Categories"
     const val EXPORT_CATEGORY_BTN = "Export Categories"
 

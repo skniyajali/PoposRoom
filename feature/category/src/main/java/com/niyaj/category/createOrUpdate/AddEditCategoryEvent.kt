@@ -23,5 +23,5 @@ sealed class AddEditCategoryEvent {
 
     data object CategoryAvailabilityChanged : AddEditCategoryEvent()
 
-    data class CreateUpdateAddEditCategory(val categoryId: Int = 0) : AddEditCategoryEvent()
+    data object CreateUpdateAddEditCategory : AddEditCategoryEvent()
 }

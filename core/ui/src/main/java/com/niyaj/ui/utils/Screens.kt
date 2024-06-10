@@ -50,6 +50,8 @@ object Screens {
     const val PRINT_SETTINGS_SCREEN = "print_settings_screen"
 
     const val CATEGORY_SCREEN = "category_screen"
+    const val CATEGORY_IMPORT_SCREEN = "category_import_screen"
+    const val CATEGORY_EXPORT_SCREEN = "category_export_screen"
     const val ADD_EDIT_CATEGORY_SCREEN = "add_edit_category_screen"
 
     const val PRODUCT_SCREEN = "products_screen"

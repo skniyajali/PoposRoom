@@ -179,6 +179,7 @@ internal fun AddOnImportScreenContent(
         title = title,
         showBackButton = selectedItems.isEmpty(),
         showBottomBar = importedItems.isNotEmpty(),
+        showSecondaryBottomBar = true,
         navActions = {
             AnimatedVisibility(
                 visible = importedItems.isNotEmpty(),

@@ -52,7 +52,7 @@ class AddEditCategoryViewModel @Inject constructor(
     private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
-    private var categoryId = savedStateHandle.get<Int>("categoryId")
+    private var categoryId = savedStateHandle.get<Int>("categoryId") ?: 0
 
     var addEditState by mutableStateOf(AddEditCategoryState())
 
@@ -61,7 +61,7 @@ class AddEditCategoryViewModel @Inject constructor(
 
     init {
         savedStateHandle.get<Int>("categoryId")?.let { categoryId ->
-            getCategoryById(categoryId)
+            if (categoryId != 0) getCategoryById(categoryId)
         }
     }
 
@@ -85,7 +85,7 @@ class AddEditCategoryViewModel @Inject constructor(
             }
 
             is AddEditCategoryEvent.CreateUpdateAddEditCategory -> {
-                createOrUpdateCategory(event.categoryId)
+                createOrUpdateCategory(categoryId)
             }
         }
     }
@@ -142,7 +142,10 @@ private fun AnalyticsHelper.logOnCreateOrUpdateCategory(categoryId: Int, message
         event = AnalyticsEvent(
             type = "category_$message",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("category_$message", categoryId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param(
+                    "category_$message",
+                    categoryId.toString(),
+                ),
             ),
         ),
     )
