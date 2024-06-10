@@ -65,7 +65,7 @@ import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
-import com.niyaj.ui.parameterProvider.AddOnPreviewParameterData
+import com.niyaj.ui.parameterProvider.AddOnPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens.ADD_ON_IMPORT_SCREEN
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -301,7 +301,7 @@ private fun AddOnImportScreenEmptyContentPreview() {
 @DevicePreviews
 @Composable
 private fun AddOnImportScreenContentPreview(
-    items: ImmutableList<AddOnItem> = AddOnPreviewParameterData.items.toImmutableList(),
+    items: ImmutableList<AddOnItem> = AddOnPreviewData.addOnItemList.toImmutableList(),
 ) {
     PoposRoomTheme {
         AddOnImportScreenContent(

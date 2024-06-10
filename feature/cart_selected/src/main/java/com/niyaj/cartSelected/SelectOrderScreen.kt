@@ -112,7 +112,7 @@ import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.StandardBottomSheetScaffold
 import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.event.UiState
-import com.niyaj.ui.parameterProvider.AddOnPreviewParameterData
+import com.niyaj.ui.parameterProvider.AddOnPreviewData
 import com.niyaj.ui.parameterProvider.CardOrderPreviewData
 import com.niyaj.ui.parameterProvider.CartOrderPreviewParameter
 import com.niyaj.ui.parameterProvider.CartPreviewParameterData
@@ -769,7 +769,7 @@ private fun SelectOrderScreenContentPreview(
     modifier: Modifier = Modifier,
     cartItem: CartItem = CartPreviewParameterData.dineOutCartItems.first(),
     orderDetails: SelectedOrderDetails = SelectedOrderDetails.Success(cartItem),
-    addOnItems: List<AddOnItem> = AddOnPreviewParameterData.items.take(5),
+    addOnItems: List<AddOnItem> = AddOnPreviewData.addOnItemList.take(5),
     deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5)
 ) {
     PoposRoomTheme {
@@ -854,7 +854,7 @@ private fun SelectedCartOrderDataPreview(
     cartOrder: CartOrder = CardOrderPreviewData.orders.last(),
     cartItem: CartItem = CartPreviewParameterData.dineOutCartItems.first(),
     orderDetails: SelectedOrderDetails = SelectedOrderDetails.Success(cartItem),
-    addOnItems: List<AddOnItem> = AddOnPreviewParameterData.items.take(5),
+    addOnItems: List<AddOnItem> = AddOnPreviewData.addOnItemList.take(5),
     deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5)
 ) {
     PoposRoomTheme {

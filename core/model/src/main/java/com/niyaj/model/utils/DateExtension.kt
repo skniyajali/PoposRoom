@@ -33,6 +33,9 @@ internal val String.toTime
 internal val Date.toTime
     get() = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(this).toString()
 
+val Long.toTime
+    get() = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(this).toString()
+
 internal val Long.toDateString
     get() = SimpleDateFormat("dd", Locale.getDefault()).format(this).toString()
 

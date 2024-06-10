@@ -33,7 +33,7 @@ import com.niyaj.designsystem.components.StandardRoundedFilterChip
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.AddOnItem
-import com.niyaj.ui.parameterProvider.AddOnPreviewParameterData
+import com.niyaj.ui.parameterProvider.AddOnPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -78,7 +78,7 @@ fun CartAddOnItems(
 @Composable
 private fun CartAddOnItemsPreview(
     modifier: Modifier = Modifier,
-    addOnItems: List<AddOnItem> = AddOnPreviewParameterData.items,
+    addOnItems: List<AddOnItem> = AddOnPreviewData.addOnItemList,
     selectedAddOnItem: List<Int> = addOnItems.filter { it.itemId % 2 == 0 }.map { it.itemId },
 ) {
     PoposRoomTheme {

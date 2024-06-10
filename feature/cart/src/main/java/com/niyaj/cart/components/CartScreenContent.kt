@@ -45,7 +45,7 @@ import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.OrderType
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
-import com.niyaj.ui.parameterProvider.AddOnPreviewParameterData
+import com.niyaj.ui.parameterProvider.AddOnPreviewData
 import com.niyaj.ui.parameterProvider.CardOrderPreviewData
 import com.niyaj.ui.parameterProvider.CartItemsPreviewParameter
 import com.niyaj.ui.utils.DevicePreviews
@@ -197,7 +197,7 @@ private fun CartScreenContentPreview(
     @PreviewParameter(CartItemsPreviewParameter::class)
     cartItems: List<CartItem>,
     modifier: Modifier = Modifier,
-    addOnItems: List<AddOnItem> = AddOnPreviewParameterData.items.take(5),
+    addOnItems: List<AddOnItem> = AddOnPreviewData.addOnItemList.take(5),
     deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5)
 ) {
     PoposRoomTheme {

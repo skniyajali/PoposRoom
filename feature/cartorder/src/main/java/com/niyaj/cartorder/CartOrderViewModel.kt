@@ -77,10 +77,10 @@ class CartOrderViewModel @Inject constructor(
             initialValue = UiState.Loading,
         )
 
-    fun selectCartOrder() {
+    fun selectCartOrder(orderId: Int) {
         viewModelScope.launch {
             val result = cartOrderRepository.insertOrUpdateSelectedOrder(
-                Selected(orderId = selectedItems.first()),
+                Selected(orderId = orderId),
             )
 
             when (result) {

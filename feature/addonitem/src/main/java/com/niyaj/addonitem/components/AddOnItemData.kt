@@ -50,7 +50,7 @@ import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.drawAnimatedBorder
-import com.niyaj.ui.parameterProvider.AddOnPreviewParameterData
+import com.niyaj.ui.parameterProvider.AddOnPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -131,7 +131,7 @@ internal fun AddOnItemData(
 @Composable
 @DevicePreviews
 private fun AddOnItemDataSelected(
-    addOnItem: AddOnItem = AddOnPreviewParameterData.items.first(),
+    addOnItem: AddOnItem = AddOnPreviewData.addOnItemList.first(),
 ) {
     PoposRoomTheme {
         AddOnItemData(
@@ -146,7 +146,7 @@ private fun AddOnItemDataSelected(
 @Composable
 @DevicePreviews
 private fun AddOnItemDataNotSelected(
-    addOnItem: AddOnItem = AddOnPreviewParameterData.items.last(),
+    addOnItem: AddOnItem = AddOnPreviewData.addOnItemList.last(),
 ) {
     PoposRoomTheme {
         AddOnItemData(

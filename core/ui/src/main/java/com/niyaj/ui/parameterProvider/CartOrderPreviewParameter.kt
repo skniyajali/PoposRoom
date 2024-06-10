@@ -18,6 +18,7 @@
 package com.niyaj.ui.parameterProvider
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.model.Address
 import com.niyaj.model.CartOrder
 import com.niyaj.model.Customer
@@ -26,6 +27,8 @@ import com.niyaj.model.OrderStatus
 import com.niyaj.model.OrderType
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.parameterProvider.CardOrderPreviewData.orders
+import com.niyaj.ui.parameterProvider.CardOrderPreviewData.sampleDineInOrder
+import com.niyaj.ui.parameterProvider.CardOrderPreviewData.sampleDineOutOrder
 
 class CartOrderPreviewParameter : PreviewParameterProvider<UiState<List<CartOrder>>> {
     override val values: Sequence<UiState<List<CartOrder>>>
@@ -36,8 +39,58 @@ class CartOrderPreviewParameter : PreviewParameterProvider<UiState<List<CartOrde
         )
 }
 
+class CartOrderStatePreviewParameter : PreviewParameterProvider<UiState<Map<String, List<CartOrder>>>> {
+    override val values: Sequence<UiState<Map<String, List<CartOrder>>>>
+        get() = sequenceOf(
+            UiState.Loading,
+            UiState.Empty,
+            UiState.Success(
+                orders.groupBy {
+                    (it.updatedAt ?: it.createdAt).toPrettyDate()
+                }
+            )
+        )
+}
+
+class CartOrderOrderTypeDataPreviewParameter: PreviewParameterProvider<CartOrder> {
+    override val values: Sequence<CartOrder>
+        get() = sequenceOf(
+            sampleDineOutOrder,
+            sampleDineInOrder
+        )
+}
 
 object CardOrderPreviewData {
+
+    val sampleDineOutOrder = CartOrder(
+        orderId = 2,
+        orderType = OrderType.DineOut,
+        orderStatus = OrderStatus.PROCESSING,
+        doesChargesIncluded = true,
+        customer = Customer(
+            customerId = 2,
+            customerPhone = "9876543210",
+            customerName = "Jane Smith",
+            customerEmail = "jane.smith@example.com",
+        ),
+        address = Address(
+            addressId = 2,
+            addressName = "456 Oak Avenue",
+            shortName = "Oak Ave",
+        ),
+        deliveryPartnerId = 1,
+    )
+
+    val sampleDineInOrder = CartOrder(
+        orderId = 1,
+        orderType = OrderType.DineIn,
+        orderStatus = OrderStatus.PROCESSING,
+        doesChargesIncluded = false,
+        customer = Customer(),
+        address = Address(),
+        deliveryPartnerId = 0,
+    )
+
     val orders = listOf(
         CartOrder(
             orderId = 1,
@@ -56,6 +109,7 @@ object CardOrderPreviewData {
                 shortName = "Main St",
             ),
             deliveryPartnerId = 0,
+            createdAt = 1686288000000,
         ),
         CartOrder(
             orderId = 2,
@@ -74,6 +128,7 @@ object CardOrderPreviewData {
                 shortName = "Oak Ave",
             ),
             deliveryPartnerId = 1,
+            createdAt = 1686288000000,
         ),
         CartOrder(
             orderId = 3,
@@ -92,6 +147,7 @@ object CardOrderPreviewData {
                 shortName = "Maple Ln",
             ),
             deliveryPartnerId = 0,
+            createdAt = 1686288000000,
         ),
         CartOrder(
             orderId = 4,
@@ -110,6 +166,7 @@ object CardOrderPreviewData {
                 shortName = "Pine Rd",
             ),
             deliveryPartnerId = 2,
+            createdAt = 1686374400000,
         ),
         CartOrder(
             orderId = 5,
@@ -128,6 +185,7 @@ object CardOrderPreviewData {
                 shortName = "Cedar Blvd",
             ),
             deliveryPartnerId = 0,
+            createdAt = 1686374400000,
         ),
         CartOrder(
             orderId = 6,
@@ -146,6 +204,7 @@ object CardOrderPreviewData {
                 shortName = "Elm St",
             ),
             deliveryPartnerId = 3,
+            createdAt = 1686374400000,
         ),
         CartOrder(
             orderId = 7,
@@ -164,6 +223,7 @@ object CardOrderPreviewData {
                 shortName = "Birch Ave",
             ),
             deliveryPartnerId = 0,
+            createdAt = 1686374400000,
         ),
         CartOrder(
             orderId = 8,
@@ -182,6 +242,7 @@ object CardOrderPreviewData {
                 shortName = "Oak Dr",
             ),
             deliveryPartnerId = 4,
+            createdAt = 1686201600000,
         ),
         CartOrder(
             orderId = 9,
@@ -200,6 +261,7 @@ object CardOrderPreviewData {
                 shortName = "Maple Ct",
             ),
             deliveryPartnerId = 0,
+            createdAt = 1686201600000,
         ),
         CartOrder(
             orderId = 10,
@@ -218,6 +280,7 @@ object CardOrderPreviewData {
                 shortName = "Pine Ln",
             ),
             deliveryPartnerId = 5,
+            createdAt = 1686201600000,
         ),
     )
 

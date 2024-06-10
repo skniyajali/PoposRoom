@@ -343,7 +343,7 @@ private fun AddressExportScreenData(
 @DevicePreviews
 @Composable
 private fun AddressExportScreenContentPreview(
-    items: ImmutableList<Address> = AddressPreviewData.items.toImmutableList(),
+    items: ImmutableList<Address> = AddressPreviewData.addressList.toImmutableList(),
 ) {
     PoposRoomTheme {
         AddressExportScreenContent(
@@ -382,7 +382,7 @@ private fun AddressExportScreenEmptyDataPreview() {
 @DevicePreviews
 @Composable
 private fun AddressExportScreenDataPreview(
-    items: ImmutableList<Address> = AddressPreviewData.items.toImmutableList(),
+    items: ImmutableList<Address> = AddressPreviewData.addressList.toImmutableList(),
 ) {
     PoposRoomTheme {
         AddressExportScreenData(

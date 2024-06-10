@@ -67,7 +67,6 @@ import com.niyaj.model.OrderType
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.utils.DevicePreviews
-import java.util.Date
 
 /**
  * This composable displays the cart order details
@@ -263,8 +262,6 @@ private fun CartOrderDetailsPreview(
             customer = Customer(),
             address = Address(),
             deliveryPartnerId = 4978,
-            createdAt = Date(),
-            updatedAt = null,
         ),
         doesExpanded = true,
         onExpandChanged = {},

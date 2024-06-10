@@ -23,8 +23,8 @@ import com.niyaj.model.Address
 import com.niyaj.model.AddressWiseOrder
 import com.niyaj.model.TotalOrderDetails
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.AddressPreviewData.addressList
 import com.niyaj.ui.parameterProvider.AddressPreviewData.groupedAddressWiseOrder
-import com.niyaj.ui.parameterProvider.AddressPreviewData.items
 import com.niyaj.ui.parameterProvider.AddressPreviewData.sampleAddressWiseOrders
 
 class AddressPreviewParameter : PreviewParameterProvider<UiState<List<Address>>> {
@@ -32,7 +32,7 @@ class AddressPreviewParameter : PreviewParameterProvider<UiState<List<Address>>>
         get() = sequenceOf(
             UiState.Loading,
             UiState.Empty,
-            UiState.Success(items),
+            UiState.Success(addressList),
         )
 }
 
@@ -54,13 +54,13 @@ class AddressDetailsPreviewParameter : PreviewParameterProvider<UiState<Address>
             UiState.Loading,
             UiState.Empty,
             UiState.Success(
-                items.last(),
+                addressList.last(),
             ),
         )
 }
 
 object AddressPreviewData {
-    val items = listOf(
+    val addressList = listOf(
         Address(
             addressId = 1,
             addressName = "123 Main Street",

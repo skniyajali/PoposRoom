@@ -166,6 +166,9 @@ val String.toTime
 val Date.toTime
     get() = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(this).toString()
 
+val Long.toTime
+    get() = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(this).toString()
+
 val String.toBarDate
     get() = SimpleDateFormat(
         "dd MMM",

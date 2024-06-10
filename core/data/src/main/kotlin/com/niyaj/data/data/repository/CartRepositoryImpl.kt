@@ -39,14 +39,12 @@ import com.niyaj.model.CartItem
 import com.niyaj.model.CartProductItem
 import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.OrderType
-import com.niyaj.model.OrderWithCartItems
 import com.niyaj.model.SELECTED_ID
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
@@ -74,9 +72,6 @@ class CartRepositoryImpl(
         }
     }
 
-    override suspend fun getAllCartOrders(): Flow<List<OrderWithCartItems>> {
-        return flow { }
-    }
 
     override suspend fun getAllDineInCart(): Flow<List<CartItem>> {
         return withContext(ioDispatcher) {

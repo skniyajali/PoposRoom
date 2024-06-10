@@ -21,7 +21,6 @@ import com.niyaj.common.result.Resource
 import com.niyaj.model.AddOnItem
 import com.niyaj.model.CartItem
 import com.niyaj.model.EmployeeNameAndId
-import com.niyaj.model.OrderWithCartItems
 import kotlinx.coroutines.flow.Flow
 
 interface CartRepository {
@@ -29,8 +28,6 @@ interface CartRepository {
     fun getAllAddOnItems(): Flow<List<AddOnItem>>
 
     suspend fun getDeliveryPartners(): Flow<List<EmployeeNameAndId>>
-
-    suspend fun getAllCartOrders(): Flow<List<OrderWithCartItems>>
 
     suspend fun getAllDineInCart(): Flow<List<CartItem>>
 

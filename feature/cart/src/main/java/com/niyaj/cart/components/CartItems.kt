@@ -62,7 +62,7 @@ import com.niyaj.ui.components.CartAddOnItems
 import com.niyaj.ui.components.CartDeliveryPartners
 import com.niyaj.ui.components.CartItemProductDetailsSection
 import com.niyaj.ui.components.CartItemTotalPriceSection
-import com.niyaj.ui.parameterProvider.AddOnPreviewParameterData
+import com.niyaj.ui.parameterProvider.AddOnPreviewData
 import com.niyaj.ui.parameterProvider.CardOrderPreviewData
 import com.niyaj.ui.parameterProvider.CartItemPreviewParameter
 import com.niyaj.ui.parameterProvider.CartItemsPreviewParameter
@@ -272,7 +272,7 @@ private fun CartItemPreview(
     @PreviewParameter(CartItemPreviewParameter::class)
     cartItem: CartItem,
     modifier: Modifier = Modifier,
-    addOnItems: List<AddOnItem> = AddOnPreviewParameterData.items.take(5),
+    addOnItems: List<AddOnItem> = AddOnPreviewData.addOnItemList.take(5),
     deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5),
 ) {
     PoposRoomTheme {
@@ -297,7 +297,7 @@ private fun CartItemsPreview(
     @PreviewParameter(CartItemsPreviewParameter::class)
     cartItems: List<CartItem>,
     modifier: Modifier = Modifier,
-    addOnItems: List<AddOnItem> = AddOnPreviewParameterData.items.take(5),
+    addOnItems: List<AddOnItem> = AddOnPreviewData.addOnItemList.take(5),
     deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5),
 ) {
     PoposRoomTheme {

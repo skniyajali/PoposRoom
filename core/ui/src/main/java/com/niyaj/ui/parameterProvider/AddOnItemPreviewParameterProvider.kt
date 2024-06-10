@@ -22,7 +22,7 @@ package com.niyaj.ui.parameterProvider
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.niyaj.model.AddOnItem
 import com.niyaj.ui.event.UiState
-import com.niyaj.ui.parameterProvider.AddOnPreviewParameterData.items
+import com.niyaj.ui.parameterProvider.AddOnPreviewData.addOnItemList
 
 /**
  * This [PreviewParameterProvider](https://developer.android.com/reference/kotlin/androidx/compose/ui/tooling/preview/PreviewParameterProvider)
@@ -33,12 +33,12 @@ class AddOnItemPreviewParameterProvider : PreviewParameterProvider<UiState<List<
         get() = sequenceOf(
             UiState.Loading,
             UiState.Empty,
-            UiState.Success(items),
+            UiState.Success(addOnItemList),
         )
 }
 
-object AddOnPreviewParameterData {
-    val items: List<AddOnItem> = listOf(
+object AddOnPreviewData {
+    val addOnItemList: List<AddOnItem> = listOf(
         AddOnItem(
             itemId = 1,
             itemName = "Extra Cheese",

@@ -195,7 +195,7 @@ internal fun AddressDetailsScreenContent(
 private fun AddressDetailsScreenContentPreview(
     @PreviewParameter(AddressWiseOrderPreviewParameter::class)
     ordersState: UiState<List<AddressWiseOrder>>,
-    addressState: UiState<Address> = UiState.Success(AddressPreviewData.items.first()),
+    addressState: UiState<Address> = UiState.Success(AddressPreviewData.addressList.first()),
     totalOrderDetails: TotalOrderDetails = AddressPreviewData.sampleTotalOrder,
 ) {
     PoposRoomTheme {

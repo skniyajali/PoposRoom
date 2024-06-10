@@ -309,7 +309,7 @@ private fun AddressImportScreenEmptyContentPreview() {
 @DevicePreviews
 @Composable
 private fun AddressImportScreenContentPreview(
-    items: ImmutableList<Address> = AddressPreviewData.items.toImmutableList(),
+    items: ImmutableList<Address> = AddressPreviewData.addressList.toImmutableList(),
 ) {
     PoposRoomTheme {
         AddressImportScreenContent(

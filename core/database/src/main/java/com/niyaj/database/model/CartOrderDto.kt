@@ -67,7 +67,7 @@ fun CartOrderDto.toExternalModel(): CartOrder {
         doesChargesIncluded = doesChargesIncluded,
         customer = customer ?: Customer(),
         address = address ?: Address(),
-        createdAt = createdAt,
-        updatedAt = updatedAt,
+        createdAt = createdAt.time,
+        updatedAt = updatedAt?.time,
     )
 }

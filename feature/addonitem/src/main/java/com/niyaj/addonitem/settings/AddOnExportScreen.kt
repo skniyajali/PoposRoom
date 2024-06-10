@@ -69,7 +69,7 @@ import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardSearchBar
-import com.niyaj.ui.parameterProvider.AddOnPreviewParameterData
+import com.niyaj.ui.parameterProvider.AddOnPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens.ADD_ON_EXPORT_SCREEN
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -339,7 +339,7 @@ private fun AddOnExportScreenData(
 @DevicePreviews
 @Composable
 private fun AddOnExportScreenContentPreview(
-    items: ImmutableList<AddOnItem> = AddOnPreviewParameterData.items.toImmutableList(),
+    items: ImmutableList<AddOnItem> = AddOnPreviewData.addOnItemList.toImmutableList(),
 ) {
     PoposRoomTheme {
         AddOnExportScreenContent(
@@ -378,7 +378,7 @@ private fun AddOnExportScreenEmptyDataPreview() {
 @DevicePreviews
 @Composable
 private fun AddOnExportScreenDataPreview(
-    items: ImmutableList<AddOnItem> = AddOnPreviewParameterData.items.toImmutableList(),
+    items: ImmutableList<AddOnItem> = AddOnPreviewData.addOnItemList.toImmutableList(),
 ) {
     PoposRoomTheme {
         AddOnExportScreenData(

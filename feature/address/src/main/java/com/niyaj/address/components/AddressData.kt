@@ -126,7 +126,7 @@ internal fun AddressData(
 @DevicePreviews
 @Composable
 private fun AddressDataPreview(
-    item: Address = AddressPreviewData.items.first(),
+    item: Address = AddressPreviewData.addressList.first(),
 ) {
     PoposRoomTheme {
         AddressData(
@@ -142,7 +142,7 @@ private fun AddressDataPreview(
 @DevicePreviews
 @Composable
 private fun AddressDataSelectedPreview(
-    item: Address = AddressPreviewData.items.last(),
+    item: Address = AddressPreviewData.addressList.last(),
 ) {
     PoposRoomTheme {
         AddressData(

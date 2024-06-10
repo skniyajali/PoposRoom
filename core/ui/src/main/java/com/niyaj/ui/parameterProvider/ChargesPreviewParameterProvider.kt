@@ -18,20 +18,20 @@ package com.niyaj.ui.parameterProvider
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.niyaj.model.Charges
-import com.niyaj.ui.parameterProvider.ChargesPreviewData.sampleChargesList
+import com.niyaj.ui.parameterProvider.ChargesPreviewData.chargesList
 import kotlinx.datetime.Clock
 import java.util.concurrent.TimeUnit
 
 class ChargesPreviewParameterProvider: PreviewParameterProvider<List<Charges>> {
     override val values: Sequence<List<Charges>>
-        get() = sequenceOf(sampleChargesList)
+        get() = sequenceOf(chargesList)
 }
 
 object ChargesPreviewData {
 
     val currentTimeMillis = Clock.System.now().toEpochMilliseconds()
 
-    val sampleChargesList = listOf(
+    val chargesList = listOf(
         Charges(
             chargesId = 1,
             chargesName = "Service Charge",
