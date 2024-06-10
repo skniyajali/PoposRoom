@@ -18,13 +18,18 @@ package com.niyaj.ui.parameterProvider
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.niyaj.model.Charges
+import com.niyaj.ui.event.UiState
 import com.niyaj.ui.parameterProvider.ChargesPreviewData.chargesList
 import kotlinx.datetime.Clock
 import java.util.concurrent.TimeUnit
 
-class ChargesPreviewParameterProvider: PreviewParameterProvider<List<Charges>> {
-    override val values: Sequence<List<Charges>>
-        get() = sequenceOf(chargesList)
+class ChargesPreviewParameterProvider: PreviewParameterProvider<UiState<List<Charges>>> {
+    override val values: Sequence<UiState<List<Charges>>>
+        get() = sequenceOf(
+            UiState.Loading,
+            UiState.Empty,
+            UiState.Success(chargesList)
+        )
 }
 
 object ChargesPreviewData {

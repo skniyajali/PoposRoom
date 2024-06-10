@@ -61,8 +61,8 @@ class AddEditChargesViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        savedStateHandle.get<Int>("chargesId")?.let { addOnItemId ->
-            getChargesById(addOnItemId)
+        savedStateHandle.get<Int>("chargesId")?.let { chargesId ->
+            if (chargesId != 0) getChargesById(chargesId)
         }
     }
 
@@ -100,7 +100,7 @@ class AddEditChargesViewModel @Inject constructor(
             }
 
             is AddEditChargesEvent.CreateOrUpdateCharges -> {
-                createOrUpdateCharges(event.chargesId)
+                createOrUpdateCharges(chargesId)
             }
         }
     }
@@ -162,7 +162,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateCharges(chargesId: Int, message: 
         event = AnalyticsEvent(
             type = "charges_$message",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("charges_$message", chargesId.toString()),
+                AnalyticsEvent.Param("charges_$message", chargesId.toString()),
             ),
         ),
     )

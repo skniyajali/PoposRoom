@@ -25,5 +25,5 @@ sealed interface AddEditChargesEvent {
 
     data object ChargesApplicableChanged : AddEditChargesEvent
 
-    data class CreateOrUpdateCharges(val chargesId: Int = 0) : AddEditChargesEvent
+    data object CreateOrUpdateCharges : AddEditChargesEvent
 }

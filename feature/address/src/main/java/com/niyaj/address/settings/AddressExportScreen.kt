@@ -44,6 +44,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.address.components.AddressData
@@ -186,6 +187,7 @@ internal fun AddressExportScreenContent(
     onClickToAddItem: () -> Unit,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
+    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp,  SpaceSmallMax, SpaceLarge)
 ) {
     TrackScreenViewEvent(screenName = ADDRESS_EXPORT_SCREEN)
 
@@ -241,7 +243,7 @@ internal fun AddressExportScreenContent(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = SpaceSmallMax, vertical = SpaceLarge),
+                    .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} addresses will be exported.")

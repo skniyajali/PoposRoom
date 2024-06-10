@@ -27,12 +27,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.niyaj.designsystem.components.StandardRoundedFilterChip
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.Charges
-import com.niyaj.ui.parameterProvider.ChargesPreviewParameterProvider
+import com.niyaj.ui.parameterProvider.ChargesPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -69,8 +68,7 @@ fun CartChargesItem(
 @Composable
 private fun CartChargesItemPreview(
     modifier: Modifier = Modifier,
-    @PreviewParameter(ChargesPreviewParameterProvider::class)
-    chargesList: List<Charges>,
+    chargesList: List<Charges> = ChargesPreviewData.chargesList,
     selectedItems: List<Int> = chargesList.filter { it.chargesId % 2 == 0 }.map { it.chargesId },
 ) {
     PoposRoomTheme {

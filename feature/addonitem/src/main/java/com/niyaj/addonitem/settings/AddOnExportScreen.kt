@@ -43,6 +43,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.addonitem.components.AddOnItemData
@@ -183,6 +184,7 @@ internal fun AddOnExportScreenContent(
     onClickExport: () -> Unit,
     onBackClick: () -> Unit,
     onClickToAddItem: () -> Unit,
+    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp,  SpaceSmallMax, SpaceLarge)
 ) {
     TrackScreenViewEvent(screenName = ADD_ON_EXPORT_SCREEN)
 
@@ -240,7 +242,7 @@ internal fun AddOnExportScreenContent(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = SpaceSmallMax, vertical = SpaceLarge),
+                    .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} addon items will be exported.")

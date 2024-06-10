@@ -45,6 +45,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.addonitem.components.AddOnItemData
@@ -57,8 +58,8 @@ import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceLarge
-import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.domain.utils.ImportExport
 import com.niyaj.model.AddOnItem
 import com.niyaj.ui.components.EmptyImportScreen
@@ -168,6 +169,7 @@ internal fun AddOnImportScreenContent(
     onClickImport: () -> Unit,
     onClickOpenFile: () -> Unit,
     onBackClick: () -> Unit,
+    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp,  SpaceSmallMax, SpaceLarge)
 ) {
     val scope = rememberCoroutineScope()
     val lazyGridState = rememberLazyGridState()
@@ -198,7 +200,7 @@ internal fun AddOnImportScreenContent(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = SpaceMedium, vertical = SpaceLarge),
+                    .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} addon item will be imported.")

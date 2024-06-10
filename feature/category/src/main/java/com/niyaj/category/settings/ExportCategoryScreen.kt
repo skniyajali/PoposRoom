@@ -45,6 +45,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.category.components.CategoryData
@@ -187,6 +188,7 @@ internal fun ExportCategoryScreenContent(
     onClickToAddItem: () -> Unit,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
+    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp,  SpaceSmallMax, SpaceLarge)
 ) {
     TrackScreenViewEvent(screenName = "ExportCategoryScreen")
 
@@ -243,7 +245,7 @@ internal fun ExportCategoryScreenContent(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = SpaceSmallMax, vertical = SpaceLarge),
+                    .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} items will be exported.")
@@ -311,6 +313,7 @@ private fun ExportCategoryScreenData(
 ) {
     if (items.isEmpty()) {
         ItemNotAvailable(
+            modifier = modifier,
             text = emptyText,
             buttonText = CategoryConstants.CREATE_NEW_CATEGORY,
             onClick = onClickToAddItem,

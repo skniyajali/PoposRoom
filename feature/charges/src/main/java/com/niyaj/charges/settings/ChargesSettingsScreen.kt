@@ -17,20 +17,28 @@
 
 package com.niyaj.charges.settings
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.niyaj.charges.destinations.ChargesExportScreenDestination
 import com.niyaj.charges.destinations.ChargesImportScreenDestination
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_SETTINGS_TITLE
+import com.niyaj.common.tags.ChargesTestTags.EXPORT_CHARGES_BTN_TEXT
+import com.niyaj.common.tags.ChargesTestTags.EXPORT_CHARGES_SUB_TEXT
+import com.niyaj.common.tags.ChargesTestTags.IMPORT_CHARGES_BTN_TEXT
+import com.niyaj.common.tags.ChargesTestTags.IMPORT_CHARGES_SUB_TEXT
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
@@ -42,15 +50,35 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 fun ChargesSettingsScreen(
     navigator: DestinationsNavigator,
 ) {
-    TrackScreenViewEvent(screenName = "Charges Setting Screen")
+    ChargesSettingsScreenContent(
+        modifier = Modifier,
+        onBackClick = navigator::navigateUp,
+        onImportClick = {
+            navigator.navigate(ChargesImportScreenDestination())
+        },
+        onExportClick = {
+            navigator.navigate(ChargesExportScreenDestination())
+        },
+    )
+}
 
-    val lazyListState = rememberLazyListState()
+@VisibleForTesting
+@Composable
+internal fun ChargesSettingsScreenContent(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+    onImportClick: () -> Unit,
+    onExportClick: () -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
+    TrackScreenViewEvent(screenName = "Charges Settings Screen")
 
-    TrackScrollJank(scrollableState = lazyListState, stateName = "Charges Setting::List")
+    TrackScrollJank(scrollableState = lazyListState, stateName = "Charges::Settings")
 
     StandardBottomSheet(
+        modifier = modifier,
         title = CHARGES_SETTINGS_TITLE,
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
     ) {
         LazyColumn(
             modifier = Modifier
@@ -59,27 +87,38 @@ fun ChargesSettingsScreen(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
-            item("ImportCharges") {
+            item(IMPORT_CHARGES_BTN_TEXT) {
                 SettingsCard(
-                    title = "Import Charges",
-                    subtitle = "Click here to import charges from file.",
+                    title = IMPORT_CHARGES_BTN_TEXT,
+                    subtitle = IMPORT_CHARGES_SUB_TEXT,
                     icon = PoposIcons.Import,
-                    onClick = {
-                        navigator.navigate(ChargesImportScreenDestination())
-                    },
+                    onClick = onImportClick,
                 )
             }
 
-            item("ExportCharges") {
+            item(EXPORT_CHARGES_BTN_TEXT) {
                 SettingsCard(
-                    title = "Export Charges",
-                    subtitle = "Click here to export charges to file.",
+                    title = EXPORT_CHARGES_BTN_TEXT,
+                    subtitle = EXPORT_CHARGES_SUB_TEXT,
                     icon = PoposIcons.Upload,
-                    onClick = {
-                        navigator.navigate(ChargesExportScreenDestination())
-                    },
+                    onClick = onExportClick,
                 )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ChargesSettingsScreenPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ChargesSettingsScreenContent(
+            modifier = modifier,
+            onBackClick = {},
+            onImportClick = {},
+            onExportClick = {},
+        )
     }
 }

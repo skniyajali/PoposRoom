@@ -19,6 +19,7 @@ package com.niyaj.ui.parameterProvider
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.niyaj.model.Category
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.CategoryPreviewData.categories
 import com.niyaj.ui.parameterProvider.CategoryPreviewData.categoryList
 
 class CategoryPreviewParameter : PreviewParameterProvider<UiState<List<Category>>> {
@@ -26,7 +27,7 @@ class CategoryPreviewParameter : PreviewParameterProvider<UiState<List<Category>
         get() = sequenceOf(
             UiState.Loading,
             UiState.Loading,
-            UiState.Success(categoryList),
+            UiState.Success(categoryList + categories),
         )
 }
 
@@ -102,6 +103,79 @@ object CategoryPreviewData {
             isAvailable = true,
             createdAt = 1685596800000,
             updatedAt = 1685683200000
+        ),
+    )
+
+    val categories = listOf(
+        Category(
+            categoryId = 11,
+            categoryName = "Furniture",
+            isAvailable = true,
+            createdAt = 1686460800000,
+            updatedAt = 1686547200000
+        ),
+        Category(
+            categoryId = 12,
+            categoryName = "Kitchen & Dining",
+            isAvailable = true,
+            createdAt = 1686547200000,
+            updatedAt = 1686633600000
+        ),
+        Category(
+            categoryId = 13,
+            categoryName = "Patio & Garden",
+            isAvailable = true,
+            createdAt = 1686633600000,
+            updatedAt = 1686720000000
+        ),
+        Category(
+            categoryId = 14,
+            categoryName = "Art & Craft Supplies",
+            isAvailable = true,
+            createdAt = 1686720000000,
+            updatedAt = 1686806400000
+        ),
+        Category(
+            categoryId = 15,
+            categoryName = "Office Products",
+            isAvailable = true,
+            createdAt = 1686806400000,
+            updatedAt = 1686892800000
+        ),
+        Category(
+            categoryId = 16,
+            categoryName = "Musical Instruments",
+            isAvailable = true,
+            createdAt = 1686892800000,
+            updatedAt = 1686979200000
+        ),
+        Category(
+            categoryId = 17,
+            categoryName = "Camera & Photo",
+            isAvailable = true,
+            createdAt = 1686979200000,
+            updatedAt = 1687065600000
+        ),
+        Category(
+            categoryId = 18,
+            categoryName = "Software",
+            isAvailable = true,
+            createdAt = 1687065600000,
+            updatedAt = 1687152000000
+        ),
+        Category(
+            categoryId = 19,
+            categoryName = "Video Games",
+            isAvailable = true,
+            createdAt = 1687152000000,
+            updatedAt = 1687238400000
+        ),
+        Category(
+            categoryId = 20,
+            categoryName = "Luggage & Travel Gear",
+            isAvailable = true,
+            createdAt = 1687238400000,
+            updatedAt = null
         )
     )
 }
