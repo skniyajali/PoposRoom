@@ -17,18 +17,18 @@
 
 package com.niyaj.customer.settings
 
-import android.Manifest
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
@@ -37,27 +37,26 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.common.tags.CustomerTestTags.CREATE_NEW_CUSTOMER
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_NOT_AVAILABLE
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_SEARCH_PLACEHOLDER
-import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_BTN
 import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_BTN_TEXT
 import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_FILE_NAME
-import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_TITLE
-import com.niyaj.common.tags.CustomerTestTags.NO_ITEMS_IN_CUSTOMER
 import com.niyaj.common.utils.Constants
-import com.niyaj.customer.CustomerData
+import com.niyaj.customer.components.CustomersData
 import com.niyaj.customer.destinations.AddEditCustomerScreenDestination
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.domain.utils.ImportExport
@@ -68,35 +67,38 @@ import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.parameterProvider.CustomerPreviewData
+import com.niyaj.ui.utils.DevicePreviews
+import com.niyaj.ui.utils.Screens.CUSTOMER_EXPORT_SCREEN
 import com.niyaj.ui.utils.TrackScreenViewEvent
-import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Destination
-@OptIn(ExperimentalPermissionsApi::class)
+@Destination(route = CUSTOMER_EXPORT_SCREEN)
 @Composable
 fun CustomerExportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: CustomerSettingsViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
 
-    val customers = viewModel.customers.collectAsStateWithLifecycle().value
-    val exportedItems = viewModel.exportedItems.collectAsStateWithLifecycle().value
+    val customers by viewModel.customers.collectAsStateWithLifecycle()
+    val exportedItems by viewModel.exportedItems.collectAsStateWithLifecycle()
+    val showSearchBar by viewModel.showSearchBar.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
-    val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
-
     val selectedItems = viewModel.selectedItems.toList()
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -109,21 +111,6 @@ fun CustomerExportScreen(
                     resultBackNavigator.navigateBack(data.successMessage)
                 }
             }
-        }
-    }
-
-    val context = LocalContext.current
-
-    val hasStoragePermission = rememberMultiplePermissionsState(
-        permissions = listOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        ),
-    )
-
-    val askForPermissions = {
-        if (!hasStoragePermission.allPermissionsGranted) {
-            hasStoragePermission.launchMultiplePermissionRequest()
         }
     }
 
@@ -143,38 +130,91 @@ fun CustomerExportScreen(
             }
         }
 
-    fun onBackClick() {
+    CustomerExportScreenContent(
+        modifier = Modifier,
+        items = customers.toImmutableList(),
+        selectedItems = selectedItems.toImmutableList(),
+        showSearchBar = showSearchBar,
+        searchText = searchText,
+        onClearClick = viewModel::clearSearchText,
+        onSearchTextChanged = viewModel::searchTextChanged,
+        onClickOpenSearch = viewModel::openSearchBar,
+        onClickCloseSearch = viewModel::closeSearchBar,
+        onClickSelectAll = viewModel::selectAllItems,
+        onClickDeselect = viewModel::deselectItems,
+        onSelectItem = viewModel::selectItem,
+        onClickExport = {
+            scope.launch {
+                val result = ImportExport.createFile(
+                    context = context,
+                    fileName = EXPORT_CUSTOMER_FILE_NAME,
+                )
+                exportLauncher.launch(result)
+                viewModel.onEvent(CustomerSettingsEvent.GetExportedItems)
+            }
+        },
+        onBackClick = navigator::navigateUp,
+        onClickToAddItem = {
+            navigator.navigate(AddEditCustomerScreenDestination())
+        },
+    )
+}
+
+
+@VisibleForTesting
+@Composable
+internal fun CustomerExportScreenContent(
+    modifier: Modifier = Modifier,
+    items: ImmutableList<Customer>,
+    selectedItems: ImmutableList<Int>,
+    showSearchBar: Boolean,
+    searchText: String,
+    onClearClick: () -> Unit,
+    onSearchTextChanged: (String) -> Unit,
+    onClickOpenSearch: () -> Unit,
+    onClickCloseSearch: () -> Unit,
+    onClickSelectAll: () -> Unit,
+    onClickDeselect: () -> Unit,
+    onSelectItem: (Int) -> Unit,
+    onClickExport: () -> Unit,
+    onBackClick: () -> Unit,
+    onClickToAddItem: () -> Unit,
+    scope: CoroutineScope = rememberCoroutineScope(),
+    lazyListState: LazyListState = rememberLazyListState(),
+    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
+) {
+    TrackScreenViewEvent(screenName = CUSTOMER_EXPORT_SCREEN)
+
+    val text = if (searchText.isEmpty()) CUSTOMER_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND
+    val title = if (selectedItems.isEmpty()) EXPORT_CUSTOMER_BTN_TEXT else "${selectedItems.size} Selected"
+
+    BackHandler {
         if (selectedItems.isNotEmpty()) {
-            viewModel.deselectItems()
+            onClickDeselect()
         } else if (showSearchBar) {
-            viewModel.closeSearchBar()
+            onClickCloseSearch()
         } else {
-            navigator.navigateUp()
+            onBackClick()
         }
     }
 
-    BackHandler {
-        onBackClick()
-    }
-
-    TrackScreenViewEvent(screenName = "Customer Export Screen")
-
     PoposSecondaryScaffold(
-        title = if (selectedItems.isEmpty()) EXPORT_CUSTOMER_TITLE else "${selectedItems.size} Selected",
+        title = title,
         showBackButton = selectedItems.isEmpty() || showSearchBar,
-        showBottomBar = customers.isNotEmpty(),
+        showBottomBar = items.isNotEmpty(),
+        showSecondaryBottomBar = true,
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
                     searchText = searchText,
                     placeholderText = CUSTOMER_SEARCH_PLACEHOLDER,
-                    onClearClick = viewModel::clearSearchText,
-                    onSearchTextChanged = viewModel::searchTextChanged,
+                    onClearClick = onClearClick,
+                    onSearchTextChanged = onSearchTextChanged,
                 )
             } else {
-                if (customers.isNotEmpty()) {
+                if (items.isNotEmpty()) {
                     IconButton(
-                        onClick = viewModel::selectAllItems,
+                        onClick = onClickSelectAll,
                     ) {
                         Icon(
                             imageVector = PoposIcons.Checklist,
@@ -183,7 +223,7 @@ fun CustomerExportScreen(
                     }
 
                     IconButton(
-                        onClick = viewModel::openSearchBar,
+                        onClick = onClickOpenSearch,
                         modifier = Modifier.testTag(NAV_SEARCH_BTN),
                     ) {
                         Icon(
@@ -198,7 +238,7 @@ fun CustomerExportScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(SpaceSmallMax),
+                    .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} customers will be exported.")
@@ -206,28 +246,18 @@ fun CustomerExportScreen(
                 PoposButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag(EXPORT_CUSTOMER_BTN),
-                    enabled = true,
+                        .testTag(EXPORT_CUSTOMER_BTN_TEXT),
+                    enabled = items.isNotEmpty(),
                     text = EXPORT_CUSTOMER_BTN_TEXT,
                     icon = PoposIcons.Upload,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary,
                     ),
-                    onClick = {
-                        scope.launch {
-                            askForPermissions()
-                            val result = ImportExport.createFile(
-                                context = context,
-                                fileName = EXPORT_CUSTOMER_FILE_NAME,
-                            )
-                            exportLauncher.launch(result)
-                            viewModel.onEvent(CustomerSettingsEvent.GetExportedItems)
-                        }
-                    },
+                    onClick = onClickExport,
                 )
             }
         },
-        onBackClick = { onBackClick() },
+        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
         fabPosition = FabPosition.End,
         floatingActionButton = {
             ScrollToTop(
@@ -241,7 +271,7 @@ fun CustomerExportScreen(
         },
         navigationIcon = {
             IconButton(
-                onClick = viewModel::deselectItems,
+                onClick = onClickDeselect,
             ) {
                 Icon(
                     imageVector = PoposIcons.Close,
@@ -249,39 +279,55 @@ fun CustomerExportScreen(
                 )
             }
         },
-    ) { paddingValues ->
-        if (customers.isEmpty()) {
-            ItemNotAvailable(
-                text = if (searchText.isEmpty()) CUSTOMER_NOT_AVAILABLE else NO_ITEMS_IN_CUSTOMER,
-                buttonText = CREATE_NEW_CUSTOMER,
-                onClick = {
-                    navigator.navigate(AddEditCustomerScreenDestination())
-                },
-            )
-        } else {
-            TrackScrollJank(scrollableState = lazyListState, stateName = "Exported Customer::List")
-
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentPadding = PaddingValues(SpaceSmall),
-                state = lazyListState,
-            ) {
-                items(
-                    items = customers,
-                    key = { it.customerId },
-                ) { item: Customer ->
-                    CustomerData(
-                        item = item,
-                        doesSelected = {
-                            selectedItems.contains(it)
-                        },
-                        onClick = viewModel::selectItem,
-                        onLongClick = viewModel::selectItem,
-                    )
-                }
+    ) {
+        Box(modifier = modifier
+            .fillMaxSize()
+            .padding(it)
+        ) {
+            if (items.isEmpty()) {
+                ItemNotAvailable(
+                    text = text,
+                    buttonText = CREATE_NEW_CUSTOMER,
+                    onClick = onClickToAddItem,
+                )
+            } else {
+                CustomersData(
+                    modifier = Modifier,
+                    customers = items,
+                    isInSelectionMode = true,
+                    doesSelected = selectedItems::contains,
+                    onClickSelectItem = onSelectItem,
+                    onNavigateToDetails = {},
+                    lazyListState = lazyListState
+                )
             }
         }
     }
 }
+
+@DevicePreviews
+@Composable
+private fun CustomerExportScreenContentPreview(
+    items: ImmutableList<Customer> = CustomerPreviewData.customerList.toImmutableList(),
+) {
+    PoposRoomTheme {
+        CustomerExportScreenContent(
+            modifier = Modifier,
+            items = items,
+            selectedItems = persistentListOf(),
+            showSearchBar = false,
+            searchText = "",
+            onClearClick = {},
+            onSearchTextChanged = {},
+            onClickOpenSearch = {},
+            onClickCloseSearch = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onSelectItem = {},
+            onClickExport = {},
+            onBackClick = {},
+            onClickToAddItem = {},
+        )
+    }
+}
+

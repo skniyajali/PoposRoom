@@ -17,6 +17,7 @@
 
 package com.niyaj.customer.createOrUpdate
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -25,9 +26,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,11 +48,13 @@ import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_PHONE_FIELD
 import com.niyaj.common.tags.CustomerTestTags.EDIT_CUSTOMER_ITEM
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.PhoneNoCountBox
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.StandardOutlinedTextField
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
@@ -63,14 +69,13 @@ fun AddEditCustomerScreen(
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: AddEditCustomerViewModel = hiltViewModel(),
 ) {
-    val phoneError = viewModel.phoneError.collectAsStateWithLifecycle().value
-    val nameError = viewModel.nameError.collectAsStateWithLifecycle().value
-    val emailError = viewModel.emailError.collectAsStateWithLifecycle().value
+    val phoneError by viewModel.phoneError.collectAsStateWithLifecycle()
+    val nameError by viewModel.nameError.collectAsStateWithLifecycle()
+    val emailError by viewModel.emailError.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
-    val enableBtn = phoneError == null && nameError == null && emailError == null
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
     val title = if (customerId == 0) CREATE_NEW_CUSTOMER else EDIT_CUSTOMER_ITEM
+    val icon = if (customerId == 0) PoposIcons.Add else PoposIcons.Edit
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -86,26 +91,56 @@ fun AddEditCustomerScreen(
         }
     }
 
+    AddEditCustomerScreenContent(
+        modifier = Modifier,
+        title = title,
+        icon = icon,
+        state = viewModel.addEditState,
+        phoneError = phoneError,
+        nameError = nameError,
+        emailError = emailError,
+        onEvent = viewModel::onEvent,
+        onBackClick = navigator::navigateUp,
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun AddEditCustomerScreenContent(
+    modifier: Modifier = Modifier,
+    title: String = CREATE_NEW_CUSTOMER,
+    icon: ImageVector = PoposIcons.Add,
+    state: AddEditCustomerState,
+    phoneError: String? = null,
+    nameError: String? = null,
+    emailError: String? = null,
+    onEvent: (AddEditCustomerEvent) -> Unit,
+    onBackClick: () -> Unit,
+) {
+    val enableBtn = phoneError == null && nameError == null && emailError == null
+
     TrackScreenViewEvent(screenName = "Add/Edit Customer Screen")
 
     PoposSecondaryScaffold(
+        modifier = modifier,
         title = title,
         showBottomBar = true,
         showBackButton = true,
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
         bottomBar = {
             PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag(ADD_EDIT_CUSTOMER_BUTTON),
                 text = title,
-                icon = if (customerId == 0) PoposIcons.Add else PoposIcons.Edit,
+                icon = icon,
                 enabled = enableBtn,
                 onClick = {
-                    viewModel.onEvent(AddEditCustomerEvent.CreateOrUpdateCustomer(customerId))
+                    onEvent(AddEditCustomerEvent.CreateOrUpdateCustomer)
                 },
             )
         },
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -117,53 +152,85 @@ fun AddEditCustomerScreen(
         ) {
             item(CUSTOMER_PHONE_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.addEditState.customerPhone,
+                    value = state.customerPhone,
                     label = CUSTOMER_PHONE_FIELD,
                     leadingIcon = PoposIcons.PhoneAndroid,
                     isError = phoneError != null,
                     errorText = phoneError,
                     errorTextTag = CUSTOMER_PHONE_ERROR,
                     keyboardType = KeyboardType.Number,
+                    showClearIcon = state.customerPhone.isNotEmpty(),
                     onValueChange = {
-                        viewModel.onEvent(AddEditCustomerEvent.CustomerPhoneChanged(it))
+                        onEvent(AddEditCustomerEvent.CustomerPhoneChanged(it))
                     },
-                    trailingIcon = {
-                        PhoneNoCountBox(
-                            count = viewModel.addEditState.customerPhone.length,
-                        )
+                    onClickClearIcon = {
+                        onEvent(AddEditCustomerEvent.CustomerPhoneChanged(""))
+                    },
+                    suffix = {
+                        PhoneNoCountBox(count = state.customerPhone.length)
                     },
                 )
             }
 
             item(CUSTOMER_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.addEditState.customerName ?: "",
+                    value = state.customerName ?: "",
                     label = CUSTOMER_NAME_FIELD,
                     leadingIcon = PoposIcons.Person,
                     isError = nameError != null,
                     errorText = nameError,
                     errorTextTag = CUSTOMER_NAME_ERROR,
+                    showClearIcon = !state.customerName.isNullOrEmpty(),
                     onValueChange = {
-                        viewModel.onEvent(AddEditCustomerEvent.CustomerNameChanged(it))
+                        onEvent(AddEditCustomerEvent.CustomerNameChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditCustomerEvent.CustomerNameChanged(""))
                     },
                 )
             }
 
             item(CUSTOMER_EMAIL_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.addEditState.customerEmail ?: "",
+                    value = state.customerEmail ?: "",
                     label = CUSTOMER_EMAIL_FIELD,
                     leadingIcon = PoposIcons.Email,
                     isError = emailError != null,
                     errorText = emailError,
                     errorTextTag = CUSTOMER_EMAIL_ERROR,
+                    showClearIcon = !state.customerEmail.isNullOrEmpty(),
                     onValueChange = {
-                        viewModel.onEvent(AddEditCustomerEvent.CustomerEmailChanged(it))
+                        onEvent(AddEditCustomerEvent.CustomerEmailChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditCustomerEvent.CustomerEmailChanged(""))
                     },
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AddEditCustomerScreenContentPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        AddEditCustomerScreenContent(
+            modifier = modifier,
+            state = AddEditCustomerState(
+                customerPhone = "9078563412",
+                customerName = "New Customer",
+                customerEmail = "new@gmail.com",
+            ),
+            phoneError = null,
+            nameError = null,
+            emailError = null,
+            onEvent = {},
+            onBackClick = {}
+        )
     }
 }

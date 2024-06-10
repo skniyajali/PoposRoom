@@ -61,7 +61,7 @@ class AddEditCustomerViewModel @Inject constructor(
 
     init {
         savedStateHandle.get<Int>("customerId")?.let { customerId ->
-            getCustomerById(customerId)
+            if(customerId != 0) getCustomerById(customerId)
         }
     }
 
@@ -107,7 +107,7 @@ class AddEditCustomerViewModel @Inject constructor(
             }
 
             is AddEditCustomerEvent.CreateOrUpdateCustomer -> {
-                createOrUpdateCustomer(event.customerId)
+                createOrUpdateCustomer(customerId)
             }
         }
     }
@@ -172,7 +172,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateCustomer(data: Int, message: Stri
         event = AnalyticsEvent(
             type = "customer_$message",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("customer_$message", data.toString()),
+                AnalyticsEvent.Param("customer_$message", data.toString()),
             ),
         ),
     )

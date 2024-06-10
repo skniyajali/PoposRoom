@@ -40,5 +40,5 @@ sealed interface AddEditCustomerEvent {
      */
     data class CustomerPhoneChanged(val customerPhone: String) : AddEditCustomerEvent
 
-    data class CreateOrUpdateCustomer(val customerId: Int = 0) : AddEditCustomerEvent
+    data object CreateOrUpdateCustomer : AddEditCustomerEvent
 }

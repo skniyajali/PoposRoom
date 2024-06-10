@@ -17,20 +17,28 @@
 
 package com.niyaj.customer.settings
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_SETTINGS_TITLE
+import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_BTN_TEXT
+import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_SUB_TITLE
+import com.niyaj.common.tags.CustomerTestTags.IMPORT_CUSTOMER_BTN_TEXT
+import com.niyaj.common.tags.CustomerTestTags.IMPORT_CUSTOMER_SUB_TITLE
 import com.niyaj.customer.destinations.CustomerExportScreenDestination
 import com.niyaj.customer.destinations.CustomerImportScreenDestination
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
@@ -42,15 +50,35 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 fun CustomerSettingsScreen(
     navigator: DestinationsNavigator,
 ) {
-    TrackScreenViewEvent(screenName = "Customer Settings Screen")
+    CustomerSettingsScreenContent(
+        modifier = Modifier,
+        onBackClick = navigator::navigateUp,
+        onImportClick = {
+            navigator.navigate(CustomerImportScreenDestination())
+        },
+        onExportClick = {
+            navigator.navigate(CustomerExportScreenDestination())
+        },
+    )
+}
 
-    val lazyListState = rememberLazyListState()
+@VisibleForTesting
+@Composable
+internal fun CustomerSettingsScreenContent(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+    onImportClick: () -> Unit,
+    onExportClick: () -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
+    TrackScreenViewEvent(screenName = CUSTOMER_SETTINGS_TITLE)
 
-    TrackScrollJank(scrollableState = lazyListState, stateName = "Customer Settings::List")
+    TrackScrollJank(scrollableState = lazyListState, stateName = "Customer::SettingList")
 
     StandardBottomSheet(
+        modifier = modifier,
         title = CUSTOMER_SETTINGS_TITLE,
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
     ) {
         LazyColumn(
             modifier = Modifier
@@ -59,27 +87,38 @@ fun CustomerSettingsScreen(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
-            item("ImportCustomer") {
+            item(IMPORT_CUSTOMER_BTN_TEXT) {
                 SettingsCard(
-                    title = "Import Customer",
-                    subtitle = "Click here to import data from file.",
+                    title = IMPORT_CUSTOMER_BTN_TEXT,
+                    subtitle = IMPORT_CUSTOMER_SUB_TITLE,
                     icon = PoposIcons.Import,
-                    onClick = {
-                        navigator.navigate(CustomerImportScreenDestination())
-                    },
+                    onClick = onImportClick,
                 )
             }
 
-            item("ExportCustomer") {
+            item(EXPORT_CUSTOMER_BTN_TEXT) {
                 SettingsCard(
-                    title = "Export Customer",
-                    subtitle = "Click here to export data to file.",
+                    title = EXPORT_CUSTOMER_BTN_TEXT,
+                    subtitle = EXPORT_CUSTOMER_SUB_TITLE,
                     icon = PoposIcons.Upload,
-                    onClick = {
-                        navigator.navigate(CustomerExportScreenDestination())
-                    },
+                    onClick = onExportClick,
                 )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CustomerSettingsScreenContentPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        CustomerSettingsScreenContent(
+            modifier = modifier,
+            onBackClick = {},
+            onImportClick = {},
+            onExportClick = {},
+        )
     }
 }

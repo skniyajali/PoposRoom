@@ -17,100 +17,97 @@
 
 package com.niyaj.customer.details
 
-import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.trace
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.niyaj.common.utils.toFormattedDateAndTime
-import com.niyaj.common.utils.toPrettyDate
-import com.niyaj.common.utils.toRupee
-import com.niyaj.common.utils.toTime
+import com.niyaj.customer.components.CustomerDetailsCard
+import com.niyaj.customer.components.CustomerRecentOrders
 import com.niyaj.customer.destinations.AddEditCustomerScreenDestination
-import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
-import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Customer
 import com.niyaj.model.CustomerWiseOrder
-import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.ItemNotAvailable
-import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.model.TotalOrderDetails
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
-import com.niyaj.ui.components.StandardExpandable
-import com.niyaj.ui.components.TextWithCount
 import com.niyaj.ui.components.TotalOrderDetailsCard
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.CustomerPreviewData
+import com.niyaj.ui.parameterProvider.CustomerWiseOrderPreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Destination(route = Screens.CUSTOMER_DETAILS_SCREEN)
 @Composable
 fun CustomerDetailsScreen(
     customerId: Int = 0,
-    navController: DestinationsNavigator,
+    navigator: DestinationsNavigator,
     onClickOrder: (Int) -> Unit,
     viewModel: CustomerDetailsViewModel = hiltViewModel(),
 ) {
-    val scope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
-
-    val customerState = viewModel.customerDetails.collectAsStateWithLifecycle().value
-
-    val customerWiseOrders = viewModel.orderDetails.collectAsStateWithLifecycle().value
-
-    val totalOrders = viewModel.totalOrders.collectAsStateWithLifecycle().value
-
-    var detailsExpanded by remember {
-        mutableStateOf(true)
-    }
-    var orderExpanded by remember {
-        mutableStateOf(true)
-    }
+    val customerState by viewModel.customerDetails.collectAsStateWithLifecycle()
+    val customerWiseOrders by viewModel.orderDetails.collectAsStateWithLifecycle()
+    val totalOrders by viewModel.totalOrders.collectAsStateWithLifecycle()
 
     TrackScreenViewEvent(screenName = Screens.CUSTOMER_DETAILS_SCREEN + "/$customerId")
 
+    CustomerDetailsScreenContent(
+        modifier = Modifier,
+        customerState = customerState,
+        customerWiseOrders = customerWiseOrders,
+        totalOrders = totalOrders,
+        onBackClick = navigator::navigateUp,
+        onClickEdit = {
+            navigator.navigate(AddEditCustomerScreenDestination(customerId))
+        },
+        onClickOrder = onClickOrder,
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun CustomerDetailsScreenContent(
+    modifier: Modifier = Modifier,
+    customerState: UiState<Customer>,
+    customerWiseOrders: UiState<List<CustomerWiseOrder>>,
+    totalOrders: TotalOrderDetails,
+    onBackClick: () -> Unit,
+    onClickEdit: () -> Unit,
+    onClickOrder: (Int) -> Unit,
+    scope: CoroutineScope = rememberCoroutineScope(),
+    lazyListState: LazyListState = rememberLazyListState()
+) {
+    var detailsExpanded by rememberSaveable { mutableStateOf(true) }
+    var orderExpanded by rememberSaveable { mutableStateOf(true) }
+
     PoposSecondaryScaffold(
+        modifier = modifier,
         title = "Customer Details",
         showBackButton = true,
         showBottomBar = false,
@@ -126,7 +123,7 @@ fun CustomerDetailsScreen(
                 },
             )
         },
-        onBackClick = navController::navigateUp,
+        onBackClick = onBackClick,
     ) {
         TrackScrollJank(scrollableState = lazyListState, stateName = "Customer Details::List")
 
@@ -136,7 +133,7 @@ fun CustomerDetailsScreen(
                 .fillMaxSize()
                 .padding(it),
             contentPadding = PaddingValues(SpaceSmall),
-            verticalArrangement = Arrangement.spacedBy(SpaceMedium),
+            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
             item(key = "TotalOrder Details") {
                 TotalOrderDetailsCard(details = totalOrders)
@@ -149,14 +146,12 @@ fun CustomerDetailsScreen(
                         detailsExpanded = !detailsExpanded
                     },
                     doesExpanded = detailsExpanded,
-                    onClickEdit = {
-                        navController.navigate(AddEditCustomerScreenDestination(customerId))
-                    },
+                    onClickEdit = onClickEdit,
                 )
             }
 
             item(key = "OrderDetails") {
-                RecentOrders(
+                CustomerRecentOrders(
                     customerWiseOrders = customerWiseOrders,
                     doesExpanded = orderExpanded,
                     onExpanded = {
@@ -171,245 +166,24 @@ fun CustomerDetailsScreen(
     }
 }
 
+@DevicePreviews
 @Composable
-fun CustomerDetailsCard(
-    customerState: UiState<Customer>,
-    onExpanded: () -> Unit,
-    doesExpanded: Boolean,
-    onClickEdit: () -> Unit,
-) = trace("CustomerDetailsCard") {
-    ElevatedCard(
-        onClick = onExpanded,
-        modifier = Modifier
-            .testTag("CustomerDetails")
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(4.dp),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.background,
-        ),
-    ) {
-        StandardExpandable(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
-            expanded = doesExpanded,
-            onExpandChanged = {
-                onExpanded()
-            },
-            title = {
-                IconWithText(
-                    text = "Customer Details",
-                    icon = PoposIcons.Address,
-                )
-            },
-            trailing = {
-                IconButton(
-                    onClick = onClickEdit,
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.Edit,
-                        contentDescription = "Edit Employee",
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                }
-            },
-            rowClickable = true,
-            expand = { modifier: Modifier ->
-                IconButton(
-                    modifier = modifier,
-                    onClick = onExpanded,
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.ArrowDown,
-                        contentDescription = "Expand More",
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
-            },
-            content = {
-                Crossfade(
-                    targetState = customerState,
-                    label = "Customer State",
-                ) { state ->
-                    when (state) {
-                        is UiState.Loading -> LoadingIndicator()
-                        is UiState.Empty -> {
-                            ItemNotAvailable(
-                                text = "Unable to get customer details",
-                                showImage = false,
-                            )
-                        }
-
-                        is UiState.Success -> {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(SpaceSmall),
-                            ) {
-                                IconWithText(
-                                    modifier = Modifier.testTag(state.data.customerPhone),
-                                    text = "Phone - ${state.data.customerPhone}",
-                                    icon = PoposIcons.PhoneAndroid,
-                                )
-                                state.data.customerName?.let { name ->
-                                    Spacer(modifier = Modifier.height(SpaceSmall))
-                                    IconWithText(
-                                        modifier = Modifier.testTag(name),
-                                        text = "Name - $name",
-                                        icon = PoposIcons.Person4,
-                                    )
-                                }
-
-                                state.data.customerEmail?.let { email ->
-                                    Spacer(modifier = Modifier.height(SpaceSmall))
-
-                                    IconWithText(
-                                        modifier = Modifier.testTag(email),
-                                        text = "Email : $email",
-                                        icon = PoposIcons.Email,
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.height(SpaceSmall))
-
-                                IconWithText(
-                                    modifier = Modifier.testTag(state.data.createdAt.toFormattedDateAndTime),
-                                    text = "Created At : ${state.data.createdAt.toPrettyDate()}",
-                                    icon = PoposIcons.CalenderToday,
-                                )
-
-                                state.data.updatedAt?.let {
-                                    Spacer(modifier = Modifier.height(SpaceSmall))
-                                    IconWithText(
-                                        text = "Updated At : ${it.toFormattedDateAndTime}",
-                                        icon = PoposIcons.Login,
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-        )
-    }
-}
-
-@Composable
-fun RecentOrders(
+private fun CustomerDetailsScreenContentPreview(
+    @PreviewParameter(CustomerWiseOrderPreviewParameter::class)
     customerWiseOrders: UiState<List<CustomerWiseOrder>>,
-    onExpanded: () -> Unit,
-    doesExpanded: Boolean,
-    onClickOrder: (Int) -> Unit,
-) = trace("RecentOrders") {
-    ElevatedCard(
-        onClick = onExpanded,
-        modifier = Modifier
-            .testTag("EmployeeDetails")
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(4.dp),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.background,
-        ),
-    ) {
-        StandardExpandable(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
-            expanded = doesExpanded,
-            onExpandChanged = {
-                onExpanded()
-            },
-            title = {
-                IconWithText(
-                    text = "Recent Orders",
-                    icon = PoposIcons.AllInbox,
-                )
-            },
-            rowClickable = true,
-            expand = { modifier: Modifier ->
-                IconButton(
-                    modifier = modifier,
-                    onClick = onExpanded,
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.ArrowDown,
-                        contentDescription = "Expand More",
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
-            },
-            content = {
-                Crossfade(
-                    targetState = customerWiseOrders,
-                    label = "Recent Orders",
-                ) { state ->
-                    when (state) {
-                        is UiState.Loading -> LoadingIndicator()
-
-                        is UiState.Empty -> {
-                            ItemNotAvailable(text = "No orders made using this customer.")
-                        }
-
-                        is UiState.Success -> {
-                            Column {
-                                val groupedByDate = remember(state.data) {
-                                    state.data.groupBy { it.updatedAt.toPrettyDate() }
-                                }
-
-                                groupedByDate.forEach { (date, orders) ->
-                                    TextWithCount(
-                                        modifier = Modifier
-                                            .background(Color.Transparent),
-                                        text = date,
-                                        count = orders.size,
-                                    )
-
-                                    orders.forEachIndexed { index, order ->
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .clickable {
-                                                    onClickOrder(order.orderId)
-                                                }
-                                                .padding(SpaceSmall),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.SpaceBetween,
-                                        ) {
-                                            IconWithText(
-                                                text = "${order.orderId}",
-                                                icon = PoposIcons.Tag,
-                                                isTitle = true,
-                                            )
-
-                                            Text(
-                                                text = order.customerAddress,
-                                                textAlign = TextAlign.Start,
-                                            )
-
-                                            Text(
-                                                text = order.totalPrice.toRupee,
-                                                textAlign = TextAlign.Start,
-                                                fontWeight = FontWeight.SemiBold,
-                                            )
-
-                                            Text(
-                                                text = order.updatedAt.toTime,
-                                                textAlign = TextAlign.End,
-                                            )
-                                        }
-
-                                        if (index != orders.size - 1) {
-                                            Spacer(modifier = Modifier.height(SpaceMini))
-                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-                                            Spacer(modifier = Modifier.height(SpaceMini))
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
+    modifier: Modifier = Modifier,
+    customer: Customer = CustomerPreviewData.customerList.first(),
+    totalOrders: TotalOrderDetails = CustomerPreviewData.sampleTotalOrder
+) {
+    PoposRoomTheme {
+        CustomerDetailsScreenContent(
+            modifier = modifier,
+            customerState = UiState.Success(customer),
+            customerWiseOrders = customerWiseOrders,
+            totalOrders = totalOrders,
+            onBackClick = {},
+            onClickEdit = {},
+            onClickOrder = {},
         )
     }
 }

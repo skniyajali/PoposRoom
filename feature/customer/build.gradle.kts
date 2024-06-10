@@ -32,8 +32,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.accompanist.permissions)
-
     //RaamCosta Library
     implementation(libs.raamcosta.animation.core)
     ksp(libs.raamcosta.ksp)

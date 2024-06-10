@@ -180,7 +180,7 @@ fun PoposNavHost(
                 composable(CustomerDetailsScreenDestination) {
                     CustomerDetailsScreen(
                         customerId = navBackStackEntry.arguments?.getInt("customerId") ?: 0,
-                        navController = destinationsNavigator,
+                        navigator = destinationsNavigator,
                         onClickOrder = {
                             navController.navigate(OrderDetailsScreenDestination(it))
                         },
