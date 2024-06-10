@@ -12,10 +12,10 @@ androidx.autofill:autofill:1.0.0
 androidx.collection:collection-jvm:1.4.0
 androidx.collection:collection-ktx:1.4.0
 androidx.collection:collection:1.4.0
-androidx.compose.animation:animation-android:1.7.0-beta02
-androidx.compose.animation:animation-core-android:1.7.0-beta02
-androidx.compose.animation:animation-core:1.7.0-beta02
-androidx.compose.animation:animation:1.7.0-beta02
+androidx.compose.animation:animation-android:1.6.7
+androidx.compose.animation:animation-core-android:1.6.7
+androidx.compose.animation:animation-core:1.6.7
+androidx.compose.animation:animation:1.6.7
 androidx.compose.foundation:foundation-android:1.6.7
 androidx.compose.foundation:foundation-layout-android:1.6.7
 androidx.compose.foundation:foundation-layout:1.6.7
@@ -44,12 +44,8 @@ androidx.compose.ui:ui-graphics-android:1.7.0-beta02
 androidx.compose.ui:ui-graphics:1.7.0-beta02
 androidx.compose.ui:ui-text-android:1.7.0-beta02
 androidx.compose.ui:ui-text:1.7.0-beta02
-androidx.compose.ui:ui-tooling-android:1.7.0-beta02
-androidx.compose.ui:ui-tooling-data-android:1.7.0-beta02
-androidx.compose.ui:ui-tooling-data:1.7.0-beta02
 androidx.compose.ui:ui-tooling-preview-android:1.7.0-beta02
 androidx.compose.ui:ui-tooling-preview:1.7.0-beta02
-androidx.compose.ui:ui-tooling:1.7.0-beta02
 androidx.compose.ui:ui-unit-android:1.7.0-beta02
 androidx.compose.ui:ui-unit:1.7.0-beta02
 androidx.compose.ui:ui-util-android:1.7.0-beta02
@@ -210,7 +206,7 @@ com.squareup.moshi:moshi:1.15.1
 com.squareup.okhttp3:okhttp:4.12.0
 com.squareup.okio:okio-jvm:3.8.0
 com.squareup.okio:okio:3.8.0
-de.charlex.compose:revealswipe:1.1.0
+de.charlex.compose:revealswipe:1.2.0
 dev.chrisbanes.snapper:snapper:0.2.2
 io.coil-kt:coil-base:2.6.0
 io.coil-kt:coil-compose-base:2.6.0
