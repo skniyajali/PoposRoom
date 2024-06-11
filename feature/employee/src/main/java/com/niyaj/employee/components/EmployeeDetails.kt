@@ -32,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toDate
@@ -39,19 +40,23 @@ import com.niyaj.common.utils.toJoinedDate
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Employee
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.ItemNotAvailable
-import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.ItemNotAvailableHalf
+import com.niyaj.ui.components.LoadingIndicatorHalf
 import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.EmployeePreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 
 /**
  *
  */
 @Composable
-fun EmployeeDetails(
+internal fun EmployeeDetails(
+    modifier: Modifier = Modifier,
     employeeState: UiState<Employee>,
     employeeDetailsExpanded: Boolean = false,
     onClickEdit: () -> Unit = {},
@@ -59,7 +64,7 @@ fun EmployeeDetails(
 ) = trace("EmployeeDetails") {
     Card(
         onClick = onExpanded,
-        modifier = Modifier
+        modifier = modifier
             .testTag("EmployeeDetails")
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
@@ -111,10 +116,10 @@ fun EmployeeDetails(
                     label = "EmployeeDetailsState",
                 ) { state ->
                     when (state) {
-                        is UiState.Loading -> LoadingIndicator()
+                        is UiState.Loading -> LoadingIndicatorHalf()
 
                         is UiState.Empty -> {
-                            ItemNotAvailable(
+                            ItemNotAvailableHalf(
                                 text = "Employee details not found",
                                 showImage = false,
                             )
@@ -165,7 +170,7 @@ fun EmployeeDetails(
                                 IconWithText(
                                     modifier = Modifier.testTag(state.data.employeeJoinedDate.toDate),
                                     text = "Joined Date : ${state.data.employeeJoinedDate.toJoinedDate}",
-                                    icon = PoposIcons.CalenderToday,
+                                    icon = PoposIcons.CalenderMonth,
                                 )
                                 Spacer(modifier = Modifier.height(SpaceSmall))
                                 IconWithText(
@@ -184,6 +189,24 @@ fun EmployeeDetails(
                     }
                 }
             },
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun EmployeeDetailsPreview(
+    @PreviewParameter(EmployeePreviewParameter::class)
+    employeeState: UiState<Employee>,
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        EmployeeDetails(
+            modifier = modifier,
+            employeeState = employeeState,
+            employeeDetailsExpanded = true,
+            onClickEdit = {},
+            onExpanded = {}
         )
     }
 }

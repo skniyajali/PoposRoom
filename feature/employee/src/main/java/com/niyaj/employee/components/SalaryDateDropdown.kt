@@ -25,8 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toYearAndMonth
 import com.niyaj.designsystem.components.PoposOutlinedAssistChip
@@ -35,13 +36,14 @@ import com.niyaj.model.EmployeeMonthlyDate
 
 @Composable
 fun SalaryDateDropdown(
+    modifier: Modifier = Modifier,
     text: String,
     salaryDates: List<EmployeeMonthlyDate> = emptyList(),
     onDateClick: (Pair<String, String>) -> Unit = {},
 ) = trace("SalaryDateDropdown") {
-    var menuExpanded by remember { mutableStateOf(false) }
+    var menuExpanded by rememberSaveable { mutableStateOf(false) }
 
-    Column {
+    Column(modifier) {
         PoposOutlinedAssistChip(
             text = text,
             icon = PoposIcons.CalenderMonth,

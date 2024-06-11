@@ -28,10 +28,15 @@ import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.EmployeeRepository
 import com.niyaj.ui.event.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -46,6 +51,9 @@ class EmployeeDetailsViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val employeeId = savedStateHandle.get<Int>("employeeId") ?: 0
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
 
     private val _selectedSalaryDate = mutableStateOf<Pair<String, String>?>(null)
     val selectedSalaryDate: State<Pair<String, String>?> = _selectedSalaryDate
@@ -68,33 +76,35 @@ class EmployeeDetailsViewModel @Inject constructor(
         initialValue = emptyList(),
     )
 
-    val employeeAbsentDates = snapshotFlow { employeeId }.flatMapLatest { employeeId ->
+    val employeeAbsentDates = _isLoading.flatMapLatest {
         employeeRepository.getEmployeeAbsentDates(employeeId).mapLatest {
             if (it.isEmpty()) UiState.Empty else UiState.Success(it)
         }
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
+        started = SharingStarted.Eagerly,
         initialValue = UiState.Loading,
     )
 
-    val salaryEstimation = snapshotFlow { _selectedSalaryDate.value }.flatMapLatest { date ->
-        employeeRepository.getEmployeeSalaryEstimation(employeeId, date).mapLatest { result ->
-            UiState.Success(result)
+    val salaryEstimation = snapshotFlow { _selectedSalaryDate.value }.combine(_isLoading) { date, _ ->
+        employeeRepository.getEmployeeSalaryEstimation(employeeId, date)
+    }.flatMapLatest { data ->
+        data.mapLatest {
+            UiState.Success(it)
         }
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
+        started = SharingStarted.Eagerly,
         initialValue = UiState.Loading,
     )
 
-    val payments = snapshotFlow { employeeId }.flatMapLatest { employeeId ->
+    val payments = _isLoading.flatMapLatest {
         employeeRepository.getEmployeePayments(employeeId).mapLatest { result ->
             if (result.isEmpty()) UiState.Empty else UiState.Success(result)
         }
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
+        started = SharingStarted.Eagerly,
         initialValue = UiState.Loading,
     )
 
@@ -114,6 +124,15 @@ class EmployeeDetailsViewModel @Inject constructor(
             }
         }
     }
+
+    // TODO:: Workaround this issue can be moved to better approach
+    fun updateLoading() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            delay(500)
+            _isLoading.value = false
+        }
+    }
 }
 
 internal fun AnalyticsHelper.logEmployeeDetailsViewed(employeeId: Int) {
@@ -121,7 +140,7 @@ internal fun AnalyticsHelper.logEmployeeDetailsViewed(employeeId: Int) {
         event = AnalyticsEvent(
             type = "employee_details_viewed",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("employee_details_viewed", employeeId.toString()),
+                AnalyticsEvent.Param("employee_details_viewed", employeeId.toString()),
             ),
         ),
     )

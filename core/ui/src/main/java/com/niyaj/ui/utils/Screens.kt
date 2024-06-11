@@ -83,6 +83,8 @@ object Screens {
     const val ADD_EDIT_PARTNER_SCREEN = "add_edit_partner_screen"
 
     const val EMPLOYEE_SCREEN = "employee_screen"
+    const val EMPLOYEE_IMPORT_SCREEN = "employee_import_screen"
+    const val EMPLOYEE_EXPORT_SCREEN = "employee_export_screen"
     const val EMPLOYEE_DETAILS_SCREEN = "employee_details_screen"
     const val ADD_EDIT_EMPLOYEE_SCREEN = "add_edit_employee_screen"
 

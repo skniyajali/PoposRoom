@@ -17,38 +17,57 @@
 
 package com.niyaj.employee.details
 
+import androidx.annotation.VisibleForTesting
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.niyaj.common.utils.toYearAndMonth
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_DETAILS
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.employee.components.AbsentDetails
 import com.niyaj.employee.components.EmployeeDetails
 import com.niyaj.employee.components.PaymentDetails
 import com.niyaj.employee.components.SalaryEstimationCard
-import com.niyaj.ui.components.PoposPrimaryScaffold
+import com.niyaj.employee.destinations.AddEditEmployeeScreenDestination
+import com.niyaj.model.Employee
+import com.niyaj.model.EmployeeAbsentDates
+import com.niyaj.model.EmployeeMonthlyDate
+import com.niyaj.model.EmployeePayments
+import com.niyaj.model.EmployeeSalaryEstimation
+import com.niyaj.ui.components.PoposScaffold
+import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.EmployeePreviewData
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.NavResult
+import com.ramcosta.composedestinations.result.OpenResultRecipient
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 /**
@@ -59,6 +78,7 @@ import kotlinx.coroutines.launch
  * @param viewModel
  * @see EmployeeDetailsViewModel
  */
+@Suppress("DEPRECATION")
 @Destination(route = Screens.EMPLOYEE_DETAILS_SCREEN)
 @Composable
 fun EmployeeDetailsScreen(
@@ -67,83 +87,134 @@ fun EmployeeDetailsScreen(
     onClickAddPayment: (Int) -> Unit,
     onClickAddAbsent: (Int) -> Unit,
     viewModel: EmployeeDetailsViewModel = hiltViewModel(),
+    paymentRecipient: OpenResultRecipient<String>,
+    absentRecipient: OpenResultRecipient<String>,
 ) {
-    val lazyListState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val salaryEstimationState by viewModel.salaryEstimation.collectAsStateWithLifecycle()
+    val salaryDates by viewModel.salaryDates.collectAsStateWithLifecycle()
+    val employeeState by viewModel.employeeDetails.collectAsStateWithLifecycle()
+    val paymentsState by viewModel.payments.collectAsStateWithLifecycle()
+    val absentState by viewModel.employeeAbsentDates.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val refreshState = rememberSwipeRefreshState(isLoading)
 
-    val salaryEstimationState = viewModel.salaryEstimation.collectAsStateWithLifecycle().value
+    // TODO:: Workaround to update data atomically
+    paymentRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {}
 
-    val salaryDates = viewModel.salaryDates.collectAsStateWithLifecycle().value
+            is NavResult.Value -> {
+                viewModel.updateLoading()
+            }
+        }
+    }
+
+    // TODO:: Workaround to update data atomically
+    absentRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {}
+
+            is NavResult.Value -> {
+                viewModel.updateLoading()
+            }
+        }
+    }
 
     val selectedSalaryDate = viewModel.selectedSalaryDate.value
 
-    val employeeState = viewModel.employeeDetails.collectAsStateWithLifecycle().value
-
-    val paymentsState = viewModel.payments.collectAsStateWithLifecycle().value
-
-    val absentState = viewModel.employeeAbsentDates.collectAsStateWithLifecycle().value
-
-    var employeeDetailsExpanded by remember {
-        mutableStateOf(false)
-    }
-
-    var paymentDetailsExpanded by remember {
-        mutableStateOf(false)
-    }
-
-    var absentReportsExpanded by remember {
-        mutableStateOf(false)
-    }
-
     TrackScreenViewEvent(screenName = Screens.EMPLOYEE_DETAILS_SCREEN + "/$employeeId")
 
-    PoposPrimaryScaffold(
-        currentRoute = Screens.EMPLOYEE_DETAILS_SCREEN,
-        selectionCount = 0,
-        snackbarHostState = snackbarHostState,
-        title = "Employee Details",
+    // TODO:: Workaround to update data atomically
+    SwipeRefresh(
+        state = refreshState,
+        onRefresh = viewModel::updateLoading,
+    ) {
+        EmployeeDetailsScreenContent(
+            modifier = Modifier,
+            employeeState = employeeState,
+            salaryEstimationState = salaryEstimationState,
+            paymentsState = paymentsState,
+            absentState = absentState,
+            salaryDates = salaryDates.toImmutableList(),
+            selectedSalaryDate = selectedSalaryDate,
+            onEvent = viewModel::onEvent,
+            onBackClick = navigator::navigateUp,
+            onClickAddPayment = {
+                navigator.clearBackStack(Screens.EMPLOYEE_DETAILS_SCREEN)
+                onClickAddPayment(employeeId)
+            },
+            onClickAddAbsent = {
+                onClickAddAbsent(employeeId)
+            },
+            onClickEdit = {
+                navigator.navigate(AddEditEmployeeScreenDestination(employeeId))
+            },
+        )
+    }
+}
+
+@VisibleForTesting
+@Composable
+internal fun EmployeeDetailsScreenContent(
+    modifier: Modifier = Modifier,
+    employeeState: UiState<Employee>,
+    salaryEstimationState: UiState<EmployeeSalaryEstimation>,
+    paymentsState: UiState<List<EmployeePayments>>,
+    absentState: UiState<List<EmployeeAbsentDates>>,
+    salaryDates: ImmutableList<EmployeeMonthlyDate>,
+    selectedSalaryDate: Pair<String, String>? = null,
+    onEvent: (EmployeeDetailsEvent) -> Unit,
+    onBackClick: () -> Unit,
+    onClickAddPayment: () -> Unit,
+    onClickAddAbsent: () -> Unit,
+    onClickEdit: () -> Unit,
+    scope: CoroutineScope = rememberCoroutineScope(),
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
+    var employeeDetailsExpanded by rememberSaveable { mutableStateOf(true) }
+    var paymentDetailsExpanded by rememberSaveable { mutableStateOf(false) }
+    var absentReportsExpanded by rememberSaveable { mutableStateOf(false) }
+
+    TrackScrollJank(scrollableState = lazyListState, stateName = "Employee Details::List")
+
+    PoposScaffold(
+        modifier = modifier,
+        title = EMPLOYEE_DETAILS,
         showBackButton = true,
-        gesturesEnabled = false,
-        floatingActionButton = {},
+        onBackClick = onBackClick,
         navActions = {
             IconButton(
-                onClick = {
-                    onClickAddPayment(employeeId)
-                },
+                onClick = onClickAddPayment,
             ) {
-                Icon(imageVector = PoposIcons.Add, contentDescription = "Add Payment Entry")
+                Icon(
+                    imageVector = PoposIcons.Add,
+                    contentDescription = "Add Payment Entry",
+                )
             }
 
             IconButton(
-                onClick = {
-                    onClickAddAbsent(employeeId)
-                },
+                onClick = onClickAddAbsent,
             ) {
-                Icon(imageVector = PoposIcons.EventBusy, contentDescription = "Add Absent Entry")
+                Icon(
+                    imageVector = PoposIcons.EventBusy,
+                    contentDescription = "Add Absent Entry",
+                )
             }
         },
-        onBackClick = navigator::navigateUp,
-        onNavigateToScreen = navigator::navigate,
     ) {
-        TrackScrollJank(scrollableState = lazyListState, stateName = "Employee Details::List")
-
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(SpaceSmall),
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             state = lazyListState,
         ) {
             item(key = "CalculateSalary") {
                 SalaryEstimationCard(
                     uiState = salaryEstimationState,
-                    dropdownText = selectedSalaryDate?.first?.toYearAndMonth
-                        ?: if (salaryDates.isNotEmpty()) salaryDates.first().startDate.toYearAndMonth else "",
+                    selectedSalaryDate = selectedSalaryDate,
                     salaryDates = salaryDates,
                     onDateClick = {
-                        viewModel.onEvent(
-                            EmployeeDetailsEvent.OnChooseSalaryDate(it),
-                        )
+                        onEvent(EmployeeDetailsEvent.OnChooseSalaryDate(it))
                     },
                     onClickPaymentCount = {
                         scope.launch {
@@ -155,34 +226,20 @@ fun EmployeeDetailsScreen(
                             lazyListState.animateScrollToItem(3)
                         }
                     },
-                    onClickAbsentEntry = {
-                        onClickAddAbsent(employeeId)
-                    },
-                    onClickSalaryEntry = {
-                        onClickAddPayment(employeeId)
-                    },
+                    onClickAbsentEntry = onClickAddAbsent,
+                    onClickSalaryEntry = onClickAddPayment,
                 )
-
-                Spacer(modifier = Modifier.height(SpaceMedium))
             }
 
             item(key = "EmployeeDetails") {
                 EmployeeDetails(
                     employeeState = employeeState,
                     employeeDetailsExpanded = employeeDetailsExpanded,
-                    onClickEdit = {
-                        navigator.navigate(
-                            com.niyaj.employee.destinations.AddEditEmployeeScreenDestination(
-                                employeeId,
-                            ),
-                        )
-                    },
+                    onClickEdit = onClickEdit,
                     onExpanded = {
                         employeeDetailsExpanded = !employeeDetailsExpanded
                     },
                 )
-
-                Spacer(modifier = Modifier.height(SpaceMedium))
             }
 
             item(key = "PaymentDetails") {
@@ -193,8 +250,6 @@ fun EmployeeDetailsScreen(
                         paymentDetailsExpanded = !paymentDetailsExpanded
                     },
                 )
-
-                Spacer(modifier = Modifier.height(SpaceMedium))
             }
 
             item(key = "AbsentDetails") {
@@ -209,5 +264,79 @@ fun EmployeeDetailsScreen(
                 Spacer(modifier = Modifier.height(SpaceMedium))
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun EmployeeDetailsScreenContentLoadingPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        EmployeeDetailsScreenContent(
+            modifier = modifier,
+            employeeState = UiState.Loading,
+            salaryEstimationState = UiState.Loading,
+            paymentsState = UiState.Loading,
+            absentState = UiState.Loading,
+            salaryDates = persistentListOf(),
+            selectedSalaryDate = null,
+            onEvent = {},
+            onBackClick = {},
+            onClickAddPayment = {},
+            onClickAddAbsent = {},
+            onClickEdit = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun EmployeeDetailsScreenContentEmptyPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        EmployeeDetailsScreenContent(
+            modifier = modifier,
+            employeeState = UiState.Empty,
+            salaryEstimationState = UiState.Empty,
+            paymentsState = UiState.Empty,
+            absentState = UiState.Empty,
+            salaryDates = persistentListOf(),
+            selectedSalaryDate = null,
+            onEvent = {},
+            onBackClick = {},
+            onClickAddPayment = {},
+            onClickAddAbsent = {},
+            onClickEdit = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun EmployeeDetailsScreenContentPreview(
+    modifier: Modifier = Modifier,
+    employee: Employee = EmployeePreviewData.employeeList.first(),
+    salaryEstimation: EmployeeSalaryEstimation = EmployeePreviewData.employeeSalaryEstimations.last(),
+    payments: List<EmployeePayments> = EmployeePreviewData.employeePayments,
+    absent: List<EmployeeAbsentDates> = EmployeePreviewData.employeeAbsentDates,
+    salaryDates: List<EmployeeMonthlyDate> = EmployeePreviewData.employeeMonthlyDates,
+) {
+    PoposRoomTheme {
+        EmployeeDetailsScreenContent(
+            modifier = modifier,
+            employeeState = UiState.Success(employee),
+            salaryEstimationState = UiState.Success(salaryEstimation),
+            paymentsState = UiState.Success(payments),
+            absentState = UiState.Success(absent),
+            salaryDates = salaryDates.toImmutableList(),
+            selectedSalaryDate = null,
+            onEvent = {},
+            onBackClick = {},
+            onClickAddPayment = {},
+            onClickAddAbsent = {},
+            onClickEdit = {},
+        )
     }
 }

@@ -164,6 +164,8 @@ fun PoposNavHost(
                         onClickAddAbsent = {
                             navController.navigate(AddEditAbsentScreenDestination(employeeId = it))
                         },
+                        paymentRecipient = resultRecipient<AddEditPaymentScreenDestination, String>(),
+                        absentRecipient = resultRecipient<AddEditAbsentScreenDestination, String>()
                     )
                 }
 

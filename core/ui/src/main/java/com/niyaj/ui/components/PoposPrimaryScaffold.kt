@@ -255,6 +255,117 @@ fun PoposPrimaryScaffold(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PoposScaffold(
+    modifier: Modifier = Modifier,
+    title: String,
+    floatingActionButton: @Composable () -> Unit = {},
+    navActions: @Composable RowScope.() -> Unit = {},
+    navigationIcon: () -> Unit = {},
+    bottomBar: @Composable () -> Unit = {},
+    fabPosition: FabPosition = FabPosition.Center,
+    showBottomBar: Boolean = false,
+    showBackButton: Boolean = false,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    onBackClick: () -> Unit,
+    content: @Composable (Shape) -> Unit,
+) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    // Remember a SystemUiController
+    val systemUiController = rememberSystemUiController()
+
+    val colorTransitionFraction = scrollBehavior.state.collapsedFraction
+
+    val color = rememberUpdatedState(newValue = containerColorForPrimary(colorTransitionFraction))
+    val navColor = MaterialTheme.colorScheme.surface
+    val shape = rememberUpdatedState(newValue = containerShape(colorTransitionFraction))
+
+    SideEffect {
+        systemUiController.setStatusBarColor(color = color.value)
+
+        systemUiController.setNavigationBarColor(color = navColor)
+    }
+
+    Scaffold(
+        topBar = {
+            PoposLargeTopAppBar(
+                title = {
+                    Text(text = title)
+                },
+                navigationIcon = {
+                    if (showBackButton) {
+                        IconButton(
+                            onClick = onBackClick,
+                            modifier = Modifier.testTag(STANDARD_BACK_BUTTON),
+                        ) {
+                            Icon(
+                                imageVector = PoposIcons.Back,
+                                contentDescription = null,
+                            )
+                        }
+                    } else {
+                        navigationIcon()
+                    }
+                },
+                actions = navActions,
+                scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    scrolledContainerColor = RoyalPurple,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                ),
+            )
+        },
+        bottomBar = {
+            AnimatedVisibility(
+                visible = showBottomBar,
+                label = "BottomBar",
+                enter = fadeIn() + slideInVertically(
+                    initialOffsetY = { fullHeight ->
+                        fullHeight / 4
+                    },
+                ),
+                exit = fadeOut() + slideOutVertically(
+                    targetOffsetY = { fullHeight ->
+                        fullHeight / 4
+                    },
+                ),
+            ) {
+                bottomBar()
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.primary,
+        floatingActionButton = floatingActionButton,
+        floatingActionButtonPosition = fabPosition,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        modifier = modifier
+            .testTag(title)
+            .fillMaxSize()
+            .navigationBarsPadding()
+            .imePadding()
+            .testTag("primaryScaffold"),
+    ) { padding ->
+        ElevatedCard(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .consumeWindowInsets(padding)
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+                )
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            shape = shape.value,
+            elevation = CardDefaults.cardElevation(),
+        ) {
+            content(shape.value)
+        }
+    }
+}
+
 @Composable
 fun PoposSecondaryScaffold(
     modifier: Modifier = Modifier,
@@ -418,7 +529,7 @@ private fun PoposSecondaryScaffoldPreview() {
 }
 
 @Composable
-internal fun containerColorForPrimary(colorTransitionFraction: Float): Color {
+fun containerColorForPrimary(colorTransitionFraction: Float): Color {
     return lerp(
         MaterialTheme.colorScheme.primary,
         RoyalPurple,
@@ -445,7 +556,7 @@ internal fun containerColor(colorTransitionFraction: Float): Color {
 }
 
 @Composable
-internal fun containerShape(colorTransitionFraction: Float): Shape {
+fun containerShape(colorTransitionFraction: Float): Shape {
     val data = lerp(
         CornerRadius(48f, 48f),
         CornerRadius(0f, 0f),

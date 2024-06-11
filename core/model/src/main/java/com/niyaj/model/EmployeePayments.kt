@@ -17,13 +17,10 @@
 
 package com.niyaj.model
 
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-
 data class EmployeePayments(
     val startDate: String = "",
     val endDate: String = "",
-    val payments: ImmutableList<Payment> = persistentListOf(),
+    val payments: List<Payment> = emptyList(),
 )
 
 data class EmployeeMonthlyDate(
