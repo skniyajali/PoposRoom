@@ -17,6 +17,7 @@
 
 package com.niyaj.employee.createOrUpdate
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -161,9 +162,10 @@ fun AddEditEmployeeScreen(
     )
 }
 
+@VisibleForTesting
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditEmployeeScreenContent(
+internal fun AddEditEmployeeScreenContent(
     modifier: Modifier = Modifier,
     title: String,
     icon: ImageVector,
@@ -558,7 +560,7 @@ fun AddEditEmployeeScreenContent(
 
 @DevicePreviews
 @Composable
-fun AddEditEmployeeScreenContentPreview() {
+private fun AddEditEmployeeScreenContentPreview() {
     PoposRoomTheme {
         AddEditEmployeeScreenContent(
             title = CREATE_NEW_EMPLOYEE,

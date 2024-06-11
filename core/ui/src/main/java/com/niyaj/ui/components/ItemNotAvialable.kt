@@ -174,6 +174,7 @@ fun EmptyImportScreen(
     btnModifier: Modifier = Modifier,
     text: String,
     buttonText: String,
+    note: String? = null,
     showImage: Boolean = true,
     icon: ImageVector = PoposIcons.FileOpen,
     image: Painter = painterResource(id = R.drawable.openfile),
@@ -188,7 +189,7 @@ fun EmptyImportScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .align(Alignment.Center),
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.spacedBy(SpaceMedium, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (showImage) {
@@ -198,7 +199,6 @@ fun EmptyImportScreen(
                     contentScale = ContentScale.FillHeight,
                     modifier = Modifier.size(300.dp),
                 )
-                Spacer(modifier = Modifier.height(SpaceMedium))
             }
 
             Text(
@@ -209,8 +209,11 @@ fun EmptyImportScreen(
                 color = MaterialTheme.colorScheme.error,
             )
 
+            note?.let {
+                NoteText(text = it)
+            }
+
             if (buttonText.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(SpaceMedium))
                 PoposElevatedButton(
                     modifier = btnModifier,
                     text = buttonText,

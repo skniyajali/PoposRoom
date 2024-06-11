@@ -17,6 +17,7 @@
 
 package com.niyaj.employeeAbsent.settings
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
@@ -46,7 +47,7 @@ class AbsentSettingsViewModel @Inject constructor(
         repository.getAllEmployeeAbsents(it)
     }.mapLatest { list ->
         totalItems = list.flatMap { item -> item.absents.map { it.absentId } }
-        list
+        if (list.all { it.absents.isEmpty() }) emptyList() else list
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -59,15 +60,15 @@ class AbsentSettingsViewModel @Inject constructor(
     private val _importedItems = MutableStateFlow<List<EmployeeWithAbsents>>(emptyList())
     val importedItems = _importedItems.asStateFlow()
 
-    private val _selectedEmployee = MutableStateFlow(0)
-    val selectedEmployee = _selectedEmployee.asStateFlow()
+    private val _selectedEmployee = mutableStateListOf<Int>()
+    val selectedEmployee = _selectedEmployee
 
     fun selectEmployee(employeeId: Int) {
         viewModelScope.launch {
-            if (_selectedEmployee.value == employeeId) {
-                _selectedEmployee.value = 0
+            if (_selectedEmployee.contains(employeeId)) {
+                _selectedEmployee.remove(employeeId)
             } else {
-                _selectedEmployee.value = employeeId
+                _selectedEmployee.add(employeeId)
             }
         }
     }
@@ -142,7 +143,7 @@ internal fun AnalyticsHelper.logImportedAbsentFromFile(totalAbsent: Int) {
         event = AnalyticsEvent(
             type = "absent_imported_from_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("absent_imported_from_file", totalAbsent.toString()),
+                AnalyticsEvent.Param("absent_imported_from_file", totalAbsent.toString()),
             ),
         ),
     )
@@ -153,7 +154,7 @@ internal fun AnalyticsHelper.logImportedAbsentToDatabase(totalAbsent: Int) {
         event = AnalyticsEvent(
             type = "absent_imported_to_database",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("absent_imported_to_database", totalAbsent.toString()),
+                AnalyticsEvent.Param("absent_imported_to_database", totalAbsent.toString()),
             ),
         ),
     )
@@ -164,7 +165,7 @@ internal fun AnalyticsHelper.logExportedAbsentToFile(totalAbsent: Int) {
         event = AnalyticsEvent(
             type = "absent_exported_to_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("absent_exported_to_file", totalAbsent.toString()),
+                AnalyticsEvent.Param("absent_exported_to_file", totalAbsent.toString()),
             ),
         ),
     )

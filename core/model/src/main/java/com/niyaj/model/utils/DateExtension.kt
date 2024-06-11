@@ -46,6 +46,9 @@ internal val String.capitalizeWords
         }
     }
 
+val String.toDate
+    get() = SimpleDateFormat("dd", Locale.getDefault()).format(this.toLong()).toString()
+
 internal fun String.getCapitalWord(): String {
     var capitalizeLetters = ""
 

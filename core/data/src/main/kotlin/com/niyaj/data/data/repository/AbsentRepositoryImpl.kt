@@ -35,7 +35,7 @@ import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Absent
 import com.niyaj.model.Employee
 import com.niyaj.model.EmployeeWithAbsents
-import com.niyaj.model.filterEmployee
+import com.niyaj.model.filterEmployeeWithAbsent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -64,9 +64,7 @@ class AbsentRepositoryImpl(
             absentDao.getAllAbsentEmployee().mapLatest { list ->
                 list.filter { it.absents.isNotEmpty() }
                     .map(EmployeeWithAbsentsDto::asExternalModel)
-                    .filter {
-                        it.employee.filterEmployee(searchText)
-                    }
+                    .filterEmployeeWithAbsent(searchText)
             }
         }
     }

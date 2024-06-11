@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.ui.utils.DevicePreviews
@@ -44,6 +45,7 @@ fun StandardElevatedCard(
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
     borderStroke: BorderStroke? = if (doesSelected) border else null,
     containerColor: Color = MaterialTheme.colorScheme.background,
+    elevation: Dp = SpaceMini,
     content: @Composable () -> Unit = {},
 ) {
     ElevatedCard(
@@ -62,7 +64,7 @@ fun StandardElevatedCard(
             containerColor = containerColor,
         ),
         elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = SpaceMini,
+            defaultElevation = elevation,
         ),
     ) {
         content()

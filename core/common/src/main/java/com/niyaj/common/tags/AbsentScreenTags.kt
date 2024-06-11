@@ -50,16 +50,15 @@ object AbsentScreenTags {
 
     const val ABSENT_TAG = "Absent-"
 
+    const val ABSENT_SETTINGS_NOTE ="Make Sure To Import Employee Before Importing Employee Absent Dates."
+
     const val ABSENT_SETTINGS_TITLE = "Absent Settings"
 
     const val IMPORT_ABSENT_TITLE = "Import Absentees"
-    const val IMPORT_ABSENT_BTN_TEXT = "Import Absentees"
     const val IMPORT_ABSENT_OPN_FILE = "Open File"
     const val IMPORT_ABSENT_NOTE_TEXT = "Make sure to open absentees.json file."
 
     const val EXPORT_ABSENT_TITLE = "Export Absentees"
-    const val EXPORT_ABSENT_BTN_TEXT = "Export Absentees"
-    const val EXPORT_ABSENT_BTN = "Export Absent"
 
     const val EXPORT_ABSENT_FILE_NAME = "absentees"
 }

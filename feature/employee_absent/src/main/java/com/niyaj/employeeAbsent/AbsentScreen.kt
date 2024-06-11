@@ -18,71 +18,47 @@
 package com.niyaj.employeeAbsent
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.util.trace
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_NOT_AVAILABLE
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_SCREEN_TITLE
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_SEARCH_PLACEHOLDER
-import com.niyaj.common.tags.AbsentScreenTags.ABSENT_TAG
 import com.niyaj.common.tags.AbsentScreenTags.CREATE_NEW_ABSENT
 import com.niyaj.common.tags.AbsentScreenTags.DELETE_ABSENT_MESSAGE
 import com.niyaj.common.tags.AbsentScreenTags.DELETE_ABSENT_TITLE
-import com.niyaj.common.tags.AbsentScreenTags.NO_ITEMS_IN_ABSENT
-import com.niyaj.common.utils.toDate
-import com.niyaj.common.utils.toMonthAndYear
-import com.niyaj.designsystem.components.StandardAssistChip
-import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.SpaceMini
-import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
+import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.employeeAbsent.components.AbsentEmployeeList
 import com.niyaj.employeeAbsent.destinations.AbsentExportScreenDestination
 import com.niyaj.employeeAbsent.destinations.AbsentImportScreenDestination
 import com.niyaj.employeeAbsent.destinations.AbsentSettingsScreenDestination
 import com.niyaj.employeeAbsent.destinations.AddEditAbsentScreenDestination
-import com.niyaj.model.Absent
 import com.niyaj.model.EmployeeWithAbsents
-import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.PoposPrimaryScaffold
 import com.niyaj.ui.components.ScaffoldNavActions
 import com.niyaj.ui.components.StandardDialog
-import com.niyaj.ui.components.StandardElevatedCard
-import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.components.StandardFAB
-import com.niyaj.ui.components.TextWithBorderCount
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.AbsentPreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
-import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
@@ -90,6 +66,7 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
@@ -104,63 +81,220 @@ fun AbsentScreen(
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
-    val uiState = viewModel.absents.collectAsStateWithLifecycle().value
 
-    val selectedItems = viewModel.selectedItems.toList()
+    val uiState by viewModel.absents.collectAsStateWithLifecycle()
+    val showSearchBar by viewModel.showSearchBar.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
-    val lazyListState = rememberLazyListState()
+    AbsentScreenContent(
+        modifier = Modifier,
+        uiState = uiState,
+        selectedItems = viewModel.selectedItems.toList(),
+        selectedEmployees = viewModel.selectedEmployee.toList(),
+        showSearchBar = showSearchBar,
+        searchText = viewModel.searchText.value,
+        onClickSearchIcon = viewModel::openSearchBar,
+        onSearchTextChanged = viewModel::searchTextChanged,
+        onClickClear = viewModel::clearSearchText,
+        onCloseSearchBar = viewModel::closeSearchBar,
+        onClickSelectItem = viewModel::selectItem,
+        onClickSelectAll = viewModel::selectAllItems,
+        onClickDeselect = viewModel::deselectItems,
+        onClickDelete = viewModel::deleteItems,
+        onSelectEmployee = viewModel::selectEmployee,
+        onClickBack = navigator::popBackStack,
+        onNavigateToScreen = navigator::navigate,
+        onClickCreateNew = {
+            navigator.navigate(AddEditAbsentScreenDestination())
+        },
+        onClickEdit = {
+            navigator.navigate(AddEditAbsentScreenDestination(it))
+        },
+        onClickSettings = {
+            navigator.navigate(AbsentSettingsScreenDestination())
+        },
+        onAbsentAddClick = {
+            navigator.navigate(AddEditAbsentScreenDestination(employeeId = it))
+        },
+        snackbarState = snackbarState,
+    )
 
-    val showFab = viewModel.totalItems.isNotEmpty()
+    HandleResultRecipients(
+        resultRecipient = resultRecipient,
+        exportRecipient = exportRecipient,
+        importRecipient = importRecipient,
+        event = event,
+        onDeselectItems = viewModel::deselectItems,
+        coroutineScope = scope,
+        snackbarHostState = snackbarState
+    )
+}
 
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
-
-    val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
-    val searchText = viewModel.searchText.value
-
-    val selectedEmployee = viewModel.selectedEmployee.collectAsStateWithLifecycle().value
-
-    val openDialog = remember { mutableStateOf(false) }
-
-    LaunchedEffect(key1 = event) {
-        event?.let { data ->
-            when (data) {
-                is UiEvent.OnError -> {
-                    scope.launch {
-                        snackbarState.showSnackbar(data.errorMessage)
-                    }
-                }
-
-                is UiEvent.OnSuccess -> {
-                    scope.launch {
-                        snackbarState.showSnackbar(data.successMessage)
-                    }
-                }
-            }
-        }
-    }
+@androidx.annotation.VisibleForTesting
+@Composable
+internal fun AbsentScreenContent(
+    modifier: Modifier = Modifier,
+    uiState: UiState<List<EmployeeWithAbsents>>,
+    selectedItems: List<Int>,
+    selectedEmployees: List<Int>,
+    showSearchBar: Boolean,
+    searchText: String,
+    onClickSearchIcon: () -> Unit,
+    onSearchTextChanged: (String) -> Unit,
+    onClickClear: () -> Unit,
+    onCloseSearchBar: () -> Unit,
+    onClickSelectItem: (Int) -> Unit,
+    onClickSelectAll: () -> Unit,
+    onClickDeselect: () -> Unit,
+    onClickDelete: () -> Unit,
+    onClickBack: () -> Unit,
+    onNavigateToScreen: (String) -> Unit,
+    onClickCreateNew: () -> Unit,
+    onClickEdit: (Int) -> Unit,
+    onClickSettings: () -> Unit,
+    onSelectEmployee: (Int) -> Unit,
+    onAbsentAddClick: (Int) -> Unit,
+    snackbarState: SnackbarHostState = remember { SnackbarHostState() },
+    scope: CoroutineScope = rememberCoroutineScope(),
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
+    TrackScreenViewEvent(screenName = Screens.ABSENT_SCREEN)
 
     BackHandler {
         if (selectedItems.isNotEmpty()) {
-            viewModel.deselectItems()
+            onClickDeselect()
         } else if (showSearchBar) {
-            viewModel.closeSearchBar()
+            onCloseSearchBar()
         } else {
-            navigator.popBackStack()
+            onClickBack()
         }
     }
 
+    val showFab = uiState is UiState.Success
+    val openDialog = remember { mutableStateOf(false) }
+
+    PoposPrimaryScaffold(
+        modifier = modifier,
+        currentRoute = Screens.ABSENT_SCREEN,
+        title = if (selectedItems.isEmpty()) ABSENT_SCREEN_TITLE else "${selectedItems.size} Selected",
+        floatingActionButton = {
+            StandardFAB(
+                fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
+                onFabClick = onClickCreateNew,
+                onClickScroll = {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(0)
+                    }
+                },
+                showScrollToTop = lazyListState.isScrolled,
+                fabText = CREATE_NEW_ABSENT,
+            )
+        },
+        navActions = {
+            ScaffoldNavActions(
+                placeholderText = ABSENT_SEARCH_PLACEHOLDER,
+                showSettingsIcon = true,
+                selectionCount = selectedItems.size,
+                showSearchBar = showSearchBar,
+                showSearchIcon = showFab,
+                searchText = searchText,
+                onEditClick = {
+                    onClickEdit(selectedItems.first())
+                },
+                onDeleteClick = {
+                    openDialog.value = true
+                },
+                onSettingsClick = onClickSettings,
+                onSelectAllClick = onClickSelectAll,
+                onClearClick = onClickClear,
+                onSearchIconClick = onClickSearchIcon,
+                onSearchTextChanged = onSearchTextChanged,
+            )
+        },
+        fabPosition = if (lazyListState.isScrolled) FabPosition.End else FabPosition.Center,
+        selectionCount = selectedItems.size,
+        showBackButton = showSearchBar,
+        onDeselect = onClickDeselect,
+        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
+        snackbarHostState = snackbarState,
+        onNavigateToScreen = onNavigateToScreen,
+    ) {
+        Crossfade(
+            targetState = uiState,
+            label = "AbsentList::UiState",
+        ) { state ->
+            when (state) {
+                is UiState.Loading -> LoadingIndicator()
+
+                is UiState.Empty -> {
+                    ItemNotAvailable(
+                        text = if (searchText.isEmpty()) ABSENT_NOT_AVAILABLE else SEARCH_ITEM_NOT_FOUND,
+                        buttonText = CREATE_NEW_ABSENT,
+                        onClick = onClickCreateNew,
+                    )
+                }
+
+                is UiState.Success -> {
+                    AbsentEmployeeList(
+                        modifier = Modifier,
+                        items = state.data,
+                        showTrailingIcon = true,
+                        expanded = selectedEmployees::contains,
+                        onExpandChanged = onSelectEmployee,
+                        doesSelected = selectedItems::contains,
+                        onClick = {
+                            if (selectedItems.isNotEmpty()) {
+                                onClickSelectItem(it)
+                            }
+                        },
+                        onLongClick = onClickSelectItem,
+                        onChipClick = onAbsentAddClick,
+                        lazyListState = lazyListState,
+                    )
+                }
+            }
+        }
+    }
+
+    AnimatedVisibility(
+        visible = openDialog.value,
+    ) {
+        StandardDialog(
+            title = DELETE_ABSENT_TITLE,
+            message = DELETE_ABSENT_MESSAGE,
+            onConfirm = {
+                openDialog.value = false
+                onClickDelete()
+            },
+            onDismiss = {
+                openDialog.value = false
+                onClickDeselect()
+            },
+        )
+    }
+}
+
+@Composable
+private fun HandleResultRecipients(
+    resultRecipient: ResultRecipient<AddEditAbsentScreenDestination, String>,
+    exportRecipient: ResultRecipient<AbsentExportScreenDestination, String>,
+    importRecipient: ResultRecipient<AbsentImportScreenDestination, String>,
+    event: UiEvent?,
+    onDeselectItems: () -> Unit,
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+) {
     resultRecipient.onNavResult { result ->
         when (result) {
             is NavResult.Canceled -> {
-                viewModel.deselectItems()
+                onDeselectItems()
             }
 
             is NavResult.Value -> {
-                scope.launch {
-                    snackbarState.showSnackbar(result.value)
+                onDeselectItems()
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(result.value)
                 }
-
-                viewModel.deselectItems()
             }
         }
     }
@@ -169,8 +303,8 @@ fun AbsentScreen(
         when (result) {
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
-                scope.launch {
-                    snackbarState.showSnackbar(result.value)
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(result.value)
                 }
             }
         }
@@ -180,256 +314,62 @@ fun AbsentScreen(
         when (result) {
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
-                scope.launch {
-                    snackbarState.showSnackbar(result.value)
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(result.value)
                 }
             }
         }
     }
 
-    TrackScreenViewEvent(screenName = Screens.ABSENT_SCREEN)
-
-    PoposPrimaryScaffold(
-        currentRoute = Screens.ABSENT_SCREEN,
-        title = if (selectedItems.isEmpty()) ABSENT_SCREEN_TITLE else "${selectedItems.size} Selected",
-        floatingActionButton = {
-            StandardFAB(
-                fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
-                onFabClick = {
-                    navigator.navigate(AddEditAbsentScreenDestination())
-                },
-                onClickScroll = {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(0)
+    LaunchedEffect(key1 = event) {
+        event?.let { data ->
+            when (data) {
+                is UiEvent.OnError -> {
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar(data.errorMessage)
                     }
-                },
-                showScrollToTop = lazyListState.isScrolled,
-                fabText = CREATE_NEW_ABSENT,
-                containerColor = MaterialTheme.colorScheme.surface,
-            )
-        },
-        navActions = {
-            ScaffoldNavActions(
-                placeholderText = ABSENT_SEARCH_PLACEHOLDER,
-                showSettingsIcon = true,
-                selectionCount = selectedItems.size,
-                showSearchIcon = showFab,
-                showSearchBar = showSearchBar,
-                searchText = searchText,
-                onEditClick = {
-                    navigator.navigate(AddEditAbsentScreenDestination(selectedItems.first()))
-                },
-                onDeleteClick = {
-                    openDialog.value = true
-                },
-                onSettingsClick = {
-                    navigator.navigate(AbsentSettingsScreenDestination)
-                },
-                onSelectAllClick = viewModel::selectAllItems,
-                onClearClick = viewModel::clearSearchText,
-                onSearchIconClick = viewModel::openSearchBar,
-                onSearchTextChanged = viewModel::searchTextChanged,
-            )
-        },
-        fabPosition = if (lazyListState.isScrolled) FabPosition.End else FabPosition.Center,
-        selectionCount = selectedItems.size,
-        showBackButton = showSearchBar,
-        onDeselect = viewModel::deselectItems,
-        onBackClick = viewModel::closeSearchBar,
-        snackbarHostState = snackbarState,
-        onNavigateToScreen = navigator::navigate,
-    ) { _ ->
-        Crossfade(
-            modifier = Modifier.fillMaxSize(),
-            targetState = uiState,
-            label = "Absent State",
-        ) { state ->
-            when (state) {
-                is UiState.Loading -> LoadingIndicator()
-
-                is UiState.Empty -> {
-                    ItemNotAvailable(
-                        text = if (searchText.isEmpty()) ABSENT_NOT_AVAILABLE else NO_ITEMS_IN_ABSENT,
-                        buttonText = CREATE_NEW_ABSENT,
-                        onClick = {
-                            navigator.navigate(AddEditAbsentScreenDestination())
-                        },
-                    )
                 }
 
-                is UiState.Success -> {
-                    TrackScrollJank(scrollableState = lazyListState, stateName = "Absent::List")
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(SpaceSmall),
-                        state = lazyListState,
-                    ) {
-                        items(
-                            items = state.data,
-                            key = { it.employee.employeeId },
-                            contentType = { it },
-                        ) { item ->
-                            if (item.absents.isNotEmpty()) {
-                                AbsentData(
-                                    item = item,
-                                    expanded = {
-                                        selectedEmployee == it
-                                    },
-                                    doesSelected = {
-                                        selectedItems.contains(it)
-                                    },
-                                    onClick = {
-                                        if (selectedItems.isNotEmpty()) {
-                                            viewModel.selectItem(it)
-                                        }
-                                    },
-                                    onExpandChanged = viewModel::selectEmployee,
-                                    onLongClick = viewModel::selectItem,
-                                    onChipClick = {
-                                        navigator.navigate(AddEditAbsentScreenDestination(employeeId = it))
-                                    },
-                                )
-
-                                Spacer(modifier = Modifier.height(SpaceSmall))
-                            }
-                        }
+                is UiEvent.OnSuccess -> {
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar(data.successMessage)
                     }
                 }
             }
         }
-    }
-
-    if (openDialog.value) {
-        StandardDialog(
-            title = DELETE_ABSENT_TITLE,
-            message = DELETE_ABSENT_MESSAGE,
-            onConfirm = {
-                openDialog.value = false
-                viewModel.deleteItems()
-            },
-            onDismiss = {
-                openDialog.value = false
-                viewModel.deselectItems()
-            },
-        )
     }
 }
 
+@DevicePreviews
 @Composable
-fun AbsentData(
+private fun AbsentScreenPreview(
+    @PreviewParameter(AbsentPreviewParameter::class)
+    uiState: UiState<List<EmployeeWithAbsents>>,
     modifier: Modifier = Modifier,
-    item: EmployeeWithAbsents,
-    expanded: (Int) -> Boolean,
-    onExpandChanged: (Int) -> Unit,
-    doesSelected: (Int) -> Boolean,
-    onClick: (Int) -> Unit,
-    onLongClick: (Int) -> Unit,
-    onChipClick: (Int) -> Unit = {},
-    showTrailingIcon: Boolean = true,
-) = trace("AbsentData") {
-    val groupByMonth = remember(item.absents) {
-        item.absents.groupBy { toMonthAndYear(it.absentDate) }
-    }
-
-    ElevatedCard(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(SpaceMini),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
-    ) {
-        StandardExpandable(
-            modifier = Modifier.padding(vertical = SpaceSmall),
-            expanded = expanded(item.employee.employeeId),
-            onExpandChanged = {
-                onExpandChanged(item.employee.employeeId)
-            },
-            title = {
-                IconWithText(
-                    text = item.employee.employeeName,
-                    icon = PoposIcons.Person,
-                    isTitle = true,
-                )
-            },
-            trailing = {
-                if (showTrailingIcon) {
-                    StandardAssistChip(
-                        modifier = Modifier.wrapContentSize(),
-                        text = "Add Entry",
-                        icon = PoposIcons.Add,
-                        onClick = { onChipClick(item.employee.employeeId) },
-                    )
-                }
-            },
-            content = {
-                EmployeeAbsentData(
-                    groupedAbsents = groupByMonth,
-                    doesSelected = doesSelected,
-                    onClick = onClick,
-                    onLongClick = onLongClick,
-                )
-            },
+) {
+    PoposRoomTheme {
+        AbsentScreenContent(
+            modifier = modifier,
+            uiState = uiState,
+            selectedItems = listOf(),
+            selectedEmployees = listOf(1, 2, 3),
+            showSearchBar = false,
+            searchText = "",
+            onClickSearchIcon = {},
+            onSearchTextChanged = {},
+            onClickClear = {},
+            onCloseSearchBar = {},
+            onClickSelectItem = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onClickDelete = {},
+            onClickBack = {},
+            onNavigateToScreen = {},
+            onClickCreateNew = {},
+            onClickEdit = {},
+            onClickSettings = {},
+            onAbsentAddClick = {},
+            onSelectEmployee = {}
         )
-    }
-}
-
-/**
- * Employee Absent Dates
- */
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-fun EmployeeAbsentData(
-    modifier: Modifier = Modifier,
-    groupedAbsents: Map<String, List<Absent>>,
-    doesSelected: (Int) -> Boolean,
-    onClick: (Int) -> Unit,
-    onLongClick: (Int) -> Unit,
-) = trace("EmployeeAbsentData") {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(),
-    ) {
-        groupedAbsents.forEach { grouped ->
-            TextWithBorderCount(
-                modifier = Modifier,
-                text = grouped.key,
-                leadingIcon = PoposIcons.CalenderMonth,
-                count = grouped.value.size,
-            )
-
-            FlowRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(SpaceMini),
-                horizontalArrangement = Arrangement.Start,
-            ) {
-                grouped.value.forEach { item ->
-                    StandardElevatedCard(
-                        modifier = modifier,
-                        containerColor = MaterialTheme.colorScheme.onPrimary,
-                        testTag = ABSENT_TAG.plus(item.absentId),
-                        doesSelected = doesSelected(item.absentId),
-                        onClick = {
-                            onClick(item.absentId)
-                        },
-                        onLongClick = {
-                            onLongClick(item.absentId)
-                        },
-                    ) {
-                        Text(
-                            text = item.absentDate.toDate,
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier
-                                .padding(SpaceSmall),
-                        )
-                    }
-                }
-            }
-        }
     }
 }

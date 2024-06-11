@@ -92,6 +92,8 @@ object Screens {
     const val ADD_EDIT_PAYMENT_SCREEN = "add_edit_payment_screen"
 
     const val ABSENT_SCREEN = "absent_screen"
+    const val ABSENT_IMPORT_SCREEN = "absent_import_screen"
+    const val ABSENT_EXPORT_SCREEN = "absent_export_screen"
     const val ADD_EDIT_ABSENT_SCREEN = "add_edit_absent_screen"
 
     const val EXPENSES_CATEGORY_SCREEN = "expenses_category_screen"

@@ -17,22 +17,18 @@
 
 package com.niyaj.employeeAbsent.settings
 
-import android.Manifest
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
@@ -45,39 +41,44 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.niyaj.common.tags.AbsentScreenTags.IMPORT_ABSENT_BTN_TEXT
+import com.niyaj.common.tags.AbsentScreenTags.ABSENT_SETTINGS_NOTE
 import com.niyaj.common.tags.AbsentScreenTags.IMPORT_ABSENT_NOTE_TEXT
 import com.niyaj.common.tags.AbsentScreenTags.IMPORT_ABSENT_OPN_FILE
 import com.niyaj.common.tags.AbsentScreenTags.IMPORT_ABSENT_TITLE
 import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.domain.utils.ImportExport
-import com.niyaj.employeeAbsent.AbsentData
-import com.niyaj.employeeAbsent.destinations.AddEditAbsentScreenDestination
+import com.niyaj.employeeAbsent.components.AbsentEmployeeList
 import com.niyaj.model.EmployeeWithAbsents
 import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
+import com.niyaj.ui.parameterProvider.AbsentPreviewData
+import com.niyaj.ui.utils.DevicePreviews
+import com.niyaj.ui.utils.Screens.ABSENT_IMPORT_SCREEN
 import com.niyaj.ui.utils.TrackScreenViewEvent
-import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-@Destination
-@OptIn(ExperimentalPermissionsApi::class)
+@Destination(route = ABSENT_IMPORT_SCREEN)
 @Composable
 fun AbsentImportScreen(
     navigator: DestinationsNavigator,
@@ -86,26 +87,14 @@ fun AbsentImportScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
 
-    val selectedEmployee = viewModel.selectedEmployee.collectAsStateWithLifecycle().value
     val importedItems = viewModel.importedItems.collectAsStateWithLifecycle().value
+    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
+    val selectedEmployees = viewModel.selectedEmployee.toList()
     val selectedItems = viewModel.selectedItems.toList()
+
     var importJob: Job? = null
-
-    val hasStoragePermission = rememberMultiplePermissionsState(
-        permissions = listOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        ),
-    )
-
-    val askForPermissions = {
-        if (!hasStoragePermission.allPermissionsGranted) {
-            hasStoragePermission.launchMultiplePermissionRequest()
-        }
-    }
 
     val importLauncher =
         rememberLauncherForActivityResult(
@@ -122,8 +111,6 @@ fun AbsentImportScreen(
             }
         }
 
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
-
     LaunchedEffect(key1 = event) {
         event?.let { data ->
             when (data) {
@@ -138,26 +125,65 @@ fun AbsentImportScreen(
         }
     }
 
-    TrackScreenViewEvent(screenName = "Absent Import Screen")
+    AbsentImportScreenContent(
+        modifier = Modifier,
+        importedItems = importedItems.toImmutableList(),
+        selectedItems = selectedItems.toImmutableList(),
+        selectedEmployees = selectedEmployees,
+        onClickSelectItem = viewModel::selectItem,
+        onClickSelectAll = viewModel::selectAllItems,
+        onClickDeselect = viewModel::deselectItems,
+        onSelectEmployee = viewModel::selectEmployee,
+        onClickImport = {
+            viewModel.onEvent(AbsentSettingsEvent.ImportAbsentItemsToDatabase)
+        },
+        onClickOpenFile = {
+            importLauncher.launch(ImportExport.openFile(context))
+        },
+        onBackClick = navigator::navigateUp,
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun AbsentImportScreenContent(
+    modifier: Modifier = Modifier,
+    importedItems: ImmutableList<EmployeeWithAbsents>,
+    selectedItems: ImmutableList<Int>,
+    selectedEmployees: List<Int>,
+    onClickSelectItem: (Int) -> Unit,
+    onClickSelectAll: () -> Unit,
+    onClickDeselect: () -> Unit,
+    onSelectEmployee: (Int) -> Unit,
+    onClickImport: () -> Unit,
+    onClickOpenFile: () -> Unit,
+    onBackClick: () -> Unit,
+    scope: CoroutineScope = rememberCoroutineScope(),
+    lazyListState: LazyListState = rememberLazyListState(),
+    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
+) {
+    TrackScreenViewEvent(screenName = ABSENT_IMPORT_SCREEN)
 
     BackHandler {
         if (selectedItems.isNotEmpty()) {
-            viewModel.deselectItems()
+            onClickDeselect()
         } else {
-            navigator.navigateUp()
+            onBackClick()
         }
     }
 
     PoposSecondaryScaffold(
+        modifier = modifier,
         title = if (selectedItems.isEmpty()) IMPORT_ABSENT_TITLE else "${selectedItems.size} Selected",
         showBackButton = selectedItems.isEmpty(),
         showBottomBar = importedItems.isNotEmpty(),
+        showSecondaryBottomBar = true,
         navActions = {
             AnimatedVisibility(
                 visible = importedItems.isNotEmpty(),
             ) {
                 IconButton(
-                    onClick = viewModel::selectAllItems,
+                    onClick = onClickSelectAll,
                 ) {
                     Icon(
                         imageVector = PoposIcons.Checklist,
@@ -170,26 +196,22 @@ fun AbsentImportScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(SpaceSmallMax),
+                    .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} item will be imported.")
+                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} absentees item will be imported.")
 
                 PoposButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag(IMPORT_ABSENT_BTN_TEXT),
+                        .testTag(IMPORT_ABSENT_TITLE),
                     enabled = true,
-                    text = IMPORT_ABSENT_BTN_TEXT,
+                    text = IMPORT_ABSENT_TITLE,
                     icon = PoposIcons.Download,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                     ),
-                    onClick = {
-                        scope.launch {
-                            viewModel.onEvent(AbsentSettingsEvent.ImportAbsentItemsToDatabase)
-                        }
-                    },
+                    onClick = onClickImport,
                 )
             }
         },
@@ -204,9 +226,10 @@ fun AbsentImportScreen(
                 },
             )
         },
+        onBackClick = onBackClick,
         navigationIcon = {
             IconButton(
-                onClick = viewModel::deselectItems,
+                onClick = onClickDeselect,
             ) {
                 Icon(
                     imageVector = PoposIcons.Close,
@@ -214,67 +237,76 @@ fun AbsentImportScreen(
                 )
             }
         },
-        onBackClick = navigator::navigateUp,
     ) { paddingValues ->
         Crossfade(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
             targetState = importedItems.isEmpty(),
             label = "Imported Items",
-        ) { itemNotAvailable ->
-            if (itemNotAvailable) {
+            modifier = Modifier.padding(paddingValues),
+        ) { itemAvailable ->
+            if (itemAvailable) {
                 EmptyImportScreen(
                     text = IMPORT_ABSENT_NOTE_TEXT,
                     buttonText = IMPORT_ABSENT_OPN_FILE,
+                    note = ABSENT_SETTINGS_NOTE,
                     icon = PoposIcons.FileOpen,
-                    onClick = {
-                        scope.launch {
-                            askForPermissions()
-                            val result = ImportExport.openFile(context)
-                            importLauncher.launch(result)
-                        }
-                    },
+                    onClick = onClickOpenFile,
                 )
             } else {
-                TrackScrollJank(
-                    scrollableState = lazyListState,
-                    stateName = "Imported Absentees::List",
+                AbsentEmployeeList(
+                    modifier = Modifier,
+                    items = importedItems,
+                    expanded = selectedEmployees::contains,
+                    onExpandChanged = onSelectEmployee,
+                    doesSelected = selectedItems::contains,
+                    onClick = onClickSelectItem,
+                    onLongClick = onClickSelectItem,
+                    onChipClick = {},
+                    lazyListState = lazyListState
                 )
-
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentPadding = PaddingValues(SpaceSmall),
-                    state = lazyListState,
-                ) {
-                    items(
-                        items = importedItems,
-                        key = { it.employee.employeeId },
-                    ) { item ->
-                        if (item.absents.isNotEmpty()) {
-                            AbsentData(
-                                item = item,
-                                expanded = {
-                                    selectedEmployee == it
-                                },
-                                doesSelected = {
-                                    selectedItems.contains(it)
-                                },
-                                onClick = viewModel::selectItem,
-                                onExpandChanged = viewModel::selectEmployee,
-                                onLongClick = viewModel::selectItem,
-                                onChipClick = {
-                                    navigator.navigate(AddEditAbsentScreenDestination(employeeId = it))
-                                },
-                                showTrailingIcon = false,
-                            )
-
-                            Spacer(modifier = Modifier.height(SpaceSmall))
-                        }
-                    }
-                }
             }
         }
     }
 }
+
+@DevicePreviews
+@Composable
+private fun AbsentImportScreenEmptyContentPreview() {
+    PoposRoomTheme {
+        AbsentImportScreenContent(
+            modifier = Modifier,
+            importedItems = persistentListOf(),
+            selectedItems = persistentListOf(),
+            selectedEmployees = listOf(),
+            onClickSelectItem = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onSelectEmployee = {},
+            onClickImport = {},
+            onClickOpenFile = {},
+            onBackClick = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AbsentImportScreenContentPreview(
+    items: ImmutableList<EmployeeWithAbsents> = AbsentPreviewData.employeesWithAbsents.toImmutableList(),
+) {
+    PoposRoomTheme {
+        AbsentImportScreenContent(
+            modifier = Modifier,
+            importedItems = items,
+            selectedItems = persistentListOf(),
+            selectedEmployees = listOf(1, 2, 3),
+            onClickSelectItem = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onSelectEmployee = {},
+            onClickImport = {},
+            onClickOpenFile = {},
+            onBackClick = {},
+        )
+    }
+}
+

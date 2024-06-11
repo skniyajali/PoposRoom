@@ -74,11 +74,11 @@ class AddEditAbsentViewModel @Inject constructor(
 
     init {
         savedStateHandle.get<Int>("absentId")?.let { absentId ->
-            getAbsentById(absentId)
+            if (absentId != 0) getAbsentById(absentId)
         }
 
         savedStateHandle.get<Int>("employeeId")?.let { employeeId ->
-            getEmployeeById(employeeId)
+            if (employeeId != 0) getEmployeeById(employeeId)
         }
     }
 
@@ -116,7 +116,7 @@ class AddEditAbsentViewModel @Inject constructor(
             }
 
             is AddEditAbsentEvent.CreateOrUpdateAbsent -> {
-                createOrUpdateAbsent(event.absentId)
+                createOrUpdateAbsent(absentId)
             }
 
             is AddEditAbsentEvent.OnSelectEmployee -> {
@@ -193,7 +193,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateAbsent(data: Int, message: String
         event = AnalyticsEvent(
             type = "employee_absent_$message",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("employee_absent_$message", data.toString()),
+                AnalyticsEvent.Param("employee_absent_$message", data.toString()),
             ),
         ),
     )
