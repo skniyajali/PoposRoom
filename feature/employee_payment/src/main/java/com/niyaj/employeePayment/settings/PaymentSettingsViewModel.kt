@@ -46,7 +46,7 @@ class PaymentSettingsViewModel @Inject constructor(
         repository.getAllEmployeePayments(it)
     }.mapLatest { list ->
         totalItems = list.flatMap { item -> item.payments.map { it.paymentId } }
-        list
+        if (list.all { it.payments.isEmpty() }) emptyList() else list
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -115,7 +115,7 @@ class PaymentSettingsViewModel @Inject constructor(
                         }
 
                         is Resource.Success -> {
-                            mEventFlow.emit(UiEvent.OnSuccess("${data.sumOf { it.payments.size }} items has been imported successfully"))
+                            mEventFlow.emit(UiEvent.OnSuccess("${data.sumOf { it.payments.size }} payments has been imported successfully"))
                             analyticsHelper.logImportedPaymentToDatabase(data.sumOf { it.payments.size })
                         }
                     }
@@ -130,7 +130,7 @@ internal fun AnalyticsHelper.logImportedPaymentFromFile(totalPayment: Int) {
         event = AnalyticsEvent(
             type = "payment_imported_from_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("payment_imported_from_file", totalPayment.toString()),
+                AnalyticsEvent.Param("payment_imported_from_file", totalPayment.toString()),
             ),
         ),
     )
@@ -141,7 +141,7 @@ internal fun AnalyticsHelper.logImportedPaymentToDatabase(totalPayment: Int) {
         event = AnalyticsEvent(
             type = "payment_imported_to_database",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("payment_imported_to_database", totalPayment.toString()),
+                AnalyticsEvent.Param("payment_imported_to_database", totalPayment.toString()),
             ),
         ),
     )
@@ -152,7 +152,7 @@ internal fun AnalyticsHelper.logExportedPaymentToFile(totalPayment: Int) {
         event = AnalyticsEvent(
             type = "payment_exported_to_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("payment_exported_to_file", totalPayment.toString()),
+                AnalyticsEvent.Param("payment_exported_to_file", totalPayment.toString()),
             ),
         ),
     )

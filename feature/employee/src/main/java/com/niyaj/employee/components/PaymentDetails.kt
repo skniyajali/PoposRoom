@@ -63,8 +63,8 @@ import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.ItemNotAvailableHalf
 import com.niyaj.ui.components.LoadingIndicatorHalf
 import com.niyaj.ui.components.NoteText
+import com.niyaj.ui.components.PoposOutlinedChip
 import com.niyaj.ui.components.StandardExpandable
-import com.niyaj.ui.components.StandardOutlinedChip
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.parameterProvider.EmployeePaymentsPreviewParameter
 import com.niyaj.ui.parameterProvider.EmployeePreviewData
@@ -276,7 +276,7 @@ private fun EmployeePayment(
 
                 Spacer(modifier = Modifier.width(SpaceSmall))
 
-                StandardOutlinedChip(text = payment.paymentType.name)
+                PoposOutlinedChip(text = payment.paymentType.name)
             }
         }
     }

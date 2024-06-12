@@ -39,29 +39,3 @@ data class Payment(
 
     val updatedAt: Long? = null,
 )
-
-fun List<Payment>.searchPayment(searchText: String): List<Payment> {
-    return if (searchText.isNotEmpty()) {
-        this.filter {
-            it.paymentAmount.contains(searchText, true) ||
-                it.paymentType.name.contains(searchText, true) ||
-                it.paymentDate.contains(searchText, true) ||
-                it.paymentMode.name.contains(searchText, true) ||
-                it.paymentNote.contains(searchText, true)
-        }
-    } else {
-        this
-    }
-}
-
-fun Payment.filterPayment(searchText: String): Boolean {
-    return if (searchText.isNotEmpty()) {
-        this.paymentAmount.contains(searchText, true) ||
-            this.paymentType.name.contains(searchText, true) ||
-            this.paymentDate.contains(searchText, true) ||
-            this.paymentMode.name.contains(searchText, true) ||
-            this.paymentNote.contains(searchText, true)
-    } else {
-        true
-    }
-}

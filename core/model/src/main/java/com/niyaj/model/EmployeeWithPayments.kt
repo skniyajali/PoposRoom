@@ -17,6 +17,7 @@
 
 package com.niyaj.model
 
+import com.niyaj.model.utils.toDate
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -26,13 +27,25 @@ data class EmployeeWithPayments(
     val payments: List<Payment> = emptyList(),
 )
 
+fun List<Payment>.searchPayment(searchText: String): List<Payment> {
+    return if (searchText.isNotEmpty()) {
+        this.filter {
+            it.paymentAmount.contains(searchText, true) ||
+                    it.paymentType.name.contains(searchText, true) ||
+                    it.paymentDate.toDate.contains(searchText, true) ||
+                    it.paymentMode.name.contains(searchText, true) ||
+                    it.paymentNote.contains(searchText, true)
+        }
+    } else this
+}
+
 fun List<EmployeeWithPayments>.searchEmployeeWithPayments(searchText: String): List<EmployeeWithPayments> {
     return if (searchText.isNotEmpty()) {
-        this.filter { withSalary ->
-            withSalary.employee.filterEmployee(searchText) ||
-                withSalary.payments.any { it.filterPayment(searchText) }
+        this.map {
+            EmployeeWithPayments(
+                employee = it.employee,
+                payments = it.payments.searchPayment(searchText),
+            )
         }
-    } else {
-        this
-    }
+    } else this
 }
