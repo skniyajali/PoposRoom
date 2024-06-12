@@ -46,9 +46,6 @@ class ExpensesViewModel @Inject constructor(
 ) : BaseViewModel() {
     override var totalItems: List<Int> = emptyList()
 
-    private val _totalAmount = MutableStateFlow("0")
-    val totalAmount = _totalAmount.asStateFlow()
-
     private val _selectedDate = MutableStateFlow(startOfDayTime)
     val selectedDate = _selectedDate.asStateFlow()
 
@@ -61,7 +58,6 @@ class ExpensesViewModel @Inject constructor(
         .flatMapLatest { it ->
             it.map { items ->
                 totalItems = items.map { it.expenseId }
-                _totalAmount.value = items.sumOf { it.expenseAmount.toInt() }.toString()
 
                 if (items.isEmpty()) {
                     UiState.Empty
@@ -106,7 +102,7 @@ internal fun AnalyticsHelper.logDeletedExpenses(data: List<Int>) {
         event = AnalyticsEvent(
             type = "expenses_deleted",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("expenses_deleted", data.toString()),
+                AnalyticsEvent.Param("expenses_deleted", data.toString()),
             ),
         ),
     )

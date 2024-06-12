@@ -27,5 +27,5 @@ sealed interface AddEditExpenseEvent {
 
     data class ExpensesNoteChanged(val expenseNote: String) : AddEditExpenseEvent
 
-    data class AddOrUpdateExpense(val expenseId: Int = 0) : AddEditExpenseEvent
+    data object AddOrUpdateExpense : AddEditExpenseEvent
 }

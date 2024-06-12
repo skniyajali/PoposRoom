@@ -55,6 +55,8 @@ class AddEditExpenseViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
+    private val expenseId: Int = savedStateHandle.get<Int>("expenseId") ?: 0
+
     var state by mutableStateOf(AddEditExpenseState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
@@ -134,7 +136,7 @@ class AddEditExpenseViewModel @Inject constructor(
             }
 
             is AddEditExpenseEvent.AddOrUpdateExpense -> {
-                addOrUpdateExpense(event.expenseId)
+                addOrUpdateExpense(expenseId)
             }
         }
     }
@@ -202,7 +204,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateExpenses(data: Int, message: Stri
         event = AnalyticsEvent(
             type = "expenses_$message",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("expenses_$message", data.toString()),
+                AnalyticsEvent.Param("expenses_$message", data.toString()),
             ),
         ),
     )

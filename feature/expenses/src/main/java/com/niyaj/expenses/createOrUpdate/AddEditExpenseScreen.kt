@@ -17,6 +17,7 @@
 
 package com.niyaj.expenses.createOrUpdate
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,11 +30,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -42,6 +43,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,6 +55,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -76,11 +79,14 @@ import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.StandardOutlinedTextField
+import com.niyaj.ui.parameterProvider.ExpensePreviewData
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
@@ -90,9 +96,9 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import kotlinx.datetime.Clock
 import java.time.LocalDate
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
 fun AddEditExpenseScreen(
@@ -103,17 +109,12 @@ fun AddEditExpenseScreen(
 ) {
     TrackScreenViewEvent(screenName = "Add/Edit Expenses Screen/$expenseId")
 
-    val lazyListState = rememberLazyListState()
-    val dateError = viewModel.dateError.collectAsStateWithLifecycle().value
-    val nameError = viewModel.nameError.collectAsStateWithLifecycle().value
-    val amountError = viewModel.priceError.collectAsStateWithLifecycle().value
-    val existError = viewModel.existingData.collectAsStateWithLifecycle().value
-
-    val enableBtn = listOf(dateError, nameError, amountError).all {
-        it == null
-    }
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
+    val dateError by viewModel.dateError.collectAsStateWithLifecycle()
+    val nameError by viewModel.nameError.collectAsStateWithLifecycle()
+    val amountError by viewModel.priceError.collectAsStateWithLifecycle()
+    val existError by viewModel.existingData.collectAsStateWithLifecycle()
+    val expensesNames by viewModel.expensesName.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -130,18 +131,49 @@ fun AddEditExpenseScreen(
     }
 
     val title = if (expenseId == 0) CREATE_NEW_EXPENSE else EDIT_EXPENSE_ITEM
+    val icon = if (expenseId == 0) PoposIcons.Add else PoposIcons.Edit
 
-    var expanded by remember { mutableStateOf(false) }
+    AddEditExpenseScreenContent(
+        modifier = Modifier,
+        title = title,
+        icon = icon,
+        state = viewModel.state,
+        expensesNames = expensesNames,
+        dateError = dateError,
+        nameError = nameError,
+        amountError = amountError,
+        existError = existError,
+        onEvent = viewModel::onEvent,
+        onBackClick = navigator::navigateUp,
+    )
+}
 
-    val expensesNames = viewModel.expensesName.collectAsStateWithLifecycle().value
-
+@VisibleForTesting
+@Composable
+internal fun AddEditExpenseScreenContent(
+    modifier: Modifier = Modifier,
+    title: String = CREATE_NEW_EXPENSE,
+    icon: ImageVector = PoposIcons.Add,
+    state: AddEditExpenseState,
+    expensesNames: List<String>,
+    dateError: String?,
+    nameError: String?,
+    amountError: String?,
+    existError: String?,
+    onEvent: (AddEditExpenseEvent) -> Unit,
+    onBackClick: () -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
     val dialogState = rememberMaterialDialogState()
 
+    var expanded by remember { mutableStateOf(false) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
+    val enableBtn = listOf(dateError, nameError, amountError).all { it == null }
 
     PoposSecondaryScaffold(
+        modifier = modifier,
         title = title,
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
         showBottomBar = true,
         showBackButton = true,
         bottomBar = {
@@ -149,14 +181,15 @@ fun AddEditExpenseScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag(ADD_EDIT_EXPENSE_BUTTON),
-                text = if (expenseId == 0) CREATE_NEW_EXPENSE else EDIT_EXPENSE_ITEM,
-                icon = if (expenseId == 0) PoposIcons.Add else PoposIcons.Edit,
+                text = title,
+                icon = icon,
                 enabled = enableBtn,
                 onClick = {
-                    viewModel.onEvent(AddEditExpenseEvent.AddOrUpdateExpense(expenseId))
+                    onEvent(AddEditExpenseEvent.AddOrUpdateExpense)
                 },
             )
         },
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     ) { paddingValues ->
         TrackScrollJank(
             scrollableState = lazyListState,
@@ -182,16 +215,21 @@ fun AddEditExpenseScreen(
                                 // This is used to assign to the DropDown the same width
                                 textFieldSize = coordinates.size.toSize()
                             },
-                        value = viewModel.state.expenseName,
+                        value = state.expenseName,
                         label = EXPENSE_NAME_FIELD,
                         leadingIcon = PoposIcons.Radar,
                         isError = nameError != null,
                         errorText = nameError,
                         errorTextTag = EXPENSE_NAME_ERROR,
                         readOnly = false,
+                        showClearIcon = state.expenseName.isNotEmpty(),
                         onValueChange = {
                             expanded = true
-                            viewModel.onEvent(AddEditExpenseEvent.ExpensesNameChanged(it))
+                            onEvent(AddEditExpenseEvent.ExpensesNameChanged(it))
+                        },
+                        onClickClearIcon = {
+                            expanded = true
+                            onEvent(AddEditExpenseEvent.ExpensesNameChanged(""))
                         },
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(
@@ -223,7 +261,7 @@ fun AddEditExpenseScreen(
                                     text = { Text(name) },
                                     onClick = {
                                         expanded = false
-                                        viewModel.onEvent(
+                                        onEvent(
                                             AddEditExpenseEvent.ExpensesNameChanged(name),
                                         )
                                     },
@@ -245,22 +283,26 @@ fun AddEditExpenseScreen(
 
             item(EXPENSE_AMOUNT_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.expenseAmount,
+                    value = state.expenseAmount,
                     label = EXPENSE_AMOUNT_FIELD,
                     leadingIcon = PoposIcons.PhoneAndroid,
                     isError = amountError != null,
                     errorText = amountError,
                     errorTextTag = EXPENSE_AMOUNT_ERROR,
                     keyboardType = KeyboardType.Number,
+                    showClearIcon = state.expenseAmount.isNotEmpty(),
                     onValueChange = {
-                        viewModel.onEvent(AddEditExpenseEvent.ExpensesAmountChanged(it))
+                        onEvent(AddEditExpenseEvent.ExpensesAmountChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditExpenseEvent.ExpensesAmountChanged(""))
                     },
                 )
             }
 
             item(EXPENSE_DATE_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.expenseDate.toPrettyDate(),
+                    value = state.expenseDate.toPrettyDate(),
                     label = EXPENSE_DATE_FIELD,
                     leadingIcon = PoposIcons.CalenderToday,
                     trailingIcon = {
@@ -292,11 +334,15 @@ fun AddEditExpenseScreen(
 
             item(EXPENSE_NOTE_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.expenseNote,
+                    value = state.expenseNote,
                     label = EXPENSE_NOTE_FIELD,
                     leadingIcon = PoposIcons.NoteAdd,
+                    showClearIcon = state.expenseNote.isNotEmpty(),
                     onValueChange = {
-                        viewModel.onEvent(AddEditExpenseEvent.ExpensesNoteChanged(it))
+                        onEvent(AddEditExpenseEvent.ExpensesNoteChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditExpenseEvent.ExpensesNoteChanged(""))
                     },
                 )
             }
@@ -340,7 +386,32 @@ fun AddEditExpenseScreen(
                 date <= LocalDate.now()
             },
         ) { date ->
-            viewModel.onEvent(AddEditExpenseEvent.ExpensesDateChanged(date.toMilliSecond))
+            onEvent(AddEditExpenseEvent.ExpensesDateChanged(date.toMilliSecond))
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AddEditExpenseScreenContentPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        AddEditExpenseScreenContent(
+            modifier = modifier,
+            state = AddEditExpenseState(
+                expenseName = "Gas",
+                expenseDate = Clock.System.now().toEpochMilliseconds().toString(),
+                expenseAmount = "500",
+                expenseNote = "This is test note"
+            ),
+            expensesNames = ExpensePreviewData.expenseNames,
+            dateError = null,
+            nameError = null,
+            amountError = null,
+            existError = null,
+            onEvent = {},
+            onBackClick = {},
+        )
     }
 }

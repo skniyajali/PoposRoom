@@ -98,19 +98,10 @@ object Screens {
     const val ABSENT_EXPORT_SCREEN = "absent_export_screen"
     const val ADD_EDIT_ABSENT_SCREEN = "add_edit_absent_screen"
 
-    const val EXPENSES_CATEGORY_SCREEN = "expenses_category_screen"
-
-    const val EXPENSES_SUB_SCREEN = "expenses_sub_category_screen"
-
     const val EXPENSES_SCREEN = "expenses_screen"
-
     const val ADD_EXPENSES_SCREEN = "add_expenses_screen"
 
-    const val EDIT_EXPENSES_SCREEN = "edit_expenses_screen"
-
     const val REPORT_SCREEN = "report_screen"
-
-    const val VIEW_LAST_SEVEN_DAYS_REPORTS = "view_last_seven_days_reports"
 
     const val REMINDER_SCREEN = "reminder_screen"
 
