@@ -51,13 +51,12 @@ object MeasureUnitTestTags {
     const val UNIT_SETTINGS_TITLE = "Item Settings"
 
     const val IMPORT_UNIT_TITLE = "Import Units"
-    const val IMPORT_UNIT_BTN_TEXT = "Import Units"
+    const val IMPORT_UNIT_SUB_TITLE = "Click here to import data from file."
     const val IMPORT_UNIT_OPN_FILE = "Open File"
     const val IMPORT_UNIT_NOTE_TEXT = "Make sure to open measure-units.json file."
 
     const val EXPORT_UNIT_TITLE = "Export Units"
-    const val EXPORT_UNIT_BTN_TEXT = "Export Units"
-    const val EXPORT_UNIT_BTN = "Export Item"
+    const val EXPORT_UNIT_SUB_TITLE = "Click here to export data to file."
 
     const val EXPORT_UNIT_FILE_NAME = "measure-units"
 }

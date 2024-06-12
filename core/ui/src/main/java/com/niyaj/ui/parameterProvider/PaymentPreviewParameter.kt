@@ -27,7 +27,7 @@ import com.niyaj.model.PaymentType
 import com.niyaj.ui.event.UiState
 
 
-class PaymentPreviewParameter : PreviewParameterProvider<UiState<List<EmployeeWithPayments>>> {
+class PaymentPreviewParameter<T> : PreviewParameterProvider<UiState<List<EmployeeWithPayments>>> {
     override val values: Sequence<UiState<List<EmployeeWithPayments>>>
         get() = sequenceOf(
             UiState.Loading,

@@ -53,6 +53,7 @@ fun LoadingIndicator(
 @Stable
 @Composable
 fun LoadingIndicatorHalf(
+    modifier: Modifier = Modifier,
     contentDesc: String = "halfLoadingIndicator",
 ) {
     Box(

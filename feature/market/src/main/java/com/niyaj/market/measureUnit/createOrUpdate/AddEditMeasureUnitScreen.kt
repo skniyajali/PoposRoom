@@ -17,16 +17,21 @@
 
 package com.niyaj.market.measureUnit.createOrUpdate
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -40,10 +45,12 @@ import com.niyaj.common.tags.MeasureUnitTestTags.UNIT_VALUE_FIELD
 import com.niyaj.common.tags.MeasureUnitTestTags.UPDATE_UNIT
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.StandardOutlinedTextField
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
@@ -60,12 +67,10 @@ fun AddEditMeasureUnitScreen(
     viewModel: AddEditMeasureUnitViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
-    val lazyListState = rememberLazyListState()
+    val nameError by viewModel.nameError.collectAsStateWithLifecycle()
+    val valueError by viewModel.valueError.collectAsStateWithLifecycle()
 
-    val nameError = viewModel.nameError.collectAsStateWithLifecycle().value
-    val valueError = viewModel.valueError.collectAsStateWithLifecycle().value
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -81,13 +86,40 @@ fun AddEditMeasureUnitScreen(
         }
     }
 
-    val enableBtn = listOf(nameError, valueError).all { it == null }
-
     val title = if (unitId == 0) CREATE_NEW_UNIT else UPDATE_UNIT
+    val icon = if (unitId == 0) PoposIcons.Add else PoposIcons.Edit
 
     TrackScreenViewEvent(screenName = "$title/unitId=$unitId/unitName=$unitName")
 
+    AddEditMeasureUnitScreenContent(
+        modifier = Modifier,
+        title = title,
+        icon = icon,
+        state = viewModel.state,
+        nameError = nameError,
+        valueError = valueError,
+        onEvent = viewModel::onEvent,
+        onBackClick = navigator::navigateUp,
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun AddEditMeasureUnitScreenContent(
+    modifier: Modifier = Modifier,
+    title: String = CREATE_NEW_UNIT,
+    icon: ImageVector = PoposIcons.Add,
+    state: AddEditMeasureUnitState,
+    nameError: String?,
+    valueError: String?,
+    onEvent: (AddEditMeasureUnitEvent) -> Unit,
+    onBackClick: () -> Unit,
+    lazyListState: LazyListState = rememberLazyListState()
+) {
+    val enableBtn = listOf(nameError, valueError).all { it == null }
+
     PoposSecondaryScaffold(
+        modifier = modifier,
         title = title,
         showBottomBar = true,
         showBackButton = true,
@@ -97,14 +129,15 @@ fun AddEditMeasureUnitScreen(
                     .fillMaxWidth()
                     .testTag(ADD_EDIT_UNIT_BUTTON),
                 text = title,
-                icon = if (unitId == 0) PoposIcons.Add else PoposIcons.Edit,
+                icon = icon,
                 enabled = enableBtn,
                 onClick = {
-                    viewModel.onEvent(AddEditMeasureUnitEvent.SaveOrUpdateMeasureUnit)
+                    onEvent(AddEditMeasureUnitEvent.SaveOrUpdateMeasureUnit)
                 },
             )
         },
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     ) { paddingValues ->
         TrackScrollJank(
             scrollableState = lazyListState,
@@ -120,32 +153,60 @@ fun AddEditMeasureUnitScreen(
         ) {
             item(UNIT_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.unitName,
+                    value = state.unitName,
                     label = UNIT_NAME_FIELD,
                     leadingIcon = PoposIcons.LineWeight,
                     errorText = nameError,
                     isError = nameError != null,
                     errorTextTag = UNIT_NAME_ERROR_TAG,
+                    showClearIcon = state.unitName.isNotEmpty(),
                     onValueChange = {
-                        viewModel.onEvent(AddEditMeasureUnitEvent.MeasureUnitNameChanged(it))
+                        onEvent(AddEditMeasureUnitEvent.MeasureUnitNameChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditMeasureUnitEvent.MeasureUnitNameChanged(""))
                     },
                 )
             }
 
             item(UNIT_VALUE_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.unitValue,
+                    value = state.unitValue,
                     label = UNIT_VALUE_FIELD,
                     leadingIcon = PoposIcons.Api,
                     errorText = valueError,
                     isError = valueError != null,
                     errorTextTag = UNIT_VALUE_ERROR_TAG,
+                    showClearIcon = state.unitValue.isNotEmpty(),
                     onValueChange = {
-                        viewModel.onEvent(AddEditMeasureUnitEvent.MeasureUnitValueChanged(it))
+                        onEvent(AddEditMeasureUnitEvent.MeasureUnitValueChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditMeasureUnitEvent.MeasureUnitValueChanged(""))
                     },
                     keyboardType = KeyboardType.Number,
                 )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AddEditMeasureUnitScreenContentPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        AddEditMeasureUnitScreenContent(
+            modifier = modifier,
+            state = AddEditMeasureUnitState(
+                unitName = "Litter",
+                unitValue = "0.5",
+            ),
+            nameError = null,
+            valueError = null,
+            onEvent = {},
+            onBackClick = {},
+        )
     }
 }
