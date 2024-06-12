@@ -17,6 +17,7 @@
 
 package com.niyaj.market.marketType.createOrUpdate
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,13 +29,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -53,12 +57,14 @@ import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.components.PoposTonalIconButton
 import com.niyaj.designsystem.components.StandardRoundedFilterChip
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.NoteText
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.StandardOutlinedTextField
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
@@ -66,7 +72,6 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
-@OptIn(ExperimentalLayoutApi::class)
 @Destination
 @Composable
 fun AddEditMarketTypeScreen(
@@ -76,17 +81,13 @@ fun AddEditMarketTypeScreen(
     viewModel: AddEditMarketTypeViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
-    val lazyListState = rememberLazyListState()
-    val typeError = viewModel.typeNameError.collectAsStateWithLifecycle().value
-    val listNameError = viewModel.listNameError.collectAsStateWithLifecycle().value
-    val listTypesError = viewModel.listTypesError.collectAsStateWithLifecycle().value
+    val typeError by viewModel.typeNameError.collectAsStateWithLifecycle()
+    val listNameError by viewModel.listNameError.collectAsStateWithLifecycle()
+    val listTypesError by viewModel.listTypesError.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     val listTypes = viewModel.listTypes.toList()
     val selectedList = viewModel.selectedTypes.toList()
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
-
-    val hasError = listOf(typeError, listNameError, listTypesError).any { it != null }
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -103,10 +104,46 @@ fun AddEditMarketTypeScreen(
     }
 
     val title = if (typeId == 0) CREATE_NEW_TYPE else UPDATE_TYPE
+    val icon = if (typeId == 0) PoposIcons.Add else PoposIcons.Edit
 
     TrackScreenViewEvent(screenName = "$title/typeId=$typeId/typeName=$typeName")
 
+    AddEditMarketTypeScreenContent(
+        modifier = Modifier,
+        title = title,
+        icon = icon,
+        state = viewModel.state,
+        typeError = typeError,
+        listNameError = listNameError,
+        listTypesError = listTypesError,
+        listTypes = listTypes,
+        selectedList = selectedList,
+        onEvent = viewModel::onEvent,
+        onBackClick = navigator::navigateUp,
+    )
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@VisibleForTesting
+@Composable
+internal fun AddEditMarketTypeScreenContent(
+    modifier: Modifier = Modifier,
+    title: String = CREATE_NEW_TYPE,
+    icon: ImageVector = PoposIcons.Add,
+    state: AddEditMarketTypeState,
+    typeError: String?,
+    listNameError: String?,
+    listTypesError: String?,
+    listTypes: List<String>,
+    selectedList: List<String>,
+    onEvent: (AddEditMarketTypeEvent) -> Unit,
+    onBackClick: () -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
+    val hasError = listOf(typeError, listNameError, listTypesError).any { it != null }
+
     PoposSecondaryScaffold(
+        modifier = modifier,
         title = title,
         showBottomBar = true,
         showBackButton = true,
@@ -116,14 +153,14 @@ fun AddEditMarketTypeScreen(
                     .fillMaxWidth()
                     .testTag(ADD_EDIT_MARKET_TYPE_BUTTON),
                 text = title,
-                icon = if (typeId == 0) PoposIcons.Add else PoposIcons.Edit,
+                icon = icon,
                 enabled = !hasError,
                 onClick = {
-                    viewModel.onEvent(AddEditMarketTypeEvent.SaveMarketType)
+                    onEvent(AddEditMarketTypeEvent.SaveMarketType)
                 },
             )
         },
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
     ) { paddingValues ->
         TrackScrollJank(
             scrollableState = lazyListState,
@@ -141,7 +178,7 @@ fun AddEditMarketTypeScreen(
                 StandardOutlinedTextField(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    value = viewModel.state.typeName,
+                    value = state.typeName,
                     label = MARKET_TYPE_FIELD,
                     leadingIcon = PoposIcons.Radar,
                     isError = typeError != null,
@@ -149,7 +186,7 @@ fun AddEditMarketTypeScreen(
                     errorTextTag = MARKET_TYPE_ERROR_TAG,
                     readOnly = false,
                     onValueChange = {
-                        viewModel.onEvent(AddEditMarketTypeEvent.TypeNameChanged(it))
+                        onEvent(AddEditMarketTypeEvent.TypeNameChanged(it))
                     },
                 )
             }
@@ -158,11 +195,11 @@ fun AddEditMarketTypeScreen(
                 StandardOutlinedTextField(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    value = viewModel.state.typeDesc ?: "",
+                    value = state.typeDesc ?: "",
                     label = MARKET_TYPE_DESC_FIELD,
                     leadingIcon = PoposIcons.Note,
                     onValueChange = {
-                        viewModel.onEvent(AddEditMarketTypeEvent.TypeDescChanged(it))
+                        onEvent(AddEditMarketTypeEvent.TypeDescChanged(it))
                     },
                 )
             }
@@ -171,13 +208,13 @@ fun AddEditMarketTypeScreen(
                 StandardOutlinedTextField(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    value = viewModel.state.supplierId.safeString,
+                    value = state.supplierId.safeString,
                     label = MARKET_TYPE_SUPPLIER_FIELD,
                     leadingIcon = PoposIcons.Person,
                     isError = false,
                     readOnly = true,
                     onValueChange = {
-                        viewModel.onEvent(AddEditMarketTypeEvent.SupplierIdChanged(it.toInt()))
+                        onEvent(AddEditMarketTypeEvent.SupplierIdChanged(it.toInt()))
                     },
                 )
             }
@@ -189,7 +226,7 @@ fun AddEditMarketTypeScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     StandardOutlinedTextField(
-                        value = viewModel.state.listType,
+                        value = state.listType,
                         label = MARKET_TYPE_LIST_TYPES,
                         isError = listNameError != null,
                         errorText = listNameError,
@@ -201,7 +238,7 @@ fun AddEditMarketTypeScreen(
                                 horizontalArrangement = Arrangement.spacedBy(SpaceMini),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                Text(text = "Click here to create")
+                                Text(text = "Click here")
                                 Icon(
                                     imageVector = PoposIcons.ArrowRightAlt,
                                     contentDescription = "Create",
@@ -211,14 +248,14 @@ fun AddEditMarketTypeScreen(
                         trailingIcon = {
                             PoposTonalIconButton(
                                 icon = PoposIcons.Add,
-                                enabled = viewModel.state.listType.isNotEmpty() && listNameError == null,
+                                enabled = state.listType.isNotEmpty() && listNameError == null,
                                 onClick = {
-                                    viewModel.onEvent(AddEditMarketTypeEvent.OnSelectListType(viewModel.state.listType))
+                                    onEvent(AddEditMarketTypeEvent.OnSelectListType(state.listType))
                                 },
                             )
                         },
                         onValueChange = {
-                            viewModel.onEvent(AddEditMarketTypeEvent.ListTypeChanged(it))
+                            onEvent(AddEditMarketTypeEvent.ListTypeChanged(it))
                         },
                     )
 
@@ -232,7 +269,7 @@ fun AddEditMarketTypeScreen(
                                 text = it,
                                 selected = selectedList.contains(it),
                                 onClick = {
-                                    viewModel.onEvent(AddEditMarketTypeEvent.OnSelectListType(it))
+                                    onEvent(AddEditMarketTypeEvent.OnSelectListType(it))
                                 },
                             )
                         }
@@ -246,5 +283,30 @@ fun AddEditMarketTypeScreen(
                 }
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AddEditMarketTypeScreenContentPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        AddEditMarketTypeScreenContent(
+            modifier = modifier,
+            state = AddEditMarketTypeState(
+                typeName = "Carmelo Gross",
+                typeDesc = null,
+                supplierId = 1535,
+                listType = "IN_STOCK"
+            ),
+            typeError = null,
+            listNameError = null,
+            listTypesError = null,
+            listTypes = listOf(),
+            selectedList = listOf(),
+            onEvent = {},
+            onBackClick = {},
+        )
     }
 }

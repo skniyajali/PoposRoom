@@ -34,7 +34,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun SettingsCard(
@@ -89,7 +91,7 @@ fun SettingsCard(
             )
         },
         tonalElevation = 1.dp,
-        shadowElevation = 4.dp,
+        shadowElevation = 1.dp,
         colors = ListItemDefaults.colors(
             containerColor = containerColor,
             headlineColor = contentColorFor(backgroundColor = containerColor),
@@ -98,4 +100,20 @@ fun SettingsCard(
             trailingIconColor = contentColorFor(backgroundColor = containerColor),
         ),
     )
+}
+
+@DevicePreviews
+@Composable
+private fun SettingsCardPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        SettingsCard(
+            modifier = modifier,
+            title = "Import Items",
+            subtitle = "Click Here to Import Items",
+            icon = PoposIcons.Import,
+            onClick = {},
+        )
+    }
 }

@@ -17,20 +17,24 @@
 
 package com.niyaj.market.marketType.settings
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.niyaj.common.tags.MarketTypeTags.MARKET_SETTINGS_TITLE
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.market.destinations.ExportMarketTypeScreenDestination
 import com.niyaj.market.destinations.ImportMarketTypeScreenDestination
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
@@ -42,13 +46,35 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 fun MarketTypeSettingsScreen(
     navigator: DestinationsNavigator,
 ) {
-    val lazyListState = rememberLazyListState()
+    MarketTypeSettingsScreenContent(
+        modifier = Modifier,
+        onBackClick = navigator::navigateUp,
+        onImportClick = {
+            navigator.navigate(ImportMarketTypeScreenDestination())
+        },
+        onExportClick = {
+            navigator.navigate(ExportMarketTypeScreenDestination())
+        },
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun MarketTypeSettingsScreenContent(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+    onImportClick: () -> Unit,
+    onExportClick: () -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
     TrackScreenViewEvent(screenName = MARKET_SETTINGS_TITLE)
+
     TrackScrollJank(scrollableState = lazyListState, stateName = "MarketTypeSettingsScreen::Columns")
 
     StandardBottomSheet(
+        modifier = modifier,
         title = MARKET_SETTINGS_TITLE,
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
     ) {
         LazyColumn(
             modifier = Modifier
@@ -57,27 +83,38 @@ fun MarketTypeSettingsScreen(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
-            item("Import Market Type") {
+            item("ImportMarketType") {
                 SettingsCard(
                     title = "Import Market Type",
                     subtitle = "Click here to import data from file.",
                     icon = PoposIcons.Import,
-                    onClick = {
-                        navigator.navigate(ImportMarketTypeScreenDestination())
-                    },
+                    onClick = onImportClick,
                 )
             }
 
-            item("ExportMarketItem") {
+            item("ExportMarketType") {
                 SettingsCard(
                     title = "Export Market Type",
                     subtitle = "Click here to export data to file.",
                     icon = PoposIcons.Upload,
-                    onClick = {
-                        navigator.navigate(ExportMarketTypeScreenDestination())
-                    },
+                    onClick = onExportClick,
                 )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun MarketTypeSettingsScreenContentPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        MarketTypeSettingsScreenContent(
+            modifier = modifier,
+            onBackClick = {},
+            onImportClick = {},
+            onExportClick = {},
+        )
     }
 }

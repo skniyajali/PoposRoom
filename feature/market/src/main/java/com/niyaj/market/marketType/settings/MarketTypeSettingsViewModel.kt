@@ -132,7 +132,7 @@ private fun AnalyticsHelper.logImportedTypesFromFile(totalTypes: Int) {
         event = AnalyticsEvent(
             type = "market_type_imported_from_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("market_type_imported_from_file", totalTypes.toString()),
+                AnalyticsEvent.Param("market_type_imported_from_file", totalTypes.toString()),
             ),
         ),
     )
@@ -143,7 +143,7 @@ private fun AnalyticsHelper.logImportedTypesToDatabase(totalTypes: Int) {
         event = AnalyticsEvent(
             type = "market_type_imported_to_database",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("market_type_imported_to_database", totalTypes.toString()),
+                AnalyticsEvent.Param("market_type_imported_to_database", totalTypes.toString()),
             ),
         ),
     )
@@ -154,7 +154,7 @@ private fun AnalyticsHelper.logExportedTypesToFile(totalItems: Int) {
         event = AnalyticsEvent(
             type = "market_type_exported_to_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("market_type_exported_to_file", totalItems.toString()),
+                AnalyticsEvent.Param("market_type_exported_to_file", totalItems.toString()),
             ),
         ),
     )

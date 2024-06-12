@@ -55,13 +55,10 @@ object MarketTypeTags {
     const val MARKET_SETTINGS_TITLE = "Item Settings"
 
     const val IMPORT_MARKET_TITLE = "Import Types"
-    const val IMPORT_MARKET_BTN_TEXT = "Import Types"
     const val IMPORT_MARKET_OPN_FILE = "Open File"
     const val IMPORT_MARKET_NOTE_TEXT = "Make sure to open market-types.json file."
 
     const val EXPORT_MARKET_TITLE = "Export Types"
-    const val EXPORT_MARKET_BTN_TEXT = "Export Types"
-    const val EXPORT_MARKET_BTN = "Export Item"
 
     const val EXPORT_MARKET_FILE_NAME = "market-types"
 }
