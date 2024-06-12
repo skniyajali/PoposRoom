@@ -71,6 +71,36 @@ fun TwoGridText(
     modifier: Modifier = Modifier,
     textOne: String,
     textTwo: String,
+    isTitle: Boolean = false,
+    textStyle: TextStyle = MaterialTheme.typography.bodySmall,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            modifier = Modifier.weight(2f, true),
+            text = textOne,
+            style = textStyle,
+            fontWeight = FontWeight.SemiBold,
+        )
+
+        Text(
+            modifier = Modifier.weight(1f, true),
+            text = textTwo,
+            style = textStyle,
+            textAlign = TextAlign.End,
+            fontWeight = if (isTitle) FontWeight.SemiBold else FontWeight.Normal,
+        )
+    }
+}
+
+@Composable
+fun TwoGridText(
+    modifier: Modifier = Modifier,
+    textOne: String,
+    textTwo: String,
     textColor: Color = Color.Black,
 ) {
     Row(

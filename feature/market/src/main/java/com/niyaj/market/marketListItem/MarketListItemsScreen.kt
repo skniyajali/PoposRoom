@@ -19,27 +19,29 @@ package com.niyaj.market.marketListItem
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.key
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.util.fastForEachIndexed
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.common.tags.MarketListTestTags.CREATE_NEW_ITEM
@@ -47,13 +49,16 @@ import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_NOT_AVAILABLE
 import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.MarketListTestTags.UPDATE_LIST
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.market.components.ListTypeHeader
-import com.niyaj.market.components.MarketItemWithQuantityCard
+import com.niyaj.market.components.MarketItemWithQuantityWithListTypeCard
 import com.niyaj.market.components.MarketListItemHeader
 import com.niyaj.market.components.ShareableMarketList
 import com.niyaj.market.destinations.AddEditMarketItemScreenDestination
+import com.niyaj.model.MarketItemAndQuantity
+import com.niyaj.model.MarketListAndType
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.ItemNotFound
 import com.niyaj.ui.components.LoadingIndicator
@@ -62,6 +67,9 @@ import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.MarketItemAndQuantityData.maretListAndType
+import com.niyaj.ui.parameterProvider.MarketItemAndQuantityWithDifferentTypePreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
@@ -78,27 +86,18 @@ fun MarketListItemsScreen(
     viewModel: MarketListItemsViewModel = hiltViewModel(),
     shareViewModel: ShareViewModel = hiltViewModel(),
 ) {
-    val lazyListState = rememberScrollState()
     val snackbarState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val captureController = rememberCaptureController()
 
-    val uiState = viewModel.marketItems.collectAsStateWithLifecycle().value
-    val marketDetails = viewModel.marketDetail.collectAsStateWithLifecycle().value
+    val uiState by viewModel.marketItems.collectAsStateWithLifecycle()
+    val marketDetails by viewModel.marketDetail.collectAsStateWithLifecycle()
+    val showSearchBar by viewModel.showSearchBar.collectAsStateWithLifecycle()
+    val showDialog by shareViewModel.showDialog.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
-    val showFab = uiState is UiState.Success
-
-    val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
-
-    val showDialog = shareViewModel.showDialog.collectAsStateWithLifecycle().value
-
-    val groupByType = remember(uiState) {
-        if (uiState is UiState.Success) uiState.data.groupBy { it.typeName } else emptyMap()
-    }
 
     LaunchedEffect(
         key1 = event,
@@ -116,147 +115,40 @@ fun MarketListItemsScreen(
         }
     }
 
-    BackHandler {
-        if (showSearchBar) {
-            viewModel.closeSearchBar()
-        } else {
-            navigator.popBackStack()
-        }
-    }
-
     TrackScreenViewEvent(screenName = "$UPDATE_LIST/listIds/${listTypeIds.joinToString(", ")}")
 
-    PoposSecondaryScaffold(
-        title = UPDATE_LIST,
-        showBackButton = true,
-        showFab = false,
-        snackbarHostState = snackbarState,
-        navActions = {
-            if (showSearchBar) {
-                StandardSearchBar(
-                    searchText = searchText,
-                    placeholderText = MARKET_ITEM_SEARCH_PLACEHOLDER,
-                    onClearClick = viewModel::clearSearchText,
-                    onSearchTextChanged = viewModel::searchTextChanged,
-                )
-            } else if (showFab) {
-                IconButton(
-                    onClick = viewModel::openSearchBar,
-                    modifier = Modifier.testTag(NAV_SEARCH_BTN),
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.Search,
-                        contentDescription = "Search Icon",
-                    )
-                }
-
-                IconButton(
-                    onClick = viewModel::printMarketList,
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.OutlinedPrint,
-                        contentDescription = "Print List",
-                    )
-                }
-
-                IconButton(
-                    onClick = shareViewModel::onShowDialog,
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.Share,
-                        contentDescription = "Share List",
-                    )
-                }
-            }
-        },
+    MarketListItemsScreenContent(
+        modifier = Modifier,
+        uiState = uiState,
+        marketDetails = marketDetails,
+        showSearchBar = showSearchBar,
+        searchText = searchText,
+        onClearClick = viewModel::clearSearchText,
+        onSearchTextChanged = viewModel::searchTextChanged,
+        onOpenSearchBar = viewModel::openSearchBar,
+        onCloseSearchBar = viewModel::closeSearchBar,
+        onPrintList = viewModel::printMarketList,
+        onClickShare = shareViewModel::onShowDialog,
+        onAddItem = viewModel::onAddItem,
+        onRemoveItem = viewModel::onRemoveItem,
+        onDecreaseQuantity = viewModel::onDecreaseQuantity,
+        onIncreaseQuantity = viewModel::onIncreaseQuantity,
         onBackClick = navigator::navigateUp,
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-        ) {
-            marketDetails?.let { marketDetail ->
-                MarketListItemHeader(marketDate = marketDetail.marketDate)
-            }
-
-            when (uiState) {
-                is UiState.Loading -> LoadingIndicator()
-
-                is UiState.Empty -> {
-                    ItemNotAvailable(
-                        text = MARKET_ITEM_NOT_AVAILABLE,
-                        buttonText = CREATE_NEW_ITEM,
-                        onClick = {
-                            navigator.navigate(AddEditMarketItemScreenDestination())
-                        },
-                    )
-                }
-
-                is UiState.Success -> {
-                    TrackScrollJank(scrollableState = lazyListState, stateName = "MarketListItem::State")
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(SpaceSmall)
-                            .verticalScroll(lazyListState),
-                        verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-                    ) {
-                        groupByType.forEach { (itemType, groupedByType) ->
-                            val groupByListType = remember(groupedByType) {
-                                groupedByType.groupBy { it.listType }
-                            }
-
-                            groupByListType.forEach { (listType, groupedByList) ->
-                                ListTypeHeader(
-                                    itemType = itemType,
-                                    listType = listType,
-                                    listCount = groupedByList.size,
-                                )
-
-                                groupedByList.fastForEachIndexed { i, item ->
-                                    key("${item.listType}(${item.listWithTypeId}, ${item.itemId})") {
-                                        MarketItemWithQuantityCard(
-                                            item = item,
-                                            onAddItem = viewModel::onAddItem,
-                                            onRemoveItem = viewModel::onRemoveItem,
-                                            onDecreaseQuantity = viewModel::onDecreaseQuantity,
-                                            onIncreaseQuantity = viewModel::onIncreaseQuantity,
-                                        )
-                                    }
-
-                                    if (i != groupedByList.size - 1) {
-                                        Spacer(modifier = Modifier.height(SpaceMini))
-                                    }
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(SpaceSmall))
-
-                        ItemNotFound(
-                            onBtnClick = {
-                                navigator.navigate(AddEditMarketItemScreenDestination())
-                            },
-                        )
-                        Spacer(modifier = Modifier.height(SpaceSmall))
-                    }
-                }
-            }
-        }
-    }
+        onClickAddNewMarketItem = {
+            navigator.navigate(AddEditMarketItemScreenDestination())
+        },
+        snackbarState = snackbarState,
+    )
 
     AnimatedVisibility(
         visible = showDialog,
     ) {
-        val items = viewModel.shareableMarketList.collectAsStateWithLifecycle().value
+        val items by viewModel.shareableMarketList.collectAsStateWithLifecycle()
 
         if (items.isNotEmpty() && marketDetails != null) {
             ShareableMarketList(
                 captureController = captureController,
-                marketDate = marketDetails.marketDate,
+                marketDate = marketDetails!!.marketDate,
                 marketLists = items,
                 onDismiss = shareViewModel::onDismissDialog,
                 onClickShare = {
@@ -277,5 +169,188 @@ fun MarketListItemsScreen(
                 },
             )
         }
+    }
+}
+
+@VisibleForTesting
+@Composable
+internal fun MarketListItemsScreenContent(
+    modifier: Modifier = Modifier,
+    uiState: UiState<List<MarketItemAndQuantity>>,
+    marketDetails: MarketListAndType?,
+    showSearchBar: Boolean,
+    searchText: String,
+    onClearClick: () -> Unit,
+    onSearchTextChanged: (String) -> Unit,
+    onOpenSearchBar: () -> Unit,
+    onCloseSearchBar: () -> Unit,
+    onPrintList: () -> Unit,
+    onClickShare: () -> Unit,
+    onAddItem: (listTypeId: Int, itemId: Int) -> Unit,
+    onRemoveItem: (listTypeId: Int, itemId: Int) -> Unit,
+    onDecreaseQuantity: (listTypeId: Int, itemId: Int) -> Unit,
+    onIncreaseQuantity: (listTypeId: Int, itemId: Int) -> Unit,
+    onBackClick: () -> Unit,
+    onClickAddNewMarketItem: () -> Unit,
+    snackbarState: SnackbarHostState = remember { SnackbarHostState() },
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
+    BackHandler {
+        if (showSearchBar) {
+            onCloseSearchBar()
+        } else {
+            onBackClick()
+        }
+    }
+
+    val showFab = uiState is UiState.Success
+
+    PoposSecondaryScaffold(
+        modifier = modifier,
+        title = UPDATE_LIST,
+        showBackButton = true,
+        showFab = false,
+        snackbarHostState = snackbarState,
+        navActions = {
+            if (showSearchBar) {
+                StandardSearchBar(
+                    searchText = searchText,
+                    placeholderText = MARKET_ITEM_SEARCH_PLACEHOLDER,
+                    onClearClick = onClearClick,
+                    onSearchTextChanged = onSearchTextChanged,
+                )
+            } else if (showFab) {
+                IconButton(
+                    onClick = onOpenSearchBar,
+                    modifier = Modifier.testTag(NAV_SEARCH_BTN),
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.Search,
+                        contentDescription = "Search Icon",
+                    )
+                }
+
+                IconButton(
+                    onClick = onPrintList,
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.OutlinedPrint,
+                        contentDescription = "Print List",
+                    )
+                }
+
+                IconButton(
+                    onClick = onClickShare,
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.Share,
+                        contentDescription = "Share List",
+                    )
+                }
+            }
+        },
+        onBackClick = if (showSearchBar) onCloseSearchBar else onBackClick,
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+        ) {
+            marketDetails?.let { marketDetail ->
+                MarketListItemHeader(marketDate = marketDetail.marketDate)
+            }
+
+            when (uiState) {
+                is UiState.Loading -> LoadingIndicator()
+
+                is UiState.Empty -> {
+                    ItemNotAvailable(
+                        text = MARKET_ITEM_NOT_AVAILABLE,
+                        buttonText = CREATE_NEW_ITEM,
+                        onClick = onClickAddNewMarketItem,
+                    )
+                }
+
+                is UiState.Success -> {
+                    TrackScrollJank(scrollableState = lazyListState, stateName = "MarketListItem::State")
+
+                    val groupByType =
+                        remember(uiState.data) { uiState.data.groupBy { it.typeName } }
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentPadding = PaddingValues(vertical = SpaceMini),
+                        verticalArrangement = Arrangement.spacedBy(SpaceMini),
+                    ) {
+                        groupByType.forEach { (itemType, groupedByType) ->
+                            val groupByListType = groupedByType.groupBy { it.listType }
+
+                            groupByListType.forEach { (listType, groupedByList) ->
+                                item("${itemType}_$listType") {
+                                    ListTypeHeader(
+                                        modifier = Modifier.padding(horizontal = SpaceSmall),
+                                        itemType = itemType,
+                                        listType = listType,
+                                        listCount = groupedByList.size,
+                                    )
+                                }
+
+                                items(
+                                    items = groupedByList,
+                                    key = {
+                                        "${it.listType}(${it.listWithTypeId}, ${it.itemId})"
+                                    }
+                                ){ item ->
+                                    MarketItemWithQuantityWithListTypeCard(
+                                        item = item,
+                                        onAddItem = onAddItem,
+                                        onRemoveItem = onRemoveItem,
+                                        onDecreaseQuantity = onDecreaseQuantity,
+                                        onIncreaseQuantity = onIncreaseQuantity,
+                                    )
+                                }
+                            }
+                        }
+
+                        item {
+                            ItemNotFound(onBtnClick = onClickAddNewMarketItem)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@DevicePreviews
+@Composable
+private fun MarketListItemsScreenContentPreview(
+    @PreviewParameter(MarketItemAndQuantityWithDifferentTypePreviewParameter::class)
+    uiState: UiState<List<MarketItemAndQuantity>>,
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        MarketListItemsScreenContent(
+            modifier = modifier,
+            uiState = uiState,
+            marketDetails = maretListAndType,
+            showSearchBar = false,
+            searchText = "",
+            onClearClick = {},
+            onSearchTextChanged = {},
+            onOpenSearchBar = {},
+            onCloseSearchBar = {},
+            onPrintList = {},
+            onClickShare = {},
+            onAddItem = { _,_ -> },
+            onRemoveItem = { _,_ -> },
+            onDecreaseQuantity = { _, _ -> },
+            onIncreaseQuantity = { _,_ -> },
+            onBackClick = {},
+            onClickAddNewMarketItem = {},
+        )
     }
 }

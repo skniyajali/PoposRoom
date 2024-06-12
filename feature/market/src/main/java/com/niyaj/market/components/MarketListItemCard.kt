@@ -39,19 +39,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.niyaj.common.tags.MarketListTestTags
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toTimeSpan
 import com.niyaj.designsystem.components.PoposOutlinedIconButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.MarketListWithType
@@ -60,10 +61,12 @@ import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.TextWithIcon
 import com.niyaj.ui.components.drawAnimatedBorder
+import com.niyaj.ui.parameterProvider.MarketListPreviewData
+import com.niyaj.ui.utils.DevicePreviews
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MarketListItemCard(
+internal fun MarketListItemCard(
     items: MarketListWithTypes,
     doesSelected: (Int) -> Boolean,
     doesExpanded: (Int) -> Boolean,
@@ -84,7 +87,6 @@ fun MarketListItemCard(
         modifier = Modifier
             .testTag(MarketListTestTags.MARKET_LIST_ITEM_TAG.plus(marketId))
             .fillMaxWidth()
-            .padding(SpaceSmall)
             .then(
                 borderStroke?.let {
                     Modifier
@@ -94,8 +96,7 @@ fun MarketListItemCard(
                             shape = CardDefaults.elevatedShape,
                         )
                 } ?: Modifier,
-            )
-            .clip(CardDefaults.elevatedShape),
+            ),
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 2.dp,
         ),
@@ -112,6 +113,8 @@ fun MarketListItemCard(
                         text = items.marketList.marketDate.toPrettyDate(),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 },
                 overlineContent = {
@@ -219,7 +222,7 @@ fun MarketListItemCard(
 }
 
 @Composable
-fun TypeList(
+private fun TypeList(
     modifier: Modifier = Modifier,
     marketType: MarketListWithType,
     onClickManageList: (listTypeId: Int) -> Unit,
@@ -255,7 +258,7 @@ fun TypeList(
                 text = marketType.listType,
                 icon = PoposIcons.ListAlt,
                 style = TextStyle(
-                    fontFamily = FontFamily.Cursive,
+                    fontFamily = FontFamily.Default,
                     fontWeight = FontWeight.SemiBold,
                 ),
                 modifier = Modifier.weight(1.5f),
@@ -268,5 +271,25 @@ fun TypeList(
                     .padding(SpaceSmall),
             )
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun MarketListItemCardPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        MarketListItemCard(
+            items = MarketListPreviewData.marketListWithTypes.last(),
+            doesSelected = { true },
+            doesExpanded = { true },
+            onClick = {},
+            onLongClick = {},
+            onClickShare = {},
+            onClickPrint = {},
+            onClickViewDetails = {},
+            onClickManageList = {},
+        )
     }
 }

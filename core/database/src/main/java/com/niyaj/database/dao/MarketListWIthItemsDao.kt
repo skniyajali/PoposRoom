@@ -57,7 +57,7 @@ interface MarketListWIthItemsDao {
             JOIN measure_unit mu ON mi.unitId = mu.unitId
             JOIN market_type mt ON mi.typeId = mt.typeId
             JOIN market_list_with_type mlt ON mlt.listWithTypeId IN (:listTypeIds)
-            LEFT JOIN market_list_with_items mil ON mi.itemId = mil.itemId AND mil.listWithTypeId IN (:listTypeIds)
+            LEFT JOIN market_list_with_items mil ON mi.itemId = mil.itemId AND mil.listWithTypeId = mlt.listWithTypeId
             
             WHERE mi.typeId = mlt.typeId
             ORDER BY mi.createdAt DESC

@@ -17,6 +17,7 @@
 
 package com.niyaj.market.marketList.createOrUpdate
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -39,8 +40,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -55,6 +58,7 @@ import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.components.PoposOutlinedAssistChip
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -63,6 +67,8 @@ import com.niyaj.model.MarketTypeIdAndListTypes
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.parameterProvider.MarketListPreviewData.marketTypeIdAndListTypes
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
@@ -72,9 +78,11 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.datetime.Clock
 import java.time.LocalDate
 
-@OptIn(ExperimentalLayoutApi::class)
 @Destination(style = DestinationStyleBottomSheet::class)
 @Composable
 fun AddEditMarketListScreen(
@@ -83,12 +91,10 @@ fun AddEditMarketListScreen(
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: AddEditMarketListViewModel = hiltViewModel(),
 ) {
-    val dialogState = rememberMaterialDialogState()
-
-    val listTypes = viewModel.marketTypes.collectAsStateWithLifecycle().value
-    val selectedDate = viewModel.selectedDate.collectAsStateWithLifecycle().value
-    val isError = viewModel.isError.collectAsStateWithLifecycle().value
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
+    val listTypes by viewModel.marketTypes.collectAsStateWithLifecycle()
+    val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
+    val isError by viewModel.isError.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     LaunchedEffect(key1 = event) {
         event?.let {
@@ -104,12 +110,49 @@ fun AddEditMarketListScreen(
     }
 
     val title = if (marketId == 0) CREATE_NEW_LIST else UPDATE_LIST
+    val icon = if (marketId == 0) PoposIcons.Add else PoposIcons.Edit
 
     TrackScreenViewEvent(screenName = "$title/marketId=$marketId")
 
-    StandardBottomSheet(
+    AddEditMarketListScreenContent(
+        modifier = Modifier,
         title = title,
-        onBackClick = navigator::navigateUp,
+        icon = icon,
+        listTypes = listTypes.toImmutableList(),
+        selectedDate = selectedDate,
+        isError = isError,
+        onDateChange = viewModel::updateSelectedDate,
+        isTypeChecked = viewModel::isTypeChecked,
+        isListTypeChecked = viewModel::isListTypeChecked,
+        onListTypeClick = viewModel::updateSelectedListTypes,
+        onCreateOrUpdateClick = viewModel::createOrUpdateMarketList,
+        onBackClick = navigator::navigateUp
+    )
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@VisibleForTesting
+@Composable
+internal fun AddEditMarketListScreenContent(
+    modifier: Modifier = Modifier,
+    title: String = CREATE_NEW_LIST,
+    icon: ImageVector = PoposIcons.Add,
+    listTypes: ImmutableList<MarketTypeIdAndListTypes>,
+    selectedDate: String,
+    isError: Boolean,
+    onDateChange: (String) -> Unit,
+    isTypeChecked: (typeId: Int) -> Boolean,
+    isListTypeChecked: (typeId: Int, listName: String) -> Boolean,
+    onListTypeClick: (typeId: Int, listName: String) -> Unit,
+    onCreateOrUpdateClick: () -> Unit,
+    onBackClick: () -> Unit,
+) {
+    val dialogState = rememberMaterialDialogState()
+
+    StandardBottomSheet(
+        modifier = modifier,
+        title = title,
+        onBackClick = onBackClick,
     ) {
         Column(
             modifier = Modifier
@@ -176,9 +219,9 @@ fun AddEditMarketListScreen(
                 listTypes.forEach {
                     MarketTypeBox(
                         type = it,
-                        isSelected = viewModel::isTypeChecked,
-                        onListTypeClick = viewModel::updateSelectedListTypes,
-                        isListTypeChecked = viewModel::isListTypeChecked,
+                        isSelected = isTypeChecked,
+                        onListTypeClick = onListTypeClick,
+                        isListTypeChecked = isListTypeChecked,
                     )
                 }
             }
@@ -193,8 +236,8 @@ fun AddEditMarketListScreen(
                 modifier = Modifier.fillMaxWidth(),
                 text = title,
                 enabled = !isError,
-                icon = if (marketId == 0) PoposIcons.Add else PoposIcons.Edit,
-                onClick = viewModel::createOrUpdateMarketList,
+                icon = icon,
+                onClick = onCreateOrUpdateClick,
             )
         }
     }
@@ -211,13 +254,13 @@ fun AddEditMarketListScreen(
                 date <= LocalDate.now()
             },
         ) { date ->
-            viewModel.updateSelectedDate(date.toMilliSecond)
+            onDateChange(date.toMilliSecond)
         }
     }
 }
 
 @Composable
-fun MarketTypeBox(
+private fun MarketTypeBox(
     modifier: Modifier = Modifier,
     type: MarketTypeIdAndListTypes,
     isSelected: (typeId: Int) -> Boolean,
@@ -229,7 +272,7 @@ fun MarketTypeBox(
 
     Surface(
         modifier = modifier
-            .fillMaxWidth(0.490f),
+            .fillMaxWidth(0.480f),
         border = borderStroke,
         shape = RoundedCornerShape(SpaceMini),
     ) {
@@ -271,7 +314,7 @@ fun MarketTypeBox(
                                 text = listType,
                                 style = MaterialTheme.typography.bodySmall,
                                 fontStyle = FontStyle.Italic,
-                                fontFamily = FontFamily.Cursive,
+                                fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier
                                     .padding(SpaceSmall),
@@ -292,5 +335,27 @@ fun MarketTypeBox(
                 }
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AddEditMarketListScreenContentPreview(
+    modifier: Modifier = Modifier,
+    listTypes: List<MarketTypeIdAndListTypes> = marketTypeIdAndListTypes
+) {
+    PoposRoomTheme {
+        AddEditMarketListScreenContent(
+            modifier = modifier,
+            listTypes = listTypes.toImmutableList(),
+            selectedDate = Clock.System.now().toEpochMilliseconds().toString(),
+            isError = false,
+            onDateChange = {},
+            isTypeChecked = { it % 2 == 0 },
+            isListTypeChecked = { _, _ -> true },
+            onListTypeClick = { _, _ -> },
+            onCreateOrUpdateClick = {},
+            onBackClick = {}
+        )
     }
 }
