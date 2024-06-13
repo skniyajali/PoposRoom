@@ -248,7 +248,7 @@ internal fun ExportCategoryScreenContent(
                     .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} items will be exported.")
+                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} categories will be exported.")
 
                 PoposButton(
                     modifier = Modifier

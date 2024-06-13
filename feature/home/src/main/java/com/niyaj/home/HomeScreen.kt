@@ -46,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -55,6 +56,7 @@ import com.niyaj.common.utils.Constants
 import com.niyaj.core.ui.R
 import com.niyaj.designsystem.components.PoposTonalIconButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.home.components.HomeScreenProducts
 import com.niyaj.model.Category
@@ -68,6 +70,9 @@ import com.niyaj.ui.components.SelectedOrderBox
 import com.niyaj.ui.components.StandardFABIcon
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.CategoryPreviewData
+import com.niyaj.ui.parameterProvider.ProductWithQuantityStatePreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
@@ -76,6 +81,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
@@ -90,20 +96,19 @@ fun HomeScreen(
     val lazyRowState = rememberLazyListState()
     val snackbarState = remember { SnackbarHostState() }
 
-    val productState = viewModel.productsWithQuantity.collectAsStateWithLifecycle().value
-    val categoriesState = viewModel.categories.collectAsStateWithLifecycle().value
+    val productState by viewModel.productsWithQuantity.collectAsStateWithLifecycle()
+    val categoriesState by viewModel.categories.collectAsStateWithLifecycle()
+    val selectedOrder by viewModel.selectedId.collectAsStateWithLifecycle()
+    val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
+    val showSearchBar by viewModel.showSearchBar.collectAsStateWithLifecycle()
+    val eventFlow by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
-    val selectedOrder = viewModel.selectedId.collectAsStateWithLifecycle().value
+    val searchText = viewModel.searchText.value
     val selectedId = if (selectedOrder.addressName.isEmpty()) {
         selectedOrder.orderId.toString()
     } else {
         selectedOrder.addressName.plus(" - ").plus(selectedOrder.orderId)
     }
-    val selectedCategory = viewModel.selectedCategory.collectAsStateWithLifecycle().value
-    val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
-    val searchText = viewModel.searchText.value
-
-    val eventFlow = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
     LaunchedEffect(key1 = eventFlow) {
         eventFlow?.let { event ->
@@ -116,7 +121,7 @@ fun HomeScreen(
 
                 is UiEvent.OnSuccess -> {
                     scope.launch {
-                        snackbarState.showSnackbar(event.successMessage)
+//                        snackbarState.showSnackbar(event.successMessage)
                     }
                 }
             }
@@ -196,9 +201,6 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContent(
     modifier: Modifier = Modifier,
-    snackbarState: SnackbarHostState,
-    lazyRowState: LazyListState,
-    lazyListState: LazyListState,
     productState: UiState<ImmutableList<ProductWithQuantity>>,
     categoryState: UiState<ImmutableList<Category>>,
     selectedCategory: Int,
@@ -218,6 +220,9 @@ fun HomeScreenContent(
     onCartClick: () -> Unit,
     onOrderClick: () -> Unit,
     currentRoute: String = Screens.HOME_SCREEN,
+    snackbarState: SnackbarHostState = remember { SnackbarHostState() },
+    lazyRowState: LazyListState = rememberLazyListState(),
+    lazyListState: LazyListState = rememberLazyListState(),
 ) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -335,37 +340,36 @@ fun HomeScreenContent(
                     containerColor = MaterialTheme.colorScheme.surface,
                 ),
             ) {
-                when (productState) {
-                    is UiState.Empty -> {
-                        ItemNotAvailable(
-                            text = HomeScreenTestTags.PRODUCT_NOT_AVAILABLE,
-                            image = painterResource(id = R.drawable.nothinghere),
-                            buttonText = HomeScreenTestTags.CREATE_NEW_PRODUCT,
-                            onClick = onClickCreateProduct,
-                        )
-                    }
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                ) {
+                    CategoriesData(
+                        lazyRowState = lazyRowState,
+                        uiState = categoryState,
+                        selectedCategory = selectedCategory,
+                        onSelect = onSelectCategory,
+                    )
 
-                    is UiState.Loading -> LoadingIndicator()
-
-                    is UiState.Success -> {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        ) {
-                            CategoriesData(
-                                lazyRowState = lazyRowState,
-                                uiState = categoryState,
-                                selectedCategory = selectedCategory,
-                                onSelect = onSelectCategory,
+                    when (productState) {
+                        is UiState.Empty -> {
+                            ItemNotAvailable(
+                                text = HomeScreenTestTags.PRODUCT_NOT_AVAILABLE,
+                                image = painterResource(id = R.drawable.nothinghere),
+                                buttonText = HomeScreenTestTags.CREATE_NEW_PRODUCT,
+                                onClick = onClickCreateProduct,
                             )
+                        }
 
+                        is UiState.Loading -> LoadingIndicator()
+
+                        is UiState.Success -> {
                             HomeScreenProducts(
                                 lazyListState = lazyListState,
                                 products = productState.data,
                                 onIncrease = onIncreaseQuantity,
                                 onDecrease = onDecreaseQuantity,
                                 onCreateProduct = onClickCreateProduct,
-                                onClickScrollToTop = onClickScrollToTop,
                             )
                         }
                     }
@@ -375,10 +379,44 @@ fun HomeScreenContent(
 
         ScrollToTop(
             modifier = Modifier
-                .padding(bottom = 32.dp, end = 16.dp)
+                .padding(bottom = 40.dp, end = 24.dp)
                 .align(Alignment.BottomEnd),
             visible = lazyListState.isScrolled,
             onClick = onClickScrollToTop,
+        )
+    }
+}
+
+
+@DevicePreviews
+@Composable
+private fun HomeScreenContentPreview(
+    @PreviewParameter(ProductWithQuantityStatePreviewParameter::class)
+    productState: UiState<ImmutableList<ProductWithQuantity>>,
+    modifier: Modifier = Modifier,
+    categoryList: ImmutableList<Category> = CategoryPreviewData.categoryList.toImmutableList(),
+) {
+    PoposRoomTheme {
+        HomeScreenContent(
+            modifier = modifier,
+            productState = productState,
+            categoryState = UiState.Success(categoryList),
+            selectedCategory = 0,
+            selectedId = "0",
+            showSearchBar = false,
+            searchText = "",
+            onOpenSearchBar = {},
+            onCloseSearchBar = {},
+            onSearchTextChanged = {},
+            onClearClick = {},
+            onNavigateToScreen = {},
+            onSelectCategory = {},
+            onIncreaseQuantity = {},
+            onDecreaseQuantity = {},
+            onClickScrollToTop = {},
+            onClickCreateProduct = {},
+            onCartClick = {},
+            onOrderClick = {},
         )
     }
 }

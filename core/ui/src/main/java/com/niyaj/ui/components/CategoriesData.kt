@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
@@ -52,7 +53,7 @@ const val CATEGORY_ITEM_TAG = "Category-"
 @Composable
 fun CategoriesData(
     modifier: Modifier = Modifier,
-    lazyRowState: LazyListState,
+    lazyRowState: LazyListState = rememberLazyListState(),
     uiState: UiState<ImmutableList<Category>>,
     selectedCategory: Int,
     onSelect: (Int) -> Unit,
@@ -94,7 +95,7 @@ fun CategoriesData(
 @Composable
 fun CategoriesData(
     modifier: Modifier = Modifier,
-    lazyRowState: LazyListState,
+    lazyRowState: LazyListState = rememberLazyListState(),
     categories: ImmutableList<Category>,
     doesSelected: (Int) -> Boolean,
     onSelect: (Int) -> Unit,

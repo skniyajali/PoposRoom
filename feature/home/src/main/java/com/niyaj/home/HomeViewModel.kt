@@ -22,6 +22,8 @@ import androidx.lifecycle.viewModelScope
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CartRepository
 import com.niyaj.data.repository.HomeRepository
 import com.niyaj.ui.event.BaseViewModel
@@ -49,6 +51,7 @@ class HomeViewModel @Inject constructor(
     private val cartRepository: CartRepository,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel() {
 
     private val _selectedCategory = MutableStateFlow(0)
@@ -113,6 +116,7 @@ class HomeViewModel @Inject constructor(
 
                 is Resource.Success -> {
                     mEventFlow.emit(UiEvent.OnSuccess("Product added to cart"))
+                    analyticsHelper.logAddProductToCart(orderId, productId)
                 }
             }
         }
@@ -127,8 +131,32 @@ class HomeViewModel @Inject constructor(
 
                 is Resource.Success -> {
                     mEventFlow.emit(UiEvent.OnSuccess("Product removed from cart"))
+                    analyticsHelper.logRemoveProductFromCart(orderId, productId)
                 }
             }
         }
     }
+}
+
+
+internal fun AnalyticsHelper.logAddProductToCart(orderId: Int, productId: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "product_added_to_cart",
+            extras = listOf(
+                AnalyticsEvent.Param("product_added_to_cart", "orderId - $orderId & productId - $productId"),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logRemoveProductFromCart(orderId: Int, productId: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "product_removed_from_cart",
+            extras = listOf(
+                AnalyticsEvent.Param("product_removed_from_cart", "orderId - $orderId & productId - $productId"),
+            ),
+        ),
+    )
 }

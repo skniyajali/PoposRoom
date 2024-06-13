@@ -201,7 +201,7 @@ internal fun ImportCategoryScreenContent(
                     .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"}  item will be imported.")
+                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} categories will be imported.")
 
                 PoposButton(
                     modifier = Modifier
