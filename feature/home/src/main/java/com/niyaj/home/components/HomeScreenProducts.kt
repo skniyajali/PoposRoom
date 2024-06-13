@@ -17,7 +17,6 @@
 
 package com.niyaj.home.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,40 +25,47 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.tags.HomeScreenTestTags
 import com.niyaj.common.tags.ProductTestTags
+import com.niyaj.common.utils.createDottedString
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.ProductWithQuantity
 import com.niyaj.ui.components.CircularBoxWithQty
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.ItemNotFound
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScrollJank
 import kotlinx.collections.immutable.ImmutableList
 
@@ -122,6 +128,8 @@ fun HomeScreenProductCard(
     onIncrease: (Int) -> Unit,
     onDecrease: (Int) -> Unit,
 ) = trace("MainFeedProductData") {
+    val productName = createDottedString(product.productName, 20)
+
     ListItem(
         modifier = modifier
             .testTag(ProductTestTags.PRODUCT_TAG.plus(product.productId))
@@ -129,7 +137,7 @@ fun HomeScreenProductCard(
             .clip(RoundedCornerShape(SpaceMini)),
         headlineContent = {
             Text(
-                text = product.productName,
+                text = productName,
                 style = MaterialTheme.typography.labelLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -145,65 +153,13 @@ fun HomeScreenProductCard(
             )
         },
         trailingContent = {
-            ElevatedCard(
-                modifier = Modifier
-                    .height(40.dp),
-                shape = RoundedCornerShape(SpaceMini),
-                colors = CardDefaults.elevatedCardColors(
-                    containerColor = MaterialTheme.colorScheme.onPrimary,
-                ),
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxHeight(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxHeight(),
-                        onClick = { onDecrease(product.productId) },
-                        enabled = remember(product.quantity) { product.quantity > 0 },
-                        shape = RoundedCornerShape(
-                            topStart = SpaceMini,
-                            topEnd = 0.dp,
-                            bottomStart = SpaceMini,
-                            bottomEnd = 0.dp,
-                        ),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.onPrimary,
-                        ),
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .padding(SpaceSmall),
-                        ) {
-                            Spacer(modifier = Modifier.width(SpaceSmall))
-                            Icon(imageVector = PoposIcons.Remove, contentDescription = "remove")
-                            Spacer(modifier = Modifier.width(SpaceSmall))
-                        }
-                    }
-
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .width(1.dp)
-                            .fillMaxHeight(),
-                    )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .clickable {
-                                onIncrease(product.productId)
-                            }
-                            .padding(SpaceSmall),
-                    ) {
-                        Spacer(modifier = Modifier.width(SpaceSmall))
-                        Icon(imageVector = PoposIcons.Add, contentDescription = "add")
-                        Spacer(modifier = Modifier.width(SpaceSmall))
-                    }
-                }
-            }
+            IncreaseAndDecreaseButton(
+                height = 50.dp,
+                iconSize = 26.dp,
+                enableDecrease = product.quantity > 0,
+                onClickIncrease = { onIncrease(product.productId) },
+                onClickDecrease = { onDecrease(product.productId) },
+            )
         },
         colors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.background,
@@ -211,4 +167,113 @@ fun HomeScreenProductCard(
         shadowElevation = 1.dp,
         tonalElevation = 1.dp,
     )
+}
+
+@DevicePreviews
+@Composable
+private fun HomeScreenProductCardPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        HomeScreenProductCard(
+            modifier = modifier,
+            product = ProductWithQuantity(
+                categoryId = 1,
+                productId = 1,
+                productName = "Chicken Biryani",
+                productPrice = 120,
+                quantity = 0,
+            ),
+            onIncrease = {},
+            onDecrease = {},
+        )
+    }
+}
+
+@Composable
+private fun IncreaseAndDecreaseButton(
+    modifier: Modifier = Modifier,
+    height: Dp,
+    iconSize: Dp,
+    enableDecrease: Boolean,
+    onClickIncrease: () -> Unit,
+    onClickDecrease: () -> Unit,
+    containerColor: Color = MaterialTheme.colorScheme.background,
+    contentColor: Color = MaterialTheme.colorScheme.tertiary,
+) {
+    Surface(
+        modifier = modifier
+            .wrapContentWidth()
+            .height(height),
+        shape = RoundedCornerShape(2.dp),
+        shadowElevation = 2.dp,
+        tonalElevation = 1.dp,
+    ) {
+        Row(
+            modifier = Modifier.fillMaxHeight(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            FilledTonalIconButton(
+                modifier = Modifier
+                    .height(height)
+                    .widthIn(min = height + 10.dp),
+                onClick = onClickDecrease,
+                enabled = enableDecrease,
+                shape = RoundedCornerShape(topStart = 2.dp, bottomStart = SpaceMini),
+                colors = IconButtonDefaults.filledTonalIconButtonColors(
+                    containerColor = containerColor,
+                    contentColor = MaterialTheme.colorScheme.error,
+                    disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerLow.copy(
+                        alpha = 1f,
+                    ),
+                ),
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Remove,
+                    contentDescription = "Decrease Quantity",
+                    modifier = Modifier.size(iconSize),
+                )
+            }
+
+            VerticalDivider(
+                modifier = Modifier
+                    .width(0.5.dp)
+                    .fillMaxHeight(),
+            )
+            FilledTonalIconButton(
+                modifier = Modifier
+                    .height(height)
+                    .widthIn(min = height + 10.dp),
+                onClick = onClickIncrease,
+                shape = RoundedCornerShape(topEnd = 2.dp, bottomEnd = SpaceMini),
+                colors = IconButtonDefaults.filledTonalIconButtonColors(
+                    containerColor = containerColor,
+                    contentColor = contentColor,
+                ),
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Add,
+                    contentDescription = "Increase Quantity",
+                    modifier = Modifier.size(iconSize),
+                )
+            }
+        }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun IncreaseAndDecreaseButtonPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        IncreaseAndDecreaseButton(
+            modifier = modifier,
+            height = 50.dp,
+            iconSize = 24.dp,
+            enableDecrease = false,
+            onClickIncrease = {},
+            onClickDecrease = {},
+        )
+    }
 }

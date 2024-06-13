@@ -307,8 +307,12 @@ class OrderPrintViewModel @Inject constructor(
                     printableText += "[L]${cart.orderId}[C]${cart.customerAddress}[R]${cart.orderDate.toTime}[R]${cart.orderPrice}\n"
                     printableText += "[L]-------------------------------\n"
                 }
+
+                printableText += "[L]\n"
             }
 
+            printableText += "[L]\n"
+            printableText += "[L]-------------------------------\n"
             printableText += "[L]<b>Total Orders</b>[R]${deliveryReports.size}\n"
             printableText += "[L]Rs.$totalAmt[R]${date}\n"
             printableText += "[L]-------------------------------\n"

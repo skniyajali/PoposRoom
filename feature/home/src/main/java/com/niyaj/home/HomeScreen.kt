@@ -272,6 +272,7 @@ fun HomeScreenContent(
                     }
                 } else {
                     IconButton(
+                        modifier = Modifier.testTag("drawerButton"),
                         onClick = {
                             scope.launch {
                                 drawerState.open()

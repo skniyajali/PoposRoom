@@ -33,7 +33,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -55,8 +54,8 @@ fun PoposApp(
 ) {
     PoposBackground(modifier) {
         val snackbarHostState = remember { SnackbarHostState() }
-
-        val isOffline by appState.isOffline.collectAsStateWithLifecycle()
+        // TODO:: Since we're not dealing with network
+//        val isOffline by appState.isOffline.collectAsStateWithLifecycle()
         val reportState = appState.reportState.collectAsStateWithLifecycle().value
         val deleteState = appState.deleteState.collectAsStateWithLifecycle().value
 
@@ -70,12 +69,13 @@ fun PoposApp(
             }
         }
 
+        // TODO:: Since we're not dealing with network
         // If user is not connected to the internet show a snack bar to inform them.
-        LaunchedEffect(isOffline) {
-            if (isOffline) {
-                snackbarHostState.showSnackbar(message = "You are not connected to the internet")
-            }
-        }
+//        LaunchedEffect(isOffline) {
+//            if (isOffline) {
+//                snackbarHostState.showSnackbar(message = "You are not connected to the internet")
+//            }
+//        }
 
         Scaffold(
             modifier = Modifier.semantics {

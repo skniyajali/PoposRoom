@@ -190,9 +190,11 @@ class MarketListItemsViewModel @Inject constructor(
                     printableString += "[L]${it.itemName} [R]${it.itemQuantity?.toSafeString()} ${it.unitName}\n"
 
                     if (i != groupedByList.size - 1) {
-                        printableString += "[L]\n"
+                        printableString += "[L]-------------------------------\n"
                     }
                 }
+
+                printableString += "[L]\n\n\n"
             }
         }
 

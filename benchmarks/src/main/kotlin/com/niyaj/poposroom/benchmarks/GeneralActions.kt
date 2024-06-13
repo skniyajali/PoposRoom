@@ -18,6 +18,7 @@
 package com.niyaj.poposroom.benchmarks
 
 import android.Manifest.permission
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import androidx.benchmark.macro.MacrobenchmarkScope
@@ -48,13 +49,34 @@ fun MacrobenchmarkScope.allowNotifications() {
     }
 }
 
+fun MacrobenchmarkScope.allowAllPermission() {
+    if (SDK_INT >= TIRAMISU) {
+        val command = "pm grant $packageName ${permission.POST_NOTIFICATIONS}"
+        device.executeShellCommand(command)
+    }
+
+    val blePer = "pm grant $packageName ${permission.BLUETOOTH}"
+    val bleAdmin = "pm grant $packageName ${permission.BLUETOOTH_ADMIN}"
+
+    if (SDK_INT >= Build.VERSION_CODES.S) {
+        val bleConnect = "pm grant $packageName ${permission.BLUETOOTH_CONNECT}"
+        val bleScan = "pm grant $packageName ${permission.BLUETOOTH_SCAN}"
+
+        device.executeShellCommand(bleConnect)
+        device.executeShellCommand(bleScan)
+    }
+
+    device.executeShellCommand(blePer)
+    device.executeShellCommand(bleAdmin)
+}
+
 /**
  * Wraps starting the default activity, waiting for it to start and then allowing notifications in
  * one convenient call.
  */
-fun MacrobenchmarkScope.startActivityAndAllowNotifications() {
+fun MacrobenchmarkScope.startActivityAndGrantPermission() {
     startActivityAndWait()
-    allowNotifications()
+    allowAllPermission()
 }
 
 /**
@@ -70,8 +92,9 @@ fun MacrobenchmarkScope.getAppDrawer(): UiObject2 {
  * Waits for and returns the `poposAppDrawer`
  */
 fun MacrobenchmarkScope.getHomeAppDrawer(): UiObject2 {
-    device.wait(Until.hasObject(By.desc("app:drawer")), 2_000)
-    device.findObject(By.desc("app:drawer")).click()
+    device.wait(Until.hasObject(By.res("drawerButton")), 2_000)
+    device.findObject(By.res("drawerButton"))
+    device.findObject(By.res("drawerButton")).click()
     return device.findObject(By.res("homeAppDrawer"))
 }
 

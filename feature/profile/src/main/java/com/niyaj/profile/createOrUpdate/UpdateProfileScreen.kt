@@ -87,6 +87,7 @@ import com.niyaj.common.tags.ProfileTestTags.TAG_FIELD
 import com.niyaj.common.tags.ProfileTestTags.UPDATE_PROFILE
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Profile
@@ -469,7 +470,7 @@ private fun UpdateProfileScreenContentPreview(
     modifier: Modifier = Modifier,
     profile: Profile = Profile.defaultProfileInfo,
 ) {
-    MaterialTheme {
+    PoposRoomTheme {
         UpdateProfileScreenContent(
             modifier = modifier,
             profile = profile,

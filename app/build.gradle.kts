@@ -29,6 +29,7 @@ plugins {
     alias(libs.plugins.androidx.baselineprofile)
     alias(libs.plugins.roborazzi)
     alias(libs.plugins.sentry)
+    alias(libs.plugins.compiler.report)
     id("com.google.android.gms.oss-licenses-plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
@@ -221,8 +222,8 @@ secrets {
 }
 
 dependencies {
-
-    implementation(project(":feature:account"))
+    // Removed for this alpha release
+//    implementation(project(":feature:account"))
     implementation(project(":feature:addonitem"))
     implementation(project(":feature:address"))
     implementation(project(":feature:cart"))

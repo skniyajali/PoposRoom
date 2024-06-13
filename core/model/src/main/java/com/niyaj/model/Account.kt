@@ -42,7 +42,7 @@ data class Account(
             email = profile.email,
             phone = profile.primaryPhone,
             password = DEFAULT_RES_PASSWORD,
-            isLoggedIn = false,
+            isLoggedIn = true,
             createdAt = System.currentTimeMillis(),
             updatedAt = null,
         )

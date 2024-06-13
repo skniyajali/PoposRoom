@@ -88,6 +88,7 @@ saketSwipe = "1.2.0"
 capturable = "1.0.3"
 fragula-compose = "2.10.1"
 konfetti-compose = "2.0.4"
+compiler-report = "1.3.1"
 
 # App Version
 namespace = "com.niyaj.poposroom"
@@ -99,7 +100,6 @@ versionName = "1.0.6"
 sourceCompatibility = "VERSION_11"
 targetCompatibility = "VERSION_11"
 junitVersion = "1.1.5"
-kotlinVersion = "1.9.0"
 
 [libraries]
 # ACRA Logger
@@ -315,8 +315,6 @@ room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", vers
 realm-gradlePlugin = { group = "io.realm.kotlin", name = "gradle-plugin", version.ref = "realmVersion" }
 detekt-gradlePlugin = { group = "io.gitlab.arturbosch.detekt", name = "detekt-gradle-plugin", version.ref = "detektVersion" }
 androidx-work-testing = { group = "androidx.work", name = "work-testing", version.ref = "androidxWork" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-
 
 [plugins]
 appsweep = { id = "com.guardsquare.appsweep", version.ref = "appsweep" }
@@ -341,6 +339,7 @@ room = { id = "androidx.room", version.ref = "room" }
 realm = { id = "io.realm.kotlin", version.ref = "realmVersion" }
 sentry = { id = "io.sentry.android.gradle", version.ref = "sentryVersion" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
+compiler-report = { id = "dev.shreyaspatil.compose-compiler-report-generator", version.ref = "compiler-report"}
 
 
 # Plugins defined by this project
@@ -358,4 +357,3 @@ popos-android-lint = { id = "popos.android.lint", version = "unspecified" }
 popos-android-room = { id = "popos.android.room", version = "unspecified" }
 popos-android-test = { id = "popos.android.test", version = "unspecified" }
 popos-jvm-library = { id = "popos.jvm.library", version = "unspecified" }
-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }

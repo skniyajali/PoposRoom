@@ -19,6 +19,7 @@ plugins {
     id("popos.android.feature")
     id("popos.android.library.compose")
     id("popos.android.library.jacoco")
+    alias(libs.plugins.compiler.report)
 }
 
 android {

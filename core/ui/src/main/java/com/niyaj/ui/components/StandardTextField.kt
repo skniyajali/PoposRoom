@@ -22,9 +22,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -260,9 +257,9 @@ private fun PasswordToggleIcon(
     ) {
         Icon(
             imageVector = if (isPasswordVisible) {
-                Icons.Filled.VisibilityOff
+                PoposIcons.VisibilityOff
             } else {
-                Icons.Filled.Visibility
+                PoposIcons.Visibility
             },
             tint = MaterialTheme.colorScheme.secondary,
             contentDescription = if (isPasswordVisible) {

@@ -30,7 +30,6 @@ import com.niyaj.employee.EmployeeNavGraph
 import com.niyaj.employeeAbsent.EmployeeabsentNavGraph
 import com.niyaj.employeePayment.EmployeepaymentNavGraph
 import com.niyaj.expenses.ExpensesNavGraph
-import com.niyaj.feature.account.AccountNavGraph
 import com.niyaj.feature.reports.ReportsNavGraph
 import com.niyaj.home.HomeNavGraph
 import com.niyaj.market.DailymarketNavGraph
@@ -52,7 +51,8 @@ object RootNavGraph : NavGraphSpec {
     override val startRoute = HomeNavGraph
 
     override val nestedNavGraphs = listOf(
-        AccountNavGraph,
+//        TODO:: Removed AccountNavGraph for this :alpha release
+//        AccountNavGraph,
         AddonitemNavGraph,
         AddressNavGraph,
         CartNavGraph,
