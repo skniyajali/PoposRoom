@@ -49,10 +49,10 @@ import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.designsystem.utils.drawAnimatedBorder
 import com.niyaj.model.MarketType
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.SettingsCard
-import com.niyaj.ui.components.drawAnimatedBorder
 import com.niyaj.ui.parameterProvider.MarketTypePreviewData
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScrollJank

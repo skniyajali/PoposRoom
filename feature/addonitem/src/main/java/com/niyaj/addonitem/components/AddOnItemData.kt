@@ -47,9 +47,9 @@ import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.designsystem.utils.drawAnimatedBorder
 import com.niyaj.model.AddOnItem
 import com.niyaj.ui.components.CircularBox
-import com.niyaj.ui.components.drawAnimatedBorder
 import com.niyaj.ui.parameterProvider.AddOnPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 

@@ -31,4 +31,20 @@ data class Account(
     val createdAt: Long,
 
     val updatedAt: Long? = null,
-)
+) {
+
+    companion object {
+        private const val DEFAULT_RES_PASSWORD = "Popos@123"
+        private val profile = Profile.defaultProfileInfo
+
+        val defaultAccount: Account = Account(
+            restaurantId = profile.restaurantId,
+            email = profile.email,
+            phone = profile.primaryPhone,
+            password = DEFAULT_RES_PASSWORD,
+            isLoggedIn = false,
+            createdAt = System.currentTimeMillis(),
+            updatedAt = null,
+        )
+    }
+}

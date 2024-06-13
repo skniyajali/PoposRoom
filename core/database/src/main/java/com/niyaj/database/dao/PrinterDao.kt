@@ -45,5 +45,5 @@ interface PrinterDao {
         SELECT * FROM profile WHERE restaurantId = :restaurantId
     """,
     )
-    fun getProfileInfo(restaurantId: Int): Flow<ProfileEntity>
+    fun getProfileInfo(restaurantId: Int): Flow<ProfileEntity?>
 }

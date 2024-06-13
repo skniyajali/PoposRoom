@@ -175,7 +175,6 @@ class ProductDetailsViewModel @Inject constructor(
             productDetails += "[L]Name [R]${productData.productName}\n"
             productDetails += "[L]Price [R]Rs.${productPrice.value}\n"
             productDetails += "[L]Last Updated [R]${productDate}\n"
-            productDetails += "[L]-------------------------------\n"
         }
 
         return productDetails
@@ -207,7 +206,6 @@ class ProductDetailsViewModel @Inject constructor(
     private fun getPrintableProductOrderDetails(): String {
         var details = ""
 
-        details += "[L]-------------------------------\n"
         details += "[C]PRODUCT ORDERS\n"
         details += "[L]-------------------------------\n"
 
@@ -219,7 +217,6 @@ class ProductDetailsViewModel @Inject constructor(
                 .groupBy { it.orderedDate.toBarDate }
 
             details += "[L]ID[L]Qty[L]Phone[R]Address\n"
-            details += "[L]-------------------------------\n"
 
             groupByDate.forEach { (date, orderList) ->
                 val totalSales = orderList
@@ -251,7 +248,7 @@ internal fun AnalyticsHelper.logProductDetailsViewed(productId: Int) {
         event = AnalyticsEvent(
             type = "product_details_viewed",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("product_details_viewed", productId.toString()),
+                AnalyticsEvent.Param("product_details_viewed", productId.toString()),
             ),
         ),
     )
@@ -262,7 +259,7 @@ internal fun AnalyticsHelper.logProductDetailsPrinted(productId: Int) {
         event = AnalyticsEvent(
             type = "product_details_printed",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("product_details_printed", productId.toString()),
+                AnalyticsEvent.Param("product_details_printed", productId.toString()),
             ),
         ),
     )

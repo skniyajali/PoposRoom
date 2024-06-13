@@ -51,9 +51,9 @@ import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.designsystem.utils.drawAnimatedBorder
 import com.niyaj.model.MeasureUnit
 import com.niyaj.ui.components.CircularBox
-import com.niyaj.ui.components.drawAnimatedBorder
 import com.niyaj.ui.parameterProvider.MeasureUnitPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScrollJank
