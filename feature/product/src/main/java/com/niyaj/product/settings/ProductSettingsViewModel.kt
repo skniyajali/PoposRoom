@@ -266,7 +266,7 @@ internal fun AnalyticsHelper.logImportedProductFromFile(totalProduct: Int) {
         event = AnalyticsEvent(
             type = "products_imported_from_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("products_imported_from_file", totalProduct.toString()),
+                AnalyticsEvent.Param("products_imported_from_file", totalProduct.toString()),
             ),
         ),
     )
@@ -277,7 +277,7 @@ internal fun AnalyticsHelper.logImportedProductToDatabase(totalProduct: Int) {
         event = AnalyticsEvent(
             type = "products_imported_to_database",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("products_imported_to_database", totalProduct.toString()),
+                AnalyticsEvent.Param("products_imported_to_database", totalProduct.toString()),
             ),
         ),
     )
@@ -288,7 +288,7 @@ internal fun AnalyticsHelper.logExportedProductToFile(totalProduct: Int) {
         event = AnalyticsEvent(
             type = "products_exported_to_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("products_exported_to_file", totalProduct.toString()),
+                AnalyticsEvent.Param("products_exported_to_file", totalProduct.toString()),
             ),
         ),
     )
@@ -299,7 +299,7 @@ internal fun AnalyticsHelper.logProductPriceIncreased(totalProduct: Int) {
         event = AnalyticsEvent(
             type = "products_price_increased",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("products_price_increased", totalProduct.toString()),
+                AnalyticsEvent.Param("products_price_increased", totalProduct.toString()),
             ),
         ),
     )
@@ -310,7 +310,7 @@ internal fun AnalyticsHelper.logProductPriceDecreased(totalProduct: Int) {
         event = AnalyticsEvent(
             type = "products_price_decreased",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("products_price_decreased", totalProduct.toString()),
+                AnalyticsEvent.Param("products_price_decreased", totalProduct.toString()),
             ),
         ),
     )

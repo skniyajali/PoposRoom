@@ -93,7 +93,7 @@ fun CategoriesData(
 }
 
 @Composable
-fun CategoriesData(
+fun CategoryList(
     modifier: Modifier = Modifier,
     lazyRowState: LazyListState = rememberLazyListState(),
     categories: ImmutableList<Category>,

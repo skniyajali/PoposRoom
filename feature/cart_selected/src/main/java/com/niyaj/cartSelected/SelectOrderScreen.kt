@@ -485,7 +485,7 @@ private fun SelectedCartOrderData(
                             },
                             style = MaterialTheme.typography.titleMedium,
                             maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
                         )
                     },
                     leadingContent = {
@@ -698,7 +698,7 @@ private fun CartOrderData(
                     },
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             },
             leadingContent = {
@@ -770,7 +770,7 @@ private fun SelectOrderScreenContentPreview(
     cartItem: CartItem = CartPreviewParameterData.dineOutCartItems.first(),
     orderDetails: SelectedOrderDetails = SelectedOrderDetails.Success(cartItem),
     addOnItems: List<AddOnItem> = AddOnPreviewData.addOnItemList.take(5),
-    deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5)
+    deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5),
 ) {
     PoposRoomTheme {
         SelectOrderScreenContent(
@@ -800,7 +800,7 @@ private fun SelectOrderScreenContentPreview(
 private fun SelectedCartOrderDataLoadingPreview(
     modifier: Modifier = Modifier,
     cartOrder: CartOrder = CardOrderPreviewData.orders.first(),
-    orderDetails: SelectedOrderDetails = SelectedOrderDetails.Loading
+    orderDetails: SelectedOrderDetails = SelectedOrderDetails.Loading,
 ) {
     PoposRoomTheme {
         SelectedCartOrderData(
@@ -816,7 +816,7 @@ private fun SelectedCartOrderDataLoadingPreview(
             onUpdateAddOnItem = { _, _ -> },
             onUpdateDeliveryPartner = { _, _ -> },
             onPlaceOrder = {},
-            onPrintOrder = {}
+            onPrintOrder = {},
         )
     }
 }
@@ -826,7 +826,7 @@ private fun SelectedCartOrderDataLoadingPreview(
 private fun SelectedCartOrderDataEmptyPreview(
     modifier: Modifier = Modifier,
     cartOrder: CartOrder = CardOrderPreviewData.orders.last(),
-    orderDetails: SelectedOrderDetails = SelectedOrderDetails.Empty
+    orderDetails: SelectedOrderDetails = SelectedOrderDetails.Empty,
 ) {
     PoposRoomTheme {
         SelectedCartOrderData(
@@ -842,7 +842,7 @@ private fun SelectedCartOrderDataEmptyPreview(
             onUpdateAddOnItem = { _, _ -> },
             onUpdateDeliveryPartner = { _, _ -> },
             onPlaceOrder = {},
-            onPrintOrder = {}
+            onPrintOrder = {},
         )
     }
 }
@@ -855,7 +855,7 @@ private fun SelectedCartOrderDataPreview(
     cartItem: CartItem = CartPreviewParameterData.dineOutCartItems.first(),
     orderDetails: SelectedOrderDetails = SelectedOrderDetails.Success(cartItem),
     addOnItems: List<AddOnItem> = AddOnPreviewData.addOnItemList.take(5),
-    deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5)
+    deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5),
 ) {
     PoposRoomTheme {
         SelectedCartOrderData(
@@ -871,7 +871,7 @@ private fun SelectedCartOrderDataPreview(
             onUpdateAddOnItem = { _, _ -> },
             onUpdateDeliveryPartner = { _, _ -> },
             onPlaceOrder = {},
-            onPrintOrder = {}
+            onPrintOrder = {},
         )
     }
 }

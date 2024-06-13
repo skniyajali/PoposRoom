@@ -205,14 +205,14 @@ fun PoposOutlinedChip(
     borderColor: Color = MaterialTheme.colorScheme.tertiary,
     contentColor: Color = MaterialTheme.colorScheme.tertiary,
     borderStroke: BorderStroke = BorderStroke(1.dp, borderColor),
-    shape: RoundedCornerShape = RoundedCornerShape(2.dp)
+    shape: RoundedCornerShape = RoundedCornerShape(2.dp),
 ) {
     Surface(
         modifier = modifier,
         shape = shape,
         border = borderStroke,
         color = Color.Transparent,
-        contentColor = contentColor
+        contentColor = contentColor,
     ) {
         Row(
             modifier = Modifier
@@ -238,7 +238,6 @@ fun PoposOutlinedChip(
     }
 }
 
-
 @Composable
 fun PoposChip(
     modifier: Modifier = Modifier,
@@ -246,13 +245,13 @@ fun PoposChip(
     icon: ImageVector? = null,
     containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
     contentColor: Color = MaterialTheme.colorScheme.onTertiaryContainer,
-    shape: RoundedCornerShape = RoundedCornerShape(2.dp)
+    shape: RoundedCornerShape = RoundedCornerShape(2.dp),
 ) {
     Surface(
         modifier = modifier,
         shape = shape,
         color = containerColor,
-        contentColor = contentColor
+        contentColor = contentColor,
     ) {
         Row(
             modifier = Modifier

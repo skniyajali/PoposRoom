@@ -167,7 +167,7 @@ fun PoposNavHost(
                             navController.navigate(AddEditAbsentScreenDestination(employeeId = it))
                         },
                         paymentRecipient = resultRecipient<AddEditPaymentScreenDestination, String>(),
-                        absentRecipient = resultRecipient<AddEditAbsentScreenDestination, String>()
+                        absentRecipient = resultRecipient<AddEditAbsentScreenDestination, String>(),
                     )
                 }
 
@@ -179,7 +179,7 @@ fun PoposNavHost(
                         onClickAddEmployee = {
                             navController.navigate(AddEditEmployeeScreenDestination())
                         },
-                        resultBackNavigator = resultBackNavigator()
+                        resultBackNavigator = resultBackNavigator(),
                     )
                 }
 

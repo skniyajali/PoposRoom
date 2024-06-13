@@ -101,7 +101,7 @@ internal fun CustomerDetailsScreenContent(
     onClickEdit: () -> Unit,
     onClickOrder: (Int) -> Unit,
     scope: CoroutineScope = rememberCoroutineScope(),
-    lazyListState: LazyListState = rememberLazyListState()
+    lazyListState: LazyListState = rememberLazyListState(),
 ) {
     var detailsExpanded by rememberSaveable { mutableStateOf(true) }
     var orderExpanded by rememberSaveable { mutableStateOf(true) }
@@ -173,7 +173,7 @@ private fun CustomerDetailsScreenContentPreview(
     customerWiseOrders: UiState<List<CustomerWiseOrder>>,
     modifier: Modifier = Modifier,
     customer: Customer = CustomerPreviewData.customerList.first(),
-    totalOrders: TotalOrderDetails = CustomerPreviewData.sampleTotalOrder
+    totalOrders: TotalOrderDetails = CustomerPreviewData.sampleTotalOrder,
 ) {
     PoposRoomTheme {
         CustomerDetailsScreenContent(

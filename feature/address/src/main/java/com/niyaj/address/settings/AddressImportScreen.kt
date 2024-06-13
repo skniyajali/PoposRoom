@@ -162,7 +162,7 @@ internal fun AddressImportScreenContent(
     onBackClick: () -> Unit,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
-    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp,  SpaceSmallMax, SpaceLarge)
+    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
 ) {
     TrackScreenViewEvent(screenName = ADDRESS_IMPORT_SCREEN)
 

@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.ui.parameterProvider
@@ -26,13 +27,12 @@ import com.niyaj.model.PaymentMode
 import com.niyaj.model.PaymentType
 import com.niyaj.ui.event.UiState
 
-
 class PaymentPreviewParameter<T> : PreviewParameterProvider<UiState<List<EmployeeWithPayments>>> {
     override val values: Sequence<UiState<List<EmployeeWithPayments>>>
         get() = sequenceOf(
             UiState.Loading,
             UiState.Empty,
-            UiState.Success(PaymentPreviewData.employeesWithPayments)
+            UiState.Success(PaymentPreviewData.employeesWithPayments),
         )
 }
 
@@ -48,7 +48,7 @@ object PaymentPreviewData {
             paymentMode = PaymentMode.Cash,
             paymentNote = "Advance payment",
             createdAt = 1673994000000,
-            updatedAt = null
+            updatedAt = null,
         ),
         Payment(
             paymentId = 2,
@@ -59,7 +59,7 @@ object PaymentPreviewData {
             paymentMode = PaymentMode.Online,
             paymentNote = "Advance payment",
             createdAt = 1675404000000,
-            updatedAt = null
+            updatedAt = null,
         ),
         Payment(
             paymentId = 3,
@@ -70,7 +70,7 @@ object PaymentPreviewData {
             paymentMode = PaymentMode.Cash,
             paymentNote = "Advance payment",
             createdAt = 1676672400000,
-            updatedAt = null
+            updatedAt = null,
         ),
         Payment(
             paymentId = 4,
@@ -81,7 +81,7 @@ object PaymentPreviewData {
             paymentMode = PaymentMode.Online,
             paymentNote = "Advance payment",
             createdAt = 1678080000000,
-            updatedAt = null
+            updatedAt = null,
         ),
         Payment(
             paymentId = 5,
@@ -92,7 +92,7 @@ object PaymentPreviewData {
             paymentMode = PaymentMode.Cash,
             paymentNote = "Advance payment",
             createdAt = 1679350800000,
-            updatedAt = null
+            updatedAt = null,
         ),
         Payment(
             paymentId = 6,
@@ -103,7 +103,7 @@ object PaymentPreviewData {
             paymentMode = PaymentMode.Online,
             paymentNote = "Advance payment",
             createdAt = 1680758400000,
-            updatedAt = null
+            updatedAt = null,
         ),
         Payment(
             paymentId = 7,
@@ -114,7 +114,7 @@ object PaymentPreviewData {
             paymentMode = PaymentMode.Cash,
             paymentNote = "Advance payment",
             createdAt = 1681944000000,
-            updatedAt = null
+            updatedAt = null,
         ),
         Payment(
             paymentId = 8,
@@ -125,7 +125,7 @@ object PaymentPreviewData {
             paymentMode = PaymentMode.Online,
             paymentNote = "Advance payment",
             createdAt = 1683354000000,
-            updatedAt = null
+            updatedAt = null,
         ),
         Payment(
             paymentId = 9,
@@ -136,7 +136,7 @@ object PaymentPreviewData {
             paymentMode = PaymentMode.Cash,
             paymentNote = "Advance payment",
             createdAt = 1684537200000,
-            updatedAt = null
+            updatedAt = null,
         ),
         Payment(
             paymentId = 10,
@@ -147,8 +147,8 @@ object PaymentPreviewData {
             paymentMode = PaymentMode.Online,
             paymentNote = "Advance payment",
             createdAt = 1685949600000,
-            updatedAt = null
-        )
+            updatedAt = null,
+        ),
     )
 
     val employeesWithPayments = listOf(
@@ -166,7 +166,7 @@ object PaymentPreviewData {
                 isDeliveryPartner = false,
                 partnerQRCode = null,
                 createdAt = 1673308800000,
-                updatedAt = null
+                updatedAt = null,
             ),
             payments = listOf(
                 Payment(
@@ -178,7 +178,7 @@ object PaymentPreviewData {
                     paymentMode = PaymentMode.Cash,
                     paymentNote = "Advance payment",
                     createdAt = 1673994000000,
-                    updatedAt = null
+                    updatedAt = null,
                 ),
                 Payment(
                     paymentId = 18,
@@ -189,7 +189,7 @@ object PaymentPreviewData {
                     paymentMode = PaymentMode.Online,
                     paymentNote = "Advance payment",
                     createdAt = 1674080400000,
-                    updatedAt = null
+                    updatedAt = null,
                 ),
                 Payment(
                     paymentId = 19,
@@ -200,7 +200,7 @@ object PaymentPreviewData {
                     paymentMode = PaymentMode.Online,
                     paymentNote = "Advance payment",
                     createdAt = 1674166800000,
-                    updatedAt = null
+                    updatedAt = null,
                 ),
                 Payment(
                     paymentId = 20,
@@ -211,7 +211,7 @@ object PaymentPreviewData {
                     paymentMode = PaymentMode.Cash,
                     paymentNote = "Advance payment",
                     createdAt = 1674166800000,
-                    updatedAt = null
+                    updatedAt = null,
                 ),
                 Payment(
                     paymentId = 2,
@@ -222,9 +222,9 @@ object PaymentPreviewData {
                     paymentMode = PaymentMode.Online,
                     paymentNote = "Advance payment",
                     createdAt = 1675404000000,
-                    updatedAt = null
-                )
-            )
+                    updatedAt = null,
+                ),
+            ),
         ),
         EmployeeWithPayments(
             employee = Employee(
@@ -240,7 +240,7 @@ object PaymentPreviewData {
                 isDeliveryPartner = false,
                 partnerQRCode = null,
                 createdAt = 1675987200000,
-                updatedAt = null
+                updatedAt = null,
             ),
             payments = listOf(
                 Payment(
@@ -252,7 +252,7 @@ object PaymentPreviewData {
                     paymentMode = PaymentMode.Cash,
                     paymentNote = "Advance payment",
                     createdAt = 1676672400000,
-                    updatedAt = null
+                    updatedAt = null,
                 ),
                 Payment(
                     paymentId = 4,
@@ -263,9 +263,9 @@ object PaymentPreviewData {
                     paymentMode = PaymentMode.Online,
                     paymentNote = "Advance payment",
                     createdAt = 1678080000000,
-                    updatedAt = null
-                )
-            )
-        )
+                    updatedAt = null,
+                ),
+            ),
+        ),
     )
 }

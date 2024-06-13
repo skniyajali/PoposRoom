@@ -35,7 +35,7 @@ class CartOrderPreviewParameter : PreviewParameterProvider<UiState<List<CartOrde
         get() = sequenceOf(
             UiState.Loading,
             UiState.Empty,
-            UiState.Success(orders)
+            UiState.Success(orders),
         )
 }
 
@@ -47,16 +47,16 @@ class CartOrderStatePreviewParameter : PreviewParameterProvider<UiState<Map<Stri
             UiState.Success(
                 orders.groupBy {
                     (it.updatedAt ?: it.createdAt).toPrettyDate()
-                }
-            )
+                },
+            ),
         )
 }
 
-class CartOrderOrderTypeDataPreviewParameter: PreviewParameterProvider<CartOrder> {
+class CartOrderOrderTypeDataPreviewParameter : PreviewParameterProvider<CartOrder> {
     override val values: Sequence<CartOrder>
         get() = sequenceOf(
             sampleDineOutOrder,
-            sampleDineInOrder
+            sampleDineInOrder,
         )
 }
 
@@ -288,52 +288,52 @@ object CardOrderPreviewData {
         EmployeeNameAndId(
             employeeId = 1,
             employeeName = "John Doe",
-            partnerQRCode = "QR12345"
+            partnerQRCode = "QR12345",
         ),
         EmployeeNameAndId(
             employeeId = 2,
             employeeName = "Jane Smith",
-            partnerQRCode = null
+            partnerQRCode = null,
         ),
         EmployeeNameAndId(
             employeeId = 3,
             employeeName = "Michael Johnson",
-            partnerQRCode = "QR67890"
+            partnerQRCode = "QR67890",
         ),
         EmployeeNameAndId(
             employeeId = 4,
             employeeName = "Emily Davis",
-            partnerQRCode = null
+            partnerQRCode = null,
         ),
         EmployeeNameAndId(
             employeeId = 5,
             employeeName = "David Wilson",
-            partnerQRCode = "QR24680"
+            partnerQRCode = "QR24680",
         ),
         EmployeeNameAndId(
             employeeId = 6,
             employeeName = "Sophia Martinez",
-            partnerQRCode = null
+            partnerQRCode = null,
         ),
         EmployeeNameAndId(
             employeeId = 7,
             employeeName = "William Thompson",
-            partnerQRCode = "QR13579"
+            partnerQRCode = "QR13579",
         ),
         EmployeeNameAndId(
             employeeId = 8,
             employeeName = "Olivia Anderson",
-            partnerQRCode = null
+            partnerQRCode = null,
         ),
         EmployeeNameAndId(
             employeeId = 9,
             employeeName = "Jacob Brown",
-            partnerQRCode = "QR86420"
+            partnerQRCode = "QR86420",
         ),
         EmployeeNameAndId(
             employeeId = 10,
             employeeName = "Avery Taylor",
-            partnerQRCode = null
-        )
+            partnerQRCode = null,
+        ),
     )
 }

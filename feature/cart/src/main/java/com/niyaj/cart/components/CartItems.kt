@@ -265,7 +265,6 @@ private fun CartItemData(
     }
 }
 
-
 @DevicePreviews
 @Composable
 private fun CartItemPreview(

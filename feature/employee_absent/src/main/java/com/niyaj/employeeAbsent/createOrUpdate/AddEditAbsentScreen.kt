@@ -390,14 +390,14 @@ internal fun AddEditAbsentScreenContent(
 private fun AddEditAbsentScreenContentPreview(
     modifier: Modifier = Modifier,
     employees: List<Employee> = EmployeePreviewData.employeeList,
-    selectedEmployee: Employee = employees.first()
+    selectedEmployee: Employee = employees.first(),
 ) {
     PoposRoomTheme {
         AddEditAbsentScreenContent(
             modifier = modifier,
             employees = employees,
             state = AddEditAbsentState(
-                absentReason = "Seek Leave"
+                absentReason = "Seek Leave",
             ),
             selectedEmployee = selectedEmployee,
             employeeError = null,

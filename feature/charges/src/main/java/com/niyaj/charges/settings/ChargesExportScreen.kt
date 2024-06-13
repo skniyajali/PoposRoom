@@ -169,7 +169,6 @@ fun ChargesExportScreen(
     )
 }
 
-
 @VisibleForTesting
 @Composable
 internal fun ChargesExportScreenContent(

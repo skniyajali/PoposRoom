@@ -209,6 +209,6 @@ fun HomeScreenProductCard(
             containerColor = MaterialTheme.colorScheme.background,
         ),
         shadowElevation = 1.dp,
-        tonalElevation = 1.dp
+        tonalElevation = 1.dp,
     )
 }

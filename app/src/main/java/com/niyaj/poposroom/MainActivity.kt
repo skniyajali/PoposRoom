@@ -20,7 +20,6 @@ package com.niyaj.poposroom
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -37,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -120,6 +120,8 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         enableEdgeToEdge()
 
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
@@ -155,8 +157,6 @@ class MainActivity : ComponentActivity() {
                 userDataRepository = userDataRepository,
             )
             val isLoggedIn by appState.isLoggedIn.collectAsStateWithLifecycle()
-
-            Log.d("isLoggedIn", "$isLoggedIn")
 
             CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
                 PoposRoomTheme(

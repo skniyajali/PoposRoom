@@ -159,7 +159,7 @@ fun AddEditPaymentScreen(
         onBackClick = navigator::navigateUp,
         onClickNewEmployee = {
             navigator.navigate(Screens.ADD_EDIT_EMPLOYEE_SCREEN)
-        }
+        },
     )
 }
 
@@ -180,7 +180,7 @@ internal fun AddEditPaymentScreenContent(
     modeError: String?,
     noteError: String?,
     onBackClick: () -> Unit,
-    onClickNewEmployee: () -> Unit
+    onClickNewEmployee: () -> Unit,
 ) {
     val dialogState = rememberMaterialDialogState()
     val lazyListState = rememberLazyListState()
@@ -517,7 +517,7 @@ private fun AddEditPaymentScreenContentPreview(
                 paymentAmount = "200",
                 paymentNote = "Advance Payment",
                 paymentType = PaymentType.Advanced,
-                paymentMode = PaymentMode.Cash
+                paymentMode = PaymentMode.Cash,
             ),
             selectedEmployee = employees.first(),
             onEvent = {},
@@ -529,7 +529,7 @@ private fun AddEditPaymentScreenContentPreview(
             modeError = null,
             noteError = null,
             onBackClick = {},
-            onClickNewEmployee = {}
+            onClickNewEmployee = {},
         )
     }
 }

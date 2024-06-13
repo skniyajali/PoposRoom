@@ -23,8 +23,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -35,23 +40,81 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.tags.ProductTestTags
+import com.niyaj.common.tags.ProductTestTags.CREATE_NEW_PRODUCT
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Product
 import com.niyaj.ui.components.CircularBox
+import com.niyaj.ui.components.ItemNotFound
 import com.niyaj.ui.components.NoteText
+import com.niyaj.ui.parameterProvider.ProductPreviewData
+import com.niyaj.ui.utils.DevicePreviews
+import com.niyaj.ui.utils.TrackScrollJank
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
+
+@Composable
+internal fun ProductList(
+    modifier: Modifier = Modifier,
+    items: ImmutableList<Product>,
+    isInSelectionMode: Boolean,
+    doesSelected: (Int) -> Boolean,
+    onSelectItem: (Int) -> Unit,
+    onNavigateToDetails: (Int) -> Unit = {},
+    showItemNotFound: Boolean = false,
+    onClickCreateNew: () -> Unit = {},
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
+    TrackScrollJank(scrollableState = lazyListState, stateName = "Product::List")
+
+    LazyColumn(
+        modifier = modifier,
+        state = lazyListState,
+        contentPadding = PaddingValues(SpaceSmall),
+        verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+    ) {
+        items(
+            items = items,
+            key = { item ->
+                item.productId
+            },
+        ) { item ->
+            ProductCard(
+                item = item,
+                doesSelected = doesSelected,
+                onClick = {
+                    if (isInSelectionMode) {
+                        onSelectItem(it)
+                    } else {
+                        onNavigateToDetails(it)
+                    }
+                },
+                onLongClick = onSelectItem,
+            )
+        }
+
+        if (showItemNotFound) {
+            item {
+                ItemNotFound(
+                    btnText = CREATE_NEW_PRODUCT,
+                    onBtnClick = onClickCreateNew,
+                )
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ProductCard(
+private fun ProductCard(
     modifier: Modifier = Modifier,
     item: Product,
     doesSelected: (Int) -> Boolean,
@@ -67,13 +130,11 @@ fun ProductCard(
         modifier = Modifier
             .fillMaxWidth()
             .testTag(ProductTestTags.PRODUCT_TAG.plus(item.productId))
-            .padding(SpaceSmall)
             .then(
                 borderStroke?.let {
                     Modifier.border(it, RoundedCornerShape(SpaceMini))
                 } ?: Modifier,
             )
-            .clip(RoundedCornerShape(SpaceMini))
             .combinedClickable(
                 onClick = {
                     onClick(item.productId)
@@ -86,7 +147,7 @@ fun ProductCard(
             containerColor = containerColor,
         ),
         elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 2.dp,
+            defaultElevation = 1.dp,
         ),
     ) {
         Column(
@@ -130,12 +191,31 @@ fun ProductCard(
                 NoteText(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(SpaceSmall),
+                        .padding(start = SpaceSmall, end = SpaceSmall, bottom = SpaceSmall),
                     text = item.productDescription,
                     icon = PoposIcons.TurnedInNot,
                     color = MaterialTheme.colorScheme.error,
                 )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ProductListPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ProductList(
+            modifier = modifier,
+            items = ProductPreviewData.productList.toImmutableList(),
+            isInSelectionMode = false,
+            doesSelected = { it % 2 == 0 },
+            onSelectItem = {},
+            onNavigateToDetails = {},
+            showItemNotFound = false,
+            onClickCreateNew = {},
+        )
     }
 }

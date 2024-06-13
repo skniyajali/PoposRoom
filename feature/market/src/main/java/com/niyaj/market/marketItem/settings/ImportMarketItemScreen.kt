@@ -255,7 +255,7 @@ internal fun ImportMarketItemScreenContent(
                     isInSelectionMode = true,
                     doesSelected = selectedItems::contains,
                     onSelectItem = onClickSelectItem,
-                    lazyGridState = lazyGridState
+                    lazyGridState = lazyGridState,
                 )
             }
         }
@@ -301,4 +301,3 @@ private fun ImportMarketItemScreenContentPreview(
         )
     }
 }
-

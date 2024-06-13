@@ -140,7 +140,7 @@ fun ExpensesScreen(
         event = event,
         onDeselectItems = viewModel::deselectItems,
         coroutineScope = scope,
-        snackbarHostState = snackbarState
+        snackbarHostState = snackbarState,
     )
 }
 
@@ -286,7 +286,7 @@ internal fun ExpensesScreenContent(
                             doesSelected = selectedItems::contains,
                             isInSelectionMode = selectedItems.isNotEmpty(),
                             onSelectItem = onClickSelectItem,
-                            lazyListState = lazyListState
+                            lazyListState = lazyListState,
                         )
                     }
                 }

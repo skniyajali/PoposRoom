@@ -144,7 +144,7 @@ fun ExpensesList(
         items(
             items = items,
             key = { it.expenseId },
-        ){
+        ) {
             ExpensesData(
                 item = it,
                 doesSelected = doesSelected,
@@ -301,7 +301,7 @@ private fun GroupedExpensesData(
                     .fillMaxWidth()
                     .padding(vertical = SpaceSmall, horizontal = SpaceMedium),
                 horizontalArrangement = Arrangement.spacedBy(SpaceMini),
-                verticalArrangement = Arrangement.spacedBy(SpaceMini)
+                verticalArrangement = Arrangement.spacedBy(SpaceMini),
             ) {
                 items.forEach { expense ->
                     val borderStroke = if (doesSelected(expense.expenseId)) border else null
@@ -394,7 +394,7 @@ private fun ExpensesListPreview(
         ExpensesList(
             modifier = modifier,
             items = ExpensePreviewData.expenses,
-            doesSelected = { it % 2 == 0},
+            doesSelected = { it % 2 == 0 },
             isInSelectionMode = false,
             onSelectItem = {},
         )

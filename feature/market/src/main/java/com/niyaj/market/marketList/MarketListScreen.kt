@@ -189,7 +189,7 @@ fun MarketListScreen(
         event = event,
         onDeselectItems = viewModel::deselectItems,
         coroutineScope = scope,
-        snackbarHostState = snackbarState
+        snackbarHostState = snackbarState,
     )
 }
 
@@ -429,10 +429,10 @@ private fun MarketListScreenPreview(
             onClickCreateNew = {},
             onClickEdit = {},
             onClickSettings = {},
-            doesExpanded = {true},
+            doesExpanded = { true },
             onClickExpand = {},
-            onClickShare = {_, _ ->},
-            onClickPrint = {_, _ ->},
+            onClickShare = { _, _ -> },
+            onClickPrint = { _, _ -> },
             onClickViewDetails = {},
             onClickManageList = {},
         )

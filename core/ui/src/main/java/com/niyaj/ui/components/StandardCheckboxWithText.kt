@@ -47,7 +47,7 @@ fun StandardCheckboxWithText(
             text = text,
             style = MaterialTheme.typography.labelMedium,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }

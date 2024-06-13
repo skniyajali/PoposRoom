@@ -189,7 +189,7 @@ internal fun AddEditExpenseScreenContent(
                 },
             )
         },
-        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     ) { paddingValues ->
         TrackScrollJank(
             scrollableState = lazyListState,
@@ -403,7 +403,7 @@ private fun AddEditExpenseScreenContentPreview(
                 expenseName = "Gas",
                 expenseDate = Clock.System.now().toEpochMilliseconds().toString(),
                 expenseAmount = "500",
-                expenseNote = "This is test note"
+                expenseNote = "This is test note",
             ),
             expensesNames = ExpensePreviewData.expenseNames,
             dateError = null,

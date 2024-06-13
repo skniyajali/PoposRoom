@@ -114,7 +114,7 @@ internal fun AddEditMeasureUnitScreenContent(
     valueError: String?,
     onEvent: (AddEditMeasureUnitEvent) -> Unit,
     onBackClick: () -> Unit,
-    lazyListState: LazyListState = rememberLazyListState()
+    lazyListState: LazyListState = rememberLazyListState(),
 ) {
     val enableBtn = listOf(nameError, valueError).all { it == null }
 
@@ -137,7 +137,7 @@ internal fun AddEditMeasureUnitScreenContent(
             )
         },
         onBackClick = onBackClick,
-        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     ) { paddingValues ->
         TrackScrollJank(
             scrollableState = lazyListState,

@@ -331,7 +331,7 @@ private fun ListTypeHeaderPreview(
             modifier = modifier,
             itemType = "Vegetable",
             listType = "OUT_OF_STOCK",
-            listCount = 4
+            listCount = 4,
         )
     }
 }
@@ -349,7 +349,7 @@ private fun ShareableMarketListWithGroupedPreview(
             marketLists = marketItemsAndQuantities,
             onDismiss = {},
             onClickShare = {},
-            onCaptured = { _, _ -> }
+            onCaptured = { _, _ -> },
         )
     }
 }
@@ -367,7 +367,7 @@ private fun ShareableMarketListWithPreview(
             marketLists = marketItemsAndQuantity,
             onDismiss = {},
             onClickShare = {},
-            onCaptured = { _, _ -> }
+            onCaptured = { _, _ -> },
         )
     }
 }

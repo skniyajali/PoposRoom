@@ -124,7 +124,7 @@ fun MarketItemScreen(
         event = event,
         onDeselectItems = viewModel::deselectItems,
         coroutineScope = scope,
-        snackbarHostState = snackbarState
+        snackbarHostState = snackbarState,
     )
 }
 
@@ -239,7 +239,7 @@ internal fun MarketItemScreenContent(
                         onSelectItem = onClickSelectItem,
                         showSettingsCard = true,
                         onClickCard = onNavigateToListScreen,
-                        lazyGridState = lazyGridState
+                        lazyGridState = lazyGridState,
                     )
                 }
             }

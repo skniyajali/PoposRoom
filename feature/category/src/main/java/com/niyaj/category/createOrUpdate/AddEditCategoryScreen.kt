@@ -204,7 +204,7 @@ private fun AddEditCategoryScreenContentPreview(
             ),
             nameError = null,
             onEvent = {},
-            onBackClick = {}
+            onBackClick = {},
         )
     }
 }

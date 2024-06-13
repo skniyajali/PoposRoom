@@ -115,7 +115,6 @@ fun ImportCategoryScreen(
             }
         }
 
-
     LaunchedEffect(key1 = event) {
         event?.let { data ->
             when (data) {
@@ -147,7 +146,6 @@ fun ImportCategoryScreen(
     )
 }
 
-
 @VisibleForTesting
 @Composable
 internal fun ImportCategoryScreenContent(
@@ -162,7 +160,7 @@ internal fun ImportCategoryScreenContent(
     onBackClick: () -> Unit,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
-    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp,  SpaceSmallMax, SpaceLarge)
+    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
 ) {
     TrackScreenViewEvent(screenName = "ImportCategoryScreen")
 
@@ -265,7 +263,7 @@ internal fun ImportCategoryScreenContent(
                     columns = GridCells.Fixed(2),
                     state = lazyGridState,
                     horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
-                    verticalArrangement = Arrangement.spacedBy(SpaceSmall)
+                    verticalArrangement = Arrangement.spacedBy(SpaceSmall),
                 ) {
                     items(
                         items = importedItems,
@@ -323,4 +321,3 @@ private fun ImportCategoryScreenContentPreview(
         )
     }
 }
-

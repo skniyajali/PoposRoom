@@ -160,7 +160,6 @@ fun CustomerExportScreen(
     )
 }
 
-
 @VisibleForTesting
 @Composable
 internal fun CustomerExportScreenContent(
@@ -280,9 +279,10 @@ internal fun CustomerExportScreenContent(
             }
         },
     ) {
-        Box(modifier = modifier
-            .fillMaxSize()
-            .padding(it)
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(it),
         ) {
             if (items.isEmpty()) {
                 ItemNotAvailable(
@@ -298,7 +298,7 @@ internal fun CustomerExportScreenContent(
                     doesSelected = selectedItems::contains,
                     onClickSelectItem = onSelectItem,
                     onNavigateToDetails = {},
-                    lazyListState = lazyListState
+                    lazyListState = lazyListState,
                 )
             }
         }
@@ -330,4 +330,3 @@ private fun CustomerExportScreenContentPreview(
         )
     }
 }
-

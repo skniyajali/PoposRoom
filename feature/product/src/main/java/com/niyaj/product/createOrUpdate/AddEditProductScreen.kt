@@ -17,6 +17,7 @@
 
 package com.niyaj.product.createOrUpdate
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -26,11 +27,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -46,7 +47,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
@@ -70,12 +73,17 @@ import com.niyaj.common.tags.ProductTestTags.PRODUCT_PRICE_ERROR
 import com.niyaj.common.tags.ProductTestTags.PRODUCT_PRICE_FIELD
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.model.Category
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.StandardOutlinedTextField
+import com.niyaj.ui.parameterProvider.CategoryPreviewData
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.Screens.ADD_EDIT_CATEGORY_SCREEN
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
@@ -83,7 +91,6 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Destination(route = Screens.ADD_EDIT_PRODUCT_SCREEN)
 @Composable
 fun AddEditProductScreen(
@@ -94,21 +101,12 @@ fun AddEditProductScreen(
 ) {
     TrackScreenViewEvent(screenName = Screens.ADD_EDIT_PRODUCT_SCREEN)
 
-    val lazyListState = rememberLazyListState()
-
-    val categories = viewModel.categories.collectAsStateWithLifecycle().value
-
-    val categoryError = viewModel.categoryError.collectAsStateWithLifecycle().value
-    val priceError = viewModel.priceError.collectAsStateWithLifecycle().value
-    val nameError = viewModel.nameError.collectAsStateWithLifecycle().value
-
-    val enableBtn = listOf(
-        categoryError,
-        priceError,
-        nameError,
-    ).all { it == null }
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
+    val categories by viewModel.categories.collectAsStateWithLifecycle()
+    val categoryError by viewModel.categoryError.collectAsStateWithLifecycle()
+    val priceError by viewModel.priceError.collectAsStateWithLifecycle()
+    val nameError by viewModel.nameError.collectAsStateWithLifecycle()
+    val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -124,17 +122,53 @@ fun AddEditProductScreen(
         }
     }
 
-    var categoryToggled by remember { mutableStateOf(false) }
-
-    var textFieldSize by remember { mutableStateOf(Size.Zero) }
-
-    val selectedCategory = viewModel.selectedCategory.collectAsStateWithLifecycle().value
-
     val title = if (productId == 0) CREATE_NEW_PRODUCT else EDIT_PRODUCT
+    val icon = if (productId == 0) PoposIcons.Add else PoposIcons.Edit
 
+    AddEditProductScreenContent(
+        modifier = Modifier,
+        title = title,
+        icon = icon,
+        state = viewModel.state,
+        selectedCategory = selectedCategory,
+        categories = categories,
+        onEvent = viewModel::onEvent,
+        categoryError = categoryError,
+        priceError = priceError,
+        nameError = nameError,
+        onBackClick = navigator::navigateUp,
+        onClickAddCategory = {
+            navigator.navigate(ADD_EDIT_CATEGORY_SCREEN)
+        },
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun AddEditProductScreenContent(
+    modifier: Modifier = Modifier,
+    title: String = CREATE_NEW_PRODUCT,
+    icon: ImageVector = PoposIcons.Add,
+    state: AddEditProductState,
+    selectedCategory: Category,
+    categories: List<Category>,
+    onEvent: (AddEditProductEvent) -> Unit,
+    categoryError: String?,
+    priceError: String?,
+    nameError: String?,
+    onBackClick: () -> Unit,
+    onClickAddCategory: () -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
     TrackScrollJank(scrollableState = lazyListState, stateName = "Add/Edit Product::Fields")
 
+    val enableBtn = listOf(categoryError, priceError, nameError).all { it == null }
+    var categoryToggled by remember { mutableStateOf(false) }
+    var textFieldSize by remember { mutableStateOf(Size.Zero) }
+    val height = (LocalConfiguration.current.screenHeightDp / 2).dp
+
     PoposSecondaryScaffold(
+        modifier = modifier,
         title = title,
         showBackButton = true,
         showBottomBar = true,
@@ -145,13 +179,13 @@ fun AddEditProductScreen(
                     .testTag(ADD_EDIT_PRODUCT_BUTTON),
                 enabled = enableBtn,
                 text = title,
-                icon = if (productId == 0) PoposIcons.Add else PoposIcons.Edit,
+                icon = icon,
                 onClick = {
-                    viewModel.onEvent(AddEditProductEvent.AddOrUpdateProduct(productId))
+                    onEvent(AddEditProductEvent.AddOrUpdateProduct)
                 },
             )
         },
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
     ) { paddingValues ->
         LazyColumn(
             state = lazyListState,
@@ -205,7 +239,8 @@ fun AddEditProductScreen(
                             clippingEnabled = true,
                         ),
                         modifier = Modifier
-                            .width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
+                            .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
+                            .height(height),
                     ) {
                         categories.forEachIndexed { index, category ->
                             DropdownMenuItem(
@@ -213,7 +248,7 @@ fun AddEditProductScreen(
                                     .testTag(category.categoryName)
                                     .fillMaxWidth(),
                                 onClick = {
-                                    viewModel.onEvent(
+                                    onEvent(
                                         AddEditProductEvent.CategoryChanged(category),
                                     )
                                     categoryToggled = false
@@ -265,9 +300,7 @@ fun AddEditProductScreen(
                         DropdownMenuItem(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            onClick = {
-                                navigator.navigate(Screens.ADD_EDIT_CATEGORY_SCREEN)
-                            },
+                            onClick = onClickAddCategory,
                             text = {
                                 Text(
                                     text = "Create a new category",
@@ -294,40 +327,52 @@ fun AddEditProductScreen(
 
             item(PRODUCT_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.productName,
+                    value = state.productName,
                     label = PRODUCT_NAME_FIELD,
                     leadingIcon = PoposIcons.Feed,
                     isError = nameError != null,
                     errorText = nameError,
                     errorTextTag = PRODUCT_NAME_ERROR,
+                    showClearIcon = state.productName.isNotEmpty(),
                     onValueChange = {
-                        viewModel.onEvent(AddEditProductEvent.ProductNameChanged(it))
+                        onEvent(AddEditProductEvent.ProductNameChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditProductEvent.ProductNameChanged(""))
                     },
                 )
             }
 
             item(PRODUCT_PRICE_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.productPrice,
+                    value = state.productPrice,
                     label = PRODUCT_PRICE_FIELD,
                     leadingIcon = PoposIcons.Money,
                     keyboardType = KeyboardType.Number,
                     isError = priceError != null,
                     errorText = priceError,
                     errorTextTag = PRODUCT_PRICE_ERROR,
+                    showClearIcon = state.productPrice.isNotEmpty(),
                     onValueChange = {
-                        viewModel.onEvent(AddEditProductEvent.ProductPriceChanged(it))
+                        onEvent(AddEditProductEvent.ProductPriceChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditProductEvent.ProductPriceChanged(""))
                     },
                 )
             }
 
             item(PRODUCT_DESCRIPTION_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.productDesc,
+                    value = state.productDesc,
                     label = PRODUCT_DESCRIPTION_FIELD,
                     leadingIcon = PoposIcons.Description,
+                    showClearIcon = state.productDesc.isNotEmpty(),
                     onValueChange = {
-                        viewModel.onEvent(AddEditProductEvent.ProductDescChanged(it))
+                        onEvent(AddEditProductEvent.ProductDescChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditProductEvent.ProductDescChanged(""))
                     },
                 )
             }
@@ -339,14 +384,14 @@ fun AddEditProductScreen(
                 ) {
                     Checkbox(
                         modifier = Modifier.testTag(PRODUCT_AVAILABILITY_FIELD),
-                        checked = viewModel.state.productAvailability,
+                        checked = state.productAvailability,
                         onCheckedChange = {
-                            viewModel.onEvent(AddEditProductEvent.ProductAvailabilityChanged)
+                            onEvent(AddEditProductEvent.ProductAvailabilityChanged)
                         },
                     )
                     Spacer(modifier = Modifier.width(SpaceSmall))
                     Text(
-                        text = if (viewModel.state.productAvailability) {
+                        text = if (state.productAvailability) {
                             "Marked as available"
                         } else {
                             "Marked as not available"
@@ -358,5 +403,33 @@ fun AddEditProductScreen(
                 Spacer(modifier = Modifier.height(SpaceSmall))
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AddEditProductScreenContentPreview(
+    modifier: Modifier = Modifier,
+    categories: List<Category> = CategoryPreviewData.categories,
+    selectedCategory: Category = categories.first(),
+) {
+    PoposRoomTheme {
+        AddEditProductScreenContent(
+            modifier = modifier,
+            state = AddEditProductState(
+                productName = "New Product",
+                productPrice = "120",
+                productDesc = "Product description",
+                productAvailability = false,
+            ),
+            selectedCategory = selectedCategory,
+            categories = categories,
+            onEvent = {},
+            categoryError = null,
+            priceError = null,
+            nameError = null,
+            onBackClick = {},
+            onClickAddCategory = {},
+        )
     }
 }

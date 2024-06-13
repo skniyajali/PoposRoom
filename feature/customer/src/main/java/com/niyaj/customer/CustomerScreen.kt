@@ -129,7 +129,7 @@ fun CustomerScreen(
         event = event,
         onDeselectItems = viewModel::deselectItems,
         coroutineScope = scope,
-        snackbarHostState = snackbarState
+        snackbarHostState = snackbarState,
     )
 }
 

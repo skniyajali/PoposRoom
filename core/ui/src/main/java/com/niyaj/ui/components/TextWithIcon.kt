@@ -230,8 +230,11 @@ fun NoteText(
     iconModifier: Modifier = Modifier.size(SpaceMedium),
     text: String,
     icon: ImageVector = PoposIcons.ErrorOutline,
+    style: TextStyle = MaterialTheme.typography.labelSmall,
     color: Color = MaterialTheme.colorScheme.secondary,
     fontWeight: FontWeight = FontWeight.Normal,
+    maxLines: Int = 1,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
     onClick: () -> Unit = {},
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -257,10 +260,10 @@ fun NoteText(
 
         Text(
             text = text,
-            style = MaterialTheme.typography.labelSmall,
+            style = style,
             fontWeight = fontWeight,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+            maxLines = maxLines,
+            overflow = overflow,
             color = color,
         )
     }

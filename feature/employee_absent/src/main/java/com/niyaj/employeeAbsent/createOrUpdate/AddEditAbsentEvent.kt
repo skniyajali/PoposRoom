@@ -27,5 +27,5 @@ sealed interface AddEditAbsentEvent {
 
     data class AbsentReasonChanged(val absentReason: String) : AddEditAbsentEvent
 
-    data object CreateOrUpdateAbsent: AddEditAbsentEvent
+    data object CreateOrUpdateAbsent : AddEditAbsentEvent
 }

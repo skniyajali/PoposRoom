@@ -61,7 +61,7 @@ class AddEditCustomerViewModel @Inject constructor(
 
     init {
         savedStateHandle.get<Int>("customerId")?.let { customerId ->
-            if(customerId != 0) getCustomerById(customerId)
+            if (customerId != 0) getCustomerById(customerId)
         }
     }
 

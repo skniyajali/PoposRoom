@@ -236,7 +236,7 @@ private fun SalaryEstimationCardPreview(
     @PreviewParameter(EmployeeSalaryEstimationPreviewParameter::class)
     uiState: UiState<EmployeeSalaryEstimation>,
     modifier: Modifier = Modifier,
-    salaryDates: List<EmployeeMonthlyDate> = EmployeePreviewData.employeeMonthlyDates
+    salaryDates: List<EmployeeMonthlyDate> = EmployeePreviewData.employeeMonthlyDates,
 ) {
     PoposRoomTheme {
         SalaryEstimationCard(
@@ -247,7 +247,7 @@ private fun SalaryEstimationCardPreview(
             onClickPaymentCount = {},
             onClickAbsentCount = {},
             onClickAbsentEntry = {},
-            onClickSalaryEntry = {}
+            onClickSalaryEntry = {},
         )
     }
 }

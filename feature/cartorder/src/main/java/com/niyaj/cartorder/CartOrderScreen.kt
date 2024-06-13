@@ -291,7 +291,7 @@ internal fun CartOrderScreenContent(
     ) {
         Crossfade(
             targetState = uiState,
-            label = "CartOrder::State"
+            label = "CartOrder::State",
         ) { state ->
             when (state) {
                 is UiState.Loading -> LoadingIndicator()
@@ -317,7 +317,7 @@ internal fun CartOrderScreenContent(
                         contentPadding = PaddingValues(SpaceSmall),
                         state = lazyGridState,
                         horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
-                        verticalArrangement = Arrangement.spacedBy(SpaceSmall)
+                        verticalArrangement = Arrangement.spacedBy(SpaceSmall),
                     ) {
                         item("Note", span = { GridItemSpan(2) }) {
                             ListItem(
@@ -398,7 +398,7 @@ internal fun CartOrderScreenContent(
     }
 
     AnimatedVisibility(
-        visible = openDialog.value
+        visible = openDialog.value,
     ) {
         StandardDialog(
             title = DELETE_CART_ORDER_ITEM_TITLE,

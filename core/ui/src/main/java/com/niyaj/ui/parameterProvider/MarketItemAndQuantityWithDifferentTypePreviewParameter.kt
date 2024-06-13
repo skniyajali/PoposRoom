@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.ui.parameterProvider
@@ -23,21 +24,21 @@ import com.niyaj.ui.event.UiState
 import com.niyaj.ui.parameterProvider.MarketItemAndQuantityData.marketItemsAndQuantities
 import com.niyaj.ui.parameterProvider.MarketItemAndQuantityData.marketItemsAndQuantity
 
-class MarketItemAndQuantityWithDifferentTypePreviewParameter: PreviewParameterProvider<UiState<List<MarketItemAndQuantity>>> {
+class MarketItemAndQuantityWithDifferentTypePreviewParameter : PreviewParameterProvider<UiState<List<MarketItemAndQuantity>>> {
     override val values: Sequence<UiState<List<MarketItemAndQuantity>>>
         get() = sequenceOf(
             UiState.Loading,
             UiState.Empty,
-            UiState.Success(marketItemsAndQuantities)
+            UiState.Success(marketItemsAndQuantities),
         )
 }
 
-class MarketItemAndQuantityPreviewParameter: PreviewParameterProvider<UiState<List<MarketItemAndQuantity>>> {
+class MarketItemAndQuantityPreviewParameter : PreviewParameterProvider<UiState<List<MarketItemAndQuantity>>> {
     override val values: Sequence<UiState<List<MarketItemAndQuantity>>>
         get() = sequenceOf(
             UiState.Loading,
             UiState.Empty,
-            UiState.Success(marketItemsAndQuantity)
+            UiState.Success(marketItemsAndQuantity),
         )
 }
 
@@ -52,7 +53,7 @@ object MarketItemAndQuantityData {
             unitValue = 1.0,
             itemPrice = "50",
             listType = "NEEDED",
-            itemQuantity = null
+            itemQuantity = null,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 1,
@@ -63,7 +64,7 @@ object MarketItemAndQuantityData {
             unitValue = 0.453592,
             itemPrice = "30",
             listType = "NEEDED",
-            itemQuantity = 1.8
+            itemQuantity = 1.8,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 2,
@@ -74,7 +75,7 @@ object MarketItemAndQuantityData {
             unitValue = 0.453592,
             itemPrice = "80",
             listType = "IN_STOCK",
-            itemQuantity = null
+            itemQuantity = null,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 2,
@@ -85,7 +86,7 @@ object MarketItemAndQuantityData {
             unitValue = 1.0,
             itemPrice = "60",
             listType = "IN_STOCK",
-            itemQuantity = 2.2
+            itemQuantity = 2.2,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 3,
@@ -96,7 +97,7 @@ object MarketItemAndQuantityData {
             unitValue = 3.78541,
             itemPrice = "120",
             listType = "OUT_OF_STOCK",
-            itemQuantity = 1.0
+            itemQuantity = 1.0,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 3,
@@ -107,7 +108,7 @@ object MarketItemAndQuantityData {
             unitValue = 0.453592,
             itemPrice = "80",
             listType = "OUT_OF_STOCK",
-            itemQuantity = null
+            itemQuantity = null,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 4,
@@ -118,7 +119,7 @@ object MarketItemAndQuantityData {
             unitValue = 1.0,
             itemPrice = "30",
             listType = "NEEDED",
-            itemQuantity = null
+            itemQuantity = null,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 4,
@@ -129,7 +130,7 @@ object MarketItemAndQuantityData {
             unitValue = 0.453592,
             itemPrice = "40",
             listType = "NEEDED",
-            itemQuantity = 1.5
+            itemQuantity = 1.5,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 5,
@@ -140,7 +141,7 @@ object MarketItemAndQuantityData {
             unitValue = 1.0,
             itemPrice = "200",
             listType = "NEEDED",
-            itemQuantity = 1.5
+            itemQuantity = 1.5,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 5,
@@ -151,8 +152,8 @@ object MarketItemAndQuantityData {
             unitValue = 0.453592,
             itemPrice = "150",
             listType = "NEEDED",
-            itemQuantity = 2.0
-        )
+            itemQuantity = 2.0,
+        ),
     )
 
     val maretListAndType = MarketListAndType(
@@ -163,7 +164,7 @@ object MarketItemAndQuantityData {
         typeId = 1,
         typeName = "Vegetable",
         listType = "NEEDED",
-        updatedAt = null
+        updatedAt = null,
     )
 
     val marketItemsAndQuantity = listOf(
@@ -176,7 +177,7 @@ object MarketItemAndQuantityData {
             unitValue = 1.0,
             itemPrice = "50",
             listType = "NEEDED",
-            itemQuantity = 2.5
+            itemQuantity = 2.5,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 1,
@@ -187,7 +188,7 @@ object MarketItemAndQuantityData {
             unitValue = 0.453592,
             itemPrice = "30",
             listType = "NEEDED",
-            itemQuantity = null
+            itemQuantity = null,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 1,
@@ -198,7 +199,7 @@ object MarketItemAndQuantityData {
             unitValue = 1.0,
             itemPrice = "60",
             listType = "NEEDED",
-            itemQuantity = null
+            itemQuantity = null,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 1,
@@ -209,7 +210,7 @@ object MarketItemAndQuantityData {
             unitValue = 0.453592,
             itemPrice = "40",
             listType = "NEEDED",
-            itemQuantity = 0.0
+            itemQuantity = 0.0,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 1,
@@ -220,7 +221,7 @@ object MarketItemAndQuantityData {
             unitValue = 1.0,
             itemPrice = "35",
             listType = "NEEDED",
-            itemQuantity = 0.0
+            itemQuantity = 0.0,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 1,
@@ -231,7 +232,7 @@ object MarketItemAndQuantityData {
             unitValue = 1.0,
             itemPrice = "45",
             listType = "NEEDED",
-            itemQuantity = null
+            itemQuantity = null,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 1,
@@ -242,7 +243,7 @@ object MarketItemAndQuantityData {
             unitValue = 0.453592,
             itemPrice = "25",
             listType = "NEEDED",
-            itemQuantity = 1.0
+            itemQuantity = 1.0,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 1,
@@ -253,7 +254,7 @@ object MarketItemAndQuantityData {
             unitValue = 1.0,
             itemPrice = "55",
             listType = "NEEDED",
-            itemQuantity = 0.0
+            itemQuantity = 0.0,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 1,
@@ -264,7 +265,7 @@ object MarketItemAndQuantityData {
             unitValue = 0.453592,
             itemPrice = "35",
             listType = "NEEDED",
-            itemQuantity = null
+            itemQuantity = null,
         ),
         MarketItemAndQuantity(
             listWithTypeId = 1,
@@ -275,8 +276,8 @@ object MarketItemAndQuantityData {
             unitValue = 1.0,
             itemPrice = "45",
             listType = "NEEDED",
-            itemQuantity = 0.0
-        )
+            itemQuantity = 0.0,
+        ),
     )
 
     val marketItemAndQuantity = marketItemsAndQuantity.random()

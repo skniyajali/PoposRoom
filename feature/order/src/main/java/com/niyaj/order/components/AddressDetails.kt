@@ -61,7 +61,6 @@ internal fun AddressDetails(
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(SpaceSmall)
             .clickable {
                 onExpandChanged()
             },

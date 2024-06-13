@@ -154,7 +154,7 @@ fun ExportCategoryScreen(
             scope.launch {
                 val result = ImportExport.createFile(
                     context = context,
-                    fileName =EXPORT_CATEGORY_FILE_NAME,
+                    fileName = EXPORT_CATEGORY_FILE_NAME,
                 )
                 exportLauncher.launch(result)
                 viewModel.onEvent(CategorySettingsEvent.GetExportedCategory)
@@ -166,7 +166,6 @@ fun ExportCategoryScreen(
         },
     )
 }
-
 
 @VisibleForTesting
 @Composable
@@ -188,7 +187,7 @@ internal fun ExportCategoryScreenContent(
     onClickToAddItem: () -> Unit,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
-    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp,  SpaceSmallMax, SpaceLarge)
+    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
 ) {
     TrackScreenViewEvent(screenName = "ExportCategoryScreen")
 

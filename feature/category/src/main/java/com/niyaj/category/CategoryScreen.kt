@@ -133,7 +133,7 @@ fun CategoryScreen(
         event = event,
         onDeselectItems = viewModel::deselectItems,
         coroutineScope = scope,
-        snackbarHostState = snackbarState
+        snackbarHostState = snackbarState,
     )
 }
 
@@ -285,13 +285,13 @@ internal fun CategoryScreenContent(
         selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
         onDeselect = onClickDeselect,
-        onBackClick = if(showSearchBar) onCloseSearchBar else onClickBack,
+        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
         snackbarHostState = snackbarHostState,
         onNavigateToScreen = onNavigateToScreen,
     ) { _ ->
         Crossfade(
             targetState = uiState,
-            label = "Category::UiState"
+            label = "Category::UiState",
         ) { state ->
             when (state) {
                 is UiState.Loading -> LoadingIndicator()
@@ -314,7 +314,7 @@ internal fun CategoryScreenContent(
                         columns = GridCells.Fixed(2),
                         state = lazyGridState,
                         horizontalArrangement = Arrangement.spacedBy(SpaceMedium),
-                        verticalArrangement = Arrangement.spacedBy(SpaceMedium)
+                        verticalArrangement = Arrangement.spacedBy(SpaceMedium),
                     ) {
                         items(
                             items = state.data,
@@ -340,7 +340,7 @@ internal fun CategoryScreenContent(
     }
 
     AnimatedVisibility(
-        visible = openDialog.value
+        visible = openDialog.value,
     ) {
         StandardDialog(
             title = DELETE_CATEGORY_ITEM_TITLE,
@@ -363,7 +363,7 @@ private fun CategoryScreenContentPreview(
     @PreviewParameter(CategoryPreviewParameter::class)
     uiState: UiState<List<Category>>,
     modifier: Modifier = Modifier,
-    selectedItems: List<Int> = if (uiState is UiState.Success) listOf(2, 5, 8) else listOf()
+    selectedItems: List<Int> = if (uiState is UiState.Success) listOf(2, 5, 8) else listOf(),
 ) {
     PoposRoomTheme {
         CategoryScreenContent(

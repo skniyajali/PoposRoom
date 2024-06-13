@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.ui.parameterProvider
@@ -28,8 +29,8 @@ import kotlinx.datetime.Clock
 class CartItemsPreviewParameter : PreviewParameterProvider<List<CartItem>> {
     override val values: Sequence<List<CartItem>>
         get() = sequenceOf(
-             dineOutCartItems.take(5),
-            dineInCartItems.take(5)
+            dineOutCartItems.take(5),
+            dineInCartItems.take(5),
         )
 }
 
@@ -37,7 +38,7 @@ class CartItemPreviewParameter : PreviewParameterProvider<CartItem> {
     override val values: Sequence<CartItem>
         get() = sequenceOf(
             dineOutCartItems.first(),
-            dineInCartItems.last()
+            dineInCartItems.last(),
         )
 }
 
@@ -48,62 +49,62 @@ object CartPreviewParameterData {
             productId = 1,
             productName = "Burger",
             productPrice = 500,
-            productQuantity = 2
+            productQuantity = 2,
         ),
         CartProductItem(
             productId = 2,
             productName = "Pizza",
             productPrice = 800,
-            productQuantity = 1
+            productQuantity = 1,
         ),
         CartProductItem(
             productId = 3,
             productName = "Soda",
             productPrice = 100,
-            productQuantity = 3
+            productQuantity = 3,
         ),
         CartProductItem(
             productId = 4,
             productName = "Fries",
             productPrice = 200,
-            productQuantity = 2
+            productQuantity = 2,
         ),
         CartProductItem(
             productId = 5,
             productName = "Salad",
             productPrice = 300,
-            productQuantity = 1
+            productQuantity = 1,
         ),
         CartProductItem(
             productId = 6,
             productName = "Chicken Wings",
             productPrice = 600,
-            productQuantity = 1
+            productQuantity = 1,
         ),
         CartProductItem(
             productId = 7,
             productName = "Ice Cream",
             productPrice = 150,
-            productQuantity = 2
+            productQuantity = 2,
         ),
         CartProductItem(
             productId = 8,
             productName = "Steak",
             productPrice = 1200,
-            productQuantity = 1
+            productQuantity = 1,
         ),
         CartProductItem(
             productId = 9,
             productName = "Pasta",
             productPrice = 700,
-            productQuantity = 1
+            productQuantity = 1,
         ),
         CartProductItem(
             productId = 10,
             productName = "Coffee",
             productPrice = 250,
-            productQuantity = 2
-        )
+            productQuantity = 2,
+        ),
     )
 
     private val chargesId = listOf(1, 2, 3, 4, 5)

@@ -23,6 +23,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +31,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
@@ -50,33 +52,37 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
 import com.niyaj.common.utils.toTime
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.OrderType
 import com.niyaj.model.ProductWiseOrder
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.ItemNotAvailable
+import com.niyaj.ui.components.ItemNotAvailableHalf
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.OrderTab
 import com.niyaj.ui.components.OrderTabs
 import com.niyaj.ui.components.OrderTabsContent
 import com.niyaj.ui.components.TextWithCount
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.ProductWiseOrderPreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ProductOrderDetails(
+internal fun ProductOrderDetails(
     modifier: Modifier = Modifier,
-    pagerState: PagerState,
     orderState: UiState<List<ProductWiseOrder>>,
     productPrice: Int,
     onClickOrder: (Int) -> Unit,
+    pagerState: PagerState = rememberPagerState { 2 },
 ) = trace("ProductOrderDetails") {
     Surface(
         modifier = modifier
@@ -94,7 +100,8 @@ fun ProductOrderDetails(
                 is UiState.Loading -> LoadingIndicator()
 
                 is UiState.Empty -> {
-                    ItemNotAvailable(
+                    ItemNotAvailableHalf(
+                        modifier = Modifier.height(IntrinsicSize.Min),
                         text = "Have not placed any order on this product.",
                     )
                 }
@@ -159,7 +166,7 @@ fun ProductOrderDetails(
 }
 
 @Composable
-fun GroupedProductOrders(
+private fun GroupedProductOrders(
     modifier: Modifier = Modifier,
     groupedByDate: Map<String, List<ProductWiseOrder>>,
     productPrice: Int,
@@ -207,7 +214,7 @@ fun GroupedProductOrders(
 }
 
 @Composable
-fun OrderDetailsCard(
+private fun OrderDetailsCard(
     modifier: Modifier = Modifier,
     order: ProductWiseOrder,
     onClickOrder: (Int) -> Unit,
@@ -294,5 +301,23 @@ fun OrderDetailsCard(
                 Icon(imageVector = PoposIcons.ArrowRightAlt, contentDescription = "View Details")
             }
         }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@DevicePreviews
+@Composable
+private fun ProductOrderDetailsPreview(
+    @PreviewParameter(ProductWiseOrderPreviewParameter::class)
+    orderState: UiState<List<ProductWiseOrder>>,
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ProductOrderDetails(
+            modifier = modifier,
+            orderState = orderState,
+            productPrice = 120,
+            onClickOrder = {},
+        )
     }
 }

@@ -387,4 +387,3 @@ private fun ChargesScreenContentPreview(
         )
     }
 }
-

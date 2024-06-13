@@ -387,7 +387,6 @@ fun HomeScreenContent(
     }
 }
 
-
 @DevicePreviews
 @Composable
 private fun HomeScreenContentPreview(

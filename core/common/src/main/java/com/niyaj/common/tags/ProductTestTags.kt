@@ -56,22 +56,25 @@ object ProductTestTags {
 
     const val PRODUCT_TAG = "Product-"
 
-    const val EXPORT_PRODUCTS_TITLE = "Export Products"
-    const val EXPORT_PRODUCTS_BTN_TEXT = "Export Products"
-    const val EXPORT_PRODUCTS_BTN = "Export Products"
+    const val PRODUCT_SETTINGS_TITLE = "Product Settings"
 
     const val IMPORT_PRODUCTS_TITLE = "Import Products"
-    const val IMPORT_PRODUCTS_BTN_TEXT = "Import Products"
+    const val IMPORT_PRODUCTS_SUB_TITLE = "Click here to import product from file."
     const val IMPORT_PRODUCTS_OPN_FILE = "Open File"
     const val IMPORT_PRODUCTS_NOTE_TEXT = "Make sure to open products.json file."
+    const val IMPORT_PRODUCTS_NOTE = "Make sure to import categories before importing products."
 
     const val INCREASE_PRODUCTS_TITLE = "Increase Price"
-    const val INCREASE_PRODUCTS_TEXT_FIELD = "Product Price"
-    const val INCREASE_PRODUCTS_BTN_TEXT = "Increase Price"
+    const val INCREASE_PRODUCTS_SUB_TITLE = "Click here to increase product price."
 
     const val DECREASE_PRODUCTS_TITLE = "Decrease Price"
-    const val DECREASE_PRODUCTS_TEXT_FIELD = "Product Price"
-    const val DECREASE_PRODUCTS_BTN_TEXT = "Decrease Price"
+    const val DECREASE_PRODUCTS_SUB_TITLE = "Click here to decrease product price."
+    const val PRODUCT_PRICE_TEXT_FIELD = "Product Price"
 
+    const val EXPORT_PRODUCTS_TITLE = "Export Products"
+    const val EXPORT_PRODUCTS_SUB_TITLE = "Click here to export product to file."
     const val EXPORTED_PRODUCTS_FILE_NAME = "products"
+
+    const val VIEW_CATEGORY_TITLE = "View Categories"
+    const val VIEW_CATEGORY_SUB_TITLE = "Click here to view categories."
 }

@@ -50,7 +50,7 @@ object AbsentScreenTags {
 
     const val ABSENT_TAG = "Absent-"
 
-    const val ABSENT_SETTINGS_NOTE ="Make Sure To Import Employee Before Importing Employee Absent Dates."
+    const val ABSENT_SETTINGS_NOTE = "Make Sure To Import Employee Before Importing Employee Absent Dates."
 
     const val ABSENT_SETTINGS_TITLE = "Absent Settings"
 

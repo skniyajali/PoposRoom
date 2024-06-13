@@ -455,9 +455,9 @@ fun PoposSecondaryScaffold(
                     },
                 ),
             ) {
-                if(showSecondaryBottomBar) {
+                if (showSecondaryBottomBar) {
                     bottomBar()
-                }else {
+                } else {
                     BottomAppBar(
                         containerColor = statusColor,
                         contentPadding = PaddingValues(SpaceMedium),

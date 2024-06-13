@@ -194,19 +194,18 @@ private fun CartProduct(
     }
 }
 
-
 @DevicePreviews
 @Composable
 private fun CartItemProductDetailsSectionPreview(
     modifier: Modifier = Modifier,
-    cartProducts: List<CartProductItem> = CartPreviewParameterData.sampleCartProductItems
+    cartProducts: List<CartProductItem> = CartPreviewParameterData.sampleCartProductItems,
 ) {
     PoposRoomTheme {
         CartItemProductDetailsSection(
             modifier = modifier,
             cartProducts = cartProducts,
             decreaseQuantity = {},
-            increaseQuantity = {}
+            increaseQuantity = {},
         )
     }
 }

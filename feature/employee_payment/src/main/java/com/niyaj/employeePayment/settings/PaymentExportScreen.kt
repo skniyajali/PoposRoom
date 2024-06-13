@@ -308,7 +308,7 @@ internal fun PaymentExportScreenContent(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(it),
         ) {
             if (items.isEmpty()) {
                 ItemNotAvailable(

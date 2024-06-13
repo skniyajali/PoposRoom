@@ -130,10 +130,9 @@ fun EmployeeScreen(
         event = event,
         onDeselectItems = viewModel::deselectItems,
         coroutineScope = scope,
-        snackbarHostState = snackbarState
+        snackbarHostState = snackbarState,
     )
 }
-
 
 @VisibleForTesting
 @Composable
@@ -244,7 +243,7 @@ internal fun EmployeeScreenContent(
                         doesSelected = selectedItems::contains,
                         onSelectItem = onClickSelectItem,
                         onNavigateToDetails = onNavigateToDetails,
-                        lazyListState = lazyListState
+                        lazyListState = lazyListState,
                     )
                 }
             }

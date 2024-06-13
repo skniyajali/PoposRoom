@@ -53,7 +53,7 @@ object CategoryConstants {
 
     const val EXPORT_CATEGORY_TITLE = "Export Categories"
     const val EXPORT_CATEGORY_TITLE_NOTE = "Click here to export category to file."
-    
+
     const val EXPORT_CATEGORY_BTN_TEXT = "Export Categories"
     const val EXPORT_CATEGORY_BTN = "Export Categories"
 

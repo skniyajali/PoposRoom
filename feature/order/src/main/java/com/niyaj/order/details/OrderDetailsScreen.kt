@@ -28,6 +28,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -351,6 +352,7 @@ internal fun OrderDetailsContent(
                             .fillMaxSize()
                             .padding(it),
                         contentPadding = PaddingValues(SpaceSmall),
+                        verticalArrangement = Arrangement.spacedBy(SpaceSmall),
                         state = lazyListState,
                     ) {
                         item("Order Details") {
@@ -366,8 +368,8 @@ internal fun OrderDetailsContent(
                             )
                         }
 
-                        item("Customer Details") {
-                            if (orderDetails.cartOrder.customer.customerId != 0) {
+                        if (orderDetails.cartOrder.customer.customerId != 0) {
+                            item("Customer Details") {
                                 CustomerDetails(
                                     customer = orderDetails.cartOrder.customer,
                                     doesExpanded = customerExpended,
@@ -379,8 +381,8 @@ internal fun OrderDetailsContent(
                             }
                         }
 
-                        item("Address Details") {
-                            if (orderDetails.cartOrder.address.addressId != 0) {
+                        if (orderDetails.cartOrder.address.addressId != 0) {
+                            item("Address Details") {
                                 AddressDetails(
                                     address = orderDetails.cartOrder.address,
                                     doesExpanded = addressExpended,

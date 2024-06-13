@@ -44,15 +44,14 @@ class CustomerPreviewParameter : PreviewParameterProvider<UiState<Customer>> {
         )
 }
 
-class CustomerWiseOrderPreviewParameter: PreviewParameterProvider<UiState<List<CustomerWiseOrder>>> {
+class CustomerWiseOrderPreviewParameter : PreviewParameterProvider<UiState<List<CustomerWiseOrder>>> {
     override val values: Sequence<UiState<List<CustomerWiseOrder>>>
         get() = sequenceOf(
             UiState.Loading,
             UiState.Empty,
-            UiState.Success(customerWiseOrders)
+            UiState.Success(customerWiseOrders),
         )
 }
-
 
 object CustomerPreviewData {
 
@@ -124,62 +123,62 @@ object CustomerPreviewData {
             orderId = 1,
             totalPrice = 5000,
             updatedAt = "1685856000000",
-            customerAddress = "123 Main St, Anytown USA"
+            customerAddress = "123 Main St, Anytown USA",
         ),
         CustomerWiseOrder(
             orderId = 2,
             totalPrice = 7500,
             updatedAt = "1685942400000",
-            customerAddress = "456 Oak Rd, Someville USA"
+            customerAddress = "456 Oak Rd, Someville USA",
         ),
         CustomerWiseOrder(
             orderId = 3,
             totalPrice = 2000,
             updatedAt = "1686028800000",
-            customerAddress = "789 Maple Ave, Otherville USA"
+            customerAddress = "789 Maple Ave, Otherville USA",
         ),
         CustomerWiseOrder(
             orderId = 4,
             totalPrice = 10000,
             updatedAt = "1686115200000",
-            customerAddress = "321 Pine St, Newtown USA"
+            customerAddress = "321 Pine St, Newtown USA",
         ),
         CustomerWiseOrder(
             orderId = 5,
             totalPrice = 3500,
             updatedAt = "1686201600000",
-            customerAddress = "567 Elm St, Mytown USA"
+            customerAddress = "567 Elm St, Mytown USA",
         ),
         CustomerWiseOrder(
             orderId = 6,
             totalPrice = 8000,
             updatedAt = "1686288000000",
-            customerAddress = "890 Cedar Rd, Yourville USA"
+            customerAddress = "890 Cedar Rd, Yourville USA",
         ),
         CustomerWiseOrder(
             orderId = 7,
             totalPrice = 6000,
             updatedAt = "1686374400000",
-            customerAddress = "246 Birch Ave, Theirtown USA"
+            customerAddress = "246 Birch Ave, Theirtown USA",
         ),
         CustomerWiseOrder(
             orderId = 8,
             totalPrice = 4000,
             updatedAt = "1686460800000",
-            customerAddress = "135 Oak Ln, Ourtown USA"
+            customerAddress = "135 Oak Ln, Ourtown USA",
         ),
         CustomerWiseOrder(
             orderId = 9,
             totalPrice = 9000,
             updatedAt = "1686547200000",
-            customerAddress = "679 Maple Blvd, Heretown USA"
+            customerAddress = "679 Maple Blvd, Heretown USA",
         ),
         CustomerWiseOrder(
             orderId = 10,
             totalPrice = 7000,
             updatedAt = "1686633600000",
-            customerAddress = "864 Pine Dr, Theretown USA"
-        )
+            customerAddress = "864 Pine Dr, Theretown USA",
+        ),
     )
 
     val sampleTotalOrder = TotalOrderDetails(

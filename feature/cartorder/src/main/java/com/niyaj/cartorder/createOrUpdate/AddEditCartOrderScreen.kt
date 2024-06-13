@@ -409,7 +409,7 @@ internal fun AddEditCartOrderScreenContent(
                             },
                             suffix = {
                                 AnimatedVisibility(
-                                    visible = state.customer.customerPhone.length != 10
+                                    visible = state.customer.customerPhone.length != 10,
                                 ) {
                                     PhoneNoCountBox(
                                         count = state.customer.customerPhone.length,
@@ -639,8 +639,8 @@ private fun AddEditCartOrderScreenContentPreview(
                     customerPhone = "9078563421",
                 ),
                 deliveryPartnerId = 1,
-                selectedAddOnItems = mutableListOf(1,3,4),
-                selectedCharges = mutableListOf(2,4)
+                selectedAddOnItems = mutableListOf(1, 3, 4),
+                selectedCharges = mutableListOf(2, 4),
             ),
             addresses = addresses,
             customers = customers,
@@ -650,7 +650,7 @@ private fun AddEditCartOrderScreenContentPreview(
             chargesState = UiState.Success(chargesList),
             partnerState = UiState.Success(partnerList),
             onBackClick = {},
-            onEvent = {}
+            onEvent = {},
         )
     }
 }

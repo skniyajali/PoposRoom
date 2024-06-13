@@ -138,7 +138,6 @@ class HomeViewModel @Inject constructor(
     }
 }
 
-
 internal fun AnalyticsHelper.logAddProductToCart(orderId: Int, productId: Int) {
     logEvent(
         event = AnalyticsEvent(

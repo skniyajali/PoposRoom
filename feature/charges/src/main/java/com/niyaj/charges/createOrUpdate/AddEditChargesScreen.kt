@@ -112,7 +112,6 @@ fun AddEditChargesScreen(
     )
 }
 
-
 @VisibleForTesting
 @Composable
 internal fun AddEditChargesScreenContent(

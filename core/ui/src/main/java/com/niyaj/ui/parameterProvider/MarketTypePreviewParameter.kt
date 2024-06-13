@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.ui.parameterProvider
@@ -26,7 +27,7 @@ class MarketTypePreviewParameter : PreviewParameterProvider<UiState<List<MarketT
         get() = sequenceOf(
             UiState.Loading,
             UiState.Empty,
-            UiState.Success(marketTypes)
+            UiState.Success(marketTypes),
         )
 }
 
@@ -38,7 +39,7 @@ object MarketTypePreviewData {
             typeDesc = "Fresh vegetables",
             supplierId = 101,
             listTypes = listOf("IN_STOCK", "NEEDED", "OUT_OF_STOCK"),
-            createdAt = 1623456789000
+            createdAt = 1623456789000,
         ),
         MarketType(
             typeId = 2,
@@ -46,7 +47,7 @@ object MarketTypePreviewData {
             typeDesc = "Fresh fruits",
             supplierId = 102,
             listTypes = listOf("IN_STOCK", "NEEDED"),
-            createdAt = 1623456790000
+            createdAt = 1623456790000,
         ),
         MarketType(
             typeId = 3,
@@ -54,7 +55,7 @@ object MarketTypePreviewData {
             supplierId = 103,
             listTypes = listOf("OUT_OF_STOCK", "NEEDED"),
             createdAt = 1623456791000,
-            updatedAt = 1623456792000
+            updatedAt = 1623456792000,
         ),
         MarketType(
             typeId = 4,
@@ -62,14 +63,14 @@ object MarketTypePreviewData {
             typeDesc = "Baked goods",
             supplierId = 104,
             listTypes = listOf("IN_STOCK"),
-            createdAt = 1623456793000
+            createdAt = 1623456793000,
         ),
         MarketType(
             typeId = 5,
             typeName = "Meat",
             supplierId = 105,
             listTypes = listOf("NEEDED", "OUT_OF_STOCK"),
-            createdAt = 1623456794000
+            createdAt = 1623456794000,
         ),
         MarketType(
             typeId = 6,
@@ -77,7 +78,7 @@ object MarketTypePreviewData {
             typeDesc = "Fresh seafood",
             supplierId = 106,
             listTypes = listOf("IN_STOCK", "NEEDED"),
-            createdAt = 1623456795000
+            createdAt = 1623456795000,
         ),
         MarketType(
             typeId = 7,
@@ -85,7 +86,7 @@ object MarketTypePreviewData {
             supplierId = 107,
             listTypes = listOf("OUT_OF_STOCK"),
             createdAt = 1623456796000,
-            updatedAt = 1623456797000
+            updatedAt = 1623456797000,
         ),
         MarketType(
             typeId = 8,
@@ -93,14 +94,14 @@ object MarketTypePreviewData {
             typeDesc = "Chips, cookies, and more",
             supplierId = 108,
             listTypes = listOf("IN_STOCK", "NEEDED", "OUT_OF_STOCK"),
-            createdAt = 1623456798000
+            createdAt = 1623456798000,
         ),
         MarketType(
             typeId = 9,
             typeName = "Household",
             supplierId = 109,
             listTypes = listOf("NEEDED"),
-            createdAt = 1623456799000
+            createdAt = 1623456799000,
         ),
         MarketType(
             typeId = 10,
@@ -108,7 +109,7 @@ object MarketTypePreviewData {
             typeDesc = "Toiletries and cosmetics",
             supplierId = 110,
             listTypes = listOf("IN_STOCK", "OUT_OF_STOCK"),
-            createdAt = 1623456800000
-        )
+            createdAt = 1623456800000,
+        ),
     )
 }

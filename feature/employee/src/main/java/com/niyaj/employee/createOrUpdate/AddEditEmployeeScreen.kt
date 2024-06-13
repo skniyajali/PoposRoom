@@ -247,7 +247,7 @@ internal fun AddEditEmployeeScreenContent(
                     showClearIcon = state.employeePhone.isNotEmpty(),
                     suffix = {
                         AnimatedVisibility(
-                            visible = state.employeePhone.length != 10
+                            visible = state.employeePhone.length != 10,
                         ) {
                             PhoneNoCountBox(
                                 count = state.employeePhone.length,
@@ -574,7 +574,7 @@ private fun AddEditEmployeeScreenContentPreview() {
                 employeeSalaryType = EmployeeSalaryType.Monthly,
                 employeeType = EmployeeType.FullTime,
                 isDeliveryPartner = true,
-                partnerQRCode = "No QR"
+                partnerQRCode = "No QR",
             ),
             phoneError = null,
             nameError = null,

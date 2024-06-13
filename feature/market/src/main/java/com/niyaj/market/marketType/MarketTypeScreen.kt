@@ -128,7 +128,7 @@ fun MarketTypeScreen(
         event = event,
         onDeselectItems = viewModel::deselectItems,
         coroutineScope = scope,
-        snackbarHostState = snackbarState
+        snackbarHostState = snackbarState,
     )
 }
 
@@ -361,7 +361,7 @@ private fun MarketTypeScreenPreview(
             onClickCreateNew = {},
             onClickEdit = {},
             onClickSettings = {},
-            onClickCreateNewItem = {}
+            onClickCreateNewItem = {},
         )
     }
 }

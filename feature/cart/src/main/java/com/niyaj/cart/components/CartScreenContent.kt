@@ -164,7 +164,6 @@ private fun CartScreenContentLoadingPreview(
     }
 }
 
-
 @DevicePreviews
 @Composable
 private fun CartScreenContentEmptyPreview(
@@ -190,7 +189,6 @@ private fun CartScreenContentEmptyPreview(
     }
 }
 
-
 @DevicePreviews
 @Composable
 private fun CartScreenContentPreview(
@@ -198,7 +196,7 @@ private fun CartScreenContentPreview(
     cartItems: List<CartItem>,
     modifier: Modifier = Modifier,
     addOnItems: List<AddOnItem> = AddOnPreviewData.addOnItemList.take(5),
-    deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5)
+    deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5),
 ) {
     PoposRoomTheme {
         CartScreenContent(

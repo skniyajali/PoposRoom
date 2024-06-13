@@ -254,7 +254,7 @@ internal fun ImportMeasureUnitScreenContent(
                     isInSelectionMode = true,
                     doesSelected = selectedItems::contains,
                     onSelectItem = onClickSelectItem,
-                    lazyGridState = lazyGridState
+                    lazyGridState = lazyGridState,
                 )
             }
         }
@@ -323,4 +323,3 @@ private fun ImportMeasureUnitScreenContentPreview(
         )
     }
 }
-

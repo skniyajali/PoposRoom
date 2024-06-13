@@ -141,7 +141,6 @@ fun EmployeeImportScreen(
     )
 }
 
-
 @VisibleForTesting
 @Composable
 internal fun EmployeeImportScreenContent(
@@ -254,7 +253,7 @@ internal fun EmployeeImportScreenContent(
                     doesSelected = selectedItems::contains,
                     onSelectItem = onClickSelectItem,
                     onNavigateToDetails = {},
-                    lazyListState = lazyListState
+                    lazyListState = lazyListState,
                 )
             }
         }
@@ -298,4 +297,3 @@ private fun EmployeeImportScreenContentPreview(
         )
     }
 }
-

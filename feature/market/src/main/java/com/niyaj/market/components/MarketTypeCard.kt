@@ -155,7 +155,7 @@ private fun MarketTypeCard(
             defaultElevation = 2.dp,
         ),
         colors = CardDefaults.elevatedCardColors().copy(
-            containerColor = containerColor
+            containerColor = containerColor,
         ),
     ) {
         Row(

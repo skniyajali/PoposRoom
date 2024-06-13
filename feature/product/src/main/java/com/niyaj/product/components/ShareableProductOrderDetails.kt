@@ -62,6 +62,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.compose.ui.window.DialogProperties
@@ -75,6 +76,7 @@ import com.niyaj.designsystem.components.PoposSuggestionChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.ButtonSize
 import com.niyaj.designsystem.theme.Pewter
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -88,14 +90,17 @@ import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.TextWithCount
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.ProductPreviewData
+import com.niyaj.ui.parameterProvider.ProductWiseOrderPreviewParameter
 import com.niyaj.ui.utils.CaptureController
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.ScrollableCapturable
+import com.niyaj.ui.utils.rememberCaptureController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShareableProductOrderDetails(
+internal fun ShareableProductOrderDetails(
     modifier: Modifier = Modifier,
-    captureController: CaptureController,
     productState: UiState<Product>,
     totalOrderDetails: ProductTotalOrderDetails,
     ordersState: UiState<List<ProductWiseOrder>>,
@@ -103,6 +108,7 @@ fun ShareableProductOrderDetails(
     onClickShare: () -> Unit,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
     onClickPrintOrder: () -> Unit,
+    captureController: CaptureController = rememberCaptureController(),
 ) = trace("ShareableProductOrderDetails") {
     BasicAlertDialog(
         onDismissRequest = onDismiss,
@@ -166,7 +172,7 @@ fun ShareableProductOrderDetails(
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun CapturableOrderDetailsCard(
+private fun CapturableOrderDetailsCard(
     modifier: Modifier = Modifier,
     product: Product,
     totalOrder: ProductTotalOrderDetails,
@@ -242,7 +248,7 @@ fun CapturableOrderDetailsCard(
 }
 
 @Composable
-fun ShareableOrderDetails(
+private fun ShareableOrderDetails(
     modifier: Modifier = Modifier,
     orders: List<ProductWiseOrder>,
     productPrice: Int,
@@ -284,7 +290,7 @@ fun ShareableOrderDetails(
 }
 
 @Composable
-fun ShareableProductOrderDetailsCard(
+private fun ShareableProductOrderDetailsCard(
     modifier: Modifier = Modifier,
     date: String,
     orders: List<ProductWiseOrder>,
@@ -381,7 +387,7 @@ fun ShareableProductOrderDetailsCard(
 }
 
 @Composable
-fun PaginationButtons(
+private fun PaginationButtons(
     modifier: Modifier = Modifier,
     showViewMoreBtn: Boolean,
     showViewLessBtn: Boolean,
@@ -422,7 +428,7 @@ fun PaginationButtons(
 }
 
 @Composable
-fun ShareableProductDetails(
+private fun ShareableProductDetails(
     modifier: Modifier = Modifier,
     product: Product,
 ) = trace("ShareableProductDetails") {
@@ -468,7 +474,7 @@ fun ShareableProductDetails(
 }
 
 @Composable
-fun DialogButtons(
+private fun DialogButtons(
     modifier: Modifier = Modifier,
     shareButtonColor: Color = MaterialTheme.colorScheme.primary,
     onDismiss: () -> Unit,
@@ -515,5 +521,37 @@ fun DialogButtons(
                 ),
             )
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ShareableProductOrderDetailsPreview(
+    @PreviewParameter(ProductWiseOrderPreviewParameter::class)
+    orderState: UiState<List<ProductWiseOrder>>,
+    modifier: Modifier = Modifier,
+    product: Product = ProductPreviewData.productList.random(),
+    totalOrderDetails: ProductTotalOrderDetails = ProductTotalOrderDetails(
+        totalAmount = "1200",
+        dineInAmount = "600",
+        dineInQty = 6,
+        dineOutAmount = "600",
+        dineOutQty = 6,
+        mostOrderItemDate = "1686854400000",
+        mostOrderQtyDate = "1687200000000",
+        datePeriod = Pair("1685603200000", "1688195200000"),
+    ),
+) {
+    PoposRoomTheme {
+        ShareableProductOrderDetails(
+            modifier = modifier,
+            productState = UiState.Success(product),
+            totalOrderDetails = totalOrderDetails,
+            ordersState = orderState,
+            onDismiss = {},
+            onClickShare = {},
+            onCaptured = { _, _ -> },
+            onClickPrintOrder = {},
+        )
     }
 }

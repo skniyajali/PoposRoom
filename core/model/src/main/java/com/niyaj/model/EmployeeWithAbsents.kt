@@ -29,21 +29,22 @@ data class EmployeeWithAbsents(
     val absents: List<Absent> = emptyList(),
 )
 
-
 /**
  * Filter absent employee by date and absent reason
  */
 fun Absent.filterAbsent(searchText: String): Boolean {
     return this.absentDate.toJoinedDate.contains(searchText, true) ||
-            this.absentReason.contains(searchText, true) ||
-            this.absentDate.toDate.contains(searchText, true) ||
-            this.createdAt.toDateString.contains(searchText, true)
+        this.absentReason.contains(searchText, true) ||
+        this.absentDate.toDate.contains(searchText, true) ||
+        this.createdAt.toDateString.contains(searchText, true)
 }
 
 fun List<Absent>.filterAbsent(searchText: String): List<Absent> {
     return if (this.isNotEmpty()) {
         this.filter { it.filterAbsent(searchText) }
-    }else this
+    } else {
+        this
+    }
 }
 
 fun List<EmployeeWithAbsents>.filterEmployeeWithAbsent(searchText: String): List<EmployeeWithAbsents> {
@@ -51,8 +52,10 @@ fun List<EmployeeWithAbsents>.filterEmployeeWithAbsent(searchText: String): List
         this.map {
             EmployeeWithAbsents(
                 employee = it.employee,
-                absents = it.absents.filterAbsent(searchText)
+                absents = it.absents.filterAbsent(searchText),
             )
         }
-    }else this
+    } else {
+        this
+    }
 }

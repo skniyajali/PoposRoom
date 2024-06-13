@@ -126,7 +126,7 @@ fun AbsentScreen(
         event = event,
         onDeselectItems = viewModel::deselectItems,
         coroutineScope = scope,
-        snackbarHostState = snackbarState
+        snackbarHostState = snackbarState,
     )
 }
 
@@ -369,7 +369,7 @@ private fun AbsentScreenPreview(
             onClickEdit = {},
             onClickSettings = {},
             onAbsentAddClick = {},
-            onSelectEmployee = {}
+            onSelectEmployee = {},
         )
     }
 }

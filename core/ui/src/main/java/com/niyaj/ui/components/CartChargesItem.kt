@@ -63,7 +63,6 @@ fun CartChargesItem(
     }
 }
 
-
 @DevicePreviews
 @Composable
 private fun CartChargesItemPreview(
@@ -76,7 +75,7 @@ private fun CartChargesItemPreview(
             modifier = modifier,
             chargesList = chargesList,
             selectedItems = selectedItems,
-            onClick = {}
+            onClick = {},
         )
     }
 }

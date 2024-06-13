@@ -261,7 +261,7 @@ internal fun AbsentImportScreenContent(
                     onClick = onClickSelectItem,
                     onLongClick = onClickSelectItem,
                     onChipClick = {},
-                    lazyListState = lazyListState
+                    lazyListState = lazyListState,
                 )
             }
         }
@@ -309,4 +309,3 @@ private fun AbsentImportScreenContentPreview(
         )
     }
 }
-

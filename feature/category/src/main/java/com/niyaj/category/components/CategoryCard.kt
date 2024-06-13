@@ -107,7 +107,6 @@ fun CategoryData(
     }
 }
 
-
 @DevicePreviews
 @Composable
 private fun CategoryDataPreview(

@@ -122,8 +122,8 @@ fun StandardTextField(
         },
         prefix = prefix,
         suffix = suffix,
-        supportingText = {
-            errorText?.let {
+        supportingText = errorText?.let {
+            {
                 Text(
                     modifier = Modifier.testTag(errorTextTag),
                     text = it,

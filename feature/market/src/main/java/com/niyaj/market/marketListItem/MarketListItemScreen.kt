@@ -144,7 +144,7 @@ fun MarketListItemScreen(
     )
 
     AnimatedVisibility(
-        visible = showDialog
+        visible = showDialog,
     ) {
         val items = viewModel.shareableMarketList.collectAsStateWithLifecycle().value
 

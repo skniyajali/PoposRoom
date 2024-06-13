@@ -301,8 +301,8 @@ internal fun MarketListItemsScreenContent(
                                     items = groupedByList,
                                     key = {
                                         "${it.listType}(${it.listWithTypeId}, ${it.itemId})"
-                                    }
-                                ){ item ->
+                                    },
+                                ) { item ->
                                     MarketItemWithQuantityWithListTypeCard(
                                         item = item,
                                         onAddItem = onAddItem,
@@ -324,7 +324,6 @@ internal fun MarketListItemsScreenContent(
     }
 }
 
-
 @DevicePreviews
 @Composable
 private fun MarketListItemsScreenContentPreview(
@@ -345,10 +344,10 @@ private fun MarketListItemsScreenContentPreview(
             onCloseSearchBar = {},
             onPrintList = {},
             onClickShare = {},
-            onAddItem = { _,_ -> },
-            onRemoveItem = { _,_ -> },
+            onAddItem = { _, _ -> },
+            onRemoveItem = { _, _ -> },
             onDecreaseQuantity = { _, _ -> },
-            onIncreaseQuantity = { _,_ -> },
+            onIncreaseQuantity = { _, _ -> },
             onBackClick = {},
             onClickAddNewMarketItem = {},
         )

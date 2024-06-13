@@ -78,7 +78,7 @@ internal fun CartFooterPlaceOrder(
             Row(
                 modifier = Modifier.weight(1.5f, true),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
+                horizontalArrangement = Arrangement.Start,
             ) {
                 IconButton(
                     onClick = onClickSelectAll,
@@ -120,7 +120,7 @@ internal fun CartFooterPlaceOrder(
                         onClick = onClickSelectAll,
                     ),
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
 
@@ -128,7 +128,7 @@ internal fun CartFooterPlaceOrder(
                 modifier = Modifier
                     .weight(1.5f, true),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.End,
             ) {
                 val text =
                     if (countSelectedItem == 0) {
@@ -147,7 +147,7 @@ internal fun CartFooterPlaceOrder(
                     shape = CutCornerShape(4.dp),
                     style = MaterialTheme.typography.labelSmall,
                     btnHeight = ButtonDefaults.MinHeight,
-                    contentPadding = PaddingValues(horizontal = 8.dp)
+                    contentPadding = PaddingValues(horizontal = 8.dp),
                 )
 
                 if (showPrintBtn) {
@@ -164,7 +164,7 @@ internal fun CartFooterPlaceOrder(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondary,
                         ),
-                        contentPadding = PaddingValues(0.dp)
+                        contentPadding = PaddingValues(0.dp),
                     )
 
                     Spacer(modifier = Modifier.width(SpaceSmall))
@@ -187,7 +187,7 @@ private fun CartFooterPlaceOrderPreview(
             showPrintBtn = true,
             onClickSelectAll = {},
             onClickPlaceAllOrder = {},
-            onClickPrintAllOrder = {}
+            onClickPrintAllOrder = {},
         )
     }
 }

@@ -230,7 +230,7 @@ private fun AddEditCustomerScreenContentPreview(
             nameError = null,
             emailError = null,
             onEvent = {},
-            onBackClick = {}
+            onBackClick = {},
         )
     }
 }

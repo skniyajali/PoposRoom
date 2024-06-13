@@ -73,7 +73,6 @@ fun CartAddOnItems(
     }
 }
 
-
 @DevicePreviews
 @Composable
 private fun CartAddOnItemsPreview(
@@ -86,7 +85,7 @@ private fun CartAddOnItemsPreview(
             modifier = modifier,
             addOnItems = addOnItems,
             selectedAddOnItem = selectedAddOnItem,
-            onClick = {}
+            onClick = {},
         )
     }
 }

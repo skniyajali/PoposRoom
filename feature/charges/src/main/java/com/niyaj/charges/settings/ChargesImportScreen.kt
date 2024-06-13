@@ -114,7 +114,6 @@ fun ChargesImportScreen(
             }
         }
 
-
     LaunchedEffect(key1 = event) {
         event?.let { data ->
             when (data) {
@@ -160,7 +159,7 @@ internal fun ChargesImportScreenContent(
     onBackClick: () -> Unit,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
-    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp,  SpaceSmallMax, SpaceLarge)
+    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
 ) {
     TrackScreenViewEvent(screenName = "Charges Import Screen")
 
@@ -319,4 +318,3 @@ private fun ChargesImportScreenContentPreview(
         )
     }
 }
-

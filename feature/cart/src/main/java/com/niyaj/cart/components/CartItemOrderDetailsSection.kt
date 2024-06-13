@@ -69,7 +69,7 @@ internal fun CartItemOrderDetailsSection(
     } else {
         MaterialTheme.colorScheme.onSecondaryContainer
     },
-    height: Dp = if (orderType == OrderType.DineIn) 56.dp else 64.dp
+    height: Dp = if (orderType == OrderType.DineIn) 56.dp else 64.dp,
 ) = trace("CartItemOrderDetailsSection") {
     Surface(
         modifier = modifier
@@ -166,7 +166,7 @@ private fun CartItemOrderDetailsSectionPreview(
     orderType: OrderType,
     modifier: Modifier = Modifier,
     orderId: String = if (orderType == OrderType.DineIn) "DineIn-1" else "DineOut-2",
-    customerPhone: String? = if (orderType == OrderType.DineOut) "9078563421" else null
+    customerPhone: String? = if (orderType == OrderType.DineOut) "9078563421" else null,
 ) {
     PoposRoomTheme {
         CartItemOrderDetailsSection(
@@ -194,7 +194,7 @@ private fun CartOrderDetailsButtonsPreview(
             iconColor = MaterialTheme.colorScheme.primary,
             onClick = {},
             onEditClick = {},
-            onViewClick = {}
+            onViewClick = {},
         )
     }
 }

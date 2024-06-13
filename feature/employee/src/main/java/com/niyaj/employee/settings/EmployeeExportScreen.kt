@@ -283,7 +283,7 @@ internal fun EmployeeExportScreenContent(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(it),
         ) {
             if (items.isEmpty()) {
                 ItemNotAvailable(
@@ -300,7 +300,7 @@ internal fun EmployeeExportScreenContent(
                     onSelectItem = onSelectItem,
                     doesSelected = selectedItems::contains,
                     onNavigateToDetails = {},
-                    lazyListState = lazyListState
+                    lazyListState = lazyListState,
                 )
             }
         }

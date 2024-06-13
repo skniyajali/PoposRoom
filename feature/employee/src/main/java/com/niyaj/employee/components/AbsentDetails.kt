@@ -79,7 +79,7 @@ internal fun AbsentDetails(
             .fillMaxWidth()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null
+                indication = null,
             ) {
                 onExpanded()
             }
@@ -150,13 +150,13 @@ internal fun AbsentDetails(
                                                 .fillMaxWidth()
                                                 .padding(horizontal = SpaceSmall, vertical = SpaceMini),
                                             horizontalArrangement = Arrangement.SpaceBetween,
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ){
+                                            verticalAlignment = Alignment.CenterVertically,
+                                        ) {
                                             IconWithText(
                                                 text = "${absentReport.startDate.toFormattedDate} - ${absentReport.endDate.toFormattedDate}",
                                                 icon = PoposIcons.CalenderMonth,
                                                 fontWeight = FontWeight.Bold,
-                                                tintColor = MaterialTheme.colorScheme.tertiary
+                                                tintColor = MaterialTheme.colorScheme.tertiary,
                                             )
                                             Spacer(modifier = Modifier.height(SpaceSmall))
                                             Text(
@@ -198,12 +198,10 @@ internal fun AbsentDetails(
                                             if (absentReport.absentDates.isEmpty()) {
                                                 NoteText(
                                                     text = "Did not take a leave on this date period!",
-                                                    modifier = Modifier
+                                                    modifier = Modifier,
                                                 )
                                             }
                                         }
-
-
                                     }
 
                                     if (index != state.data.size - 1) {
@@ -220,7 +218,6 @@ internal fun AbsentDetails(
         )
     }
 }
-
 
 @DevicePreviews
 @Composable

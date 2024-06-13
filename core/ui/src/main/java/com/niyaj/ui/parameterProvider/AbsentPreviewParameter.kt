@@ -1,17 +1,18 @@
 /*
- *      Copyright 2024 Sk Niyaj Ali
+ * Copyright 2024 Sk Niyaj Ali
  *
- *      Licensed under the Apache License, Version 2.0 (the "License");
- *      you may not use this file except in compliance with the License.
- *      You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *              http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
- *      Unless required by applicable law or agreed to in writing, software
- *      distributed under the License is distributed on an "AS IS" BASIS,
- *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *      See the License for the specific language governing permissions and
- *      limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.niyaj.ui.parameterProvider
@@ -30,7 +31,7 @@ class AbsentPreviewParameter : PreviewParameterProvider<UiState<List<EmployeeWit
         get() = sequenceOf(
             UiState.Loading,
             UiState.Empty,
-            UiState.Success(employeesWithAbsents)
+            UiState.Success(employeesWithAbsents),
         )
 }
 
@@ -51,7 +52,7 @@ object AbsentPreviewData {
                 isDeliveryPartner = false,
                 partnerQRCode = null,
                 createdAt = 1673308800000,
-                updatedAt = null
+                updatedAt = null,
             ),
             absents = listOf(
                 Absent(
@@ -60,7 +61,7 @@ object AbsentPreviewData {
                     absentReason = "Sick",
                     absentDate = "1674718800000",
                     createdAt = 1674718800000,
-                    updatedAt = null
+                    updatedAt = null,
                 ),
                 Absent(
                     absentId = 2,
@@ -68,17 +69,17 @@ object AbsentPreviewData {
                     absentReason = "Personal",
                     absentDate = "1675323600000",
                     createdAt = 1675323600000,
-                    updatedAt = null
+                    updatedAt = null,
                 ),
                 Absent(
                     absentId = 11,
                     employeeId = 1,
                     absentReason = "Vacation",
-                    absentDate = "1676592000000", // February 17, 2024
+                    absentDate = "1676592000000",
                     createdAt = 1676592000000,
-                    updatedAt = null
-                )
-            )
+                    updatedAt = null,
+                ),
+            ),
         ),
         EmployeeWithAbsents(
             employee = Employee(
@@ -94,7 +95,7 @@ object AbsentPreviewData {
                 isDeliveryPartner = false,
                 partnerQRCode = null,
                 createdAt = 1675987200000,
-                updatedAt = null
+                updatedAt = null,
             ),
             absents = listOf(
                 Absent(
@@ -103,7 +104,7 @@ object AbsentPreviewData {
                     absentReason = "Vacation",
                     absentDate = "1676672400000",
                     createdAt = 1676672400000,
-                    updatedAt = null
+                    updatedAt = null,
                 ),
                 Absent(
                     absentId = 4,
@@ -111,17 +112,17 @@ object AbsentPreviewData {
                     absentReason = "Sick",
                     absentDate = "1678080000000",
                     createdAt = 1678080000000,
-                    updatedAt = null
+                    updatedAt = null,
                 ),
                 Absent(
                     absentId = 12,
                     employeeId = 2,
                     absentReason = "Personal",
-                    absentDate = "1679186400000", // March 19, 2024
+                    absentDate = "1679186400000",
                     createdAt = 1679186400000,
-                    updatedAt = null
-                )
-            )
+                    updatedAt = null,
+                ),
+            ),
         ),
         EmployeeWithAbsents(
             employee = Employee(
@@ -137,7 +138,7 @@ object AbsentPreviewData {
                 isDeliveryPartner = true,
                 partnerQRCode = "QR1234",
                 createdAt = 1678665600000,
-                updatedAt = null
+                updatedAt = null,
             ),
             absents = listOf(
                 Absent(
@@ -146,7 +147,7 @@ object AbsentPreviewData {
                     absentReason = "Personal",
                     absentDate = "1679350800000",
                     createdAt = 1679350800000,
-                    updatedAt = null
+                    updatedAt = null,
                 ),
                 Absent(
                     absentId = 6,
@@ -154,17 +155,17 @@ object AbsentPreviewData {
                     absentReason = "Sick",
                     absentDate = "1680758400000",
                     createdAt = 1680758400000,
-                    updatedAt = null
+                    updatedAt = null,
                 ),
                 Absent(
                     absentId = 13,
                     employeeId = 3,
                     absentReason = "Vacation",
-                    absentDate = "1681781200000", // April 17, 2024
+                    absentDate = "1681781200000",
                     createdAt = 1681781200000,
-                    updatedAt = null
-                )
-            )
+                    updatedAt = null,
+                ),
+            ),
         ),
         EmployeeWithAbsents(
             employee = Employee(
@@ -180,7 +181,7 @@ object AbsentPreviewData {
                 isDeliveryPartner = false,
                 partnerQRCode = null,
                 createdAt = 1681257600000,
-                updatedAt = null
+                updatedAt = null,
             ),
             absents = listOf(
                 Absent(
@@ -189,7 +190,7 @@ object AbsentPreviewData {
                     absentReason = "Vacation",
                     absentDate = "1681944000000",
                     createdAt = 1681944000000,
-                    updatedAt = null
+                    updatedAt = null,
                 ),
                 Absent(
                     absentId = 8,
@@ -197,9 +198,9 @@ object AbsentPreviewData {
                     absentReason = "Personal",
                     absentDate = "1683354000000",
                     createdAt = 1683354000000,
-                    updatedAt = null
-                )
-            )
+                    updatedAt = null,
+                ),
+            ),
         ),
         EmployeeWithAbsents(
             employee = Employee(
@@ -215,7 +216,7 @@ object AbsentPreviewData {
                 isDeliveryPartner = true,
                 partnerQRCode = "QR5678",
                 createdAt = 1683849600000,
-                updatedAt = null
+                updatedAt = null,
             ),
             absents = listOf(
                 Absent(
@@ -224,7 +225,7 @@ object AbsentPreviewData {
                     absentReason = "Sick",
                     absentDate = "1684537200000",
                     createdAt = 1684537200000,
-                    updatedAt = null
+                    updatedAt = null,
                 ),
                 Absent(
                     absentId = 10,
@@ -232,9 +233,9 @@ object AbsentPreviewData {
                     absentReason = "Personal",
                     absentDate = "1685949600000",
                     createdAt = 1685949600000,
-                    updatedAt = null
-                )
-            )
-        )
+                    updatedAt = null,
+                ),
+            ),
+        ),
     )
 }

@@ -85,7 +85,7 @@ internal fun PaymentDetails(
             .fillMaxWidth()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null
+                indication = null,
             ) {
                 onExpanded()
             }
@@ -157,7 +157,7 @@ internal fun PaymentDetails(
 @Composable
 private fun EmployeePaymentsList(
     modifier: Modifier = Modifier,
-    paymentList: List<EmployeePayments>
+    paymentList: List<EmployeePayments>,
 ) {
     Box(
         modifier = modifier.fillMaxWidth(),
@@ -178,13 +178,13 @@ private fun EmployeePaymentsList(
                             .fillMaxWidth()
                             .padding(vertical = SpaceMini, horizontal = SpaceSmall),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         IconWithText(
                             text = "${salaries.startDate.toFormattedDate} - ${salaries.endDate.toFormattedDate}",
                             icon = PoposIcons.CalenderMonth,
                             fontWeight = FontWeight.Bold,
-                            tintColor = MaterialTheme.colorScheme.tertiary
+                            tintColor = MaterialTheme.colorScheme.tertiary,
                         )
                         Spacer(modifier = Modifier.height(SpaceSmall))
                         Text(
@@ -201,7 +201,7 @@ private fun EmployeePaymentsList(
                     salaries.payments.forEachIndexed { index, salary ->
                         EmployeePayment(
                             modifier = Modifier.padding(horizontal = SpaceSmall),
-                            payment = salary
+                            payment = salary,
                         )
 
                         if (index != salaries.payments.size - 1) {
@@ -216,7 +216,7 @@ private fun EmployeePaymentsList(
                             text = "Payments were not made on this date period!",
                             modifier = Modifier
                                 .padding(vertical = SpaceMini)
-                                .align(Alignment.CenterHorizontally)
+                                .align(Alignment.CenterHorizontally),
                         )
                     }
                 }

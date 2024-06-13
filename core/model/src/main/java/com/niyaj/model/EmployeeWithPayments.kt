@@ -31,12 +31,14 @@ fun List<Payment>.searchPayment(searchText: String): List<Payment> {
     return if (searchText.isNotEmpty()) {
         this.filter {
             it.paymentAmount.contains(searchText, true) ||
-                    it.paymentType.name.contains(searchText, true) ||
-                    it.paymentDate.toDate.contains(searchText, true) ||
-                    it.paymentMode.name.contains(searchText, true) ||
-                    it.paymentNote.contains(searchText, true)
+                it.paymentType.name.contains(searchText, true) ||
+                it.paymentDate.toDate.contains(searchText, true) ||
+                it.paymentMode.name.contains(searchText, true) ||
+                it.paymentNote.contains(searchText, true)
         }
-    } else this
+    } else {
+        this
+    }
 }
 
 fun List<EmployeeWithPayments>.searchEmployeeWithPayments(searchText: String): List<EmployeeWithPayments> {
@@ -47,5 +49,7 @@ fun List<EmployeeWithPayments>.searchEmployeeWithPayments(searchText: String): L
                 payments = it.payments.searchPayment(searchText),
             )
         }
-    } else this
+    } else {
+        this
+    }
 }

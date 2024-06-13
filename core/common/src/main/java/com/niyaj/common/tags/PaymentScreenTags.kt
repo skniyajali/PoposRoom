@@ -66,7 +66,7 @@ object PaymentScreenTags {
 
     const val PAYMENT_SETTINGS_TITLE = "Payment Settings"
 
-    const val PAYMENT_SETTINGS_NOTE ="Make Sure To Import Employee Before Importing Employee Payments."
+    const val PAYMENT_SETTINGS_NOTE = "Make Sure To Import Employee Before Importing Employee Payments."
 
     const val IMPORT_PAYMENT_TITLE = "Import Payments"
     const val IMPORT_PAYMENT_SUB_TITLE = "Click here to import data from file."

@@ -295,7 +295,7 @@ internal fun ExportMarketItemScreenContent(
                 ItemNotAvailable(
                     text = text,
                     buttonText = MarketListTestTags.CREATE_NEW_ITEM,
-                    onClick = onClickToAddItem
+                    onClick = onClickToAddItem,
                 )
             } else if (isLoading) {
                 LoadingIndicator()
@@ -306,7 +306,7 @@ internal fun ExportMarketItemScreenContent(
                     isInSelectionMode = true,
                     doesSelected = selectedItems::contains,
                     onSelectItem = onSelectItem,
-                    lazyGridState = lazyGridState
+                    lazyGridState = lazyGridState,
                 )
             }
         }

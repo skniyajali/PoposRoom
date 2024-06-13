@@ -66,7 +66,7 @@ fun CartItemTotalPriceSection(
         MaterialTheme.colorScheme.primary
     } else {
         MaterialTheme.colorScheme.secondary
-    }
+    },
 ) = trace("CartItemTotalPriceSection") {
     Surface(
         modifier = modifier
@@ -132,7 +132,6 @@ fun CartItemTotalPriceSection(
     }
 }
 
-
 @DevicePreviews
 @Composable
 private fun CartItemTotalPriceSectionPreview(
@@ -148,7 +147,7 @@ private fun CartItemTotalPriceSectionPreview(
             orderType = orderType,
             showPrintBtn = orderType == OrderType.DineOut,
             onClickPlaceOrder = {},
-            onClickPrintOrder = {}
+            onClickPrintOrder = {},
         )
     }
 }

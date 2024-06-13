@@ -82,7 +82,7 @@ fun CartDeliveryPartners(
 @Composable
 private fun CartDeliveryPartnersPreview(
     modifier: Modifier = Modifier,
-    deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds
+    deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds,
 ) {
     PoposRoomTheme {
         CartDeliveryPartners(

@@ -90,13 +90,17 @@ class CartOrderRepositoryImpl(
                         withContext(ioDispatcher) {
                             addressDao.getAddressById(cartOrder.addressId)?.asExternalModel()
                         }
-                    } else null
+                    } else {
+                        null
+                    }
 
                     val customer = if (cartOrder.orderType != OrderType.DineIn) {
                         withContext(ioDispatcher) {
                             customerDao.getCustomerById(cartOrder.customerId)?.asExternalModel()
                         }
-                    } else null
+                    } else {
+                        null
+                    }
 
                     CartOrder(
                         orderId = cartOrder.orderId,

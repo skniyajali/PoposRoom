@@ -126,7 +126,7 @@ fun AddEditMarketListScreen(
         isListTypeChecked = viewModel::isListTypeChecked,
         onListTypeClick = viewModel::updateSelectedListTypes,
         onCreateOrUpdateClick = viewModel::createOrUpdateMarketList,
-        onBackClick = navigator::navigateUp
+        onBackClick = navigator::navigateUp,
     )
 }
 
@@ -342,7 +342,7 @@ private fun MarketTypeBox(
 @Composable
 private fun AddEditMarketListScreenContentPreview(
     modifier: Modifier = Modifier,
-    listTypes: List<MarketTypeIdAndListTypes> = marketTypeIdAndListTypes
+    listTypes: List<MarketTypeIdAndListTypes> = marketTypeIdAndListTypes,
 ) {
     PoposRoomTheme {
         AddEditMarketListScreenContent(
@@ -355,7 +355,7 @@ private fun AddEditMarketListScreenContentPreview(
             isListTypeChecked = { _, _ -> true },
             onListTypeClick = { _, _ -> },
             onCreateOrUpdateClick = {},
-            onBackClick = {}
+            onBackClick = {},
         )
     }
 }

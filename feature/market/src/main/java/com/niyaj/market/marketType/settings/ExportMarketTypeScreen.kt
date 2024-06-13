@@ -167,7 +167,6 @@ fun ExportMarketTypeScreen(
     )
 }
 
-
 @VisibleForTesting
 @Composable
 internal fun ExportMarketTypeScreenContent(

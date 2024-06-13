@@ -21,6 +21,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +31,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -40,12 +42,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.niyaj.core.ui.R
 import com.niyaj.designsystem.components.PoposElevatedButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceMedium
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun ItemNotAvailable(
@@ -130,7 +135,8 @@ fun ItemNotAvailableHalf(
 ) {
     Column(
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -138,32 +144,43 @@ fun ItemNotAvailableHalf(
             Image(
                 painter = image,
                 contentDescription = "No data available",
+                modifier = Modifier
+                    .weight(1.5f, true),
             )
-            Spacer(modifier = Modifier.height(SpaceMedium))
         }
 
-        Text(
-            text = text,
-            fontWeight = FontWeight.Normal,
-            style = MaterialTheme.typography.bodySmall,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.error,
-            modifier = Modifier.padding(horizontal = SpaceLarge),
-        )
+        Box(
+            modifier = Modifier
+                .weight(1f),
+            contentAlignment = Alignment.Center,
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = text,
+                    fontWeight = FontWeight.Normal,
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(horizontal = SpaceLarge),
+                )
 
-        if (buttonText.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(SpaceMedium))
-            PoposElevatedButton(
-                modifier = btnModifier,
-                text = buttonText,
-                icon = icon,
-                onClick = onClick,
-                colors = ButtonDefaults.elevatedButtonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = MaterialTheme.colorScheme.onSecondary,
-                ),
-                shape = CutCornerShape(4.dp),
-            )
+                if (buttonText.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(SpaceMedium))
+                    PoposElevatedButton(
+                        modifier = btnModifier,
+                        text = buttonText,
+                        icon = icon,
+                        onClick = onClick,
+                        colors = ButtonDefaults.elevatedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.onSecondary,
+                        ),
+                        shape = CutCornerShape(4.dp),
+                    )
+                }
+            }
         }
     }
 }
@@ -210,7 +227,12 @@ fun EmptyImportScreen(
             )
 
             note?.let {
-                NoteText(text = it)
+                NoteText(
+                    modifier = Modifier.padding(horizontal = SpaceLarge),
+                    text = it,
+                    maxLines = 3,
+                    overflow = TextOverflow.Visible,
+                )
             }
 
             if (buttonText.isNotEmpty()) {
@@ -226,6 +248,55 @@ fun EmptyImportScreen(
                     shape = CutCornerShape(4.dp),
                 )
             }
+        }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ItemNotAvailableHalfPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        Surface {
+            ItemNotAvailableHalf(
+                modifier = modifier,
+                text = "Item not available Half",
+                buttonText = "Create New Item",
+            )
+        }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ItemNotAvailablePreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        Surface {
+            ItemNotAvailable(
+                modifier = modifier,
+                text = "Item not available",
+                buttonText = "Create New Item",
+            )
+        }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun EmptyImportScreenPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        Surface {
+            EmptyImportScreen(
+                modifier = modifier,
+                text = "Make sure to open item.json file",
+                buttonText = "Open File",
+                note = "Make sure to import category before importing products",
+            )
         }
     }
 }

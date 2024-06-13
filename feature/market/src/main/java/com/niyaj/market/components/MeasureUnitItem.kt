@@ -136,7 +136,7 @@ fun MeasureUnitItem(
                 },
             ),
         colors = CardDefaults.elevatedCardColors().copy(
-            containerColor = containerColor
+            containerColor = containerColor,
         ),
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 2.dp,
@@ -181,7 +181,7 @@ private fun MeasureUnitItemsPreview(
             modifier = modifier,
             items = MeasureUnitPreviewData.measureUnits.toImmutableList(),
             isInSelectionMode = false,
-            doesSelected = { it % 2 == 0},
+            doesSelected = { it % 2 == 0 },
             onSelectItem = {},
         )
     }

@@ -298,7 +298,7 @@ private fun AddEditMarketTypeScreenContentPreview(
                 typeName = "Carmelo Gross",
                 typeDesc = null,
                 supplierId = 1535,
-                listType = "IN_STOCK"
+                listType = "IN_STOCK",
             ),
             typeError = null,
             listNameError = null,

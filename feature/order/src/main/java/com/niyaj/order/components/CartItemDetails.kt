@@ -76,7 +76,6 @@ internal fun CartItemDetails(
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(SpaceSmall)
             .clickable {
                 onExpandChanged()
             },

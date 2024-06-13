@@ -137,7 +137,7 @@ fun AddEditMarketItemScreen(
         },
         onClickAddMeasureUnit = {
             navigator.navigate(AddEditMeasureUnitScreenDestination(unitName = it))
-        }
+        },
     )
 }
 
@@ -231,8 +231,8 @@ internal fun AddEditMarketItemScreenContent(
                             expanded = true
                             onEvent(
                                 AddEditMarketItemEvent.ItemTypeChanged(
-                                    MarketTypeIdAndName(typeId = 0, typeName = "")
-                                )
+                                    MarketTypeIdAndName(typeId = 0, typeName = ""),
+                                ),
                             )
                         },
                         trailingIcon = {
@@ -505,7 +505,6 @@ internal fun AddEditMarketItemScreenContent(
     }
 }
 
-
 @DevicePreviews
 @Composable
 private fun AddEditMarketItemScreenContentPreview(
@@ -537,7 +536,7 @@ private fun AddEditMarketItemScreenContentPreview(
             onEvent = {},
             onBackClick = {},
             onClickAddMarketType = {},
-            onClickAddMeasureUnit = {}
+            onClickAddMeasureUnit = {},
         )
     }
 }

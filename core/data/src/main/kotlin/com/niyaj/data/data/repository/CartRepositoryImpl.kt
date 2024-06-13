@@ -347,9 +347,9 @@ class CartRepositoryImpl(
                     customerPhone = itemDto.customerPhone,
                     customerAddress = itemDto.customerAddress,
                     updatedAt = (
-                            itemDto.cartOrder.updatedAt
-                                ?: itemDto.cartOrder.createdAt
-                            ).toTimeSpan,
+                        itemDto.cartOrder.updatedAt
+                            ?: itemDto.cartOrder.createdAt
+                        ).toTimeSpan,
                     orderPrice = itemDto.orderPrice.totalPrice,
                     deliveryPartnerId = itemDto.cartOrder.deliveryPartnerId,
                 )

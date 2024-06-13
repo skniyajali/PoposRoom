@@ -206,7 +206,7 @@ private fun EmployeeDetailsPreview(
             employeeState = employeeState,
             employeeDetailsExpanded = true,
             onClickEdit = {},
-            onExpanded = {}
+            onExpanded = {},
         )
     }
 }
