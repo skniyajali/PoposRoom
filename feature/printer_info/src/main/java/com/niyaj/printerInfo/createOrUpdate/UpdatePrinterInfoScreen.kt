@@ -54,7 +54,6 @@ import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.StandardCheckboxWithText
 import com.niyaj.ui.components.StandardOutlinedTextField
@@ -111,8 +110,7 @@ fun UpdatePrinterInfoScreen(
             PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(UPDATE_PRINTER_BUTTON)
-                    .padding(SpaceSmallMax),
+                    .testTag(UPDATE_PRINTER_BUTTON),
                 enabled = !hasError,
                 text = UPDATE_PRINTER_INFO,
                 icon = PoposIcons.Edit,

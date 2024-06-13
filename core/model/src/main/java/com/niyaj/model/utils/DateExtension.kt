@@ -33,6 +33,9 @@ internal val String.toTime
 internal val Date.toTime
     get() = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(this).toString()
 
+val Long.toTime
+    get() = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(this).toString()
+
 internal val Long.toDateString
     get() = SimpleDateFormat("dd", Locale.getDefault()).format(this).toString()
 
@@ -42,6 +45,9 @@ internal val String.capitalizeWords
             if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
         }
     }
+
+val String.toDate
+    get() = SimpleDateFormat("dd", Locale.getDefault()).format(this.toLong()).toString()
 
 internal fun String.getCapitalWord(): String {
     var capitalizeLetters = ""

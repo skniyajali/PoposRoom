@@ -17,22 +17,19 @@
 
 package com.niyaj.employeePayment.settings
 
-import android.Manifest
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -40,68 +37,72 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.niyaj.common.tags.PaymentScreenTags
-import com.niyaj.common.tags.PaymentScreenTags.EXPORT_PAYMENT_BTN
-import com.niyaj.common.tags.PaymentScreenTags.EXPORT_PAYMENT_BTN_TEXT
+import com.niyaj.common.tags.PaymentScreenTags.CREATE_NEW_PAYMENT
 import com.niyaj.common.tags.PaymentScreenTags.EXPORT_PAYMENT_FILE_NAME
 import com.niyaj.common.tags.PaymentScreenTags.EXPORT_PAYMENT_TITLE
+import com.niyaj.common.tags.PaymentScreenTags.PAYMENT_NOT_AVAILABLE
 import com.niyaj.common.tags.PaymentScreenTags.PAYMENT_SEARCH_PLACEHOLDER
 import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.domain.utils.ImportExport
-import com.niyaj.employeePayment.PaymentData
+import com.niyaj.employeePayment.components.EmployeePaymentList
+import com.niyaj.employeePayment.components.ViewType
 import com.niyaj.employeePayment.destinations.AddEditPaymentScreenDestination
-import com.niyaj.ui.components.IconWithText
+import com.niyaj.model.EmployeeWithPayments
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.parameterProvider.PaymentPreviewData
+import com.niyaj.ui.utils.DevicePreviews
+import com.niyaj.ui.utils.Screens.PAYMENT_EXPORT_SCREEN
 import com.niyaj.ui.utils.TrackScreenViewEvent
-import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
-import com.niyaj.ui.utils.isScrolled
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Destination
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalFoundationApi::class)
+@Destination(route = PAYMENT_EXPORT_SCREEN)
 @Composable
 fun PaymentExportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: PaymentSettingsViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
 
-    val items = viewModel.items.collectAsStateWithLifecycle().value
-    val exportedItems = viewModel.exportedItems.collectAsStateWithLifecycle().value
+    val items by viewModel.items.collectAsStateWithLifecycle()
+    val exportedItems by viewModel.exportedItems.collectAsStateWithLifecycle()
+    val showSearchBar by viewModel.showSearchBar.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
-    val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
-
     val selectedItems = viewModel.selectedItems.toList()
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -117,31 +118,17 @@ fun PaymentExportScreen(
         }
     }
 
-    val context = LocalContext.current
-
-    val hasStoragePermission = rememberMultiplePermissionsState(
-        permissions = listOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        ),
-    )
-
-    val askForPermissions = {
-        if (!hasStoragePermission.allPermissionsGranted) {
-            hasStoragePermission.launchMultiplePermissionRequest()
-        }
-    }
-
     val exportLauncher =
         rememberLauncherForActivityResult(
             ActivityResultContracts.StartActivityForResult(),
-        ) {
-            it.data?.data?.let {
+        ) { activityResult ->
+            activityResult.data?.data?.let {
                 scope.launch {
                     val result = ImportExport.writeDataAsync(context, it, exportedItems)
+                    val exportedSize = exportedItems.sumOf { it.payments.size }
 
                     if (result.isSuccess) {
-                        resultBackNavigator.navigateBack("${exportedItems.size} Items has been exported.")
+                        resultBackNavigator.navigateBack("$exportedSize payments has been exported.")
                     } else {
                         resultBackNavigator.navigateBack("Unable to export items.")
                     }
@@ -149,38 +136,92 @@ fun PaymentExportScreen(
             }
         }
 
-    fun onBackClick() {
+    PaymentExportScreenContent(
+        modifier = Modifier,
+        items = items.toImmutableList(),
+        selectedItems = selectedItems.toImmutableList(),
+        showSearchBar = showSearchBar,
+        searchText = searchText,
+        onClearClick = viewModel::clearSearchText,
+        onSearchTextChanged = viewModel::searchTextChanged,
+        onClickOpenSearch = viewModel::openSearchBar,
+        onClickCloseSearch = viewModel::closeSearchBar,
+        onClickSelectAll = viewModel::selectAllItems,
+        onClickDeselect = viewModel::deselectItems,
+        onSelectItem = viewModel::selectItem,
+        onClickExport = {
+            scope.launch {
+                val result = ImportExport.createFile(
+                    context = context,
+                    fileName = EXPORT_PAYMENT_FILE_NAME,
+                )
+                exportLauncher.launch(result)
+                viewModel.onEvent(PaymentSettingsEvent.GetExportedItems)
+            }
+        },
+        onBackClick = navigator::navigateUp,
+        onClickToAddItem = {
+            navigator.navigate(AddEditPaymentScreenDestination())
+        },
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun PaymentExportScreenContent(
+    modifier: Modifier = Modifier,
+    items: ImmutableList<EmployeeWithPayments>,
+    selectedItems: ImmutableList<Int>,
+    showSearchBar: Boolean,
+    searchText: String,
+    onClearClick: () -> Unit,
+    onSearchTextChanged: (String) -> Unit,
+    onClickOpenSearch: () -> Unit,
+    onClickCloseSearch: () -> Unit,
+    onClickSelectAll: () -> Unit,
+    onClickDeselect: () -> Unit,
+    onSelectItem: (Int) -> Unit,
+    onClickExport: () -> Unit,
+    onBackClick: () -> Unit,
+    onClickToAddItem: () -> Unit,
+    scope: CoroutineScope = rememberCoroutineScope(),
+    lazyListState: LazyListState = rememberLazyListState(),
+    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
+) {
+    TrackScreenViewEvent(screenName = "PaymentExportScreen")
+
+    var viewType by remember { mutableStateOf(ViewType.CARD) }
+    val text = if (searchText.isEmpty()) PAYMENT_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND
+    val title = if (selectedItems.isEmpty()) EXPORT_PAYMENT_TITLE else "${selectedItems.size} Selected"
+
+    BackHandler {
         if (selectedItems.isNotEmpty()) {
-            viewModel.deselectItems()
+            onClickDeselect()
         } else if (showSearchBar) {
-            viewModel.closeSearchBar()
+            onClickCloseSearch()
         } else {
-            navigator.navigateUp()
+            onBackClick()
         }
     }
 
-    BackHandler {
-        onBackClick()
-    }
-
-    TrackScreenViewEvent(screenName = "Payment Export Screen")
-
     PoposSecondaryScaffold(
-        title = if (selectedItems.isEmpty()) EXPORT_PAYMENT_TITLE else "${selectedItems.size} Selected",
+        modifier = modifier,
+        title = title,
         showBackButton = selectedItems.isEmpty() || showSearchBar,
         showBottomBar = items.isNotEmpty(),
+        showSecondaryBottomBar = true,
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
                     searchText = searchText,
                     placeholderText = PAYMENT_SEARCH_PLACEHOLDER,
-                    onClearClick = viewModel::clearSearchText,
-                    onSearchTextChanged = viewModel::searchTextChanged,
+                    onClearClick = onClearClick,
+                    onSearchTextChanged = onSearchTextChanged,
                 )
             } else {
                 if (items.isNotEmpty()) {
                     IconButton(
-                        onClick = viewModel::selectAllItems,
+                        onClick = onClickSelectAll,
                     ) {
                         Icon(
                             imageVector = PoposIcons.Checklist,
@@ -189,12 +230,30 @@ fun PaymentExportScreen(
                     }
 
                     IconButton(
-                        onClick = viewModel::openSearchBar,
+                        onClick = onClickOpenSearch,
                         modifier = Modifier.testTag(NAV_SEARCH_BTN),
                     ) {
                         Icon(
                             imageVector = PoposIcons.Search,
                             contentDescription = "Search Icon",
+                        )
+                    }
+
+                    IconButton(
+                        onClick = {
+                            viewType = when (viewType) {
+                                ViewType.LIST -> ViewType.CARD
+                                ViewType.CARD -> ViewType.LIST
+                            }
+                        },
+                    ) {
+                        Icon(
+                            imageVector = if (viewType == ViewType.LIST) {
+                                PoposIcons.ViewAgenda
+                            } else {
+                                PoposIcons.CalendarViewDay
+                            },
+                            contentDescription = "Change View",
                         )
                     }
                 }
@@ -204,36 +263,26 @@ fun PaymentExportScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(SpaceSmallMax),
+                    .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} items will be exported.")
+                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} payments will be exported.")
 
                 PoposButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag(EXPORT_PAYMENT_BTN),
-                    enabled = true,
-                    text = EXPORT_PAYMENT_BTN_TEXT,
+                        .testTag(EXPORT_PAYMENT_TITLE),
+                    enabled = items.isNotEmpty(),
+                    text = EXPORT_PAYMENT_TITLE,
                     icon = PoposIcons.Upload,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary,
                     ),
-                    onClick = {
-                        scope.launch {
-                            askForPermissions()
-                            val result = ImportExport.createFile(
-                                context = context,
-                                fileName = EXPORT_PAYMENT_FILE_NAME,
-                            )
-                            exportLauncher.launch(result)
-                            viewModel.onEvent(PaymentSettingsEvent.GetExportedItems)
-                        }
-                    },
+                    onClick = onClickExport,
                 )
             }
         },
-        onBackClick = { onBackClick() },
+        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
         fabPosition = FabPosition.End,
         floatingActionButton = {
             ScrollToTop(
@@ -247,7 +296,7 @@ fun PaymentExportScreen(
         },
         navigationIcon = {
             IconButton(
-                onClick = viewModel::deselectItems,
+                onClick = onClickDeselect,
             ) {
                 Icon(
                     imageVector = PoposIcons.Close,
@@ -255,59 +304,79 @@ fun PaymentExportScreen(
                 )
             }
         },
-    ) { paddingValues ->
-        if (items.isEmpty()) {
-            ItemNotAvailable(
-                text = if (searchText.isEmpty()) PaymentScreenTags.PAYMENT_NOT_AVAILABLE else PaymentScreenTags.NO_ITEMS_IN_PAYMENT,
-                buttonText = PaymentScreenTags.CREATE_NEW_PAYMENT,
-                onClick = {
-                    navigator.navigate(AddEditPaymentScreenDestination())
-                },
-            )
-        } else {
-            TrackScrollJank(scrollableState = lazyListState, stateName = "Exported Payment::List")
-
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentPadding = PaddingValues(SpaceSmall),
-                state = lazyListState,
-            ) {
-                items.forEachIndexed { _, payments ->
-                    if (payments.payments.isNotEmpty()) {
-                        stickyHeader {
-                            IconWithText(
-                                modifier = Modifier
-                                    .background(
-                                        if (lazyListState.isScrolled) MaterialTheme.colorScheme.surface else Color.Transparent,
-                                    )
-                                    .clip(
-                                        RoundedCornerShape(if (lazyListState.isScrolled) 4.dp else 0.dp),
-                                    ),
-                                isTitle = true,
-                                text = payments.employee.employeeName,
-                                icon = PoposIcons.Person,
-                            )
-                        }
-
-                        items(
-                            items = payments.payments,
-                            key = { it.paymentId },
-                        ) { item ->
-                            PaymentData(
-                                employeeName = payments.employee.employeeName,
-                                item = item,
-                                doesSelected = {
-                                    selectedItems.contains(it)
-                                },
-                                onClick = viewModel::selectItem,
-                                onLongClick = viewModel::selectItem,
-                            )
-                        }
-                    }
-                }
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it),
+        ) {
+            if (items.isEmpty()) {
+                ItemNotAvailable(
+                    text = text,
+                    buttonText = CREATE_NEW_PAYMENT,
+                    onClick = onClickToAddItem,
+                )
+            } else {
+                EmployeePaymentList(
+                    modifier = Modifier,
+                    viewType = viewType,
+                    items = items,
+                    doesSelected = selectedItems::contains,
+                    onSelectItem = onSelectItem,
+                    isInSelectionMode = true,
+                    lazyListState = lazyListState,
+                )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun PaymentExportScreenEmptyDataPreview() {
+    PoposRoomTheme {
+        PaymentExportScreenContent(
+            modifier = Modifier,
+            items = persistentListOf(),
+            selectedItems = persistentListOf(),
+            showSearchBar = false,
+            searchText = "",
+            onClearClick = {},
+            onSearchTextChanged = {},
+            onClickOpenSearch = {},
+            onClickCloseSearch = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onSelectItem = {},
+            onClickExport = {},
+            onBackClick = {},
+            onClickToAddItem = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun PaymentExportScreenContentPreview(
+    items: ImmutableList<EmployeeWithPayments> = PaymentPreviewData.employeesWithPayments.toImmutableList(),
+) {
+    PoposRoomTheme {
+        PaymentExportScreenContent(
+            modifier = Modifier,
+            items = items,
+            selectedItems = persistentListOf(),
+            showSearchBar = false,
+            searchText = "",
+            onClearClick = {},
+            onSearchTextChanged = {},
+            onClickOpenSearch = {},
+            onClickCloseSearch = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onSelectItem = {},
+            onClickExport = {},
+            onBackClick = {},
+            onClickToAddItem = {},
+        )
     }
 }

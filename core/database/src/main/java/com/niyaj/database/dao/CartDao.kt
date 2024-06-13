@@ -58,7 +58,7 @@ interface CartDao {
     )
     fun getCartItemByOrderId(
         orderId: Int,
-    ): Flow<CartItemDto>
+    ): Flow<CartItemDto?>
 
     @Query(
         value = """

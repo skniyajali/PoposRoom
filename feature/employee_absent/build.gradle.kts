@@ -33,7 +33,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.accompanist.permissions)
     implementation(libs.dialog.core)
     implementation(libs.dialog.datetime)
 

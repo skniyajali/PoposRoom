@@ -25,9 +25,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -105,20 +103,15 @@ fun ChangePasswordScreen(
         onBackClick = navController::navigateUp,
         showBottomBar = true,
         bottomBar = {
-            BottomAppBar(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                PoposButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = SpaceMedium),
-                    text = "Change Password",
-                    enabled = hasError,
-                    onClick = {
-                        viewModel.onEvent(ChangePasswordEvent.ChangePassword)
-                    },
-                )
-            }
+            PoposButton(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                text = "Change Password",
+                enabled = hasError,
+                onClick = {
+                    viewModel.onEvent(ChangePasswordEvent.ChangePassword)
+                },
+            )
         },
     ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "ChangePassword::Fields")

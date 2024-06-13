@@ -41,13 +41,16 @@ import com.niyaj.common.utils.toRupee
 import com.niyaj.common.utils.toSafeString
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.MintCream
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.model.MarketItemAndQuantity
 import com.niyaj.ui.components.IncDecBox
+import com.niyaj.ui.parameterProvider.MarketItemAndQuantityData.marketItemAndQuantity
+import com.niyaj.ui.utils.DevicePreviews
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
 @Composable
-fun MarketItemWithQuantityCard(
+internal fun MarketItemWithQuantityCard(
     item: MarketItemAndQuantity,
     onAddItem: (itemId: Int) -> Unit,
     onRemoveItem: (itemId: Int) -> Unit,
@@ -143,7 +146,7 @@ fun MarketItemWithQuantityCard(
 }
 
 @Composable
-fun MarketItemWithQuantityCard(
+internal fun MarketItemWithQuantityWithListTypeCard(
     item: MarketItemAndQuantity,
     onAddItem: (listTypeId: Int, itemId: Int) -> Unit,
     onRemoveItem: (listTypeId: Int, itemId: Int) -> Unit,
@@ -239,7 +242,7 @@ fun MarketItemWithQuantityCard(
 }
 
 @Composable
-fun addSwipeAction(
+private fun addSwipeAction(
     onSwipe: () -> Unit,
 ): SwipeAction {
     return SwipeAction(
@@ -251,7 +254,7 @@ fun addSwipeAction(
 }
 
 @Composable
-fun removeSwipeAction(
+private fun removeSwipeAction(
     onSwipe: () -> Unit,
 ): SwipeAction {
     return SwipeAction(
@@ -260,4 +263,36 @@ fun removeSwipeAction(
         isUndo = false,
         onSwipe = onSwipe,
     )
+}
+
+@DevicePreviews
+@Composable
+private fun MarketItemWithQuantityWithListTypeCardPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        MarketItemWithQuantityWithListTypeCard(
+            item = marketItemAndQuantity,
+            onAddItem = { _, _ -> },
+            onRemoveItem = { _, _ -> },
+            onDecreaseQuantity = { _, _ -> },
+            onIncreaseQuantity = { _, _ -> },
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun MarketItemWithQuantityItemsCardPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        MarketItemWithQuantityCard(
+            item = marketItemAndQuantity,
+            onAddItem = {},
+            onRemoveItem = {},
+            onDecreaseQuantity = {},
+            onIncreaseQuantity = {},
+        )
+    }
 }

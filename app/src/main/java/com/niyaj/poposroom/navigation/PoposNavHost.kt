@@ -38,8 +38,10 @@ import com.niyaj.cartorder.destinations.AddEditCartOrderScreenDestination
 import com.niyaj.cartorder.destinations.CartOrderScreenDestination
 import com.niyaj.customer.destinations.CustomerDetailsScreenDestination
 import com.niyaj.customer.details.CustomerDetailsScreen
+import com.niyaj.employee.destinations.AddEditEmployeeScreenDestination
 import com.niyaj.employee.destinations.EmployeeDetailsScreenDestination
 import com.niyaj.employee.details.EmployeeDetailsScreen
+import com.niyaj.employeeAbsent.createOrUpdate.AddEditAbsentScreen
 import com.niyaj.employeeAbsent.destinations.AddEditAbsentScreenDestination
 import com.niyaj.employeePayment.PaymentScreen
 import com.niyaj.employeePayment.destinations.AddEditPaymentScreenDestination
@@ -164,6 +166,20 @@ fun PoposNavHost(
                         onClickAddAbsent = {
                             navController.navigate(AddEditAbsentScreenDestination(employeeId = it))
                         },
+                        paymentRecipient = resultRecipient<AddEditPaymentScreenDestination, String>(),
+                        absentRecipient = resultRecipient<AddEditAbsentScreenDestination, String>(),
+                    )
+                }
+
+                composable(AddEditAbsentScreenDestination) {
+                    AddEditAbsentScreen(
+                        absentId = navBackStackEntry.arguments?.getInt("absentId") ?: 0,
+                        employeeId = navBackStackEntry.arguments?.getInt("employeeId") ?: 0,
+                        navigator = this.destinationsNavigator,
+                        onClickAddEmployee = {
+                            navController.navigate(AddEditEmployeeScreenDestination())
+                        },
+                        resultBackNavigator = resultBackNavigator(),
                     )
                 }
 
@@ -180,7 +196,7 @@ fun PoposNavHost(
                 composable(CustomerDetailsScreenDestination) {
                     CustomerDetailsScreen(
                         customerId = navBackStackEntry.arguments?.getInt("customerId") ?: 0,
-                        navController = destinationsNavigator,
+                        navigator = destinationsNavigator,
                         onClickOrder = {
                             navController.navigate(OrderDetailsScreenDestination(it))
                         },

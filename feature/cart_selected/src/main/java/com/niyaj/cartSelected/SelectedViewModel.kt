@@ -245,7 +245,7 @@ internal fun AnalyticsHelper.logSelectedCartOrder(cartOrderId: Int) {
         event = AnalyticsEvent(
             type = "cart_order_selected",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("cart_order_selected", cartOrderId.toString()),
+                AnalyticsEvent.Param("cart_order_selected", cartOrderId.toString()),
             ),
         ),
     )
@@ -256,7 +256,7 @@ internal fun AnalyticsHelper.logPlacedCartOrder(cartOrderId: Int) {
         event = AnalyticsEvent(
             type = "order_placed",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("order_placed", cartOrderId.toString()),
+                AnalyticsEvent.Param("order_placed", cartOrderId.toString()),
             ),
         ),
     )

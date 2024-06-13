@@ -17,10 +17,10 @@
 
 package com.niyaj.addonitem.settings
 
-import android.Manifest
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
@@ -40,14 +40,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.addonitem.components.AddOnItemData
 import com.niyaj.common.tags.AddOnTestTags.IMPORT_ADDON_BTN_TEXT
 import com.niyaj.common.tags.AddOnTestTags.IMPORT_ADDON_NOTE_TEXT
@@ -56,6 +56,8 @@ import com.niyaj.common.tags.AddOnTestTags.IMPORT_ADDON_TITLE
 import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.domain.utils.ImportExport
@@ -64,6 +66,9 @@ import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
+import com.niyaj.ui.parameterProvider.AddOnPreviewData
+import com.niyaj.ui.utils.DevicePreviews
+import com.niyaj.ui.utils.Screens.ADD_ON_IMPORT_SCREEN
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
@@ -71,11 +76,13 @@ import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-@Destination
-@OptIn(ExperimentalPermissionsApi::class)
+@Destination(route = ADD_ON_IMPORT_SCREEN)
 @Composable
 fun AddOnImportScreen(
     navigator: DestinationsNavigator,
@@ -84,25 +91,11 @@ fun AddOnImportScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val lazyGridState = rememberLazyGridState()
 
-    val importedItems = viewModel.importedItems.collectAsStateWithLifecycle().value
-
+    val importedItems by viewModel.importedItems.collectAsStateWithLifecycle()
     val selectedItems = viewModel.selectedItems.toList()
+
     var importJob: Job? = null
-
-    val hasStoragePermission = rememberMultiplePermissionsState(
-        permissions = listOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        ),
-    )
-
-    val askForPermissions = {
-        if (!hasStoragePermission.allPermissionsGranted) {
-            hasStoragePermission.launchMultiplePermissionRequest()
-        }
-    }
 
     val importLauncher =
         rememberLauncherForActivityResult(
@@ -119,7 +112,7 @@ fun AddOnImportScreen(
             }
         }
 
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -143,18 +136,58 @@ fun AddOnImportScreen(
         }
     }
 
-    TrackScreenViewEvent(screenName = "AddOnImportScreen")
+    TrackScreenViewEvent(screenName = ADD_ON_IMPORT_SCREEN)
+
+    AddOnImportScreenContent(
+        modifier = Modifier,
+        importedItems = importedItems.toImmutableList(),
+        selectedItems = selectedItems.toImmutableList(),
+        onClickSelectItem = viewModel::selectItem,
+        onClickSelectAll = viewModel::selectAllItems,
+        onClickDeselect = viewModel::deselectItems,
+        onClickImport = {
+            viewModel.onEvent(AddOnSettingsEvent.ImportAddOnItemsToDatabase)
+        },
+        onClickOpenFile = {
+            scope.launch {
+                importLauncher.launch(ImportExport.openFile(context))
+            }
+        },
+        onBackClick = navigator::navigateUp,
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun AddOnImportScreenContent(
+    modifier: Modifier = Modifier,
+    importedItems: ImmutableList<AddOnItem>,
+    selectedItems: ImmutableList<Int>,
+    onClickSelectItem: (Int) -> Unit,
+    onClickSelectAll: () -> Unit,
+    onClickDeselect: () -> Unit,
+    onClickImport: () -> Unit,
+    onClickOpenFile: () -> Unit,
+    onBackClick: () -> Unit,
+    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
+) {
+    val scope = rememberCoroutineScope()
+    val lazyGridState = rememberLazyGridState()
+    val title =
+        if (selectedItems.isEmpty()) IMPORT_ADDON_TITLE else "${selectedItems.size} Selected"
 
     PoposSecondaryScaffold(
-        title = if (selectedItems.isEmpty()) IMPORT_ADDON_TITLE else "${selectedItems.size} Selected",
+        modifier = modifier,
+        title = title,
         showBackButton = selectedItems.isEmpty(),
         showBottomBar = importedItems.isNotEmpty(),
+        showSecondaryBottomBar = true,
         navActions = {
             AnimatedVisibility(
                 visible = importedItems.isNotEmpty(),
             ) {
                 IconButton(
-                    onClick = viewModel::selectAllItems,
+                    onClick = onClickSelectAll,
                 ) {
                     Icon(
                         imageVector = PoposIcons.Checklist,
@@ -167,7 +200,7 @@ fun AddOnImportScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(SpaceSmallMax),
+                    .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} addon item will be imported.")
@@ -182,11 +215,7 @@ fun AddOnImportScreen(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                     ),
-                    onClick = {
-                        scope.launch {
-                            viewModel.onEvent(AddOnSettingsEvent.ImportAddOnItemsToDatabase)
-                        }
-                    },
+                    onClick = onClickImport,
                 )
             }
         },
@@ -201,10 +230,10 @@ fun AddOnImportScreen(
                 },
             )
         },
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
         navigationIcon = {
             IconButton(
-                onClick = viewModel::deselectItems,
+                onClick = onClickDeselect,
             ) {
                 Icon(
                     imageVector = PoposIcons.Close,
@@ -212,31 +241,25 @@ fun AddOnImportScreen(
                 )
             }
         },
-    ) {
+    ) { paddingValues ->
         Crossfade(
             targetState = importedItems.isEmpty(),
             label = "Imported Items",
+            modifier = Modifier.padding(paddingValues),
         ) { itemAvailable ->
             if (itemAvailable) {
                 EmptyImportScreen(
                     text = IMPORT_ADDON_NOTE_TEXT,
                     buttonText = IMPORT_ADDON_OPN_FILE,
                     icon = PoposIcons.FileOpen,
-                    onClick = {
-                        scope.launch {
-                            askForPermissions()
-                            val result = ImportExport.openFile(context)
-                            importLauncher.launch(result)
-                        }
-                    },
+                    onClick = onClickOpenFile,
                 )
             } else {
                 TrackScrollJank(scrollableState = lazyGridState, stateName = "addon-import:list")
 
                 LazyVerticalGrid(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(it),
+                        .fillMaxSize(),
                     contentPadding = PaddingValues(SpaceSmall),
                     columns = GridCells.Fixed(2),
                     state = lazyGridState,
@@ -250,12 +273,50 @@ fun AddOnImportScreen(
                             doesSelected = {
                                 selectedItems.contains(it)
                             },
-                            onClick = viewModel::selectItem,
-                            onLongClick = viewModel::selectItem,
+                            onClick = onClickSelectItem,
+                            onLongClick = onClickSelectItem,
                         )
                     }
                 }
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AddOnImportScreenEmptyContentPreview() {
+    PoposRoomTheme {
+        AddOnImportScreenContent(
+            modifier = Modifier,
+            importedItems = persistentListOf(),
+            selectedItems = persistentListOf(),
+            onClickSelectItem = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onClickImport = {},
+            onClickOpenFile = {},
+            onBackClick = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AddOnImportScreenContentPreview(
+    items: ImmutableList<AddOnItem> = AddOnPreviewData.addOnItemList.toImmutableList(),
+) {
+    PoposRoomTheme {
+        AddOnImportScreenContent(
+            modifier = Modifier,
+            importedItems = items,
+            selectedItems = persistentListOf(),
+            onClickSelectItem = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onClickImport = {},
+            onClickOpenFile = {},
+            onBackClick = {},
+        )
     }
 }

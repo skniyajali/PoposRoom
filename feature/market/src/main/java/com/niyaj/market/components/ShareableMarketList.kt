@@ -59,6 +59,7 @@ import com.niyaj.designsystem.components.PoposOutlinedAssistChip
 import com.niyaj.designsystem.components.PoposOutlinedButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.ButtonSize
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -66,14 +67,18 @@ import com.niyaj.model.MarketItemAndQuantity
 import com.niyaj.model.MarketListAndType
 import com.niyaj.ui.components.CountBox
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.TwoGridTexts
+import com.niyaj.ui.components.TwoGridText
+import com.niyaj.ui.parameterProvider.MarketItemAndQuantityData.marketItemsAndQuantities
+import com.niyaj.ui.parameterProvider.MarketItemAndQuantityData.marketItemsAndQuantity
 import com.niyaj.ui.utils.CaptureController
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.ScrollableCapturable
+import com.niyaj.ui.utils.rememberCaptureController
 import kotlinx.datetime.Clock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShareableMarketList(
+internal fun ShareableMarketList(
     captureController: CaptureController,
     marketDate: Long,
     marketDetail: MarketListAndType? = null,
@@ -136,7 +141,7 @@ fun ShareableMarketList(
 }
 
 @Composable
-fun ListTypeHeader(
+internal fun ListTypeHeader(
     modifier: Modifier = Modifier,
     itemType: String,
     listType: String,
@@ -158,14 +163,14 @@ fun ListTypeHeader(
                 text = itemType.uppercase(),
                 icon = PoposIcons.Category,
                 fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.labelLarge,
+                style = MaterialTheme.typography.labelMedium,
             )
 
             Row {
                 CountBox(
                     count = listType,
                     style = TextStyle(
-                        fontFamily = FontFamily.Cursive,
+                        fontFamily = FontFamily.Default,
                         fontStyle = FontStyle.Italic,
                     ),
                 )
@@ -183,7 +188,7 @@ fun ListTypeHeader(
 
 @Preview
 @Composable
-fun ShareableItemHeader(
+private fun ShareableItemHeader(
     modifier: Modifier = Modifier,
     marketDate: Long = Clock.System.now().toEpochMilliseconds(),
     marketDetail: MarketListAndType? = null,
@@ -235,7 +240,7 @@ fun ShareableItemHeader(
 }
 
 @Composable
-fun ShareableListBottomBar(
+private fun ShareableListBottomBar(
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit,
     onClickShare: () -> Unit,
@@ -277,7 +282,7 @@ fun ShareableListBottomBar(
 }
 
 @Composable
-fun ShareableItemBody(
+private fun ShareableItemBody(
     modifier: Modifier = Modifier,
     groupByType: Map<String, List<MarketItemAndQuantity>>,
 ) = trace("ShareableItemBody") {
@@ -298,7 +303,7 @@ fun ShareableItemBody(
                 )
 
                 groupedByList.fastForEachIndexed { i, it ->
-                    TwoGridTexts(
+                    TwoGridText(
                         modifier = Modifier.padding(SpaceSmall),
                         textOne = it.itemName,
                         textTwo = it.itemQuantity?.toSafeString() +
@@ -313,5 +318,56 @@ fun ShareableItemBody(
                 }
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ListTypeHeaderPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ListTypeHeader(
+            modifier = modifier,
+            itemType = "Vegetable",
+            listType = "OUT_OF_STOCK",
+            listCount = 4,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ShareableMarketListWithGroupedPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ShareableMarketList(
+            captureController = rememberCaptureController(),
+            marketDate = System.currentTimeMillis(),
+            marketDetail = null,
+            marketLists = marketItemsAndQuantities,
+            onDismiss = {},
+            onClickShare = {},
+            onCaptured = { _, _ -> },
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ShareableMarketListWithPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ShareableMarketList(
+            captureController = rememberCaptureController(),
+            marketDate = System.currentTimeMillis(),
+            marketDetail = null,
+            marketLists = marketItemsAndQuantity,
+            onDismiss = {},
+            onClickShare = {},
+            onCaptured = { _, _ -> },
+        )
     }
 }

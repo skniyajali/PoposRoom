@@ -20,17 +20,15 @@ package com.niyaj.product.settings
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
@@ -41,50 +39,56 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.niyaj.common.tags.ProductTestTags
+import com.niyaj.common.tags.ProductTestTags.IMPORT_PRODUCTS_NOTE
 import com.niyaj.common.tags.ProductTestTags.IMPORT_PRODUCTS_NOTE_TEXT
 import com.niyaj.common.tags.ProductTestTags.IMPORT_PRODUCTS_OPN_FILE
+import com.niyaj.common.tags.ProductTestTags.IMPORT_PRODUCTS_TITLE
 import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.domain.utils.ImportExport
 import com.niyaj.model.Product
-import com.niyaj.product.components.ProductCard
+import com.niyaj.product.components.ProductList
 import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
+import com.niyaj.ui.parameterProvider.ProductPreviewData
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
-import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @Destination
 @Composable
 fun ImportProductScreen(
-    navController: DestinationsNavigator,
+    navigator: DestinationsNavigator,
     viewModel: ProductSettingsViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
 
     val importedProducts = viewModel.importedProducts.collectAsStateWithLifecycle().value
-
+    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
     val selectedItems = viewModel.selectedItems.toList()
 
     var importJob: Job? = null
@@ -104,8 +108,6 @@ fun ImportProductScreen(
             }
         }
 
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
-
     LaunchedEffect(key1 = event) {
         event?.let { data ->
             when (data) {
@@ -120,36 +122,61 @@ fun ImportProductScreen(
         }
     }
 
+    ImportProductScreenContent(
+        modifier = Modifier,
+        importedItems = importedProducts.toImmutableList(),
+        selectedItems = selectedItems.toImmutableList(),
+        onClickSelectItem = viewModel::selectItem,
+        onClickSelectAll = viewModel::selectAllItems,
+        onClickDeselect = viewModel::deselectItems,
+        onClickImport = {
+            viewModel.onEvent(ProductSettingsEvent.ImportProductsToDatabase)
+        },
+        onClickOpenFile = {
+            importLauncher.launch(ImportExport.openFile(context))
+        },
+        onBackClick = navigator::navigateUp,
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun ImportProductScreenContent(
+    modifier: Modifier = Modifier,
+    importedItems: ImmutableList<Product>,
+    selectedItems: ImmutableList<Int>,
+    onClickSelectItem: (Int) -> Unit,
+    onClickSelectAll: () -> Unit,
+    onClickDeselect: () -> Unit,
+    onClickImport: () -> Unit,
+    onClickOpenFile: () -> Unit,
+    onBackClick: () -> Unit,
+    scope: CoroutineScope = rememberCoroutineScope(),
+    lazyListState: LazyListState = rememberLazyListState(),
+    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
+) {
+    TrackScreenViewEvent(screenName = IMPORT_PRODUCTS_TITLE)
+
     BackHandler {
         if (selectedItems.isNotEmpty()) {
-            viewModel.deselectItems()
+            onClickDeselect()
         } else {
-            navController.navigateUp()
+            onBackClick()
         }
     }
 
-    TrackScreenViewEvent(screenName = "Product Import Screen")
-
     PoposSecondaryScaffold(
-        title = if (selectedItems.isEmpty()) ProductTestTags.IMPORT_PRODUCTS_TITLE else "${selectedItems.size} Selected",
+        modifier = modifier,
+        title = if (selectedItems.isEmpty()) IMPORT_PRODUCTS_TITLE else "${selectedItems.size} Selected",
         showBackButton = selectedItems.isEmpty(),
-        navigationIcon = {
-            IconButton(
-                onClick = viewModel::deselectItems,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = Constants.CLEAR_ICON,
-                )
-            }
-        },
-        showBottomBar = importedProducts.isNotEmpty() && lazyListState.isScrollingUp(),
+        showBottomBar = importedItems.isNotEmpty(),
+        showSecondaryBottomBar = true,
         navActions = {
             AnimatedVisibility(
-                visible = importedProducts.isNotEmpty(),
+                visible = importedItems.isNotEmpty(),
             ) {
                 IconButton(
-                    onClick = viewModel::selectAllItems,
+                    onClick = onClickSelectAll,
                 ) {
                     Icon(
                         imageVector = PoposIcons.Checklist,
@@ -162,7 +189,7 @@ fun ImportProductScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(SpaceSmallMax),
+                    .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} products will be imported.")
@@ -170,18 +197,14 @@ fun ImportProductScreen(
                 PoposButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag(ProductTestTags.IMPORT_PRODUCTS_BTN_TEXT),
+                        .testTag(IMPORT_PRODUCTS_TITLE),
                     enabled = true,
-                    text = ProductTestTags.IMPORT_PRODUCTS_BTN_TEXT,
+                    text = IMPORT_PRODUCTS_TITLE,
                     icon = PoposIcons.Download,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                     ),
-                    onClick = {
-                        scope.launch {
-                            viewModel.onEvent(ProductSettingsEvent.ImportProductsToDatabase)
-                        }
-                    },
+                    onClick = onClickImport,
                 )
             }
         },
@@ -196,56 +219,82 @@ fun ImportProductScreen(
                 },
             )
         },
-        onBackClick = navController::navigateUp,
-    ) {
+        onBackClick = onBackClick,
+        navigationIcon = {
+            IconButton(
+                onClick = onClickDeselect,
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Deselect All",
+                )
+            }
+        },
+    ) { paddingValues ->
         Crossfade(
-            targetState = importedProducts.isEmpty(),
-            label = "Imported Products",
-        ) { productsAvailable ->
-            if (productsAvailable) {
+            targetState = importedItems.isEmpty(),
+            label = "Imported Items",
+            modifier = Modifier.padding(paddingValues),
+        ) { itemAvailable ->
+            if (itemAvailable) {
                 EmptyImportScreen(
                     text = IMPORT_PRODUCTS_NOTE_TEXT,
                     buttonText = IMPORT_PRODUCTS_OPN_FILE,
+                    note = IMPORT_PRODUCTS_NOTE,
                     icon = PoposIcons.FileOpen,
-                    onClick = {
-                        scope.launch {
-                            val result = ImportExport.openFile(context)
-                            importLauncher.launch(result)
-                        }
-                    },
+                    onClick = onClickOpenFile,
                 )
             } else {
-                TrackScrollJank(
-                    scrollableState = lazyListState,
-                    stateName = "Imported Products::List",
+                ProductList(
+                    modifier = Modifier,
+                    items = importedItems,
+                    isInSelectionMode = true,
+                    doesSelected = selectedItems::contains,
+                    onSelectItem = onClickSelectItem,
+                    onNavigateToDetails = {},
+                    showItemNotFound = false,
+                    onClickCreateNew = {},
+                    lazyListState = lazyListState,
                 )
-
-                LazyColumn(
-                    state = lazyListState,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(it),
-                    contentPadding = PaddingValues(SpaceSmall),
-                ) {
-                    itemsIndexed(
-                        items = importedProducts,
-                        key = { index, item ->
-                            item.productName.plus(index).plus(item.productId)
-                        },
-                        contentType = { _, item -> item },
-                    ) { _, item ->
-                        ProductCard(
-                            item = item,
-                            doesSelected = selectedItems::contains,
-                            onClick = viewModel::selectItem,
-                            onLongClick = viewModel::selectItem,
-                            border = BorderStroke(0.dp, Color.Transparent),
-                            showArrow = false,
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        )
-                    }
-                }
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ImportProductScreenEmptyContentPreview() {
+    PoposRoomTheme {
+        ImportProductScreenContent(
+            modifier = Modifier,
+            importedItems = persistentListOf(),
+            selectedItems = persistentListOf(),
+            onClickSelectItem = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onClickImport = {},
+            onClickOpenFile = {},
+            onBackClick = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ImportProductScreenContentPreview(
+    items: ImmutableList<Product> = ProductPreviewData.productList.toImmutableList(),
+) {
+    PoposRoomTheme {
+        ImportProductScreenContent(
+            modifier = Modifier,
+            importedItems = items,
+            selectedItems = persistentListOf(),
+            onClickSelectItem = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onClickImport = {},
+            onClickOpenFile = {},
+            onBackClick = {},
+        )
     }
 }

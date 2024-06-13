@@ -31,5 +31,5 @@ sealed interface AddEditProductEvent {
 
     data object ProductAvailabilityChanged : AddEditProductEvent
 
-    data class AddOrUpdateProduct(val productId: Int = 0) : AddEditProductEvent
+    data object AddOrUpdateProduct : AddEditProductEvent
 }

@@ -15,14 +15,6 @@
  *
  */
 
-package com.niyaj.home
+package com.niyaj.model
 
-import kotlinx.coroutines.flow.StateFlow
-
-data class ProductWithFlowQuantity(
-    val categoryId: Int,
-    val productId: Int,
-    val productName: String,
-    val productPrice: Int,
-    val quantity: StateFlow<Int>,
-)
+data class ProductAndQuantity(val productId: Int, val quantity: Int)

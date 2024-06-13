@@ -50,7 +50,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Date
+import kotlinx.datetime.Clock
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -260,8 +260,8 @@ class AddEditCartOrderViewModel @Inject constructor(
                         customer = state.customer,
                         address = state.address,
                         deliveryPartnerId = state.deliveryPartnerId,
-                        createdAt = Date(),
-                        updatedAt = if (cartOrderId == 0) null else Date(),
+                        createdAt = Clock.System.now().toEpochMilliseconds(),
+                        updatedAt = if (cartOrderId == 0) null else Clock.System.now().toEpochMilliseconds(),
                     ),
                     addOnItems = state.selectedAddOnItems.toImmutableList(),
                     charges = state.selectedCharges.toImmutableList(),

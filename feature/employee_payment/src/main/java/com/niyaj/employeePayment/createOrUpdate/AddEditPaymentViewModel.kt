@@ -55,6 +55,8 @@ class AddEditPaymentViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
+    private val paymentId = savedStateHandle.get<Int>("paymentId") ?: 0
+
     var state by mutableStateOf(AddEditPaymentState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
@@ -71,11 +73,11 @@ class AddEditPaymentViewModel @Inject constructor(
 
     init {
         savedStateHandle.get<Int>("paymentId")?.let { paymentId ->
-            getPaymentById(paymentId)
+            if (paymentId != 0) getPaymentById(paymentId)
         }
 
         savedStateHandle.get<Int>("employeeId")?.let { employeeId ->
-            getEmployeeById(employeeId)
+            if (employeeId != 0) getEmployeeById(employeeId)
         }
     }
 
@@ -159,7 +161,7 @@ class AddEditPaymentViewModel @Inject constructor(
             }
 
             is AddEditPaymentEvent.CreateOrUpdatePayment -> {
-                createOrUpdatePayment(event.paymentId)
+                createOrUpdatePayment(paymentId)
             }
 
             is AddEditPaymentEvent.OnSelectEmployee -> {
@@ -249,7 +251,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdatePayment(data: Int, message: Strin
         event = AnalyticsEvent(
             type = "employee_payment_$message",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("employee_payment_$message", data.toString()),
+                AnalyticsEvent.Param("employee_payment_$message", data.toString()),
             ),
         ),
     )

@@ -27,7 +27,6 @@ import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -44,7 +43,6 @@ class PaymentViewModel @Inject constructor(
 
     override var totalItems: List<Int> = emptyList()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val payments = snapshotFlow { mSearchText.value }
         .flatMapLatest { it ->
             paymentRepository.getAllEmployeePayments(it)
@@ -89,7 +87,7 @@ internal fun AnalyticsHelper.logDeletedPayments(data: List<Int>) {
         event = AnalyticsEvent(
             type = "employee_payment_deleted",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("employee_payment_deleted", data.toString()),
+                AnalyticsEvent.Param("employee_payment_deleted", data.toString()),
             ),
         ),
     )

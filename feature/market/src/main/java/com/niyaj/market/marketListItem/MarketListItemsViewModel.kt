@@ -205,7 +205,7 @@ private fun AnalyticsHelper.logPrintMarketList(listTypeIds: List<Int>, marketDat
         event = AnalyticsEvent(
             type = "market_list_printed_for",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("market_list_printed_for", "${marketDate.toFormattedDate} - ${listTypeIds.toListString()}"),
+                AnalyticsEvent.Param("market_list_printed_for", "${marketDate.toFormattedDate} - ${listTypeIds.toListString()}"),
             ),
         ),
     )

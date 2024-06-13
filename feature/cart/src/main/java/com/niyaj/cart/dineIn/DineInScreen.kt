@@ -76,7 +76,6 @@ fun DineInScreen(
     CartScreenContent(
         modifier = Modifier,
         uiState = uiState,
-        snackbarHostState = snackbarHostState,
         selectedItems = selectedDineInOrder,
         addOnItems = addOnItems,
         onClickCreateOrder = onClickCreateOrder,
@@ -89,5 +88,6 @@ fun DineInScreen(
             viewModel.onEvent(DineInEvent.PlaceAllDineInCart)
         },
         onEvent = viewModel::onEvent,
+        snackbarHostState = snackbarHostState,
     )
 }

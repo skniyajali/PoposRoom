@@ -32,7 +32,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.accompanist.permissions)
+    implementation(libs.accompanist.swiperefresh)
     implementation(libs.dialog.core)
     implementation(libs.dialog.datetime)
     implementation(libs.zxing.core)

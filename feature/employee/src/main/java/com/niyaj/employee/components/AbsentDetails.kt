@@ -19,9 +19,12 @@ package com.niyaj.employee.components
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -36,31 +39,37 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toFormattedDate
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor6
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.EmployeeAbsentDates
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.ItemNotAvailable
-import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.ItemNotAvailableHalf
+import com.niyaj.ui.components.LoadingIndicatorHalf
+import com.niyaj.ui.components.NoteText
 import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.EmployeeAbsentsPreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 
 /**
  *
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun AbsentDetails(
+internal fun AbsentDetails(
     absentState: UiState<List<EmployeeAbsentDates>>,
     absentReportsExpanded: Boolean = false,
     onExpanded: () -> Unit,
@@ -68,7 +77,10 @@ fun AbsentDetails(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+            ) {
                 onExpanded()
             }
             .testTag("AbsentDetails"),
@@ -91,7 +103,7 @@ fun AbsentDetails(
                     icon = PoposIcons.EventBusy,
                 )
             },
-            rowClickable = true,
+            rowClickable = false,
             expand = { modifier: Modifier ->
                 IconButton(
                     modifier = modifier,
@@ -110,10 +122,10 @@ fun AbsentDetails(
                     label = "AbsentDetails",
                 ) { state ->
                     when (state) {
-                        is UiState.Loading -> LoadingIndicator()
+                        is UiState.Loading -> LoadingIndicatorHalf()
 
                         is UiState.Empty -> {
-                            ItemNotAvailable(
+                            ItemNotAvailableHalf(
                                 text = "Employee absent reports not available",
                                 showImage = false,
                             )
@@ -124,19 +136,27 @@ fun AbsentDetails(
 
                             Column(
                                 modifier = Modifier
-                                    .fillMaxWidth(),
+                                    .fillMaxWidth()
+                                    .padding(top = SpaceMini),
                             ) {
                                 state.data.forEachIndexed { index, absentReport ->
                                     Column(
                                         modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(SpaceSmall),
+                                            .fillMaxWidth(),
                                         horizontalAlignment = Alignment.Start,
                                     ) {
-                                        Column {
-                                            Text(
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = SpaceSmall, vertical = SpaceMini),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically,
+                                        ) {
+                                            IconWithText(
                                                 text = "${absentReport.startDate.toFormattedDate} - ${absentReport.endDate.toFormattedDate}",
+                                                icon = PoposIcons.CalenderMonth,
                                                 fontWeight = FontWeight.Bold,
+                                                tintColor = MaterialTheme.colorScheme.tertiary,
                                             )
                                             Spacer(modifier = Modifier.height(SpaceSmall))
                                             Text(
@@ -145,14 +165,15 @@ fun AbsentDetails(
                                             )
                                         }
 
-                                        Spacer(modifier = Modifier.height(SpaceSmall))
+                                        Spacer(modifier = Modifier.height(SpaceMini))
                                         HorizontalDivider(modifier = Modifier.fillMaxWidth())
-                                        Spacer(modifier = Modifier.height(SpaceSmall))
+                                        Spacer(modifier = Modifier.height(SpaceMini))
 
                                         FlowRow(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .padding(SpaceSmall),
+                                            horizontalArrangement = if (absentReport.absentDates.isEmpty()) Arrangement.Center else Arrangement.Start,
                                         ) {
                                             absentReport.absentDates.forEach { date ->
                                                 Card(
@@ -171,7 +192,14 @@ fun AbsentDetails(
                                                             .padding(SpaceSmall),
                                                     )
                                                 }
-                                                Spacer(modifier = Modifier.width(SpaceSmall))
+                                                Spacer(modifier = Modifier.width(SpaceMini))
+                                            }
+
+                                            if (absentReport.absentDates.isEmpty()) {
+                                                NoteText(
+                                                    text = "Did not take a leave on this date period!",
+                                                    modifier = Modifier,
+                                                )
                                             }
                                         }
                                     }
@@ -187,6 +215,22 @@ fun AbsentDetails(
                     }
                 }
             },
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AbsentDetailsPreview(
+    @PreviewParameter(EmployeeAbsentsPreviewParameter::class)
+    absentState: UiState<List<EmployeeAbsentDates>>,
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        AbsentDetails(
+            absentState = absentState,
+            absentReportsExpanded = true,
+            onExpanded = {},
         )
     }
 }

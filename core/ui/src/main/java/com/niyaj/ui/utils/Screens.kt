@@ -31,6 +31,8 @@ object Screens {
     const val HOME_SCREEN = "home_screen"
 
     const val ADD_ON_ITEM_SCREEN = "add_on_item_screen"
+    const val ADD_ON_IMPORT_SCREEN = "add_on_import_screen"
+    const val ADD_ON_EXPORT_SCREEN = "add_on_export_screen"
     const val ADD_EDIT_ADD_ON_ITEM_SCREEN = "add_edit_add_on_item_screen"
 
     const val CART_SCREEN = "cart_screen"
@@ -48,15 +50,21 @@ object Screens {
     const val PRINT_SETTINGS_SCREEN = "print_settings_screen"
 
     const val CATEGORY_SCREEN = "category_screen"
+    const val CATEGORY_IMPORT_SCREEN = "category_import_screen"
+    const val CATEGORY_EXPORT_SCREEN = "category_export_screen"
     const val ADD_EDIT_CATEGORY_SCREEN = "add_edit_category_screen"
 
     const val PRODUCT_SCREEN = "products_screen"
     const val ADD_EDIT_PRODUCT_SCREEN = "add_edit_product_screen"
 
     const val ADDRESS_SCREEN = "address_screen"
+    const val ADDRESS_IMPORT_SCREEN = "address_import_screen"
+    const val ADDRESS_EXPORT_SCREEN = "address_export_screen"
     const val ADDRESS_DETAILS_SCREEN = "address_details_screen"
 
     const val CUSTOMER_SCREEN = "customer_screen"
+    const val CUSTOMER_IMPORT_SCREEN = "customer_import_screen"
+    const val CUSTOMER_EXPORT_SCREEN = "customer_export_screen"
     const val CUSTOMER_DETAILS_SCREEN = "customer_details_screen"
 
     const val CART_ORDER_SCREEN = "cart_order_screen"
@@ -67,34 +75,33 @@ object Screens {
     const val CART_ORDER_SETTINGS_SCREEN = "cart_order_settings_screen"
 
     const val CHARGES_SCREEN = "charges_screen"
+    const val CHARGES_IMPORT_SCREEN = "charges_import_screen"
+    const val CHARGES_EXPORT_SCREEN = "charges_export_screen"
 
     const val PARTNER_SCREEN = "partner_screen"
 
     const val ADD_EDIT_PARTNER_SCREEN = "add_edit_partner_screen"
 
     const val EMPLOYEE_SCREEN = "employee_screen"
+    const val EMPLOYEE_IMPORT_SCREEN = "employee_import_screen"
+    const val EMPLOYEE_EXPORT_SCREEN = "employee_export_screen"
     const val EMPLOYEE_DETAILS_SCREEN = "employee_details_screen"
     const val ADD_EDIT_EMPLOYEE_SCREEN = "add_edit_employee_screen"
 
     const val PAYMENT_SCREEN = "payment_screen"
+    const val PAYMENT_IMPORT_SCREEN = "payment_import_screen"
+    const val PAYMENT_EXPORT_SCREEN = "payment_export_screen"
     const val ADD_EDIT_PAYMENT_SCREEN = "add_edit_payment_screen"
 
     const val ABSENT_SCREEN = "absent_screen"
+    const val ABSENT_IMPORT_SCREEN = "absent_import_screen"
+    const val ABSENT_EXPORT_SCREEN = "absent_export_screen"
     const val ADD_EDIT_ABSENT_SCREEN = "add_edit_absent_screen"
 
-    const val EXPENSES_CATEGORY_SCREEN = "expenses_category_screen"
-
-    const val EXPENSES_SUB_SCREEN = "expenses_sub_category_screen"
-
     const val EXPENSES_SCREEN = "expenses_screen"
-
     const val ADD_EXPENSES_SCREEN = "add_expenses_screen"
 
-    const val EDIT_EXPENSES_SCREEN = "edit_expenses_screen"
-
     const val REPORT_SCREEN = "report_screen"
-
-    const val VIEW_LAST_SEVEN_DAYS_REPORTS = "view_last_seven_days_reports"
 
     const val REMINDER_SCREEN = "reminder_screen"
 

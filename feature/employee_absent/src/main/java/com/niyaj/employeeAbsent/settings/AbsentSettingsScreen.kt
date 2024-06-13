@@ -17,20 +17,26 @@
 
 package com.niyaj.employeeAbsent.settings
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.niyaj.common.tags.AbsentScreenTags.ABSENT_SETTINGS_NOTE
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_SETTINGS_TITLE
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.employeeAbsent.destinations.AbsentExportScreenDestination
 import com.niyaj.employeeAbsent.destinations.AbsentImportScreenDestination
+import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
@@ -42,15 +48,35 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 fun AbsentSettingsScreen(
     navigator: DestinationsNavigator,
 ) {
-    TrackScreenViewEvent(screenName = "Absent Settings Screen")
+    AbsentSettingsScreenContent(
+        modifier = Modifier,
+        onBackClick = navigator::navigateUp,
+        onImportClick = {
+            navigator.navigate(AbsentImportScreenDestination())
+        },
+        onExportClick = {
+            navigator.navigate(AbsentExportScreenDestination())
+        },
+    )
+}
 
-    val lazyListState = rememberLazyListState()
+@VisibleForTesting
+@Composable
+internal fun AbsentSettingsScreenContent(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+    onImportClick: () -> Unit,
+    onExportClick: () -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
+    TrackScreenViewEvent(screenName = "Absent Settings Screen")
 
     TrackScrollJank(scrollableState = lazyListState, stateName = "Absent Settings::List")
 
     StandardBottomSheet(
+        modifier = modifier,
         title = ABSENT_SETTINGS_TITLE,
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
     ) {
         LazyColumn(
             modifier = Modifier
@@ -59,14 +85,16 @@ fun AbsentSettingsScreen(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
-            item("ImportAbsent") {
+            item("Note") {
+                NoteCard(text = ABSENT_SETTINGS_NOTE)
+            }
+
+            item("Import") {
                 SettingsCard(
                     title = "Import Absent Employee",
                     subtitle = "Click here to import data from file.",
                     icon = PoposIcons.Import,
-                    onClick = {
-                        navigator.navigate(AbsentImportScreenDestination())
-                    },
+                    onClick = onImportClick,
                 )
             }
 
@@ -75,11 +103,24 @@ fun AbsentSettingsScreen(
                     title = "Export Absent Employee",
                     subtitle = "Click here to export data to file.",
                     icon = PoposIcons.Upload,
-                    onClick = {
-                        navigator.navigate(AbsentExportScreenDestination())
-                    },
+                    onClick = onExportClick,
                 )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AbsentSettingsScreenContentPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        AbsentSettingsScreenContent(
+            modifier = modifier,
+            onBackClick = {},
+            onImportClick = {},
+            onExportClick = {},
+        )
     }
 }

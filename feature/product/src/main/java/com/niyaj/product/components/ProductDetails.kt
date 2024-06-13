@@ -20,7 +20,9 @@ package com.niyaj.product.components
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
@@ -31,22 +33,26 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toDateString
 import com.niyaj.common.utils.toFormattedDateAndTime
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Product
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.ItemNotAvailable
-import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.ItemNotAvailableHalf
+import com.niyaj.ui.components.LoadingIndicatorHalf
 import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.ProductPreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
-fun ProductDetails(
+internal fun ProductDetails(
     modifier: Modifier = Modifier,
     productState: UiState<Product>,
     onExpanded: () -> Unit,
@@ -107,10 +113,11 @@ fun ProductDetails(
                     label = "Product State",
                 ) { state ->
                     when (state) {
-                        is UiState.Loading -> LoadingIndicator()
+                        is UiState.Loading -> LoadingIndicatorHalf()
 
                         is UiState.Empty -> {
-                            ItemNotAvailable(
+                            ItemNotAvailableHalf(
+                                modifier = Modifier.height(IntrinsicSize.Min),
                                 text = "Product Details Not Available",
                                 showImage = false,
                             )
@@ -148,7 +155,7 @@ fun ProductDetails(
                                 IconWithText(
                                     modifier = Modifier.testTag(state.data.createdAt.toDateString),
                                     text = "Created At : ${state.data.createdAt.toFormattedDateAndTime}",
-                                    icon = PoposIcons.CalenderToday,
+                                    icon = PoposIcons.CalenderMonth,
                                 )
 
                                 state.data.updatedAt?.let {
@@ -162,6 +169,24 @@ fun ProductDetails(
                     }
                 }
             },
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ProductOrderDetailsPreview(
+    @PreviewParameter(ProductPreviewParameter::class)
+    productState: UiState<Product>,
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ProductDetails(
+            modifier = modifier,
+            productState = productState,
+            onExpanded = {},
+            doesExpanded = true,
+            onClickEdit = {},
         )
     }
 }

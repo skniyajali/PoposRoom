@@ -17,6 +17,7 @@
 
 package com.niyaj.market.marketItem.createOrUpdate
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,7 +30,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -45,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -69,21 +70,22 @@ import com.niyaj.common.tags.MarketListTestTags.MARKET_LIST_ITEM_DESC
 import com.niyaj.common.tags.MarketListTestTags.UPDATE_ITEM
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.market.destinations.AddEditMarketTypeScreenDestination
 import com.niyaj.market.destinations.AddEditMeasureUnitScreenDestination
 import com.niyaj.model.MarketTypeIdAndName
+import com.niyaj.model.MeasureUnit
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.StandardOutlinedTextField
-import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
 fun AddEditMarketItemScreen(
@@ -92,17 +94,13 @@ fun AddEditMarketItemScreen(
     viewModel: AddEditMarketItemViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
-    val lazyListState = rememberLazyListState()
-    val typeError = viewModel.typeError.collectAsStateWithLifecycle().value
-    val nameError = viewModel.nameError.collectAsStateWithLifecycle().value
-    val amountError = viewModel.priceError.collectAsStateWithLifecycle().value
-    val unitError = viewModel.unitError.collectAsStateWithLifecycle().value
-
-    val enableBtn = listOf(typeError, nameError, amountError, unitError).all {
-        it == null
-    }
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
+    val typeError by viewModel.typeError.collectAsStateWithLifecycle()
+    val nameError by viewModel.nameError.collectAsStateWithLifecycle()
+    val amountError by viewModel.priceError.collectAsStateWithLifecycle()
+    val unitError by viewModel.unitError.collectAsStateWithLifecycle()
+    val typeNames by viewModel.itemTypes.collectAsStateWithLifecycle()
+    val measureUnits by viewModel.measureUnits.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -119,18 +117,59 @@ fun AddEditMarketItemScreen(
     }
 
     val title = if (itemId == 0) CREATE_NEW_ITEM else UPDATE_ITEM
+    val icon = if (itemId == 0) PoposIcons.Add else PoposIcons.Edit
+
+    AddEditMarketItemScreenContent(
+        modifier = Modifier,
+        title = title,
+        icon = icon,
+        state = viewModel.state,
+        typeNames = typeNames,
+        measureUnits = measureUnits,
+        typeError = typeError,
+        nameError = nameError,
+        amountError = amountError,
+        unitError = unitError,
+        onEvent = viewModel::onEvent,
+        onBackClick = navigator::navigateUp,
+        onClickAddMarketType = {
+            navigator.navigate(AddEditMarketTypeScreenDestination(typeName = it))
+        },
+        onClickAddMeasureUnit = {
+            navigator.navigate(AddEditMeasureUnitScreenDestination(unitName = it))
+        },
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun AddEditMarketItemScreenContent(
+    modifier: Modifier = Modifier,
+    title: String = CREATE_NEW_ITEM,
+    icon: ImageVector = PoposIcons.Add,
+    state: AddEditMarketItemState,
+    typeNames: List<MarketTypeIdAndName>,
+    measureUnits: List<MeasureUnit>,
+    typeError: String?,
+    nameError: String?,
+    amountError: String?,
+    unitError: String?,
+    onEvent: (AddEditMarketItemEvent) -> Unit,
+    onBackClick: () -> Unit,
+    onClickAddMarketType: (String) -> Unit,
+    onClickAddMeasureUnit: (String) -> Unit,
+) {
+    val lazyListState = rememberLazyListState()
+    val enableBtn = listOf(typeError, nameError, amountError, unitError).all {
+        it == null
+    }
 
     var expanded by remember { mutableStateOf(false) }
     var measureExpanded by remember { mutableStateOf(false) }
-
-    val typeNames = viewModel.itemTypes.collectAsStateWithLifecycle().value
-    val measureUnits = viewModel.measureUnits.collectAsStateWithLifecycle().value
-
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
-    TrackScreenViewEvent(screenName = "$title/itemId=$itemId")
-
     PoposSecondaryScaffold(
+        modifier = modifier,
         title = title,
         showBottomBar = true,
         showBackButton = true,
@@ -138,17 +177,16 @@ fun AddEditMarketItemScreen(
             PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(ADD_EDIT_MARKET_ITEM_BUTTON)
-                    .padding(SpaceMedium),
-                text = if (itemId == 0) CREATE_NEW_ITEM else UPDATE_ITEM,
-                icon = if (itemId == 0) PoposIcons.Add else PoposIcons.Edit,
+                    .testTag(ADD_EDIT_MARKET_ITEM_BUTTON),
+                text = title,
+                icon = icon,
                 enabled = enableBtn,
                 onClick = {
-                    viewModel.onEvent(AddEditMarketItemEvent.AddOrUpdateItem)
+                    onEvent(AddEditMarketItemEvent.AddOrUpdateItem)
                 },
             )
         },
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
     ) { paddingValues ->
         TrackScrollJank(
             scrollableState = lazyListState,
@@ -173,18 +211,27 @@ fun AddEditMarketItemScreen(
                                 // This is used to assign to the DropDown the same width
                                 textFieldSize = coordinates.size.toSize()
                             },
-                        value = viewModel.state.marketType.typeName,
+                        value = state.marketType.typeName,
                         label = MARKET_ITEM_TYPE_FIELD,
                         leadingIcon = PoposIcons.Radar,
                         isError = typeError != null,
                         errorText = typeError,
                         errorTextTag = MARKET_ITEM_TYPE_ERROR_TAG,
                         readOnly = false,
+                        showClearIcon = state.marketType.typeName.isNotEmpty(),
                         onValueChange = {
                             expanded = true
-                            viewModel.onEvent(
+                            onEvent(
                                 AddEditMarketItemEvent.ItemTypeChanged(
                                     MarketTypeIdAndName(typeId = 0, typeName = it),
+                                ),
+                            )
+                        },
+                        onClickClearIcon = {
+                            expanded = true
+                            onEvent(
+                                AddEditMarketItemEvent.ItemTypeChanged(
+                                    MarketTypeIdAndName(typeId = 0, typeName = ""),
                                 ),
                             )
                         },
@@ -215,7 +262,7 @@ fun AddEditMarketItemScreen(
                                 text = { Text(marketType.typeName) },
                                 onClick = {
                                     expanded = false
-                                    viewModel.onEvent(
+                                    onEvent(
                                         AddEditMarketItemEvent.ItemTypeChanged(marketType),
                                     )
                                 },
@@ -256,11 +303,7 @@ fun AddEditMarketItemScreen(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             onClick = {
-                                navigator.navigate(
-                                    AddEditMarketTypeScreenDestination(
-                                        typeName = viewModel.state.marketType.typeName,
-                                    ),
-                                )
+                                onClickAddMarketType(state.marketType.typeName)
                             },
                             text = {
                                 Text(
@@ -288,14 +331,18 @@ fun AddEditMarketItemScreen(
 
             item(MARKET_ITEM_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.itemName,
+                    value = state.itemName,
                     label = MARKET_ITEM_NAME_FIELD,
                     leadingIcon = PoposIcons.WorkOutline,
                     isError = nameError != null,
                     errorText = nameError,
                     errorTextTag = MARKET_ITEM_NAME_ERROR_TAG,
+                    showClearIcon = state.itemName.isNotEmpty(),
                     onValueChange = {
-                        viewModel.onEvent(AddEditMarketItemEvent.ItemNameChanged(it))
+                        onEvent(AddEditMarketItemEvent.ItemNameChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditMarketItemEvent.ItemNameChanged(""))
                     },
                 )
             }
@@ -311,16 +358,21 @@ fun AddEditMarketItemScreen(
                                 // This is used to assign to the DropDown the same width
                                 textFieldSize = coordinates.size.toSize()
                             },
-                        value = viewModel.state.itemMeasureUnit.unitName,
+                        value = state.itemMeasureUnit.unitName,
                         label = MARKET_ITEM_MEASURE_FIELD,
                         leadingIcon = PoposIcons.MonitorWeight,
                         isError = unitError != null,
                         errorText = unitError,
                         errorTextTag = MARKET_ITEM_MEASURE_ERROR_TAG,
                         readOnly = false,
+                        showClearIcon = state.itemMeasureUnit.unitName.isNotEmpty(),
                         onValueChange = {
                             measureExpanded = true
-                            viewModel.onEvent(AddEditMarketItemEvent.ItemMeasureUnitNameChanged(it))
+                            onEvent(AddEditMarketItemEvent.ItemMeasureUnitNameChanged(it))
+                        },
+                        onClickClearIcon = {
+                            measureExpanded = true
+                            onEvent(AddEditMarketItemEvent.ItemMeasureUnitNameChanged(""))
                         },
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = measureExpanded)
@@ -349,7 +401,7 @@ fun AddEditMarketItemScreen(
                                 text = { Text(unit.unitName) },
                                 onClick = {
                                     measureExpanded = false
-                                    viewModel.onEvent(
+                                    onEvent(
                                         AddEditMarketItemEvent.ItemMeasureUnitChanged(unit),
                                     )
                                 },
@@ -390,11 +442,7 @@ fun AddEditMarketItemScreen(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             onClick = {
-                                navigator.navigate(
-                                    AddEditMeasureUnitScreenDestination(
-                                        unitName = viewModel.state.itemMeasureUnit.unitName,
-                                    ),
-                                )
+                                onClickAddMeasureUnit(state.itemMeasureUnit.unitName)
                             },
                             text = {
                                 Text(
@@ -422,29 +470,73 @@ fun AddEditMarketItemScreen(
 
             item(MARKET_ITEM_PRICE_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.itemPrice ?: "",
+                    value = state.itemPrice ?: "",
                     label = MARKET_ITEM_PRICE_FIELD,
                     leadingIcon = PoposIcons.Rupee,
                     isError = amountError != null,
                     errorText = amountError,
                     errorTextTag = MARKET_ITEM_PRICE_ERROR_TAG,
                     keyboardType = KeyboardType.Number,
+                    showClearIcon = !state.itemPrice.isNullOrEmpty(),
                     onValueChange = {
-                        viewModel.onEvent(AddEditMarketItemEvent.ItemPriceChanged(it))
+                        onEvent(AddEditMarketItemEvent.ItemPriceChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditMarketItemEvent.ItemPriceChanged(""))
                     },
                 )
             }
 
             item(MARKET_LIST_ITEM_DESC) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.itemDesc ?: "",
+                    value = state.itemDesc ?: "",
                     label = MARKET_LIST_ITEM_DESC,
                     leadingIcon = PoposIcons.Note,
+                    showClearIcon = !state.itemDesc.isNullOrEmpty(),
                     onValueChange = {
-                        viewModel.onEvent(AddEditMarketItemEvent.ItemDescriptionChanged(it))
+                        onEvent(AddEditMarketItemEvent.ItemDescriptionChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditMarketItemEvent.ItemDescriptionChanged(""))
                     },
                 )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AddEditMarketItemScreenContentPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        AddEditMarketItemScreenContent(
+            modifier = modifier,
+            state = AddEditMarketItemState(
+                marketType = MarketTypeIdAndName(
+                    typeId = 8704,
+                    typeName = "Marcy Dawson",
+                ),
+                itemName = "Xavier Randolph",
+                itemMeasureUnit = MeasureUnit(
+                    unitId = 5982,
+                    unitName = "Johnnie Adams",
+                    unitValue = 2.3,
+                ),
+                itemPrice = null,
+                itemDesc = null,
+            ),
+            typeNames = listOf(),
+            measureUnits = listOf(),
+            typeError = null,
+            nameError = null,
+            amountError = null,
+            unitError = null,
+            onEvent = {},
+            onBackClick = {},
+            onClickAddMarketType = {},
+            onClickAddMeasureUnit = {},
+        )
     }
 }

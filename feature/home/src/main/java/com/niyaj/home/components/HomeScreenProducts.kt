@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -65,12 +66,11 @@ import kotlinx.collections.immutable.ImmutableList
 @Composable
 fun HomeScreenProducts(
     modifier: Modifier = Modifier,
-    lazyListState: LazyListState,
+    lazyListState: LazyListState = rememberLazyListState(),
     products: ImmutableList<ProductWithQuantity>,
     onIncrease: (Int) -> Unit,
     onDecrease: (Int) -> Unit,
     onCreateProduct: () -> Unit,
-    onClickScrollToTop: () -> Unit,
 ) = trace("MainFeedProducts") {
     TrackScrollJank(scrollableState = lazyListState, stateName = "products:list")
 
@@ -208,5 +208,7 @@ fun HomeScreenProductCard(
         colors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.background,
         ),
+        shadowElevation = 1.dp,
+        tonalElevation = 1.dp,
     )
 }

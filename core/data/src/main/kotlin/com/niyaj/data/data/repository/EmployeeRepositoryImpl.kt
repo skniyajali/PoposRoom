@@ -38,7 +38,6 @@ import com.niyaj.model.EmployeeMonthlyDate
 import com.niyaj.model.EmployeePayments
 import com.niyaj.model.EmployeeSalaryEstimation
 import com.niyaj.model.searchEmployee
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -336,7 +335,7 @@ class EmployeeRepositoryImpl(
                                 EmployeeAbsentDates(
                                     startDate = date.first,
                                     endDate = date.second,
-                                    absentDates = absentDates.toImmutableList(),
+                                    absentDates = absentDates,
                                 ),
                             )
                         }
@@ -376,7 +375,7 @@ class EmployeeRepositoryImpl(
                                 EmployeePayments(
                                     startDate = date.first,
                                     endDate = date.second,
-                                    payments = result.toImmutableList(),
+                                    payments = result,
                                 ),
                             )
                         }
@@ -426,7 +425,7 @@ class EmployeeRepositoryImpl(
     override suspend fun importEmployeesToDatabase(employees: List<Employee>): Resource<Boolean> {
         try {
             employees.forEach { newEmployee ->
-                return withContext(ioDispatcher) {
+                withContext(ioDispatcher) {
                     upsertEmployee(newEmployee)
                 }
             }

@@ -17,19 +17,18 @@
 
 package com.niyaj.market.marketItem.settings
 
-import android.Manifest
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
@@ -38,28 +37,30 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.common.tags.MarketListTestTags
-import com.niyaj.common.tags.MarketListTestTags.EXPORT_MARKET_ITEM_BTN
-import com.niyaj.common.tags.MarketListTestTags.EXPORT_MARKET_ITEM_BTN_TEXT
 import com.niyaj.common.tags.MarketListTestTags.EXPORT_MARKET_ITEM_FILE_NAME
 import com.niyaj.common.tags.MarketListTestTags.EXPORT_MARKET_ITEM_TITLE
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_NOT_AVAILABLE
+import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_SEARCH_PLACEHOLDER
 import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.domain.utils.ImportExport
-import com.niyaj.market.components.MarketItemCard
+import com.niyaj.market.components.MarketItemCardList
 import com.niyaj.market.destinations.AddEditMarketItemScreenDestination
 import com.niyaj.model.MarketItem
 import com.niyaj.ui.components.InfoText
@@ -69,16 +70,20 @@ import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.parameterProvider.MarketItemPreviewData
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
-import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Destination
 @Composable
 fun ExportMarketItemScreen(
@@ -86,19 +91,16 @@ fun ExportMarketItemScreen(
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: MarketItemSettingsViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val lazyGridState = rememberLazyGridState()
 
-    val items = viewModel.items.collectAsStateWithLifecycle().value
-    val exportedItems = viewModel.exportedItems.collectAsStateWithLifecycle().value
+    val items by viewModel.items.collectAsStateWithLifecycle()
+    val exportedItems by viewModel.exportedItems.collectAsStateWithLifecycle()
+    val showSearchBar by viewModel.showSearchBar.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
-    val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
-
     val selectedItems = viewModel.selectedItems.toList()
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
-
     val isLoading = remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = event) {
@@ -112,21 +114,6 @@ fun ExportMarketItemScreen(
                     resultBackNavigator.navigateBack(data.successMessage)
                 }
             }
-        }
-    }
-
-    val context = LocalContext.current
-
-    val hasStoragePermission = rememberMultiplePermissionsState(
-        permissions = listOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        ),
-    )
-
-    val askForPermissions = {
-        if (!hasStoragePermission.allPermissionsGranted) {
-            hasStoragePermission.launchMultiplePermissionRequest()
         }
     }
 
@@ -148,38 +135,92 @@ fun ExportMarketItemScreen(
             }
         }
 
-    fun onBackClick() {
+    ExportMarketItemScreenContent(
+        modifier = Modifier,
+        items = items.toImmutableList(),
+        selectedItems = selectedItems.toImmutableList(),
+        isLoading = isLoading.value,
+        showSearchBar = showSearchBar,
+        searchText = searchText,
+        onClearClick = viewModel::clearSearchText,
+        onSearchTextChanged = viewModel::searchTextChanged,
+        onClickOpenSearch = viewModel::openSearchBar,
+        onClickCloseSearch = viewModel::closeSearchBar,
+        onClickSelectAll = viewModel::selectAllItems,
+        onClickDeselect = viewModel::deselectItems,
+        onSelectItem = viewModel::selectItem,
+        onClickExport = {
+            scope.launch {
+                val result = ImportExport.createFile(
+                    context = context,
+                    fileName = EXPORT_MARKET_ITEM_FILE_NAME,
+                )
+                exportLauncher.launch(result)
+                viewModel.onEvent(MarketItemSettingsEvent.GetExportedMarketItem)
+            }
+        },
+        onBackClick = navigator::navigateUp,
+        onClickToAddItem = {
+            navigator.navigate(AddEditMarketItemScreenDestination())
+        },
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun ExportMarketItemScreenContent(
+    modifier: Modifier = Modifier,
+    items: ImmutableList<MarketItem>,
+    selectedItems: ImmutableList<Int>,
+    isLoading: Boolean,
+    showSearchBar: Boolean,
+    searchText: String,
+    onClearClick: () -> Unit,
+    onSearchTextChanged: (String) -> Unit,
+    onClickOpenSearch: () -> Unit,
+    onClickCloseSearch: () -> Unit,
+    onClickSelectAll: () -> Unit,
+    onClickDeselect: () -> Unit,
+    onSelectItem: (Int) -> Unit,
+    onClickExport: () -> Unit,
+    onBackClick: () -> Unit,
+    onClickToAddItem: () -> Unit,
+    scope: CoroutineScope = rememberCoroutineScope(),
+    lazyGridState: LazyGridState = rememberLazyGridState(),
+    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
+) {
+    TrackScreenViewEvent(screenName = "ExportMarketItemScreen")
+
+    val text = if (searchText.isEmpty()) MARKET_ITEM_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND
+    val title = if (selectedItems.isEmpty()) EXPORT_MARKET_ITEM_TITLE else "${selectedItems.size} Selected"
+
+    BackHandler {
         if (selectedItems.isNotEmpty()) {
-            viewModel.deselectItems()
+            onClickDeselect()
         } else if (showSearchBar) {
-            viewModel.closeSearchBar()
+            onClickCloseSearch()
         } else {
-            navigator.navigateUp()
+            onBackClick()
         }
     }
 
-    BackHandler {
-        onBackClick()
-    }
-
-    TrackScreenViewEvent(screenName = EXPORT_MARKET_ITEM_TITLE)
-
     PoposSecondaryScaffold(
-        title = if (selectedItems.isEmpty()) EXPORT_MARKET_ITEM_TITLE else "${selectedItems.size} Selected",
+        title = title,
         showBackButton = selectedItems.isEmpty() || showSearchBar,
         showBottomBar = items.isNotEmpty(),
+        showSecondaryBottomBar = true,
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
                     searchText = searchText,
-                    placeholderText = "Search for categories...",
-                    onClearClick = viewModel::clearSearchText,
-                    onSearchTextChanged = viewModel::searchTextChanged,
+                    placeholderText = MARKET_ITEM_SEARCH_PLACEHOLDER,
+                    onClearClick = onClearClick,
+                    onSearchTextChanged = onSearchTextChanged,
                 )
             } else {
                 if (items.isNotEmpty()) {
                     IconButton(
-                        onClick = viewModel::selectAllItems,
+                        onClick = onClickSelectAll,
                     ) {
                         Icon(
                             imageVector = PoposIcons.Checklist,
@@ -188,7 +229,7 @@ fun ExportMarketItemScreen(
                     }
 
                     IconButton(
-                        onClick = viewModel::openSearchBar,
+                        onClick = onClickOpenSearch,
                         modifier = Modifier.testTag(NAV_SEARCH_BTN),
                     ) {
                         Icon(
@@ -203,35 +244,26 @@ fun ExportMarketItemScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(SpaceSmallMax),
+                    .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} items will be exported.")
+                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} market item will be exported.")
 
                 PoposButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag(EXPORT_MARKET_ITEM_BTN),
-                    enabled = true,
-                    text = EXPORT_MARKET_ITEM_BTN_TEXT,
+                        .testTag(EXPORT_MARKET_ITEM_TITLE),
+                    enabled = items.isNotEmpty(),
+                    text = EXPORT_MARKET_ITEM_TITLE,
                     icon = PoposIcons.Upload,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary,
                     ),
-                    onClick = {
-                        scope.launch {
-                            askForPermissions()
-                            val result = ImportExport.createFile(
-                                context = context,
-                                fileName = EXPORT_MARKET_ITEM_FILE_NAME,
-                            )
-                            exportLauncher.launch(result)
-                            viewModel.onEvent(MarketItemSettingsEvent.GetExportedMarketItem)
-                        }
-                    },
+                    onClick = onClickExport,
                 )
             }
         },
+        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
         fabPosition = FabPosition.End,
         floatingActionButton = {
             ScrollToTop(
@@ -243,10 +275,9 @@ fun ExportMarketItemScreen(
                 },
             )
         },
-        onBackClick = { onBackClick() },
         navigationIcon = {
             IconButton(
-                onClick = viewModel::deselectItems,
+                onClick = onClickDeselect,
             ) {
                 Icon(
                     imageVector = PoposIcons.Close,
@@ -254,40 +285,82 @@ fun ExportMarketItemScreen(
                 )
             }
         },
-    ) { paddingValues ->
-        if (items.isEmpty()) {
-            ItemNotAvailable(
-                text = if (searchText.isEmpty()) MarketListTestTags.MARKET_ITEM_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND,
-                buttonText = MarketListTestTags.CREATE_NEW_ITEM,
-                onClick = {
-                    navigator.navigate(AddEditMarketItemScreenDestination())
-                },
-            )
-        } else if (isLoading.value) {
-            LoadingIndicator()
-        } else {
-            TrackScrollJank(scrollableState = lazyGridState, stateName = "ExportedMarketItem::List")
-
-            LazyVerticalGrid(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentPadding = PaddingValues(SpaceSmall),
-                columns = GridCells.Fixed(2),
-                state = lazyGridState,
-            ) {
-                items(
+    ) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(it),
+        ) {
+            if (items.isEmpty()) {
+                ItemNotAvailable(
+                    text = text,
+                    buttonText = MarketListTestTags.CREATE_NEW_ITEM,
+                    onClick = onClickToAddItem,
+                )
+            } else if (isLoading) {
+                LoadingIndicator()
+            } else {
+                MarketItemCardList(
+                    modifier = Modifier,
                     items = items,
-                    key = { it.itemId },
-                ) { item: MarketItem ->
-                    MarketItemCard(
-                        item = item,
-                        doesSelected = selectedItems::contains,
-                        onClick = viewModel::selectItem,
-                        onLongClick = viewModel::selectItem,
-                    )
-                }
+                    isInSelectionMode = true,
+                    doesSelected = selectedItems::contains,
+                    onSelectItem = onSelectItem,
+                    lazyGridState = lazyGridState,
+                )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ExportMarketItemScreenContentEmptyPreview() {
+    PoposRoomTheme {
+        ExportMarketItemScreenContent(
+            modifier = Modifier,
+            items = persistentListOf(),
+            selectedItems = persistentListOf(),
+            isLoading = false,
+            showSearchBar = false,
+            searchText = "",
+            onClearClick = {},
+            onSearchTextChanged = {},
+            onClickOpenSearch = {},
+            onClickCloseSearch = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onSelectItem = {},
+            onClickExport = {},
+            onBackClick = {},
+            onClickToAddItem = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ExportMarketItemScreenContentPreview(
+    items: ImmutableList<MarketItem> = MarketItemPreviewData.marketItems.toImmutableList(),
+) {
+    PoposRoomTheme {
+        ExportMarketItemScreenContent(
+            modifier = Modifier,
+            items = items,
+            selectedItems = persistentListOf(),
+            isLoading = false,
+            showSearchBar = false,
+            searchText = "",
+            onClearClick = {},
+            onSearchTextChanged = {},
+            onClickOpenSearch = {},
+            onClickCloseSearch = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onSelectItem = {},
+            onClickExport = {},
+            onBackClick = {},
+            onClickToAddItem = {},
+        )
     }
 }

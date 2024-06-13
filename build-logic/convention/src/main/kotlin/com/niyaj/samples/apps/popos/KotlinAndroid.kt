@@ -90,5 +90,8 @@ private inline fun <reified T : KotlinTopLevelExtension> Project.configureKotlin
             // Enable experimental coroutines APIs, including Flow
             "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
         )
+        freeCompilerArgs.add(
+            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
+        )
     }
 }

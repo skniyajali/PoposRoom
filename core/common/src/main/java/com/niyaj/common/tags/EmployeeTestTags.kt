@@ -77,19 +77,19 @@ object EmployeeTestTags {
     const val EMPLOYEE_TAG = "Customer-"
 
     // Details screen tags
-    const val EMPLOYEE_DETAILS_SCREEN = "Employee DetailsScreen"
+    const val EMPLOYEE_DETAILS = "Employee Details"
     const val REMAINING_AMOUNT_TEXT = "remainingAmount"
 
     const val EMPLOYEE_SETTINGS_TITLE = "Employees Settings"
 
     const val IMPORT_EMPLOYEE_TITLE = "Import Employees"
-    const val IMPORT_EMPLOYEE_BTN_TEXT = "Import Employees"
+    const val IMPORT_EMPLOYEE_SUB_TITLE = "Click here to import data from file."
+
     const val IMPORT_EMPLOYEE_NOTE_TEXT = "Make sure to open employees.json file."
     const val IMPORT_EMPLOYEE_OPN_FILE = "Open File"
 
     const val EXPORT_EMPLOYEE_TITLE = "Export Employees"
-    const val EXPORT_EMPLOYEE_BTN_TEXT = "Export Employees"
-    const val EXPORT_EMPLOYEE_BTN = "Export Employees"
+    const val EXPORT_EMPLOYEE_SUB_TITLE = "Click here to export data to file."
 
     const val EXPORT_EMPLOYEE_FILE_NAME = "employees"
 }

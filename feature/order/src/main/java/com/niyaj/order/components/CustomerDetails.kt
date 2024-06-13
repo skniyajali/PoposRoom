@@ -61,7 +61,6 @@ internal fun CustomerDetails(
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(SpaceSmall)
             .clickable {
                 onExpandChanged()
             },

@@ -17,20 +17,30 @@
 
 package com.niyaj.employeePayment.settings
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.niyaj.common.tags.PaymentScreenTags.EXPORT_PAYMENT_SUB_TITLE
+import com.niyaj.common.tags.PaymentScreenTags.EXPORT_PAYMENT_TITLE
+import com.niyaj.common.tags.PaymentScreenTags.IMPORT_PAYMENT_SUB_TITLE
+import com.niyaj.common.tags.PaymentScreenTags.IMPORT_PAYMENT_TITLE
+import com.niyaj.common.tags.PaymentScreenTags.PAYMENT_SETTINGS_NOTE
 import com.niyaj.common.tags.PaymentScreenTags.PAYMENT_SETTINGS_TITLE
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.employeePayment.destinations.PaymentExportScreenDestination
 import com.niyaj.employeePayment.destinations.PaymentImportScreenDestination
+import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
@@ -42,15 +52,35 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 fun PaymentSettingsScreen(
     navigator: DestinationsNavigator,
 ) {
-    TrackScreenViewEvent(screenName = "Payment Setting Screen")
+    PaymentSettingsScreenContent(
+        modifier = Modifier,
+        onBackClick = navigator::navigateUp,
+        onImportClick = {
+            navigator.navigate(PaymentImportScreenDestination)
+        },
+        onExportClick = {
+            navigator.navigate(PaymentExportScreenDestination)
+        },
+    )
+}
 
-    val lazyListState = rememberLazyListState()
+@VisibleForTesting
+@Composable
+internal fun PaymentSettingsScreenContent(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+    onImportClick: () -> Unit,
+    onExportClick: () -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
+    TrackScreenViewEvent(screenName = "Payment Setting Screen")
 
     TrackScrollJank(scrollableState = lazyListState, stateName = "Payment Settings::List")
 
     StandardBottomSheet(
+        modifier = modifier,
         title = PAYMENT_SETTINGS_TITLE,
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
     ) {
         LazyColumn(
             modifier = Modifier
@@ -59,27 +89,42 @@ fun PaymentSettingsScreen(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
-            item("ImportPayment") {
+            item("Note") {
+                NoteCard(text = PAYMENT_SETTINGS_NOTE)
+            }
+
+            item(IMPORT_PAYMENT_TITLE) {
                 SettingsCard(
-                    title = "Import Employee Payment",
-                    subtitle = "Click here to import data from file.",
+                    title = IMPORT_PAYMENT_TITLE,
+                    subtitle = IMPORT_PAYMENT_SUB_TITLE,
                     icon = PoposIcons.Import,
-                    onClick = {
-                        navigator.navigate(PaymentImportScreenDestination())
-                    },
+                    onClick = onImportClick,
                 )
             }
 
-            item("ExportPayment") {
+            item(EXPORT_PAYMENT_TITLE) {
                 SettingsCard(
-                    title = "Export Employee Payment",
-                    subtitle = "Click here to export data to file.",
+                    title = EXPORT_PAYMENT_TITLE,
+                    subtitle = EXPORT_PAYMENT_SUB_TITLE,
                     icon = PoposIcons.Upload,
-                    onClick = {
-                        navigator.navigate(PaymentExportScreenDestination())
-                    },
+                    onClick = onExportClick,
                 )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun PaymentSettingsScreenContentPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        PaymentSettingsScreenContent(
+            modifier = modifier,
+            onBackClick = {},
+            onImportClick = {},
+            onExportClick = {},
+        )
     }
 }

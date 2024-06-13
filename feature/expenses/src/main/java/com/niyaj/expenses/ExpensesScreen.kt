@@ -18,18 +18,25 @@
 package com.niyaj.expenses
 
 import androidx.activity.compose.BackHandler
+import androidx.annotation.VisibleForTesting
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.common.tags.ExpenseTestTags.CREATE_NEW_EXPENSE
@@ -38,17 +45,17 @@ import com.niyaj.common.tags.ExpenseTestTags.DELETE_EXPENSE_TITLE
 import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NOT_AVAILABLE
 import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_SCREEN_TITLE
 import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_SEARCH_PLACEHOLDER
-import com.niyaj.common.tags.ExpenseTestTags.NO_ITEMS_IN_EXPENSE
+import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
 import com.niyaj.common.utils.toMilliSecond
-import com.niyaj.common.utils.toPrettyDate
-import com.niyaj.common.utils.toRupee
-import com.niyaj.expenses.components.ExpensesData
-import com.niyaj.expenses.components.GroupedExpensesData
+import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.expenses.components.ExpensesList
 import com.niyaj.expenses.components.TotalExpenses
 import com.niyaj.expenses.destinations.AddEditExpenseScreenDestination
 import com.niyaj.expenses.destinations.ExpensesExportScreenDestination
 import com.niyaj.expenses.destinations.ExpensesImportScreenDestination
 import com.niyaj.expenses.destinations.ExpensesSettingsScreenDestination
+import com.niyaj.model.Expense
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.PoposPrimaryScaffold
@@ -56,9 +63,10 @@ import com.niyaj.ui.components.ScaffoldNavActions
 import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.ExpensePreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
-import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
@@ -69,7 +77,9 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import java.time.LocalDate
 
 @RootNavGraph(start = true)
@@ -84,102 +94,123 @@ fun ExpensesScreen(
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
-    val state = viewModel.expenses.collectAsStateWithLifecycle().value
+
+    val state by viewModel.expenses.collectAsStateWithLifecycle()
+    val showSearchBar by viewModel.showSearchBar.collectAsStateWithLifecycle()
+    val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     val selectedItems = viewModel.selectedItems.toList()
-
-    val lazyListState = rememberLazyListState()
-
-    val showFab = viewModel.totalItems.isNotEmpty()
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
-
-    val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
 
-    val openDialog = remember { mutableStateOf(false) }
-    val dialogState = rememberMaterialDialogState()
+    ExpensesScreenContent(
+        modifier = Modifier,
+        uiState = state,
+        selectedDate = selectedDate,
+        selectedItems = selectedItems,
+        showSearchBar = showSearchBar,
+        searchText = searchText,
+        onClickSearchIcon = viewModel::openSearchBar,
+        onSearchTextChanged = viewModel::searchTextChanged,
+        onClickClear = viewModel::clearSearchText,
+        onCloseSearchBar = viewModel::closeSearchBar,
+        onClickSelectItem = viewModel::selectItem,
+        onClickSelectAll = viewModel::selectAllItems,
+        onClickDeselect = viewModel::deselectItems,
+        onClickDelete = viewModel::deleteItems,
+        onSelectDate = viewModel::selectDate,
+        onClickBack = navigator::popBackStack,
+        onNavigateToScreen = navigator::navigate,
+        onClickCreateNew = {
+            navigator.navigate(AddEditExpenseScreenDestination())
+        },
+        onClickEdit = {
+            navigator.navigate(AddEditExpenseScreenDestination(it))
+        },
+        onClickSettings = {
+            navigator.navigate(ExpensesSettingsScreenDestination())
+        },
+        snackbarState = snackbarState,
+    )
 
-    val selectedDate = viewModel.selectedDate.collectAsStateWithLifecycle().value.toPrettyDate()
-    val totalAmount = viewModel.totalAmount.collectAsStateWithLifecycle().value.toRupee
-    val totalItem = viewModel.totalItems.size.toString()
+    HandleResultRecipients(
+        resultRecipient = resultRecipient,
+        exportRecipient = exportRecipient,
+        importRecipient = importRecipient,
+        event = event,
+        onDeselectItems = viewModel::deselectItems,
+        coroutineScope = scope,
+        snackbarHostState = snackbarState,
+    )
+}
 
-    LaunchedEffect(key1 = event) {
-        event?.let { data ->
-            when (data) {
-                is UiEvent.OnError -> {
-                    scope.launch {
-                        snackbarState.showSnackbar(data.errorMessage)
-                    }
-                }
-
-                is UiEvent.OnSuccess -> {
-                    scope.launch {
-                        snackbarState.showSnackbar(data.successMessage)
-                    }
-                }
-            }
-        }
-    }
-
-    resultRecipient.onNavResult { result ->
-        when (result) {
-            is NavResult.Canceled -> {
-                viewModel.deselectItems()
-            }
-
-            is NavResult.Value -> {
-                scope.launch {
-                    viewModel.deselectItems()
-                    snackbarState.showSnackbar(result.value)
-                }
-            }
-        }
-    }
-
-    exportRecipient.onNavResult { result ->
-        when (result) {
-            is NavResult.Canceled -> {}
-            is NavResult.Value -> {
-                scope.launch {
-                    snackbarState.showSnackbar(result.value)
-                }
-            }
-        }
-    }
-
-    importRecipient.onNavResult { result ->
-        when (result) {
-            is NavResult.Canceled -> {}
-            is NavResult.Value -> {
-                scope.launch {
-                    snackbarState.showSnackbar(result.value)
-                }
-            }
-        }
-    }
+@VisibleForTesting
+@Composable
+internal fun ExpensesScreenContent(
+    modifier: Modifier = Modifier,
+    uiState: UiState<List<Expense>>,
+    selectedDate: String,
+    selectedItems: List<Int>,
+    showSearchBar: Boolean,
+    searchText: String,
+    onClickSearchIcon: () -> Unit,
+    onSearchTextChanged: (String) -> Unit,
+    onClickClear: () -> Unit,
+    onCloseSearchBar: () -> Unit,
+    onClickSelectItem: (Int) -> Unit,
+    onClickSelectAll: () -> Unit,
+    onClickDeselect: () -> Unit,
+    onClickDelete: () -> Unit,
+    onSelectDate: (String) -> Unit,
+    onClickBack: () -> Unit,
+    onNavigateToScreen: (String) -> Unit,
+    onClickCreateNew: () -> Unit,
+    onClickEdit: (Int) -> Unit,
+    onClickSettings: () -> Unit,
+    snackbarState: SnackbarHostState = remember { SnackbarHostState() },
+    scope: CoroutineScope = rememberCoroutineScope(),
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
+    TrackScreenViewEvent(screenName = Screens.EXPENSES_SCREEN)
 
     BackHandler {
         if (selectedItems.isNotEmpty()) {
-            viewModel.deselectItems()
+            onClickDeselect()
         } else if (showSearchBar) {
-            viewModel.closeSearchBar()
+            onCloseSearchBar()
         } else {
-            navigator.popBackStack()
+            onClickBack()
         }
     }
 
-    TrackScreenViewEvent(screenName = Screens.EXPENSES_SCREEN)
+    val showFab = uiState is UiState.Success
+    val dialogState = rememberMaterialDialogState()
+    val openDialog = remember { mutableStateOf(false) }
+
+    val totalAmount = remember(uiState) {
+        if (uiState is UiState.Success) {
+            uiState.data.sumOf { it.expenseAmount.toInt() }.toString()
+        } else {
+            "0"
+        }
+    }
+
+    val totalItem = remember(uiState) {
+        if (uiState is UiState.Success) {
+            uiState.data.size.toString()
+        } else {
+            "0"
+        }
+    }
 
     PoposPrimaryScaffold(
+        modifier = modifier,
         currentRoute = Screens.EXPENSES_SCREEN,
         title = if (selectedItems.isEmpty()) EXPENSE_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
-                onFabClick = {
-                    navigator.navigate(AddEditExpenseScreenDestination())
-                },
+                onFabClick = onClickCreateNew,
                 onClickScroll = {
                     scope.launch {
                         lazyListState.animateScrollToItem(0)
@@ -194,32 +225,30 @@ fun ExpensesScreen(
                 placeholderText = EXPENSE_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = showFab,
                 showSearchBar = showSearchBar,
+                showSearchIcon = showFab,
                 searchText = searchText,
                 onEditClick = {
-                    navigator.navigate(AddEditExpenseScreenDestination(selectedItems.first()))
+                    onClickEdit(selectedItems.first())
                 },
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = {
-                    navigator.navigate(ExpensesSettingsScreenDestination)
-                },
-                onSelectAllClick = viewModel::selectAllItems,
-                onClearClick = viewModel::clearSearchText,
-                onSearchClick = viewModel::openSearchBar,
-                onSearchTextChanged = viewModel::searchTextChanged,
+                onSettingsClick = onClickSettings,
+                onSelectAllClick = onClickSelectAll,
+                onClearClick = onClickClear,
+                onSearchIconClick = onClickSearchIcon,
+                onSearchTextChanged = onSearchTextChanged,
             )
         },
         fabPosition = if (lazyListState.isScrolled) FabPosition.End else FabPosition.Center,
         selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
-        onDeselect = viewModel::deselectItems,
-        onBackClick = viewModel::closeSearchBar,
+        onDeselect = onClickDeselect,
+        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
         snackbarHostState = snackbarState,
-        onNavigateToScreen = navigator::navigate,
-    ) { _ ->
+        onNavigateToScreen = onNavigateToScreen,
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize(),
@@ -233,67 +262,53 @@ fun ExpensesScreen(
                 },
             )
 
-            when (state) {
-                is UiState.Loading -> LoadingIndicator()
+            Spacer(modifier.height(SpaceSmall))
 
-                is UiState.Empty -> {
-                    ItemNotAvailable(
-                        text = if (searchText.isEmpty()) EXPENSE_NOT_AVAILABLE else NO_ITEMS_IN_EXPENSE,
-                        buttonText = CREATE_NEW_EXPENSE,
-                        onClick = {
-                            navigator.navigate(AddEditExpenseScreenDestination())
-                        },
-                    )
-                }
+            Crossfade(
+                targetState = uiState,
+                label = "::UiState",
+            ) { state ->
+                when (state) {
+                    is UiState.Loading -> LoadingIndicator()
 
-                is UiState.Success -> {
-                    TrackScrollJank(scrollableState = lazyListState, stateName = "Expenses::List")
-                    val grouped = remember(state.data) {
-                        state.data.groupBy { it.expenseName }
+                    is UiState.Empty -> {
+                        ItemNotAvailable(
+                            text = if (searchText.isEmpty()) EXPENSE_NOT_AVAILABLE else SEARCH_ITEM_NOT_FOUND,
+                            buttonText = CREATE_NEW_EXPENSE,
+                            onClick = onClickCreateNew,
+                        )
                     }
 
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        state = lazyListState,
-                    ) {
-                        grouped.forEach { (_, expenses) ->
-                            if (expenses.size > 1) {
-                                item {
-                                    GroupedExpensesData(
-                                        items = expenses,
-                                        doesSelected = {
-                                            selectedItems.contains(it)
-                                        },
-                                        onClick = {
-                                            if (selectedItems.isNotEmpty()) {
-                                                viewModel.selectItem(it)
-                                            }
-                                        },
-                                        onLongClick = viewModel::selectItem,
-                                    )
-                                }
-                            } else {
-                                item {
-                                    ExpensesData(
-                                        item = expenses.first(),
-                                        doesSelected = {
-                                            selectedItems.contains(it)
-                                        },
-                                        onClick = {
-                                            if (selectedItems.isNotEmpty()) {
-                                                viewModel.selectItem(it)
-                                            }
-                                        },
-                                        onLongClick = viewModel::selectItem,
-                                    )
-                                }
-                            }
-                        }
+                    is UiState.Success -> {
+                        ExpensesList(
+                            modifier = Modifier,
+                            items = state.data,
+                            doesSelected = selectedItems::contains,
+                            isInSelectionMode = selectedItems.isNotEmpty(),
+                            onSelectItem = onClickSelectItem,
+                            lazyListState = lazyListState,
+                        )
                     }
                 }
             }
         }
+    }
+
+    AnimatedVisibility(
+        visible = openDialog.value,
+    ) {
+        StandardDialog(
+            title = DELETE_EXPENSE_TITLE,
+            message = DELETE_EXPENSE_MESSAGE,
+            onConfirm = {
+                openDialog.value = false
+                onClickDelete()
+            },
+            onDismiss = {
+                openDialog.value = false
+                onClickDeselect()
+            },
+        )
     }
 
     MaterialDialog(
@@ -308,22 +323,106 @@ fun ExpensesScreen(
                 date <= LocalDate.now()
             },
         ) { date ->
-            viewModel.selectDate(date.toMilliSecond)
+            onSelectDate(date.toMilliSecond)
+        }
+    }
+}
+
+@Composable
+private fun HandleResultRecipients(
+    resultRecipient: ResultRecipient<AddEditExpenseScreenDestination, String>,
+    exportRecipient: ResultRecipient<ExpensesExportScreenDestination, String>,
+    importRecipient: ResultRecipient<ExpensesImportScreenDestination, String>,
+    event: UiEvent?,
+    onDeselectItems: () -> Unit,
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+) {
+    resultRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {
+                onDeselectItems()
+            }
+
+            is NavResult.Value -> {
+                onDeselectItems()
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(result.value)
+                }
+            }
         }
     }
 
-    if (openDialog.value) {
-        StandardDialog(
-            title = DELETE_EXPENSE_TITLE,
-            message = DELETE_EXPENSE_MESSAGE,
-            onConfirm = {
-                openDialog.value = false
-                viewModel.deleteItems()
-            },
-            onDismiss = {
-                openDialog.value = false
-                viewModel.deselectItems()
-            },
+    exportRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    importRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = event) {
+        event?.let { data ->
+            when (data) {
+                is UiEvent.OnError -> {
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar(data.errorMessage)
+                    }
+                }
+
+                is UiEvent.OnSuccess -> {
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar(data.successMessage)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ExpensesScreenPreview(
+    @PreviewParameter(ExpensePreviewParameter::class)
+    uiState: UiState<List<Expense>>,
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ExpensesScreenContent(
+            modifier = modifier,
+            uiState = uiState,
+            selectedDate = Clock.System.now().toEpochMilliseconds().toString(),
+            selectedItems = listOf(),
+            showSearchBar = false,
+            searchText = "",
+            onClickSearchIcon = {},
+            onSearchTextChanged = {},
+            onClickClear = {},
+            onCloseSearchBar = {},
+            onClickSelectItem = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onClickDelete = {},
+            onSelectDate = {},
+            onClickBack = {},
+            onNavigateToScreen = {},
+            onClickCreateNew = {},
+            onClickEdit = {},
+            onClickSettings = {},
         )
     }
 }

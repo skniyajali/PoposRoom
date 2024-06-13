@@ -51,15 +51,17 @@ import com.niyaj.designsystem.theme.LightColor1
 import com.niyaj.designsystem.theme.LightColor2
 import com.niyaj.designsystem.theme.LightColor3
 import com.niyaj.designsystem.theme.LightColor4
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.product.details.ProductTotalOrderDetails
 import com.niyaj.ui.components.ReportCardBox
+import com.niyaj.ui.utils.DevicePreviews
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun ProductTotalOrdersDetails(
+internal fun ProductTotalOrdersDetails(
     modifier: Modifier = Modifier,
     details: ProductTotalOrderDetails,
 ) = trace("ProductTotalOrdersDetails") {
@@ -210,8 +212,29 @@ fun ProductTotalOrdersDetails(
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(SpaceSmall))
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ProductTotalOrderDetailsPreview(
+    modifier: Modifier = Modifier,
+    productTotalOrderDetails: ProductTotalOrderDetails = ProductTotalOrderDetails(
+        totalAmount = "1200",
+        dineInAmount = "600",
+        dineInQty = 6,
+        dineOutAmount = "600",
+        dineOutQty = 6,
+        mostOrderItemDate = "1686854400000".toBarDate,
+        mostOrderQtyDate = "1688195200000".toBarDate,
+        datePeriod = Pair("1685603200000", "1688195200000"),
+    ),
+) {
+    PoposRoomTheme {
+        ProductTotalOrdersDetails(
+            modifier = modifier,
+            details = productTotalOrderDetails,
+        )
     }
 }

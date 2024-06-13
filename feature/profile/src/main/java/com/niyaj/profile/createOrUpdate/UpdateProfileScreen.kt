@@ -450,7 +450,7 @@ fun UpdateProfileScreen(
 
                 PoposButton(
                     modifier = Modifier
-                        .padding(horizontal = SpaceSmall)
+                        .fillMaxWidth()
                         .testTag(ADD_EDIT_PROFILE_BTN),
                     text = UPDATE_PROFILE,
                     icon = PoposIcons.Edit,

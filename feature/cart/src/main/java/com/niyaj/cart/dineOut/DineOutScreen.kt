@@ -173,7 +173,6 @@ fun DineOutScreen(
     CartScreenContent(
         modifier = Modifier,
         uiState = uiState,
-        snackbarHostState = snackbarHostState,
         selectedItems = selectedDineOutOrder,
         addOnItems = addOnItems,
         showPrintBtn = true,
@@ -193,5 +192,6 @@ fun DineOutScreen(
             printAllOrder(selectedDineOutOrder)
             viewModel.onEvent(DineOutEvent.PlaceAllDineOutCart)
         },
+        snackbarHostState = snackbarHostState,
     )
 }

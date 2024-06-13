@@ -30,15 +30,25 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.util.fastAll
 import com.niyaj.cart.CartEvent
 import com.niyaj.cart.CartState
 import com.niyaj.core.ui.R
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.model.AddOnItem
+import com.niyaj.model.CartItem
 import com.niyaj.model.EmployeeNameAndId
+import com.niyaj.model.OrderType
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.parameterProvider.AddOnPreviewData
+import com.niyaj.ui.parameterProvider.CardOrderPreviewData
+import com.niyaj.ui.parameterProvider.CartItemsPreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.isScrollingUp
@@ -48,7 +58,6 @@ import com.niyaj.ui.utils.isScrollingUp
 internal fun CartScreenContent(
     modifier: Modifier = Modifier,
     uiState: CartState,
-    snackbarHostState: SnackbarHostState,
     selectedItems: List<Int>,
     addOnItems: List<AddOnItem>,
     showPrintBtn: Boolean = false,
@@ -61,6 +70,7 @@ internal fun CartScreenContent(
     onEvent: (CartEvent) -> Unit,
     printOrder: (Int) -> Unit = {},
     onClickPrintAllOrder: () -> Unit = {},
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     listState: LazyListState = rememberLazyListState(),
 ) {
     TrackScreenViewEvent(screenName = "DineOut Tab::Cart")
@@ -113,7 +123,6 @@ internal fun CartScreenContent(
 
                 CartItems(
                     modifier = Modifier,
-                    listState = listState,
                     cartState = uiState,
                     selectedCartItems = selectedItems,
                     addOnItems = addOnItems,
@@ -123,8 +132,88 @@ internal fun CartScreenContent(
                     onClickViewOrder = onClickOrderDetails,
                     onClickPrintOrder = printOrder,
                     onEvent = onEvent,
+                    listState = listState,
                 )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CartScreenContentLoadingPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        CartScreenContent(
+            modifier = modifier,
+            uiState = CartState.Loading,
+            selectedItems = listOf(),
+            addOnItems = listOf(),
+            showPrintBtn = false,
+            deliveryPartners = listOf(),
+            onClickCreateOrder = {},
+            onClickEditOrder = {},
+            onClickOrderDetails = {},
+            onClickSelectAll = {},
+            onClickPlaceAllOrder = {},
+            onEvent = {},
+            printOrder = {},
+            onClickPrintAllOrder = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CartScreenContentEmptyPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        CartScreenContent(
+            modifier = modifier,
+            uiState = CartState.Empty,
+            selectedItems = listOf(),
+            addOnItems = listOf(),
+            showPrintBtn = false,
+            deliveryPartners = listOf(),
+            onClickCreateOrder = {},
+            onClickEditOrder = {},
+            onClickOrderDetails = {},
+            onClickSelectAll = {},
+            onClickPlaceAllOrder = {},
+            onEvent = {},
+            printOrder = {},
+            onClickPrintAllOrder = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CartScreenContentPreview(
+    @PreviewParameter(CartItemsPreviewParameter::class)
+    cartItems: List<CartItem>,
+    modifier: Modifier = Modifier,
+    addOnItems: List<AddOnItem> = AddOnPreviewData.addOnItemList.take(5),
+    deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5),
+) {
+    PoposRoomTheme {
+        CartScreenContent(
+            modifier = modifier,
+            uiState = CartState.Success(cartItems),
+            selectedItems = listOf(),
+            addOnItems = addOnItems,
+            showPrintBtn = cartItems.fastAll { it.orderType == OrderType.DineOut },
+            deliveryPartners = deliveryPartners,
+            onClickCreateOrder = {},
+            onClickEditOrder = {},
+            onClickOrderDetails = {},
+            onClickSelectAll = {},
+            onClickPlaceAllOrder = {},
+            onEvent = {},
+            printOrder = {},
+            onClickPrintAllOrder = {},
+        )
     }
 }

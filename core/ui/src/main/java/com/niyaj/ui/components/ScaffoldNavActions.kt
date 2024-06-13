@@ -43,7 +43,7 @@ import com.niyaj.designsystem.icon.PoposIcons
  * @param searchText : search text
  * @param onSearchTextChanged : search text change listener (only visible when search bar is visible)
  * @param onClearClick : clear button click listener (only visible when search bar is visible)
- * @param onSearchClick : search button click listener (only visible when search bar is not visible)
+ * @param onSearchIconClick : search button click listener (only visible when search bar is not visible)
  * @param showSettingsIcon: show settings icon
  * @param onSettingsClick: on setting click listener (only visible when show setting icon is visible)
  * @param content : additional content
@@ -62,7 +62,7 @@ fun ScaffoldNavActions(
     onDeleteClick: () -> Unit,
     onSelectAllClick: () -> Unit,
     onClearClick: () -> Unit,
-    onSearchClick: () -> Unit,
+    onSearchIconClick: () -> Unit,
     onSettingsClick: () -> Unit = {},
     onSearchTextChanged: (String) -> Unit,
     content: @Composable () -> Unit = {},
@@ -115,7 +115,7 @@ fun ScaffoldNavActions(
     } else {
         if (showSearchIcon) {
             IconButton(
-                onClick = onSearchClick,
+                onClick = onSearchIconClick,
                 modifier = Modifier.testTag(NAV_SEARCH_BTN),
             ) {
                 Icon(

@@ -22,8 +22,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -32,16 +34,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.tags.CategoryConstants
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Category
 import com.niyaj.ui.components.CircularBox
+import com.niyaj.ui.utils.DevicePreviews
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -52,19 +57,19 @@ fun CategoryData(
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
+    containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CategoryData") {
     val borderStroke = if (doesSelected(item.categoryId)) border else null
 
     ElevatedCard(
         modifier = modifier
+            .height(IntrinsicSize.Max)
             .testTag(CategoryConstants.CATEGORY_ITEM_TAG.plus(item.categoryId))
-            .padding(SpaceSmall)
             .then(
                 borderStroke?.let {
                     Modifier.border(it, CardDefaults.elevatedShape)
                 } ?: Modifier,
             )
-            .clip(CardDefaults.elevatedShape)
             .combinedClickable(
                 onClick = {
                     onClick(item.categoryId)
@@ -73,6 +78,10 @@ fun CategoryData(
                     onLongClick(item.categoryId)
                 },
             ),
+        elevation = CardDefaults.elevatedCardElevation(2.dp),
+        colors = CardDefaults.elevatedCardColors().copy(
+            containerColor = containerColor,
+        ),
     ) {
         Row(
             modifier = Modifier
@@ -91,7 +100,29 @@ fun CategoryData(
             Text(
                 text = item.categoryName,
                 fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CategoryDataPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        CategoryData(
+            modifier = modifier,
+            item = Category(
+                categoryId = 2,
+                categoryName = "Long category data for testing does text overflow it work",
+                isAvailable = true,
+            ),
+            doesSelected = { false },
+            onClick = {},
+            onLongClick = {},
+        )
     }
 }

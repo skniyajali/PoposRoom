@@ -34,7 +34,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -80,7 +79,7 @@ import com.niyaj.common.tags.CartOrderTestTags.ORDER_TYPE_FIELD
 import com.niyaj.common.tags.ProductTestTags.ADD_EDIT_PRODUCT_BUTTON
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.LightColor6
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
@@ -100,6 +99,12 @@ import com.niyaj.ui.components.PhoneNoCountBox
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.AddOnPreviewData
+import com.niyaj.ui.parameterProvider.AddressPreviewData
+import com.niyaj.ui.parameterProvider.CardOrderPreviewData
+import com.niyaj.ui.parameterProvider.ChargesPreviewData
+import com.niyaj.ui.parameterProvider.CustomerPreviewData
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -171,8 +176,8 @@ fun AddEditCartOrderScreen(
 @Composable
 internal fun AddEditCartOrderScreenContent(
     modifier: Modifier = Modifier,
-    title: String,
-    icon: ImageVector,
+    title: String = CREATE_NEW_CART_ORDER,
+    icon: ImageVector = PoposIcons.Add,
     orderId: String,
     state: AddEditCartOrderState,
     addresses: List<Address>,
@@ -202,22 +207,17 @@ internal fun AddEditCartOrderScreenContent(
         showBackButton = true,
         showBottomBar = true,
         bottomBar = {
-            BottomAppBar(
-                containerColor = LightColor6,
-            ) {
-                PoposButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag(ADD_EDIT_PRODUCT_BUTTON)
-                        .padding(SpaceSmall),
-                    enabled = enableBtn,
-                    text = title,
-                    icon = icon,
-                    onClick = {
-                        onEvent(AddEditCartOrderEvent.CreateOrUpdateCartOrder)
-                    },
-                )
-            }
+            PoposButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(ADD_EDIT_PRODUCT_BUTTON),
+                enabled = enableBtn,
+                text = title,
+                icon = icon,
+                onClick = {
+                    onEvent(AddEditCartOrderEvent.CreateOrUpdateCartOrder)
+                },
+            )
         },
         onBackClick = onBackClick,
     ) { paddingValues ->
@@ -297,10 +297,13 @@ internal fun AddEditCartOrderScreenContent(
                             isError = addressError != null,
                             errorText = addressError,
                             errorTextTag = ADDRESS_NAME_ERROR_FIELD,
+                            showClearIcon = state.address.addressName.isNotEmpty(),
+                            onClickClearIcon = {
+                                onEvent(AddEditCartOrderEvent.AddressNameChanged(""))
+                                addressToggled = true
+                            },
                             onValueChange = {
-                                onEvent(
-                                    AddEditCartOrderEvent.AddressNameChanged(it),
-                                )
+                                onEvent(AddEditCartOrderEvent.AddressNameChanged(it))
                                 addressToggled = true
                             },
                             trailingIcon = {
@@ -393,26 +396,30 @@ internal fun AddEditCartOrderScreenContent(
                             errorText = customerError,
                             errorTextTag = CUSTOMER_PHONE_ERROR_FIELD,
                             keyboardType = KeyboardType.Number,
+                            showClearIcon = state.customer.customerPhone.isNotEmpty(),
+                            onClickClearIcon = {
+                                onEvent(AddEditCartOrderEvent.CustomerPhoneChanged(""))
+                                customerToggled = true
+                            },
                             onValueChange = {
                                 onEvent(
                                     AddEditCartOrderEvent.CustomerPhoneChanged(it),
                                 )
                                 customerToggled = true
                             },
-                            trailingIcon = {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
+                            suffix = {
+                                AnimatedVisibility(
+                                    visible = state.customer.customerPhone.length != 10,
                                 ) {
                                     PhoneNoCountBox(
                                         count = state.customer.customerPhone.length,
                                     )
-
-                                    Spacer(modifier = Modifier.width(1.dp))
-
-                                    ExposedDropdownMenuDefaults.TrailingIcon(
-                                        expanded = customerToggled,
-                                    )
                                 }
+                            },
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(
+                                    expanded = customerToggled,
+                                )
                             },
                         )
 
@@ -588,7 +595,7 @@ internal fun AddEditCartOrderScreenContent(
 
                                 CartChargesItem(
                                     chargesList = items.data,
-                                    selectedItem = state.selectedCharges.toList(),
+                                    selectedItems = state.selectedCharges.toList(),
                                     backgroundColor = Color.Transparent,
                                     onClick = {
                                         onEvent(AddEditCartOrderEvent.SelectCharges(it))
@@ -602,5 +609,48 @@ internal fun AddEditCartOrderScreenContent(
                 }
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AddEditCartOrderScreenContentPreview(
+    modifier: Modifier = Modifier,
+    addresses: List<Address> = AddressPreviewData.addressList.take(5),
+    customers: List<Customer> = CustomerPreviewData.customerList.take(5),
+    addOnItems: List<AddOnItem> = AddOnPreviewData.addOnItemList.take(5),
+    chargesList: List<Charges> = ChargesPreviewData.chargesList.take(5),
+    partnerList: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5),
+) {
+    PoposRoomTheme {
+        AddEditCartOrderScreenContent(
+            modifier = modifier,
+            orderId = "1",
+            state = AddEditCartOrderState(
+                orderType = OrderType.DineOut,
+                doesChargesIncluded = false,
+                address = Address(
+                    addressId = 1,
+                    addressName = "New Ladies",
+                    shortName = "NL",
+                ),
+                customer = Customer(
+                    customerId = 1,
+                    customerPhone = "9078563421",
+                ),
+                deliveryPartnerId = 1,
+                selectedAddOnItems = mutableListOf(1, 3, 4),
+                selectedCharges = mutableListOf(2, 4),
+            ),
+            addresses = addresses,
+            customers = customers,
+            addressError = null,
+            customerError = null,
+            addOnState = UiState.Success(addOnItems),
+            chargesState = UiState.Success(chargesList),
+            partnerState = UiState.Success(partnerList),
+            onBackClick = {},
+            onEvent = {},
+        )
     }
 }

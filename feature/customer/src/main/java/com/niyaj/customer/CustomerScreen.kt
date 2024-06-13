@@ -18,55 +18,38 @@
 package com.niyaj.customer
 
 import androidx.activity.compose.BackHandler
+import androidx.annotation.VisibleForTesting
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.border
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.trace
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.common.tags.CustomerTestTags.CREATE_NEW_CUSTOMER
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_NOT_AVAILABLE
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_SCREEN_TITLE
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_SEARCH_PLACEHOLDER
-import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_TAG
 import com.niyaj.common.tags.CustomerTestTags.DELETE_CUSTOMER_MESSAGE
 import com.niyaj.common.tags.CustomerTestTags.DELETE_CUSTOMER_TITLE
-import com.niyaj.common.tags.CustomerTestTags.NO_ITEMS_IN_CUSTOMER
+import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
+import com.niyaj.customer.components.CustomersData
 import com.niyaj.customer.destinations.AddEditCustomerScreenDestination
 import com.niyaj.customer.destinations.CustomerDetailsScreenDestination
 import com.niyaj.customer.destinations.CustomerExportScreenDestination
 import com.niyaj.customer.destinations.CustomerImportScreenDestination
 import com.niyaj.customer.destinations.CustomerSettingsScreenDestination
-import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.SpaceMini
-import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.model.Customer
-import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.PoposPrimaryScaffold
@@ -74,9 +57,10 @@ import com.niyaj.ui.components.ScaffoldNavActions
 import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.CustomersPreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
-import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
@@ -84,6 +68,7 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
@@ -98,97 +83,105 @@ fun CustomerScreen(
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
-    val uiState = viewModel.customers.collectAsStateWithLifecycle().value
+
+    val uiState by viewModel.customers.collectAsStateWithLifecycle()
+    val showSearchBar by viewModel.showSearchBar.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     val selectedItems = viewModel.selectedItems.toList()
-
-    val lazyListState = rememberLazyListState()
-
-    val showFab = viewModel.totalItems.isNotEmpty()
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
-
-    val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
 
-    val openDialog = remember { mutableStateOf(false) }
+    CustomerScreenContent(
+        modifier = Modifier,
+        uiState = uiState,
+        selectedItems = selectedItems,
+        showSearchBar = showSearchBar,
+        searchText = searchText,
+        onClickSearchIcon = viewModel::openSearchBar,
+        onSearchTextChanged = viewModel::searchTextChanged,
+        onClickClear = viewModel::clearSearchText,
+        onCloseSearchBar = viewModel::closeSearchBar,
+        onClickSelectItem = viewModel::selectItem,
+        onClickSelectAll = viewModel::selectAllItems,
+        onClickDeselect = viewModel::deselectItems,
+        onClickDelete = viewModel::deleteItems,
+        onClickBack = navigator::popBackStack,
+        onNavigateToScreen = navigator::navigate,
+        onClickCreateNew = {
+            navigator.navigate(AddEditCustomerScreenDestination())
+        },
+        onClickEdit = {
+            navigator.navigate(AddEditCustomerScreenDestination(it))
+        },
+        onClickSettings = {
+            navigator.navigate(CustomerSettingsScreenDestination())
+        },
+        onNavigateToDetails = {
+            navigator.navigate(CustomerDetailsScreenDestination(it))
+        },
+        snackbarState = snackbarState,
+    )
 
-    LaunchedEffect(key1 = event) {
-        event?.let { data ->
-            when (data) {
-                is UiEvent.OnError -> {
-                    scope.launch {
-                        snackbarState.showSnackbar(data.errorMessage)
-                    }
-                }
+    HandleResultRecipients(
+        resultRecipient = resultRecipient,
+        exportRecipient = exportRecipient,
+        importRecipient = importRecipient,
+        event = event,
+        onDeselectItems = viewModel::deselectItems,
+        coroutineScope = scope,
+        snackbarHostState = snackbarState,
+    )
+}
 
-                is UiEvent.OnSuccess -> {
-                    scope.launch {
-                        snackbarState.showSnackbar(data.successMessage)
-                    }
-                }
-            }
-        }
-    }
-
-    resultRecipient.onNavResult { result ->
-        when (result) {
-            is NavResult.Canceled -> {
-                viewModel.deselectItems()
-            }
-
-            is NavResult.Value -> {
-                scope.launch {
-                    viewModel.deselectItems()
-                    snackbarState.showSnackbar(result.value)
-                }
-            }
-        }
-    }
-
-    exportRecipient.onNavResult { result ->
-        when (result) {
-            is NavResult.Canceled -> {}
-            is NavResult.Value -> {
-                scope.launch {
-                    snackbarState.showSnackbar(result.value)
-                }
-            }
-        }
-    }
-
-    importRecipient.onNavResult { result ->
-        when (result) {
-            is NavResult.Canceled -> {}
-            is NavResult.Value -> {
-                scope.launch {
-                    snackbarState.showSnackbar(result.value)
-                }
-            }
-        }
-    }
+@VisibleForTesting
+@Composable
+internal fun CustomerScreenContent(
+    modifier: Modifier = Modifier,
+    uiState: UiState<List<Customer>>,
+    selectedItems: List<Int>,
+    showSearchBar: Boolean,
+    searchText: String,
+    onClickSearchIcon: () -> Unit,
+    onSearchTextChanged: (String) -> Unit,
+    onClickClear: () -> Unit,
+    onCloseSearchBar: () -> Unit,
+    onClickSelectItem: (Int) -> Unit,
+    onClickSelectAll: () -> Unit,
+    onClickDeselect: () -> Unit,
+    onClickDelete: () -> Unit,
+    onClickBack: () -> Unit,
+    onNavigateToScreen: (String) -> Unit,
+    onClickCreateNew: () -> Unit,
+    onClickEdit: (Int) -> Unit,
+    onClickSettings: () -> Unit,
+    onNavigateToDetails: (Int) -> Unit,
+    snackbarState: SnackbarHostState = remember { SnackbarHostState() },
+    scope: CoroutineScope = rememberCoroutineScope(),
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
+    TrackScreenViewEvent(screenName = Screens.CUSTOMER_SCREEN)
 
     BackHandler {
         if (selectedItems.isNotEmpty()) {
-            viewModel.deselectItems()
+            onClickDeselect()
         } else if (showSearchBar) {
-            viewModel.closeSearchBar()
+            onCloseSearchBar()
         } else {
-            navigator.popBackStack()
+            onClickBack()
         }
     }
 
-    TrackScreenViewEvent(screenName = Screens.CUSTOMER_SCREEN)
+    val showFab = uiState is UiState.Success
+    val openDialog = remember { mutableStateOf(false) }
 
     PoposPrimaryScaffold(
+        modifier = modifier,
         currentRoute = Screens.CUSTOMER_SCREEN,
         title = if (selectedItems.isEmpty()) CUSTOMER_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
-                onFabClick = {
-                    navigator.navigate(AddEditCustomerScreenDestination())
-                },
+                onFabClick = onClickCreateNew,
                 onClickScroll = {
                     scope.launch {
                         lazyListState.animateScrollToItem(0)
@@ -203,159 +196,171 @@ fun CustomerScreen(
                 placeholderText = CUSTOMER_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = showFab,
                 showSearchBar = showSearchBar,
+                showSearchIcon = showFab,
                 searchText = searchText,
                 onEditClick = {
-                    navigator.navigate(AddEditCustomerScreenDestination(selectedItems.first()))
+                    onClickEdit(selectedItems.first())
                 },
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = {
-                    navigator.navigate(CustomerSettingsScreenDestination)
-                },
-                onSelectAllClick = viewModel::selectAllItems,
-                onClearClick = viewModel::clearSearchText,
-                onSearchClick = viewModel::openSearchBar,
-                onSearchTextChanged = viewModel::searchTextChanged,
+                onSettingsClick = onClickSettings,
+                onSelectAllClick = onClickSelectAll,
+                onClearClick = onClickClear,
+                onSearchIconClick = onClickSearchIcon,
+                onSearchTextChanged = onSearchTextChanged,
             )
         },
         fabPosition = if (lazyListState.isScrolled) FabPosition.End else FabPosition.Center,
         selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
-        onDeselect = viewModel::deselectItems,
-        onBackClick = viewModel::closeSearchBar,
+        onDeselect = onClickDeselect,
+        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
         snackbarHostState = snackbarState,
-        onNavigateToScreen = navigator::navigate,
-    ) { _ ->
+        onNavigateToScreen = onNavigateToScreen,
+    ) {
         Crossfade(
             targetState = uiState,
-            label = "Customer State",
+            label = "Customer::UiState",
         ) { state ->
             when (state) {
                 is UiState.Loading -> LoadingIndicator()
 
                 is UiState.Empty -> {
                     ItemNotAvailable(
-                        text = if (searchText.isEmpty()) CUSTOMER_NOT_AVAILABLE else NO_ITEMS_IN_CUSTOMER,
+                        text = if (searchText.isEmpty()) CUSTOMER_NOT_AVAILABLE else SEARCH_ITEM_NOT_FOUND,
                         buttonText = CREATE_NEW_CUSTOMER,
-                        onClick = {
-                            navigator.navigate(AddEditCustomerScreenDestination())
-                        },
+                        onClick = onClickCreateNew,
                     )
                 }
 
                 is UiState.Success -> {
-                    TrackScrollJank(scrollableState = lazyListState, stateName = "Customer::List")
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(SpaceSmall),
-                        state = lazyListState,
-                    ) {
-                        items(
-                            items = state.data,
-                            key = { it.customerId },
-                        ) { item: Customer ->
-                            CustomerData(
-                                item = item,
-                                doesSelected = {
-                                    selectedItems.contains(it)
-                                },
-                                onClick = {
-                                    if (selectedItems.isNotEmpty()) {
-                                        viewModel.selectItem(it)
-                                    } else {
-                                        navigator.navigate(CustomerDetailsScreenDestination(it))
-                                    }
-                                },
-                                onLongClick = viewModel::selectItem,
-                            )
-                        }
-                    }
+                    CustomersData(
+                        customers = state.data,
+                        doesSelected = selectedItems::contains,
+                        isInSelectionMode = selectedItems.isNotEmpty(),
+                        lazyListState = lazyListState,
+                        onClickSelectItem = onClickSelectItem,
+                        onNavigateToDetails = onNavigateToDetails,
+                    )
                 }
             }
         }
     }
 
-    if (openDialog.value) {
+    AnimatedVisibility(
+        visible = openDialog.value,
+    ) {
         StandardDialog(
             title = DELETE_CUSTOMER_TITLE,
             message = DELETE_CUSTOMER_MESSAGE,
             onConfirm = {
                 openDialog.value = false
-                viewModel.deleteItems()
+                onClickDelete()
             },
             onDismiss = {
                 openDialog.value = false
-                viewModel.deselectItems()
+                onClickDeselect()
             },
         )
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CustomerData(
-    modifier: Modifier = Modifier,
-    item: Customer,
-    doesSelected: (Int) -> Boolean,
-    onClick: (Int) -> Unit,
-    onLongClick: (Int) -> Unit,
-    border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-) = trace("CustomerData") {
-    val borderStroke = if (doesSelected(item.customerId)) border else null
-
-    ListItem(
-        modifier = modifier
-            .testTag(CUSTOMER_TAG.plus(item.customerId))
-            .fillMaxWidth()
-            .padding(SpaceSmall)
-            .then(
-                borderStroke?.let {
-                    Modifier.border(it, RoundedCornerShape(SpaceMini))
-                } ?: Modifier,
-            )
-            .clip(RoundedCornerShape(SpaceMini))
-            .combinedClickable(
-                onClick = {
-                    onClick(item.customerId)
-                },
-                onLongClick = {
-                    onLongClick(item.customerId)
-                },
-            ),
-        headlineContent = {
-            Text(
-                text = item.customerPhone,
-                style = MaterialTheme.typography.labelLarge,
-            )
-        },
-        supportingContent = item.customerName?.let {
-            {
-                Text(
-                    text = it,
-                )
+private fun HandleResultRecipients(
+    resultRecipient: ResultRecipient<AddEditCustomerScreenDestination, String>,
+    exportRecipient: ResultRecipient<CustomerExportScreenDestination, String>,
+    importRecipient: ResultRecipient<CustomerImportScreenDestination, String>,
+    event: UiEvent?,
+    onDeselectItems: () -> Unit,
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+) {
+    resultRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {
+                onDeselectItems()
             }
-        },
-        leadingContent = {
-            CircularBox(
-                icon = PoposIcons.Person4,
-                doesSelected = doesSelected(item.customerId),
-                text = item.customerName,
-            )
-        },
-        trailingContent = {
-            Icon(
-                PoposIcons.ArrowRightAlt,
-                contentDescription = "Localized description",
-            )
-        },
-        shadowElevation = 4.dp,
-        colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.background,
-        ),
-    )
+
+            is NavResult.Value -> {
+                onDeselectItems()
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    exportRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    importRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = event) {
+        event?.let { data ->
+            when (data) {
+                is UiEvent.OnError -> {
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar(data.errorMessage)
+                    }
+                }
+
+                is UiEvent.OnSuccess -> {
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar(data.successMessage)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CustomerScreenPreview(
+    @PreviewParameter(CustomersPreviewParameter::class)
+    uiState: UiState<List<Customer>>,
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        CustomerScreenContent(
+            modifier = modifier,
+            uiState = uiState,
+            selectedItems = listOf(),
+            showSearchBar = false,
+            searchText = "",
+            onClickSearchIcon = {},
+            onSearchTextChanged = {},
+            onClickClear = {},
+            onCloseSearchBar = {},
+            onClickSelectItem = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onClickDelete = {},
+            onClickBack = {},
+            onNavigateToScreen = {},
+            onClickCreateNew = {},
+            onClickEdit = {},
+            onClickSettings = {},
+            onNavigateToDetails = {},
+        )
+    }
 }

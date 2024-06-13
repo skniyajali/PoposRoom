@@ -35,13 +35,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.util.trace
+import com.niyaj.common.utils.toPrettyDate
+import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.components.PoposOutlinedAssistChip
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.NoteText
+import com.niyaj.ui.utils.DevicePreviews
+import kotlinx.datetime.Clock
 
 @Composable
 fun TotalExpenses(
@@ -79,11 +84,12 @@ fun TotalExpenses(
                     Text(
                         text = "Total Expenses",
                         style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
 
                 PoposOutlinedAssistChip(
-                    text = selectedDate,
+                    text = selectedDate.toPrettyDate(),
                     icon = PoposIcons.CalenderMonth,
                     onClick = onDateClick,
                     trailingIcon = PoposIcons.ArrowDown,
@@ -102,9 +108,9 @@ fun TotalExpenses(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = totalAmount,
+                    text = totalAmount.toRupee,
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Bold,
                 )
                 NoteText(
                     text = "Total $totalItem Expenses",
@@ -112,5 +118,20 @@ fun TotalExpenses(
                 )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun TotalExpensesPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        TotalExpenses(
+            totalAmount = "10000",
+            totalItem = "10",
+            selectedDate = Clock.System.now().toEpochMilliseconds().toString(),
+            onDateClick = {},
+        )
     }
 }

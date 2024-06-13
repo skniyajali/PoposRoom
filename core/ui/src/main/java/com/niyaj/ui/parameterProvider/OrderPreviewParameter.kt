@@ -224,3 +224,8 @@ class OrderPreviewParameter : PreviewParameterProvider<Pair<List<Order>, List<Or
             ),
         )
 }
+
+class OrderTypePreviewParameter : PreviewParameterProvider<OrderType> {
+    override val values: Sequence<OrderType>
+        get() = sequenceOf(OrderType.DineIn, OrderType.DineOut)
+}

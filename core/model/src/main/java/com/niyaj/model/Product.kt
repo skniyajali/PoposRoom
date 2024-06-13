@@ -37,7 +37,6 @@ data class Product(
     val createdAt: Long,
 
     val updatedAt: Long? = null,
-
 )
 
 /**
@@ -53,16 +52,5 @@ fun List<Product>.filterProducts(searchText: String): List<Product> {
         }
     } else {
         this
-    }
-}
-
-/**
- * Filter product by category
- */
-fun Product.filterByCategory(categoryId: String): Boolean {
-    return if (categoryId.isNotEmpty()) {
-        this.categoryId == categoryId.toInt()
-    } else {
-        true
     }
 }

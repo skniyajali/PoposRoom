@@ -28,15 +28,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.niyaj.designsystem.components.StandardRoundedFilterChip
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.Charges
+import com.niyaj.ui.parameterProvider.ChargesPreviewData
+import com.niyaj.ui.utils.DevicePreviews
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CartChargesItem(
     modifier: Modifier = Modifier,
     chargesList: List<Charges> = emptyList(),
-    selectedItem: List<Int> = emptyList(),
+    selectedItems: List<Int> = emptyList(),
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     onClick: (Int) -> Unit = {},
 ) {
@@ -51,11 +54,28 @@ fun CartChargesItem(
             StandardRoundedFilterChip(
                 modifier = Modifier,
                 text = charges.chargesName,
-                selected = selectedItem.contains(charges.chargesId),
+                selected = selectedItems.contains(charges.chargesId),
                 onClick = {
                     onClick(charges.chargesId)
                 },
             )
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CartChargesItemPreview(
+    modifier: Modifier = Modifier,
+    chargesList: List<Charges> = ChargesPreviewData.chargesList,
+    selectedItems: List<Int> = chargesList.filter { it.chargesId % 2 == 0 }.map { it.chargesId },
+) {
+    PoposRoomTheme {
+        CartChargesItem(
+            modifier = modifier,
+            chargesList = chargesList,
+            selectedItems = selectedItems,
+            onClick = {},
+        )
     }
 }

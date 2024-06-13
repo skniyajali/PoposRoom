@@ -18,7 +18,7 @@
 package com.niyaj.model
 
 import com.niyaj.model.utils.toTime
-import java.util.Date
+import kotlinx.datetime.Clock
 
 data class CartOrder(
     val orderId: Int = 0,
@@ -35,9 +35,9 @@ data class CartOrder(
 
     val deliveryPartnerId: Int = 0,
 
-    val createdAt: Date = Date(),
+    val createdAt: Long = Clock.System.now().toEpochMilliseconds(),
 
-    val updatedAt: Date? = null,
+    val updatedAt: Long? = null,
 )
 
 fun List<CartOrder>.filterCartOrder(searchText: String): List<CartOrder> {

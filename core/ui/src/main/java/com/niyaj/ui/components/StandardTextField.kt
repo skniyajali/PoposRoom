@@ -17,8 +17,14 @@
 
 package com.niyaj.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -27,6 +33,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
@@ -114,8 +122,8 @@ fun StandardTextField(
         },
         prefix = prefix,
         suffix = suffix,
-        supportingText = {
-            errorText?.let {
+        supportingText = errorText?.let {
+            {
                 Text(
                     modifier = Modifier.testTag(errorTextTag),
                     text = it,
@@ -151,6 +159,8 @@ fun StandardOutlinedTextField(
     leadingIcon: ImageVector,
     trailingIcon: @Composable (() -> Unit)? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
+    showClearIcon: Boolean = false,
+    clearIcon: ImageVector = PoposIcons.Close,
     readOnly: Boolean = false,
     enabled: Boolean = true,
     errorTextTag: String = label.plus("Error"),
@@ -161,8 +171,12 @@ fun StandardOutlinedTextField(
     onPasswordToggleClick: (Boolean) -> Unit = {},
     prefix: @Composable (() -> Unit)? = null,
     suffix: @Composable (() -> Unit)? = null,
+    onClickClearIcon: () -> Unit = {},
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     onValueChange: (String) -> Unit,
 ) {
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -181,32 +195,21 @@ fun StandardOutlinedTextField(
         leadingIcon = {
             Icon(imageVector = leadingIcon, contentDescription = TEXT_FIELD_LEADING_ICON)
         },
-        trailingIcon = if (isPasswordToggleDisplayed) {
-            val icon: @Composable () -> Unit = {
-                IconButton(
-                    onClick = {
-                        onPasswordToggleClick(!isPasswordVisible)
-                    },
-                    modifier = Modifier,
-                ) {
-                    Icon(
-                        imageVector = if (isPasswordVisible) {
-                            PoposIcons.VisibilityOff
-                        } else {
-                            PoposIcons.Visibility
-                        },
-                        tint = MaterialTheme.colorScheme.secondary,
-                        contentDescription = if (isPasswordVisible) {
-                            PASSWORD_HIDDEN_ICON
-                        } else {
-                            PASSWORD_SHOWN_ICON
-                        },
-                    )
-                }
+        trailingIcon = @Composable {
+            if (isPasswordToggleDisplayed) {
+                PasswordToggleIcon(
+                    isPasswordVisible = isPasswordVisible,
+                    onPasswordToggleClick = onPasswordToggleClick,
+                )
+            } else if (showClearIcon && isFocused) {
+                ClearIconButton(
+                    showClearIcon = true,
+                    clearIcon = clearIcon,
+                    onClickClearIcon = onClickClearIcon,
+                )
+            } else {
+                trailingIcon?.invoke()
             }
-            icon
-        } else {
-            trailingIcon
         },
         prefix = prefix,
         suffix = suffix,
@@ -239,5 +242,56 @@ fun StandardOutlinedTextField(
             keyboardType = keyboardType,
         ),
         maxLines = maxLines,
+        interactionSource = interactionSource,
     )
+}
+
+@Composable
+private fun PasswordToggleIcon(
+    modifier: Modifier = Modifier,
+    isPasswordVisible: Boolean,
+    onPasswordToggleClick: (Boolean) -> Unit,
+) {
+    IconButton(
+        onClick = {
+            onPasswordToggleClick(!isPasswordVisible)
+        },
+        modifier = modifier,
+    ) {
+        Icon(
+            imageVector = if (isPasswordVisible) {
+                Icons.Filled.VisibilityOff
+            } else {
+                Icons.Filled.Visibility
+            },
+            tint = MaterialTheme.colorScheme.secondary,
+            contentDescription = if (isPasswordVisible) {
+                "VisibilityOff"
+            } else {
+                "VisibilityOn"
+            },
+        )
+    }
+}
+
+@Composable
+private fun ClearIconButton(
+    modifier: Modifier = Modifier,
+    showClearIcon: Boolean,
+    clearIcon: ImageVector,
+    onClickClearIcon: () -> Unit,
+) {
+    AnimatedVisibility(
+        visible = showClearIcon,
+    ) {
+        IconButton(
+            onClick = onClickClearIcon,
+            modifier = modifier,
+        ) {
+            Icon(
+                imageVector = clearIcon,
+                contentDescription = "trailingIcon",
+            )
+        }
+    }
 }

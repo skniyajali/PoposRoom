@@ -17,6 +17,7 @@
 
 package com.niyaj.category.createOrUpdate
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -29,10 +30,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -45,10 +49,12 @@ import com.niyaj.common.tags.CategoryConstants.CREATE_NEW_CATEGORY
 import com.niyaj.common.tags.CategoryConstants.UPDATE_CATEGORY
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.StandardOutlinedTextField
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
@@ -64,12 +70,11 @@ fun AddEditCategoryScreen(
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: AddEditCategoryViewModel = hiltViewModel(),
 ) {
-    val nameError = viewModel.nameError.collectAsStateWithLifecycle().value
+    val nameError by viewModel.nameError.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
-    val enableBtn = nameError == null
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
     val title = if (categoryId == 0) CREATE_NEW_CATEGORY else UPDATE_CATEGORY
+    val icon = if (categoryId == 0) PoposIcons.Add else PoposIcons.Edit
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -85,26 +90,50 @@ fun AddEditCategoryScreen(
         }
     }
 
+    AddEditCategoryScreenContent(
+        modifier = Modifier,
+        title = title,
+        icon = icon,
+        state = viewModel.addEditState,
+        nameError = nameError,
+        onEvent = viewModel::onEvent,
+        onBackClick = navigator::navigateUp,
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun AddEditCategoryScreenContent(
+    modifier: Modifier = Modifier,
+    title: String = CREATE_NEW_CATEGORY,
+    icon: ImageVector = PoposIcons.Add,
+    state: AddEditCategoryState,
+    nameError: String? = null,
+    onEvent: (AddEditCategoryEvent) -> Unit,
+    onBackClick: () -> Unit,
+) {
     TrackScreenViewEvent(screenName = Screens.ADD_EDIT_CATEGORY_SCREEN)
 
     PoposSecondaryScaffold(
+        modifier = modifier,
         title = title,
         showBackButton = true,
         showBottomBar = true,
         bottomBar = {
             PoposButton(
                 modifier = Modifier
-                    .testTag(AddressTestTags.ADD_EDIT_ADDRESS_BTN)
-                    .padding(SpaceMedium),
+                    .fillMaxWidth()
+                    .testTag(AddressTestTags.ADD_EDIT_ADDRESS_BTN),
                 text = title,
-                icon = if (categoryId == 0) PoposIcons.Add else PoposIcons.Edit,
-                enabled = enableBtn,
+                icon = icon,
+                enabled = nameError == null,
                 onClick = {
-                    viewModel.onEvent(AddEditCategoryEvent.CreateUpdateAddEditCategory(categoryId))
+                    onEvent(AddEditCategoryEvent.CreateUpdateAddEditCategory)
                 },
             )
         },
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -116,14 +145,18 @@ fun AddEditCategoryScreen(
         ) {
             item(CATEGORY_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.addEditState.categoryName,
+                    value = state.categoryName,
                     label = CATEGORY_NAME_FIELD,
                     leadingIcon = PoposIcons.Category,
                     isError = nameError != null,
                     errorText = nameError,
                     errorTextTag = CATEGORY_NAME_ERROR_TAG,
+                    showClearIcon = state.categoryName.isNotEmpty(),
+                    onClickClearIcon = {
+                        onEvent(AddEditCategoryEvent.CategoryNameChanged(""))
+                    },
                     onValueChange = {
-                        viewModel.onEvent(AddEditCategoryEvent.CategoryNameChanged(it))
+                        onEvent(AddEditCategoryEvent.CategoryNameChanged(it))
                     },
                 )
             }
@@ -135,14 +168,14 @@ fun AddEditCategoryScreen(
                 ) {
                     Checkbox(
                         modifier = Modifier.testTag(CATEGORY_AVAILABLE_SWITCH),
-                        checked = viewModel.addEditState.isAvailable,
+                        checked = state.isAvailable,
                         onCheckedChange = {
-                            viewModel.onEvent(AddEditCategoryEvent.CategoryAvailabilityChanged)
+                            onEvent(AddEditCategoryEvent.CategoryAvailabilityChanged)
                         },
                     )
                     Spacer(modifier = Modifier.width(SpaceSmall))
                     Text(
-                        text = if (viewModel.addEditState.isAvailable) {
+                        text = if (state.isAvailable) {
                             "Marked as available"
                         } else {
                             "Marked as not available"
@@ -154,5 +187,24 @@ fun AddEditCategoryScreen(
                 Spacer(modifier = Modifier.height(SpaceSmall))
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AddEditCategoryScreenContentPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        AddEditCategoryScreenContent(
+            modifier = modifier,
+            state = AddEditCategoryState(
+                categoryName = "New Category",
+                isAvailable = true,
+            ),
+            nameError = null,
+            onEvent = {},
+            onBackClick = {},
+        )
     }
 }

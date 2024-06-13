@@ -107,6 +107,7 @@ acra-mail = { group = "ch.acra", name = "acra-mail", version.ref = "acraVersion"
 acra-toast = { group = "ch.acra", name = "acra-toast", version.ref = "acraVersion" }
 
 # Accompanist library
+accompanist-swiperefresh = { group = "com.google.accompanist", name = "accompanist-swiperefresh", version.ref = "accompanist" }
 accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
 accompanist-testharness = { group = "com.google.accompanist", name = "accompanist-testharness", version.ref = "accompanist" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }

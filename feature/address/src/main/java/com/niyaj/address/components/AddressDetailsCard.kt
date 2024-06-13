@@ -31,35 +31,42 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toFormattedDateAndTime
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Address
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.ItemNotAvailable
-import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.ItemNotAvailableHalf
+import com.niyaj.ui.components.LoadingIndicatorHalf
 import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.AddressDetailsPreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
-fun AddressDetailsCard(
+internal fun AddressDetailsCard(
     addressState: UiState<Address>,
     onExpanded: () -> Unit,
     doesExpanded: Boolean,
     onClickEdit: () -> Unit,
+    modifier: Modifier = Modifier,
+    containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("AddressDetailsCard") {
     ElevatedCard(
         onClick = onExpanded,
-        modifier = Modifier
+        modifier = modifier
             .testTag("EmployeeDetails")
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = containerColor,
         ),
     ) {
         StandardExpandable(
@@ -106,10 +113,10 @@ fun AddressDetailsCard(
                     label = "Address State",
                 ) { state ->
                     when (state) {
-                        is UiState.Loading -> LoadingIndicator()
+                        is UiState.Loading -> LoadingIndicatorHalf()
 
                         is UiState.Empty -> {
-                            ItemNotAvailable(
+                            ItemNotAvailableHalf(
                                 text = "Address Details Not Available",
                                 showImage = false,
                             )
@@ -125,19 +132,22 @@ fun AddressDetailsCard(
                                     modifier = Modifier.testTag(state.data.addressName),
                                     text = "Name - ${state.data.addressName}",
                                     icon = PoposIcons.Address,
+                                    tintColor = MaterialTheme.colorScheme.outline,
                                 )
                                 Spacer(modifier = Modifier.height(SpaceSmall))
                                 IconWithText(
                                     modifier = Modifier.testTag(state.data.shortName),
                                     text = "Short Name - ${state.data.shortName}",
                                     icon = PoposIcons.Home,
+                                    tintColor = MaterialTheme.colorScheme.outline,
                                 )
                                 Spacer(modifier = Modifier.height(SpaceSmall))
 
                                 IconWithText(
                                     modifier = Modifier.testTag(state.data.createdAt.toFormattedDateAndTime),
                                     text = "Created At : ${state.data.createdAt.toPrettyDate()}",
-                                    icon = PoposIcons.CalenderToday,
+                                    icon = PoposIcons.CalenderMonth,
+                                    tintColor = MaterialTheme.colorScheme.outline,
                                 )
 
                                 state.data.updatedAt?.let {
@@ -145,6 +155,7 @@ fun AddressDetailsCard(
                                     IconWithText(
                                         text = "Updated At : ${it.toFormattedDateAndTime}",
                                         icon = PoposIcons.Login,
+                                        tintColor = MaterialTheme.colorScheme.outline,
                                     )
                                 }
                             }
@@ -152,6 +163,24 @@ fun AddressDetailsCard(
                     }
                 }
             },
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AddressDetailsCardPreview(
+    @PreviewParameter(AddressDetailsPreviewParameter::class)
+    addressState: UiState<Address>,
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        AddressDetailsCard(
+            modifier = modifier,
+            addressState = addressState,
+            onExpanded = {},
+            doesExpanded = true,
+            onClickEdit = {},
         )
     }
 }

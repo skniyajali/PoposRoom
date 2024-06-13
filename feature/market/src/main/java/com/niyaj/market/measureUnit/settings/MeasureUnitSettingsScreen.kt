@@ -17,20 +17,28 @@
 
 package com.niyaj.market.measureUnit.settings
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.niyaj.common.tags.MeasureUnitTestTags.EXPORT_UNIT_SUB_TITLE
+import com.niyaj.common.tags.MeasureUnitTestTags.EXPORT_UNIT_TITLE
+import com.niyaj.common.tags.MeasureUnitTestTags.IMPORT_UNIT_SUB_TITLE
+import com.niyaj.common.tags.MeasureUnitTestTags.IMPORT_UNIT_TITLE
 import com.niyaj.common.tags.MeasureUnitTestTags.UNIT_SETTINGS_TITLE
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.market.destinations.ExportMeasureUnitScreenDestination
 import com.niyaj.market.destinations.ImportMeasureUnitScreenDestination
 import com.niyaj.ui.components.SettingsCard
 import com.niyaj.ui.components.StandardBottomSheet
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.ramcosta.composedestinations.annotation.Destination
@@ -40,15 +48,37 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 @Destination(style = DestinationStyleBottomSheet::class)
 @Composable
 fun MeasureUnitSettingsScreen(
-    navController: DestinationsNavigator,
+    navigator: DestinationsNavigator,
 ) {
-    val lazyListState = rememberLazyListState()
+    MeasureUnitSettingsScreenContent(
+        modifier = Modifier,
+        onBackClick = navigator::navigateUp,
+        onImportClick = {
+            navigator.navigate(ImportMeasureUnitScreenDestination())
+        },
+        onExportClick = {
+            navigator.navigate(ExportMeasureUnitScreenDestination())
+        },
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun MeasureUnitSettingsScreenContent(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+    onImportClick: () -> Unit,
+    onExportClick: () -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
     TrackScreenViewEvent(screenName = UNIT_SETTINGS_TITLE)
-    TrackScrollJank(scrollableState = lazyListState, stateName = "MeasureUnitSettingsScreen::Columns")
+
+    TrackScrollJank(scrollableState = lazyListState, stateName = "MeasureUnitSettingsScreen::List")
 
     StandardBottomSheet(
+        modifier = modifier,
         title = UNIT_SETTINGS_TITLE,
-        onBackClick = navController::navigateUp,
+        onBackClick = onBackClick,
     ) {
         LazyColumn(
             modifier = Modifier
@@ -57,27 +87,38 @@ fun MeasureUnitSettingsScreen(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
-            item("Import Measure Unit") {
+            item(IMPORT_UNIT_TITLE) {
                 SettingsCard(
-                    title = "Import Measure Unit",
-                    subtitle = "Click here to import data from file.",
+                    title = IMPORT_UNIT_TITLE,
+                    subtitle = IMPORT_UNIT_SUB_TITLE,
                     icon = PoposIcons.Import,
-                    onClick = {
-                        navController.navigate(ImportMeasureUnitScreenDestination())
-                    },
+                    onClick = onImportClick,
                 )
             }
 
-            item("ExportMarketItem") {
+            item(EXPORT_UNIT_TITLE) {
                 SettingsCard(
-                    title = "Export Measure Unit",
-                    subtitle = "Click here to export data to file.",
+                    title = EXPORT_UNIT_TITLE,
+                    subtitle = EXPORT_UNIT_SUB_TITLE,
                     icon = PoposIcons.Upload,
-                    onClick = {
-                        navController.navigate(ExportMeasureUnitScreenDestination())
-                    },
+                    onClick = onExportClick,
                 )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun MeasureUnitSettingsScreenContentPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        MeasureUnitSettingsScreenContent(
+            modifier = modifier,
+            onBackClick = {},
+            onImportClick = {},
+            onExportClick = {},
+        )
     }
 }

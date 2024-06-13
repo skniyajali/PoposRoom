@@ -17,13 +17,13 @@
 
 package com.niyaj.address.details
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -31,27 +31,36 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.address.components.AddressDetailsCard
 import com.niyaj.address.components.RecentOrders
 import com.niyaj.address.destinations.AddEditAddressScreenDestination
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.SpaceMedium
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.model.Address
+import com.niyaj.model.AddressWiseOrder
+import com.niyaj.model.TotalOrderDetails
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.components.TotalOrderDetailsCard
+import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.AddressPreviewData
+import com.niyaj.ui.parameterProvider.AddressWiseOrderPreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Destination(route = Screens.ADDRESS_DETAILS_SCREEN)
@@ -62,27 +71,49 @@ fun AddressDetailsScreen(
     onClickOrder: (Int) -> Unit,
     viewModel: AddressDetailsViewModel = hiltViewModel(),
 ) {
-    val scope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
-
-    val addressState = viewModel.addressDetails.collectAsStateWithLifecycle().value
-
-    val orderDetailsState = viewModel.orderDetails.collectAsStateWithLifecycle().value
-
-    val totalOrdersState = viewModel.totalOrders.collectAsStateWithLifecycle().value
-
-    var detailsExpanded by remember {
-        mutableStateOf(true)
-    }
-    var orderExpanded by remember {
-        mutableStateOf(true)
-    }
+    val addressState by viewModel.addressDetails.collectAsStateWithLifecycle()
+    val orderDetailsState by viewModel.orderDetails.collectAsStateWithLifecycle()
+    val totalOrdersState by viewModel.totalOrders.collectAsStateWithLifecycle()
 
     TrackScreenViewEvent(screenName = Screens.ADDRESS_DETAILS_SCREEN + addressId)
 
-    PoposSecondaryScaffold(
-        title = "Address Details",
+    AddressDetailsScreenContent(
+        modifier = Modifier,
+        addressState = addressState,
+        orderDetailsState = orderDetailsState,
+        totalOrdersState = totalOrdersState,
         onBackClick = navigator::navigateUp,
+        onClickEdit = {
+            navigator.navigate(AddEditAddressScreenDestination(addressId))
+        },
+        onClickOrder = onClickOrder,
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun AddressDetailsScreenContent(
+    modifier: Modifier = Modifier,
+    addressState: UiState<Address>,
+    orderDetailsState: UiState<List<AddressWiseOrder>>,
+    totalOrdersState: TotalOrderDetails,
+    onBackClick: () -> Unit,
+    onClickEdit: () -> Unit,
+    onClickOrder: (Int) -> Unit,
+    scope: CoroutineScope = rememberCoroutineScope(),
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
+    var detailsExpanded by rememberSaveable {
+        mutableStateOf(true)
+    }
+    var orderExpanded by rememberSaveable {
+        mutableStateOf(true)
+    }
+
+    PoposSecondaryScaffold(
+        modifier = modifier,
+        title = "Address Details",
+        onBackClick = onBackClick,
         showFab = true,
         fabPosition = FabPosition.End,
         floatingActionButton = {
@@ -122,14 +153,13 @@ fun AddressDetailsScreen(
 
         LazyColumn(
             state = lazyListState,
-            verticalArrangement = Arrangement.spacedBy(SpaceMedium),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it),
-            contentPadding = PaddingValues(SpaceSmall),
         ) {
             item(key = "TotalOrder Details") {
                 TotalOrderDetailsCard(details = totalOrdersState)
+                Spacer(modifier = Modifier.height(SpaceSmall))
             }
 
             item(key = "Address Details") {
@@ -139,10 +169,9 @@ fun AddressDetailsScreen(
                         detailsExpanded = !detailsExpanded
                     },
                     doesExpanded = detailsExpanded,
-                    onClickEdit = {
-                        navigator.navigate(AddEditAddressScreenDestination(addressId))
-                    },
+                    onClickEdit = onClickEdit,
                 )
+                Spacer(modifier = Modifier.height(SpaceSmall))
             }
 
             item(key = "OrderDetails") {
@@ -155,8 +184,29 @@ fun AddressDetailsScreen(
                     onClickOrder = onClickOrder,
                 )
 
-                Spacer(modifier = Modifier.height(SpaceMedium))
+                Spacer(modifier = Modifier.height(SpaceSmall))
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AddressDetailsScreenContentPreview(
+    @PreviewParameter(AddressWiseOrderPreviewParameter::class)
+    ordersState: UiState<List<AddressWiseOrder>>,
+    addressState: UiState<Address> = UiState.Success(AddressPreviewData.addressList.first()),
+    totalOrderDetails: TotalOrderDetails = AddressPreviewData.sampleTotalOrder,
+) {
+    PoposRoomTheme {
+        AddressDetailsScreenContent(
+            modifier = Modifier,
+            addressState = addressState,
+            orderDetailsState = ordersState,
+            totalOrdersState = totalOrderDetails,
+            onBackClick = {},
+            onClickEdit = {},
+            onClickOrder = {},
+        )
     }
 }

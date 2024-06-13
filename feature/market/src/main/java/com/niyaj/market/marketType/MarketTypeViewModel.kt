@@ -90,7 +90,7 @@ private fun AnalyticsHelper.logDeletedMarketTypes(data: List<Int>) {
         event = AnalyticsEvent(
             type = "market_type_deleted",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("market_type_deleted", data.toString()),
+                AnalyticsEvent.Param("market_type_deleted", data.toString()),
             ),
         ),
     )

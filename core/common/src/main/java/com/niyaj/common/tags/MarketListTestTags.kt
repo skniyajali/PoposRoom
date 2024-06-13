@@ -32,14 +32,12 @@ object MarketListTestTags {
 
     const val MARKET_LIST_SCREEN_TITLE = "Market Lists"
 
-    const val ADD_EDIT_MARKET_LIST_BUTTON = "AddEdit Item"
-
     const val CREATE_NEW_LIST = "Create New List"
     const val UPDATE_LIST = "Update List"
 
     const val TYPES_NOTE_TEXT = "Please select at least one list type."
 
-    const val MARKET_ITEM_TYPE_FIELD = "Item Type"
+    const val MARKET_ITEM_TYPE_FIELD = "Market Type"
     const val MARKET_ITEM_TYPE_ERROR_TAG = "Item Type Error"
 
     const val MARKET_ITEM_NAME_FIELD = "Item Name"
@@ -76,13 +74,10 @@ object MarketListTestTags {
     const val MARKET_ITEM_SETTINGS_TITLE = "Item Settings"
 
     const val IMPORT_MARKET_ITEM_TITLE = "Import Item"
-    const val IMPORT_MARKET_ITEM_BTN_TEXT = "Import Item"
     const val IMPORT_MARKET_ITEM_OPN_FILE = "Open File"
     const val IMPORT_MARKET_ITEM_NOTE_TEXT = "Make sure to open market-items.json file."
 
     const val EXPORT_MARKET_ITEM_TITLE = "Export Item"
-    const val EXPORT_MARKET_ITEM_BTN_TEXT = "Export Item"
-    const val EXPORT_MARKET_ITEM_BTN = "Export Item"
 
     const val EXPORT_MARKET_ITEM_FILE_NAME = "market-items"
 }

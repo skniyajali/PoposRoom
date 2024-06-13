@@ -17,18 +17,18 @@
 
 package com.niyaj.expenses.settings
 
-import android.Manifest
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
@@ -37,66 +37,67 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.niyaj.common.tags.ExpenseTestTags
+import com.niyaj.common.tags.ExpenseTestTags.CREATE_NEW_EXPENSE
 import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_NOT_AVAILABLE
-import com.niyaj.common.tags.ExpenseTestTags.EXPORT_EXPENSE_BTN
-import com.niyaj.common.tags.ExpenseTestTags.EXPORT_EXPENSE_BTN_TEXT
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.ExpenseTestTags.EXPORT_EXPENSE_FILE_NAME
 import com.niyaj.common.tags.ExpenseTestTags.EXPORT_EXPENSE_TITLE
-import com.niyaj.common.tags.ExpenseTestTags.NO_ITEMS_IN_EXPENSE
 import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.domain.utils.ImportExport
-import com.niyaj.expenses.components.ExpensesData
+import com.niyaj.expenses.components.ExpensesList
 import com.niyaj.expenses.destinations.AddEditExpenseScreenDestination
+import com.niyaj.model.Expense
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.parameterProvider.ExpensePreviewData
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
-import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Destination
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ExpensesExportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: ExpensesSettingsViewModel = hiltViewModel(),
 ) {
-    TrackScreenViewEvent(screenName = "Expenses Export Screen")
-
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
 
-    val expenseList = viewModel.expenses.collectAsStateWithLifecycle().value
-    val exportedItems = viewModel.exportedItems.collectAsStateWithLifecycle().value
+    val expenseList by viewModel.expenses.collectAsStateWithLifecycle()
+    val exportedItems by viewModel.exportedItems.collectAsStateWithLifecycle()
+    val showSearchBar by viewModel.showSearchBar.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
-    val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
-
     val selectedItems = viewModel.selectedItems.toList()
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -109,21 +110,6 @@ fun ExpensesExportScreen(
                     resultBackNavigator.navigateBack(data.successMessage)
                 }
             }
-        }
-    }
-
-    val context = LocalContext.current
-
-    val hasStoragePermission = rememberMultiplePermissionsState(
-        permissions = listOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        ),
-    )
-
-    val askForPermissions = {
-        if (!hasStoragePermission.allPermissionsGranted) {
-            hasStoragePermission.launchMultiplePermissionRequest()
         }
     }
 
@@ -144,36 +130,91 @@ fun ExpensesExportScreen(
             }
         }
 
-    fun onBackClick() {
+    ExpensesExportScreenContent(
+        modifier = Modifier,
+        items = expenseList.toImmutableList(),
+        selectedItems = selectedItems.toImmutableList(),
+        showSearchBar = showSearchBar,
+        searchText = searchText,
+        onClearClick = viewModel::clearSearchText,
+        onSearchTextChanged = viewModel::searchTextChanged,
+        onClickOpenSearch = viewModel::openSearchBar,
+        onClickCloseSearch = viewModel::closeSearchBar,
+        onClickSelectAll = viewModel::selectAllItems,
+        onClickDeselect = viewModel::deselectItems,
+        onSelectItem = viewModel::selectItem,
+        onClickExport = {
+            scope.launch {
+                val result = ImportExport.createFile(
+                    context = context,
+                    fileName = EXPORT_EXPENSE_FILE_NAME,
+                )
+                exportLauncher.launch(result)
+                viewModel.onEvent(ExpensesSettingsEvent.GetExportedItems)
+            }
+        },
+        onBackClick = navigator::navigateUp,
+        onClickToAddItem = {
+            navigator.navigate(AddEditExpenseScreenDestination())
+        },
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun ExpensesExportScreenContent(
+    modifier: Modifier = Modifier,
+    items: ImmutableList<Expense>,
+    selectedItems: ImmutableList<Int>,
+    showSearchBar: Boolean,
+    searchText: String,
+    onClearClick: () -> Unit,
+    onSearchTextChanged: (String) -> Unit,
+    onClickOpenSearch: () -> Unit,
+    onClickCloseSearch: () -> Unit,
+    onClickSelectAll: () -> Unit,
+    onClickDeselect: () -> Unit,
+    onSelectItem: (Int) -> Unit,
+    onClickExport: () -> Unit,
+    onBackClick: () -> Unit,
+    onClickToAddItem: () -> Unit,
+    scope: CoroutineScope = rememberCoroutineScope(),
+    lazyListState: LazyListState = rememberLazyListState(),
+    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
+) {
+    TrackScreenViewEvent(screenName = "ExpensesExportScreen")
+
+    val text = if (searchText.isEmpty()) EXPENSE_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND
+    val title =
+        if (selectedItems.isEmpty()) EXPORT_EXPENSE_TITLE else "${selectedItems.size} Selected"
+
+    BackHandler {
         if (selectedItems.isNotEmpty()) {
-            viewModel.deselectItems()
+            onClickDeselect()
         } else if (showSearchBar) {
-            viewModel.closeSearchBar()
+            onClickCloseSearch()
         } else {
-            navigator.navigateUp()
+            onBackClick()
         }
     }
 
-    BackHandler {
-        onBackClick()
-    }
-
     PoposSecondaryScaffold(
-        title = if (selectedItems.isEmpty()) EXPORT_EXPENSE_TITLE else "${selectedItems.size} Selected",
+        title = title,
         showBackButton = selectedItems.isEmpty() || showSearchBar,
-        showBottomBar = expenseList.isNotEmpty(),
+        showBottomBar = items.isNotEmpty(),
+        showSecondaryBottomBar = true,
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
                     searchText = searchText,
-                    placeholderText = "Search for expenses...",
-                    onClearClick = viewModel::clearSearchText,
-                    onSearchTextChanged = viewModel::searchTextChanged,
+                    placeholderText = EXPENSE_SEARCH_PLACEHOLDER,
+                    onClearClick = onClearClick,
+                    onSearchTextChanged = onSearchTextChanged,
                 )
             } else {
-                if (expenseList.isNotEmpty()) {
+                if (items.isNotEmpty()) {
                     IconButton(
-                        onClick = viewModel::selectAllItems,
+                        onClick = onClickSelectAll,
                     ) {
                         Icon(
                             imageVector = PoposIcons.Checklist,
@@ -182,7 +223,7 @@ fun ExpensesExportScreen(
                     }
 
                     IconButton(
-                        onClick = viewModel::openSearchBar,
+                        onClick = onClickOpenSearch,
                         modifier = Modifier.testTag(NAV_SEARCH_BTN),
                     ) {
                         Icon(
@@ -197,7 +238,7 @@ fun ExpensesExportScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(SpaceSmallMax),
+                    .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} expenses will be exported.")
@@ -205,28 +246,18 @@ fun ExpensesExportScreen(
                 PoposButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag(EXPORT_EXPENSE_BTN),
-                    enabled = true,
-                    text = EXPORT_EXPENSE_BTN_TEXT,
+                        .testTag(EXPORT_EXPENSE_TITLE),
+                    enabled = items.isNotEmpty(),
+                    text = EXPORT_EXPENSE_TITLE,
                     icon = PoposIcons.Upload,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary,
                     ),
-                    onClick = {
-                        scope.launch {
-                            askForPermissions()
-                            val result = ImportExport.createFile(
-                                context = context,
-                                fileName = EXPORT_EXPENSE_FILE_NAME,
-                            )
-                            exportLauncher.launch(result)
-                            viewModel.onEvent(ExpensesSettingsEvent.GetExportedItems)
-                        }
-                    },
+                    onClick = onClickExport,
                 )
             }
         },
-        onBackClick = { onBackClick() },
+        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
         fabPosition = FabPosition.End,
         floatingActionButton = {
             ScrollToTop(
@@ -240,7 +271,7 @@ fun ExpensesExportScreen(
         },
         navigationIcon = {
             IconButton(
-                onClick = viewModel::deselectItems,
+                onClick = onClickDeselect,
             ) {
                 Icon(
                     imageVector = PoposIcons.Close,
@@ -248,41 +279,77 @@ fun ExpensesExportScreen(
                 )
             }
         },
-    ) { paddingValues ->
-        if (expenseList.isEmpty()) {
-            ItemNotAvailable(
-                text = if (searchText.isEmpty()) EXPENSE_NOT_AVAILABLE else NO_ITEMS_IN_EXPENSE,
-                buttonText = ExpenseTestTags.CREATE_NEW_EXPENSE,
-                onClick = {
-                    navigator.navigate(AddEditExpenseScreenDestination())
-                },
-            )
-        } else {
-            TrackScrollJank(scrollableState = lazyListState, stateName = "Exported Expenses::List")
-
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentPadding = PaddingValues(SpaceSmall),
-                state = lazyListState,
-            ) {
-                items(
-                    items = expenseList,
-                    key = {
-                        it.expenseId
-                    },
-                ) { expense ->
-                    ExpensesData(
-                        item = expense,
-                        doesSelected = {
-                            selectedItems.contains(it)
-                        },
-                        onClick = viewModel::selectItem,
-                        onLongClick = viewModel::selectItem,
-                    )
-                }
+    ) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(it),
+        ) {
+            if (items.isEmpty()) {
+                ItemNotAvailable(
+                    text = text,
+                    buttonText = CREATE_NEW_EXPENSE,
+                    onClick = onClickToAddItem,
+                )
+            } else {
+                ExpensesList(
+                    modifier = Modifier,
+                    items = items,
+                    doesSelected = selectedItems::contains,
+                    onSelectItem = onSelectItem,
+                    lazyListState = lazyListState,
+                )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ExpensesExportScreenContentEmptyPreview() {
+    PoposRoomTheme {
+        ExpensesExportScreenContent(
+            modifier = Modifier,
+            items = persistentListOf(),
+            selectedItems = persistentListOf(),
+            showSearchBar = false,
+            searchText = "",
+            onClearClick = {},
+            onSearchTextChanged = {},
+            onClickOpenSearch = {},
+            onClickCloseSearch = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onSelectItem = {},
+            onClickExport = {},
+            onBackClick = {},
+            onClickToAddItem = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ExpensesExportScreenContentPreview(
+    items: ImmutableList<Expense> = ExpensePreviewData.expenses.toImmutableList(),
+) {
+    PoposRoomTheme {
+        ExpensesExportScreenContent(
+            modifier = Modifier,
+            items = items,
+            selectedItems = persistentListOf(),
+            showSearchBar = false,
+            searchText = "",
+            onClearClick = {},
+            onSearchTextChanged = {},
+            onClickOpenSearch = {},
+            onClickCloseSearch = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onSelectItem = {},
+            onClickExport = {},
+            onBackClick = {},
+            onClickToAddItem = {},
+        )
     }
 }

@@ -132,7 +132,7 @@ private fun AnalyticsHelper.logImportedUnitsFromFile(totalUnits: Int) {
         event = AnalyticsEvent(
             type = "measure_unit_imported_from_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("measure_unit_imported_from_file", totalUnits.toString()),
+                AnalyticsEvent.Param("measure_unit_imported_from_file", totalUnits.toString()),
             ),
         ),
     )
@@ -143,7 +143,7 @@ private fun AnalyticsHelper.logImportedUnitsToDatabase(totalUnits: Int) {
         event = AnalyticsEvent(
             type = "measure_unit_imported_to_database",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("measure_unit_imported_to_database", totalUnits.toString()),
+                AnalyticsEvent.Param("measure_unit_imported_to_database", totalUnits.toString()),
             ),
         ),
     )
@@ -154,7 +154,7 @@ private fun AnalyticsHelper.logExportedUnitsToFile(totalItems: Int) {
         event = AnalyticsEvent(
             type = "measure_unit_exported_to_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("measure_unit_exported_to_file", totalItems.toString()),
+                AnalyticsEvent.Param("measure_unit_exported_to_file", totalItems.toString()),
             ),
         ),
     )

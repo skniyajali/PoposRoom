@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,8 +44,10 @@ import com.niyaj.common.utils.Constants.NOT_PAID
 import com.niyaj.common.utils.Constants.PAID
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.IconSizeSmall
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun StandardOutlinedChip(
@@ -191,5 +194,113 @@ fun StandardChip(
                 color = MaterialTheme.colorScheme.onPrimary,
             )
         }
+    }
+}
+
+@Composable
+fun PoposOutlinedChip(
+    modifier: Modifier = Modifier,
+    text: String,
+    icon: ImageVector? = null,
+    borderColor: Color = MaterialTheme.colorScheme.tertiary,
+    contentColor: Color = MaterialTheme.colorScheme.tertiary,
+    borderStroke: BorderStroke = BorderStroke(1.dp, borderColor),
+    shape: RoundedCornerShape = RoundedCornerShape(2.dp),
+) {
+    Surface(
+        modifier = modifier,
+        shape = shape,
+        border = borderStroke,
+        color = Color.Transparent,
+        contentColor = contentColor,
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(SpaceMini),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            icon?.let {
+                Icon(
+                    imageVector = it,
+                    contentDescription = "$text icon",
+                    modifier = Modifier.size(IconSizeSmall),
+                )
+
+                Spacer(modifier = Modifier.width(SpaceMini))
+            }
+
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelSmall,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+@Composable
+fun PoposChip(
+    modifier: Modifier = Modifier,
+    text: String,
+    icon: ImageVector? = null,
+    containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
+    contentColor: Color = MaterialTheme.colorScheme.onTertiaryContainer,
+    shape: RoundedCornerShape = RoundedCornerShape(2.dp),
+) {
+    Surface(
+        modifier = modifier,
+        shape = shape,
+        color = containerColor,
+        contentColor = contentColor,
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(SpaceMini),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            icon?.let {
+                Icon(
+                    imageVector = it,
+                    contentDescription = "$text icon",
+                    modifier = Modifier.size(IconSizeSmall),
+                )
+
+                Spacer(modifier = Modifier.width(SpaceMini))
+            }
+
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelSmall,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun PoposChipPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        PoposChip(
+            modifier = modifier,
+            text = "Popos Chip",
+            icon = PoposIcons.StarHalf,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun PoposOutlinedChipPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        PoposOutlinedChip(
+            modifier = modifier,
+            text = "Popos Outlined Chip",
+            icon = PoposIcons.MergeType,
+        )
     }
 }

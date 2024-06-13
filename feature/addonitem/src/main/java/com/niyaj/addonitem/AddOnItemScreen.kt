@@ -45,6 +45,8 @@ import com.niyaj.addonitem.destinations.AddEditAddOnItemScreenDestination
 import com.niyaj.addonitem.destinations.AddOnExportScreenDestination
 import com.niyaj.addonitem.destinations.AddOnImportScreenDestination
 import com.niyaj.addonitem.destinations.AddOnSettingsScreenDestination
+import com.niyaj.common.tags.AddOnTestTags.ADDON_ITEM_LIST
+import com.niyaj.common.tags.AddOnTestTags.ADDON_LOADING_INDICATOR
 import com.niyaj.common.tags.AddOnTestTags.ADDON_NOT_AVAILABLE
 import com.niyaj.common.tags.AddOnTestTags.ADDON_SCREEN_TITLE
 import com.niyaj.common.tags.AddOnTestTags.ADDON_SEARCH_PLACEHOLDER
@@ -52,6 +54,7 @@ import com.niyaj.common.tags.AddOnTestTags.CREATE_NEW_ADD_ON
 import com.niyaj.common.tags.AddOnTestTags.DELETE_ADD_ON_ITEM_MESSAGE
 import com.niyaj.common.tags.AddOnTestTags.DELETE_ADD_ON_ITEM_TITLE
 import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
 import com.niyaj.ui.components.ItemNotAvailable
@@ -205,7 +208,7 @@ private fun AddOnItemScreenContent(
                 onSettingsClick = onSettingsClick,
                 onSelectAllClick = onSelectAllClick,
                 onClearClick = onClearSearchClick,
-                onSearchClick = onSearchClick,
+                onSearchIconClick = onSearchClick,
                 onSearchTextChanged = onSearchTextChanged,
             )
         },
@@ -213,7 +216,7 @@ private fun AddOnItemScreenContent(
         selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
         onDeselect = onDeselect,
-        onBackClick = onBackClick,
+        onBackClick = if (showSearchBar) onCloseSearchBar else onBackClick,
         snackbarHostState = snackbarHostState,
         onNavigateToScreen = onNavigateToScreen,
     ) {
@@ -222,7 +225,7 @@ private fun AddOnItemScreenContent(
             label = "AddOn State",
         ) { state ->
             when (state) {
-                is UiState.Loading -> LoadingIndicator(contentDesc = "AddOn:LoadingIndicator")
+                is UiState.Loading -> LoadingIndicator(contentDesc = ADDON_LOADING_INDICATOR)
 
                 is UiState.Empty -> {
                     ItemNotAvailable(
@@ -239,7 +242,7 @@ private fun AddOnItemScreenContent(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(SpaceSmall)
-                            .testTag("addon:list"),
+                            .testTag(ADDON_ITEM_LIST),
                         columns = GridCells.Fixed(2),
                         state = lazyGridState,
                     ) {
@@ -331,75 +334,29 @@ private fun HandleResultRecipients(
 
 @DevicePreviews
 @Composable
-fun AddOnItemScreenLoading() {
-    AddOnItemScreenContent(
-        uiState = UiState.Loading,
-        selectedItems = listOf(),
-        showSearchBar = false,
-        searchText = "",
-        onItemClick = {},
-        onCreateNewClick = {},
-        onEditClick = {},
-        onDeleteClick = {},
-        onSettingsClick = {},
-        onSelectAllClick = {},
-        onClearSearchClick = {},
-        onSearchClick = {},
-        onSearchTextChanged = {},
-        onCloseSearchBar = {},
-        onBackClick = {},
-        onDeselect = {},
-        onNavigateToScreen = {},
-    )
-}
-
-@DevicePreviews
-@Composable
-fun AddOnItemScreenEmpty() {
-    AddOnItemScreenContent(
-        uiState = UiState.Empty,
-        selectedItems = listOf(),
-        showSearchBar = false,
-        searchText = "",
-        onItemClick = {},
-        onCreateNewClick = {},
-        onEditClick = {},
-        onDeleteClick = {},
-        onSettingsClick = {},
-        onSelectAllClick = {},
-        onClearSearchClick = {},
-        onSearchClick = {},
-        onSearchTextChanged = {},
-        onCloseSearchBar = {},
-        onBackClick = {},
-        onDeselect = {},
-        onNavigateToScreen = {},
-    )
-}
-
-@DevicePreviews
-@Composable
-fun AddOnItemScreenPopulated(
+private fun AddOnItemScreenPreview(
     @PreviewParameter(AddOnItemPreviewParameterProvider::class)
-    items: List<AddOnItem>,
+    uiState: UiState<List<AddOnItem>>,
 ) {
-    AddOnItemScreenContent(
-        uiState = UiState.Success(items),
-        selectedItems = listOf(),
-        showSearchBar = false,
-        searchText = "",
-        onItemClick = {},
-        onCreateNewClick = {},
-        onEditClick = {},
-        onDeleteClick = {},
-        onSettingsClick = {},
-        onSelectAllClick = {},
-        onClearSearchClick = {},
-        onSearchClick = {},
-        onSearchTextChanged = {},
-        onCloseSearchBar = {},
-        onBackClick = {},
-        onDeselect = {},
-        onNavigateToScreen = {},
-    )
+    PoposRoomTheme {
+        AddOnItemScreenContent(
+            uiState = uiState,
+            selectedItems = listOf(),
+            showSearchBar = false,
+            searchText = "",
+            onItemClick = {},
+            onCreateNewClick = {},
+            onEditClick = {},
+            onDeleteClick = {},
+            onSettingsClick = {},
+            onSelectAllClick = {},
+            onClearSearchClick = {},
+            onSearchClick = {},
+            onSearchTextChanged = {},
+            onCloseSearchBar = {},
+            onBackClick = {},
+            onDeselect = {},
+            onNavigateToScreen = {},
+        )
+    }
 }

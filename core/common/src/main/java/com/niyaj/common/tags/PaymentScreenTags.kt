@@ -21,7 +21,6 @@ object PaymentScreenTags {
 
     const val PAYMENT_SCREEN_TITLE = "Payments"
     const val PAYMENT_NOT_AVAILABLE = "Payments Not Available"
-    const val NO_ITEMS_IN_PAYMENT = "Payments Not Found"
     const val PAYMENT_SEARCH_PLACEHOLDER = "Search for Payments..."
 
     const val CREATE_NEW_PAYMENT = "Add New Payment"
@@ -33,13 +32,11 @@ object PaymentScreenTags {
     const val PAYMENT_EMPLOYEE_NAME_ERROR = "Employee NameError"
 
     const val PAYMENT_TYPE_FIELD = "Payment Type"
-    const val PAYMENT_TYPE_ERROR = "Payment TypeError"
 
     const val GIVEN_DATE_FIELD = "Given Date"
     const val GIVEN_DATE_ERROR = "Given DateError"
 
     const val PAYMENT_MODE_FIELD = "Payment Mode"
-    const val PAYMENT_MODE_ERROR = "Payment ModeError"
 
     const val GIVEN_AMOUNT_FIELD = "Given Amount"
     const val GIVEN_AMOUNT_ERROR = "Given AmountError"
@@ -69,14 +66,14 @@ object PaymentScreenTags {
 
     const val PAYMENT_SETTINGS_TITLE = "Payment Settings"
 
+    const val PAYMENT_SETTINGS_NOTE = "Make Sure To Import Employee Before Importing Employee Payments."
+
     const val IMPORT_PAYMENT_TITLE = "Import Payments"
-    const val IMPORT_PAYMENT_BTN_TEXT = "Import Employee Payments"
+    const val IMPORT_PAYMENT_SUB_TITLE = "Click here to import data from file."
     const val IMPORT_PAYMENT_OPN_FILE = "Open File"
     const val IMPORT_PAYMENT_NOTE_TEXT = "Make sure to open payments.json file."
 
     const val EXPORT_PAYMENT_TITLE = "Export Payments"
-    const val EXPORT_PAYMENT_BTN_TEXT = "Export Employee Payments"
-    const val EXPORT_PAYMENT_BTN = "Export Payment"
-
+    const val EXPORT_PAYMENT_SUB_TITLE = "Click here to export data to file."
     const val EXPORT_PAYMENT_FILE_NAME = "payments"
 }

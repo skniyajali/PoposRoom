@@ -116,6 +116,7 @@ fun PoposButton(
     btnHeight: Dp = ButtonSize,
     shape: Shape = RoundedCornerShape(SpaceMini),
     colors: ButtonColors = ButtonDefaults.buttonColors(),
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     style: TextStyle = MaterialTheme.typography.labelLarge,
     onClick: () -> Unit,
 ) {
@@ -124,6 +125,7 @@ fun PoposButton(
         enabled = enabled,
         shape = shape,
         colors = colors,
+        contentPadding = contentPadding,
         modifier = modifier
             .testTag(text)
             .heightIn(btnHeight),
@@ -230,6 +232,7 @@ fun PoposIconTextButton(
     btnHeight: Dp = ButtonSize,
     shape: Shape = RoundedCornerShape(SpaceMini),
     colors: ButtonColors = ButtonDefaults.buttonColors(),
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     style: TextStyle = MaterialTheme.typography.labelLarge,
     onClick: () -> Unit,
 ) {
@@ -238,6 +241,7 @@ fun PoposIconTextButton(
         enabled = enabled,
         shape = shape,
         colors = colors,
+        contentPadding = contentPadding,
         modifier = modifier
             .heightIn(btnHeight),
     ) {

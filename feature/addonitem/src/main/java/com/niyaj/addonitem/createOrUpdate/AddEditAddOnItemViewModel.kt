@@ -99,7 +99,7 @@ class AddEditAddOnItemViewModel @Inject constructor(
             }
 
             is AddEditAddOnItemEvent.CreateUpdateAddOnItem -> {
-                createOrUpdateAddOnItem(event.addOnItemId)
+                createOrUpdateAddOnItem(addOnItemId)
             }
         }
     }
@@ -167,7 +167,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateAddon(data: Int, message: String)
         event = AnalyticsEvent(
             type = "addon_$message",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("addon_$message", data.toString()),
+                AnalyticsEvent.Param("addon_$message", data.toString()),
             ),
         ),
     )

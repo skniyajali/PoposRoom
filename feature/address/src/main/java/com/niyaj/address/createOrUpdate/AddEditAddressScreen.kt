@@ -17,14 +17,19 @@
 
 package com.niyaj.address.createOrUpdate
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,8 +39,6 @@ import com.niyaj.common.tags.AddressTestTags.ADDRESS_FULL_NAME_FIELD
 import com.niyaj.common.tags.AddressTestTags.ADDRESS_SHORT_NAME_ERROR
 import com.niyaj.common.tags.AddressTestTags.ADDRESS_SHORT_NAME_FIELD
 import com.niyaj.common.tags.AddressTestTags.CREATE_ADDRESS_SCREEN
-import com.niyaj.common.tags.AddressTestTags.CREATE_NEW_ADDRESS
-import com.niyaj.common.tags.AddressTestTags.EDIT_ADDRESS
 import com.niyaj.common.tags.AddressTestTags.UPDATE_ADDRESS_SCREEN
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
@@ -43,6 +46,7 @@ import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.StandardOutlinedTextField
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
@@ -57,12 +61,9 @@ fun AddEditAddressScreen(
     viewModel: AddEditAddressViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
-    val nameError = viewModel.nameError.collectAsStateWithLifecycle().value
-    val shortNameError = viewModel.shortNameError.collectAsStateWithLifecycle().value
-
-    val enableBtn = nameError == null && shortNameError == null
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
+    val nameError by viewModel.nameError.collectAsStateWithLifecycle()
+    val shortNameError by viewModel.shortNameError.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -79,27 +80,56 @@ fun AddEditAddressScreen(
     }
 
     val title = if (addressId == 0) CREATE_ADDRESS_SCREEN else UPDATE_ADDRESS_SCREEN
+    val icon = if (addressId == 0) PoposIcons.Add else PoposIcons.EditLocation
 
     TrackScreenViewEvent(screenName = "Add/Edit Address Screen")
 
+    AddEditAddressScreenContent(
+        modifier = Modifier,
+        title = title,
+        icon = icon,
+        state = viewModel.state,
+        onEvent = viewModel::onEvent,
+        nameError = nameError,
+        shortNameError = shortNameError,
+        onBackClick = navigator::navigateUp,
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun AddEditAddressScreenContent(
+    modifier: Modifier = Modifier,
+    title: String = CREATE_ADDRESS_SCREEN,
+    icon: ImageVector = PoposIcons.Add,
+    state: AddEditAddressState,
+    onEvent: (AddEditAddressEvent) -> Unit,
+    nameError: String? = null,
+    shortNameError: String? = null,
+    onBackClick: () -> Unit,
+) {
+    val enableBtn = nameError == null && shortNameError == null
+
     PoposSecondaryScaffold(
+        modifier = modifier,
         title = title,
         showBackButton = true,
         showBottomBar = true,
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
         bottomBar = {
             PoposButton(
                 modifier = Modifier
-                    .testTag(AddressTestTags.ADD_EDIT_ADDRESS_BTN)
-                    .padding(SpaceMedium),
-                text = if (addressId == 0) CREATE_NEW_ADDRESS else EDIT_ADDRESS,
+                    .fillMaxWidth()
+                    .testTag(AddressTestTags.ADD_EDIT_ADDRESS_BTN),
+                text = title,
                 enabled = enableBtn,
-                icon = if (addressId == 0) PoposIcons.Add else PoposIcons.EditLocation,
+                icon = icon,
                 onClick = {
-                    viewModel.onEvent(AddEditAddressEvent.CreateOrUpdateAddress(addressId))
+                    onEvent(AddEditAddressEvent.CreateOrUpdateAddress)
                 },
             )
         },
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -111,31 +141,55 @@ fun AddEditAddressScreen(
         ) {
             item(ADDRESS_FULL_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.addressName,
+                    value = state.addressName,
                     label = ADDRESS_FULL_NAME_FIELD,
                     leadingIcon = PoposIcons.Address,
                     isError = nameError != null,
                     errorText = nameError,
                     errorTextTag = ADDRESS_FULL_NAME_ERROR,
+                    showClearIcon = state.addressName.isNotEmpty(),
                     onValueChange = {
-                        viewModel.onEvent(AddEditAddressEvent.AddressNameChanged(it))
+                        onEvent(AddEditAddressEvent.AddressNameChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditAddressEvent.AddressNameChanged(""))
                     },
                 )
             }
 
             item(ADDRESS_SHORT_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.shortName,
+                    value = state.shortName,
                     label = ADDRESS_SHORT_NAME_FIELD,
                     leadingIcon = PoposIcons.Rupee,
                     isError = shortNameError != null,
                     errorText = shortNameError,
                     errorTextTag = ADDRESS_SHORT_NAME_ERROR,
+                    showClearIcon = state.shortName.isNotEmpty(),
                     onValueChange = {
-                        viewModel.onEvent(AddEditAddressEvent.ShortNameChanged(it))
+                        onEvent(AddEditAddressEvent.ShortNameChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditAddressEvent.ShortNameChanged(""))
                     },
                 )
             }
         }
     }
+}
+
+@DevicePreviews
+@Composable
+private fun AddEditAddressScreenContentPreview() {
+    AddEditAddressScreenContent(
+        modifier = Modifier,
+        state = AddEditAddressState(
+            shortName = "New Ladies",
+            addressName = "NL",
+        ),
+        onEvent = {},
+        nameError = null,
+        shortNameError = null,
+        onBackClick = {},
+    )
 }

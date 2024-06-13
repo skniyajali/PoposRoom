@@ -24,7 +24,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -230,8 +230,11 @@ fun NoteText(
     iconModifier: Modifier = Modifier.size(SpaceMedium),
     text: String,
     icon: ImageVector = PoposIcons.ErrorOutline,
+    style: TextStyle = MaterialTheme.typography.labelSmall,
     color: Color = MaterialTheme.colorScheme.secondary,
     fontWeight: FontWeight = FontWeight.Normal,
+    maxLines: Int = 1,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
     onClick: () -> Unit = {},
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -257,10 +260,10 @@ fun NoteText(
 
         Text(
             text = text,
-            style = MaterialTheme.typography.labelSmall,
+            style = style,
             fontWeight = fontWeight,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+            maxLines = maxLines,
+            overflow = overflow,
             color = color,
         )
     }
@@ -334,7 +337,7 @@ fun NoteCard(
 
     ListItem(
         modifier = modifier
-            .height(height)
+            .heightIn(height)
             .fillMaxWidth()
             .clip(RoundedCornerShape(SpaceMini))
             .clickable(

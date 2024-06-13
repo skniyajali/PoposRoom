@@ -30,7 +30,6 @@ object AddressTestTags {
     const val ADD_EDIT_ADDRESS_BTN = "AddEdit Address"
 
     const val CREATE_NEW_ADDRESS = "Create New Address"
-    const val EDIT_ADDRESS = "Update Address"
 
     // Add Edit Address Screen Tags
     const val ADDRESS_SHORT_NAME_FIELD = "Short Name"
@@ -54,11 +53,13 @@ object AddressTestTags {
     const val ADDRESS_SETTINGS_TITLE = "Address Settings"
 
     const val IMPORT_ADDRESS_TITLE = "Import Address"
+    const val IMPORT_ADDRESS_SUB_TITLE = "Click here to import data from file."
     const val IMPORT_ADDRESS_BTN_TEXT = "Import Address"
     const val IMPORT_ADDRESS_OPN_FILE = "Open File"
     const val IMPORT_ADDRESS_NOTE_TEXT = "Make sure to open addresses.json file."
 
     const val EXPORT_ADDRESS_TITLE = "Export Address"
+    const val EXPORT_ADDRESS_SUB_TITLE = "Click here to export address to file."
     const val EXPORT_ADDRESS_BTN_TEXT = "Export Address"
     const val EXPORT_ADDRESS_BTN = "Export Address"
 

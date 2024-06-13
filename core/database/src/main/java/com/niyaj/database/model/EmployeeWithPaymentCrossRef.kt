@@ -68,6 +68,8 @@ data class EmployeeWithPaymentsDto(
 fun EmployeeWithPaymentsDto.asExternalModel(): EmployeeWithPayments {
     return EmployeeWithPayments(
         employee = this.employee.asExternalModel(),
-        payments = this.payments.map { it.asExternalModel() },
+        payments = this.payments.map { it.asExternalModel() }
+            .sortedByDescending { it.paymentDate }
+            .sortedByDescending { it.updatedAt ?: it.createdAt },
     )
 }

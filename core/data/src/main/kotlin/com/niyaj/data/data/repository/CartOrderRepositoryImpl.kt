@@ -30,6 +30,7 @@ import com.niyaj.common.tags.CartOrderTestTags.CUSTOMER_PHONE_LENGTH_ERROR
 import com.niyaj.common.tags.CartOrderTestTags.CUSTOMER_PHONE_LETTER_ERROR
 import com.niyaj.common.tags.CartOrderTestTags.ORDER_PRICE_LESS_THAN_TWO_ERROR
 import com.niyaj.common.tags.CartOrderTestTags.ORDER_SHORT_NAME_EMPTY_ERROR
+import com.niyaj.common.utils.toDate
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.CartOrderRepository
 import com.niyaj.data.repository.validation.CartOrderValidationRepository
@@ -109,8 +110,8 @@ class CartOrderRepositoryImpl(
                         deliveryPartnerId = cartOrder.deliveryPartnerId,
                         customer = customer ?: Customer(),
                         address = address ?: Address(),
-                        createdAt = cartOrder.createdAt,
-                        updatedAt = cartOrder.updatedAt,
+                        createdAt = cartOrder.createdAt.time,
+                        updatedAt = cartOrder.updatedAt?.time,
                     )
                 }
             }
@@ -225,8 +226,8 @@ class CartOrderRepositoryImpl(
                         deliveryPartnerId = cartOrder.deliveryPartnerId,
                         customer = customer ?: Customer(),
                         address = address ?: Address(),
-                        createdAt = cartOrder.createdAt,
-                        updatedAt = cartOrder.updatedAt,
+                        createdAt = cartOrder.createdAt.time,
+                        updatedAt = cartOrder.updatedAt?.time,
                     )
                 }
             }.mapLatest {
@@ -265,8 +266,8 @@ class CartOrderRepositoryImpl(
                         deliveryPartnerId = cartOrder.deliveryPartnerId,
                         customer = customer ?: Customer(),
                         address = address ?: Address(),
-                        createdAt = cartOrder.createdAt,
-                        updatedAt = cartOrder.updatedAt,
+                        createdAt = cartOrder.createdAt.time,
+                        updatedAt = cartOrder.updatedAt?.time,
                     )
 
                     CartOrderWithAddOnAndCharges(
@@ -381,8 +382,8 @@ class CartOrderRepositoryImpl(
                         deliveryPartnerId = cartOrder.deliveryPartnerId,
                         addressId = addressId,
                         customerId = customerId,
-                        createdAt = cartOrder.createdAt,
-                        updatedAt = cartOrder.updatedAt,
+                        createdAt = cartOrder.createdAt.toDate,
+                        updatedAt = cartOrder.updatedAt?.toDate,
                     )
 
                     val result = cartOrderDao.createOrUpdateCartOrder(newOrder)

@@ -17,19 +17,17 @@
 
 package com.niyaj.product.settings
 
-import android.Manifest
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
@@ -38,46 +36,54 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.common.tags.ProductTestTags
 import com.niyaj.common.tags.ProductTestTags.EXPORTED_PRODUCTS_FILE_NAME
-import com.niyaj.common.tags.ProductTestTags.EXPORT_PRODUCTS_BTN_TEXT
 import com.niyaj.common.tags.ProductTestTags.EXPORT_PRODUCTS_TITLE
+import com.niyaj.common.tags.ProductTestTags.NO_ITEMS_IN_PRODUCT
+import com.niyaj.common.tags.ProductTestTags.PRODUCT_SEARCH_PLACEHOLDER
 import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
-import com.niyaj.domain.utils.ImportExport.createFile
+import com.niyaj.domain.utils.ImportExport
 import com.niyaj.domain.utils.ImportExport.writeDataAsync
-import com.niyaj.product.components.ProductCard
+import com.niyaj.model.Category
+import com.niyaj.model.Product
+import com.niyaj.product.components.ProductList
 import com.niyaj.product.destinations.AddEditProductScreenDestination
-import com.niyaj.ui.components.CategoriesData
+import com.niyaj.ui.components.CategoryList
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailableHalf
 import com.niyaj.ui.components.NAV_SEARCH_BTN
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.parameterProvider.CategoryPreviewData
+import com.niyaj.ui.parameterProvider.ProductPreviewData
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
-import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Destination
 @Composable
 fun ExportProductScreen(
@@ -85,21 +91,18 @@ fun ExportProductScreen(
     viewModel: ProductSettingsViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
 ) {
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
-    val lazyRowState = rememberLazyListState()
 
-    val categories = viewModel.categories.collectAsStateWithLifecycle().value
-    val products = viewModel.products.collectAsStateWithLifecycle().value
-    val exportedProducts = viewModel.exportedProducts.collectAsStateWithLifecycle().value
+    val categories by viewModel.categories.collectAsStateWithLifecycle()
+    val products by viewModel.products.collectAsStateWithLifecycle()
+    val exportedProducts by viewModel.exportedProducts.collectAsStateWithLifecycle()
+    val showSearchBar by viewModel.showSearchBar.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     val selectedItems = viewModel.selectedItems.toList()
     val selectedCategory = viewModel.selectedCategory.toList()
-
-    val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -112,21 +115,6 @@ fun ExportProductScreen(
                     resultBackNavigator.navigateBack(data.successMessage)
                 }
             }
-        }
-    }
-
-    val context = LocalContext.current
-
-    val hasStoragePermission = rememberMultiplePermissionsState(
-        permissions = listOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        ),
-    )
-
-    val askForPermissions = {
-        if (!hasStoragePermission.allPermissionsGranted) {
-            hasStoragePermission.launchMultiplePermissionRequest()
         }
     }
 
@@ -147,38 +135,100 @@ fun ExportProductScreen(
             }
         }
 
-    fun onBackClick() {
-        if (showSearchBar) {
-            viewModel.closeSearchBar()
-        } else if (selectedItems.isNotEmpty()) {
-            viewModel.deselectItems()
+    ExportProductScreenContent(
+        modifier = Modifier,
+        items = products.toImmutableList(),
+        categories = categories,
+        selectedItems = selectedItems.toImmutableList(),
+        selectedCategory = selectedCategory,
+        showSearchBar = showSearchBar,
+        searchText = searchText,
+        onClearClick = viewModel::clearSearchText,
+        onSearchTextChanged = viewModel::searchTextChanged,
+        onClickOpenSearch = viewModel::openSearchBar,
+        onClickCloseSearch = viewModel::closeSearchBar,
+        onClickSelectAll = viewModel::selectAllItems,
+        onClickDeselect = viewModel::deselectItems,
+        onSelectItem = viewModel::selectItem,
+        onBackClick = navigator::navigateUp,
+        onSelectCategory = {
+            viewModel.onEvent(ProductSettingsEvent.OnSelectCategory(it))
+        },
+        onClickExport = {
+            scope.launch {
+                val result = ImportExport.createFile(
+                    context = context,
+                    fileName = EXPORTED_PRODUCTS_FILE_NAME,
+                )
+                exportLauncher.launch(result)
+                viewModel.onEvent(ProductSettingsEvent.GetExportedProduct)
+            }
+        },
+        onClickToAddItem = {
+            navigator.navigate(AddEditProductScreenDestination())
+        },
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun ExportProductScreenContent(
+    modifier: Modifier = Modifier,
+    items: ImmutableList<Product>,
+    categories: ImmutableList<Category>,
+    selectedCategory: List<Int>,
+    selectedItems: ImmutableList<Int>,
+    showSearchBar: Boolean,
+    searchText: String,
+    onClearClick: () -> Unit,
+    onSearchTextChanged: (String) -> Unit,
+    onClickOpenSearch: () -> Unit,
+    onClickCloseSearch: () -> Unit,
+    onClickSelectAll: () -> Unit,
+    onClickDeselect: () -> Unit,
+    onSelectItem: (Int) -> Unit,
+    onSelectCategory: (Int) -> Unit,
+    onClickExport: () -> Unit,
+    onBackClick: () -> Unit,
+    onClickToAddItem: () -> Unit,
+    scope: CoroutineScope = rememberCoroutineScope(),
+    lazyListState: LazyListState = rememberLazyListState(),
+    lazyRowState: LazyListState = rememberLazyListState(),
+    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
+) {
+    TrackScreenViewEvent(screenName = "ExportProductScreen")
+
+    val text = if (searchText.isEmpty()) NO_ITEMS_IN_PRODUCT else Constants.SEARCH_ITEM_NOT_FOUND
+    val title = if (selectedItems.isEmpty()) EXPORT_PRODUCTS_TITLE else "${selectedItems.size} Selected"
+
+    BackHandler {
+        if (selectedItems.isNotEmpty()) {
+            onClickDeselect()
+        } else if (showSearchBar) {
+            onClickCloseSearch()
         } else {
-            navigator.navigateUp()
+            onBackClick()
         }
     }
 
-    BackHandler {
-        onBackClick()
-    }
-
-    TrackScreenViewEvent(screenName = "Product Export Screen")
-
     PoposSecondaryScaffold(
-        title = if (selectedItems.isEmpty()) EXPORT_PRODUCTS_TITLE else "${selectedItems.size} Selected",
+        modifier = modifier,
+        title = title,
         showBackButton = selectedItems.isEmpty() || showSearchBar,
-        showBottomBar = products.isNotEmpty() && lazyListState.isScrollingUp(),
+        showBottomBar = items.isNotEmpty(),
+        showSecondaryBottomBar = true,
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
                     searchText = searchText,
-                    placeholderText = "Search for products...",
-                    onClearClick = viewModel::clearSearchText,
-                    onSearchTextChanged = viewModel::searchTextChanged,
+                    placeholderText = PRODUCT_SEARCH_PLACEHOLDER,
+                    onClearClick = onClearClick,
+                    onSearchTextChanged = onSearchTextChanged,
                 )
             } else {
-                if (products.isNotEmpty()) {
+                if (items.isNotEmpty()) {
                     IconButton(
-                        onClick = viewModel::selectAllItems,
+                        onClick = onClickSelectAll,
                     ) {
                         Icon(
                             imageVector = PoposIcons.Checklist,
@@ -187,7 +237,7 @@ fun ExportProductScreen(
                     }
 
                     IconButton(
-                        onClick = viewModel::openSearchBar,
+                        onClick = onClickOpenSearch,
                         modifier = Modifier.testTag(NAV_SEARCH_BTN),
                     ) {
                         Icon(
@@ -202,7 +252,7 @@ fun ExportProductScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(SpaceSmallMax),
+                    .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
                 InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} products will be exported.")
@@ -210,28 +260,18 @@ fun ExportProductScreen(
                 PoposButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag(ProductTestTags.EXPORT_PRODUCTS_BTN),
-                    enabled = true,
-                    text = EXPORT_PRODUCTS_BTN_TEXT,
+                        .testTag(EXPORT_PRODUCTS_TITLE),
+                    enabled = items.isNotEmpty(),
+                    text = EXPORT_PRODUCTS_TITLE,
                     icon = PoposIcons.Upload,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary,
                     ),
-                    onClick = {
-                        scope.launch {
-                            askForPermissions()
-                            val result = createFile(
-                                context = context,
-                                fileName = EXPORTED_PRODUCTS_FILE_NAME,
-                            )
-                            exportLauncher.launch(result)
-                            viewModel.onEvent(ProductSettingsEvent.GetExportedProduct)
-                        }
-                    },
+                    onClick = onClickExport,
                 )
             }
         },
-        onBackClick = { onBackClick() },
+        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
         fabPosition = FabPosition.End,
         floatingActionButton = {
             ScrollToTop(
@@ -245,11 +285,11 @@ fun ExportProductScreen(
         },
         navigationIcon = {
             IconButton(
-                onClick = viewModel::deselectItems,
+                onClick = onClickDeselect,
             ) {
                 Icon(
                     imageVector = PoposIcons.Close,
-                    contentDescription = Constants.CLEAR_ICON,
+                    contentDescription = "Deselect All",
                 )
             }
         },
@@ -259,54 +299,86 @@ fun ExportProductScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            CategoriesData(
+            CategoryList(
                 lazyRowState = lazyRowState,
                 categories = categories,
                 doesSelected = selectedCategory::contains,
-                onSelect = {
-                    viewModel.onEvent(ProductSettingsEvent.OnSelectCategory(it))
-                },
+                onSelect = onSelectCategory,
             )
 
-            if (products.isEmpty()) {
+            if (items.isEmpty()) {
                 ItemNotAvailableHalf(
-                    modifier = Modifier.weight(2f),
-                    text = if (searchText.isEmpty()) ProductTestTags.PRODUCT_NOT_AVAILABLE else ProductTestTags.NO_ITEMS_IN_PRODUCT,
+                    text = text,
                     buttonText = ProductTestTags.CREATE_NEW_PRODUCT,
-                    onClick = {
-                        navigator.navigate(AddEditProductScreenDestination())
-                    },
+                    onClick = onClickToAddItem,
                 )
             } else {
-                TrackScrollJank(
-                    scrollableState = lazyListState,
-                    stateName = "Exported Products::List",
+                ProductList(
+                    modifier = Modifier,
+                    items = items,
+                    isInSelectionMode = true,
+                    doesSelected = selectedItems::contains,
+                    onSelectItem = onSelectItem,
+                    lazyListState = lazyListState,
                 )
-
-                LazyColumn(
-                    state = lazyListState,
-                    contentPadding = PaddingValues(SpaceSmall),
-                ) {
-                    itemsIndexed(
-                        items = products,
-                        key = { index, item ->
-                            item.productName.plus(index).plus(item.productId)
-                        },
-                    ) { _, item ->
-                        ProductCard(
-                            item = item,
-                            doesSelected = {
-                                selectedItems.contains(it)
-                            },
-                            onClick = viewModel::selectItem,
-                            onLongClick = viewModel::selectItem,
-                            border = BorderStroke(0.dp, Color.Transparent),
-                            showArrow = false,
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        )
-                    }
-                }
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ExportProductScreenContentEmptyPreview() {
+    PoposRoomTheme {
+        ExportProductScreenContent(
+            modifier = Modifier,
+            items = persistentListOf(),
+            categories = persistentListOf(),
+            selectedItems = persistentListOf(),
+            selectedCategory = listOf(),
+            showSearchBar = false,
+            searchText = "",
+            onClearClick = {},
+            onSearchTextChanged = {},
+            onClickOpenSearch = {},
+            onClickCloseSearch = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onSelectItem = {},
+            onSelectCategory = {},
+            onClickExport = {},
+            onBackClick = {},
+            onClickToAddItem = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ExportProductScreenContentPreview(
+    items: ImmutableList<Product> = ProductPreviewData.productList.toImmutableList(),
+    categories: ImmutableList<Category> = CategoryPreviewData.categories.toImmutableList(),
+) {
+    PoposRoomTheme {
+        ExportProductScreenContent(
+            modifier = Modifier,
+            items = items,
+            categories = categories,
+            selectedCategory = listOf(),
+            selectedItems = persistentListOf(),
+            showSearchBar = false,
+            searchText = "",
+            onClearClick = {},
+            onSearchTextChanged = {},
+            onClickOpenSearch = {},
+            onClickCloseSearch = {},
+            onClickSelectAll = {},
+            onClickDeselect = {},
+            onSelectItem = {},
+            onSelectCategory = {},
+            onClickExport = {},
+            onBackClick = {},
+            onClickToAddItem = {},
+        )
     }
 }

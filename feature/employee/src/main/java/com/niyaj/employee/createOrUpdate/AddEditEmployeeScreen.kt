@@ -17,6 +17,7 @@
 
 package com.niyaj.employee.createOrUpdate
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -32,7 +33,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -88,6 +88,7 @@ import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.components.StandardRoundedFilterChip
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -161,9 +162,10 @@ fun AddEditEmployeeScreen(
     )
 }
 
+@VisibleForTesting
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditEmployeeScreenContent(
+internal fun AddEditEmployeeScreenContent(
     modifier: Modifier = Modifier,
     title: String,
     icon: ImageVector,
@@ -192,22 +194,17 @@ fun AddEditEmployeeScreenContent(
         onBackClick = onBackClick,
         showBottomBar = true,
         bottomBar = {
-            BottomAppBar(
-                containerColor = Color.White,
-            ) {
-                PoposButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag(ADD_EDIT_EMPLOYEE_BUTTON)
-                        .padding(SpaceSmall),
-                    text = title,
-                    icon = icon,
-                    enabled = enableBtn,
-                    onClick = {
-                        onEvent(AddEditEmployeeEvent.CreateOrUpdateEmployee)
-                    },
-                )
-            }
+            PoposButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(ADD_EDIT_EMPLOYEE_BUTTON),
+                text = title,
+                icon = icon,
+                enabled = enableBtn,
+                onClick = {
+                    onEvent(AddEditEmployeeEvent.CreateOrUpdateEmployee)
+                },
+            )
         },
     ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "Add/Edit Employee::Fields")
@@ -228,8 +225,12 @@ fun AddEditEmployeeScreenContent(
                     isError = nameError != null,
                     errorText = nameError,
                     errorTextTag = EMPLOYEE_NAME_ERROR,
+                    showClearIcon = state.employeeName.isNotEmpty(),
                     onValueChange = {
                         onEvent(AddEditEmployeeEvent.EmployeeNameChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditEmployeeEvent.EmployeeNameChanged(""))
                     },
                 )
             }
@@ -243,13 +244,21 @@ fun AddEditEmployeeScreenContent(
                     errorText = phoneError,
                     errorTextTag = EMPLOYEE_PHONE_ERROR,
                     keyboardType = KeyboardType.Number,
-                    trailingIcon = {
-                        PhoneNoCountBox(
-                            count = state.employeePhone.length,
-                        )
+                    showClearIcon = state.employeePhone.isNotEmpty(),
+                    suffix = {
+                        AnimatedVisibility(
+                            visible = state.employeePhone.length != 10,
+                        ) {
+                            PhoneNoCountBox(
+                                count = state.employeePhone.length,
+                            )
+                        }
                     },
                     onValueChange = {
                         onEvent(AddEditEmployeeEvent.EmployeePhoneChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditEmployeeEvent.EmployeePhoneChanged(""))
                     },
                 )
             }
@@ -263,8 +272,12 @@ fun AddEditEmployeeScreenContent(
                     isError = salaryError != null,
                     errorText = salaryError,
                     errorTextTag = EMPLOYEE_SALARY_ERROR,
+                    showClearIcon = state.employeeSalary.isNotEmpty(),
                     onValueChange = {
                         onEvent(AddEditEmployeeEvent.EmployeeSalaryChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditEmployeeEvent.EmployeeSalaryChanged(""))
                     },
                 )
             }
@@ -340,8 +353,13 @@ fun AddEditEmployeeScreenContent(
                     value = state.employeeEmail ?: "",
                     label = EMPLOYEE_EMAIL_FIELD,
                     leadingIcon = PoposIcons.Email,
+                    keyboardType = KeyboardType.Email,
+                    showClearIcon = !state.employeeEmail.isNullOrEmpty(),
                     onValueChange = {
                         onEvent(AddEditEmployeeEvent.EmployeeEmailChanged(it))
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditEmployeeEvent.EmployeeEmailChanged(""))
                     },
                 )
             }
@@ -447,6 +465,7 @@ fun AddEditEmployeeScreenContent(
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+                    horizontalAlignment = Alignment.Start,
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -454,6 +473,8 @@ fun AddEditEmployeeScreenContent(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         StandardCheckboxWithText(
+                            modifier = Modifier
+                                .weight(2f, false),
                             text = if (state.isDeliveryPartner) {
                                 EMPLOYEE_PARTNER_CHECKED_FIELD
                             } else {
@@ -465,11 +486,13 @@ fun AddEditEmployeeScreenContent(
                             },
                         )
 
+                        Spacer(modifier.width(SpaceSmall))
+
                         AnimatedVisibility(
                             visible = state.isDeliveryPartner,
                         ) {
                             StandardRoundedFilterChip(
-                                text = if (scannedBitmap != null) "Scanned" else "Scan QR Code",
+                                text = if (scannedBitmap != null) "Scanned" else "Scan QR",
                                 icon = PoposIcons.QrCodeScanner,
                                 selected = scannedBitmap != null,
                                 onClick = {
@@ -537,16 +560,28 @@ fun AddEditEmployeeScreenContent(
 
 @DevicePreviews
 @Composable
-fun AddEditEmployeeScreenContentPreview() {
-    AddEditEmployeeScreenContent(
-        title = CREATE_NEW_EMPLOYEE,
-        icon = PoposIcons.Add,
-        state = AddEditEmployeeState(),
-        phoneError = null,
-        nameError = null,
-        salaryError = null,
-        positionError = null,
-        onBackClick = {},
-        onEvent = {},
-    )
+private fun AddEditEmployeeScreenContentPreview() {
+    PoposRoomTheme {
+        AddEditEmployeeScreenContent(
+            title = CREATE_NEW_EMPLOYEE,
+            icon = PoposIcons.Add,
+            state = AddEditEmployeeState(
+                employeePhone = "9078563421",
+                employeeName = "Leopoldo Rodriguez",
+                employeeSalary = "12000",
+                employeePosition = "Chef",
+                employeeEmail = null,
+                employeeSalaryType = EmployeeSalaryType.Monthly,
+                employeeType = EmployeeType.FullTime,
+                isDeliveryPartner = true,
+                partnerQRCode = "No QR",
+            ),
+            phoneError = null,
+            nameError = null,
+            salaryError = null,
+            positionError = null,
+            onBackClick = {},
+            onEvent = {},
+        )
+    }
 }

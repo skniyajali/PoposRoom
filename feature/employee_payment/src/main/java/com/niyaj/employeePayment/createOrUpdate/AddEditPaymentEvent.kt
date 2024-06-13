@@ -35,5 +35,5 @@ sealed interface AddEditPaymentEvent {
 
     data class PaymentNoteChanged(val paymentNote: String) : AddEditPaymentEvent
 
-    data class CreateOrUpdatePayment(val paymentId: Int = 0) : AddEditPaymentEvent
+    data object CreateOrUpdatePayment : AddEditPaymentEvent
 }

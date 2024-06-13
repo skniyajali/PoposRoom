@@ -17,6 +17,7 @@
 
 package com.niyaj.employeePayment.createOrUpdate
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -30,7 +31,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilledTonalIconButton
@@ -47,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -75,15 +76,19 @@ import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.components.StandardRoundedFilterChip
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.model.Employee
 import com.niyaj.model.PaymentMode
 import com.niyaj.model.PaymentType
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.StandardOutlinedTextField
+import com.niyaj.ui.parameterProvider.EmployeePreviewData
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -95,9 +100,10 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import java.time.LocalDate
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Destination(route = Screens.ADD_EDIT_PAYMENT_SCREEN)
 @Composable
 fun AddEditPaymentScreen(
@@ -109,27 +115,15 @@ fun AddEditPaymentScreen(
 ) {
     TrackScreenViewEvent(screenName = "Add/Edit Payment Screen-$employeeId/$paymentId")
 
-    val lazyListState = rememberLazyListState()
-
-    val employees = viewModel.employees.collectAsStateWithLifecycle().value
-
-    val employeeError = viewModel.employeeError.collectAsStateWithLifecycle().value
-    val amountError = viewModel.amountError.collectAsStateWithLifecycle().value
-    val dateError = viewModel.dateError.collectAsStateWithLifecycle().value
-    val typeError = viewModel.paymentTypeError.collectAsStateWithLifecycle().value
-    val modeError = viewModel.paymentModeError.collectAsStateWithLifecycle().value
-    val noteError = viewModel.paymentNoteError.collectAsStateWithLifecycle().value
-
-    val enableBtn = listOf(
-        employeeError,
-        amountError,
-        dateError,
-        modeError,
-        typeError,
-        noteError,
-    ).all { it == null }
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
+    val employees by viewModel.employees.collectAsStateWithLifecycle()
+    val employeeError by viewModel.employeeError.collectAsStateWithLifecycle()
+    val amountError by viewModel.amountError.collectAsStateWithLifecycle()
+    val dateError by viewModel.dateError.collectAsStateWithLifecycle()
+    val typeError by viewModel.paymentTypeError.collectAsStateWithLifecycle()
+    val modeError by viewModel.paymentModeError.collectAsStateWithLifecycle()
+    val noteError by viewModel.paymentNoteError.collectAsStateWithLifecycle()
+    val selectedEmployee by viewModel.selectedEmployee.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -145,32 +139,80 @@ fun AddEditPaymentScreen(
         }
     }
 
-    var employeeToggled by remember { mutableStateOf(false) }
+    val title = if (paymentId == 0) CREATE_NEW_PAYMENT else EDIT_PAYMENT_ITEM
+    val icon = if (paymentId == 0) PoposIcons.Add else PoposIcons.Edit
 
+    AddEditPaymentScreenContent(
+        modifier = Modifier,
+        title = title,
+        icon = icon,
+        state = viewModel.state,
+        selectedEmployee = selectedEmployee,
+        onEvent = viewModel::onEvent,
+        employees = employees.toImmutableList(),
+        employeeError = employeeError,
+        amountError = amountError,
+        dateError = dateError,
+        typeError = typeError,
+        modeError = modeError,
+        noteError = noteError,
+        onBackClick = navigator::navigateUp,
+        onClickNewEmployee = {
+            navigator.navigate(Screens.ADD_EDIT_EMPLOYEE_SCREEN)
+        },
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun AddEditPaymentScreenContent(
+    modifier: Modifier = Modifier,
+    title: String = CREATE_NEW_PAYMENT,
+    icon: ImageVector = PoposIcons.Add,
+    state: AddEditPaymentState,
+    selectedEmployee: Employee,
+    onEvent: (AddEditPaymentEvent) -> Unit,
+    employees: ImmutableList<Employee>,
+    employeeError: String?,
+    amountError: String?,
+    dateError: String?,
+    typeError: String?,
+    modeError: String?,
+    noteError: String?,
+    onBackClick: () -> Unit,
+    onClickNewEmployee: () -> Unit,
+) {
+    val dialogState = rememberMaterialDialogState()
+    val lazyListState = rememberLazyListState()
+
+    var employeeToggled by remember { mutableStateOf(false) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
-    val selectedEmployee = viewModel.selectedEmployee.collectAsStateWithLifecycle().value
-
-    val dialogState = rememberMaterialDialogState()
-
-    val title = if (paymentId == 0) CREATE_NEW_PAYMENT else EDIT_PAYMENT_ITEM
+    val enableBtn = listOf(
+        employeeError,
+        amountError,
+        dateError,
+        modeError,
+        typeError,
+        noteError,
+    ).all { it == null }
 
     PoposSecondaryScaffold(
+        modifier = modifier,
         title = title,
-        onBackClick = navigator::navigateUp,
+        onBackClick = onBackClick,
         showBackButton = true,
         showBottomBar = lazyListState.isScrollingUp(),
         bottomBar = {
             PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(ADD_EDIT_PAYMENT_ENTRY_BUTTON)
-                    .padding(SpaceMedium),
+                    .testTag(ADD_EDIT_PAYMENT_ENTRY_BUTTON),
                 enabled = enableBtn,
                 text = title,
-                icon = if (paymentId == 0) PoposIcons.Add else PoposIcons.Edit,
+                icon = icon,
                 onClick = {
-                    viewModel.onEvent(AddEditPaymentEvent.CreateOrUpdatePayment(paymentId))
+                    onEvent(AddEditPaymentEvent.CreateOrUpdatePayment)
                 },
             )
         },
@@ -229,7 +271,7 @@ fun AddEditPaymentScreen(
                                     .testTag(employee.employeeName)
                                     .fillMaxWidth(),
                                 onClick = {
-                                    viewModel.onEvent(AddEditPaymentEvent.OnSelectEmployee(employee))
+                                    onEvent(AddEditPaymentEvent.OnSelectEmployee(employee))
 
                                     employeeToggled = false
                                 },
@@ -280,9 +322,7 @@ fun AddEditPaymentScreen(
                         DropdownMenuItem(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            onClick = {
-                                navigator.navigate(Screens.ADD_EDIT_EMPLOYEE_SCREEN)
-                            },
+                            onClick = onClickNewEmployee,
                             text = {
                                 Text(
                                     text = "Create a new employee",
@@ -311,7 +351,7 @@ fun AddEditPaymentScreen(
 
             item(GIVEN_DATE_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.paymentDate.toPrettyDate(),
+                    value = state.paymentDate.toPrettyDate(),
                     label = GIVEN_DATE_FIELD,
                     leadingIcon = PoposIcons.CalenderToday,
                     trailingIcon = {
@@ -345,7 +385,7 @@ fun AddEditPaymentScreen(
 
             item(GIVEN_AMOUNT_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.paymentAmount,
+                    value = state.paymentAmount,
                     label = GIVEN_AMOUNT_FIELD,
                     leadingIcon = PoposIcons.Money,
                     keyboardType = KeyboardType.Number,
@@ -353,7 +393,7 @@ fun AddEditPaymentScreen(
                     errorText = amountError,
                     errorTextTag = GIVEN_AMOUNT_ERROR,
                     onValueChange = {
-                        viewModel.onEvent(AddEditPaymentEvent.PaymentAmountChanged(it))
+                        onEvent(AddEditPaymentEvent.PaymentAmountChanged(it))
                     },
                 )
 
@@ -362,14 +402,14 @@ fun AddEditPaymentScreen(
 
             item(PAYMENT_NOTE_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.paymentNote,
+                    value = state.paymentNote,
                     label = PAYMENT_NOTE_FIELD,
                     leadingIcon = PoposIcons.Description,
                     isError = noteError != null,
                     errorText = noteError,
                     errorTextTag = PAYMENT_NOTE_ERROR,
                     onValueChange = {
-                        viewModel.onEvent(AddEditPaymentEvent.PaymentNoteChanged(it))
+                        onEvent(AddEditPaymentEvent.PaymentNoteChanged(it))
                     },
                 )
 
@@ -394,10 +434,10 @@ fun AddEditPaymentScreen(
                             StandardRoundedFilterChip(
                                 modifier = Modifier.testTag(PAYMENT_TYPE_FIELD.plus(type.name)),
                                 text = type.name,
-                                selected = viewModel.state.paymentType == type,
+                                selected = state.paymentType == type,
                                 selectedColor = MaterialTheme.colorScheme.tertiary,
                                 onClick = {
-                                    viewModel.onEvent(AddEditPaymentEvent.PaymentTypeChanged(type))
+                                    onEvent(AddEditPaymentEvent.PaymentTypeChanged(type))
                                 },
                             )
 
@@ -427,10 +467,10 @@ fun AddEditPaymentScreen(
                             StandardRoundedFilterChip(
                                 modifier = Modifier.testTag(PAYMENT_MODE_FIELD.plus(type.name)),
                                 text = type.name,
-                                selected = viewModel.state.paymentMode == type,
+                                selected = state.paymentMode == type,
                                 selectedColor = MaterialTheme.colorScheme.secondary,
                                 onClick = {
-                                    viewModel.onEvent(AddEditPaymentEvent.PaymentModeChanged(type))
+                                    onEvent(AddEditPaymentEvent.PaymentModeChanged(type))
                                 },
                             )
 
@@ -459,7 +499,37 @@ fun AddEditPaymentScreen(
                 }
             },
         ) { date ->
-            viewModel.onEvent(AddEditPaymentEvent.PaymentDateChanged(date.toMilliSecond))
+            onEvent(AddEditPaymentEvent.PaymentDateChanged(date.toMilliSecond))
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AddEditPaymentScreenContentPreview(
+    modifier: Modifier = Modifier,
+    employees: ImmutableList<Employee> = EmployeePreviewData.employeeList.toImmutableList(),
+) {
+    PoposRoomTheme {
+        AddEditPaymentScreenContent(
+            modifier = modifier,
+            state = AddEditPaymentState(
+                paymentAmount = "200",
+                paymentNote = "Advance Payment",
+                paymentType = PaymentType.Advanced,
+                paymentMode = PaymentMode.Cash,
+            ),
+            selectedEmployee = employees.first(),
+            onEvent = {},
+            employees = employees,
+            employeeError = null,
+            amountError = null,
+            dateError = null,
+            typeError = null,
+            modeError = null,
+            noteError = null,
+            onBackClick = {},
+            onClickNewEmployee = {},
+        )
     }
 }

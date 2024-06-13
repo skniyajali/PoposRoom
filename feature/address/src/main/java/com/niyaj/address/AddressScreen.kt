@@ -18,42 +18,32 @@
 package com.niyaj.address
 
 import androidx.activity.compose.BackHandler
+import androidx.annotation.VisibleForTesting
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.border
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.trace
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.niyaj.address.components.AddressData
 import com.niyaj.address.destinations.AddEditAddressScreenDestination
 import com.niyaj.address.destinations.AddressDetailsScreenDestination
 import com.niyaj.address.destinations.AddressExportScreenDestination
@@ -68,10 +58,9 @@ import com.niyaj.common.tags.AddressTestTags.CREATE_NEW_ADDRESS
 import com.niyaj.common.tags.AddressTestTags.DELETE_ADDRESS_ITEM_MESSAGE
 import com.niyaj.common.tags.AddressTestTags.DELETE_ADDRESS_ITEM_TITLE
 import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
-import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Address
-import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.NoteCard
@@ -80,6 +69,8 @@ import com.niyaj.ui.components.ScaffoldNavActions
 import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.components.StandardFAB
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.AddressPreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -90,6 +81,10 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
@@ -103,99 +98,108 @@ fun AddressScreen(
     importRecipient: ResultRecipient<AddressImportScreenDestination, String>,
 ) {
     val scope = rememberCoroutineScope()
-    val lazyGridState = rememberLazyGridState()
     val snackbarState = remember { SnackbarHostState() }
 
-    val uiState = viewModel.addresses.collectAsStateWithLifecycle().value
+    val uiState by viewModel.addresses.collectAsStateWithLifecycle()
+    val showSearchBar by viewModel.showSearchBar.collectAsStateWithLifecycle()
+    val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     val selectedItems = viewModel.selectedItems.toList()
-    val showFab = viewModel.totalItems.isNotEmpty()
-
-    val event = viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
-
-    val showSearchBar = viewModel.showSearchBar.collectAsStateWithLifecycle().value
     val searchText = viewModel.searchText.value
-
-    val openDialog = remember { mutableStateOf(false) }
-
-    LaunchedEffect(key1 = event) {
-        event?.let { data ->
-            when (data) {
-                is UiEvent.OnError -> {
-                    scope.launch {
-                        snackbarState.showSnackbar(data.errorMessage)
-                    }
-                }
-
-                is UiEvent.OnSuccess -> {
-                    scope.launch {
-                        snackbarState.showSnackbar(data.successMessage)
-                    }
-                }
-            }
-        }
-    }
-
-    BackHandler {
-        if (selectedItems.isNotEmpty()) {
-            viewModel.deselectItems()
-        } else if (showSearchBar) {
-            viewModel.closeSearchBar()
-        } else {
-            navigator.popBackStack()
-        }
-    }
-
-    resultRecipient.onNavResult { result ->
-        when (result) {
-            is NavResult.Canceled -> {
-                viewModel.deselectItems()
-            }
-
-            is NavResult.Value -> {
-                scope.launch {
-                    viewModel.deselectItems()
-                    snackbarState.showSnackbar(result.value)
-                }
-            }
-        }
-    }
-
-    exportRecipient.onNavResult { result ->
-        when (result) {
-            is NavResult.Canceled -> {}
-            is NavResult.Value -> {
-                scope.launch {
-                    snackbarState.showSnackbar(result.value)
-                }
-            }
-        }
-    }
-
-    importRecipient.onNavResult { result ->
-        when (result) {
-            is NavResult.Canceled -> {}
-            is NavResult.Value -> {
-                scope.launch {
-                    snackbarState.showSnackbar(result.value)
-                }
-            }
-        }
-    }
 
     TrackScreenViewEvent(screenName = Screens.ADDRESS_SCREEN)
 
+    AddressScreenContent(
+        uiState = uiState,
+        selectedItems = selectedItems.toImmutableList(),
+        showSearchBar = showSearchBar,
+        searchText = searchText,
+        onClickSelectItem = viewModel::selectItem,
+        onDeleteClick = viewModel::deleteItems,
+        onSelectAllClick = viewModel::selectAllItems,
+        onClearSearchClick = viewModel::clearSearchText,
+        onSearchClick = viewModel::openSearchBar,
+        onSearchTextChanged = viewModel::searchTextChanged,
+        onCloseSearchBar = viewModel::closeSearchBar,
+        onDeselect = viewModel::deselectItems,
+        onBackClick = navigator::popBackStack,
+        onNavigateToScreen = navigator::navigate,
+        onCreateNewClick = {
+            navigator.navigate(AddEditAddressScreenDestination())
+        },
+        onEditClick = {
+            navigator.navigate(AddEditAddressScreenDestination(selectedItems.first()))
+        },
+        onSettingsClick = {
+            navigator.navigate(AddressSettingsScreenDestination())
+        },
+        onNavigateToDetails = {
+            navigator.navigate(AddressDetailsScreenDestination(it))
+        },
+        snackbarHostState = snackbarState,
+    )
+
+    HandleResultRecipients(
+        resultRecipient = resultRecipient,
+        exportRecipient = exportRecipient,
+        importRecipient = importRecipient,
+        event = event,
+        onDeselectItems = viewModel::deselectItems,
+        coroutineScope = scope,
+        snackbarHostState = snackbarState,
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun AddressScreenContent(
+    modifier: Modifier = Modifier,
+    uiState: UiState<List<Address>>,
+    selectedItems: ImmutableList<Int>,
+    showSearchBar: Boolean,
+    searchText: String,
+    onClickSelectItem: (Int) -> Unit,
+    onDeleteClick: () -> Unit,
+    onSelectAllClick: () -> Unit,
+    onClearSearchClick: () -> Unit,
+    onSearchClick: () -> Unit,
+    onSearchTextChanged: (String) -> Unit,
+    onCloseSearchBar: () -> Unit,
+    onDeselect: () -> Unit,
+    onBackClick: () -> Unit,
+    onNavigateToScreen: (String) -> Unit,
+    onCreateNewClick: () -> Unit,
+    onEditClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    onNavigateToDetails: (Int) -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    lazyGridState: LazyGridState = rememberLazyGridState(),
+) {
+    val showFab = uiState is UiState.Success
+
+    val openDialog = remember { mutableStateOf(false) }
+
+    BackHandler {
+        if (selectedItems.isNotEmpty()) {
+            onDeselect()
+        } else if (showSearchBar) {
+            onCloseSearchBar()
+        } else {
+            onBackClick()
+        }
+    }
+
     PoposPrimaryScaffold(
+        modifier = modifier,
         currentRoute = Screens.ADDRESS_SCREEN,
         title = if (selectedItems.isEmpty()) ADDRESS_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
-                onFabClick = {
-                    navigator.navigate(AddEditAddressScreenDestination())
-                },
+                onFabClick = onCreateNewClick,
                 onClickScroll = {
-                    scope.launch {
+                    coroutineScope.launch {
                         lazyGridState.animateScrollToItem(0)
                     }
                 },
@@ -211,28 +215,24 @@ fun AddressScreen(
                 showSearchIcon = showFab,
                 showSearchBar = showSearchBar,
                 searchText = searchText,
-                onEditClick = {
-                    navigator.navigate(AddEditAddressScreenDestination(selectedItems.first()))
-                },
+                onEditClick = onEditClick,
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = {
-                    navigator.navigate(AddressSettingsScreenDestination)
-                },
-                onSelectAllClick = viewModel::selectAllItems,
-                onClearClick = viewModel::clearSearchText,
-                onSearchClick = viewModel::openSearchBar,
-                onSearchTextChanged = viewModel::searchTextChanged,
+                onSettingsClick = onSettingsClick,
+                onSelectAllClick = onSelectAllClick,
+                onClearClick = onClearSearchClick,
+                onSearchIconClick = onSearchClick,
+                onSearchTextChanged = onSearchTextChanged,
             )
         },
         fabPosition = if (lazyGridState.isScrolled) FabPosition.End else FabPosition.Center,
         selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
-        onDeselect = viewModel::deselectItems,
-        onBackClick = viewModel::closeSearchBar,
-        snackbarHostState = snackbarState,
-        onNavigateToScreen = navigator::navigate,
+        onDeselect = onDeselect,
+        onBackClick = if (showSearchBar) onCloseSearchBar else onBackClick,
+        snackbarHostState = snackbarHostState,
+        onNavigateToScreen = onNavigateToScreen,
     ) {
         Crossfade(
             targetState = uiState,
@@ -245,9 +245,7 @@ fun AddressScreen(
                     ItemNotAvailable(
                         text = if (searchText.isEmpty()) ADDRESS_NOT_AVAILABLE else SEARCH_ITEM_NOT_FOUND,
                         buttonText = CREATE_NEW_ADDRESS,
-                        onClick = {
-                            navigator.navigate(AddEditAddressScreenDestination())
-                        },
+                        onClick = onCreateNewClick,
                     )
                 }
 
@@ -256,8 +254,8 @@ fun AddressScreen(
 
                     LazyVerticalGrid(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(SpaceSmall),
+                            .fillMaxSize(),
+                        contentPadding = PaddingValues(SpaceSmall),
                         columns = GridCells.Fixed(2),
                         state = lazyGridState,
                     ) {
@@ -284,12 +282,12 @@ fun AddressScreen(
                                 },
                                 onClick = {
                                     if (selectedItems.isNotEmpty()) {
-                                        viewModel.selectItem(it)
+                                        onClickSelectItem(it)
                                     } else {
-                                        navigator.navigate(AddressDetailsScreenDestination(it))
+                                        onNavigateToDetails(it)
                                     }
                                 },
-                                onLongClick = viewModel::selectItem,
+                                onLongClick = onClickSelectItem,
                             )
                         }
                     }
@@ -298,73 +296,117 @@ fun AddressScreen(
         }
     }
 
-    if (openDialog.value) {
+    AnimatedVisibility(
+        visible = openDialog.value,
+    ) {
         StandardDialog(
             title = DELETE_ADDRESS_ITEM_TITLE,
             message = DELETE_ADDRESS_ITEM_MESSAGE,
             onConfirm = {
                 openDialog.value = false
-                viewModel.deleteItems()
+                onDeleteClick()
             },
             onDismiss = {
                 openDialog.value = false
-                viewModel.deselectItems()
+                onDeselect()
             },
         )
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AddressData(
-    modifier: Modifier = Modifier,
-    item: Address,
-    doesSelected: (Int) -> Boolean,
-    onClick: (Int) -> Unit,
-    onLongClick: (Int) -> Unit,
-    border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-) = trace("Address::Data") {
-    val borderStroke = if (doesSelected(item.addressId)) border else null
-
-    ElevatedCard(
-        modifier = modifier
-            .padding(SpaceSmall)
-            .then(
-                borderStroke?.let {
-                    Modifier.border(it, CardDefaults.elevatedShape)
-                } ?: Modifier,
-            )
-            .clip(CardDefaults.elevatedShape)
-            .combinedClickable(
-                onClick = {
-                    onClick(item.addressId)
-                },
-                onLongClick = {
-                    onLongClick(item.addressId)
-                },
-            ),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(SpaceSmall),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(text = item.addressName)
-                Spacer(modifier = Modifier.height(SpaceSmall))
-                Text(text = item.shortName)
+private fun HandleResultRecipients(
+    resultRecipient: ResultRecipient<AddEditAddressScreenDestination, String>,
+    exportRecipient: ResultRecipient<AddressExportScreenDestination, String>,
+    importRecipient: ResultRecipient<AddressImportScreenDestination, String>,
+    event: UiEvent?,
+    onDeselectItems: () -> Unit,
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+) {
+    resultRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {
+                onDeselectItems()
             }
 
-            CircularBox(
-                icon = PoposIcons.Address,
-                doesSelected = doesSelected(item.addressId),
-                text = item.addressName,
-            )
+            is NavResult.Value -> {
+                onDeselectItems()
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(result.value)
+                }
+            }
         }
+    }
+
+    exportRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    importRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(result.value)
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = event) {
+        event?.let { data ->
+            when (data) {
+                is UiEvent.OnError -> {
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar(data.errorMessage)
+                    }
+                }
+
+                is UiEvent.OnSuccess -> {
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar(data.successMessage)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AddressScreenContentPreview(
+    @PreviewParameter(AddressPreviewParameter::class)
+    state: UiState<List<Address>>,
+) {
+    PoposRoomTheme {
+        AddressScreenContent(
+            modifier = Modifier,
+            uiState = state,
+            selectedItems = persistentListOf(),
+            showSearchBar = false,
+            searchText = "",
+            onClickSelectItem = {},
+            onDeleteClick = {},
+            onSelectAllClick = {},
+            onClearSearchClick = {},
+            onSearchClick = {},
+            onSearchTextChanged = {},
+            onCloseSearchBar = {},
+            onDeselect = {},
+            onBackClick = {},
+            onNavigateToScreen = {},
+            onCreateNewClick = {},
+            onEditClick = {},
+            onSettingsClick = {},
+            onNavigateToDetails = {},
+        )
     }
 }

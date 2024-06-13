@@ -56,7 +56,7 @@ class AddEditProductViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val productId = savedStateHandle.get<Int>("productId")
+    private val productId = savedStateHandle.get<Int>("productId") ?: 0
 
     var state by mutableStateOf(AddEditProductState())
 
@@ -104,7 +104,7 @@ class AddEditProductViewModel @Inject constructor(
 
     init {
         savedStateHandle.get<Int>("productId")?.let { productId ->
-            getProductById(productId)
+            if (productId != 0) getProductById(productId)
         }
     }
 
@@ -149,7 +149,7 @@ class AddEditProductViewModel @Inject constructor(
             }
 
             is AddEditProductEvent.AddOrUpdateProduct -> {
-                createOrUpdateProduct(event.productId)
+                createOrUpdateProduct(productId)
             }
         }
     }
@@ -224,7 +224,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateProduct(data: Int, message: Strin
         event = AnalyticsEvent(
             type = "product_$message",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("product_$message", data.toString()),
+                AnalyticsEvent.Param("product_$message", data.toString()),
             ),
         ),
     )

@@ -29,7 +29,7 @@ data class Charges(
 
     val isApplicable: Boolean,
 
-    val createdAt: Long,
+    val createdAt: Long = System.currentTimeMillis(),
 
     val updatedAt: Long? = null,
 )

@@ -20,11 +20,13 @@ package com.niyaj.cart.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -39,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
@@ -46,7 +49,9 @@ import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.components.PoposIconTextButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor10
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 internal fun CartFooterPlaceOrder(
@@ -71,7 +76,9 @@ internal fun CartFooterPlaceOrder(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
+                modifier = Modifier.weight(1.5f, true),
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
             ) {
                 IconButton(
                     onClick = onClickSelectAll,
@@ -112,11 +119,16 @@ internal fun CartFooterPlaceOrder(
                         indication = null,
                         onClick = onClickSelectAll,
                     ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
 
             Row(
+                modifier = Modifier
+                    .weight(1.5f, true),
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End,
             ) {
                 val text =
                     if (countSelectedItem == 0) {
@@ -135,24 +147,47 @@ internal fun CartFooterPlaceOrder(
                     shape = CutCornerShape(4.dp),
                     style = MaterialTheme.typography.labelSmall,
                     btnHeight = ButtonDefaults.MinHeight,
+                    contentPadding = PaddingValues(horizontal = 8.dp),
                 )
 
                 if (showPrintBtn) {
                     Spacer(modifier = Modifier.width(SpaceSmall))
 
                     PoposIconTextButton(
+                        modifier = Modifier.wrapContentWidth(),
                         icon = PoposIcons.Print,
                         enabled = countSelectedItem > 0,
                         onClick = onClickPrintAllOrder,
                         contentDescription = "Print Order",
-                        btnHeight = 30.dp,
+                        btnHeight = ButtonDefaults.MinHeight,
                         shape = CutCornerShape(4.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondary,
                         ),
+                        contentPadding = PaddingValues(0.dp),
                     )
+
+                    Spacer(modifier = Modifier.width(SpaceSmall))
                 }
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CartFooterPlaceOrderPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        CartFooterPlaceOrder(
+            modifier = modifier,
+            countTotalItems = 4222,
+            countSelectedItem = 322,
+            showPrintBtn = true,
+            onClickSelectAll = {},
+            onClickPlaceAllOrder = {},
+            onClickPrintAllOrder = {},
+        )
     }
 }

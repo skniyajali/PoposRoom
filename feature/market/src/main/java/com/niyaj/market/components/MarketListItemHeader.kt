@@ -48,7 +48,7 @@ import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.IconWithText
 
 @Composable
-fun MarketListItemHeader(
+internal fun MarketListItemHeader(
     marketList: MarketListAndType,
 ) = trace("MarketListItemHeader") {
     ElevatedCard(
@@ -99,7 +99,7 @@ fun MarketListItemHeader(
                     containerColor = MaterialTheme.colorScheme.secondary,
                     icon = PoposIcons.Category,
                     textStyle = TextStyle(
-                        fontFamily = FontFamily.Cursive,
+                        fontFamily = FontFamily.Default,
                         fontWeight = FontWeight.SemiBold,
                         letterSpacing = 2.sp,
                     ),
@@ -111,7 +111,7 @@ fun MarketListItemHeader(
                     icon = PoposIcons.ListAlt,
                     borderColor = MaterialTheme.colorScheme.secondary,
                     textStyle = TextStyle(
-                        fontFamily = FontFamily.Cursive,
+                        fontFamily = FontFamily.Default,
                         fontWeight = FontWeight.SemiBold,
                         fontStyle = FontStyle.Italic,
                     ),
@@ -122,7 +122,7 @@ fun MarketListItemHeader(
 }
 
 @Composable
-fun MarketListItemHeader(
+internal fun MarketListItemHeader(
     marketDate: Long,
 ) = trace("MarketListItemHeader") {
     ElevatedCard(

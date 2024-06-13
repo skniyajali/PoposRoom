@@ -24,6 +24,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
@@ -41,6 +42,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -70,7 +72,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -84,10 +88,12 @@ import com.niyaj.common.utils.findActivity
 import com.niyaj.common.utils.openAppSettings
 import com.niyaj.common.utils.toTimeSpan
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
+import com.niyaj.model.CartItem
 import com.niyaj.model.CartOrder
 import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.OrderType
@@ -106,6 +112,11 @@ import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.StandardBottomSheetScaffold
 import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.AddOnPreviewData
+import com.niyaj.ui.parameterProvider.CardOrderPreviewData
+import com.niyaj.ui.parameterProvider.CartOrderPreviewParameter
+import com.niyaj.ui.parameterProvider.CartPreviewParameterData
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -133,19 +144,29 @@ fun SelectOrderScreen(
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
-    val lazyListState = rememberLazyListState()
 
-    val openDialog = remember { mutableStateOf(false) }
-
-    val state = viewModel.cartOrders.collectAsStateWithLifecycle().value
-    val selectedOrder = viewModel.selectedId.collectAsStateWithLifecycle().value
+    val state by viewModel.cartOrders.collectAsStateWithLifecycle()
+    val selectedOrder by viewModel.selectedId.collectAsStateWithLifecycle()
 
     val orderDetails by viewModel.orderDetails.collectAsStateWithLifecycle()
     val addOnItems by viewModel.addOnItems.collectAsStateWithLifecycle()
     val deliveryPartners by viewModel.deliveryPartners.collectAsStateWithLifecycle()
 
-    var selectedId by remember {
-        mutableIntStateOf(0)
+    val printError by printViewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
+
+    LaunchedEffect(key1 = printError) {
+        printError?.let { event ->
+            when (event) {
+                is UiEvent.OnError -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.errorMessage,
+                        duration = SnackbarDuration.Short,
+                    )
+                }
+
+                else -> {}
+            }
+        }
     }
 
     LaunchedEffect(key1 = true) {
@@ -158,23 +179,6 @@ fun SelectOrderScreen(
                 is UiEvent.OnSuccess -> {
                     resultBackNavigator.navigateBack(data.successMessage)
                 }
-            }
-        }
-    }
-
-    val printError = printViewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null).value
-
-    LaunchedEffect(key1 = printError) {
-        printError?.let {
-            when (printError) {
-                is UiEvent.OnError -> {
-                    snackbarHostState.showSnackbar(
-                        message = printError.errorMessage,
-                        duration = SnackbarDuration.Short,
-                    )
-                }
-
-                else -> {}
             }
         }
     }
@@ -234,114 +238,28 @@ fun SelectOrderScreen(
     HandleBluetoothPermissionState(
         multiplePermissionsState = bluetoothPermissions,
         onSuccessful = {
-            StandardBottomSheetScaffold(
-                title = SELECTED_SCREEN_TITLE,
-                showBottomBar = false,
-                snackbarHostState = snackbarHostState,
-                onBackClick = {
-                    navigator.navigate(Screens.HOME_SCREEN)
+            SelectOrderScreenContent(
+                modifier = Modifier,
+                state = state,
+                selectedOrder = selectedOrder,
+                orderDetails = orderDetails,
+                addOnItems = addOnItems,
+                deliveryPartners = deliveryPartners,
+                onSelectOrder = viewModel::selectCartOrder,
+                onDeleteClick = viewModel::deleteCartOrder,
+                onIncreaseQty = viewModel::increaseProductQuantity,
+                onDecreaseQty = viewModel::decreaseProductQuantity,
+                onUpdateAddOnItem = viewModel::updateCartAddOnItem,
+                onUpdateDeliveryPartner = viewModel::updateDeliveryPartner,
+                onPlaceOrder = viewModel::placeOrder,
+                onPrintOrder = printOrder,
+                onBackClick = navigator::navigateUp,
+                onEditClick = onEditClick,
+                onClickCreateOrder = {
+                    navigator.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
                 },
-            ) {
-                Crossfade(
-                    targetState = state,
-                    label = "Select Cart Order",
-                ) { state ->
-                    when (state) {
-                        is UiState.Loading -> LoadingIndicator()
-
-                        is UiState.Empty -> {
-                            ItemNotAvailable(
-                                text = CartOrderTestTags.CART_ORDER_NOT_AVAILABLE,
-                                buttonText = CartOrderTestTags.CREATE_NEW_CART_ORDER,
-                                onClick = {
-                                    navigator.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
-                                },
-                            )
-                        }
-
-                        is UiState.Success -> {
-                            TrackScrollJank(
-                                scrollableState = lazyListState,
-                                stateName = "Cart Orders::List",
-                            )
-                            LazyColumn(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(SpaceMedium),
-                                state = lazyListState,
-                            ) {
-                                item("Note") {
-                                    ListItem(
-                                        modifier = Modifier
-                                            .height(48.dp)
-                                            .fillMaxWidth()
-                                            .clip(RoundedCornerShape(SpaceMini)),
-                                        headlineContent = {
-                                            Text(
-                                                text = SELECTED_SCREEN_NOTE,
-                                                style = MaterialTheme.typography.labelMedium,
-                                            )
-                                        },
-                                        leadingContent = {
-                                            Icon(
-                                                imageVector = PoposIcons.Info,
-                                                contentDescription = "info",
-                                            )
-                                        },
-                                        colors = ListItemDefaults.colors(
-                                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                                        ),
-                                    )
-
-                                    Spacer(modifier = Modifier.height(SpaceMedium))
-                                }
-
-                                items(
-                                    items = state.data,
-                                    key = {
-                                        it.orderId
-                                    },
-                                ) { item: CartOrder ->
-                                    if (item.orderId == selectedOrder) {
-                                        SelectedCartOrderData(
-                                            cartOrder = item,
-                                            orderDetails = orderDetails,
-                                            addOnItems = addOnItems,
-                                            deliveryPartners = deliveryPartners,
-                                            onDeleteClick = {
-                                                selectedId = it
-                                                openDialog.value = true
-                                            },
-                                            onEditClick = onEditClick,
-                                            onIncreaseQty = viewModel::increaseProductQuantity,
-                                            onDecreaseQty = viewModel::decreaseProductQuantity,
-                                            onUpdateAddOnItem = viewModel::updateCartAddOnItem,
-                                            onUpdateDeliveryPartner = viewModel::updateDeliveryPartner,
-                                            onPlaceOrder = viewModel::placeOrder,
-                                            onPrintOrder = printOrder,
-                                        )
-                                    } else {
-                                        CartOrderData(
-                                            cartOrder = item,
-                                            doesSelected = {
-                                                selectedOrder == it
-                                            },
-                                            onSelectOrder = viewModel::selectCartOrder,
-                                            onDeleteClick = {
-                                                selectedId = it
-                                                openDialog.value = true
-                                            },
-                                            onEditClick = onEditClick,
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(SpaceMedium))
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+                snackbarHostState = snackbarHostState,
+            )
         },
         onError = { shouldShowRationale ->
             BluetoothPermissionDialog(
@@ -356,6 +274,141 @@ fun SelectOrderScreen(
             )
         },
     )
+}
+
+@VisibleForTesting
+@Composable
+internal fun SelectOrderScreenContent(
+    modifier: Modifier = Modifier,
+    state: UiState<List<CartOrder>>,
+    selectedOrder: Int,
+    orderDetails: SelectedOrderDetails,
+    addOnItems: List<AddOnItem>,
+    deliveryPartners: List<EmployeeNameAndId>,
+    onSelectOrder: (Int) -> Unit,
+    onDeleteClick: (Int) -> Unit,
+    onIncreaseQty: (orderId: Int, productId: Int) -> Unit,
+    onDecreaseQty: (orderId: Int, productId: Int) -> Unit,
+    onUpdateAddOnItem: (orderId: Int, itemId: Int) -> Unit,
+    onUpdateDeliveryPartner: (orderId: Int, partnerId: Int) -> Unit,
+    onPlaceOrder: (orderId: Int) -> Unit,
+    onPrintOrder: (orderId: Int) -> Unit,
+    onBackClick: () -> Unit,
+    onEditClick: (Int) -> Unit,
+    onClickCreateOrder: () -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
+    var selectedId by remember {
+        mutableIntStateOf(0)
+    }
+    val openDialog = remember { mutableStateOf(false) }
+
+    StandardBottomSheetScaffold(
+        modifier = modifier,
+        title = SELECTED_SCREEN_TITLE,
+        showBottomBar = false,
+        snackbarHostState = snackbarHostState,
+        onBackClick = onBackClick,
+    ) {
+        Crossfade(
+            targetState = state,
+            label = "Select Cart Order",
+        ) { state ->
+            when (state) {
+                is UiState.Loading -> LoadingIndicator()
+
+                is UiState.Empty -> {
+                    ItemNotAvailable(
+                        text = CartOrderTestTags.CART_ORDER_NOT_AVAILABLE,
+                        buttonText = CartOrderTestTags.CREATE_NEW_CART_ORDER,
+                        onClick = onClickCreateOrder,
+                    )
+                }
+
+                is UiState.Success -> {
+                    TrackScrollJank(
+                        scrollableState = lazyListState,
+                        stateName = "Cart Orders::List",
+                    )
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(SpaceMedium),
+                        state = lazyListState,
+                    ) {
+                        item("Note") {
+                            ListItem(
+                                modifier = Modifier
+                                    .height(48.dp)
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(SpaceMini)),
+                                headlineContent = {
+                                    Text(
+                                        text = SELECTED_SCREEN_NOTE,
+                                        style = MaterialTheme.typography.labelMedium,
+                                    )
+                                },
+                                leadingContent = {
+                                    Icon(
+                                        imageVector = PoposIcons.Info,
+                                        contentDescription = "info",
+                                    )
+                                },
+                                colors = ListItemDefaults.colors(
+                                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                ),
+                            )
+
+                            Spacer(modifier = Modifier.height(SpaceMedium))
+                        }
+
+                        items(
+                            items = state.data,
+                            key = {
+                                it.orderId
+                            },
+                        ) { item: CartOrder ->
+                            if (item.orderId == selectedOrder) {
+                                SelectedCartOrderData(
+                                    cartOrder = item,
+                                    orderDetails = orderDetails,
+                                    addOnItems = addOnItems,
+                                    deliveryPartners = deliveryPartners,
+                                    onDeleteClick = {
+                                        selectedId = it
+                                        openDialog.value = true
+                                    },
+                                    onEditClick = onEditClick,
+                                    onIncreaseQty = onIncreaseQty,
+                                    onDecreaseQty = onDecreaseQty,
+                                    onUpdateAddOnItem = onUpdateAddOnItem,
+                                    onUpdateDeliveryPartner = onUpdateDeliveryPartner,
+                                    onPlaceOrder = onPlaceOrder,
+                                    onPrintOrder = onPrintOrder,
+                                )
+                            } else {
+                                CartOrderData(
+                                    cartOrder = item,
+                                    doesSelected = {
+                                        selectedOrder == it
+                                    },
+                                    onSelectOrder = onSelectOrder,
+                                    onDeleteClick = {
+                                        selectedId = it
+                                        openDialog.value = true
+                                    },
+                                    onEditClick = onEditClick,
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(SpaceMedium))
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     AnimatedVisibility(
         visible = openDialog.value,
@@ -365,7 +418,7 @@ fun SelectOrderScreen(
             message = CartOrderTestTags.DELETE_CART_ORDER_ITEM_MESSAGE,
             onConfirm = {
                 openDialog.value = false
-                viewModel.deleteCartOrder(selectedId)
+                onDeleteClick(selectedId)
             },
             onDismiss = {
                 openDialog.value = false
@@ -431,6 +484,8 @@ private fun SelectedCartOrderData(
                                 append(cartOrder.orderId.toString())
                             },
                             style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                         )
                     },
                     leadingContent = {
@@ -532,8 +587,12 @@ private fun SelectedCartOrderData(
                                         it == orderDetails.cartItem.deliveryPartnerId
                                     },
                                     onClick = {
-                                        val newId = if (it == orderDetails.cartItem.deliveryPartnerId) 0 else it
-                                        onUpdateDeliveryPartner(orderDetails.cartItem.orderId, newId)
+                                        val newId =
+                                            if (it == orderDetails.cartItem.deliveryPartnerId) 0 else it
+                                        onUpdateDeliveryPartner(
+                                            orderDetails.cartItem.orderId,
+                                            newId,
+                                        )
                                     },
                                     backgroundColor = Color.Transparent,
                                 )
@@ -638,6 +697,8 @@ private fun CartOrderData(
                         append(cartOrder.orderId.toString())
                     },
                     style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             },
             leadingContent = {
@@ -695,5 +756,140 @@ private fun CartOrderData(
                 tint = MaterialTheme.colorScheme.onSecondary,
             )
         }
+    }
+}
+
+// ===========================PREVIEWS===================
+
+@DevicePreviews
+@Composable
+private fun SelectOrderScreenContentPreview(
+    @PreviewParameter(CartOrderPreviewParameter::class)
+    state: UiState<List<CartOrder>>,
+    modifier: Modifier = Modifier,
+    cartItem: CartItem = CartPreviewParameterData.dineOutCartItems.first(),
+    orderDetails: SelectedOrderDetails = SelectedOrderDetails.Success(cartItem),
+    addOnItems: List<AddOnItem> = AddOnPreviewData.addOnItemList.take(5),
+    deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5),
+) {
+    PoposRoomTheme {
+        SelectOrderScreenContent(
+            modifier = modifier,
+            state = state,
+            selectedOrder = 2,
+            orderDetails = orderDetails,
+            addOnItems = addOnItems,
+            deliveryPartners = deliveryPartners,
+            onSelectOrder = {},
+            onDeleteClick = {},
+            onIncreaseQty = { _, _ -> },
+            onDecreaseQty = { _, _ -> },
+            onUpdateAddOnItem = { _, _ -> },
+            onUpdateDeliveryPartner = { _, _ -> },
+            onPlaceOrder = {},
+            onPrintOrder = {},
+            onBackClick = {},
+            onEditClick = {},
+            onClickCreateOrder = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun SelectedCartOrderDataLoadingPreview(
+    modifier: Modifier = Modifier,
+    cartOrder: CartOrder = CardOrderPreviewData.orders.first(),
+    orderDetails: SelectedOrderDetails = SelectedOrderDetails.Loading,
+) {
+    PoposRoomTheme {
+        SelectedCartOrderData(
+            modifier = modifier,
+            cartOrder = cartOrder,
+            orderDetails = orderDetails,
+            addOnItems = listOf(),
+            deliveryPartners = listOf(),
+            onDeleteClick = {},
+            onEditClick = {},
+            onIncreaseQty = { _, _ -> },
+            onDecreaseQty = { _, _ -> },
+            onUpdateAddOnItem = { _, _ -> },
+            onUpdateDeliveryPartner = { _, _ -> },
+            onPlaceOrder = {},
+            onPrintOrder = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun SelectedCartOrderDataEmptyPreview(
+    modifier: Modifier = Modifier,
+    cartOrder: CartOrder = CardOrderPreviewData.orders.last(),
+    orderDetails: SelectedOrderDetails = SelectedOrderDetails.Empty,
+) {
+    PoposRoomTheme {
+        SelectedCartOrderData(
+            modifier = modifier,
+            cartOrder = cartOrder,
+            orderDetails = orderDetails,
+            addOnItems = listOf(),
+            deliveryPartners = listOf(),
+            onDeleteClick = {},
+            onEditClick = {},
+            onIncreaseQty = { _, _ -> },
+            onDecreaseQty = { _, _ -> },
+            onUpdateAddOnItem = { _, _ -> },
+            onUpdateDeliveryPartner = { _, _ -> },
+            onPlaceOrder = {},
+            onPrintOrder = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun SelectedCartOrderDataPreview(
+    modifier: Modifier = Modifier,
+    cartOrder: CartOrder = CardOrderPreviewData.orders.last(),
+    cartItem: CartItem = CartPreviewParameterData.dineOutCartItems.first(),
+    orderDetails: SelectedOrderDetails = SelectedOrderDetails.Success(cartItem),
+    addOnItems: List<AddOnItem> = AddOnPreviewData.addOnItemList.take(5),
+    deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5),
+) {
+    PoposRoomTheme {
+        SelectedCartOrderData(
+            modifier = modifier,
+            cartOrder = cartOrder,
+            orderDetails = orderDetails,
+            addOnItems = addOnItems,
+            deliveryPartners = deliveryPartners,
+            onDeleteClick = {},
+            onEditClick = {},
+            onIncreaseQty = { _, _ -> },
+            onDecreaseQty = { _, _ -> },
+            onUpdateAddOnItem = { _, _ -> },
+            onUpdateDeliveryPartner = { _, _ -> },
+            onPlaceOrder = {},
+            onPrintOrder = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CartOrderDataPreview(
+    modifier: Modifier = Modifier,
+    cartOrder: CartOrder = CardOrderPreviewData.orders.last(),
+) {
+    PoposRoomTheme {
+        CartOrderData(
+            modifier = modifier,
+            cartOrder = cartOrder,
+            doesSelected = { true },
+            onSelectOrder = {},
+            onDeleteClick = {},
+            onEditClick = {},
+        )
     }
 }

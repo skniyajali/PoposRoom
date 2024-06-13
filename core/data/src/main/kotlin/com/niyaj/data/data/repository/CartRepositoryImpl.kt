@@ -39,14 +39,12 @@ import com.niyaj.model.CartItem
 import com.niyaj.model.CartProductItem
 import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.OrderType
-import com.niyaj.model.OrderWithCartItems
 import com.niyaj.model.SELECTED_ID
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
@@ -72,10 +70,6 @@ class CartRepositoryImpl(
         return withContext(ioDispatcher) {
             cartOrderDao.getDeliveryPartners()
         }
-    }
-
-    override suspend fun getAllCartOrders(): Flow<List<OrderWithCartItems>> {
-        return flow { }
     }
 
     override suspend fun getAllDineInCart(): Flow<List<CartItem>> {
@@ -324,40 +318,42 @@ class CartRepositoryImpl(
         }
     }
 
-    private suspend fun mapCartOrderToCartItemAsync(itemDto: CartItemDto): CartItem {
+    private suspend fun mapCartOrderToCartItemAsync(itemDto: CartItemDto?): CartItem {
         return withContext(ioDispatcher) {
-            val productMap = withContext(ioDispatcher) {
-                val productIds = itemDto.cartItems.map { it.productId }.toSet()
-                cartDao.getProductsById(productIds.toList())
-                    .associateBy { it.productId } // Create map for efficient lookup by product ID
-            }
+            itemDto?.let {
+                val productMap = withContext(ioDispatcher) {
+                    val productIds = itemDto.cartItems.map { it.productId }.toSet()
+                    cartDao.getProductsById(productIds.toList())
+                        .associateBy { it.productId } // Create map for efficient lookup by product ID
+                }
 
-            val cartProducts = itemDto.cartItems.map { cartItem ->
-                val product = productMap[cartItem.productId] ?: ProductEntity()
+                val cartProducts = itemDto.cartItems.map { cartItem ->
+                    val product = productMap[cartItem.productId] ?: ProductEntity()
 
-                CartProductItem(
-                    productId = product.productId,
-                    productName = product.productName,
-                    productPrice = product.productPrice,
-                    productQuantity = cartItem.quantity,
+                    CartProductItem(
+                        productId = product.productId,
+                        productName = product.productName,
+                        productPrice = product.productPrice,
+                        productQuantity = cartItem.quantity,
+                    )
+                }
+
+                CartItem(
+                    orderId = itemDto.cartOrder.orderId,
+                    orderType = itemDto.cartOrder.orderType,
+                    cartProducts = cartProducts.toImmutableList(),
+                    addOnItems = itemDto.addOnItems.toImmutableList(),
+                    charges = itemDto.charges.toImmutableList(),
+                    customerPhone = itemDto.customerPhone,
+                    customerAddress = itemDto.customerAddress,
+                    updatedAt = (
+                        itemDto.cartOrder.updatedAt
+                            ?: itemDto.cartOrder.createdAt
+                        ).toTimeSpan,
+                    orderPrice = itemDto.orderPrice.totalPrice,
+                    deliveryPartnerId = itemDto.cartOrder.deliveryPartnerId,
                 )
-            }
-
-            CartItem(
-                orderId = itemDto.cartOrder.orderId,
-                orderType = itemDto.cartOrder.orderType,
-                cartProducts = cartProducts.toImmutableList(),
-                addOnItems = itemDto.addOnItems.toImmutableList(),
-                charges = itemDto.charges.toImmutableList(),
-                customerPhone = itemDto.customerPhone,
-                customerAddress = itemDto.customerAddress,
-                updatedAt = (
-                    itemDto.cartOrder.updatedAt
-                        ?: itemDto.cartOrder.createdAt
-                    ).toTimeSpan,
-                orderPrice = itemDto.orderPrice.totalPrice,
-                deliveryPartnerId = itemDto.cartOrder.deliveryPartnerId,
-            )
+            } ?: CartItem()
         }
     }
 
