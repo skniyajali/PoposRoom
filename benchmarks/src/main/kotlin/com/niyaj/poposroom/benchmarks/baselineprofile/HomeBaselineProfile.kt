@@ -31,7 +31,7 @@ class HomeBaselineProfile {
     fun generate() =
         baselineProfileRule.collect(
             packageName = PACKAGE_NAME,
-            includeInStartupProfile = true
+            includeInStartupProfile = true,
         ) {
             startActivityAndGrantPermission()
         }
