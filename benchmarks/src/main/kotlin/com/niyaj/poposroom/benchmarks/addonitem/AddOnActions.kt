@@ -20,18 +20,26 @@ package com.niyaj.poposroom.benchmarks.addonitem
 import androidx.benchmark.macro.MacrobenchmarkScope
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Until
+import androidx.test.uiautomator.untilHasChildren
 import com.niyaj.poposroom.benchmarks.flingElementDownUp
 import com.niyaj.poposroom.benchmarks.getHomeAppDrawer
 import com.niyaj.poposroom.benchmarks.waitForObjectHomeOnAppDrawer
 
 fun MacrobenchmarkScope.goToAddOnScreenScreen() {
-    getHomeAppDrawer()
+    val drawer = getHomeAppDrawer()
     device.waitForIdle()
-    // Wait until interests are shown on screen
+
+    // Wait until the drawer item visible
     waitForObjectHomeOnAppDrawer(By.text("Home"))
 
-    // Wait until content is loaded by checking if interests are loaded
-//    device.wait(Until.gone(By.res("loadingWheel")), 5_000)
+    // Click on Products, Categories Expandable
+    drawer.wait(untilHasChildren(), 60_000)
+    waitForObjectHomeOnAppDrawer(By.res("productCategories"))
+    drawer.findObject(By.res("productCategories")).click()
+
+    // wait for on Addon Item visible
+    waitForObjectHomeOnAppDrawer(By.res("AddOn Item"))
+    device.findObject(By.res("AddOn Item")).click()
 }
 
 fun MacrobenchmarkScope.interestsScrollTopicsDownUp() {

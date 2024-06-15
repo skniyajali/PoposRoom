@@ -17,6 +17,7 @@
 
 package com.niyaj.model
 
+const val DEFAULT_RES_ID = 1
 const val RESTAURANT_LOGO_NAME = "reslogo"
 const val RESTAURANT_PRINT_LOGO_NAME = "printlogo"
 
@@ -60,7 +61,7 @@ data class Profile(
             "upi://pay?pa=paytmqr281005050101zry6uqipmngr@paytm&pn=Paytm%20Merchant&paytmqr=281005050101ZRY6UQIPMNGR"
 
         val defaultProfileInfo = Profile(
-            restaurantId = 0,
+            restaurantId = DEFAULT_RES_ID,
             name = RESTAURANT_NAME,
             email = RESTAURANT_EMAIL,
             primaryPhone = RESTAURANT_PRIMARY_PHONE,

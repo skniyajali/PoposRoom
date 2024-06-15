@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -55,6 +56,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
@@ -191,6 +193,7 @@ internal fun AddEditCartOrderScreenContent(
     onEvent: (AddEditCartOrderEvent) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
+    val height = (LocalConfiguration.current.screenHeightDp / 2).dp
     val enableBtn = listOf(
         addressError,
         customerError,
@@ -326,7 +329,8 @@ internal fun AddEditCartOrderScreenContent(
                                     clippingEnabled = true,
                                 ),
                                 modifier = Modifier
-                                    .width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
+                                    .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
+                                    .heightIn(max = height),
                             ) {
                                 addresses.forEachIndexed { index, address ->
                                     DropdownMenuItem(
@@ -437,7 +441,8 @@ internal fun AddEditCartOrderScreenContent(
                                     clippingEnabled = true,
                                 ),
                                 modifier = Modifier
-                                    .width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
+                                    .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
+                                    .heightIn(max = height),
                             ) {
                                 customers.forEachIndexed { index, customer ->
                                     DropdownMenuItem(

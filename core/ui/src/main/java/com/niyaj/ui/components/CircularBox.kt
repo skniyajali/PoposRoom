@@ -17,7 +17,6 @@
 
 package com.niyaj.ui.components
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -139,15 +138,20 @@ fun CircularBoxWithQty(
                 style = textStyle,
             )
         } else {
-            AnimatedContent(
-                targetState = quantity.value,
-                label = "",
-            ) {
-                Text(
-                    text = it.toString(),
-                    style = textStyle,
-                )
-            }
+            Text(
+                text = qty.toString(),
+                style = textStyle,
+            )
+
+//            AnimatedContent(
+//                targetState = quantity.value,
+//                label = "",
+//            ) {
+//                Text(
+//                    text = it.toString(),
+//                    style = textStyle,
+//                )
+//            }
         }
     }
 }

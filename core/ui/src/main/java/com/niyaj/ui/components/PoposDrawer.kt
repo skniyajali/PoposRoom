@@ -47,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -93,7 +94,8 @@ fun PoposDrawer(
 
         LazyColumn(
             modifier = Modifier
-                .weight(2.5f),
+                .weight(2.5f)
+                .testTag("drawerList"),
         ) {
             item("Divider") {
                 HorizontalDivider(thickness = 1.dp, modifier = Modifier.fillMaxWidth())
@@ -535,7 +537,8 @@ fun PoposDrawer(
                 StandardExpandable(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = IconSizeSmall),
+                        .padding(start = IconSizeSmall)
+                        .testTag("productCategories"),
                     dividerModifier = Modifier.padding(end = IconSizeSmall),
                     expanded = expanded.value || doesExpanded,
                     onExpandChanged = {
@@ -816,6 +819,7 @@ fun PoposDrawerItem(
         onClick = onClick,
         modifier = Modifier
             .height(48.dp)
-            .padding(NavigationDrawerItemDefaults.ItemPadding),
+            .padding(NavigationDrawerItemDefaults.ItemPadding)
+            .testTag(text),
     )
 }

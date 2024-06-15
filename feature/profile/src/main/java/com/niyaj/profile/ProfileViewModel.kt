@@ -27,6 +27,8 @@ import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.saveImageToInternalStorage
 import com.niyaj.data.repository.AccountRepository
 import com.niyaj.data.repository.ProfileRepository
+import com.niyaj.data.repository.UserDataRepository
+import com.niyaj.model.DEFAULT_RES_ID
 import com.niyaj.model.Profile
 import com.niyaj.model.RESTAURANT_LOGO_NAME
 import com.niyaj.model.RESTAURANT_PRINT_LOGO_NAME
@@ -38,6 +40,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -47,16 +51,29 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val repository: ProfileRepository,
     private val accountRepository: AccountRepository,
+    private val userDataRepository: UserDataRepository,
     private val application: Application,
     @Dispatcher(PoposDispatchers.IO)
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
 
-    private val resId = accountRepository.getCurrentLoggedInResId().stateIn(
+    private val resId = userDataRepository.loggedInUserId.map {
+        if (it == 0) {
+            repository.insertOrUpdateProfile(Profile.defaultProfileInfo)
+
+            userDataRepository.setUserLoggedIn(DEFAULT_RES_ID)
+        }
+        it
+    }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = 0,
     )
+
+    // TODO:: Setting default profile
+    init {
+        setDefaultProfile()
+    }
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -144,6 +161,19 @@ class ProfileViewModel @Inject constructor(
                             _eventFlow.emit(UiEvent.OnError("Unable to update profile photo"))
                         }
                     }
+                }
+            }
+        }
+    }
+
+    // TODO:: Setting default profile
+    private fun setDefaultProfile() {
+        viewModelScope.launch {
+            userDataRepository.loggedInUserId.mapLatest {
+                if (it == 0) {
+                    repository.insertOrUpdateProfile(Profile.defaultProfileInfo)
+
+                    userDataRepository.setUserLoggedIn(DEFAULT_RES_ID)
                 }
             }
         }

@@ -40,7 +40,6 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.metrics.performance.JankStats
@@ -58,7 +57,6 @@ import com.niyaj.data.utils.NetworkMonitor
 import com.niyaj.data.utils.WorkMonitor
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
-import com.niyaj.feature.account.AccountNavGraph
 import com.niyaj.home.HomeNavGraph
 import com.niyaj.model.DarkThemeConfig
 import com.niyaj.model.ThemeBrand
@@ -99,7 +97,7 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterialNavigationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        val splashScreen = installSplashScreen()
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         var uiState: MainActivityUiState by mutableStateOf(MainActivityUiState.Loading)
@@ -112,13 +110,13 @@ class MainActivity : ComponentActivity() {
                     .collect()
             }
         }
-
-        splashScreen.setKeepOnScreenCondition {
-            when (uiState) {
-                MainActivityUiState.Loading -> true
-                is MainActivityUiState.Success -> false
-            }
-        }
+        // TOOD:: Removed Splash Screen Condition Check
+//        splashScreen.setKeepOnScreenCondition {
+//            when (uiState) {
+//                MainActivityUiState.Loading -> true
+//                is MainActivityUiState.Success -> false
+//            }
+//        }
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -156,7 +154,6 @@ class MainActivity : ComponentActivity() {
                 workMonitor = workMonitor,
                 userDataRepository = userDataRepository,
             )
-            val isLoggedIn by appState.isLoggedIn.collectAsStateWithLifecycle()
 
             CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
                 PoposRoomTheme(
@@ -165,10 +162,11 @@ class MainActivity : ComponentActivity() {
                     disableDynamicTheming = shouldDisableDynamicTheming(uiState),
                 ) {
                     RequestAllPermissions()
-
+                    // TODO:: By Default Providing HomeNavGraph for this release
                     PoposApp(
                         appState = appState,
-                        startRoute = if (isLoggedIn) HomeNavGraph else AccountNavGraph,
+                        //  if (isLoggedIn) HomeNavGraph else AccountNavGraph
+                        startRoute = HomeNavGraph,
                     )
                 }
             }

@@ -30,8 +30,6 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,15 +38,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -68,6 +66,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -86,7 +85,7 @@ import com.niyaj.common.tags.SelectedTestTag.SELECTED_SCREEN_NOTE
 import com.niyaj.common.tags.SelectedTestTag.SELECTED_SCREEN_TITLE
 import com.niyaj.common.utils.findActivity
 import com.niyaj.common.utils.openAppSettings
-import com.niyaj.common.utils.toTimeSpan
+import com.niyaj.designsystem.components.PoposIconButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
@@ -109,6 +108,8 @@ import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.HandleBluetoothPermissionState
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.NoteText
+import com.niyaj.ui.components.PoposChip
 import com.niyaj.ui.components.StandardBottomSheetScaffold
 import com.niyaj.ui.components.StandardDialog
 import com.niyaj.ui.event.UiState
@@ -443,120 +444,47 @@ private fun SelectedCartOrderData(
     onUpdateDeliveryPartner: (orderId: Int, partnerId: Int) -> Unit,
     onPlaceOrder: (orderId: Int) -> Unit,
     onPrintOrder: (orderId: Int) -> Unit,
+    showDeliveryPartner: Boolean = deliveryPartners.isNotEmpty() &&
+        cartOrder.orderType == OrderType.DineOut,
 ) = trace("CartOrders") {
     Surface(
         modifier = modifier
             .fillMaxWidth(),
+        color = Color.Transparent,
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                ListItem(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(2f)
-                        .clip(RoundedCornerShape(SpaceMini)),
-                    headlineContent = {
-                        Text(
-                            buildAnnotatedString {
-                                if (cartOrder.orderType == OrderType.DineOut) {
-                                    withStyle(
-                                        style = SpanStyle(
-                                            color = Color.Red,
-                                            fontWeight = FontWeight.Bold,
-                                        ),
-                                    ) {
-                                        append(cartOrder.address.shortName.uppercase())
-
-                                        append(" - ")
-                                    }
-                                }
-
-                                append(cartOrder.orderId.toString())
-                            },
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    },
-                    leadingContent = {
-                        CircularBox(
-                            icon = PoposIcons.Tag,
-                            doesSelected = true,
-                            size = 30.dp,
-                        )
-                    },
-                    trailingContent = {
-                        Text(
-                            text = cartOrder.createdAt.toTimeSpan,
-                            style = MaterialTheme.typography.labelSmall,
-                        )
-                    },
-                    colors = ListItemDefaults.colors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    ),
-                )
-
-                Spacer(modifier = Modifier.width(SpaceSmall))
-
-                IconButton(
-                    onClick = {
-                        onEditClick(cartOrder.orderId)
-                    },
-                    modifier = Modifier
-                        .background(
-                            MaterialTheme.colorScheme.primary,
-                            RoundedCornerShape(SpaceMini),
-                        ),
-                ) {
-                    Icon(
-                        contentDescription = "Edit",
-                        imageVector = PoposIcons.Edit,
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(SpaceSmall))
-
-                IconButton(
-                    onClick = {
-                        onDeleteClick(cartOrder.orderId)
-                    },
-                    modifier = Modifier
-                        .background(
-                            MaterialTheme.colorScheme.secondary,
-                            RoundedCornerShape(SpaceMini),
-                        ),
-                ) {
-                    Icon(
-                        contentDescription = "Delete cart order",
-                        imageVector = PoposIcons.Delete,
-                        tint = MaterialTheme.colorScheme.onSecondary,
-                    )
-                }
-            }
+            CartOrderData(
+                modifier = modifier,
+                cartOrder = cartOrder,
+                doesSelected = { true },
+                onSelectOrder = {},
+                onDeleteClick = onDeleteClick,
+                onEditClick = onEditClick,
+            )
 
             when (orderDetails) {
                 is SelectedOrderDetails.Loading -> CircularProgressIndicator()
 
                 is SelectedOrderDetails.Empty -> {
-                    Text(
+                    NoteText(
                         text = "You have not added any products yet.",
                         style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(bottom = SpaceSmall),
                     )
                 }
 
                 is SelectedOrderDetails.Success -> {
-                    OutlinedCard {
+                    OutlinedCard(
+                        colors = CardDefaults.outlinedCardColors(
+                            containerColor = Color.Transparent,
+                        ),
+                    ) {
                         CartItemProductDetailsSection(
                             cartProducts = orderDetails.cartItem.cartProducts,
                             decreaseQuantity = {
@@ -568,7 +496,7 @@ private fun SelectedCartOrderData(
                         )
 
                         AnimatedVisibility(
-                            visible = deliveryPartners.isNotEmpty(),
+                            visible = showDeliveryPartner,
                             enter = fadeIn(tween(500)),
                             exit = fadeOut(tween(600)),
                         ) {
@@ -662,100 +590,115 @@ private fun CartOrderData(
     onSelectOrder: (Int) -> Unit,
     onDeleteClick: (Int) -> Unit,
     onEditClick: (Int) -> Unit,
+    containerColor: Color = containerColorFor(cartOrder.orderType),
+    contentColor: Color = contentColorFor(cartOrder.orderType),
+    icon: ImageVector = getIconFor(cartOrder.orderType),
 ) = trace("CartOrders") {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .height(48.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        ListItem(
+        Card(
             modifier = Modifier
                 .fillMaxSize()
-                .weight(2f)
-                .clip(RoundedCornerShape(SpaceMini))
-                .clickable {
-                    onSelectOrder(cartOrder.orderId)
-                },
-            headlineContent = {
-                Text(
-                    buildAnnotatedString {
-                        if (cartOrder.orderType == OrderType.DineOut) {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = Color.Red,
-                                    fontWeight = FontWeight.Bold,
-                                ),
-                            ) {
-                                append(cartOrder.address.shortName.uppercase())
-
-                                append(" - ")
-                            }
-                        }
-
-                        append(cartOrder.orderId.toString())
-                    },
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                .weight(2f),
+            shape = RoundedCornerShape(SpaceMini),
+            onClick = {
+                onSelectOrder(cartOrder.orderId)
             },
-            leadingContent = {
-                CircularBox(
-                    icon = PoposIcons.Tag,
-                    doesSelected = doesSelected(cartOrder.orderId),
-                    size = 30.dp,
-                )
-            },
-            trailingContent = {
-                Text(
-                    text = cartOrder.createdAt.toTimeSpan,
-                    style = MaterialTheme.typography.labelSmall,
-                )
-            },
-            colors = ListItemDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
+            colors = CardDefaults.cardColors().copy(
+                containerColor = containerColor,
             ),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Row(
+                    modifier = Modifier
+                        .weight(2f)
+                        .padding(horizontal = SpaceSmall),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
+                ) {
+                    CircularBox(
+                        icon = PoposIcons.Tag,
+                        doesSelected = doesSelected(cartOrder.orderId),
+                        size = 30.dp,
+                    )
+
+                    Text(
+                        buildAnnotatedString {
+                            if (cartOrder.orderType == OrderType.DineOut) {
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = Color.Red,
+                                        fontWeight = FontWeight.Bold,
+                                    ),
+                                ) {
+                                    append(cartOrder.address.shortName.uppercase())
+
+                                    append(" - ")
+                                }
+                            }
+
+                            append(cartOrder.orderId.toString())
+                        },
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+
+                PoposChip(
+                    text = cartOrder.orderType.name,
+                    icon = icon,
+                    containerColor = contentColor,
+                    shape = RoundedCornerShape(topStart = 2.dp, bottomStart = 2.dp),
+                )
+            }
+        }
+
+        PoposIconButton(
+            icon = PoposIcons.Edit,
+            onClick = { onEditClick(cartOrder.orderId) },
+            containerColor = MaterialTheme.colorScheme.primary,
+            shape = RoundedCornerShape(SpaceMini),
         )
 
-        Spacer(modifier = Modifier.width(SpaceSmall))
+        PoposIconButton(
+            icon = PoposIcons.Delete,
+            onClick = { onDeleteClick(cartOrder.orderId) },
+            containerColor = MaterialTheme.colorScheme.secondary,
+            shape = RoundedCornerShape(SpaceMini),
+        )
+    }
+}
 
-        IconButton(
-            onClick = {
-                onEditClick(cartOrder.orderId)
-            },
-            modifier = Modifier
-                .background(
-                    MaterialTheme.colorScheme.primary,
-                    RoundedCornerShape(SpaceMini),
-                ),
-        ) {
-            Icon(
-                contentDescription = "Edit",
-                imageVector = PoposIcons.Edit,
-                tint = MaterialTheme.colorScheme.onPrimary,
-            )
-        }
+@Composable
+private fun getIconFor(orderType: OrderType): ImageVector {
+    return if (orderType == OrderType.DineIn) PoposIcons.DinnerDining else PoposIcons.DeliveryDining
+}
 
-        Spacer(modifier = Modifier.width(SpaceSmall))
+@Composable
+private fun containerColorFor(orderType: OrderType): Color {
+    return if (orderType == OrderType.DineIn) {
+        MaterialTheme.colorScheme.secondaryContainer
+    } else {
+        MaterialTheme.colorScheme.primaryContainer
+    }
+}
 
-        IconButton(
-            onClick = {
-                onDeleteClick(cartOrder.orderId)
-            },
-            modifier = Modifier
-                .background(
-                    MaterialTheme.colorScheme.secondary,
-                    RoundedCornerShape(SpaceMini),
-                ),
-        ) {
-            Icon(
-                contentDescription = "Delete cart order",
-                imageVector = PoposIcons.Delete,
-                tint = MaterialTheme.colorScheme.onSecondary,
-            )
-        }
+@Composable
+private fun contentColorFor(orderType: OrderType): Color {
+    return if (orderType == OrderType.DineIn) {
+        MaterialTheme.colorScheme.secondary
+    } else {
+        MaterialTheme.colorScheme.primary
     }
 }
 
@@ -849,10 +792,39 @@ private fun SelectedCartOrderDataEmptyPreview(
 
 @DevicePreviews
 @Composable
-private fun SelectedCartOrderDataPreview(
+private fun SelectedDineInCartOrderDataPreview(
+    modifier: Modifier = Modifier,
+    cartOrder: CartOrder = CardOrderPreviewData.orders.first(),
+    cartItem: CartItem = CartPreviewParameterData.dineInCartItems.first(),
+    orderDetails: SelectedOrderDetails = SelectedOrderDetails.Success(cartItem),
+    addOnItems: List<AddOnItem> = AddOnPreviewData.addOnItemList.take(5),
+    deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5),
+) {
+    PoposRoomTheme {
+        SelectedCartOrderData(
+            modifier = modifier,
+            cartOrder = cartOrder,
+            orderDetails = orderDetails,
+            addOnItems = addOnItems,
+            deliveryPartners = deliveryPartners,
+            onDeleteClick = {},
+            onEditClick = {},
+            onIncreaseQty = { _, _ -> },
+            onDecreaseQty = { _, _ -> },
+            onUpdateAddOnItem = { _, _ -> },
+            onUpdateDeliveryPartner = { _, _ -> },
+            onPlaceOrder = {},
+            onPrintOrder = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun SelectedDineOutCartOrderDataPreview(
     modifier: Modifier = Modifier,
     cartOrder: CartOrder = CardOrderPreviewData.orders.last(),
-    cartItem: CartItem = CartPreviewParameterData.dineOutCartItems.first(),
+    cartItem: CartItem = CartPreviewParameterData.dineInCartItems.first(),
     orderDetails: SelectedOrderDetails = SelectedOrderDetails.Success(cartItem),
     addOnItems: List<AddOnItem> = AddOnPreviewData.addOnItemList.take(5),
     deliveryPartners: List<EmployeeNameAndId> = CardOrderPreviewData.sampleEmployeeNameAndIds.take(5),

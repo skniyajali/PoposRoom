@@ -159,16 +159,18 @@ class MarketListViewModel @Inject constructor(
             groupByListType.forEach { (listType, groupedByList) ->
 
                 printableString += "[L]-------------------------------\n"
-                printableString += "[L]$itemType [R]$listType[${groupedByList.size}]\n"
+                printableString += "[L]<b>$itemType</b> [R]$listType[${groupedByList.size}]\n"
                 printableString += "[L]-------------------------------\n"
 
                 groupedByList.fastForEachIndexed { i, it ->
                     printableString += "[L]${it.itemName} [R]${it.itemQuantity?.toSafeString()} ${it.unitName}\n"
 
                     if (i != groupedByList.size - 1) {
-                        printableString += "[L]\n"
+                        printableString += "[L]-------------------------------\n"
                     }
                 }
+
+                printableString += "[L]\n\n\n"
             }
         }
 
@@ -181,7 +183,7 @@ private fun AnalyticsHelper.logPrintMarketList(marketDate: Long) {
         event = AnalyticsEvent(
             type = "market_list_printed_for",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("market_list_printed_for", marketDate.toFormattedDate),
+                AnalyticsEvent.Param("market_list_printed_for", marketDate.toFormattedDate),
             ),
         ),
     )

@@ -23,7 +23,6 @@ import com.niyaj.common.result.Resource
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.AccountRepository
 import com.niyaj.database.dao.AccountDao
-import com.niyaj.database.model.AccountEntity
 import com.niyaj.database.model.toExternalModel
 import com.niyaj.model.Account
 import kotlinx.coroutines.CoroutineDispatcher
@@ -43,7 +42,9 @@ class AccountRepositoryImpl(
 
     override suspend fun getAccountInfo(resId: Int): Flow<Account> {
         return withContext(ioDispatcher) {
-            accountDao.getAccountInfo(resId).map(AccountEntity::toExternalModel)
+            accountDao.getAccountInfo(resId).map {
+                it?.toExternalModel() ?: Account.defaultAccount
+            }
         }
     }
 
@@ -81,7 +82,7 @@ class AccountRepositoryImpl(
 
                 if (findUser != null) {
                     if (findUser.password == password) {
-                        val result = accountDao.markAsLoggedIn(findUser.restaurantId)
+                        accountDao.markAsLoggedIn(findUser.restaurantId)
 
                         Resource.Success(findUser.restaurantId)
                     } else {

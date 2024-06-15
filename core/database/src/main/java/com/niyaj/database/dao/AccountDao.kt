@@ -30,7 +30,7 @@ interface AccountDao {
     fun getCurrentLoggedInResId(): Flow<Int>
 
     @Query("SELECT * FROM account WHERE restaurantId = :resId")
-    fun getAccountInfo(resId: Int): Flow<AccountEntity>
+    fun getAccountInfo(resId: Int): Flow<AccountEntity?>
 
     @Upsert
     suspend fun createOrUpdateAccount(account: AccountEntity): Long
