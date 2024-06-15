@@ -32,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -244,7 +245,7 @@ fun PoposChip(
     text: String,
     icon: ImageVector? = null,
     containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
-    contentColor: Color = MaterialTheme.colorScheme.onTertiaryContainer,
+    contentColor: Color = contentColorFor(containerColor),
     shape: RoundedCornerShape = RoundedCornerShape(2.dp),
 ) {
     Surface(

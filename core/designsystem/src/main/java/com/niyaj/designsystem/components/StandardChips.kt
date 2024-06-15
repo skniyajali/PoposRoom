@@ -21,6 +21,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -29,10 +30,13 @@ import androidx.compose.material3.ChipColors
 import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.InputChip
+import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.SuggestionChipDefaults.suggestionChipBorder
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
@@ -42,8 +46,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.IconSizeMini
+import com.niyaj.designsystem.theme.PoposRoomTheme
 
 @Composable
 fun StandardAssistChip(
@@ -167,6 +174,51 @@ fun StandardRoundedFilterChip(
 }
 
 @Composable
+fun StandardRoundedInputChip(
+    modifier: Modifier = Modifier,
+    text: String,
+    icon: ImageVector? = null,
+    selected: Boolean = false,
+    borderColor: Color = MaterialTheme.colorScheme.error,
+    onClick: () -> Unit = {},
+) {
+    InputChip(
+        modifier = modifier.wrapContentHeight(),
+        onClick = onClick,
+        selected = selected,
+        label = {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+        },
+        leadingIcon = {
+            icon?.let {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = text.plus("icon"),
+                    modifier = Modifier,
+                )
+            }
+        },
+        trailingIcon = {
+            Icon(
+                imageVector = PoposIcons.Close,
+                contentDescription = "closeIcon",
+                modifier = Modifier,
+            )
+        },
+        colors = InputChipDefaults.inputChipColors(),
+        border = InputChipDefaults.inputChipBorder(
+            enabled = true,
+            selected = selected,
+            borderColor = borderColor,
+        ),
+    )
+}
+
+@Composable
 fun PoposOutlinedAssistChip(
     modifier: Modifier = Modifier,
     text: String,
@@ -238,4 +290,33 @@ fun PoposSuggestionChip(
             Text(text = text)
         },
     )
+}
+
+@Preview
+@Composable
+private fun StandardRoundedInputChipPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardRoundedInputChip(
+            text = "InputChip",
+            icon = PoposIcons.StarHalf,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PoposSuggestionChipPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        Surface {
+            PoposSuggestionChip(
+                modifier = modifier,
+                text = "Suggestion Chip",
+                icon = PoposIcons.StarHalf,
+            )
+        }
+    }
 }

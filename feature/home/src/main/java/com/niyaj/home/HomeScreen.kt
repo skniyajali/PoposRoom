@@ -136,6 +136,7 @@ fun HomeScreen(
 
     LaunchedEffect(key1 = selectedOrder.orderId) {
         scope.launch {
+            viewModel.selectCategory(selectedCategory)
             lazyListState.animateScrollToItem(0)
             lazyRowState.animateScrollToItem(0)
         }

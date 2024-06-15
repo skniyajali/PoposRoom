@@ -53,10 +53,10 @@ const val CATEGORY_ITEM_TAG = "Category-"
 @Composable
 fun CategoriesData(
     modifier: Modifier = Modifier,
-    lazyRowState: LazyListState = rememberLazyListState(),
     uiState: UiState<ImmutableList<Category>>,
     selectedCategory: Int,
     onSelect: (Int) -> Unit,
+    lazyRowState: LazyListState = rememberLazyListState(),
 ) = trace("CategoriesData") {
     Crossfade(
         targetState = uiState,
@@ -78,10 +78,10 @@ fun CategoriesData(
                     ) { category ->
                         CategoryData(
                             item = category,
-                            doesSelected = {
-                                selectedCategory == it
+                            selected = selectedCategory == category.categoryId,
+                            onClick = {
+                                onSelect(category.categoryId)
                             },
-                            onClick = onSelect,
                         )
                     }
                 }
@@ -114,31 +114,29 @@ fun CategoryList(
         ) { category ->
             CategoryData(
                 item = category,
-                doesSelected = doesSelected,
-                onClick = onSelect,
+                selected = doesSelected(category.categoryId),
+                onClick = { onSelect(category.categoryId) },
             )
         }
     }
 }
 
 @Composable
-fun CategoryData(
+private fun CategoryData(
     modifier: Modifier = Modifier,
     item: Category,
-    doesSelected: (Int) -> Boolean,
-    onClick: (Int) -> Unit,
+    selected: Boolean,
+    onClick: () -> Unit,
     selectedColor: Color = MaterialTheme.colorScheme.secondaryContainer,
     unselectedColor: Color = MaterialTheme.colorScheme.surface,
 ) = trace("CategoryData") {
-    val color = if (doesSelected(item.categoryId)) selectedColor else unselectedColor
+    val color = if (selected) selectedColor else unselectedColor
 
     ElevatedCard(
         modifier = modifier
             .testTag(CATEGORY_ITEM_TAG.plus(item.categoryId))
             .padding(SpaceSmall),
-        onClick = {
-            onClick(item.categoryId)
-        },
+        onClick = onClick,
         colors = CardDefaults.elevatedCardColors(
             containerColor = color,
         ),
@@ -152,7 +150,7 @@ fun CategoryData(
         ) {
             CircularBox(
                 icon = PoposIcons.Category,
-                doesSelected = doesSelected(item.categoryId),
+                doesSelected = selected,
                 size = 25.dp,
                 text = item.categoryName,
             )

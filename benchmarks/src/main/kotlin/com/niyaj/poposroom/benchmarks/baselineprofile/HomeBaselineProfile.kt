@@ -29,7 +29,10 @@ class HomeBaselineProfile {
 
     @Test
     fun generate() =
-        baselineProfileRule.collect(PACKAGE_NAME) {
+        baselineProfileRule.collect(
+            packageName = PACKAGE_NAME,
+            includeInStartupProfile = true
+        ) {
             startActivityAndGrantPermission()
         }
 }

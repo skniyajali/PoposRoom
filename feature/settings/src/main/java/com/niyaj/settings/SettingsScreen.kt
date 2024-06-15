@@ -354,4 +354,4 @@ private fun PreviewSettingsDialogLoading() {
     }
 }
 
-private const val PRIVACY_POLICY_URL = "https://github.com/niyajali/PoposRoom/"
+private const val PRIVACY_POLICY_URL = "https://github.com/niyajali/"

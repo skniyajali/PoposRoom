@@ -17,6 +17,7 @@
 
 package com.niyaj.home.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -48,7 +49,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -57,38 +60,41 @@ import com.niyaj.common.tags.HomeScreenTestTags
 import com.niyaj.common.tags.ProductTestTags
 import com.niyaj.common.utils.createDottedString
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.components.StandardRoundedInputChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.ProductWithQuantity
 import com.niyaj.ui.components.CircularBoxWithQty
-import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.ItemNotFound
+import com.niyaj.ui.parameterProvider.ProductPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScrollJank
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun HomeScreenProducts(
+internal fun HomeScreenProducts(
     modifier: Modifier = Modifier,
-    lazyListState: LazyListState = rememberLazyListState(),
     products: ImmutableList<ProductWithQuantity>,
+    selectedCategory: String? = null,
     onIncrease: (Int) -> Unit,
     onDecrease: (Int) -> Unit,
     onCreateProduct: () -> Unit,
+    onClickCategory: () -> Unit = {},
+    lazyListState: LazyListState = rememberLazyListState(),
 ) = trace("MainFeedProducts") {
     TrackScrollJank(scrollableState = lazyListState, stateName = "products:list")
 
     Column(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(SpaceSmall),
-        verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+            .fillMaxWidth(),
     ) {
-        IconWithText(
-            text = "Products",
-            icon = PoposIcons.Dns,
+        TitleWithSelectedCategory(
+            modifier = Modifier.padding(SpaceSmall),
+            selectedCategory = selectedCategory,
+            onClickCategory = onClickCategory,
         )
 
         LazyColumn(
@@ -122,7 +128,7 @@ fun HomeScreenProducts(
 }
 
 @Composable
-fun HomeScreenProductCard(
+private fun HomeScreenProductCard(
     modifier: Modifier = Modifier,
     product: ProductWithQuantity,
     onIncrease: (Int) -> Unit,
@@ -169,24 +175,58 @@ fun HomeScreenProductCard(
     )
 }
 
-@DevicePreviews
 @Composable
-private fun HomeScreenProductCardPreview(
+private fun TitleWithSelectedCategory(
     modifier: Modifier = Modifier,
+    text: String = "Products",
+    icon: ImageVector = PoposIcons.Dns,
+    selectedCategory: String? = null,
+    onClickCategory: () -> Unit,
+    containerColor: Color = Color.Transparent,
+    contentColor: Color = MaterialTheme.colorScheme.tertiary,
 ) {
-    PoposRoomTheme {
-        HomeScreenProductCard(
-            modifier = modifier,
-            product = ProductWithQuantity(
-                categoryId = 1,
-                productId = 1,
-                productName = "Chicken Biryani",
-                productPrice = 120,
-                quantity = 0,
-            ),
-            onIncrease = {},
-            onDecrease = {},
-        )
+    Surface(
+        modifier = modifier
+            .fillMaxWidth(),
+        color = containerColor,
+        contentColor = contentColor,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Row(
+                modifier = Modifier,
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(SpaceMini),
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = text,
+                    tint = contentColor,
+                )
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+
+            AnimatedVisibility(
+                visible = selectedCategory != null,
+            ) {
+                selectedCategory?.let {
+                    StandardRoundedInputChip(
+                        text = it,
+                        icon = PoposIcons.Category,
+                        selected = false,
+                        onClick = onClickCategory,
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -263,6 +303,27 @@ private fun IncreaseAndDecreaseButton(
 
 @DevicePreviews
 @Composable
+private fun HomeScreenProductCardPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        HomeScreenProductCard(
+            modifier = modifier,
+            product = ProductWithQuantity(
+                categoryId = 1,
+                productId = 1,
+                productName = "Chicken Biryani",
+                productPrice = 120,
+                quantity = 0,
+            ),
+            onIncrease = {},
+            onDecrease = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
 private fun IncreaseAndDecreaseButtonPreview(
     modifier: Modifier = Modifier,
 ) {
@@ -275,5 +336,54 @@ private fun IncreaseAndDecreaseButtonPreview(
             onClickIncrease = {},
             onClickDecrease = {},
         )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun HomeScreenProductsPreview(
+    modifier: Modifier = Modifier,
+    products: List<ProductWithQuantity> = ProductPreviewData.productWithQuantityList,
+) {
+    PoposRoomTheme {
+        HomeScreenProducts(
+            modifier = modifier,
+            products = products.toImmutableList(),
+            selectedCategory = "Biryani",
+            onIncrease = {},
+            onDecrease = {},
+            onCreateProduct = {},
+            onClickCategory = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun TitleWithEmptySelectedCategoryPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        TitleWithSelectedCategory(
+            modifier = modifier,
+            selectedCategory = null,
+            onClickCategory = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun TitleWithSelectedCategoryPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        Surface {
+            TitleWithSelectedCategory(
+                modifier = modifier,
+                selectedCategory = "Biryani",
+                onClickCategory = {},
+            )
+        }
     }
 }
