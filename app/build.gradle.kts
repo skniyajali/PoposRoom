@@ -18,6 +18,7 @@
 import com.niyaj.samples.apps.popos.PoposBuildType
 import io.sentry.android.gradle.extensions.InstrumentationFeature
 import io.sentry.android.gradle.instrumentation.logcat.LogcatLevel
+import org.jetbrains.kotlin.storage.CacheResetOnProcessCanceled.enabled
 
 plugins {
     alias(libs.plugins.popos.android.application)
@@ -222,8 +223,7 @@ secrets {
 }
 
 dependencies {
-    // Removed for this alpha release
-//    implementation(project(":feature:account"))
+    implementation(project(":feature:account"))
     implementation(project(":feature:addonitem"))
     implementation(project(":feature:address"))
     implementation(project(":feature:cart"))
