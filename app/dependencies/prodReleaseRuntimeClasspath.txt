@@ -148,7 +148,7 @@ com.google.accompanist:accompanist-drawablepainter:0.32.0
 com.google.accompanist:accompanist-navigation-material:0.32.0
 com.google.accompanist:accompanist-pager:0.25.1
 com.google.accompanist:accompanist-permissions:0.34.0
-com.google.accompanist:accompanist-swiperefresh:0.27.0
+com.google.accompanist:accompanist-swiperefresh:0.34.0
 com.google.accompanist:accompanist-systemuicontroller:0.34.0
 com.google.android.datatransport:transport-api:3.1.0
 com.google.android.datatransport:transport-backend-cct:3.1.9
