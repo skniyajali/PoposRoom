@@ -38,7 +38,7 @@ import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.LightColor2
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Customer
@@ -56,7 +56,7 @@ internal fun CustomerDetails(
     doesExpanded: Boolean,
     onExpandChanged: () -> Unit,
     onClickViewDetails: (Int) -> Unit,
-    containerColor: Color = LightColor2,
+    containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CustomerDetails") {
     ElevatedCard(
         modifier = modifier
@@ -187,18 +187,20 @@ internal fun CustomerDetails(
 private fun CustomerDetailsPreview(
     modifier: Modifier = Modifier,
 ) {
-    CustomerDetails(
-        modifier = Modifier,
-        customer = Customer(
-            customerId = 1,
-            customerPhone = "9876543211",
-            customerName = "Niyaj",
-            customerEmail = "niyaj@gmail.com",
-            createdAt = System.currentTimeMillis(),
-            updatedAt = null,
-        ),
-        doesExpanded = true,
-        onExpandChanged = {},
-        onClickViewDetails = {},
-    )
+    PoposRoomTheme {
+        CustomerDetails(
+            modifier = Modifier,
+            customer = Customer(
+                customerId = 1,
+                customerPhone = "9876543211",
+                customerName = "Niyaj",
+                customerEmail = "niyaj@gmail.com",
+                createdAt = System.currentTimeMillis(),
+                updatedAt = null,
+            ),
+            doesExpanded = true,
+            onExpandChanged = {},
+            onClickViewDetails = {},
+        )
+    }
 }

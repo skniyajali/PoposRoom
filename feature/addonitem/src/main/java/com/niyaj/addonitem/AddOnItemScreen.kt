@@ -18,6 +18,7 @@
 package com.niyaj.addonitem
 
 import androidx.activity.compose.BackHandler
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.fillMaxSize
@@ -146,8 +147,9 @@ fun AddOnItemScreen(
     )
 }
 
+@VisibleForTesting
 @Composable
-private fun AddOnItemScreenContent(
+internal fun AddOnItemScreenContent(
     uiState: UiState<List<AddOnItem>>,
     selectedItems: List<Int>,
     showSearchBar: Boolean,
@@ -169,6 +171,7 @@ private fun AddOnItemScreenContent(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
 ) {
+    val showFab = uiState is UiState.Success
     val openDialog = remember { mutableStateOf(false) }
 
     BackHandler {
@@ -188,7 +191,7 @@ private fun AddOnItemScreenContent(
         title = if (selectedItems.isEmpty()) ADDON_SCREEN_TITLE else "${selectedItems.size} Selected",
         floatingActionButton = {
             StandardFAB(
-                fabVisible = (uiState !is UiState.Empty && selectedItems.isEmpty() && !showSearchBar),
+                fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
                 onFabClick = onCreateNewClick,
                 onClickScroll = { coroutineScope.launch { lazyGridState.animateScrollToItem(0) } },
                 showScrollToTop = lazyGridState.isScrolled,
@@ -200,7 +203,7 @@ private fun AddOnItemScreenContent(
                 placeholderText = ADDON_SEARCH_PLACEHOLDER,
                 showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchIcon = uiState is UiState.Success,
+                showSearchIcon = showFab,
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = onEditClick,

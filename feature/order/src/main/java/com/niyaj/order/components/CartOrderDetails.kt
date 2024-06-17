@@ -36,6 +36,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,7 +56,7 @@ import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.components.PoposOutlinedDropdownButton
 import com.niyaj.designsystem.components.PoposSuggestionChip
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.LightColor6
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Address
@@ -81,7 +82,7 @@ internal fun CartOrderDetails(
     deliveryPartner: EmployeeNameAndId? = null,
     partners: List<EmployeeNameAndId>,
     onChangePartner: (Int) -> Unit,
-    containerColor: Color = LightColor6,
+    containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CartOrderDetails") {
     var expanded by remember { mutableStateOf(false) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
@@ -198,7 +199,7 @@ internal fun CartOrderDetails(
                                         // This is used to assign to the DropDown the same width
                                         textFieldSize = coordinates.size.toSize()
                                     }
-                                    .menuAnchor(),
+                                    .menuAnchor(MenuAnchorType.PrimaryNotEditable, true),
                                 text = "$text Delivery Partner",
                                 leadingIcon = icon,
                                 trailingIcon = if (expanded) PoposIcons.KeyboardArrowUp else PoposIcons.ArrowDown,
@@ -251,33 +252,35 @@ internal fun CartOrderDetails(
 private fun CartOrderDetailsPreview(
     modifier: Modifier = Modifier,
 ) {
-    CartOrderDetails(
-        modifier = modifier,
-        cartOrder = CartOrder(
-            orderId = 4866,
-            orderType = OrderType.DineOut,
-            orderStatus = OrderStatus.PROCESSING,
-            doesChargesIncluded = false,
-            customer = Customer(),
-            address = Address(),
-            deliveryPartnerId = 4978,
-        ),
-        doesExpanded = true,
-        onExpandChanged = {},
-        deliveryPartner = EmployeeNameAndId(
-            employeeId = 4978,
-            employeeName = "Niyaj",
-        ),
-        partners = listOf(
-            EmployeeNameAndId(
+    PoposRoomTheme {
+        CartOrderDetails(
+            modifier = modifier,
+            cartOrder = CartOrder(
+                orderId = 4866,
+                orderType = OrderType.DineOut,
+                orderStatus = OrderStatus.PROCESSING,
+                doesChargesIncluded = false,
+                customer = Customer(),
+                address = Address(),
+                deliveryPartnerId = 4978,
+            ),
+            doesExpanded = true,
+            onExpandChanged = {},
+            deliveryPartner = EmployeeNameAndId(
                 employeeId = 4978,
                 employeeName = "Niyaj",
             ),
-            EmployeeNameAndId(
-                employeeId = 497,
-                employeeName = "Baby",
+            partners = listOf(
+                EmployeeNameAndId(
+                    employeeId = 4978,
+                    employeeName = "Niyaj",
+                ),
+                EmployeeNameAndId(
+                    employeeId = 497,
+                    employeeName = "Baby",
+                ),
             ),
-        ),
-        onChangePartner = {},
-    )
+            onChangePartner = {},
+        )
+    }
 }

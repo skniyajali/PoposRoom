@@ -38,7 +38,7 @@ import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.LightColor3
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Address
@@ -56,7 +56,7 @@ internal fun AddressDetails(
     doesExpanded: Boolean,
     onExpandChanged: () -> Unit,
     onClickViewDetails: (Int) -> Unit,
-    containerColor: Color = LightColor3,
+    containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("AddressDetails") {
     ElevatedCard(
         modifier = modifier
@@ -168,17 +168,19 @@ internal fun AddressDetails(
 private fun AddressDetailsPreview(
     modifier: Modifier = Modifier,
 ) {
-    AddressDetails(
-        modifier = modifier,
-        address = Address(
-            addressId = 5729,
-            addressName = "Francisca Osborn",
-            shortName = "Russel Garcia",
-            createdAt = System.currentTimeMillis(),
-            updatedAt = null,
-        ),
-        doesExpanded = true,
-        onExpandChanged = {},
-        onClickViewDetails = {},
-    )
+    PoposRoomTheme {
+        AddressDetails(
+            modifier = modifier,
+            address = Address(
+                addressId = 5729,
+                addressName = "Francisca Osborn",
+                shortName = "Russel Garcia",
+                createdAt = System.currentTimeMillis(),
+                updatedAt = null,
+            ),
+            doesExpanded = true,
+            onExpandChanged = {},
+            onClickViewDetails = {},
+        )
+    }
 }

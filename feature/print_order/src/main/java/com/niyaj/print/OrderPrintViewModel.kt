@@ -192,8 +192,9 @@ class OrderPrintViewModel @Inject constructor(
         orderedProduct.forEach {
             val productName =
                 createDottedString(it.productName, printerInfo.productNameLength)
+            val productPrice = it.productPrice * it.productQuantity
 
-            products += "[L]$productName[R]${it.productQuantity}[R]${it.productPrice}\n"
+            products += "[L]$productName[R]${it.productQuantity}[R]${productPrice}\n"
         }
 
         return products

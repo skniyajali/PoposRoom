@@ -598,16 +598,16 @@ private fun ShareableCartProductsDetails(
 
                     Text(
                         modifier = Modifier.weight(0.5f, true),
-                        text = "Price",
+                        text = "Qty",
                         textAlign = TextAlign.End,
+                        fontWeight = FontWeight.Normal,
                         style = MaterialTheme.typography.labelMedium,
                     )
 
                     Text(
                         modifier = Modifier.weight(0.5f, true),
-                        text = "Qty",
+                        text = "Price",
                         textAlign = TextAlign.End,
-                        fontWeight = FontWeight.Normal,
                         style = MaterialTheme.typography.labelMedium,
                     )
                 }
@@ -764,19 +764,6 @@ private fun CartProduct(
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .background(LightColor8, RoundedCornerShape(4.dp))
-                    .weight(0.5f, true),
-            ) {
-                Text(
-                    modifier = Modifier.align(Alignment.Center),
-                    text = cartProduct.productPrice.toString().toRupee,
-                    textAlign = TextAlign.End,
-                )
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
                     .background(LightColor10, RoundedCornerShape(4.dp))
                     .weight(0.3f, true),
             ) {
@@ -784,6 +771,21 @@ private fun CartProduct(
                     modifier = Modifier.align(Alignment.Center),
                     text = cartProduct.productQuantity.toString(),
                     fontWeight = FontWeight.Bold,
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .background(LightColor8, RoundedCornerShape(4.dp))
+                    .weight(0.5f, true),
+            ) {
+                val productPrice = (cartProduct.productPrice * cartProduct.productQuantity)
+
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = productPrice.toRupee,
+                    textAlign = TextAlign.End,
                 )
             }
         }

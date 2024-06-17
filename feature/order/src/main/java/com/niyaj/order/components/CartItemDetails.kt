@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.LightColor6
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.AddOnItem
 import com.niyaj.model.CartProductItem
@@ -71,7 +70,7 @@ internal fun CartItemDetails(
     orderPrice: OrderPrice,
     doesExpanded: Boolean,
     onExpandChanged: () -> Unit,
-    containerColor: Color = LightColor6,
+    containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CartItemDetails") {
     ElevatedCard(
         modifier = modifier
@@ -133,7 +132,7 @@ internal fun CartItemDetails(
 }
 
 @Composable
-fun CartItemOrderProductDetails(
+internal fun CartItemOrderProductDetails(
     modifier: Modifier = Modifier,
     orderType: OrderType,
     doesChargesIncluded: Boolean,
@@ -161,10 +160,11 @@ fun CartItemOrderProductDetails(
         Spacer(modifier = Modifier.height(SpaceSmall))
 
         cartProducts.forEach { product ->
+            val productPrice = (product.productPrice * product.productQuantity)
             ThreeGridTexts(
                 textOne = product.productName,
                 textTwo = product.productQuantity.toString(),
-                textThree = product.productPrice.toString().toRupee,
+                textThree = productPrice.toRupee,
             )
             Spacer(modifier = Modifier.height(SpaceSmall))
         }
