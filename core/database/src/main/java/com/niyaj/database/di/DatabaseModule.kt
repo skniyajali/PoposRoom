@@ -19,8 +19,6 @@ package com.niyaj.database.di
 
 import android.content.Context
 import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.niyaj.database.PoposDatabase
 import dagger.Module
 import dagger.Provides
@@ -42,22 +40,5 @@ object DatabaseModule {
         PoposDatabase::class.java,
         "popos-database",
     ).fallbackToDestructiveMigration()
-//        .addCallback(CALLBACK)
         .build()
-
-    private val CALLBACK = object : RoomDatabase.Callback() {
-        override fun onCreate(db: SupportSQLiteDatabase) {
-            super.onCreate(db)
-
-            db.execSQL(
-                """
-            CREATE TRIGGER[IF NOT EXISTS] product_with_quantity_trigger
-            AFTER INSERT, UPDATE, DELETE ON cart
-            BEGIN
-                REFRESH VIEW product_with_quantity;
-            END;
-                """.trimIndent(),
-            )
-        }
-    }
 }

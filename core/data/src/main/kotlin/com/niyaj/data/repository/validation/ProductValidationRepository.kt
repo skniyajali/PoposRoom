@@ -26,4 +26,6 @@ interface ProductValidationRepository {
     suspend fun validateProductName(productName: String, productId: Int? = null): ValidationResult
 
     fun validateProductPrice(productPrice: Int, type: String? = null): ValidationResult
+
+    fun validateProductTag(tagName: String): ValidationResult
 }

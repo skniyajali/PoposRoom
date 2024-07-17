@@ -40,6 +40,11 @@ object ProductTestTags {
 
     const val PRODUCT_AVAILABILITY_FIELD = "Product Availability"
 
+    const val PRODUCT_TAGS = "Product Tags"
+    const val PRODUCT_TAG_NAME = "Product Tag Name"
+    const val PRODUCT_TAGS_ERROR = "Product TagsError"
+    const val PRODUCT_TAGS_MSG = "If below tag are not suitable, Please create new tag."
+
     const val ADD_EDIT_PRODUCT_BUTTON = "AddEdit ProductButton"
 
     const val PRODUCT_NAME_EMPTY_ERROR = "Product name must not be empty"
@@ -48,6 +53,8 @@ object ProductTestTags {
 
     const val PRODUCT_PRICE_EMPTY_ERROR = "Product price must not be empty."
     const val PRODUCT_PRICE_LENGTH_ERROR = "Product price must be at least 10 rupees."
+
+    const val PRODUCT_TAG_LENGTH_ERROR = "Tag name must be more than 3 characters"
 
     const val PRODUCT_CATEGORY_EMPTY_ERROR = "Product category must not be empty."
 

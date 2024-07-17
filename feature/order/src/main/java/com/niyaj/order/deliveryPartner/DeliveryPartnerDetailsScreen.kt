@@ -21,11 +21,14 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Intent
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -40,8 +43,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -61,10 +66,12 @@ import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor6
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.DeliveryReport
+import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.TotalOrders
 import com.niyaj.order.components.ShareablePartnerDetails
 import com.niyaj.order.components.TotalDeliveryReportCard
@@ -76,10 +83,12 @@ import com.niyaj.ui.components.ItemNotAvailableHalf
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.StandardBottomSheetScaffold
 import com.niyaj.ui.event.ShareViewModel
+import com.niyaj.ui.parameterProvider.CardOrderPreviewData
 import com.niyaj.ui.parameterProvider.DeliveryReportPreviewParameter
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.rememberCaptureController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -87,6 +96,9 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Date
@@ -103,10 +115,14 @@ fun DeliveryPartnerDetailsScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val captureController = rememberCaptureController()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val reportState by viewModel.deliveryReports.collectAsStateWithLifecycle()
     val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
     val showShareDialog by shareViewModel.showDialog.collectAsStateWithLifecycle()
+    val partners by viewModel.partners.collectAsStateWithLifecycle()
+
+    val selectedItems = viewModel.selectedItems.toList()
 
     TrackScreenViewEvent("DeliveryPartnerDetailsScreen/$partnerId")
 
@@ -136,14 +152,35 @@ fun DeliveryPartnerDetailsScreen(
         }
     }
 
+    LaunchedEffect(true) {
+        printViewModel.eventFlow.collect { event ->
+            when (event) {
+                is UiEvent.OnError -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(event.errorMessage)
+                    }
+                }
+
+                is UiEvent.OnSuccess -> {}
+            }
+        }
+    }
+
     DeliveryPartnerDetailsScreenContent(
         modifier = Modifier,
         selectedDate = selectedDate,
         reportState = reportState,
+        selectedItems = selectedItems.toImmutableList(),
+        partners = partners.toImmutableList(),
         onClickPrint = printDeliveryReport,
         onClickShare = shareViewModel::onShowDialog,
         onSelectDate = viewModel::selectDate,
+        onSelectItem = viewModel::selectItem,
+        onDeselectItems = viewModel::deselectItems,
+        onClickSelectItems = viewModel::selectUnselectedOrders,
+        onChangePartner = viewModel::onChangeDeliveryPartner,
         onBackClick = navigator::navigateUp,
+        snackbarHostState = snackbarHostState,
         onNavigateToHomeScreen = {
             navigator.navigate(Screens.HOME_SCREEN)
         },
@@ -192,15 +229,23 @@ private fun DeliveryPartnerDetailsScreenContent(
     modifier: Modifier = Modifier,
     selectedDate: String,
     reportState: PartnerReportState,
+    selectedItems: ImmutableList<Int>,
+    partners: ImmutableList<EmployeeNameAndId>,
     onClickPrint: () -> Unit,
     onClickShare: () -> Unit,
     onBackClick: () -> Unit,
     onNavigateToHomeScreen: () -> Unit,
     onClickOrder: (Int) -> Unit,
     onSelectDate: (String) -> Unit,
+    onSelectItem: (Int) -> Unit,
+    onDeselectItems: () -> Unit,
+    onClickSelectItems: () -> Unit,
+    onChangePartner: (Int) -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) = trace("DeliveryPartnerDetailsScreenContent") {
     val lazyListState = rememberLazyListState()
     val dialogState = rememberMaterialDialogState()
+
     val totalOrders = if (reportState is PartnerReportState.Success) {
         remember {
             TotalOrders(
@@ -221,9 +266,19 @@ private fun DeliveryPartnerDetailsScreenContent(
         "Partner Reports"
     }
 
+    val onClickBack: () -> Unit = {
+        if (selectedItems.isEmpty()) {
+            onBackClick()
+        } else {
+            onDeselectItems()
+        }
+    }
+
+    BackHandler { onClickBack() }
+
     StandardBottomSheetScaffold(
         modifier = modifier,
-        title = title,
+        title = if (selectedItems.isEmpty()) title else "${selectedItems.size} Selected",
         showBottomBar = true,
         bottomBar = {
             TotalDeliveryReportCard(
@@ -233,6 +288,11 @@ private fun DeliveryPartnerDetailsScreenContent(
                     .background(MaterialTheme.colorScheme.secondary),
                 totalOrders = totalOrders,
                 selectedDate = selectedDate.ifEmpty { System.currentTimeMillis().toString() },
+                selectedCount = selectedItems.size,
+                isInSelectionMode = selectedItems.isNotEmpty(),
+                onClickSelectItems = onClickSelectItems,
+                onChangePartner = onChangePartner,
+                partners = partners,
                 onClickPrint = onClickPrint,
                 onClickShare = onClickShare,
                 onChangeDate = dialogState::show,
@@ -241,7 +301,8 @@ private fun DeliveryPartnerDetailsScreenContent(
                 color = MaterialTheme.colorScheme.secondary,
             )
         },
-        onBackClick = onBackClick,
+        onBackClick = onClickBack,
+        snackbarHostState = snackbarHostState,
     ) {
         Crossfade(
             targetState = reportState,
@@ -274,10 +335,18 @@ private fun DeliveryPartnerDetailsScreenContent(
                             key = {
                                 it.orderId
                             },
-                        ) {
+                        ) { deliveryReport ->
                             DeliveryReportCard(
-                                order = it,
-                                onClickOrder = onClickOrder,
+                                order = deliveryReport,
+                                isSelected = selectedItems::contains,
+                                onSelectItem = onSelectItem,
+                                onClickOrder = {
+                                    if (selectedItems.isEmpty()) {
+                                        onClickOrder(it)
+                                    } else {
+                                        onSelectItem(it)
+                                    }
+                                },
                             )
                         }
                     }
@@ -303,22 +372,30 @@ private fun DeliveryPartnerDetailsScreenContent(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun DeliveryReportCard(
     modifier: Modifier = Modifier,
     order: DeliveryReport,
+    isSelected: (Int) -> Boolean,
     onClickOrder: (Int) -> Unit,
+    onSelectItem: (Int) -> Unit,
     containerColor: Color = LightColor6,
 ) = trace("DeliveryReportCard") {
     ElevatedCard(
-        modifier = modifier,
+        modifier = modifier
+            .combinedClickable(
+                onLongClick = {
+                    onSelectItem(order.orderId)
+                },
+                onClick = {
+                    onClickOrder(order.orderId)
+                },
+            ),
         colors = CardDefaults.elevatedCardColors().copy(
             containerColor = containerColor,
         ),
         shape = RoundedCornerShape(SpaceMini),
-        onClick = {
-            onClickOrder(order.orderId)
-        },
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 1.dp,
         ),
@@ -336,7 +413,7 @@ internal fun DeliveryReportCard(
             ) {
                 CircularBox(
                     icon = PoposIcons.Tag,
-                    doesSelected = false,
+                    doesSelected = isSelected(order.orderId),
                     backgroundColor = MaterialTheme.colorScheme.background,
                     modifier = Modifier,
                 )
@@ -396,40 +473,58 @@ private fun DeliveryReportCardPreview(
             partnerName = null,
             orderDate = Date(),
         ),
+        isSelected = { false },
         onClickOrder = {},
+        onSelectItem = {},
     )
 }
 
 @DevicePreviews
 @Composable
 private fun DeliveryPartnerDetailsScreenLoadingState() {
-    DeliveryPartnerDetailsScreenContent(
-        modifier = Modifier,
-        selectedDate = System.currentTimeMillis().toString(),
-        reportState = PartnerReportState.Loading,
-        onClickPrint = {},
-        onClickShare = {},
-        onBackClick = {},
-        onNavigateToHomeScreen = {},
-        onClickOrder = {},
-        onSelectDate = {},
-    )
+    PoposRoomTheme {
+        DeliveryPartnerDetailsScreenContent(
+            modifier = Modifier,
+            selectedDate = System.currentTimeMillis().toString(),
+            reportState = PartnerReportState.Loading,
+            partners = persistentListOf(),
+            selectedItems = persistentListOf(),
+            onClickPrint = {},
+            onClickShare = {},
+            onBackClick = {},
+            onNavigateToHomeScreen = {},
+            onClickOrder = {},
+            onSelectDate = {},
+            onSelectItem = {},
+            onDeselectItems = {},
+            onClickSelectItems = {},
+            onChangePartner = {},
+        )
+    }
 }
 
 @DevicePreviews
 @Composable
 private fun DeliveryPartnerDetailsScreenEmptyState() {
-    DeliveryPartnerDetailsScreenContent(
-        modifier = Modifier,
-        selectedDate = System.currentTimeMillis().toString(),
-        reportState = PartnerReportState.Empty,
-        onClickPrint = {},
-        onClickShare = {},
-        onBackClick = {},
-        onNavigateToHomeScreen = {},
-        onClickOrder = {},
-        onSelectDate = {},
-    )
+    PoposRoomTheme {
+        DeliveryPartnerDetailsScreenContent(
+            modifier = Modifier,
+            selectedDate = System.currentTimeMillis().toString(),
+            reportState = PartnerReportState.Empty,
+            selectedItems = persistentListOf(),
+            partners = persistentListOf(),
+            onClickPrint = {},
+            onClickShare = {},
+            onBackClick = {},
+            onNavigateToHomeScreen = {},
+            onClickOrder = {},
+            onSelectDate = {},
+            onSelectItem = {},
+            onDeselectItems = {},
+            onClickSelectItems = {},
+            onChangePartner = {},
+        )
+    }
 }
 
 @DevicePreviews
@@ -438,15 +533,24 @@ private fun DeliveryPartnerDetailsScreenSuccessState(
     @PreviewParameter(DeliveryReportPreviewParameter::class)
     orders: List<DeliveryReport>,
 ) {
-    DeliveryPartnerDetailsScreenContent(
-        modifier = Modifier,
-        selectedDate = System.currentTimeMillis().toString(),
-        reportState = PartnerReportState.Success(orders = orders),
-        onClickPrint = {},
-        onClickShare = {},
-        onBackClick = {},
-        onNavigateToHomeScreen = {},
-        onClickOrder = {},
-        onSelectDate = {},
-    )
+    PoposRoomTheme {
+        DeliveryPartnerDetailsScreenContent(
+            modifier = Modifier,
+            selectedDate = System.currentTimeMillis().toString(),
+            reportState = PartnerReportState.Success(orders = orders),
+            selectedItems = orders.filter { it.orderId % 2 == 0 }.map { it.orderId }
+                .toImmutableList(),
+            partners = CardOrderPreviewData.sampleEmployeeNameAndIds.toImmutableList(),
+            onClickPrint = {},
+            onClickShare = {},
+            onBackClick = {},
+            onNavigateToHomeScreen = {},
+            onClickOrder = {},
+            onSelectDate = {},
+            onSelectItem = {},
+            onDeselectItems = {},
+            onClickSelectItems = {},
+            onChangePartner = {},
+        )
+    }
 }

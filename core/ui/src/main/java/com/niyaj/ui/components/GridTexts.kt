@@ -103,6 +103,9 @@ fun TwoGridText(
     textOne: String,
     textTwo: String,
     textColor: Color = Color.Black,
+    textStyle: TextStyle = MaterialTheme.typography.labelMedium,
+    textOneWeight: FontWeight = FontWeight.SemiBold,
+    textTwoWeight: FontWeight = FontWeight.Normal,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -112,17 +115,17 @@ fun TwoGridText(
         Text(
             modifier = Modifier,
             text = textOne,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.SemiBold,
+            style = textStyle,
+            fontWeight = textOneWeight,
             color = textColor,
         )
 
         Text(
             modifier = Modifier,
             text = textTwo,
-            style = MaterialTheme.typography.labelSmall,
+            style = textStyle,
             textAlign = TextAlign.End,
-            fontWeight = FontWeight.Normal,
+            fontWeight = textTwoWeight,
             color = textColor,
         )
     }
@@ -134,8 +137,8 @@ fun ThreeGridTexts(
     textOne: String,
     textTwo: String,
     textThree: String,
-    isTitle: Boolean = false,
     textStyle: TextStyle = MaterialTheme.typography.bodySmall,
+    fontWeight: FontWeight = FontWeight.Normal,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -146,7 +149,7 @@ fun ThreeGridTexts(
             modifier = Modifier.weight(2f),
             text = textOne,
             style = textStyle,
-            fontWeight = FontWeight.SemiBold,
+            fontWeight = fontWeight,
         )
 
         Text(
@@ -154,7 +157,7 @@ fun ThreeGridTexts(
             text = textTwo,
             style = textStyle,
             textAlign = TextAlign.Start,
-            fontWeight = if (isTitle) FontWeight.SemiBold else FontWeight.Normal,
+            fontWeight = fontWeight,
         )
 
         Text(
@@ -162,55 +165,7 @@ fun ThreeGridTexts(
             text = textThree,
             style = textStyle,
             textAlign = TextAlign.End,
-            fontWeight = if (isTitle) FontWeight.SemiBold else FontWeight.Normal,
-        )
-    }
-}
-
-@Composable
-fun FourGridTexts(
-    modifier: Modifier = Modifier,
-    textOne: String,
-    textTwo: String,
-    textThree: String,
-    textFour: String,
-    isTitle: Boolean = false,
-    textStyle: TextStyle = MaterialTheme.typography.labelMedium,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(
-            modifier = Modifier.weight(0.5f),
-            text = textOne,
-            style = textStyle,
-            fontWeight = FontWeight.Bold,
-        )
-
-        Text(
-            modifier = Modifier.weight(0.5f, true),
-            text = textTwo,
-            style = textStyle,
-            textAlign = TextAlign.Start,
-            fontWeight = if (isTitle) FontWeight.Bold else FontWeight.Normal,
-        )
-
-        Text(
-            modifier = Modifier.weight(1f, true),
-            text = textThree,
-            style = textStyle,
-            textAlign = TextAlign.Start,
-            fontWeight = if (isTitle) FontWeight.Bold else FontWeight.Normal,
-        )
-
-        Text(
-            modifier = Modifier.weight(0.5f, true),
-            text = textFour,
-            style = textStyle,
-            textAlign = TextAlign.End,
-            fontWeight = if (isTitle) FontWeight.Bold else FontWeight.Normal,
+            fontWeight = fontWeight,
         )
     }
 }

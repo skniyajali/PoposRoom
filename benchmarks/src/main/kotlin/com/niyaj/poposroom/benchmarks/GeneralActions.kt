@@ -66,6 +66,12 @@ fun MacrobenchmarkScope.allowAllPermission() {
         device.executeShellCommand(bleScan)
     }
 
+    val readPermission = "pm grant $packageName ${permission.READ_EXTERNAL_STORAGE}"
+    val writePermission = "pm grant $packageName ${permission.WRITE_EXTERNAL_STORAGE}"
+
+    device.executeShellCommand(readPermission)
+    device.executeShellCommand(writePermission)
+
     device.executeShellCommand(blePer)
     device.executeShellCommand(bleAdmin)
 }

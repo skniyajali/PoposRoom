@@ -13,7 +13,11 @@ concurrency:
 jobs:
   test_and_apk:
     name: "Local tests and APKs"
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+
+    runs-on: ${{ matrix.os }}
 
     permissions:
       contents: write
@@ -22,18 +26,8 @@ jobs:
     timeout-minutes: 360
 
     steps:
-      - name: Enable KVM group perms
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-          ls /dev/kvm
-
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v3
 
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
@@ -45,7 +39,10 @@ jobs:
           java-version: 17
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          validate-wrappers: true
+          gradle-home-cache-cleanup: true
 
       - name: Check build-logic
         run: ./gradlew check -p build-logic
@@ -66,11 +63,13 @@ jobs:
           echo "::error::Dependency Guard failed, please update baselines with: ./gradlew dependencyGuardBaseline" && exit 1
 
         # Runs if previous job failed
+
       - name: Generate new Dependency Guard baselines if verification failed and it's a PR
         id: dependencyguard_baseline
         if: steps.dependencyguard_verify.outcome == 'failure' && github.event_name == 'pull_request'
         run: |
           ./gradlew dependencyGuardBaseline
+
 
       - name: Push new Dependency Guard baselines if available
         uses: stefanzweifel/git-auto-commit-action@v5
@@ -92,12 +91,14 @@ jobs:
         run: |
           echo "::error::Screenshot tests failed, please create a PR in your fork first." && exit 1
 
+
       # Runs if previous job failed
       - name: Generate new screenshots if verification failed and it's a PR
         id: screenshotsrecord
         if: steps.screenshotsverify.outcome == 'failure' && github.event_name == 'pull_request'
         run: |
           ./gradlew recordRoborazziDemoDebug
+
 
       - name: Push new screenshots if available
         uses: stefanzweifel/git-auto-commit-action@v5
@@ -116,7 +117,7 @@ jobs:
       # release build
 
       - name: Build all build type and flavor permutations
-        run: ./gradlew --scan --debug :app:assemble :benchmarks:assemble
+        run: ./gradlew :app:assemble :benchmarks:assemble
           -x pixel6Api33ProdNonMinifiedReleaseAndroidTest
           -x pixel6Api33DemoNonMinifiedReleaseAndroidTest
           -x collectDemoNonMinifiedReleaseBaselineProfile

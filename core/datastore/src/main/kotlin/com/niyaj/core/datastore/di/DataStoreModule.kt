@@ -24,6 +24,8 @@ import androidx.datastore.dataStoreFile
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.network.di.ApplicationScope
+import com.niyaj.core.datastore.KeepDataConfigPreferences
+import com.niyaj.core.datastore.KeepDataConfigSerializer
 import com.niyaj.core.datastore.UserPreferences
 import com.niyaj.core.datastore.UserPreferencesSerializer
 import dagger.Module
@@ -53,5 +55,21 @@ object DataStoreModule {
             migrations = listOf(),
         ) {
             context.dataStoreFile("user_preferences.pb")
+        }
+
+    @Provides
+    @Singleton
+    internal fun providesKeepDataConfigDataStore(
+        @ApplicationContext context: Context,
+        @Dispatcher(PoposDispatchers.IO) ioDispatcher: CoroutineDispatcher,
+        @ApplicationScope scope: CoroutineScope,
+        keepDataConfigSerializer: KeepDataConfigSerializer,
+    ): DataStore<KeepDataConfigPreferences> =
+        DataStoreFactory.create(
+            serializer = keepDataConfigSerializer,
+            scope = CoroutineScope(scope.coroutineContext + ioDispatcher),
+            migrations = listOf(),
+        ) {
+            context.dataStoreFile("keep_data_config.pb")
         }
 }

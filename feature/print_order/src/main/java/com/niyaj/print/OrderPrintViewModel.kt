@@ -20,7 +20,6 @@ package com.niyaj.print
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dantsu.escposprinter.exceptions.EscPosConnectionException
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.utils.createDottedString
@@ -46,7 +45,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.IOException
 import javax.inject.Inject
 
 /**
@@ -104,54 +102,52 @@ class OrderPrintViewModel @Inject constructor(
     private fun printOrder(orderId: Int) {
         viewModelScope.launch {
             try {
-                bluetoothPrinter.connectBluetoothPrinterAsync()
-                val printer = bluetoothPrinter.printer
+                bluetoothPrinter
+                    .connectAndGetBluetoothPrinterAsync()
+                    .onSuccess {
+                        it?.let {
+                            var printItems = ""
 
-                printer?.let {
-                    var printItems = ""
+                            withContext(ioDispatcher) {
+                                val orderDetails = printRepository.getOrderDetails(orderId)
+                                val usePartnerQr = userDataRepository.usePartnerQRCode()
+                                val partner = orderDetails.deliveryPartner
 
-                    withContext(ioDispatcher) {
-                        val orderDetails = printRepository.getOrderDetails(orderId)
-                        val usePartnerQr = userDataRepository.usePartnerQRCode()
-                        val partner = orderDetails.deliveryPartner
+                                printItems += bluetoothPrinter.getPrintableRestaurantDetails(it)
+                                printItems += printOrderDetails(orderDetails.cartOrder, partner)
+                                printItems += printProductDetails(orderDetails.cartProducts.toList())
 
-                        printItems += bluetoothPrinter.getPrintableRestaurantDetails(it)
-                        printItems += printOrderDetails(orderDetails.cartOrder, partner)
-                        printItems += printProductDetails(orderDetails.cartProducts.toList())
+                                if (orderDetails.addOnItems.isNotEmpty()) {
+                                    printItems += printAddOnItems(orderDetails.addOnItems.toList())
+                                }
 
-                        if (orderDetails.addOnItems.isNotEmpty()) {
-                            printItems += printAddOnItems(orderDetails.addOnItems.toList())
+                                if (orderDetails.cartOrder.doesChargesIncluded && orderDetails.cartOrder.orderType != OrderType.DineIn) {
+                                    val chargesList = printRepository.getCharges()
+
+                                    printItems += printCharges(chargesList)
+                                }
+
+                                if (orderDetails.charges.isNotEmpty()) {
+                                    printItems += printAdditionalCharges(orderDetails.charges.toList())
+                                }
+
+                                printItems += printSubTotalAndDiscount(orderDetails.orderPrice)
+                                printItems += printTotalPrice(orderDetails.orderPrice.totalPrice)
+                                printItems += bluetoothPrinter.getPrintableFooterInfo()
+                                printItems += bluetoothPrinter.getPrintableQrCode(
+                                    usePartnerQr,
+                                    partner,
+                                )
+                            }
+
+                            it.printFormattedText(printItems, 10f)
                         }
-
-                        if (orderDetails.cartOrder.doesChargesIncluded && orderDetails.cartOrder.orderType != OrderType.DineIn) {
-                            val chargesList = printRepository.getCharges()
-
-                            printItems += printCharges(chargesList)
-                        }
-
-                        if (orderDetails.charges.isNotEmpty()) {
-                            printItems += printAdditionalCharges(orderDetails.charges.toList())
-                        }
-
-                        printItems += printSubTotalAndDiscount(orderDetails.orderPrice)
-                        printItems += printTotalPrice(orderDetails.orderPrice.totalPrice)
-                        printItems += bluetoothPrinter.getPrintableFooterInfo()
-                        printItems += bluetoothPrinter.getPrintableQrCode(usePartnerQr, partner)
                     }
-
-                    printer.printFormattedText(printItems, 10f)
-                } ?: run {
-                    _eventFlow.emit(UiEvent.OnError("Printer not connected"))
-                }
-            } catch (e: EscPosConnectionException) {
-                _eventFlow.emit(UiEvent.OnError("Unable to print order details"))
-                return@launch
-            } catch (e: IOException) {
-                _eventFlow.emit(UiEvent.OnError("Unable to print order details"))
-                return@launch
+                    .onFailure {
+                        _eventFlow.emit(UiEvent.OnError("Printer not connected"))
+                    }
             } catch (e: Exception) {
-                _eventFlow.emit(UiEvent.OnError("Unable to print order details"))
-                return@launch
+                _eventFlow.emit(UiEvent.OnError("Printer not connected"))
             }
         }
     }
@@ -263,24 +259,30 @@ class OrderPrintViewModel @Inject constructor(
     private fun printDeliveryReport(date: String, partnerId: Int? = null) {
         viewModelScope.launch {
             try {
-                bluetoothPrinter.connectBluetoothPrinter()
-                val printer = bluetoothPrinter.printer
+                bluetoothPrinter
+                    .connectAndGetBluetoothPrinterAsync()
+                    .onSuccess {
+                        it?.let {
+                            val deliveryReports =
+                                printRepository.getDeliveryReports(date, partnerId)
 
-                printer?.let {
-                    val deliveryReports = printRepository.getDeliveryReports(date, partnerId)
+                            var printItems = ""
+                            printItems += bluetoothPrinter.getPrintableHeader(
+                                "DELIVERY REPORTS",
+                                date,
+                            )
+                            printItems += getPrintableOrders(deliveryReports)
+                            printItems += "[L]-------------------------------\n"
+                            printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
+                            printItems += "[L]-------------------------------\n"
 
-                    var printItems = ""
-                    printItems += bluetoothPrinter.getPrintableHeader("DELIVERY REPORTS", date)
-                    printItems += getPrintableOrders(deliveryReports)
-                    printItems += "[L]-------------------------------\n"
-                    printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
-                    printItems += "[L]-------------------------------\n"
-
-                    printer.printFormattedText(printItems, 10f)
-                }
+                            it.printFormattedText(printItems, 10f)
+                        }
+                    }.onFailure {
+                        _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                    }
             } catch (e: Exception) {
-                Log.d("Print", e.message ?: "Error printing delivery report")
-                _eventFlow.emit(UiEvent.OnError("Error printing delivery reports"))
+                _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
             }
         }
     }

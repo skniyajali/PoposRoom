@@ -17,6 +17,7 @@
 
 package com.niyaj.database
 
+import android.content.Context
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -30,6 +31,7 @@ import com.niyaj.database.dao.CartPriceDao
 import com.niyaj.database.dao.CategoryDao
 import com.niyaj.database.dao.ChargesDao
 import com.niyaj.database.dao.CustomerDao
+import com.niyaj.database.dao.DataDeletionDao
 import com.niyaj.database.dao.EmployeeDao
 import com.niyaj.database.dao.ExpenseDao
 import com.niyaj.database.dao.HomeDao
@@ -112,7 +114,7 @@ import com.niyaj.database.util.TimestampConverters
         MarketListWithItemsEntity::class,
         MeasureUnitEntity::class,
     ],
-    version = 25,
+    version = 26,
     autoMigrations = [],
     exportSchema = true,
     views = [
@@ -148,4 +150,25 @@ abstract class PoposDatabase : RoomDatabase() {
     abstract fun marketListWithTypeDao(): MarketListWIthTypeDao
     abstract fun marketListWithItemsDao(): MarketListWIthItemsDao
     abstract fun measureUnitDao(): MeasureUnitDao
+    abstract fun dataDeletionDao(): DataDeletionDao
+
+    companion object {
+
+        const val NAME = "popos-database"
+
+        private const val SUFFIX_SHM = "-shm"
+        private const val SUFFIX_WAL = "-wal"
+
+        private const val DATABASE_SHM = NAME + SUFFIX_SHM
+        private const val DATABASE_WAL = NAME + SUFFIX_WAL
+
+        val dbFileNames = listOf(NAME, DATABASE_SHM, DATABASE_WAL)
+
+        fun getFilePaths(context: Context): List<String> {
+            val dbPath = context.getDatabasePath(NAME).path
+            val dbShm = dbPath + SUFFIX_SHM
+            val dbWal = dbPath + SUFFIX_WAL
+            return listOf(dbPath, dbShm, dbWal)
+        }
+    }
 }

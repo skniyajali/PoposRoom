@@ -26,8 +26,8 @@ android {
 }
 
 dependencies {
+    api(libs.bundles.androidx.compose.ui.test)
     api(libs.roborazzi)
-    implementation(libs.androidx.compose.ui.test)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.ui.test)
     implementation(libs.robolectric)

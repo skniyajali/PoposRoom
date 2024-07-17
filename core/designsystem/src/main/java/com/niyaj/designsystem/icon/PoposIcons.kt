@@ -50,6 +50,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Assessment
+import androidx.compose.material.icons.filled.AutoDelete
 import androidx.compose.material.icons.filled.AutoGraph
 import androidx.compose.material.icons.filled.BluetoothConnected
 import androidx.compose.material.icons.filled.BluetoothDisabled
@@ -69,6 +70,7 @@ import androidx.compose.material.icons.filled.CollectionsBookmark
 import androidx.compose.material.icons.filled.ControlPoint
 import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.DeliveryDining
 import androidx.compose.material.icons.filled.DensityMedium
 import androidx.compose.material.icons.filled.Description
@@ -183,6 +185,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
  */
 object PoposIcons {
 
+    val AutoDelete: ImageVector = Icons.Default.AutoDelete
+    val DeleteSweep: ImageVector = Icons.Default.DeleteSweep
     val VisibilityOff: ImageVector = Icons.Default.VisibilityOff
     val KeyboardArrowUp: ImageVector = Icons.Default.KeyboardArrowUp
     val Rule: ImageVector = Icons.AutoMirrored.Filled.Rule

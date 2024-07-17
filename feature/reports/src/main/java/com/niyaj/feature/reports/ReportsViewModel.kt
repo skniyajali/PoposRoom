@@ -17,7 +17,6 @@
 
 package com.niyaj.feature.reports
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.utils.getStartTime
@@ -31,10 +30,13 @@ import com.niyaj.model.TotalExpenses
 import com.niyaj.model.TotalOrders
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.logScreenView
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -78,6 +80,9 @@ class ReportsViewModel @Inject constructor(
     private val _totalExpensesReports = MutableStateFlow(TotalExpenses())
     val totalExpensesReports = _totalExpensesReports.asStateFlow()
 
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
+
     init {
         analyticsHelper.logScreenView(Screens.REPORT_SCREEN)
         generateReport()
@@ -100,8 +105,7 @@ class ReportsViewModel @Inject constructor(
     }.map { reports ->
         reports.map {
             HorizontalBarData(
-                xValue = it.dineInSalesAmount.plus(it.dineOutSalesAmount)
-                    .plus(it.expensesAmount).toFloat(),
+                xValue = it.dineInSalesAmount.plus(it.dineOutSalesAmount).toFloat(),
                 yValue = it.reportDate.toBarDate,
             )
         }
@@ -256,10 +260,205 @@ class ReportsViewModel @Inject constructor(
             is ReportsEvent.GenerateReport -> {
                 generateReport()
             }
+
+            is ReportsEvent.PrintBarReport -> {
+                viewModelScope.launch {
+                    try {
+                        bluetoothPrinter
+                            .connectAndGetBluetoothPrinterAsync()
+                            .onSuccess {
+                                it?.let { printer ->
+                                    var printItems = ""
+
+                                    printItems += bluetoothPrinter.getPrintableHeader(
+                                        title = "LAST FEW DAYS REPORTS",
+                                        _selectedDate.value,
+                                    )
+
+                                    printItems += getPrintableBarReport()
+
+                                    printItems += "[L]-------------------------------\n"
+                                    printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
+                                    printItems += "[L]-------------------------------\n"
+
+                                    printer.printFormattedTextAndCut(printItems, 10f)
+                                    analyticsHelper.logPrintReport()
+                                }
+                            }.onFailure {
+                                _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                            }
+                    } catch (e: Exception) {
+                        _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                    }
+                }
+            }
+
+            is ReportsEvent.PrintAddressWiseReport -> {
+                viewModelScope.launch {
+                    try {
+                        bluetoothPrinter
+                            .connectAndGetBluetoothPrinterAsync()
+                            .onSuccess {
+                                it?.let { printer ->
+                                    var printItems = ""
+
+                                    printItems += bluetoothPrinter.getPrintableHeader(
+                                        title = "ADDRESS REPORTS",
+                                        _selectedDate.value,
+                                    )
+
+                                    printItems += getPrintableAddressWiseReport()
+
+                                    printItems += "[L]-------------------------------\n"
+                                    printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
+                                    printItems += "[L]-------------------------------\n"
+
+                                    printer.printFormattedTextAndCut(printItems, 10f)
+                                    analyticsHelper.logPrintReport()
+                                }
+                            }.onFailure {
+                                _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                            }
+                    } catch (e: Exception) {
+                        _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                    }
+                }
+            }
+
+            is ReportsEvent.PrintCategoryWiseReport -> {
+                viewModelScope.launch {
+                    try {
+                        bluetoothPrinter
+                            .connectAndGetBluetoothPrinterAsync()
+                            .onSuccess {
+                                it?.let { printer ->
+                                    var printItems = ""
+
+                                    printItems += bluetoothPrinter.getPrintableHeader(
+                                        title = "CATEGORY REPORTS",
+                                        _selectedDate.value,
+                                    )
+
+                                    printItems += getPrintableCategoryWiseReport()
+
+                                    printItems += "[L]-------------------------------\n"
+                                    printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
+                                    printItems += "[L]-------------------------------\n"
+
+                                    printer.printFormattedTextAndCut(printItems, 10f)
+                                    analyticsHelper.logPrintReport()
+                                }
+                            }.onFailure {
+                                _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                            }
+                    } catch (e: Exception) {
+                        _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                    }
+                }
+            }
+
+            is ReportsEvent.PrintCustomerWiseReport -> {
+                viewModelScope.launch {
+                    try {
+                        bluetoothPrinter
+                            .connectAndGetBluetoothPrinterAsync()
+                            .onSuccess {
+                                it?.let { printer ->
+                                    var printItems = ""
+
+                                    printItems += bluetoothPrinter.getPrintableHeader(
+                                        title = "CUSTOMER REPORTS",
+                                        _selectedDate.value,
+                                    )
+
+                                    printItems += getPrintableCustomerWiseReport()
+
+                                    printItems += "[L]-------------------------------\n"
+                                    printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
+                                    printItems += "[L]-------------------------------\n"
+
+                                    printer.printFormattedTextAndCut(printItems, 10f)
+                                    analyticsHelper.logPrintReport()
+                                }
+                            }.onFailure {
+                                _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                            }
+                    } catch (e: Exception) {
+                        _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                    }
+                }
+            }
+
+            is ReportsEvent.PrintExpenseWiseReport -> {
+                viewModelScope.launch {
+                    try {
+                        bluetoothPrinter
+                            .connectAndGetBluetoothPrinterAsync()
+                            .onSuccess {
+                                it?.let { printer ->
+                                    var printItems = ""
+
+                                    printItems += bluetoothPrinter.getPrintableHeader(
+                                        title = "EXPENSES REPORTS",
+                                        _selectedDate.value,
+                                    )
+
+                                    printItems += getPrintableExpensesReport()
+
+                                    printItems += "[L]-------------------------------\n"
+                                    printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
+                                    printItems += "[L]-------------------------------\n"
+
+                                    printer.printFormattedTextAndCut(printItems, 10f)
+                                    analyticsHelper.logPrintReport()
+                                }
+                            }.onFailure {
+                                _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                            }
+                    } catch (e: Exception) {
+                        _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                    }
+                }
+            }
+
+            is ReportsEvent.PrintProductWiseReport -> {
+                viewModelScope.launch {
+                    try {
+                        bluetoothPrinter
+                            .connectAndGetBluetoothPrinterAsync()
+                            .onSuccess {
+                                it?.let { printer ->
+                                    var printItems = ""
+
+                                    printItems += bluetoothPrinter.getPrintableHeader(
+                                        title = "PRODUCT WISE REPORTS",
+                                        _selectedDate.value,
+                                    )
+
+                                    printItems += getPrintableProductWiseReport()
+
+                                    printItems += "[L]-------------------------------\n"
+                                    printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
+                                    printItems += "[L]-------------------------------\n"
+
+                                    printer.printFormattedTextAndCut(printItems, 10f)
+                                    analyticsHelper.logPrintReport()
+                                }
+                            }
+                            .onFailure {
+                                _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                            }
+                    } catch (e: Exception) {
+                        _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                    }
+                }
+            }
         }
     }
 
-    private fun generateReport(reportDate: String = _selectedDate.value) {
+    private fun generateReport(
+        reportDate: String = _selectedDate.value,
+    ) {
         viewModelScope.launch {
             reportsRepository.generateReport(reportDate)
             analyticsHelper.logRegenerateReport()
@@ -269,31 +468,34 @@ class ReportsViewModel @Inject constructor(
     private fun printAllReports() {
         viewModelScope.launch {
             try {
-                bluetoothPrinter.connectBluetoothPrinter()
-                val escposPrinter = bluetoothPrinter.printer
+                bluetoothPrinter
+                    .connectAndGetBluetoothPrinterAsync()
+                    .onSuccess {
+                        it?.let { printer ->
+                            var printItems = ""
 
-                escposPrinter?.let { printer ->
-                    var printItems = ""
+                            printItems += bluetoothPrinter.getPrintableHeader(
+                                title = "REPORTS",
+                                _selectedDate.value,
+                            )
+                            printItems += getPrintableBoxReport() + "\n"
+                            printItems += getPrintableBarReport() + "\n"
+                            printItems += getPrintableCategoryWiseReport() + "\n"
+                            printItems += getPrintableAddressWiseReport() + "\n"
+                            printItems += getPrintableCustomerWiseReport() + "\n"
+                            printItems += getPrintableExpensesReport() + "\n"
+                            printItems += "[L]-------------------------------\n"
+                            printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
+                            printItems += "[L]-------------------------------\n"
 
-                    printItems += bluetoothPrinter.getPrintableHeader(
-                        title = "REPORTS",
-                        _selectedDate.value,
-                    )
-                    printItems += getPrintableBoxReport() + "\n"
-                    printItems += getPrintableBarReport() + "\n"
-                    printItems += getPrintableCategoryWiseReport() + "\n"
-                    printItems += getPrintableAddressWiseReport() + "\n"
-                    printItems += getPrintableCustomerWiseReport() + "\n"
-                    printItems += getPrintableExpensesReport() + "\n"
-                    printItems += "[L]-------------------------------\n"
-                    printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
-                    printItems += "[L]-------------------------------\n"
-
-                    printer.printFormattedTextAndCut(printItems, 10f)
-                    analyticsHelper.logPrintReport()
-                } ?: return@launch
+                            printer.printFormattedTextAndCut(printItems, 10f)
+                            analyticsHelper.logPrintReport()
+                        }
+                    }.onFailure {
+                        _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                    }
             } catch (e: Exception) {
-                Log.d("Printer", e.message ?: "Error printing")
+                _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
             }
         }
     }
@@ -303,7 +505,8 @@ class ReportsViewModel @Inject constructor(
         val report = (reportState.value as UiState.Success).data
 
         val totalAmount =
-            report.expensesAmount.plus(report.dineInSalesAmount).plus(report.dineOutSalesAmount)
+            report.expensesAmount.plus(report.dineInSalesAmount)
+                .plus(report.dineOutSalesAmount)
                 .toString()
 
         printableString += "[L]-------------------------------\n"
@@ -342,6 +545,40 @@ class ReportsViewModel @Inject constructor(
             }
         } else {
             printableString += "[C]Reports not available. \n"
+        }
+
+        printableString += "[L]-------------------------------\n"
+
+        return printableString
+    }
+
+    private fun getPrintableProductWiseReport(): String {
+        var printableString = ""
+
+        printableString += "[L]-------------------------------\n"
+        printableString += "[C]TOP SALES PRODUCTS\n"
+
+        val productWiseReport = try {
+            (productWiseData.value as UiState.Success).data
+        } catch (e: Exception) {
+            emptyList()
+        }
+
+        if (productWiseReport.isNotEmpty()) {
+            val productWiseData =
+                productWiseReport.take(info.productWiseReportLimit)
+
+            printableString += "[L]-------------------------------\n"
+            printableString += "[L]Name[R]Qty\n"
+            printableString += "[L]-------------------------------\n"
+
+            productWiseData.forEach { data ->
+                printableString += "[L]${data.yValue}[R]${
+                    data.xValue.toString().substringBefore(".")
+                }\n"
+            }
+        } else {
+            printableString += "[C]Product report is not available"
         }
 
         printableString += "[L]-------------------------------\n"
@@ -479,7 +716,7 @@ private fun AnalyticsHelper.logRegenerateReport() {
         event = AnalyticsEvent(
             type = "report_generated",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("report_generated", "true"),
+                AnalyticsEvent.Param("report_generated", "true"),
             ),
         ),
     )
@@ -490,7 +727,7 @@ private fun AnalyticsHelper.logPrintReport() {
         event = AnalyticsEvent(
             type = "report_printed",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("report_printed", "true"),
+                AnalyticsEvent.Param("report_printed", "true"),
             ),
         ),
     )

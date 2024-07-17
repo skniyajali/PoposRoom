@@ -24,9 +24,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -53,7 +51,6 @@ import com.niyaj.common.utils.toTimeSpan
 import com.niyaj.designsystem.components.PoposOutlinedIconButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
-import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.utils.drawAnimatedBorder
 import com.niyaj.model.MarketListWithType
@@ -124,6 +121,7 @@ internal fun MarketListItemCard(
                     CircularBox(
                         icon = PoposIcons.ShoppingBag,
                         doesSelected = false,
+                        backgroundColor = MaterialTheme.colorScheme.background,
                     )
                 },
                 trailingContent = {
@@ -202,18 +200,14 @@ internal fun MarketListItemCard(
             AnimatedVisibility(
                 visible = doesExpanded(items.marketList.marketId),
             ) {
-                Column {
-                    Spacer(modifier = Modifier.height(SpaceMini))
-
-                    items.marketTypes.forEachIndexed { index, listType ->
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    items.marketTypes.forEach { listType ->
                         TypeList(
                             marketType = listType,
                             onClickManageList = onClickManageList,
                         )
-
-                        if (index < items.marketTypes.size - 1) {
-                            Spacer(modifier = Modifier.height(SpaceMini))
-                        }
                     }
                 }
             }
@@ -231,7 +225,7 @@ private fun TypeList(
         modifier = modifier
             .fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         ),
         shape = RectangleShape,
         onClick = {
@@ -251,7 +245,7 @@ private fun TypeList(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = SpaceMini),
+                    .padding(start = SpaceSmall),
             )
 
             IconWithText(

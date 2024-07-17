@@ -45,6 +45,9 @@ import java.time.ZoneId
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 val API_KEY = "WQBvKOC4PBQ8EZUqOrVpslYSavvudON84Q5RyZavmPMHhZ00VvgfeIpXL2C5jFyM"
 
@@ -231,6 +234,9 @@ val String.toYearAndMonth
 
 val Long.toDate
     get() = Date(this)
+
+val String.toJavaDate
+    get() = Date(this.toLong())
 
 fun String.toPrettyDate(): String {
     val nowTime = Calendar.getInstance()
@@ -880,4 +886,12 @@ fun Bitmap.toByteArray(): ByteArray {
 
 fun ByteArray.toBitmap(): Bitmap {
     return BitmapFactory.decodeByteArray(this, 0, this.size)
+}
+
+@OptIn(ExperimentalContracts::class)
+inline fun Int.ifZero(defaultValue: () -> Int): Int {
+    contract {
+        callsInPlace(defaultValue, InvocationKind.AT_MOST_ONCE)
+    }
+    return if (this == 0) defaultValue() else this
 }

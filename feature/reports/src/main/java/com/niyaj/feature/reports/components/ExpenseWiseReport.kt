@@ -17,6 +17,7 @@
 
 package com.niyaj.feature.reports.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,12 +28,20 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_TAG
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.components.PoposIconButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.ExpensesReport
@@ -43,14 +52,17 @@ import com.niyaj.ui.components.ItemNotAvailableHalf
 import com.niyaj.ui.components.LoadingIndicatorHalf
 import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.ExpensesReportPreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
-fun ExpenseWiseReport(
+internal fun ExpenseWiseReport(
     modifier: Modifier = Modifier,
     uiState: UiState<List<ExpensesReport>>,
     totalReports: TotalExpenses,
     doesExpanded: Boolean,
     onExpandChanged: () -> Unit,
+    onPrintExpenseWiseReport: () -> Unit,
     onExpenseClick: (Int) -> Unit = {},
 ) {
     ElevatedCard(
@@ -83,6 +95,11 @@ fun ExpenseWiseReport(
                     CountBox(
                         count = totalReports.totalQuantity.toString(),
                         backgroundColor = MaterialTheme.colorScheme.secondary,
+                    )
+
+                    PoposIconButton(
+                        icon = PoposIcons.Print,
+                        onClick = onPrintExpenseWiseReport,
                     )
                 }
             },
@@ -118,6 +135,59 @@ fun ExpenseWiseReport(
                     }
                 }
             },
+        )
+    }
+}
+
+@Composable
+private fun ExpensesReportCard(
+    modifier: Modifier = Modifier,
+    report: ExpensesReport,
+    onClickEnable: Boolean = false,
+    onExpenseClick: (Int) -> Unit = {},
+) = trace("ExpensesReportCard") {
+    Row(
+        modifier = modifier
+            .testTag(EXPENSE_TAG.plus(report.expenseId))
+            .fillMaxWidth()
+            .clickable(onClickEnable) { onExpenseClick(report.expenseId) }
+            .padding(SpaceSmall),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        IconWithText(
+            text = report.expenseName,
+            icon = PoposIcons.Person,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.SemiBold,
+        )
+
+        Text(
+            text = report.expenseAmount.toRupee,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Bold,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ExpenseWiseReportPreview(
+    @PreviewParameter(ExpensesReportPreviewParameter::class)
+    uiState: UiState<List<ExpensesReport>>,
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ExpenseWiseReport(
+            modifier = modifier,
+            uiState = uiState,
+            totalReports = TotalExpenses(
+                totalExpenses = 5000,
+                totalQuantity = 5,
+            ),
+            doesExpanded = true,
+            onExpandChanged = {},
+            onPrintExpenseWiseReport = {},
         )
     }
 }

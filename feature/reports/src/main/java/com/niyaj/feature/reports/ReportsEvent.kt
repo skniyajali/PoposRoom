@@ -30,4 +30,16 @@ sealed class ReportsEvent {
     data object PrintReport : ReportsEvent()
 
     data object GenerateReport : ReportsEvent()
+
+    data object PrintBarReport : ReportsEvent()
+
+    data object PrintCategoryWiseReport : ReportsEvent()
+
+    data object PrintProductWiseReport : ReportsEvent()
+
+    data object PrintAddressWiseReport : ReportsEvent()
+
+    data object PrintCustomerWiseReport : ReportsEvent()
+
+    data object PrintExpenseWiseReport : ReportsEvent()
 }

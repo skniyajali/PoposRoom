@@ -254,6 +254,7 @@ fun PoposOutlinedAssistChip(
         ),
         colors = AssistChipDefaults.assistChipColors(
             leadingIconContentColor = borderColor,
+            trailingIconContentColor = borderColor,
         ),
     )
 }

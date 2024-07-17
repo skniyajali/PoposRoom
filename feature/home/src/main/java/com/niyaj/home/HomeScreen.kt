@@ -20,13 +20,17 @@ package com.niyaj.home
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedCard
@@ -58,10 +62,10 @@ import com.niyaj.designsystem.components.PoposTonalIconButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
+import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.home.components.HomeScreenProducts
 import com.niyaj.model.Category
 import com.niyaj.model.ProductWithQuantity
-import com.niyaj.ui.components.CategoriesData
 import com.niyaj.ui.components.HomeScreenScaffold
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
@@ -69,6 +73,7 @@ import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.SelectedOrderBox
 import com.niyaj.ui.components.StandardFABIcon
 import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.components.TwoColumnLazyRowList
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.parameterProvider.CategoryPreviewData
 import com.niyaj.ui.parameterProvider.ProductWithQuantityStatePreviewParameter
@@ -80,6 +85,8 @@ import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.NavResult
+import com.ramcosta.composedestinations.result.OpenResultRecipient
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
@@ -89,11 +96,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     navigator: DestinationsNavigator,
+    resultRecipient: OpenResultRecipient<String>,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
-    val lazyRowState = rememberLazyListState()
+    val lazyRowState = rememberLazyStaggeredGridState()
     val snackbarState = remember { SnackbarHostState() }
 
     val productState by viewModel.productsWithQuantity.collectAsStateWithLifecycle()
@@ -139,6 +147,17 @@ fun HomeScreen(
             viewModel.selectCategory(selectedCategory)
             lazyListState.animateScrollToItem(0)
             lazyRowState.animateScrollToItem(0)
+        }
+    }
+
+    resultRecipient.onNavResult {
+        when (it) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarState.showSnackbar(it.value)
+                }
+            }
         }
     }
 
@@ -222,13 +241,12 @@ fun HomeScreenContent(
     onOrderClick: () -> Unit,
     currentRoute: String = Screens.HOME_SCREEN,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
-    lazyRowState: LazyListState = rememberLazyListState(),
+    lazyRowState: LazyStaggeredGridState = rememberLazyStaggeredGridState(),
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val showSearchIcon = productState is UiState.Success
-    val showFab = showSearchIcon && selectedCategory == 0
     val animatedColor by animateColorAsState(
         targetValue = if (selectedId != "0") {
             MaterialTheme.colorScheme.tertiaryContainer
@@ -324,7 +342,7 @@ fun HomeScreenContent(
             },
             floatingActionButton = {
                 StandardFABIcon(
-                    fabVisible = showFab && !showSearchBar,
+                    fabVisible = showSearchIcon && !showSearchBar,
                     onFabClick = {
                         onNavigateToScreen(Screens.ADD_EDIT_CART_ORDER_SCREEN)
                     },
@@ -345,8 +363,10 @@ fun HomeScreenContent(
                 Column(
                     modifier = Modifier
                         .fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(SpaceSmall),
                 ) {
-                    CategoriesData(
+                    TwoColumnLazyRowList(
+                        modifier = Modifier.wrapContentHeight(),
                         lazyRowState = lazyRowState,
                         uiState = categoryState,
                         selectedCategory = selectedCategory,

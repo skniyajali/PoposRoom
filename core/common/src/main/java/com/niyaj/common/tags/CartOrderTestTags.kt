@@ -46,7 +46,8 @@ object CartOrderTestTags {
     const val CART_PARTNER_ITEMS = "Delivery Partner"
 
     const val CART_ORDER_NAME_EMPTY_ERROR = "Address name must not be empty."
-    const val ADDRESS_NAME_LENGTH_ERROR = "The address name must be more than 2 characters long."
+    const val ADDRESS_NAME_LENGTH_ERROR = "The address name must be more than 6 characters long."
+    const val ADDRESS_NAME_INVALID = "Please enter a valid address. for example: AB Complex"
     const val CART_ORDER_NAME_ERROR = "Unable to create or get address."
 
     const val ORDER_SHORT_NAME_EMPTY_ERROR = "Address short name cannot be empty."

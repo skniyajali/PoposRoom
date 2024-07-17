@@ -18,34 +18,50 @@
 package com.niyaj.feature.reports.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.niyaj.designsystem.components.PoposOutlinedAssistChip
+import androidx.compose.ui.Modifier
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.model.OrderType
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
-fun OrderTypeDropdown(
+internal fun OrderTypeDropdown(
+    modifier: Modifier = Modifier,
     text: String,
     onItemClick: (String) -> Unit = {},
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
 
-    Column {
-        PoposOutlinedAssistChip(
-            text = text,
-            icon = PoposIcons.CalenderMonth,
+    Column(
+        modifier = modifier,
+    ) {
+        AssistChip(
+            label = {
+                Text(
+                    text = text,
+                )
+            },
             onClick = {
                 menuExpanded = !menuExpanded
             },
-            trailingIcon = PoposIcons.ArrowDropDown,
+            trailingIcon = {
+                Icon(
+                    imageVector = PoposIcons.ArrowDropDown,
+                    contentDescription = "Dropdown",
+                )
+            },
         )
 
         DropdownMenu(
@@ -88,6 +104,22 @@ fun OrderTypeDropdown(
                     onItemClick(OrderType.DineOut.name)
                     menuExpanded = false
                 },
+            )
+        }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun OrderTypeDropdownPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        Surface {
+            OrderTypeDropdown(
+                modifier = modifier,
+                text = "All",
+                onItemClick = {},
             )
         }
     }

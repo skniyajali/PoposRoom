@@ -22,19 +22,20 @@ import com.niyaj.model.Category
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.parameterProvider.CategoryPreviewData.categories
 import com.niyaj.ui.parameterProvider.CategoryPreviewData.categoryList
+import kotlinx.collections.immutable.persistentListOf
 
 class CategoryPreviewParameter : PreviewParameterProvider<UiState<List<Category>>> {
     override val values: Sequence<UiState<List<Category>>>
         get() = sequenceOf(
             UiState.Loading,
-            UiState.Loading,
-            UiState.Success(categoryList + categories),
+            UiState.Empty,
+            UiState.Success((categoryList + categories)),
         )
 }
 
 object CategoryPreviewData {
 
-    val categoryList = listOf(
+    val categoryList = persistentListOf(
         Category(
             categoryId = 1,
             categoryName = "Electronics",
@@ -107,7 +108,7 @@ object CategoryPreviewData {
         ),
     )
 
-    val categories = listOf(
+    val categories = persistentListOf(
         Category(
             categoryId = 11,
             categoryName = "Furniture",

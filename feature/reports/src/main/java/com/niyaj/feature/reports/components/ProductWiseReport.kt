@@ -18,6 +18,7 @@
 package com.niyaj.feature.reports.components
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,9 +29,12 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.designsystem.components.PoposIconButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.feature.chart.common.dimens.ChartDimens
 import com.niyaj.feature.chart.horizontalbar.HorizontalBarChart
@@ -43,9 +47,10 @@ import com.niyaj.ui.components.ItemNotAvailableHalf
 import com.niyaj.ui.components.LoadingIndicatorHalf
 import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
-fun ProductWiseReport(
+internal fun ProductWiseReport(
     productState: UiState<List<HorizontalBarData>>,
     orderType: String,
     productRepExpanded: Boolean,
@@ -53,6 +58,7 @@ fun ProductWiseReport(
     onExpandChanged: () -> Unit,
     onClickOrderType: (String) -> Unit,
     onBarClick: (String) -> Unit,
+    onPrintProductWiseReport: () -> Unit,
 ) = trace("ProductWiseReport") {
     ElevatedCard(
         modifier = Modifier
@@ -76,10 +82,17 @@ fun ProductWiseReport(
                 )
             },
             trailing = {
-                OrderTypeDropdown(
-                    text = orderType.ifEmpty { "All" },
-                    onItemClick = onClickOrderType,
-                )
+                Row {
+                    OrderTypeDropdown(
+                        text = orderType.ifEmpty { "All" },
+                        onItemClick = onClickOrderType,
+                    )
+
+                    PoposIconButton(
+                        icon = PoposIcons.Print,
+                        onClick = onPrintProductWiseReport,
+                    )
+                }
             },
             expand = null,
             contentDesc = "Product wise report",
@@ -132,6 +145,27 @@ fun ProductWiseReport(
                     }
                 }
             },
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ProductWiseReportPreview(
+    @PreviewParameter(ProductWiseReportPreviewProvider::class)
+    productState: UiState<List<HorizontalBarData>>,
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ProductWiseReport(
+            productState = productState,
+            orderType = "All",
+            productRepExpanded = true,
+            selectedProduct = "",
+            onExpandChanged = {},
+            onClickOrderType = {},
+            onBarClick = {},
+            onPrintProductWiseReport = {},
         )
     }
 }

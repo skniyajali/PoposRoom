@@ -19,15 +19,22 @@ package com.niyaj.ui.components
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
@@ -38,25 +45,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.model.Category
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.CategoryPreviewData
+import com.niyaj.ui.parameterProvider.CategoryPreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScrollJank
 import kotlinx.collections.immutable.ImmutableList
 
 const val CATEGORY_ITEM_TAG = "Category-"
 
 @Composable
-fun CategoriesData(
+fun TwoColumnLazyRowList(
     modifier: Modifier = Modifier,
-    uiState: UiState<ImmutableList<Category>>,
+    uiState: UiState<List<Category>>,
     selectedCategory: Int,
     onSelect: (Int) -> Unit,
-    lazyRowState: LazyListState = rememberLazyListState(),
+    lazyRowState: LazyStaggeredGridState = rememberLazyStaggeredGridState(),
 ) = trace("CategoriesData") {
     Crossfade(
         targetState = uiState,
@@ -66,21 +78,24 @@ fun CategoriesData(
             is UiState.Success -> {
                 TrackScrollJank(scrollableState = lazyRowState, stateName = "category:list")
 
-                LazyRow(
-                    modifier = modifier.fillMaxWidth(),
+                LazyHorizontalStaggeredGrid(
+                    modifier = modifier.height(90.dp),
+                    rows = StaggeredGridCells.Fixed(2),
                     state = lazyRowState,
+                    verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+                    horizontalItemSpacing = SpaceSmall,
+                    contentPadding = PaddingValues(start = SpaceSmall),
                 ) {
                     items(
                         items = state.data,
-                        key = {
-                            it.categoryId
-                        },
-                    ) { category ->
+                        key = { it.categoryId },
+                    ) {
                         CategoryData(
-                            item = category,
-                            selected = selectedCategory == category.categoryId,
+                            modifier = Modifier,
+                            item = it,
+                            selected = selectedCategory == it.categoryId,
                             onClick = {
-                                onSelect(category.categoryId)
+                                onSelect(it.categoryId)
                             },
                         )
                     }
@@ -134,8 +149,7 @@ private fun CategoryData(
 
     ElevatedCard(
         modifier = modifier
-            .testTag(CATEGORY_ITEM_TAG.plus(item.categoryId))
-            .padding(SpaceSmall),
+            .testTag(CATEGORY_ITEM_TAG.plus(item.categoryId)),
         onClick = onClick,
         colors = CardDefaults.elevatedCardColors().copy(
             containerColor = color,
@@ -163,5 +177,52 @@ private fun CategoryData(
                 fontWeight = FontWeight.SemiBold,
             )
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CategoryListPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        CategoryList(
+            modifier = modifier,
+            categories = CategoryPreviewData.categories,
+            doesSelected = { false },
+            onSelect = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CategoryDataPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        CategoryData(
+            modifier = modifier,
+            item = CategoryPreviewData.categoryList.first(),
+            selected = false,
+            onClick = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun TwoColumnLazyRowListPreview(
+    @PreviewParameter(CategoryPreviewParameter::class)
+    uiState: UiState<List<Category>>,
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        TwoColumnLazyRowList(
+            modifier = modifier,
+            uiState = uiState,
+            selectedCategory = 0,
+            onSelect = {},
+        )
     }
 }

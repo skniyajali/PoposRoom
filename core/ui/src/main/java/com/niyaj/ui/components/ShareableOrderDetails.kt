@@ -15,7 +15,7 @@
  *
  */
 
-package com.niyaj.order.components
+package com.niyaj.ui.components
 
 import android.graphics.Bitmap
 import androidx.compose.animation.Crossfade
@@ -43,6 +43,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -72,14 +73,13 @@ import com.niyaj.designsystem.theme.ButtonSize
 import com.niyaj.designsystem.theme.LightColor10
 import com.niyaj.designsystem.theme.LightColor8
 import com.niyaj.designsystem.theme.LightColor9
-import com.niyaj.designsystem.theme.SpaceLarge
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.gradient6
 import com.niyaj.designsystem.theme.gradient7
 import com.niyaj.designsystem.theme.rainbowColorsBrush
-import com.niyaj.designsystem.utils.drawRainbowBorder
 import com.niyaj.model.AddOnItem
 import com.niyaj.model.CartOrder
 import com.niyaj.model.CartProductItem
@@ -87,13 +87,10 @@ import com.niyaj.model.Charges
 import com.niyaj.model.OrderDetails
 import com.niyaj.model.OrderPrice
 import com.niyaj.model.OrderType
-import com.niyaj.ui.components.AnimatedTextDividerDashed
-import com.niyaj.ui.components.CartAddOnItems
-import com.niyaj.ui.components.CartChargesItem
-import com.niyaj.ui.components.CircularBox
-import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.CardOrderPreviewData
 import com.niyaj.ui.utils.CaptureController
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.ScrollableCapturable
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -108,7 +105,7 @@ fun ShareableOrderDetails(
     onCaptured: (Bitmap?, Throwable?) -> Unit,
     onClickPrintOrder: (orderId: Int) -> Unit,
 ) = trace("ShareableOrderDetails") {
-    var changeLayout by remember { mutableStateOf(false) }
+    var changeLayout by remember { mutableStateOf(true) }
 
     BasicAlertDialog(
         onDismissRequest = onDismiss,
@@ -133,8 +130,13 @@ fun ShareableOrderDetails(
                 label = "OrderDetails",
             ) { state ->
                 when (state) {
-                    UiState.Empty -> LoadingIndicator()
-                    UiState.Loading -> LoadingIndicator()
+                    is UiState.Loading -> LoadingIndicator()
+                    is UiState.Empty -> ItemNotAvailable(
+                        text = "Looks, like you have not added any product!",
+                        buttonText = "Add New Item",
+                        onClick = onDismiss,
+                    )
+
                     is UiState.Success -> {
                         val chargesList = if (state.data.cartOrder.orderType == OrderType.DineOut) {
                             charges.filterNot { !it.isApplicable }
@@ -231,8 +233,6 @@ private fun CapturableCard(
                     CartItemOrderDetails(
                         orderDetails = orderDetails,
                         charges = charges,
-                        icon = icon,
-                        containerColor = containerColor,
                     )
                 } else {
                     CartItemOrderDetailsCard(
@@ -253,23 +253,21 @@ private fun CartItemOrderDetails(
     modifier: Modifier = Modifier,
     orderDetails: OrderDetails,
     charges: List<Charges>,
-    icon: ImageVector,
-    containerColor: Color,
 ) = trace("CartItemOrderDetails") {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(SpaceSmall),
+        colors = CardDefaults.cardColors().copy(
+            containerColor = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.onBackground,
+        ),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth(),
         ) {
-            ShareableCartOrderDetails(
-                cartOrder = orderDetails.cartOrder,
-                icon = icon,
-                color = containerColor,
-            )
+            ShareableCartOrderDetails(cartOrder = orderDetails.cartOrder)
 
             if (orderDetails.cartProducts.isNotEmpty()) {
                 CartItemOrderProductDetails(
@@ -452,105 +450,55 @@ private fun ShareableCartOrderDetailsCard(
 private fun ShareableCartOrderDetails(
     modifier: Modifier = Modifier,
     cartOrder: CartOrder,
-    icon: ImageVector,
-    color: Color,
 ) = trace("ShareableCartOrderDetails") {
     Column(
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(SpaceSmall),
         verticalArrangement = Arrangement.spacedBy(SpaceMini),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        CircularBox(
-            icon = icon,
-            showBorder = true,
-            doesSelected = false,
-            borderStroke = BorderStroke(3.dp, color),
-            unselectedTint = color,
-            size = 80.dp,
+        // TODO:: Restaurant Name Should Populate From DB
+        Text(
+            text = "Popos Highlight".uppercase(),
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+        )
+        // TODO:: Restaurant Tag Should Populate From DB
+        Text(
+            text = "- Pure And Tasty - ",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
         )
 
         Spacer(modifier = Modifier.height(SpaceMini))
 
-        Text(
-            text = "Order Details".uppercase(),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = color,
+        TwoGridText(
+            textOne = "Order ID",
+            textTwo = cartOrder.orderId.toString(),
         )
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement
-                .spacedBy(SpaceSmall, Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            PoposSuggestionChip(
-                icon = PoposIcons.Tag,
-                text = cartOrder.orderId.toString(),
-                borderColor = color,
-            )
+        TwoGridText(
+            textOne = "Order Type",
+            textTwo = cartOrder.orderType.name,
+        )
 
-            PoposSuggestionChip(
-                icon = icon,
-                text = cartOrder.orderType.name,
-                borderColor = color,
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement
-                .spacedBy(SpaceSmall, Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            PoposSuggestionChip(
-                icon = PoposIcons.ModeStandby,
-                text = cartOrder.orderStatus.name,
-                borderColor = color,
-            )
-
-            PoposSuggestionChip(
-                icon = PoposIcons.CalenderMonth,
-                text = (
-                    cartOrder.updatedAt
-                        ?: cartOrder.createdAt
-                    ).toFormattedDateAndTime,
-                borderColor = color,
-            )
-        }
+        TwoGridText(
+            textOne = "Order Date",
+            textTwo = (cartOrder.updatedAt ?: cartOrder.createdAt).toFormattedDateAndTime,
+        )
 
         if (cartOrder.address.addressName.isNotEmpty()) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement
-                    .spacedBy(SpaceSmall, Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                PoposSuggestionChip(
-                    text = cartOrder.customer.customerPhone,
-                    icon = PoposIcons.Phone,
-                    borderColor = color,
-                )
+            TwoGridText(
+                textOne = "Customer Address",
+                textTwo = cartOrder.address.addressName,
+            )
 
-                PoposSuggestionChip(
-                    text = cartOrder.address.addressName,
-                    icon = PoposIcons.LocationOn,
-                    borderColor = color,
-                )
-            }
+            TwoGridText(
+                textOne = "Customer Phone",
+                textTwo = cartOrder.customer.customerPhone,
+            )
         }
-
-        HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = SpaceLarge, horizontal = SpaceMini)
-                .drawRainbowBorder(2.dp, durationMillis = 5000),
-            thickness = SpaceMini,
-        )
     }
 }
 
@@ -845,5 +793,37 @@ private fun DialogButtons(
             ),
             onClick = onClickShare,
         )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ShareableCartOrderDetailsPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        Surface {
+            ShareableCartOrderDetails(
+                modifier = modifier,
+                cartOrder = CardOrderPreviewData.sampleDineOutOrder,
+            )
+        }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ShareableCartOrderDetailsCardPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        Surface {
+            ShareableCartOrderDetailsCard(
+                modifier = modifier,
+                cartOrder = CardOrderPreviewData.sampleDineOutOrder,
+                icon = PoposIcons.DeliveryDining,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
     }
 }

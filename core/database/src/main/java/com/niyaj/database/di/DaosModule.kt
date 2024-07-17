@@ -28,6 +28,7 @@ import com.niyaj.database.dao.CartPriceDao
 import com.niyaj.database.dao.CategoryDao
 import com.niyaj.database.dao.ChargesDao
 import com.niyaj.database.dao.CustomerDao
+import com.niyaj.database.dao.DataDeletionDao
 import com.niyaj.database.dao.EmployeeDao
 import com.niyaj.database.dao.ExpenseDao
 import com.niyaj.database.dao.HomeDao
@@ -136,4 +137,8 @@ object DaosModule {
 
     @Provides
     fun provideMeasureUnitDao(database: PoposDatabase): MeasureUnitDao = database.measureUnitDao()
+
+    @Provides
+    fun providesDataDeletionDao(database: PoposDatabase): DataDeletionDao =
+        database.dataDeletionDao()
 }

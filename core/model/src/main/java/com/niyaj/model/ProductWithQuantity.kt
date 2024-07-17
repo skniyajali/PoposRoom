@@ -25,6 +25,7 @@ data class ProductWithQuantity(
     val productName: String,
     val productPrice: Int,
     val quantity: Int = 0,
+    val tags: List<String> = emptyList(),
 )
 
 fun List<ProductWithQuantity>.filterByCategory(categoryId: Int): List<ProductWithQuantity> {

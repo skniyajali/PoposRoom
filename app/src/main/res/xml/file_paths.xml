@@ -18,5 +18,6 @@
 <resources>
     <paths>
         <cache-path name="shared_images" path="images/"/>
+        <external-cache-path name="ex_cache" path="/"/>
     </paths>
 </resources>

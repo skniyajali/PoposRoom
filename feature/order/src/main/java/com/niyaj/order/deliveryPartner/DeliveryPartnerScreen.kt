@@ -33,7 +33,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -67,6 +69,7 @@ import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.Screens.DELIVERY_REPORT_SCREEN
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
+import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.rememberCaptureController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -87,6 +90,7 @@ fun DeliveryPartnerScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val captureController = rememberCaptureController()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val partnerState by viewModel.allOrders.collectAsStateWithLifecycle()
     val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
@@ -119,21 +123,36 @@ fun DeliveryPartnerScreen(
         }
     }
 
+    LaunchedEffect(true) {
+        printViewModel.eventFlow.collect { event ->
+            when (event) {
+                is UiEvent.OnError -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(event.errorMessage)
+                    }
+                }
+
+                is UiEvent.OnSuccess -> {}
+            }
+        }
+    }
+
     DeliveryPartnerScreenContent(
         partnerState = partnerState,
         selectedDate = selectedDate.ifEmpty { System.currentTimeMillis().toString() },
         onSelectDate = viewModel::selectDate,
+        onClickShare = shareViewModel::onShowDialog,
+        onBackClick = navigator::navigateUp,
+        snackbarHostState = snackbarHostState,
         onClickPrintAll = {
             printDeliveryReport()
         },
         onClickPrint = {
             printDeliveryReport(it)
         },
-        onClickShare = shareViewModel::onShowDialog,
         onClickViewDetails = {
             navigator.navigate(DeliveryPartnerDetailsScreenDestination(it))
         },
-        onBackClick = navigator::navigateUp,
         onNavigateToHomeScreen = {
             navigator.navigate(Screens.HOME_SCREEN)
         },
@@ -188,6 +207,7 @@ private fun DeliveryPartnerScreenContent(
     onClickPrint: (Int) -> Unit,
     onClickViewDetails: (Int) -> Unit,
     onNavigateToHomeScreen: () -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) = trace("DeliveryReportScreenContent") {
     TrackScreenViewEvent(screenName = DELIVERY_REPORT_SCREEN)
 
@@ -221,6 +241,7 @@ private fun DeliveryPartnerScreenContent(
             )
         },
         onBackClick = onBackClick,
+        snackbarHostState = snackbarHostState,
     ) {
         Crossfade(
             targetState = partnerState,

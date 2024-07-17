@@ -63,7 +63,6 @@ import com.niyaj.designsystem.components.PoposOutlinedAssistChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.model.Order
 import com.niyaj.order.components.OrderedItemLayout
-import com.niyaj.order.components.ShareableOrderDetails
 import com.niyaj.order.destinations.DeliveryPartnerScreenDestination
 import com.niyaj.order.destinations.OrderDetailsScreenDestination
 import com.niyaj.print.OrderPrintViewModel
@@ -73,6 +72,7 @@ import com.niyaj.ui.components.HandleBluetoothPermissionState
 import com.niyaj.ui.components.OrderTab
 import com.niyaj.ui.components.OrderTabs
 import com.niyaj.ui.components.OrderTabsContent
+import com.niyaj.ui.components.ShareableOrderDetails
 import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
 import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.parameterProvider.OrderPreviewParameter

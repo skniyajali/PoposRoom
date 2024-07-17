@@ -17,341 +17,294 @@
 
 package com.niyaj.settings
 
-import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import com.niyaj.designsystem.components.PoposTextButton
+import com.niyaj.common.utils.shareContent
+import com.niyaj.common.utils.toBarDate
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
-import com.niyaj.designsystem.theme.supportsDynamicTheming
-import com.niyaj.feature.settings.R.string
-import com.niyaj.model.DarkThemeConfig
-import com.niyaj.model.ThemeBrand
+import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.settings.destinations.DataDeletionSettingsScreenDestination
+import com.niyaj.ui.components.LoadingIndicatorHalf
+import com.niyaj.ui.components.PoposSecondaryScaffold
+import com.niyaj.ui.components.ScrollToTop
+import com.niyaj.ui.components.SettingsCard
+import com.niyaj.ui.components.StandardDialog
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.TrackScrollJank
+import com.niyaj.ui.utils.UiEvent
+import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.spec.DestinationStyle
+import com.ramcosta.composedestinations.result.NavResult
+import com.ramcosta.composedestinations.result.ResultRecipient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
-@Destination(
-    style = DestinationStyle.Dialog::class,
-    route = Screens.SETTINGS_SCREEN,
-)
+@Destination(route = Screens.SETTINGS_SCREEN)
 @Composable
-fun SettingsDialog(
+fun SettingsScreen(
     navigator: DestinationsNavigator,
     viewModel: SettingsViewModel = hiltViewModel(),
+    resultRecipient: ResultRecipient<DataDeletionSettingsScreenDestination, String>,
 ) {
-    val settingsUiState by viewModel.settingsUiState.collectAsStateWithLifecycle()
-    SettingsDialog(
-        onDismiss = navigator::navigateUp,
-        settingsUiState = settingsUiState,
-        onChangeThemeBrand = viewModel::updateThemeBrand,
-        onChangeDynamicColorPreference = viewModel::updateDynamicColorPreference,
-        onChangeDarkThemeConfig = viewModel::updateDarkThemeConfig,
-        onChangeOrderSms = viewModel::updateSendOrderSms,
-        onChangePartnerQrCode = viewModel::updateUseDeliveryPartnerQrCode,
-    )
-}
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
-@Composable
-fun SettingsDialog(
-    settingsUiState: SettingsUiState,
-    supportDynamicColor: Boolean = supportsDynamicTheming(),
-    onDismiss: () -> Unit,
-    onChangeThemeBrand: (themeBrand: ThemeBrand) -> Unit,
-    onChangeDynamicColorPreference: (useDynamicColor: Boolean) -> Unit,
-    onChangeDarkThemeConfig: (darkThemeConfig: DarkThemeConfig) -> Unit,
-    onChangeOrderSms: (sendSms: Boolean) -> Unit,
-    onChangePartnerQrCode: (useQrCode: Boolean) -> Unit,
-) {
-    val configuration = LocalConfiguration.current
-
-    /**
-     * usePlatformDefaultWidth = false is use as a temporary fix to allow
-     * height recalculation during recomposition. This, however, causes
-     * Dialog's to occupy full width in Compact mode. Therefore max width
-     * is configured below. This should be removed when there's fix to
-     * https://issuetracker.google.com/issues/221643630
-     */
-    AlertDialog(
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-        modifier = Modifier.widthIn(max = configuration.screenWidthDp.dp - 80.dp),
-        onDismissRequest = { onDismiss() },
-        title = {
-            Text(
-                text = stringResource(string.feature_settings_title),
-                style = MaterialTheme.typography.titleLarge,
-            )
+    val restoreLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            uri?.let { viewModel.restoreBackup(uri) }
         },
-        text = {
-            HorizontalDivider()
-            Column(Modifier.verticalScroll(rememberScrollState())) {
-                when (settingsUiState) {
-                    SettingsUiState.Loading -> {
-                        Text(
-                            text = stringResource(string.feature_settings_loading),
-                            modifier = Modifier.padding(vertical = 16.dp),
-                        )
-                    }
+    )
 
-                    is SettingsUiState.Success -> {
-                        SettingsPanel(
-                            settings = settingsUiState.settings,
-                            supportDynamicColor = supportDynamicColor,
-                            onChangeThemeBrand = onChangeThemeBrand,
-                            onChangeDynamicColorPreference = onChangeDynamicColorPreference,
-                            onChangeDarkThemeConfig = onChangeDarkThemeConfig,
-                            onChangeOrderSms = onChangeOrderSms,
-                            onChangePartnerQrCode = onChangePartnerQrCode,
-                        )
-                    }
+    val backupLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/zip"),
+        onResult = {
+            if (it != null && viewModel.cacheBackupUri != null) {
+                viewModel.copyBackupFile(viewModel.cacheBackupUri!!, it)
+            }
+        },
+    )
+
+    LaunchedEffect(
+        key1 = true,
+    ) {
+        viewModel.eventFlow.collectLatest {
+            when (it) {
+                is UiEvent.OnError -> {
+                    snackbarHostState.showSnackbar(it.errorMessage)
                 }
 
-                HorizontalDivider(Modifier.padding(top = 8.dp))
-                LinksPanel()
-            }
-            TrackScreenViewEvent(screenName = "Settings")
-        },
-        confirmButton = {
-            Text(
-                text = stringResource(string.feature_settings_dismiss_dialog_button_text),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .clickable { onDismiss() },
-            )
-        },
-    )
-}
+                is UiEvent.OnSuccess -> {
+                    val label = if (it.successMessage.contains("Backup")) "Share" else null
+                    val action = snackbarHostState.showSnackbar(
+                        message = it.successMessage,
+                        actionLabel = label,
+                    )
 
-// [ColumnScope] is used for using the [ColumnScope.AnimatedVisibility] extension overload composable.
-@Composable
-private fun ColumnScope.SettingsPanel(
-    settings: UserEditableSettings,
-    supportDynamicColor: Boolean,
-    onChangeThemeBrand: (themeBrand: ThemeBrand) -> Unit,
-    onChangeDynamicColorPreference: (useDynamicColor: Boolean) -> Unit,
-    onChangeDarkThemeConfig: (darkThemeConfig: DarkThemeConfig) -> Unit,
-    onChangeOrderSms: (sendSms: Boolean) -> Unit,
-    onChangePartnerQrCode: (useQrCode: Boolean) -> Unit,
-) {
-    SettingsDialogSectionTitle(text = stringResource(string.feature_settings_theme))
-    Column(Modifier.selectableGroup()) {
-        SettingsDialogThemeChooserRow(
-            text = stringResource(string.feature_settings_brand_default),
-            selected = settings.brand == ThemeBrand.DEFAULT,
-            onClick = { onChangeThemeBrand(ThemeBrand.DEFAULT) },
-        )
-        SettingsDialogThemeChooserRow(
-            text = stringResource(string.feature_settings_brand_android),
-            selected = settings.brand == ThemeBrand.ANDROID,
-            onClick = { onChangeThemeBrand(ThemeBrand.ANDROID) },
-        )
-    }
-
-    AnimatedVisibility(visible = settings.brand == ThemeBrand.DEFAULT && supportDynamicColor) {
-        Column {
-            SettingsDialogSectionTitle(text = stringResource(string.feature_settings_dynamic_color_preference))
-            Column(Modifier.selectableGroup()) {
-                SettingsDialogThemeChooserRow(
-                    text = stringResource(string.feature_settings_dynamic_color_yes),
-                    selected = settings.useDynamicColor,
-                    onClick = { onChangeDynamicColorPreference(true) },
-                )
-                SettingsDialogThemeChooserRow(
-                    text = stringResource(string.feature_settings_dynamic_color_no),
-                    selected = !settings.useDynamicColor,
-                    onClick = { onChangeDynamicColorPreference(false) },
-                )
+                    if (viewModel.cacheBackupUri != null && action == SnackbarResult.ActionPerformed) {
+                        context.shareContent(viewModel.cacheBackupUri!!, type = "application/zip")
+                    }
+                }
             }
         }
     }
 
-    SettingsDialogSectionTitle(text = stringResource(string.feature_settings_dark_mode_preference))
-    Column(Modifier.selectableGroup()) {
-        SettingsDialogThemeChooserRow(
-            text = stringResource(string.feature_settings_dark_mode_config_system_default),
-            selected = settings.darkThemeConfig == DarkThemeConfig.FOLLOW_SYSTEM,
-            onClick = { onChangeDarkThemeConfig(DarkThemeConfig.FOLLOW_SYSTEM) },
-        )
-        SettingsDialogThemeChooserRow(
-            text = stringResource(string.feature_settings_dark_mode_config_light),
-            selected = settings.darkThemeConfig == DarkThemeConfig.LIGHT,
-            onClick = { onChangeDarkThemeConfig(DarkThemeConfig.LIGHT) },
-        )
-        SettingsDialogThemeChooserRow(
-            text = stringResource(string.feature_settings_dark_mode_config_dark),
-            selected = settings.darkThemeConfig == DarkThemeConfig.DARK,
-            onClick = { onChangeDarkThemeConfig(DarkThemeConfig.DARK) },
-        )
+    resultRecipient.onNavResult {
+        when (it) {
+            is NavResult.Canceled -> {}
+            is NavResult.Value -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar(it.value)
+                }
+            }
+        }
     }
 
-    SettingsDialogSectionTitle(text = stringResource(string.feature_settings_order_sms_preference))
-    Column(Modifier.selectableGroup()) {
-        SettingsDialogThemeChooserRow(
-            text = stringResource(string.feature_settings_order_sms_yes),
-            selected = settings.sendOrderSms,
-            onClick = { onChangeOrderSms(true) },
-        )
-        SettingsDialogThemeChooserRow(
-            text = stringResource(string.feature_settings_order_sms_no),
-            selected = !settings.sendOrderSms,
-            onClick = { onChangeOrderSms(false) },
-        )
-    }
-
-    SettingsDialogSectionTitle(text = stringResource(string.feature_settings_partner_qr_preference))
-    Column(Modifier.selectableGroup()) {
-        SettingsDialogThemeChooserRow(
-            text = stringResource(string.feature_settings_partner_qr_yes),
-            selected = settings.useDeliveryPartnerQrCode,
-            onClick = { onChangePartnerQrCode(true) },
-        )
-        SettingsDialogThemeChooserRow(
-            text = stringResource(string.feature_settings_partner_qr_no),
-            selected = !settings.useDeliveryPartnerQrCode,
-            onClick = { onChangePartnerQrCode(false) },
-        )
-    }
-}
-
-@Composable
-private fun SettingsDialogSectionTitle(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
+    SettingsScreenContent(
+        snackbarState = snackbarHostState,
+        isLoading = isLoading,
+        onClickChangeAppearance = {
+            navigator.navigate(Screens.APP_SETTINGS_DIALOG)
+        },
+        onClickDeletionSettings = {
+            navigator.navigate(Screens.DATA_DELETION_SETTINGS_SCREEN)
+        },
+        onClickBackupDb = {
+            viewModel.createBackup {
+                backupLauncher.launch("PoposBackup-${System.currentTimeMillis().toBarDate}.zip")
+            }
+        },
+        onClickRestoreDb = {
+            restoreLauncher.launch("application/zip")
+        },
+        onClickDeleteAll = viewModel::deleteAllData,
+        onBackClick = {
+            navigator.popBackStack()
+        },
     )
 }
 
+@VisibleForTesting
 @Composable
-fun SettingsDialogThemeChooserRow(
-    text: String,
-    selected: Boolean,
-    onClick: () -> Unit,
+internal fun SettingsScreenContent(
+    modifier: Modifier = Modifier,
+    isLoading: Boolean,
+    onClickChangeAppearance: () -> Unit,
+    onClickDeletionSettings: () -> Unit,
+    onClickBackupDb: () -> Unit,
+    onClickRestoreDb: () -> Unit,
+    onClickDeleteAll: () -> Unit,
+    onBackClick: () -> Unit,
+    snackbarState: SnackbarHostState = remember { SnackbarHostState() },
+    lazyListState: LazyListState = rememberLazyListState(),
+    scope: CoroutineScope = rememberCoroutineScope(),
+    containerColor: Color = MaterialTheme.colorScheme.background,
 ) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .selectable(
-                selected = selected,
-                role = Role.RadioButton,
-                onClick = onClick,
+    val openDialog = remember { mutableStateOf(false) }
+
+    TrackScreenViewEvent(screenName = Screens.SETTINGS_SCREEN)
+
+    PoposSecondaryScaffold(
+        modifier = modifier,
+        title = "App Settings",
+        snackbarHostState = snackbarState,
+        showBackButton = true,
+        showBottomBar = false,
+        fabPosition = FabPosition.End,
+        floatingActionButton = {
+            ScrollToTop(
+                visible = !lazyListState.isScrollingUp(),
+                onClick = {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(index = 0)
+                    }
+                },
             )
-            .padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        RadioButton(
-            selected = selected,
-            onClick = null,
+        },
+        onBackClick = onBackClick,
+    ) { paddingValues ->
+        TrackScrollJank(
+            scrollableState = lazyListState,
+            stateName = "App Settings::Columns",
         )
-        Spacer(Modifier.width(8.dp))
-        Text(text)
+
+        Crossfade(
+            targetState = isLoading,
+            label = "",
+        ) {
+            if (it) {
+                LoadingIndicatorHalf()
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentPadding = PaddingValues(SpaceSmall),
+                    state = lazyListState,
+                    verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+                ) {
+                    item("Change Appearance") {
+                        SettingsCard(
+                            title = "Change Theme",
+                            subtitle = "Click here to change the appearance of the app",
+                            icon = PoposIcons.Settings,
+                            onClick = onClickChangeAppearance,
+                            containerColor = containerColor,
+                        )
+                    }
+
+                    item("Data Deletion Settings") {
+                        SettingsCard(
+                            title = "Data Deletion Settings",
+                            subtitle = "Click here to change the data deletion settings",
+                            icon = PoposIcons.AutoDelete,
+                            onClick = onClickDeletionSettings,
+                            containerColor = containerColor,
+                        )
+                    }
+
+                    item("Delete All Data") {
+                        SettingsCard(
+                            title = "Delete All Data",
+                            subtitle = "Click here to delete all data from database",
+                            icon = PoposIcons.DeleteSweep,
+                            onClick = {
+                                openDialog.value = true
+                            },
+                            containerColor = containerColor,
+                        )
+                    }
+
+                    item("Backup Database") {
+                        SettingsCard(
+                            title = "Backup Database",
+                            subtitle = "Click here to backup database to file.",
+                            icon = PoposIcons.Upload,
+                            onClick = onClickBackupDb,
+                            containerColor = containerColor,
+                        )
+                    }
+
+                    item("Restore Database") {
+                        SettingsCard(
+                            title = "Restore Database",
+                            subtitle = "Click here to restore database from file.",
+                            icon = PoposIcons.Import,
+                            onClick = onClickRestoreDb,
+                            containerColor = containerColor,
+                        )
+                    }
+                }
+            }
+        }
     }
-}
 
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun LinksPanel() {
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(
-            space = 16.dp,
-            alignment = Alignment.CenterHorizontally,
-        ),
-        modifier = Modifier.fillMaxWidth(),
+    AnimatedVisibility(
+        visible = openDialog.value,
     ) {
-        val uriHandler = LocalUriHandler.current
-        PoposTextButton(
-            onClick = { uriHandler.openUri(PRIVACY_POLICY_URL) },
-            text = stringResource(string.feature_settings_privacy_policy),
-        )
-
-        val context = LocalContext.current
-        PoposTextButton(
-            onClick = {
-                context.startActivity(Intent(context, OssLicensesMenuActivity::class.java))
+        StandardDialog(
+            title = "Delete All Data",
+            message = "Are you sure you want to delete all data including today?",
+            onConfirm = {
+                openDialog.value = false
+                onClickDeleteAll()
             },
-            text = stringResource(string.feature_settings_licenses),
+            onDismiss = {
+                openDialog.value = false
+            },
         )
     }
 }
 
-@Preview
+@DevicePreviews
 @Composable
-private fun PreviewSettingsDialog() {
+private fun SettingsScreenContentPreview(
+    modifier: Modifier = Modifier,
+) {
     PoposRoomTheme {
-        SettingsDialog(
-            onDismiss = {},
-            settingsUiState = SettingsUiState.Success(
-                UserEditableSettings(
-                    brand = ThemeBrand.DEFAULT,
-                    darkThemeConfig = DarkThemeConfig.FOLLOW_SYSTEM,
-                    useDynamicColor = false,
-                    sendOrderSms = false,
-                    useDeliveryPartnerQrCode = false,
-                ),
-            ),
-            onChangeThemeBrand = {},
-            onChangeDynamicColorPreference = {},
-            onChangeDarkThemeConfig = {},
-            onChangeOrderSms = {},
-            onChangePartnerQrCode = {},
+        SettingsScreenContent(
+            modifier = modifier,
+            isLoading = false,
+            onClickChangeAppearance = {},
+            onClickDeletionSettings = {},
+            onClickBackupDb = {},
+            onClickRestoreDb = {},
+            onClickDeleteAll = {},
+            onBackClick = {},
         )
     }
 }
-
-@Preview
-@Composable
-private fun PreviewSettingsDialogLoading() {
-    PoposRoomTheme {
-        SettingsDialog(
-            onDismiss = {},
-            settingsUiState = SettingsUiState.Loading,
-            onChangeThemeBrand = {},
-            onChangeDynamicColorPreference = {},
-            onChangeDarkThemeConfig = {},
-            onChangeOrderSms = {},
-            onChangePartnerQrCode = {},
-        )
-    }
-}
-
-private const val PRIVACY_POLICY_URL = "https://github.com/niyajali/"

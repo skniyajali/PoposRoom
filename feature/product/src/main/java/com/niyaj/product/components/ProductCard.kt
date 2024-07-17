@@ -24,8 +24,11 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -55,6 +58,7 @@ import com.niyaj.model.Product
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotFound
 import com.niyaj.ui.components.NoteText
+import com.niyaj.ui.components.PoposChip
 import com.niyaj.ui.parameterProvider.ProductPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScrollJank
@@ -175,11 +179,22 @@ private fun ProductCard(
                     )
                 },
                 trailingContent = {
-                    if (showArrow) {
-                        Icon(
-                            imageVector = PoposIcons.ArrowRightAlt,
-                            contentDescription = "View ${item.productName} Details",
-                        )
+                    Row {
+                        item.tags.forEach {
+                            PoposChip(
+                                text = it,
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            )
+
+                            Spacer(modifier = Modifier.width(SpaceMini))
+                        }
+
+                        if (showArrow) {
+                            Icon(
+                                imageVector = PoposIcons.ArrowRightAlt,
+                                contentDescription = "View ${item.productName} Details",
+                            )
+                        }
                     }
                 },
                 colors = ListItemDefaults.colors(

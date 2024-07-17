@@ -36,7 +36,7 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 const val DELETE_DATA_WORKER_TAG = "Data Deletion Worker"
-const val DELETE_DATA_INTERVAL_HOUR: Long = 15
+const val DELETE_DATA_INTERVAL_HOUR: Long = 3
 
 @HiltWorker
 class DataDeletionWorker @AssistedInject constructor(
@@ -56,9 +56,8 @@ class DataDeletionWorker @AssistedInject constructor(
         notifier.showDataDeletionNotification()
 
         val result = deletionRepository.deleteData()
-        result.message?.let {
-            Result.retry()
 
+        result.message?.let {
             Result.failure()
         }
 
@@ -67,7 +66,7 @@ class DataDeletionWorker @AssistedInject constructor(
 
     companion object {
         /**
-         * Expedited periodic time work to generate report on app startup
+         * Expedited periodic time work to delete data on app startup
          */
         fun deletionWorker() = PeriodicWorkRequestBuilder<DelegatingWorker>(
             DELETE_DATA_INTERVAL_HOUR,

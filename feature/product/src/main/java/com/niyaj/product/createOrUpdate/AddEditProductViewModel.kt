@@ -18,6 +18,7 @@
 package com.niyaj.product.createOrUpdate
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -36,7 +37,6 @@ import com.niyaj.model.Category
 import com.niyaj.model.Product
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -66,13 +66,18 @@ class AddEditProductViewModel @Inject constructor(
     private val _selectedCategory = MutableStateFlow(Category())
     val selectedCategory = _selectedCategory.asStateFlow()
 
+    private val _tagList = mutableStateListOf<String>()
+    val tagList: MutableList<String> = _tagList
+
+    private val _selectedTags = mutableStateListOf("")
+    val selectedTags: MutableList<String> = _selectedTags
+
     val categories = productRepository.getAllCategory().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = emptyList(),
     )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val categoryError: StateFlow<String?> = _selectedCategory
         .mapLatest {
             validationRepository.validateCategoryId(it.categoryId).errorMessage
@@ -82,7 +87,6 @@ class AddEditProductViewModel @Inject constructor(
             initialValue = null,
         )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val nameError: StateFlow<String?> = snapshotFlow { state.productName }
         .mapLatest {
             validationRepository.validateProductName(it, productId).errorMessage
@@ -92,7 +96,6 @@ class AddEditProductViewModel @Inject constructor(
             initialValue = null,
         )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val priceError: StateFlow<String?> = snapshotFlow { state.productPrice }
         .mapLatest {
             validationRepository.validateProductPrice(safeString(it)).errorMessage
@@ -102,7 +105,17 @@ class AddEditProductViewModel @Inject constructor(
             initialValue = null,
         )
 
+    val tagError = snapshotFlow { state.tagName }.mapLatest {
+        validationRepository.validateProductTag(it).errorMessage
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = null,
+    )
+
     init {
+        _tagList.addAll(defaultTagList)
+
         savedStateHandle.get<Int>("productId")?.let { productId ->
             if (productId != 0) getProductById(productId)
         }
@@ -148,6 +161,28 @@ class AddEditProductViewModel @Inject constructor(
                 }
             }
 
+            is AddEditProductEvent.TagNameChanged -> {
+                state = state.copy(tagName = event.tagName)
+            }
+
+            is AddEditProductEvent.OnSelectTag -> {
+                viewModelScope.launch {
+                    if (!_tagList.contains(event.tagName)) {
+                        _tagList.add(event.tagName)
+                    }
+
+                    if (_selectedTags.contains(event.tagName)) {
+                        _selectedTags.remove(event.tagName)
+                    } else {
+                        _selectedTags.add(event.tagName)
+                    }
+
+                    if (state.tagName == event.tagName) {
+                        state = state.copy(tagName = "")
+                    }
+                }
+            }
+
             is AddEditProductEvent.AddOrUpdateProduct -> {
                 createOrUpdateProduct(productId)
             }
@@ -169,6 +204,7 @@ class AddEditProductViewModel @Inject constructor(
                     productPrice = state.productPrice.safeInt(),
                     productDescription = state.productDesc.trim().capitalizeWords,
                     productAvailability = state.productAvailability,
+                    tags = selectedTags.toList(),
                     createdAt = System.currentTimeMillis(),
                     updatedAt = if (productId == 0) null else System.currentTimeMillis(),
                 )
@@ -204,6 +240,18 @@ class AddEditProductViewModel @Inject constructor(
                             productDesc = product.productDescription,
                             productAvailability = product.productAvailability,
                         )
+
+                        if (product.tags.isNotEmpty()) {
+                            _selectedTags.clear()
+
+                            product.tags.forEach {
+                                if (!tagList.contains(it)) {
+                                    tagList.add(it)
+                                }
+                            }
+
+                            _selectedTags.addAll(product.tags)
+                        }
                     }
                 }
             }
@@ -218,6 +266,14 @@ class AddEditProductViewModel @Inject constructor(
         }
     }
 }
+
+internal val defaultTagList = listOf(
+    "Popular",
+    "Best",
+    "New",
+    "Trending",
+    "Top",
+)
 
 private fun AnalyticsHelper.logOnCreateOrUpdateProduct(data: Int, message: String) {
     logEvent(

@@ -23,7 +23,7 @@ import com.niyaj.model.ProductWithQuantity
 
 @DatabaseView(
     value = """
-        SELECT product.categoryId, product.productId, productName, productPrice, COALESCE(cart.quantity, 0) as quantity
+        SELECT product.categoryId, product.productId, productName, productPrice, COALESCE(cart.quantity, 0) as quantity, product.tags
         FROM product
         LEFT JOIN cart ON product.productId = cart.productId 
         AND CASE WHEN (SELECT orderId FROM selected LIMIT 1) IS NOT NULL
@@ -43,6 +43,8 @@ data class ProductWIthQuantityView(
     val productPrice: Int,
 
     val quantity: Int = 0,
+
+    val tags: List<String> = emptyList(),
 )
 
 fun List<ProductWIthQuantityView>.asExternalModel(): List<ProductWithQuantity> {
@@ -53,6 +55,7 @@ fun List<ProductWIthQuantityView>.asExternalModel(): List<ProductWithQuantity> {
             productName = it.productName,
             productPrice = it.productPrice,
             quantity = it.quantity,
+            tags = it.tags,
         )
     }
 }
