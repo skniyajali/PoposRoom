@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -210,6 +211,7 @@ fun CategoryWiseReportCard(
     selectedCategory: String,
     onExpandChanged: (String) -> Unit,
     onProductClick: (Int) -> Unit,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
 ) = trace("CategoryWiseReportCard") {
     Column(
         modifier = Modifier
@@ -255,7 +257,7 @@ fun CategoryWiseReportCard(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                                .background(containerColor),
                         ) {
                             products.forEachIndexed { index, productWithQty ->
                                 ProductReportCard(

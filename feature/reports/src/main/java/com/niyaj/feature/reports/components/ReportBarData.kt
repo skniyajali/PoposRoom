@@ -25,8 +25,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,7 +47,7 @@ import com.niyaj.feature.chart.horizontalbar.config.StartDirection
 import com.niyaj.feature.chart.horizontalbar.model.HorizontalBarData
 import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.ItemNotAvailable
-import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.ItemNotAvailableHalf
 import com.niyaj.ui.event.UiState
 
 @Composable
@@ -57,22 +57,20 @@ fun ReportBarData(
     onBarClick: (String) -> Unit,
     onClickViewMore: () -> Unit,
 ) = trace("ReportBarData") {
-    Card(
+    ElevatedCard(
         modifier = Modifier
             .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(2.dp),
-        colors = CardDefaults.cardColors(),
+        colors = CardDefaults.elevatedCardColors(),
     ) {
         Crossfade(
             targetState = reportBarState,
             label = "ReportBarState",
         ) { state ->
             when (state) {
-                is UiState.Loading -> LoadingIndicator()
+                is UiState.Loading -> ItemNotAvailableHalf()
 
                 is UiState.Empty -> {
                     ItemNotAvailable(
-                        modifier = Modifier.padding(SpaceSmall),
                         text = "Reports are not available",
                         showImage = false,
                     )

@@ -28,12 +28,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.LightColor2
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.CategoryWiseReport
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.ItemNotAvailable
-import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.ItemNotAvailableHalf
+import com.niyaj.ui.components.LoadingIndicatorHalf
 import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.event.UiState
 
@@ -52,9 +51,7 @@ fun CategoryWiseReport(
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = LightColor2,
-        ),
+        colors = CardDefaults.elevatedCardColors(),
     ) {
         StandardExpandable(
             modifier = Modifier
@@ -85,10 +82,10 @@ fun CategoryWiseReport(
                     label = "CategoryState",
                 ) { state ->
                     when (state) {
-                        is UiState.Loading -> LoadingIndicator()
+                        is UiState.Loading -> LoadingIndicatorHalf()
 
                         is UiState.Empty -> {
-                            ItemNotAvailable(
+                            ItemNotAvailableHalf(
                                 text = "Category wise report not available",
                                 showImage = false,
                             )

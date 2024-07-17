@@ -42,7 +42,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.niyaj.core.ui.R
 import com.niyaj.designsystem.components.PoposElevatedButton
@@ -85,32 +84,40 @@ fun ItemNotAvailable(
                 Image(
                     painter = image,
                     contentDescription = "No data available",
+                    modifier = Modifier
+                        .weight(2f, true),
                 )
                 Spacer(modifier = Modifier.height(SpaceMedium))
             }
 
-            Text(
-                text = text,
-                fontWeight = FontWeight.Normal,
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(horizontal = SpaceLarge),
-            )
-
-            if (buttonText.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(SpaceMedium))
-                PoposElevatedButton(
-                    modifier = btnModifier,
-                    text = buttonText,
-                    icon = icon,
-                    onClick = onClick,
-                    colors = ButtonDefaults.elevatedButtonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onSecondary,
-                    ),
-                    shape = CutCornerShape(4.dp),
+            Column(
+                modifier = Modifier
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(SpaceMedium),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = text,
+                    fontWeight = FontWeight.Normal,
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(horizontal = SpaceLarge),
                 )
+
+                if (buttonText.isNotEmpty()) {
+                    PoposElevatedButton(
+                        modifier = btnModifier,
+                        text = buttonText,
+                        icon = icon,
+                        onClick = onClick,
+                        colors = ButtonDefaults.elevatedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.onSecondary,
+                        ),
+                        shape = CutCornerShape(4.dp),
+                    )
+                }
             }
         }
     }
@@ -227,12 +234,7 @@ fun EmptyImportScreen(
             )
 
             note?.let {
-                NoteText(
-                    modifier = Modifier.padding(horizontal = SpaceLarge),
-                    text = it,
-                    maxLines = 3,
-                    overflow = TextOverflow.Visible,
-                )
+                InfoText(text = it)
             }
 
             if (buttonText.isNotEmpty()) {

@@ -49,7 +49,7 @@ val DefaultRoborazziOptions =
     )
 
 enum class DefaultTestDevices(val description: String, val spec: String) {
-    PHONE("phone", "spec:shape=Normal,width=640,height=360,unit=dp,dpi=480"),
+    PHONE("phone", "spec:shape=Normal,width=360,height=640,unit=dp,dpi=480"),
     FOLDABLE("foldable", "spec:shape=Normal,width=673,height=841,unit=dp,dpi=480"),
     TABLET("tablet", "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480"),
 }
@@ -60,6 +60,37 @@ fun <A : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<A>, A>.c
     DefaultTestDevices.entries.forEach {
         this.captureForDevice(it.description, it.spec, screenshotName, body = body)
     }
+}
+
+fun <A : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<A>, A>.captureForPhone(
+    screenshotName: String,
+    deviceName: String = "phone",
+    deviceSpec: String = "spec:shape=Normal,width=360,height=640,unit=dp,dpi=480",
+    roborazziOptions: RoborazziOptions = DefaultRoborazziOptions,
+    darkMode: Boolean = false,
+    body: @Composable () -> Unit,
+) {
+    val (width, height, dpi) = extractSpecs(deviceSpec)
+
+    // Set qualifiers from specs
+    RuntimeEnvironment.setQualifiers("w${width}dp-h${height}dp-${dpi}dpi")
+
+    this.activity.setContent {
+        CompositionLocalProvider(
+            LocalInspectionMode provides true,
+        ) {
+            DeviceConfigurationOverride(
+                override = DeviceConfigurationOverride.Companion.DarkMode(darkMode),
+            ) {
+                body()
+            }
+        }
+    }
+    this.onRoot()
+        .captureRoboImage(
+            "src/test/screenshots/${screenshotName}_$deviceName.png",
+            roborazziOptions = roborazziOptions,
+        )
 }
 
 fun <A : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<A>, A>.captureForDevice(

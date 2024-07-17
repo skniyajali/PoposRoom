@@ -60,7 +60,7 @@ playService = "18.5.0"
 revealswipeVersion = '1.1.0'
 raamcostaVersion = "1.9.56"
 room = "2.6.1"
-robolectric = "4.11.1"
+robolectric = "4.12.2"
 roborazzi = "1.20.0"
 secrets = "2.0.1"
 sentryVersion = '4.6.0'
@@ -79,7 +79,7 @@ minSdk = "26"
 compileSdk = "34"
 targetSdk = "34"
 versionCode = "1"
-versionName = "1.0.7"
+versionName = "1.0.8"
 
 [libraries]
 # Accompanist library

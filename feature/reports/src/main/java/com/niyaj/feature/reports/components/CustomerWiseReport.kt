@@ -41,8 +41,8 @@ import com.niyaj.model.CustomerWiseReport
 import com.niyaj.model.TotalOrders
 import com.niyaj.ui.components.CountBox
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.ItemNotAvailable
-import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.ItemNotAvailableHalf
+import com.niyaj.ui.components.LoadingIndicatorHalf
 import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.event.UiState
 
@@ -95,10 +95,10 @@ fun CustomerWiseReport(
                     label = "CustomerState",
                 ) { state ->
                     when (state) {
-                        is UiState.Loading -> LoadingIndicator()
+                        is UiState.Loading -> LoadingIndicatorHalf()
 
                         is UiState.Empty -> {
-                            ItemNotAvailable(
+                            ItemNotAvailableHalf(
                                 text = "Customer wise report not available",
                                 showImage = false,
                             )

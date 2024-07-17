@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.LightColor3
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.feature.chart.common.dimens.ChartDimens
 import com.niyaj.feature.chart.horizontalbar.HorizontalBarChart
@@ -40,8 +39,8 @@ import com.niyaj.feature.chart.horizontalbar.config.HorizontalBarConfig
 import com.niyaj.feature.chart.horizontalbar.config.StartDirection
 import com.niyaj.feature.chart.horizontalbar.model.HorizontalBarData
 import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.ItemNotAvailable
-import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.components.ItemNotAvailableHalf
+import com.niyaj.ui.components.LoadingIndicatorHalf
 import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.event.UiState
 
@@ -59,9 +58,7 @@ fun ProductWiseReport(
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = LightColor3,
-        ),
+        colors = CardDefaults.elevatedCardColors(),
     ) {
         StandardExpandable(
             modifier = Modifier
@@ -93,13 +90,13 @@ fun ProductWiseReport(
                 ) { state ->
                     when (state) {
                         is UiState.Empty -> {
-                            ItemNotAvailable(
+                            ItemNotAvailableHalf(
                                 text = "Product wise report not available",
                                 showImage = false,
                             )
                         }
 
-                        is UiState.Loading -> LoadingIndicator()
+                        is UiState.Loading -> LoadingIndicatorHalf()
 
                         is UiState.Success -> {
                             Spacer(modifier = Modifier.height(SpaceSmall))

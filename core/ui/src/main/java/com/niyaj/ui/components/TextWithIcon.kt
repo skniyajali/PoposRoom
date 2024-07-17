@@ -20,7 +20,9 @@ package com.niyaj.ui.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,7 +36,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -47,13 +51,16 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun IconWithText(
@@ -360,4 +367,68 @@ fun NoteCard(
         },
         colors = ListItemDefaults.colors(containerColor = containerColor),
     )
+}
+
+@Composable
+fun InfoText(
+    modifier: Modifier = Modifier,
+    text: String,
+    icon: ImageVector = PoposIcons.Info,
+    style: TextStyle = LocalTextStyle.current,
+    maxLines: Int = 3,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
+    textAlign: TextAlign = TextAlign.Start,
+) {
+    Box(
+        modifier = modifier
+            .width(IntrinsicSize.Max),
+        contentAlignment = Alignment.Center,
+    ) {
+        Surface(
+            modifier = Modifier
+                .align(Alignment.Center),
+            color = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.error,
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(SpaceSmall),
+                horizontalArrangement = Arrangement.spacedBy(
+                    SpaceSmall,
+                    Alignment.CenterHorizontally,
+                ),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = "infoIcon",
+                )
+
+                Text(
+                    text = text,
+                    textAlign = textAlign,
+                    maxLines = maxLines,
+                    overflow = overflow,
+                    style = style,
+                )
+            }
+        }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun InfoTextPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            InfoText(
+                modifier = modifier,
+                text = "This is info text and test for max lines and overflow",
+            )
+        }
+    }
 }

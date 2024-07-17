@@ -155,7 +155,7 @@ fun PoposPrimaryScaffold(
                             ) {
                                 Icon(
                                     imageVector = PoposIcons.Back,
-                                    contentDescription = null,
+                                    contentDescription = "Back Icon",
                                 )
                             }
                         } else {
@@ -174,10 +174,11 @@ fun PoposPrimaryScaffold(
                                 if (state.currentState != 0) {
                                     IconButton(
                                         onClick = onDeselect,
+                                        modifier = Modifier.testTag(Constants.CLEAR_ICON),
                                     ) {
                                         Icon(
                                             imageVector = PoposIcons.Close,
-                                            contentDescription = Constants.CLEAR_ICON,
+                                            contentDescription = "Close Icon",
                                         )
                                     }
                                 } else {
@@ -187,10 +188,12 @@ fun PoposPrimaryScaffold(
                                                 drawerState.open()
                                             }
                                         },
+                                        modifier = Modifier
+                                            .testTag("drawerIconBtn"),
                                     ) {
                                         Icon(
                                             imageVector = PoposIcons.App,
-                                            contentDescription = "primaryAppDrawerIcon",
+                                            contentDescription = "drawerIcon",
                                         )
                                     }
                                 }

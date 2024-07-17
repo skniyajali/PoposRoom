@@ -128,7 +128,7 @@ private fun CategoryData(
     selected: Boolean,
     onClick: () -> Unit,
     selectedColor: Color = MaterialTheme.colorScheme.secondaryContainer,
-    unselectedColor: Color = MaterialTheme.colorScheme.surface,
+    unselectedColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CategoryData") {
     val color = if (selected) selectedColor else unselectedColor
 
@@ -137,7 +137,7 @@ private fun CategoryData(
             .testTag(CATEGORY_ITEM_TAG.plus(item.categoryId))
             .padding(SpaceSmall),
         onClick = onClick,
-        colors = CardDefaults.elevatedCardColors(
+        colors = CardDefaults.elevatedCardColors().copy(
             containerColor = color,
         ),
     ) {
