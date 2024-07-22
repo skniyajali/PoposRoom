@@ -244,16 +244,12 @@ private val allPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
             Manifest.permission.BLUETOOTH_CONNECT,
             Manifest.permission.BLUETOOTH_SCAN,
             Manifest.permission.POST_NOTIFICATIONS,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
         )
     } else {
         listOf(
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.BLUETOOTH,
             Manifest.permission.BLUETOOTH_ADMIN,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
         )
     }
 } else {
@@ -261,8 +257,6 @@ private val allPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
         Manifest.permission.ACCESS_NETWORK_STATE,
         Manifest.permission.BLUETOOTH,
         Manifest.permission.BLUETOOTH_ADMIN,
-        Manifest.permission.READ_EXTERNAL_STORAGE,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
     )
 }
 
