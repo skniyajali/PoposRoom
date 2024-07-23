@@ -173,3 +173,19 @@ fun Activity.openAppSettings() {
 fun Context.showToast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
+
+fun Context.shareContent(
+    contentUri: Uri,
+    type: String,
+    title: String = "Share Via",
+) {
+    val sharingIntent = Intent(Intent.ACTION_SEND).apply {
+        this.type = type
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        putExtra(Intent.EXTRA_STREAM, contentUri)
+    }
+
+    val chooserIntent = Intent.createChooser(sharingIntent, title)
+    chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    startActivity(chooserIntent)
+}

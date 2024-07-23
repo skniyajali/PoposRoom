@@ -46,6 +46,8 @@ object Screens {
     const val SEARCH_SCREEN = "search_screen"
 
     const val SETTINGS_SCREEN = "settings_screen"
+    const val APP_SETTINGS_DIALOG = "app_settings_dialog"
+    const val DATA_DELETION_SETTINGS_SCREEN = "data_deletion_settings_screen"
 
     const val PRINT_SETTINGS_SCREEN = "print_settings_screen"
 

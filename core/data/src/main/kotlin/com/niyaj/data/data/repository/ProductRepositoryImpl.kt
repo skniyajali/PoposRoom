@@ -27,6 +27,7 @@ import com.niyaj.common.tags.ProductTestTags.PRODUCT_NAME_EMPTY_ERROR
 import com.niyaj.common.tags.ProductTestTags.PRODUCT_NAME_LENGTH_ERROR
 import com.niyaj.common.tags.ProductTestTags.PRODUCT_PRICE_EMPTY_ERROR
 import com.niyaj.common.tags.ProductTestTags.PRODUCT_PRICE_LENGTH_ERROR
+import com.niyaj.common.tags.ProductTestTags.PRODUCT_TAG_LENGTH_ERROR
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.ProductRepository
 import com.niyaj.data.repository.validation.ProductValidationRepository
@@ -220,6 +221,19 @@ class ProductRepositoryImpl(
         return ValidationResult(
             successful = true,
         )
+    }
+
+    override fun validateProductTag(tagName: String): ValidationResult {
+        if (tagName.isNotEmpty()) {
+            if (tagName.length < 3) {
+                return ValidationResult(
+                    successful = false,
+                    errorMessage = PRODUCT_TAG_LENGTH_ERROR,
+                )
+            }
+        }
+
+        return ValidationResult(true)
     }
 
     override suspend fun getProductPrice(productId: Int): Int {

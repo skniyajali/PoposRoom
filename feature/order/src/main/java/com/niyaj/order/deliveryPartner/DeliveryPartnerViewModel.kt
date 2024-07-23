@@ -19,11 +19,11 @@ package com.niyaj.order.deliveryPartner
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.data.repository.OrderRepository
 import com.niyaj.model.DeliveryReport
 import com.niyaj.model.TotalDeliveryPartnerOrder
+import com.niyaj.ui.event.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -40,7 +41,7 @@ import javax.inject.Inject
 class DeliveryPartnerViewModel @Inject constructor(
     private val orderRepository: OrderRepository,
     savedStateHandle: SavedStateHandle,
-) : ViewModel() {
+) : BaseViewModel() {
 
     private var partnerId = savedStateHandle.get<Int?>("partnerId")
 
@@ -59,8 +60,10 @@ class DeliveryPartnerViewModel @Inject constructor(
 
     val deliveryReports = _selectedDate.combine(snapshotFlow { partnerId }) { date, partnerId ->
         orderRepository.getPartnerDeliveryReports(date, partnerId)
-    }.flatMapLatest {
-        it.map { items ->
+    }.flatMapLatest { listFlow ->
+        listFlow.map { items ->
+            totalItems = items.map { it.orderId }
+
             if (items.isEmpty()) PartnerReportState.Empty else PartnerReportState.Success(items)
         }
     }.stateIn(
@@ -69,15 +72,40 @@ class DeliveryPartnerViewModel @Inject constructor(
         initialValue = PartnerReportState.Loading,
     )
 
+    val partners = snapshotFlow { partnerId }.flatMapLatest {
+        orderRepository.getDeliveryPartners()
+    }.mapLatest { list ->
+        list.filterNot { it.employeeId == partnerId }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList(),
+    )
+
     fun selectDate(date: String) {
         viewModelScope.launch {
             _selectedDate.update { date }
         }
     }
 
-    fun getSharablePartnerOrders() {
+    fun onChangeDeliveryPartner(employeeId: Int) {
         viewModelScope.launch {
-            partnerId = null
+            mSelectedItems.forEach {
+                orderRepository.updateDeliveryPartner(it, employeeId)
+            }
+
+            mSelectedItems.clear()
+        }
+    }
+
+    fun selectUnselectedOrders() {
+        viewModelScope.launch {
+            val unselectedItems = totalItems.filter {
+                it !in mSelectedItems
+            }
+
+            mSelectedItems.clear()
+            mSelectedItems.addAll(unselectedItems)
         }
     }
 }

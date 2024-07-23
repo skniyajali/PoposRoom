@@ -139,29 +139,30 @@ class MarketListItemsViewModel @Inject constructor(
                 val marketList = repository
                     .getShareableMarketListByIds(listTypeIds.asList()).stateIn(this)
 
-                bluetoothPrinter.connectBluetoothPrinter()
-                val escposPrinter = bluetoothPrinter.printer
+                bluetoothPrinter
+                    .connectAndGetBluetoothPrinterAsync()
+                    .onSuccess {
+                        it?.let { printer ->
+                            var printItems = ""
 
-                escposPrinter?.let { printer ->
-                    var printItems = ""
+                            printItems += bluetoothPrinter.getPrintableHeader(
+                                title = "MARKET LIST",
+                                marketDate,
+                            )
+                            printItems += getPrintableItems(marketList.value)
 
-                    printItems += bluetoothPrinter.getPrintableHeader(
-                        title = "MARKET LIST",
-                        marketDate,
-                    )
-                    printItems += getPrintableItems(marketList.value)
+                            printItems += "[L]-------------------------------\n"
+                            printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
+                            printItems += "[L]-------------------------------\n"
 
-                    printItems += "[L]-------------------------------\n"
-                    printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
-                    printItems += "[L]-------------------------------\n"
-
-                    printer.printFormattedTextAndCut(printItems, 10f)
-                    analyticsHelper.logPrintMarketList(listTypeIds.asList(), marketDate)
-                }
+                            printer.printFormattedTextAndCut(printItems, 10f)
+                            analyticsHelper.logPrintMarketList(listTypeIds.asList(), marketDate)
+                        }
+                    }.onFailure {
+                        mEventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                    }
             } catch (e: Exception) {
-                viewModelScope.launch {
-                    mEventFlow.emit(UiEvent.OnError("Unable to print"))
-                }
+                mEventFlow.emit(UiEvent.OnError("Printer Not Connected"))
             }
         }
     }
@@ -207,7 +208,10 @@ private fun AnalyticsHelper.logPrintMarketList(listTypeIds: List<Int>, marketDat
         event = AnalyticsEvent(
             type = "market_list_printed_for",
             extras = listOf(
-                AnalyticsEvent.Param("market_list_printed_for", "${marketDate.toFormattedDate} - ${listTypeIds.toListString()}"),
+                AnalyticsEvent.Param(
+                    "market_list_printed_for",
+                    "${marketDate.toFormattedDate} - ${listTypeIds.toListString()}",
+                ),
             ),
         ),
     )

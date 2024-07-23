@@ -17,6 +17,7 @@
 
 package com.niyaj.data.utils
 
+import com.niyaj.common.utils.toFormattedDateAndTime
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 
@@ -25,7 +26,7 @@ internal fun AnalyticsHelper.logThemeChanged(themeName: String) =
         AnalyticsEvent(
             type = "theme_changed",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param(key = "theme_name", value = themeName),
+                AnalyticsEvent.Param(key = "theme_name", value = themeName),
             ),
         ),
     )
@@ -35,7 +36,7 @@ internal fun AnalyticsHelper.logDarkThemeConfigChanged(darkThemeConfigName: Stri
         AnalyticsEvent(
             type = "dark_theme_config_changed",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param(key = "dark_theme_config", value = darkThemeConfigName),
+                AnalyticsEvent.Param(key = "dark_theme_config", value = darkThemeConfigName),
             ),
         ),
     )
@@ -45,7 +46,7 @@ internal fun AnalyticsHelper.logDynamicColorPreferenceChanged(useDynamicColor: B
         AnalyticsEvent(
             type = "dynamic_color_preference_changed",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param(
+                AnalyticsEvent.Param(
                     key = "dynamic_color_preference",
                     value = useDynamicColor.toString(),
                 ),
@@ -65,7 +66,7 @@ internal fun AnalyticsHelper.logUserLoggedIn(userId: Int) =
         AnalyticsEvent(
             type = "user_logged_in",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param(key = "user_id", value = userId.toString()),
+                AnalyticsEvent.Param(key = "user_id", value = userId.toString()),
             ),
         ),
     )
@@ -76,7 +77,7 @@ internal fun AnalyticsHelper.logOrderSmsPreferenceChanged(sendOrderSms: Boolean)
     AnalyticsEvent(
         type = "order_sms_preference_changed",
         extras = listOf(
-            com.niyaj.core.analytics.AnalyticsEvent.Param(key = "send_order_sms", value = sendOrderSms.toString()),
+            AnalyticsEvent.Param(key = "send_order_sms", value = sendOrderSms.toString()),
         ),
     ),
 )
@@ -86,7 +87,7 @@ internal fun AnalyticsHelper.logDeliveryPartnerQrCodePreferenceChanged(useDelive
         AnalyticsEvent(
             type = "delivery_partner_qr_code_preference_changed",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param(
+                AnalyticsEvent.Param(
                     key = "use_delivery_partner_qr_code",
                     value = useDeliveryPartnerQrCode.toString(),
                 ),
@@ -98,7 +99,31 @@ internal fun AnalyticsHelper.logSelectedOrderIdChanged(selectedOrderId: Int) = l
     AnalyticsEvent(
         type = "selected_order_id_changed",
         extras = listOf(
-            com.niyaj.core.analytics.AnalyticsEvent.Param(key = "selected_order_id", value = selectedOrderId.toString()),
+            AnalyticsEvent.Param(key = "selected_order_id", value = selectedOrderId.toString()),
+        ),
+    ),
+)
+
+internal fun AnalyticsHelper.logBackupPerformed() = logEvent(
+    AnalyticsEvent(
+        type = "backup_initiated",
+        extras = listOf(
+            AnalyticsEvent.Param(
+                key = "backup_initiated",
+                value = System.currentTimeMillis().toFormattedDateAndTime,
+            ),
+        ),
+    ),
+)
+
+internal fun AnalyticsHelper.logBackupRestorePerformed() = logEvent(
+    AnalyticsEvent(
+        type = "restore_initiated",
+        extras = listOf(
+            AnalyticsEvent.Param(
+                key = "restore_initiated",
+                value = System.currentTimeMillis().toFormattedDateAndTime,
+            ),
         ),
     ),
 )

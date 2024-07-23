@@ -41,6 +41,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.contentColorFor
@@ -54,9 +55,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.ButtonSize
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.utils.drawAnimatedBorder
@@ -390,18 +394,19 @@ fun PoposIconButton(
     contentDescription: String = icon.name,
     enabled: Boolean = true,
     btnHeight: Dp = 40.dp,
-    shape: Shape = IconButtonDefaults.filledShape,
+    shape: Shape = RoundedCornerShape(SpaceMini),
     containerColor: Color = IconButtonDefaults.iconButtonColors().containerColor,
     contentColor: Color = contentColorFor(backgroundColor = containerColor),
     onClick: () -> Unit,
 ) {
     IconButton(
         modifier = modifier
-            .background(containerColor, shape)
-            .heightIn(btnHeight),
+            .heightIn(btnHeight)
+            .background(if (enabled) containerColor else containerColor.copy(0.4f), shape),
         onClick = onClick,
         colors = IconButtonDefaults.iconButtonColors(
             containerColor = containerColor,
+            contentColor = contentColor,
         ),
         enabled = enabled,
     ) {
@@ -409,7 +414,6 @@ fun PoposIconButton(
             imageVector = icon,
             contentDescription = contentDescription,
             modifier = iconModifier,
-            tint = contentColor,
         )
     }
 }
@@ -467,5 +471,36 @@ fun PoposOutlinedIconButton(
             imageVector = icon,
             contentDescription = contentDescription,
         )
+    }
+}
+
+@Preview
+@Composable
+private fun PoposIconButtonEnabledPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        Surface {
+            PoposIconButton(
+                icon = PoposIcons.Share,
+                onClick = {},
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PoposIconButtonDisabledPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        Surface {
+            PoposIconButton(
+                icon = PoposIcons.Share,
+                onClick = {},
+                enabled = false,
+            )
+        }
     }
 }

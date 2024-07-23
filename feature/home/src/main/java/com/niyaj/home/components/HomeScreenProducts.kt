@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -63,6 +64,7 @@ import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.components.StandardRoundedInputChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.ProductWithQuantity
@@ -78,26 +80,25 @@ import kotlinx.collections.immutable.toImmutableList
 internal fun HomeScreenProducts(
     modifier: Modifier = Modifier,
     products: ImmutableList<ProductWithQuantity>,
-    selectedCategory: String? = null,
     onIncrease: (Int) -> Unit,
     onDecrease: (Int) -> Unit,
     onCreateProduct: () -> Unit,
-    onClickCategory: () -> Unit = {},
     lazyListState: LazyListState = rememberLazyListState(),
 ) = trace("MainFeedProducts") {
     TrackScrollJank(scrollableState = lazyListState, stateName = "products:list")
 
     Column(
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxSize(),
     ) {
         TitleWithSelectedCategory(
-            modifier = Modifier.padding(SpaceSmall),
-            selectedCategory = selectedCategory,
-            onClickCategory = onClickCategory,
+            modifier = Modifier.padding(bottom = SpaceSmall, start = SpaceMedium),
+            text = "Products",
+            selectedCategory = null,
+            onClickCategory = {},
         )
 
         LazyColumn(
+            modifier = modifier,
             state = lazyListState,
         ) {
             items(
@@ -349,11 +350,9 @@ private fun HomeScreenProductsPreview(
         HomeScreenProducts(
             modifier = modifier,
             products = products.toImmutableList(),
-            selectedCategory = "Biryani",
             onIncrease = {},
             onDecrease = {},
             onCreateProduct = {},
-            onClickCategory = {},
         )
     }
 }

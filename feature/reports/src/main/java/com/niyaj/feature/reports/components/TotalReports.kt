@@ -28,18 +28,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.util.trace
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.model.Reports
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.ReportBox
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.ReportsPreviewParameter
+import com.niyaj.ui.utils.DevicePreviews
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun TotalReports(
+internal fun TotalReports(
     modifier: Modifier = Modifier,
     uiState: UiState<Reports>,
     onOrderClick: () -> Unit,
@@ -65,7 +69,7 @@ fun TotalReports(
                     val report = state.data
 
                     val totalAmount =
-                        report.expensesAmount.plus(report.dineInSalesAmount)
+                        report.dineInSalesAmount
                             .plus(report.dineOutSalesAmount)
                             .toString()
 
@@ -121,6 +125,24 @@ fun TotalReports(
             icon = PoposIcons.Sync,
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
             onClick = onRegenerateReport,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun TotalReportsPreview(
+    @PreviewParameter(ReportsPreviewParameter::class)
+    uiState: UiState<Reports>,
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        TotalReports(
+            modifier = modifier,
+            uiState = uiState,
+            onOrderClick = {},
+            onExpensesClick = {},
+            onRegenerateReport = {},
         )
     }
 }

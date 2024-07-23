@@ -139,26 +139,28 @@ class ProductDetailsViewModel @Inject constructor(
     fun printProductDetails() {
         viewModelScope.launch {
             try {
-                var printItems = ""
-                bluetoothPrinter.connectBluetoothPrinter()
-                val printer = bluetoothPrinter.printer
+                bluetoothPrinter
+                    .connectAndGetBluetoothPrinterAsync()
+                    .onSuccess {
+                        it?.let {
+                            var printItems = ""
 
-                printer?.let {
-                    printItems += bluetoothPrinter.getPrintableHeader("Product Details", "")
-                    printItems += getPrintableProductDetails()
-                    printItems += getTotalSales()
-                    printItems += getPrintableProductOrderDetails()
-                    printItems += "[L]-------------------------------\n"
-                    printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
-                    printItems += "[L]-------------------------------\n"
+                            printItems += bluetoothPrinter.getPrintableHeader("Product Details", "")
+                            printItems += getPrintableProductDetails()
+                            printItems += getTotalSales()
+                            printItems += getPrintableProductOrderDetails()
+                            printItems += "[L]-------------------------------\n"
+                            printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
+                            printItems += "[L]-------------------------------\n"
 
-                    it.printFormattedText(printItems, 10f)
-                    analyticsHelper.logProductDetailsPrinted(productId)
-                } ?: run {
-                    _eventFlow.emit(UiEvent.OnError("Failed to connect to printer"))
-                }
+                            it.printFormattedText(printItems, 10f)
+                            analyticsHelper.logProductDetailsPrinted(productId)
+                        }
+                    }.onFailure {
+                        _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                    }
             } catch (e: Exception) {
-                _eventFlow.emit(UiEvent.OnError("Failed to print product details"))
+                _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
             }
         }
     }

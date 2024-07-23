@@ -23,7 +23,7 @@ import com.niyaj.model.Customer
 import com.niyaj.model.OrderType
 
 data class AddEditCartOrderState(
-    val orderType: OrderType = OrderType.DineIn,
+    val orderType: OrderType = OrderType.DineOut,
     val doesChargesIncluded: Boolean = false,
     val address: Address = Address(),
     val customer: Customer = Customer(),

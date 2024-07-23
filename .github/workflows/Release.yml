@@ -7,7 +7,12 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+
+    runs-on: ${{ matrix.os }}
+
     timeout-minutes: 120
 
     steps:
@@ -19,10 +24,7 @@ jobs:
           ls /dev/kvm
 
       - name: Checkout
-        uses: actions/checkout@v4   
-
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v3
+        uses: actions/checkout@v4
 
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
@@ -32,6 +34,12 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          validate-wrappers: true
+          gradle-home-cache-cleanup: true
 
       - name: Install GMD image for baseline profile generation
         run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager "system-images;android-33;aosp_atd;x86_64"
@@ -46,6 +54,7 @@ jobs:
              -Pandroid.experimental.testOptions.managedDevices.emulator.showKernelLogging=true
              -Pandroid.experimental.androidTest.numManagedDeviceShards=1
              -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1

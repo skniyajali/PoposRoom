@@ -29,6 +29,10 @@ sealed interface AddEditProductEvent {
 
     data class ProductDescChanged(val productDesc: String) : AddEditProductEvent
 
+    data class TagNameChanged(val tagName: String) : AddEditProductEvent
+
+    data class OnSelectTag(val tagName: String) : AddEditProductEvent
+
     data object ProductAvailabilityChanged : AddEditProductEvent
 
     data object AddOrUpdateProduct : AddEditProductEvent

@@ -22,6 +22,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.VisibleForTesting
@@ -51,7 +52,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -61,6 +61,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -110,8 +111,10 @@ import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.NoteText
 import com.niyaj.ui.components.PoposChip
+import com.niyaj.ui.components.ShareableOrderDetails
 import com.niyaj.ui.components.StandardBottomSheetScaffold
 import com.niyaj.ui.components.StandardDialog
+import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.parameterProvider.AddOnPreviewData
 import com.niyaj.ui.parameterProvider.CardOrderPreviewData
@@ -122,12 +125,14 @@ import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
+import com.niyaj.ui.utils.rememberCaptureController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
 @RootNavGraph(start = true)
@@ -142,8 +147,11 @@ fun SelectOrderScreen(
     resultBackNavigator: ResultBackNavigator<String>,
     viewModel: SelectedViewModel = hiltViewModel(),
     printViewModel: OrderPrintViewModel = hiltViewModel(),
+    shareViewModel: ShareViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val captureController = rememberCaptureController()
     val snackbarHostState = remember { SnackbarHostState() }
 
     val state by viewModel.cartOrders.collectAsStateWithLifecycle()
@@ -153,16 +161,13 @@ fun SelectOrderScreen(
     val addOnItems by viewModel.addOnItems.collectAsStateWithLifecycle()
     val deliveryPartners by viewModel.deliveryPartners.collectAsStateWithLifecycle()
 
-    val printError by printViewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
+    val showShareDialog = shareViewModel.showDialog.collectAsStateWithLifecycle().value
 
-    LaunchedEffect(key1 = printError) {
-        printError?.let { event ->
+    LaunchedEffect(key1 = true) {
+        printViewModel.eventFlow.collectLatest { event ->
             when (event) {
                 is UiEvent.OnError -> {
-                    snackbarHostState.showSnackbar(
-                        message = event.errorMessage,
-                        duration = SnackbarDuration.Short,
-                    )
+                    resultBackNavigator.setResult(event.errorMessage)
                 }
 
                 else -> {}
@@ -259,6 +264,10 @@ fun SelectOrderScreen(
                 onClickCreateOrder = {
                     navigator.navigate(Screens.ADD_EDIT_CART_ORDER_SCREEN)
                 },
+                onShareClick = {
+                    viewModel.getShareableOrderDetails(it)
+                    shareViewModel.onShowDialog()
+                },
                 snackbarHostState = snackbarHostState,
             )
         },
@@ -275,6 +284,41 @@ fun SelectOrderScreen(
             )
         },
     )
+
+    AnimatedVisibility(
+        visible = showShareDialog,
+    ) {
+        val shareableOrderDetails =
+            viewModel.shareableOrderDetails.collectAsStateWithLifecycle().value
+        val charges = viewModel.charges.collectAsStateWithLifecycle().value
+
+        ShareableOrderDetails(
+            captureController = captureController,
+            orderDetails = shareableOrderDetails,
+            charges = charges,
+            onDismiss = shareViewModel::onDismissDialog,
+            onClickShare = {
+                captureController.captureLongScreenshot()
+            },
+            onCaptured = { bitmap, error ->
+                bitmap?.let {
+                    scope.launch {
+                        val uri = shareViewModel.saveImage(it, context)
+                        uri?.let {
+                            shareViewModel.shareContent(context, "Share Image", uri)
+                        }
+                    }
+                }
+                error?.let {
+                    Log.d("Capturable", "Error: ${it.message}\n${it.stackTrace.joinToString()}")
+                }
+            },
+            onClickPrintOrder = {
+                shareViewModel.onDismissDialog()
+                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
+            },
+        )
+    }
 }
 
 @VisibleForTesting
@@ -296,6 +340,7 @@ internal fun SelectOrderScreenContent(
     onPrintOrder: (orderId: Int) -> Unit,
     onBackClick: () -> Unit,
     onEditClick: (Int) -> Unit,
+    onShareClick: (Int) -> Unit,
     onClickCreateOrder: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     lazyListState: LazyListState = rememberLazyListState(),
@@ -306,7 +351,7 @@ internal fun SelectOrderScreenContent(
     val openDialog = remember { mutableStateOf(false) }
 
     StandardBottomSheetScaffold(
-        modifier = modifier,
+        modifier = modifier.fillMaxSize(),
         title = SELECTED_SCREEN_TITLE,
         showBottomBar = false,
         snackbarHostState = snackbarHostState,
@@ -387,6 +432,7 @@ internal fun SelectOrderScreenContent(
                                     onUpdateDeliveryPartner = onUpdateDeliveryPartner,
                                     onPlaceOrder = onPlaceOrder,
                                     onPrintOrder = onPrintOrder,
+                                    onShareClick = onShareClick,
                                 )
                             } else {
                                 CartOrderData(
@@ -400,6 +446,7 @@ internal fun SelectOrderScreenContent(
                                         openDialog.value = true
                                     },
                                     onEditClick = onEditClick,
+                                    onShareClick = onShareClick,
                                 )
                             }
 
@@ -438,6 +485,7 @@ private fun SelectedCartOrderData(
     deliveryPartners: List<EmployeeNameAndId>,
     onDeleteClick: (Int) -> Unit,
     onEditClick: (Int) -> Unit,
+    onShareClick: (Int) -> Unit,
     onIncreaseQty: (orderId: Int, productId: Int) -> Unit,
     onDecreaseQty: (orderId: Int, productId: Int) -> Unit,
     onUpdateAddOnItem: (orderId: Int, itemId: Int) -> Unit,
@@ -464,6 +512,7 @@ private fun SelectedCartOrderData(
                 onSelectOrder = {},
                 onDeleteClick = onDeleteClick,
                 onEditClick = onEditClick,
+                onShareClick = onShareClick,
             )
 
             when (orderDetails) {
@@ -590,6 +639,7 @@ private fun CartOrderData(
     onSelectOrder: (Int) -> Unit,
     onDeleteClick: (Int) -> Unit,
     onEditClick: (Int) -> Unit,
+    onShareClick: (Int) -> Unit,
     containerColor: Color = containerColorFor(cartOrder.orderType),
     contentColor: Color = contentColorFor(cartOrder.orderType),
     icon: ImageVector = getIconFor(cartOrder.orderType),
@@ -676,6 +726,13 @@ private fun CartOrderData(
             containerColor = MaterialTheme.colorScheme.secondary,
             shape = RoundedCornerShape(SpaceMini),
         )
+
+        PoposIconButton(
+            icon = PoposIcons.Share,
+            onClick = { onShareClick(cartOrder.orderId) },
+            containerColor = MaterialTheme.colorScheme.tertiary,
+            shape = RoundedCornerShape(SpaceMini),
+        )
     }
 }
 
@@ -733,6 +790,7 @@ private fun SelectOrderScreenContentPreview(
             onPrintOrder = {},
             onBackClick = {},
             onEditClick = {},
+            onShareClick = {},
             onClickCreateOrder = {},
         )
     }
@@ -760,6 +818,7 @@ private fun SelectedCartOrderDataLoadingPreview(
             onUpdateDeliveryPartner = { _, _ -> },
             onPlaceOrder = {},
             onPrintOrder = {},
+            onShareClick = {},
         )
     }
 }
@@ -786,6 +845,7 @@ private fun SelectedCartOrderDataEmptyPreview(
             onUpdateDeliveryPartner = { _, _ -> },
             onPlaceOrder = {},
             onPrintOrder = {},
+            onShareClick = {},
         )
     }
 }
@@ -815,6 +875,7 @@ private fun SelectedDineInCartOrderDataPreview(
             onUpdateDeliveryPartner = { _, _ -> },
             onPlaceOrder = {},
             onPrintOrder = {},
+            onShareClick = {},
         )
     }
 }
@@ -844,6 +905,7 @@ private fun SelectedDineOutCartOrderDataPreview(
             onUpdateDeliveryPartner = { _, _ -> },
             onPlaceOrder = {},
             onPrintOrder = {},
+            onShareClick = {},
         )
     }
 }
@@ -862,6 +924,7 @@ private fun CartOrderDataPreview(
             onSelectOrder = {},
             onDeleteClick = {},
             onEditClick = {},
+            onShareClick = {},
         )
     }
 }

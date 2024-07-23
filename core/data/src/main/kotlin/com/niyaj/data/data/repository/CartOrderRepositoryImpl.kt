@@ -21,6 +21,7 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
+import com.niyaj.common.tags.CartOrderTestTags.ADDRESS_NAME_INVALID
 import com.niyaj.common.tags.CartOrderTestTags.ADDRESS_NAME_LENGTH_ERROR
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_NAME_EMPTY_ERROR
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_NAME_ERROR
@@ -507,6 +508,8 @@ class CartOrderRepositoryImpl(
     }
 
     override suspend fun validateAddressName(addressName: String): ValidationResult {
+        val addressRegex = """^\S+(?:\s+\S+)+$""".toRegex()
+
         if (addressName.isEmpty()) {
             return ValidationResult(
                 successful = false,
@@ -514,10 +517,17 @@ class CartOrderRepositoryImpl(
             )
         }
 
-        if (addressName.length < 2) {
+        if (addressName.length < 6) {
             return ValidationResult(
                 successful = false,
                 errorMessage = ADDRESS_NAME_LENGTH_ERROR,
+            )
+        }
+
+        if (!addressName.matches(addressRegex)) {
+            return ValidationResult(
+                successful = false,
+                errorMessage = ADDRESS_NAME_INVALID,
             )
         }
 

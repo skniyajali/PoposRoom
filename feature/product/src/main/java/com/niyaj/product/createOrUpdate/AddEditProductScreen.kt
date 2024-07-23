@@ -19,6 +19,9 @@ package com.niyaj.product.createOrUpdate
 
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -71,10 +74,17 @@ import com.niyaj.common.tags.ProductTestTags.PRODUCT_NAME_ERROR
 import com.niyaj.common.tags.ProductTestTags.PRODUCT_NAME_FIELD
 import com.niyaj.common.tags.ProductTestTags.PRODUCT_PRICE_ERROR
 import com.niyaj.common.tags.ProductTestTags.PRODUCT_PRICE_FIELD
+import com.niyaj.common.tags.ProductTestTags.PRODUCT_TAGS
+import com.niyaj.common.tags.ProductTestTags.PRODUCT_TAGS_ERROR
+import com.niyaj.common.tags.ProductTestTags.PRODUCT_TAGS_MSG
+import com.niyaj.common.tags.ProductTestTags.PRODUCT_TAG_NAME
 import com.niyaj.designsystem.components.PoposButton
+import com.niyaj.designsystem.components.PoposTonalIconButton
+import com.niyaj.designsystem.components.StandardRoundedFilterChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
+import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.Category
 import com.niyaj.ui.components.CircularBox
@@ -105,8 +115,12 @@ fun AddEditProductScreen(
     val categoryError by viewModel.categoryError.collectAsStateWithLifecycle()
     val priceError by viewModel.priceError.collectAsStateWithLifecycle()
     val nameError by viewModel.nameError.collectAsStateWithLifecycle()
+    val tagError by viewModel.tagError.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
     val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
+
+    val tagList = viewModel.tagList.toList()
+    val selectedTags = viewModel.selectedTags.toList()
 
     LaunchedEffect(key1 = event) {
         event?.let { data ->
@@ -132,10 +146,13 @@ fun AddEditProductScreen(
         state = viewModel.state,
         selectedCategory = selectedCategory,
         categories = categories,
+        tagList = tagList,
+        selectedTags = selectedTags,
         onEvent = viewModel::onEvent,
         categoryError = categoryError,
         priceError = priceError,
         nameError = nameError,
+        tagError = tagError,
         onBackClick = navigator::navigateUp,
         onClickAddCategory = {
             navigator.navigate(ADD_EDIT_CATEGORY_SCREEN)
@@ -143,6 +160,7 @@ fun AddEditProductScreen(
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @VisibleForTesting
 @Composable
 internal fun AddEditProductScreenContent(
@@ -152,10 +170,13 @@ internal fun AddEditProductScreenContent(
     state: AddEditProductState,
     selectedCategory: Category,
     categories: List<Category>,
+    tagList: List<String>,
+    selectedTags: List<String>,
     onEvent: (AddEditProductEvent) -> Unit,
     categoryError: String?,
     priceError: String?,
     nameError: String?,
+    tagError: String?,
     onBackClick: () -> Unit,
     onClickAddCategory: () -> Unit,
     lazyListState: LazyListState = rememberLazyListState(),
@@ -377,6 +398,67 @@ internal fun AddEditProductScreenContent(
                 )
             }
 
+            item(PRODUCT_TAGS) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    StandardOutlinedTextField(
+                        value = state.tagName,
+                        label = PRODUCT_TAG_NAME,
+                        isError = tagError != null,
+                        errorText = tagError,
+                        message = PRODUCT_TAGS_MSG,
+                        errorTextTag = PRODUCT_TAGS_ERROR,
+                        leadingIcon = PoposIcons.ListAlt,
+                        suffix = {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(SpaceMini),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(text = "Click here")
+                                Icon(
+                                    imageVector = PoposIcons.ArrowRightAlt,
+                                    contentDescription = "Create",
+                                )
+                            }
+                        },
+                        trailingIcon = {
+                            PoposTonalIconButton(
+                                icon = PoposIcons.Add,
+                                enabled = state.tagName.isNotEmpty() && tagError == null,
+                                onClick = {
+                                    onEvent(AddEditProductEvent.OnSelectTag(state.tagName))
+                                },
+                            )
+                        },
+                        onValueChange = {
+                            onEvent(AddEditProductEvent.TagNameChanged(it))
+                        },
+                    )
+
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(
+                            SpaceMini,
+                            Alignment.CenterHorizontally,
+                        ),
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        tagList.forEach {
+                            StandardRoundedFilterChip(
+                                text = it,
+                                selected = selectedTags.contains(it),
+                                onClick = {
+                                    onEvent(AddEditProductEvent.OnSelectTag(it))
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+
             item(PRODUCT_AVAILABILITY_FIELD) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -424,10 +506,13 @@ private fun AddEditProductScreenContentPreview(
             ),
             selectedCategory = selectedCategory,
             categories = categories,
+            tagList = defaultTagList,
+            selectedTags = emptyList(),
             onEvent = {},
             categoryError = null,
             priceError = null,
             nameError = null,
+            tagError = null,
             onBackClick = {},
             onClickAddCategory = {},
         )

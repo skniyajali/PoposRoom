@@ -509,7 +509,9 @@ private fun ShareablePartnerDetailsBody(
             key(order.orderId) {
                 DeliveryReportCard(
                     order = order,
+                    isSelected = { false },
                     onClickOrder = {},
+                    onSelectItem = {},
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
                 )
             }

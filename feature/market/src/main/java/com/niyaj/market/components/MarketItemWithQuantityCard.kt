@@ -72,16 +72,11 @@ internal fun MarketItemWithQuantityCard(
     )
 
     SwipeableActionsBox(
-        startActions = listOf(
-            addSwipeAction {
-                if (!itemState) onAddItem(item.itemId)
-            },
-        ),
-        endActions = listOf(
-            removeSwipeAction {
-                if (itemState) onRemoveItem(item.itemId)
-            },
-        ),
+        endActions = if (itemState) {
+            listOf(removeSwipeAction { onRemoveItem(item.itemId) })
+        } else {
+            emptyList()
+        },
         backgroundUntilSwipeThreshold = MaterialTheme.colorScheme.background,
     ) {
         ListItem(
@@ -168,16 +163,11 @@ internal fun MarketItemWithQuantityWithListTypeCard(
     )
 
     SwipeableActionsBox(
-        startActions = listOf(
-            addSwipeAction {
-                if (!itemState) onAddItem(item.listWithTypeId, item.itemId)
-            },
-        ),
-        endActions = listOf(
-            removeSwipeAction {
-                if (itemState) onRemoveItem(item.listWithTypeId, item.itemId)
-            },
-        ),
+        endActions = if (itemState) {
+            listOf(removeSwipeAction { onRemoveItem(item.listWithTypeId, item.itemId) })
+        } else {
+            emptyList()
+        },
         backgroundUntilSwipeThreshold = MaterialTheme.colorScheme.background,
     ) {
         ListItem(
@@ -239,18 +229,6 @@ internal fun MarketItemWithQuantityWithListTypeCard(
                 ),
         )
     }
-}
-
-@Composable
-private fun addSwipeAction(
-    onSwipe: () -> Unit,
-): SwipeAction {
-    return SwipeAction(
-        icon = rememberVectorPainter(PoposIcons.Add),
-        background = MaterialTheme.colorScheme.primaryContainer,
-        isUndo = false,
-        onSwipe = onSwipe,
-    )
 }
 
 @Composable

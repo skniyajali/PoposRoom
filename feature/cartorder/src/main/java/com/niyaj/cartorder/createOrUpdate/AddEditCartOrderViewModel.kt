@@ -42,10 +42,13 @@ import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -105,21 +108,29 @@ class AddEditCartOrderViewModel @Inject constructor(
         initialValue = 1,
     )
 
-    val addresses = addressFlow.flatMapLatest {
-        cartOrderRepository.getAllAddresses(it.addressName)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList(),
-    )
+    @OptIn(FlowPreview::class)
+    val addresses = addressFlow
+        .debounce(200)
+        .filter { it.addressName.length >= 2 }
+        .flatMapLatest {
+            cartOrderRepository.getAllAddresses(it.addressName)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList(),
+        )
 
-    val customers = customerFlow.flatMapLatest {
-        cartOrderRepository.getAllCustomer(it.customerPhone)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList(),
-    )
+    @OptIn(FlowPreview::class)
+    val customers = customerFlow
+        .debounce(200)
+        .filter { it.customerPhone.length >= 5 }
+        .flatMapLatest {
+            cartOrderRepository.getAllCustomer(it.customerPhone)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList(),
+        )
 
     val addOnItems = snapshotFlow { cartOrderId }.flatMapLatest {
         cartOrderRepository.getAllAddOnItem()
@@ -261,7 +272,12 @@ class AddEditCartOrderViewModel @Inject constructor(
                         address = state.address,
                         deliveryPartnerId = state.deliveryPartnerId,
                         createdAt = Clock.System.now().toEpochMilliseconds(),
-                        updatedAt = if (cartOrderId == 0) null else Clock.System.now().toEpochMilliseconds(),
+                        updatedAt = if (cartOrderId == 0) {
+                            null
+                        } else {
+                            Clock.System.now()
+                                .toEpochMilliseconds()
+                        },
                     ),
                     addOnItems = state.selectedAddOnItems.toImmutableList(),
                     charges = state.selectedCharges.toImmutableList(),
@@ -326,7 +342,10 @@ private fun AnalyticsHelper.logOnCreateOrUpdateOrder(cartOrderId: Int, message: 
         event = AnalyticsEvent(
             type = "cart_order_$message",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("cart_order_$message", cartOrderId.toString()),
+                AnalyticsEvent.Param(
+                    "cart_order_$message",
+                    cartOrderId.toString(),
+                ),
             ),
         ),
     )

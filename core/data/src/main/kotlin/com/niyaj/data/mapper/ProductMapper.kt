@@ -29,6 +29,7 @@ fun Product.toEntity(): ProductEntity {
         productPrice = this.productPrice,
         productDescription = this.productDescription,
         productAvailability = this.productAvailability,
+        tags = this.tags,
         createdAt = this.createdAt.toDate,
         updatedAt = this.updatedAt?.toDate,
     )

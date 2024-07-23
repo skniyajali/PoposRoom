@@ -37,7 +37,10 @@ class PrinterInfoViewModel @Inject constructor(
     private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
-    val eventFlow = bluetoothPrinter.mEventFlow.shareIn(viewModelScope, SharingStarted.WhileSubscribed(5_000))
+    val eventFlow = bluetoothPrinter.eventFlow.shareIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+    )
 
     val info = bluetoothPrinter.printerInfo.mapLatest {
         if (it.printerId.isEmpty()) {
@@ -77,7 +80,7 @@ internal fun AnalyticsHelper.printedTestData() {
         event = AnalyticsEvent(
             type = "printed_test_data",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("printed_test_data", "Yes"),
+                AnalyticsEvent.Param("printed_test_data", "Yes"),
             ),
         ),
     )
@@ -88,7 +91,10 @@ internal fun AnalyticsHelper.connectedBluetoothPrinter(address: String) {
         event = AnalyticsEvent(
             type = "connected_bluetooth_printer",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("connected_bluetooth_printer", address),
+                AnalyticsEvent.Param(
+                    "connected_bluetooth_printer",
+                    address,
+                ),
             ),
         ),
     )

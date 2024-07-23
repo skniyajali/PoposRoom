@@ -24,8 +24,10 @@ import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CartOrderRepository
 import com.niyaj.data.repository.CartRepository
+import com.niyaj.data.repository.OrderRepository
 import com.niyaj.model.CartItem
 import com.niyaj.model.CartOrder
+import com.niyaj.model.OrderDetails
 import com.niyaj.model.SELECTED_ID
 import com.niyaj.model.Selected
 import com.niyaj.ui.event.UiState
@@ -39,7 +41,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -47,6 +51,7 @@ import javax.inject.Inject
 class SelectedViewModel @Inject constructor(
     private val cartOrderRepository: CartOrderRepository,
     private val cartRepository: CartRepository,
+    private val orderRepository: OrderRepository,
     private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
@@ -93,8 +98,19 @@ class SelectedViewModel @Inject constructor(
         initialValue = emptyList(),
     )
 
+    val charges = selectedId.flatMapLatest {
+        orderRepository.getAllCharges()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList(),
+    )
+
     private val _cartOrders = MutableStateFlow<UiState<List<CartOrder>>>(UiState.Loading)
     val cartOrders = _cartOrders.asStateFlow()
+
+    private val _shareableOrderDetails = MutableStateFlow<UiState<OrderDetails>>(UiState.Empty)
+    val shareableOrderDetails = _shareableOrderDetails.asStateFlow()
 
     init {
         getAllCartOrders()
@@ -114,7 +130,7 @@ class SelectedViewModel @Inject constructor(
         }
     }
 
-    fun selectCartOrder(orderId: Int) {
+    internal fun selectCartOrder(orderId: Int) {
         viewModelScope.launch {
             val result = cartOrderRepository.insertOrUpdateSelectedOrder(
                 Selected(
@@ -148,7 +164,7 @@ class SelectedViewModel @Inject constructor(
         }
     }
 
-    fun decreaseProductQuantity(orderId: Int, productId: Int) {
+    internal fun decreaseProductQuantity(orderId: Int, productId: Int) {
         viewModelScope.launch {
             when (
                 val result =
@@ -162,12 +178,12 @@ class SelectedViewModel @Inject constructor(
                     )
                 }
 
-                is Resource.Success -> { }
+                is Resource.Success -> {}
             }
         }
     }
 
-    fun increaseProductQuantity(orderId: Int, productId: Int) {
+    internal fun increaseProductQuantity(orderId: Int, productId: Int) {
         viewModelScope.launch {
             when (
                 val result =
@@ -186,7 +202,7 @@ class SelectedViewModel @Inject constructor(
         }
     }
 
-    fun placeOrder(orderId: Int) {
+    internal fun placeOrder(orderId: Int) {
         viewModelScope.launch {
             when (cartRepository.placeOrder(orderId)) {
                 is Resource.Error -> {
@@ -203,7 +219,7 @@ class SelectedViewModel @Inject constructor(
         }
     }
 
-    fun updateCartAddOnItem(orderId: Int, itemId: Int) {
+    internal fun updateCartAddOnItem(orderId: Int, itemId: Int) {
         viewModelScope.launch {
             when (
                 val result =
@@ -218,7 +234,7 @@ class SelectedViewModel @Inject constructor(
         }
     }
 
-    fun updateDeliveryPartner(orderId: Int, partnerId: Int) {
+    internal fun updateDeliveryPartner(orderId: Int, partnerId: Int) {
         viewModelScope.launch {
             when (
                 val result =
@@ -230,6 +246,21 @@ class SelectedViewModel @Inject constructor(
 
                 is Resource.Success -> {}
             }
+        }
+    }
+
+    internal fun getShareableOrderDetails(orderId: Int) {
+        viewModelScope.launch {
+            orderRepository.getOrderDetails(orderId)
+                .onStart { _shareableOrderDetails.update { UiState.Loading } }
+                .collectLatest { orderDetails ->
+                    if (orderDetails.cartProducts.isEmpty()) {
+                        _shareableOrderDetails.update { UiState.Empty }
+                        return@collectLatest
+                    }
+
+                    _shareableOrderDetails.update { UiState.Success(orderDetails) }
+                }
         }
     }
 }

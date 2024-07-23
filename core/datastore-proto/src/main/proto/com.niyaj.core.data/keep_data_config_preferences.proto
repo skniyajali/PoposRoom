@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option java_package = "com.niyaj.core.datastore";
+option java_multiple_files = true;
+
+message KeepDataConfigPreferences {
+
+  optional int32 report_interval = 1;
+
+  int32 order_interval = 2;
+
+  int32 cart_interval = 3;
+
+  int32 expense_interval = 4;
+
+  int32 market_list_interval = 5;
+
+  bool delete_data_before_interval = 6;
+
+  // NEXT AVAILABLE ID: 7
+}

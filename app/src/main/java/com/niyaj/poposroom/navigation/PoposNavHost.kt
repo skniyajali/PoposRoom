@@ -48,6 +48,8 @@ import com.niyaj.employeePayment.destinations.AddEditPaymentScreenDestination
 import com.niyaj.employeePayment.destinations.PaymentScreenDestination
 import com.niyaj.feature.reports.ReportScreen
 import com.niyaj.feature.reports.destinations.ReportScreenDestination
+import com.niyaj.home.HomeScreen
+import com.niyaj.home.destinations.HomeScreenDestination
 import com.niyaj.order.OrderScreen
 import com.niyaj.order.destinations.OrderDetailsScreenDestination
 import com.niyaj.order.destinations.OrderScreenDestination
@@ -250,6 +252,13 @@ fun PoposNavHost(
                         onClickAddress = {
                             navController.navigate(AddressDetailsScreenDestination(it))
                         },
+                    )
+                }
+
+                composable(HomeScreenDestination) {
+                    HomeScreen(
+                        navigator = destinationsNavigator,
+                        resultRecipient = resultRecipient<SelectOrderScreenDestination, String>(),
                     )
                 }
             },

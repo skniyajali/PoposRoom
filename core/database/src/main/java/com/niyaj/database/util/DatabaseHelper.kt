@@ -17,24 +17,59 @@
 
 package com.niyaj.database.util
 
-import androidx.sqlite.db.SupportSQLiteDatabase
-import androidx.sqlite.db.SupportSQLiteOpenHelper
+import android.content.Context
+import androidx.room.Room
+import com.niyaj.database.PoposDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okio.use
+import javax.inject.Inject
 
-class DatabaseHelper : SupportSQLiteOpenHelper {
-    override val databaseName: String?
-        get() = TODO("Not yet implemented")
+class DatabaseHelper @Inject constructor(
+    private val context: Context,
+) {
+    fun isDatabaseValid(): Boolean {
+        var newDatabase: PoposDatabase? = null
+        try {
+            newDatabase =
+                Room.databaseBuilder(context, PoposDatabase::class.java, PoposDatabase.NAME).build()
+            val database = newDatabase.openHelper.writableDatabase
 
-    override val readableDatabase: SupportSQLiteDatabase
-        get() = TODO("Not yet implemented")
+            // Check if the database file exists and can be opened
+            if (!database.isOpen) {
+                return false
+            }
 
-    override val writableDatabase: SupportSQLiteDatabase
-        get() = TODO("Not yet implemented")
+            // Check if any tables exist in the database
+            val cursor = database.query("SELECT name FROM sqlite_master WHERE type='table'")
 
-    override fun close() {
-        TODO("Not yet implemented")
+            cursor.use {
+                return it.count > 0
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
+        } finally {
+            newDatabase?.close()
+        }
     }
 
-    override fun setWriteAheadLoggingEnabled(enabled: Boolean) {
-        TODO("Not yet implemented")
+    suspend fun deleteAllTables(): Boolean {
+        var newDatabase: PoposDatabase? = null
+        try {
+            newDatabase =
+                Room.databaseBuilder(context, PoposDatabase::class.java, PoposDatabase.NAME).build()
+
+            withContext(Dispatchers.IO) {
+                newDatabase.clearAllTables()
+            }
+
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
+        } finally {
+            newDatabase?.close()
+        }
     }
 }

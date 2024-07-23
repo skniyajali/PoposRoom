@@ -115,29 +115,30 @@ class MarketListViewModel @Inject constructor(
                 val marketList =
                     marketListRepository.getShareableMarketItems(listTypeIds).stateIn(this)
 
-                bluetoothPrinter.connectBluetoothPrinter()
-                val escposPrinter = bluetoothPrinter.printer
+                bluetoothPrinter
+                    .connectAndGetBluetoothPrinterAsync()
+                    .onSuccess {
+                        it?.let { printer ->
+                            var printItems = ""
 
-                escposPrinter?.let { printer ->
-                    var printItems = ""
+                            printItems += bluetoothPrinter.getPrintableHeader(
+                                title = "MARKET LIST",
+                                marketDate.toString(),
+                            )
+                            printItems += getPrintableItems(marketList.value)
 
-                    printItems += bluetoothPrinter.getPrintableHeader(
-                        title = "MARKET LIST",
-                        marketDate.toString(),
-                    )
-                    printItems += getPrintableItems(marketList.value)
+                            printItems += "[L]-------------------------------\n"
+                            printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
+                            printItems += "[L]-------------------------------\n"
 
-                    printItems += "[L]-------------------------------\n"
-                    printItems += "[C]{^..^}--END OF REPORTS--{^..^}\n"
-                    printItems += "[L]-------------------------------\n"
-
-                    printer.printFormattedTextAndCut(printItems, 10f)
-                    analyticsHelper.logPrintMarketList(marketDate)
-                }
+                            printer.printFormattedTextAndCut(printItems, 10f)
+                            analyticsHelper.logPrintMarketList(marketDate)
+                        }
+                    }.onFailure {
+                        mEventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                    }
             } catch (e: Exception) {
-                viewModelScope.launch {
-                    mEventFlow.emit(UiEvent.OnError("Unable to print"))
-                }
+                mEventFlow.emit(UiEvent.OnError("Printer Not Connected"))
             }
         }
     }

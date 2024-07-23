@@ -25,6 +25,7 @@ import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -33,10 +34,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,28 +54,43 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.common.utils.calculateStartOfDayTime
+import com.niyaj.common.utils.getStartTime
 import com.niyaj.common.utils.isToday
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.components.PoposOutlinedAssistChip
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.feature.chart.horizontalbar.model.HorizontalBarData
 import com.niyaj.feature.reports.components.AddressWiseReport
 import com.niyaj.feature.reports.components.CategoryWiseReport
 import com.niyaj.feature.reports.components.CustomerWiseReport
 import com.niyaj.feature.reports.components.ExpenseWiseReport
 import com.niyaj.feature.reports.components.ProductWiseReport
+import com.niyaj.feature.reports.components.ProductWiseReportPreviewData
 import com.niyaj.feature.reports.components.ReportBarData
 import com.niyaj.feature.reports.components.TotalReports
 import com.niyaj.feature.reports.destinations.ViewLastSevenDaysReportsDestination
+import com.niyaj.model.AddressWiseReport
+import com.niyaj.model.CategoryWiseReport
+import com.niyaj.model.CustomerWiseReport
+import com.niyaj.model.ExpensesReport
+import com.niyaj.model.Reports
+import com.niyaj.model.TotalExpenses
+import com.niyaj.model.TotalOrders
 import com.niyaj.ui.components.ItemNotFound
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
+import com.niyaj.ui.event.UiState
+import com.niyaj.ui.parameterProvider.ReportsPreviewData
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
+import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -80,6 +98,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -99,6 +118,8 @@ fun ReportScreen(
     viewModel: ReportsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val bluetoothPermissions =
         // Checks if the device has Android 12 or above
@@ -150,10 +171,6 @@ fun ReportScreen(
         }
     }
 
-    val scope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
-    val dialogState = rememberMaterialDialogState()
-
     val reportState = viewModel.reportState.collectAsStateWithLifecycle().value
     val reportBarState = viewModel.reportsBarData.collectAsStateWithLifecycle().value
     val productState = viewModel.productWiseData.collectAsStateWithLifecycle().value
@@ -170,7 +187,92 @@ fun ReportScreen(
     val totalAddressReports = viewModel.totalAddressReports.collectAsStateWithLifecycle().value
     val totalExpensesReport = viewModel.totalExpensesReports.collectAsStateWithLifecycle().value
 
-    val lastSevenStartDate = calculateStartOfDayTime(days = "-8")
+    LaunchedEffect(true) {
+        viewModel.eventFlow.collectLatest {
+            when (it) {
+                is UiEvent.OnError -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(it.errorMessage)
+                    }
+                }
+
+                is UiEvent.OnSuccess -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(it.successMessage)
+                    }
+                }
+            }
+        }
+    }
+
+    ReportScreenContent(
+        modifier = Modifier,
+        reportState = reportState,
+        reportBarState = reportBarState,
+        productState = productState,
+        categoryState = categoryState,
+        addressState = addressState,
+        customerState = customerState,
+        expensesState = expensesState,
+        selectedDate = selectedDate,
+        productOrderType = productOrderType,
+        categoryOrderType = categoryOrderType,
+        selectedCategory = selectedCategory,
+        totalCustomerReports = totalCustomerReports,
+        totalAddressReports = totalAddressReports,
+        totalExpensesReport = totalExpensesReport,
+        onAddressClick = onClickAddress,
+        onClickCustomer = onClickCustomer,
+        onClickProduct = onClickProduct,
+        onPrintReport = printReport,
+        onReportEvent = viewModel::onReportEvent,
+        onBackClick = navigator::popBackStack,
+        snackbarHostState = snackbarHostState,
+        onOrderClick = {
+            navigator.navigate(Screens.ORDER_SCREEN)
+        },
+        onExpensesClick = {
+            navigator.navigate(Screens.EXPENSES_SCREEN)
+        },
+        onClickViewMore = {
+            navigator.navigate(ViewLastSevenDaysReportsDestination)
+        },
+    )
+}
+
+@VisibleForTesting
+@Composable
+internal fun ReportScreenContent(
+    modifier: Modifier = Modifier,
+    title: String = "Reports",
+    reportState: UiState<Reports>,
+    reportBarState: UiState<List<HorizontalBarData>>,
+    productState: UiState<List<HorizontalBarData>>,
+    categoryState: UiState<List<CategoryWiseReport>>,
+    addressState: UiState<List<AddressWiseReport>>,
+    customerState: UiState<List<CustomerWiseReport>>,
+    expensesState: UiState<List<ExpensesReport>>,
+    selectedDate: String,
+    productOrderType: String,
+    categoryOrderType: String,
+    selectedCategory: String,
+    totalCustomerReports: TotalOrders,
+    totalAddressReports: TotalOrders,
+    totalExpensesReport: TotalExpenses,
+    onAddressClick: (Int) -> Unit,
+    onClickCustomer: (Int) -> Unit,
+    onClickProduct: (Int) -> Unit,
+    onPrintReport: () -> Unit,
+    onOrderClick: () -> Unit,
+    onExpensesClick: () -> Unit,
+    onClickViewMore: () -> Unit,
+    onReportEvent: (ReportsEvent) -> Unit,
+    onBackClick: () -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+) {
+    val scope = rememberCoroutineScope()
+    val dialogState = rememberMaterialDialogState()
 
     var categoryWiseRepExpanded by remember { mutableStateOf(false) }
     var productWiseRepExpanded by remember { mutableStateOf(false) }
@@ -185,6 +287,8 @@ fun ReportScreen(
         mutableStateOf("")
     }
 
+    val lastSevenStartDate = calculateStartOfDayTime(days = "-8")
+
     LaunchedEffect(key1 = selectedDate) {
         selectedBarData = ""
         selectedProductData = ""
@@ -192,13 +296,11 @@ fun ReportScreen(
 
     TrackScreenViewEvent(screenName = Screens.REPORT_SCREEN)
 
-    BackHandler {
-        navigator.popBackStack()
-    }
+    BackHandler { onBackClick() }
 
     PoposSecondaryScaffold(
         showBackButton = true,
-        title = "Reports",
+        title = title,
         navActions = {
             if (!selectedDate.isToday) {
                 PoposOutlinedAssistChip(
@@ -216,7 +318,7 @@ fun ReportScreen(
             }
 
             IconButton(
-                onClick = printReport,
+                onClick = onPrintReport,
             ) {
                 Icon(imageVector = PoposIcons.Print, contentDescription = "Print Reports")
             }
@@ -232,13 +334,14 @@ fun ReportScreen(
                 },
             )
         },
-        onBackClick = navigator::popBackStack,
+        onBackClick = onBackClick,
+        snackbarHostState = snackbarHostState,
     ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "Reports::List")
 
         LazyColumn(
             state = lazyListState,
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues),
             contentPadding = PaddingValues(SpaceSmall),
@@ -249,14 +352,10 @@ fun ReportScreen(
 
                 TotalReports(
                     uiState = reportState,
-                    onOrderClick = {
-                        navigator.navigate(Screens.ORDER_SCREEN)
-                    },
-                    onExpensesClick = {
-                        navigator.navigate(Screens.EXPENSES_SCREEN)
-                    },
+                    onOrderClick = onOrderClick,
+                    onExpensesClick = onExpensesClick,
                     onRegenerateReport = {
-                        viewModel.onReportEvent(ReportsEvent.GenerateReport)
+                        onReportEvent(ReportsEvent.GenerateReport)
                     },
                 )
             }
@@ -268,8 +367,9 @@ fun ReportScreen(
                     onBarClick = {
                         selectedBarData = it
                     },
-                    onClickViewMore = {
-                        navigator.navigate(ViewLastSevenDaysReportsDestination())
+                    onClickViewMore = onClickViewMore,
+                    onClickPrint = {
+                        onReportEvent(ReportsEvent.PrintBarReport)
                     },
                 )
             }
@@ -281,15 +381,18 @@ fun ReportScreen(
                     reportExpanded = categoryWiseRepExpanded,
                     selectedCategory = selectedCategory,
                     onCategoryExpandChanged = {
-                        viewModel.onReportEvent(ReportsEvent.OnSelectCategory(it))
+                        onReportEvent(ReportsEvent.OnSelectCategory(it))
                     },
                     onExpandChanged = {
                         categoryWiseRepExpanded = !categoryWiseRepExpanded
                     },
                     onClickOrderType = {
-                        viewModel.onReportEvent(ReportsEvent.OnChangeCategoryOrderType(it))
+                        onReportEvent(ReportsEvent.OnChangeCategoryOrderType(it))
                     },
                     onProductClick = onClickProduct,
+                    onPrintProductWiseReport = {
+                        onReportEvent(ReportsEvent.PrintCategoryWiseReport)
+                    },
                 )
             }
 
@@ -303,10 +406,13 @@ fun ReportScreen(
                         productWiseRepExpanded = !productWiseRepExpanded
                     },
                     onClickOrderType = {
-                        viewModel.onReportEvent(ReportsEvent.OnChangeProductOrderType(it))
+                        onReportEvent(ReportsEvent.OnChangeProductOrderType(it))
                     },
                     onBarClick = {
                         selectedProductData = it
+                    },
+                    onPrintProductWiseReport = {
+                        onReportEvent(ReportsEvent.PrintProductWiseReport)
                     },
                 )
             }
@@ -319,7 +425,10 @@ fun ReportScreen(
                     onExpandChanged = {
                         addressWiseRepExpanded = !addressWiseRepExpanded
                     },
-                    onAddressClick = onClickAddress,
+                    onAddressClick = onAddressClick,
+                    onPrintAddressWiseReport = {
+                        onReportEvent(ReportsEvent.PrintAddressWiseReport)
+                    },
                 )
             }
 
@@ -332,6 +441,9 @@ fun ReportScreen(
                         customerWiseRepExpanded = !customerWiseRepExpanded
                     },
                     onCustomerClick = onClickCustomer,
+                    onPrintCustomerWiseReport = {
+                        onReportEvent(ReportsEvent.PrintCustomerWiseReport)
+                    },
                 )
             }
 
@@ -344,6 +456,9 @@ fun ReportScreen(
                     onExpandChanged = {
                         expensesRepExpanded = !expensesRepExpanded
                     },
+                    onPrintExpenseWiseReport = {
+                        onReportEvent(ReportsEvent.PrintExpenseWiseReport)
+                    },
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
@@ -353,9 +468,7 @@ fun ReportScreen(
                 ItemNotFound(
                     title = "No more reports available",
                     btnText = "Place New Order",
-                    onBtnClick = {
-                        navigator.navigate(Screens.HOME_SCREEN)
-                    },
+                    onBtnClick = onBackClick,
                 )
             }
         }
@@ -373,7 +486,42 @@ fun ReportScreen(
                 (date.toMilliSecond >= lastSevenStartDate) && (date <= LocalDate.now())
             },
         ) { date ->
-            viewModel.onReportEvent(ReportsEvent.SelectDate(date.toMilliSecond))
+            onReportEvent(ReportsEvent.SelectDate(date.toMilliSecond))
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ReportScreenContentPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ReportScreenContent(
+            modifier = modifier,
+            reportState = UiState.Success(ReportsPreviewData.reports),
+            reportBarState = UiState.Success(ProductWiseReportPreviewData.lastDaysReports),
+            productState = UiState.Success(ProductWiseReportPreviewData.productWiseReport),
+            categoryState = UiState.Success(ReportsPreviewData.categoryWiseReport),
+            addressState = UiState.Success(ReportsPreviewData.addressWiseReport),
+            customerState = UiState.Success(ReportsPreviewData.customerWiseReport),
+            expensesState = UiState.Success(ReportsPreviewData.expensesReport),
+            selectedDate = getStartTime,
+            productOrderType = "All",
+            categoryOrderType = "All",
+            selectedCategory = "All",
+            totalCustomerReports = TotalOrders(5000L, 5),
+            totalAddressReports = TotalOrders(5000L, 5),
+            totalExpensesReport = TotalExpenses(5000L, 5),
+            onAddressClick = {},
+            onClickCustomer = {},
+            onClickProduct = {},
+            onPrintReport = {},
+            onOrderClick = {},
+            onExpensesClick = {},
+            onClickViewMore = {},
+            onReportEvent = {},
+            onBackClick = {},
+        )
     }
 }

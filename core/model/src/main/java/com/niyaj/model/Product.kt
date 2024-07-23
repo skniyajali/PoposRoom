@@ -34,6 +34,8 @@ data class Product(
 
     val productAvailability: Boolean = true,
 
+    val tags: List<String> = emptyList(),
+
     val createdAt: Long,
 
     val updatedAt: Long? = null,

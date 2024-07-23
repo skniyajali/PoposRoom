@@ -22,4 +22,5 @@ data class AddEditProductState(
     val productPrice: String = "",
     val productDesc: String = "",
     val productAvailability: Boolean = true,
+    val tagName: String = "",
 )

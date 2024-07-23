@@ -28,7 +28,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
-import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -93,22 +92,11 @@ open class ShareViewModel @Inject constructor(
                 stream.flush()
                 stream.close()
 
-                FileProvider.getUriForFile(context, "com.popos.fileprovider", file)
+                FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
             } catch (e: IOException) {
                 Log.d("saving bitmap", "saving bitmap error ${e.message}")
                 null
             }
         }
     }
-}
-
-internal fun AnalyticsHelper.logProductDetailsViewed(productId: Int) {
-    logEvent(
-        event = AnalyticsEvent(
-            type = "product_details_viewed",
-            extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("product_details_viewed", productId.toString()),
-            ),
-        ),
-    )
 }

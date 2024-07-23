@@ -124,6 +124,9 @@ internal fun ShareableMarketList(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.background,
+                        ),
                     ) {
                         ShareableItemHeader(marketDate = marketDate, marketDetail = marketDetail)
 

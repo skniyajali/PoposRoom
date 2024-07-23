@@ -17,8 +17,15 @@
 
 package com.niyaj.data.di
 
+import com.niyaj.data.data.repository.BackupRepositoryImpl
+import com.niyaj.data.data.repository.DataDeletionRepositoryImpl
+import com.niyaj.data.data.repository.KeepDataConfigRepositoryImpl
 import com.niyaj.data.data.repository.UserDataRepositoryImpl
+import com.niyaj.data.repository.BackupRepository
+import com.niyaj.data.repository.DataDeletionRepository
+import com.niyaj.data.repository.KeepDataConfigRepository
 import com.niyaj.data.repository.UserDataRepository
+import com.niyaj.data.repository.validation.KeepDataConfigValidationRepository
 import com.niyaj.data.utils.ConnectivityManagerNetworkMonitor
 import com.niyaj.data.utils.NetworkMonitor
 import dagger.Binds
@@ -39,4 +46,24 @@ abstract class DataModule {
     internal abstract fun bindsUserDataRepository(
         userDataRepository: UserDataRepositoryImpl,
     ): UserDataRepository
+
+    @Binds
+    internal abstract fun bindBackupRepository(
+        backupRepository: BackupRepositoryImpl,
+    ): BackupRepository
+
+    @Binds
+    internal abstract fun bindsKeepDataConfigRepository(
+        keepDataRepository: KeepDataConfigRepositoryImpl,
+    ): KeepDataConfigRepository
+
+    @Binds
+    internal abstract fun bindsKeepDataValidationRepository(
+        keepDataRepository: KeepDataConfigRepositoryImpl,
+    ): KeepDataConfigValidationRepository
+
+    @Binds
+    internal abstract fun provideDataDeletionRepository(
+        dataDeletionRepository: DataDeletionRepositoryImpl,
+    ): DataDeletionRepository
 }

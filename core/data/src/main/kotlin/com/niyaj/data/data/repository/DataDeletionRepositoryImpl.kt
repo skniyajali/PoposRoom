@@ -17,16 +17,65 @@
 
 package com.niyaj.data.data.repository
 
+import com.niyaj.common.network.Dispatcher
+import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
+import com.niyaj.common.utils.calculateStartOfDayTime
+import com.niyaj.core.datastore.KeepDataConfigDataSource
 import com.niyaj.data.repository.DataDeletionRepository
+import com.niyaj.database.dao.DataDeletionDao
+import com.niyaj.database.util.DatabaseHelper
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.withContext
+import java.util.Date
+import javax.inject.Inject
 
-class DataDeletionRepositoryImpl : DataDeletionRepository {
+class DataDeletionRepositoryImpl @Inject constructor(
+    private val keepDataConfig: KeepDataConfigDataSource,
+    private val deletionDao: DataDeletionDao,
+    private val databaseHelper: DatabaseHelper,
+    @Dispatcher(PoposDispatchers.IO)
+    private val ioDispatcher: CoroutineDispatcher,
+) : DataDeletionRepository {
 
     override suspend fun deleteData(): Resource<Boolean> {
-        return Resource.Success(true)
+        return try {
+            withContext(ioDispatcher) {
+                val deleteData = keepDataConfig.deleteDataBeforeInterval.stateIn(this).value
+
+                if (deleteData) {
+                    val config = keepDataConfig.keepDataConfig.stateIn(this).value
+
+                    val reportDate = calculateStartOfDayTime(days = "-${config.reportInterval}")
+                    val orderDate = calculateStartOfDayTime(days = "-${config.orderInterval}")
+                    val expenseDate = calculateStartOfDayTime(days = "-${config.expenseInterval}")
+                    val marketListDate =
+                        calculateStartOfDayTime(days = "-${config.marketListInterval}")
+
+                    async { deletionDao.deleteReportData(reportDate) }.await()
+                    async { deletionDao.deleteOrdersData(Date(orderDate.toLong())) }.await()
+                    async { deletionDao.deleteExpenses(expenseDate) }.await()
+                    async { deletionDao.deleteMarketList(marketListDate.toLong()) }.await()
+                }
+            }
+
+            Resource.Success(true)
+        } catch (e: Exception) {
+            Resource.Error(e.message)
+        }
     }
 
     override suspend fun deleteAllRecords(): Resource<Boolean> {
-        return Resource.Success(false)
+        return try {
+            val result = withContext(ioDispatcher) {
+                databaseHelper.deleteAllTables()
+            }
+
+            Resource.Success(result)
+        } catch (e: Exception) {
+            Resource.Error(e.message)
+        }
     }
 }

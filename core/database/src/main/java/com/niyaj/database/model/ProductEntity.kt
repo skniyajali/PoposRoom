@@ -22,6 +22,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.niyaj.database.util.ListConverter
 import com.niyaj.model.Product
 import java.util.Date
 
@@ -52,6 +54,9 @@ data class ProductEntity(
 
     val productAvailability: Boolean = true,
 
+    @TypeConverters(ListConverter::class)
+    val tags: List<String> = emptyList(),
+
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     val createdAt: Date = Date(),
 
@@ -68,6 +73,7 @@ fun ProductEntity.asExternalModel(): Product {
         productPrice = this.productPrice,
         productDescription = this.productDescription,
         productAvailability = this.productAvailability,
+        tags = this.tags,
         createdAt = this.createdAt.time,
         updatedAt = this.updatedAt?.time,
     )

@@ -15,7 +15,7 @@
  *
  */
 
-package com.niyaj.order.components
+package com.niyaj.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -48,18 +47,12 @@ import com.niyaj.model.CartProductItem
 import com.niyaj.model.Charges
 import com.niyaj.model.OrderPrice
 import com.niyaj.model.OrderType
-import com.niyaj.ui.components.IconWithText
-import com.niyaj.ui.components.StandardChip
-import com.niyaj.ui.components.StandardExpandable
-import com.niyaj.ui.components.TextDivider
-import com.niyaj.ui.components.ThreeGridTexts
-import com.niyaj.ui.components.TwoGridTexts
 
 /**
  * This composable displays the cart items
  */
 @Composable
-internal fun CartItemDetails(
+fun CartItemDetails(
     modifier: Modifier = Modifier,
     orderType: OrderType,
     doesChargesIncluded: Boolean,
@@ -147,16 +140,19 @@ internal fun CartItemOrderProductDetails(
             .fillMaxWidth()
             .padding(SpaceSmall),
     ) {
+        Spacer(modifier = Modifier.height(SpaceSmall))
+        DashedDivider(modifier = Modifier.fillMaxWidth())
+        Spacer(modifier = Modifier.height(SpaceSmall))
+
         ThreeGridTexts(
             textOne = "Name",
             textTwo = "Qty",
             textThree = "Price",
-            isTitle = true,
+            fontWeight = FontWeight.Bold,
         )
+
         Spacer(modifier = Modifier.height(SpaceSmall))
-
-        HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
+        DashedDivider(modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.height(SpaceSmall))
 
         cartProducts.forEach { product ->
@@ -165,6 +161,7 @@ internal fun CartItemOrderProductDetails(
                 textOne = product.productName,
                 textTwo = product.productQuantity.toString(),
                 textThree = productPrice.toRupee,
+                fontWeight = FontWeight.SemiBold,
             )
             Spacer(modifier = Modifier.height(SpaceSmall))
         }
@@ -172,9 +169,7 @@ internal fun CartItemOrderProductDetails(
         if (addOnItems.isNotEmpty()) {
             Spacer(modifier = Modifier.height(SpaceSmall))
 
-            TextDivider(
-                text = "Add On Items",
-            )
+            TextDivider(text = "Add On Items")
 
             Spacer(modifier = Modifier.height(SpaceSmall))
 
@@ -228,13 +223,7 @@ internal fun CartItemOrderProductDetails(
         }
 
         Spacer(modifier = Modifier.height(SpaceSmall))
-
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(),
-            thickness = 1.dp,
-            color = Color.Gray,
-        )
-
+        DashedDivider(modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.height(SpaceSmall))
 
         Row(
@@ -245,6 +234,7 @@ internal fun CartItemOrderProductDetails(
             Text(
                 text = "Sub Total",
                 style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.SemiBold,
             )
 
             Text(
@@ -264,6 +254,7 @@ internal fun CartItemOrderProductDetails(
             Text(
                 text = "Discount",
                 style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.SemiBold,
             )
 
             Text(
@@ -275,10 +266,9 @@ internal fun CartItemOrderProductDetails(
 
         Spacer(modifier = Modifier.height(SpaceSmall))
 
-        HorizontalDivider(
+        DashedDivider(
             modifier = Modifier.fillMaxWidth(),
-            thickness = 2.dp,
-            color = Color.Gray,
+            dashHeight = 2.dp,
         )
 
         Spacer(modifier = Modifier.height(SpaceSmall))
@@ -300,6 +290,13 @@ internal fun CartItemOrderProductDetails(
                 fontWeight = FontWeight.SemiBold,
             )
         }
+
+        Spacer(modifier = Modifier.height(SpaceSmall))
+
+        DashedDivider(
+            modifier = Modifier.fillMaxWidth(),
+            dashHeight = 2.dp,
+        )
 
         Spacer(modifier = Modifier.height(SpaceSmall))
     }

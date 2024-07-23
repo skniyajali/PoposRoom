@@ -34,14 +34,18 @@ import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.Printer
 import com.niyaj.model.Profile
 import com.niyaj.ui.utils.UiEvent
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
 
@@ -70,10 +74,12 @@ class BluetoothPrinter @Inject constructor(
 
     var printer: EscPosPrinter? = null
 
-    val mEventFlow = MutableSharedFlow<UiEvent>(
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-    )
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
+
+    private val handler = CoroutineExceptionHandler { _, exception ->
+        _eventFlow.tryEmit(UiEvent.OnError("An unexpected error occurred: ${exception.message}"))
+    }
 
     @SuppressLint("MissingPermission")
     fun getBluetoothPrintersAsFlow(): Flow<List<BluetoothDeviceState>> {
@@ -91,13 +97,13 @@ class BluetoothPrinter @Inject constructor(
 
                 data?.let { send(it) }
             } catch (e: IOException) {
-                mEventFlow.tryEmit(UiEvent.OnError("Unable to connect printer"))
+                _eventFlow.tryEmit(UiEvent.OnError("Unable to connect printer"))
                 send(emptyList())
             } catch (e: EscPosConnectionException) {
-                mEventFlow.tryEmit(UiEvent.OnError("Unable to connect printer"))
+                _eventFlow.tryEmit(UiEvent.OnError("Unable to connect printer"))
                 send(emptyList())
             } catch (e: Exception) {
-                mEventFlow.tryEmit(UiEvent.OnError("Unable to connect printer"))
+                _eventFlow.tryEmit(UiEvent.OnError("Unable to connect printer"))
                 send(emptyList())
             }
         }
@@ -117,16 +123,16 @@ class BluetoothPrinter @Inject constructor(
         } catch (e: Exception) {
             when (e) {
                 is IOException -> {
-                    mEventFlow.tryEmit(UiEvent.OnError("Unable to connect printer"))
+                    _eventFlow.tryEmit(UiEvent.OnError("Unable to connect printer"))
                 }
 
                 is EscPosConnectionException -> {
-                    mEventFlow.tryEmit(UiEvent.OnError("Unable to connect printer"))
+                    _eventFlow.tryEmit(UiEvent.OnError("Unable to connect printer"))
                 }
 
                 else -> {
                     Log.e("Print Exception", e.message ?: "Unable to print")
-                    mEventFlow.tryEmit(UiEvent.OnError("Something went wrong, please try again later."))
+                    _eventFlow.tryEmit(UiEvent.OnError("Something went wrong, please try again later."))
                 }
             }
         }
@@ -152,52 +158,47 @@ class BluetoothPrinter @Inject constructor(
                     printerInfo.value.printerNbrLines,
                 )
             } catch (e: IOException) {
-                mEventFlow.tryEmit(UiEvent.OnError("Unable to connect printer"))
+                _eventFlow.tryEmit(UiEvent.OnError("Unable to connect printer"))
             } catch (e: EscPosConnectionException) {
-                mEventFlow.tryEmit(UiEvent.OnError("Unable to connect printer"))
+                _eventFlow.tryEmit(UiEvent.OnError("Unable to connect printer"))
             } catch (e: Exception) {
-                mEventFlow.tryEmit(UiEvent.OnError("Unable to connect printer"))
+                _eventFlow.tryEmit(UiEvent.OnError("Unable to connect printer"))
             }
         }
     }
 
-    fun connectBluetoothPrinterAsync() {
-        externalScope.runCatching {
-            val bluetoothConnections = try {
-                BluetoothPrintersConnections.selectFirstPaired()
-            } catch (e: IOException) {
-                null
-            } catch (e: EscPosConnectionException) {
-                null
-            } catch (e: Exception) {
-                null
-            }
-
-            bluetoothConnections?.let { data ->
+    suspend fun connectAndGetBluetoothPrinterAsync(): Result<EscPosPrinter?> {
+        return withContext(Dispatchers.IO) {
+            runCatching {
                 try {
-                    printer = EscPosPrinter(
-                        data,
-                        printerInfo.value.printerDpi,
-                        printerInfo.value.printerWidth,
-                        printerInfo.value.printerNbrLines,
-                    )
-                } catch (e: IOException) {
-                    null
-                } catch (e: EscPosConnectionException) {
-                    null
+                    val bluetoothConnections = BluetoothPrintersConnections.selectFirstPaired()
+                    bluetoothConnections?.let { data ->
+                        EscPosPrinter(
+                            data,
+                            printerInfo.value.printerDpi,
+                            printerInfo.value.printerWidth,
+                            printerInfo.value.printerNbrLines,
+                        )
+                    } ?: throw IOException("No printer found")
                 } catch (e: Exception) {
-                    null
+                    throw IOException("Unable to connect printer")
                 }
             }
         }
     }
 
     fun printTestData() {
-        try {
-            printer?.printFormattedText("[C]<b><font size='big'>Testing</font></b> \n")
-        } catch (e: Exception) {
-            mEventFlow.tryEmit(UiEvent.OnError("Failed to print"))
-            Log.e("Bluetooth", "Failed to print", e)
+        externalScope.launch(handler) {
+            val result = connectAndGetBluetoothPrinterAsync()
+
+            result.fold(
+                onSuccess = { printer ->
+                    printer?.printFormattedText("[C]<b><font size='big'>Testing</font></b> \n")
+                },
+                onFailure = {
+                    _eventFlow.emit(UiEvent.OnError("Printer Not Connected"))
+                },
+            )
         }
     }
 
@@ -224,18 +225,6 @@ class BluetoothPrinter @Inject constructor(
         }
 
         return details
-    }
-
-    fun getPrintableQrCode(slogan: String = DEFAULT_SLOGAN): String {
-        return if (printerInfo.value.printQRCode) {
-            "[C]Pay by scanning this QR code\n\n" +
-                "[L]\n" +
-                "[C]<qrcode size ='40'>${profileInfo.value.paymentQrCode}</qrcode>\n\n\n" +
-                "[C]$slogan \n\n" +
-                "[L]-------------------------------\n"
-        } else {
-            ""
-        }
     }
 
     fun getPrintableQrCode(

@@ -129,7 +129,7 @@ fun MarketListItemScreen(
         onClickSearchIcon = viewModel::openSearchBar,
         onSearchTextChanged = viewModel::searchTextChanged,
         onClickClear = viewModel::clearSearchText,
-        onCloseSearchBar = viewModel::clearSearchText,
+        onCloseSearchBar = viewModel::closeSearchBar,
         onClickShare = shareViewModel::onShowDialog,
         onClickPrint = viewModel::printMarketList,
         onAddItem = viewModel::onAddItem,

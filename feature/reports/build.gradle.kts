@@ -31,8 +31,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":feature:chart"))
-    api(project(":feature:printer"))
+    implementation(projects.feature.chart)
+    api(projects.feature.printer)
 
     implementation(libs.accompanist.permissions)
     implementation(libs.dialog.core)

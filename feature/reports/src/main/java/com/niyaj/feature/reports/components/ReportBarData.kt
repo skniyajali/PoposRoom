@@ -28,16 +28,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.components.PoposIconButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.feature.chart.common.dimens.ChartDimens
 import com.niyaj.feature.chart.horizontalbar.HorizontalBarChart
@@ -49,13 +50,15 @@ import com.niyaj.ui.components.IconWithText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.ItemNotAvailableHalf
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
-fun ReportBarData(
+internal fun ReportBarData(
     reportBarState: UiState<List<HorizontalBarData>>,
     selectedBarData: String,
     onBarClick: (String) -> Unit,
     onClickViewMore: () -> Unit,
+    onClickPrint: () -> Unit,
 ) = trace("ReportBarData") {
     ElevatedCard(
         modifier = Modifier
@@ -92,12 +95,15 @@ fun ReportBarData(
                                 secondaryText = selectedBarData.ifEmpty { null },
                             )
 
-                            IconButton(
-                                onClick = onClickViewMore,
-                            ) {
-                                Icon(
-                                    imageVector = PoposIcons.ArrowRightAlt,
-                                    contentDescription = "View more",
+                            Row {
+                                PoposIconButton(
+                                    icon = PoposIcons.Print,
+                                    onClick = onClickPrint,
+                                )
+
+                                PoposIconButton(
+                                    icon = PoposIcons.ArrowRightAlt,
+                                    onClick = onClickViewMore,
                                 )
                             }
                         }
@@ -140,5 +146,23 @@ fun ReportBarData(
                 }
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ReportBarDataPreview(
+    @PreviewParameter(ReportBarDataPreviewProvider::class)
+    reportBarState: UiState<List<HorizontalBarData>>,
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ReportBarData(
+            reportBarState = reportBarState,
+            selectedBarData = "",
+            onBarClick = {},
+            onClickViewMore = {},
+            onClickPrint = {},
+        )
     }
 }

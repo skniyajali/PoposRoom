@@ -236,12 +236,12 @@ internal fun AddEditCartOrderScreenContent(
         ) {
             item(ORDER_TYPE_FIELD) {
                 val orderTypes = listOf(
-                    OrderType.DineIn.name,
                     OrderType.DineOut.name,
+                    OrderType.DineIn.name,
                 )
                 val icons = listOf(
-                    PoposIcons.DinnerDining,
                     PoposIcons.DeliveryDining,
+                    PoposIcons.DinnerDining,
                 )
 
                 MultiSelector(
@@ -485,26 +485,32 @@ internal fun AddEditCartOrderScreenContent(
             }
 
             item(CHARGES_INCLUDED_FIELD) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
+                AnimatedVisibility(
+                    visible = state.orderType != OrderType.DineIn && chargesState is UiState.Success,
+                    enter = fadeIn(tween(500)),
+                    exit = fadeOut(tween(600)),
                 ) {
-                    Checkbox(
-                        modifier = Modifier.testTag(CHARGES_INCLUDED_FIELD),
-                        checked = state.doesChargesIncluded,
-                        onCheckedChange = {
-                            onEvent(AddEditCartOrderEvent.DoesChargesIncluded)
-                        },
-                    )
-                    Spacer(modifier = Modifier.width(SpaceSmall))
-                    Text(
-                        text = if (state.doesChargesIncluded) {
-                            "Charges included"
-                        } else {
-                            "Charges not included"
-                        },
-                        style = MaterialTheme.typography.labelMedium,
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(
+                            modifier = Modifier.testTag(CHARGES_INCLUDED_FIELD),
+                            checked = state.doesChargesIncluded,
+                            onCheckedChange = {
+                                onEvent(AddEditCartOrderEvent.DoesChargesIncluded)
+                            },
+                        )
+                        Spacer(modifier = Modifier.width(SpaceSmall))
+                        Text(
+                            text = if (state.doesChargesIncluded) {
+                                "Charges included"
+                            } else {
+                                "Charges not included"
+                            },
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(SpaceSmall))

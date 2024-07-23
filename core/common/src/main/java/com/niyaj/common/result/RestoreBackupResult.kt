@@ -15,21 +15,11 @@
  *
  */
 
-package com.niyaj.data.di
+package com.niyaj.common.result
 
-import com.niyaj.data.data.repository.DataDeletionRepositoryImpl
-import com.niyaj.data.repository.DataDeletionRepository
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-
-@Module
-@InstallIn(SingletonComponent::class)
-object DataDeletionModule {
-
-    @Provides
-    fun provideDataDeletionRepositoryImpl(): DataDeletionRepository {
-        return DataDeletionRepositoryImpl()
-    }
+enum class RestoreBackupResult {
+    Success,
+    FileError,
+    WrongFile,
+    DbError,
 }
