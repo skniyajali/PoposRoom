@@ -155,7 +155,7 @@ fun HomeScreen(
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
                 scope.launch {
-                    snackbarState.showSnackbar(it.value)
+//                    snackbarState.showSnackbar(it.value)
                 }
             }
         }

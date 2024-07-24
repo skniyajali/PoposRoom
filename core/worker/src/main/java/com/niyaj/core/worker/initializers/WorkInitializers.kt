@@ -19,11 +19,14 @@ package com.niyaj.core.worker.initializers
 
 import android.content.Context
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
 import com.niyaj.core.worker.workers.DELETE_DATA_WORKER_TAG
 import com.niyaj.core.worker.workers.DataDeletionWorker
 import com.niyaj.core.worker.workers.GENERATE_REPORT_WORKER_TAG
 import com.niyaj.core.worker.workers.GenerateReportWorker
+import com.niyaj.core.worker.workers.PRINT_ORDER_WORKER_TAG
+import com.niyaj.core.worker.workers.PrintOrderWorker
 
 object WorkInitializers {
 
@@ -49,4 +52,10 @@ fun WorkManager.enqueueDeletionWorker() = this.enqueueUniquePeriodicWork(
     DELETE_DATA_WORKER_TAG,
     ExistingPeriodicWorkPolicy.KEEP,
     DataDeletionWorker.deletionWorker(),
+)
+
+fun WorkManager.enqueuePrintOrderWorker(orderId: Int) = this.enqueueUniqueWork(
+    PRINT_ORDER_WORKER_TAG.plus("_$orderId"),
+    ExistingWorkPolicy.APPEND_OR_REPLACE,
+    PrintOrderWorker.printOrderWorker(orderId)
 )

@@ -26,4 +26,6 @@ class NoOpNotifier @Inject constructor() : Notifier {
     override fun showDataDeletionNotification() = Unit
 
     override fun showReportGenerationNotification() = Unit
+
+    override fun showPrintingErrorNotification(orderId: Int) = Unit
 }

@@ -17,6 +17,7 @@
 
 package com.niyaj.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.FiniteAnimationSpec
@@ -57,6 +58,7 @@ fun StandardExpandable(
     expanded: Boolean,
     onExpandChanged: (Boolean) -> Unit,
     rowClickable: Boolean = true,
+    showExpandIcon: Boolean = true,
     iconTint: Color = MaterialTheme.colorScheme.onSurface,
     content: @Composable () -> Unit,
     leading: @Composable (RowScope.() -> Unit)? = null,
@@ -117,19 +119,20 @@ fun StandardExpandable(
                 expand?.let { expand ->
                     expand(Modifier.rotate(expandAnimation.value))
                 } ?: run {
-                    IconButton(
-                        modifier = Modifier
-//                            .alpha(ContentAlpha.medium)
-                            .rotate(expandAnimation.value),
-                        onClick = {
-                            onExpandChanged(!expanded)
-                        },
-                    ) {
-                        Icon(
-                            imageVector = PoposIcons.ArrowDropDown,
-                            contentDescription = contentDesc.plus("Expand Less"),
-                            tint = iconTint,
-                        )
+                    AnimatedVisibility(showExpandIcon) {
+                        IconButton(
+                            modifier = Modifier
+                                .rotate(expandAnimation.value),
+                            onClick = {
+                                onExpandChanged(!expanded)
+                            },
+                        ) {
+                            Icon(
+                                imageVector = PoposIcons.ArrowDropDown,
+                                contentDescription = contentDesc.plus("Expand Less"),
+                                tint = iconTint,
+                            )
+                        }
                     }
                 }
             }

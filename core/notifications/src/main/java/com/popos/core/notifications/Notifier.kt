@@ -21,4 +21,6 @@ interface Notifier {
     fun showDataDeletionNotification()
 
     fun showReportGenerationNotification()
+
+    fun showPrintingErrorNotification(orderId: Int)
 }

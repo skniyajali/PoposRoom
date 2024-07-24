@@ -27,17 +27,20 @@ android {
 
 dependencies {
 
-    implementation(project(":core:data"))
-    implementation(project(":core:model"))
-    implementation(project(":core:common"))
-    implementation(project(":core:notifications"))
+    implementation(projects.core.data)
+    implementation(projects.core.model)
+    implementation(projects.core.common)
+    implementation(projects.core.notifications)
+
+    implementation(projects.feature.printer)
+    implementation(libs.pos.printer)
+
     implementation(libs.hilt.android)
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.hilt.ext.work)
     implementation(libs.androidx.work.ktx)
     ksp(libs.hilt.ext.compiler)
-
 
     prodImplementation(libs.firebase.cloud.messaging)
     prodImplementation(platform(libs.firebase.bom))

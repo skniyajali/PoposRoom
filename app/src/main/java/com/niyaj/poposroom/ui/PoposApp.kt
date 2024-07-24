@@ -58,6 +58,7 @@ fun PoposApp(
 //        val isOffline by appState.isOffline.collectAsStateWithLifecycle()
         val reportState = appState.reportState.collectAsStateWithLifecycle().value
         val deleteState = appState.deleteState.collectAsStateWithLifecycle().value
+        val printError = appState.printingError.collectAsStateWithLifecycle().value
 
         LaunchedEffect(key1 = deleteState, key2 = reportState) {
             if (deleteState) {
@@ -66,6 +67,12 @@ fun PoposApp(
 
             if (reportState) {
                 snackbarHostState.showSnackbar("Generating Reports")
+            }
+        }
+
+        LaunchedEffect(key1 = printError) {
+            printError?.let {
+                snackbarHostState.showSnackbar("Printer Not Connected")
             }
         }
 

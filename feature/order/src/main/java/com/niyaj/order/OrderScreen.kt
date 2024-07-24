@@ -131,11 +131,11 @@ fun OrderScreen(
     val printOrder: (Int) -> Unit = {
         if (bluetoothAdapter?.isEnabled == true) {
             // Bluetooth is on print the receipt
-            printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
+            printViewModel.enqueuePrintOrderWorker(it)
         } else {
             // Bluetooth is off, ask user to turn it on
             enableBluetoothContract.launch(enableBluetoothIntent)
-            printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
+            printViewModel.enqueuePrintOrderWorker(it)
         }
     }
 

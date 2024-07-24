@@ -23,8 +23,10 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import com.popos.core.notifications.utils.DELETION_NOTIFICATION_ID
+import com.popos.core.notifications.utils.ORDER_PRINT_NOTIFICATION_ID
 import com.popos.core.notifications.utils.REPORT_NOTIFICATION_ID
 import com.popos.core.notifications.utils.deletionWorkNotification
+import com.popos.core.notifications.utils.printOrderNotification
 import com.popos.core.notifications.utils.reportWorkNotification
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -64,5 +66,19 @@ class SystemTrayNotifier @Inject constructor(
         // Send the notifications
         val notificationManager = NotificationManagerCompat.from(this)
         notificationManager.notify(REPORT_NOTIFICATION_ID, reportWorkNotification())
+    }
+
+    override fun showPrintingErrorNotification(orderId: Int) = with(context) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS,
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+
+        // Send the notifications
+        val notificationManager = NotificationManagerCompat.from(this)
+        notificationManager.notify(ORDER_PRINT_NOTIFICATION_ID, printOrderNotification(orderId))
     }
 }

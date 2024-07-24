@@ -28,7 +28,11 @@ interface WorkMonitor {
 
     val isDeletingData: Flow<Boolean>
 
+    val printingError: Flow<Boolean>
+
     fun requestGenerateReport()
 
     fun requestDeletingData()
+
+    fun enqueuePrintOrderWorker(orderId: Int)
 }
