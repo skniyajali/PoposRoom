@@ -57,5 +57,5 @@ fun WorkManager.enqueueDeletionWorker() = this.enqueueUniquePeriodicWork(
 fun WorkManager.enqueuePrintOrderWorker(orderId: Int) = this.enqueueUniqueWork(
     PRINT_ORDER_WORKER_TAG.plus("_$orderId"),
     ExistingWorkPolicy.APPEND_OR_REPLACE,
-    PrintOrderWorker.printOrderWorker(orderId)
+    PrintOrderWorker.printOrderWorker(orderId),
 )

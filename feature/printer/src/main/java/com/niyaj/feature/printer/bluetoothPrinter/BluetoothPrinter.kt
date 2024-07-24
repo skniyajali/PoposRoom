@@ -240,11 +240,11 @@ class BluetoothPrinter @Inject constructor(
 
         return if (printerInfo.value.printQRCode) {
             "[C]Pay by scanning this QR code\n" +
-                    "[C]${name}\n" +
-                    "[L]\n" +
-                    "[C]<qrcode size ='40'>$data</qrcode>\n\n\n" +
-                    "[C]$slogan \n\n" +
-                    "[L]-------------------------------\n"
+                "[C]${name}\n" +
+                "[L]\n" +
+                "[C]<qrcode size ='40'>$data</qrcode>\n\n\n" +
+                "[C]$slogan \n\n" +
+                "[L]-------------------------------\n"
         } else {
             ""
         }
@@ -253,8 +253,8 @@ class BluetoothPrinter @Inject constructor(
     private fun getPrintableFooterInfo(): String {
         return if (printerInfo.value.printWelcomeText) {
             "[C]Thank you for ordering!\n" +
-                    "[C]For order and inquiry, Call.\n" +
-                    "[C]${profileInfo.value.primaryPhone} / ${profileInfo.value.secondaryPhone}\n\n"
+                "[C]For order and inquiry, Call.\n" +
+                "[C]${profileInfo.value.primaryPhone} / ${profileInfo.value.secondaryPhone}\n\n"
         } else {
             ""
         }
@@ -320,8 +320,8 @@ class BluetoothPrinter @Inject constructor(
 
     private fun printTotalPrice(orderPrice: Long): String {
         return "[L]-------------------------------\n" +
-                "[L]Total[R] Rs. ${orderPrice}\n" +
-                "[L]-------------------------------\n\n"
+            "[L]Total[R] Rs. ${orderPrice}\n" +
+            "[L]-------------------------------\n\n"
     }
 
     private fun printAddOnItems(addOnItemList: List<AddOnItem>): String {
@@ -374,8 +374,8 @@ class BluetoothPrinter @Inject constructor(
 
     private fun printSubTotalAndDiscount(orderPrice: OrderPrice): String {
         return "[L]-------------------------------\n" +
-                "[L]Sub Total[R]${orderPrice.basePrice}\n" +
-                "[L]Discount[R]${orderPrice.discountPrice}\n"
+            "[L]Sub Total[R]${orderPrice.basePrice}\n" +
+            "[L]Discount[R]${orderPrice.discountPrice}\n"
     }
 
     private fun getPrintableOrders(deliveryReports: List<DeliveryReport>): String {
