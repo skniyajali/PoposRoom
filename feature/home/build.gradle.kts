@@ -36,4 +36,6 @@ dependencies {
     //RaamCosta Library
     implementation(libs.raamcosta.animation.core)
     ksp(libs.raamcosta.ksp)
+
+    implementation(libs.konfetti.compose)
 }

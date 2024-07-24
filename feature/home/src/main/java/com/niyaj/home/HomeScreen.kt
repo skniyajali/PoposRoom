@@ -43,6 +43,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -78,6 +79,7 @@ import com.niyaj.ui.event.UiState
 import com.niyaj.ui.parameterProvider.CategoryPreviewData
 import com.niyaj.ui.parameterProvider.ProductWithQuantityStatePreviewParameter
 import com.niyaj.ui.utils.DevicePreviews
+import com.niyaj.ui.utils.Presets
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
@@ -90,6 +92,9 @@ import com.ramcosta.composedestinations.result.OpenResultRecipient
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
+import nl.dionsegijn.konfetti.compose.KonfettiView
+import nl.dionsegijn.konfetti.compose.OnParticleSystemUpdateListener
+import nl.dionsegijn.konfetti.core.PartySystem
 
 @RootNavGraph(start = true)
 @Destination(route = Screens.HOME_SCREEN)
@@ -117,6 +122,8 @@ fun HomeScreen(
     } else {
         selectedOrder.addressName.plus(" - ").plus(selectedOrder.orderId)
     }
+
+    val showKonfetti = remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = eventFlow) {
         eventFlow?.let { event ->
@@ -155,7 +162,7 @@ fun HomeScreen(
             is NavResult.Canceled -> {}
             is NavResult.Value -> {
                 scope.launch {
-//                    snackbarState.showSnackbar(it.value)
+                    showKonfetti.value = true
                 }
             }
         }
@@ -215,6 +222,8 @@ fun HomeScreen(
         onOrderClick = {
             navigator.navigate(Screens.ORDER_SCREEN)
         },
+        showKonfetti = showKonfetti.value,
+        hideKonfetti = { showKonfetti.value = false },
     )
 }
 
@@ -239,6 +248,8 @@ fun HomeScreenContent(
     onClickCreateProduct: () -> Unit,
     onCartClick: () -> Unit,
     onOrderClick: () -> Unit,
+    showKonfetti: Boolean,
+    hideKonfetti: () -> Unit,
     currentRoute: String = Screens.HOME_SCREEN,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     lazyRowState: LazyStaggeredGridState = rememberLazyStaggeredGridState(),
@@ -406,6 +417,21 @@ fun HomeScreenContent(
             visible = lazyListState.isScrolled,
             onClick = onClickScrollToTop,
         )
+
+        if (showKonfetti) {
+            KonfettiView(
+                modifier = Modifier.fillMaxSize(),
+                parties = Presets.rain(),
+                updateListener = object : OnParticleSystemUpdateListener {
+                    override fun onParticleSystemEnded(
+                        system: PartySystem,
+                        activeSystems: Int,
+                    ) {
+                        if (activeSystems == 0) hideKonfetti()
+                    }
+                },
+            )
+        }
     }
 }
 
@@ -438,6 +464,8 @@ private fun HomeScreenContentPreview(
             onClickCreateProduct = {},
             onCartClick = {},
             onOrderClick = {},
+            showKonfetti = false,
+            hideKonfetti = {},
         )
     }
 }

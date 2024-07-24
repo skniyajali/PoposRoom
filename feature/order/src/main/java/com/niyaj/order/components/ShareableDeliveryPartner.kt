@@ -53,9 +53,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.compose.ui.window.DialogProperties
+import com.niyaj.common.utils.getStartTime
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.components.PoposButton
@@ -63,10 +65,13 @@ import com.niyaj.designsystem.components.PoposOutlinedIconButton
 import com.niyaj.designsystem.components.PoposSuggestionChip
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.ButtonSize
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.gradient6
 import com.niyaj.designsystem.theme.rainbowColorsBrush
+import com.niyaj.model.DeliveryReport
+import com.niyaj.model.TotalDeliveryPartnerOrder
 import com.niyaj.model.TotalOrders
 import com.niyaj.order.deliveryPartner.DeliveryReportCard
 import com.niyaj.order.deliveryPartner.PartnerReportState
@@ -74,6 +79,8 @@ import com.niyaj.order.deliveryPartner.PartnerState
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
+import com.niyaj.ui.parameterProvider.DeliveryReportPreviewParameter
+import com.niyaj.ui.parameterProvider.TotalDeliveryPartnerOrderPreviewParameter
 import com.niyaj.ui.utils.CaptureController
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.ScrollableCapturable
@@ -129,7 +136,7 @@ fun ShareableDeliveryPartner(
                             verticalArrangement = Arrangement.SpaceBetween,
                         ) {
                             CapturableDeliveryPartnerCard(
-                                modifier = Modifier,
+                                modifier = Modifier.weight(2.5f),
                                 captureController = captureController,
                                 selectedDate = selectedDate,
                                 state = state,
@@ -205,7 +212,7 @@ fun ShareablePartnerDetails(
                             verticalArrangement = Arrangement.SpaceBetween,
                         ) {
                             CapturablePartnerDetailsCard(
-                                modifier = Modifier,
+                                modifier = Modifier.weight(2.5f),
                                 captureController = captureController,
                                 selectedDate = selectedDate,
                                 state = state,
@@ -562,6 +569,38 @@ private fun DialogButtons(
                 containerColor = shareButtonColor,
             ),
             onClick = onClickShare,
+        )
+    }
+}
+
+
+@DevicePreviews
+@Composable
+private fun ShareableDeliveryPartnerBodyPreview(
+    @PreviewParameter(TotalDeliveryPartnerOrderPreviewParameter::class)
+    orders: List<TotalDeliveryPartnerOrder>,
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ShareableDeliveryPartnerBody(
+            modifier = modifier,
+            state = PartnerState.Success(orders),
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ShareablePartnerDetailsCardPreview(
+    @PreviewParameter(DeliveryReportPreviewParameter::class)
+    orders: List<DeliveryReport>,
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ShareablePartnerDetailsCard(
+            modifier = modifier,
+            state = PartnerReportState.Success(orders),
+            selectedDate = getStartTime
         )
     }
 }
