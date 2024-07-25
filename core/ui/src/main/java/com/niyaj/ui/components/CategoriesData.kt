@@ -114,7 +114,7 @@ fun CategoryList(
     doesSelected: (Int) -> Boolean,
     onSelect: (Int) -> Unit,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    horizontalArrangement: Arrangement. Horizontal = Arrangement.Start,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
     lazyRowState: LazyListState = rememberLazyListState(),
 ) = trace("CategoriesData") {
     TrackScrollJank(scrollableState = lazyRowState, stateName = "category:list")
@@ -123,7 +123,7 @@ fun CategoryList(
         modifier = modifier.fillMaxWidth(),
         state = lazyRowState,
         contentPadding = contentPadding,
-        horizontalArrangement = horizontalArrangement
+        horizontalArrangement = horizontalArrangement,
     ) {
         items(
             items = categories,
