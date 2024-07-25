@@ -17,16 +17,16 @@
 
 package com.niyaj.ui.parameterProvider
 
+import com.niyaj.common.utils.getStartDate
 import com.niyaj.model.DeliveryReport
 import com.niyaj.model.TotalDeliveryPartnerOrder
-import java.util.Date
 
 object DeliveryPartnerPreviewData {
     val partnerOrders = List(10) {
         TotalDeliveryPartnerOrder(
             partnerId = it,
-            totalOrders = (10..20).random(),
-            totalAmount = (4000L..5000).random(),
+            totalOrders = it.plus(10),
+            totalAmount = it.plus(30).toLong(),
             partnerName = "Partner $it",
         )
     }
@@ -35,11 +35,11 @@ object DeliveryPartnerPreviewData {
         DeliveryReport(
             orderId = it + 1,
             customerAddress = "Address $it",
-            customerPhone = "${(1000000000..9999999999).random()}",
-            orderPrice = (100L..500).random(),
-            partnerId = (1..8).random(),
+            customerPhone = "${9876543210 + it}",
+            orderPrice = it.plus(100).toLong(),
+            partnerId = it % 10,
             partnerName = "Partner $it",
-            orderDate = Date(),
+            orderDate = getStartDate,
         )
     }
 }

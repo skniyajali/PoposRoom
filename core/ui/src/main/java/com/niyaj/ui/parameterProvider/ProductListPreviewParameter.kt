@@ -18,6 +18,7 @@
 package com.niyaj.ui.parameterProvider
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import com.niyaj.common.utils.getStartDateLong
 import com.niyaj.model.OrderType
 import com.niyaj.model.Product
 import com.niyaj.model.ProductWiseOrder
@@ -287,7 +288,7 @@ object ProductPreviewData {
     val productWiseOrders = listOf(
         ProductWiseOrder(
             orderId = 1,
-            orderedDate = Date(System.currentTimeMillis() - 86400000),
+            orderedDate = Date(getStartDateLong - 86400000),
             orderType = OrderType.DineIn,
             quantity = 2,
             customerPhone = null,
@@ -295,7 +296,7 @@ object ProductPreviewData {
         ),
         ProductWiseOrder(
             orderId = 2,
-            orderedDate = Date(System.currentTimeMillis()),
+            orderedDate = Date(getStartDateLong),
             orderType = OrderType.DineOut,
             quantity = 1,
             customerPhone = "1234567890",
@@ -303,7 +304,7 @@ object ProductPreviewData {
         ),
         ProductWiseOrder(
             orderId = 3,
-            orderedDate = Date(System.currentTimeMillis() - 172800000),
+            orderedDate = Date(getStartDateLong - 172800000),
             orderType = OrderType.DineIn,
             quantity = 3,
             customerPhone = null,
@@ -311,7 +312,7 @@ object ProductPreviewData {
         ),
         ProductWiseOrder(
             orderId = 4,
-            orderedDate = Date(System.currentTimeMillis()),
+            orderedDate = Date(getStartDateLong),
             orderType = OrderType.DineOut,
             quantity = 2,
             customerPhone = "9876543210",
@@ -319,7 +320,7 @@ object ProductPreviewData {
         ),
         ProductWiseOrder(
             orderId = 5,
-            orderedDate = Date(System.currentTimeMillis()),
+            orderedDate = Date(getStartDateLong),
             orderType = OrderType.DineIn,
             quantity = 1,
             customerPhone = null,
@@ -327,7 +328,7 @@ object ProductPreviewData {
         ),
         ProductWiseOrder(
             orderId = 6,
-            orderedDate = Date(System.currentTimeMillis() - 86400000),
+            orderedDate = Date(getStartDateLong - 86400000),
             orderType = OrderType.DineOut,
             quantity = 4,
             customerPhone = "5555555555",
@@ -335,7 +336,7 @@ object ProductPreviewData {
         ),
         ProductWiseOrder(
             orderId = 7,
-            orderedDate = Date(System.currentTimeMillis()),
+            orderedDate = Date(getStartDateLong),
             orderType = OrderType.DineIn,
             quantity = 2,
             customerPhone = null,
@@ -343,7 +344,7 @@ object ProductPreviewData {
         ),
         ProductWiseOrder(
             orderId = 8,
-            orderedDate = Date(System.currentTimeMillis() - 172800000),
+            orderedDate = Date(getStartDateLong - 172800000),
             orderType = OrderType.DineOut,
             quantity = 3,
             customerPhone = "1010101010",
@@ -351,7 +352,7 @@ object ProductPreviewData {
         ),
         ProductWiseOrder(
             orderId = 9,
-            orderedDate = Date(System.currentTimeMillis()),
+            orderedDate = Date(getStartDateLong),
             orderType = OrderType.DineIn,
             quantity = 1,
             customerPhone = null,
@@ -359,7 +360,7 @@ object ProductPreviewData {
         ),
         ProductWiseOrder(
             orderId = 10,
-            orderedDate = Date(System.currentTimeMillis() - 86400000),
+            orderedDate = Date(getStartDateLong - 86400000),
             orderType = OrderType.DineOut,
             quantity = 2,
             customerPhone = "8888888888",

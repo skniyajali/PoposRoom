@@ -82,8 +82,8 @@ object ReportsPreviewData {
         dineInSalesQty = 8,
         dineOutSalesQty = 10,
         reportDate = getStartTime,
-        createdAt = System.currentTimeMillis().toString(),
-        updatedAt = System.currentTimeMillis().toString(),
+        createdAt = getStartTime,
+        updatedAt = getStartTime,
     )
 
     val addressWiseReport: List<AddressWiseReport> = List(5) {
@@ -91,8 +91,8 @@ object ReportsPreviewData {
             addressId = it,
             addressName = "Address $it",
             shortName = "A$it",
-            totalOrders = (1..5).random(),
-            totalSales = it.times((400..500).random()),
+            totalOrders = it.plus(1),
+            totalSales = it.plus(10),
         )
     }
 
@@ -103,7 +103,7 @@ object ReportsPreviewData {
                 ProductWiseReport(
                     productId = index,
                     productName = "Product $index",
-                    quantity = index.times((1..5).random()),
+                    quantity = index.plus(it),
                 )
             }.toImmutableList(),
         )
@@ -114,8 +114,8 @@ object ReportsPreviewData {
             customerId = it,
             customerName = "Customer $it",
             customerPhone = "9078452121".plus(it),
-            totalOrders = (1..5).random(),
-            totalSales = it.times((400..500).random()),
+            totalOrders = it.plus(10),
+            totalSales = it.plus(400),
         )
     }
 
@@ -123,7 +123,7 @@ object ReportsPreviewData {
         ExpensesReport(
             expenseId = it,
             expenseName = "Expense $it",
-            expenseAmount = it.times((400..500).random()).toString(),
+            expenseAmount = it.plus(500).toString(),
         )
     }
 }
