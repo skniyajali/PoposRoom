@@ -287,6 +287,8 @@ internal fun IncreaseProductPriceScreenContent(
             )
 
             CategoryList(
+                horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
+                contentPadding = PaddingValues(SpaceSmall),
                 lazyRowState = lazyRowState,
                 categories = categories,
                 doesSelected = selectedCategories::contains,

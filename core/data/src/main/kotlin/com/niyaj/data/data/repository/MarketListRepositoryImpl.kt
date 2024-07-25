@@ -33,6 +33,7 @@ import com.niyaj.model.MarketListAndType
 import com.niyaj.model.MarketListWithTypes
 import com.niyaj.model.MarketTypeIdAndListTypes
 import com.niyaj.model.asExternalModel
+import com.niyaj.model.searchMarketList
 import com.niyaj.model.toExternalModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
@@ -54,6 +55,8 @@ class MarketListRepositoryImpl(
         return withContext(ioDispatcher) {
             marketListDao.getMarketItems().mapLatest { typeList ->
                 typeList.toExternalModel()
+            }.map {
+                it.searchMarketList(searchText)
             }
         }
     }

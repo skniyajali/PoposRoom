@@ -24,6 +24,7 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -57,7 +58,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -84,7 +84,7 @@ import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.StandardBottomSheetScaffold
 import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.parameterProvider.CardOrderPreviewData
-import com.niyaj.ui.parameterProvider.DeliveryReportPreviewParameter
+import com.niyaj.ui.parameterProvider.DeliveryPartnerPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -224,8 +224,9 @@ fun DeliveryPartnerDetailsScreen(
     }
 }
 
+@VisibleForTesting
 @Composable
-private fun DeliveryPartnerDetailsScreenContent(
+internal fun DeliveryPartnerDetailsScreenContent(
     modifier: Modifier = Modifier,
     selectedDate: String,
     reportState: PartnerReportState,
@@ -530,8 +531,7 @@ private fun DeliveryPartnerDetailsScreenEmptyState() {
 @DevicePreviews
 @Composable
 private fun DeliveryPartnerDetailsScreenSuccessState(
-    @PreviewParameter(DeliveryReportPreviewParameter::class)
-    orders: List<DeliveryReport>,
+    orders: List<DeliveryReport> = DeliveryPartnerPreviewData.deliveryReports,
 ) {
     PoposRoomTheme {
         DeliveryPartnerDetailsScreenContent(

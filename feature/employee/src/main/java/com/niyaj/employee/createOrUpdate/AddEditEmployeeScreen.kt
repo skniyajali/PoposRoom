@@ -167,8 +167,8 @@ fun AddEditEmployeeScreen(
 @Composable
 internal fun AddEditEmployeeScreenContent(
     modifier: Modifier = Modifier,
-    title: String,
-    icon: ImageVector,
+    title: String = CREATE_NEW_EMPLOYEE,
+    icon: ImageVector = PoposIcons.Add,
     state: AddEditEmployeeState,
     phoneError: String? = null,
     nameError: String? = null,

@@ -271,7 +271,7 @@ class ReportsViewModel @Inject constructor(
                                     var printItems = ""
 
                                     printItems += bluetoothPrinter.getPrintableHeader(
-                                        title = "LAST FEW DAYS REPORTS",
+                                        title = "REPORTS",
                                         _selectedDate.value,
                                     )
 
@@ -431,7 +431,7 @@ class ReportsViewModel @Inject constructor(
                                     var printItems = ""
 
                                     printItems += bluetoothPrinter.getPrintableHeader(
-                                        title = "PRODUCT WISE REPORTS",
+                                        title = "PRODUCTS REPORTS",
                                         _selectedDate.value,
                                     )
 

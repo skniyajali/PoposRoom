@@ -72,12 +72,15 @@ internal fun CategoryWiseReport(
     onClickOrderType: (String) -> Unit,
     onProductClick: (productId: Int) -> Unit,
     onPrintProductWiseReport: () -> Unit,
+    containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CategoryWiseReport") {
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
-        colors = CardDefaults.elevatedCardColors(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = containerColor,
+        ),
     ) {
         StandardExpandable(
             modifier = Modifier
@@ -108,6 +111,7 @@ internal fun CategoryWiseReport(
                 }
             },
             expand = null,
+            showExpandIcon = false,
             contentDesc = "Category wise report",
             content = {
                 Crossfade(
@@ -145,7 +149,7 @@ private fun CategoryWiseReportCard(
     selectedCategory: String,
     onExpandChanged: (String) -> Unit,
     onProductClick: (Int) -> Unit,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
 ) = trace("CategoryWiseReportCard") {
     Column(
         modifier = Modifier

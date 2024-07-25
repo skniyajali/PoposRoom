@@ -24,4 +24,8 @@
     <string name="deletion_notification_channel_description">Deleting app data within a period of time.</string>
     <string name="deletion_notification_title">Deleting Data</string>
     <string name="deletion_notification_text">Deleting Old App Data</string>
+    <string name="order_print_title">Printer Not Connected</string>
+    <string name="order_print_text">Unable to print order</string>
+    <string name="print_order_channel_name">Print Order Notification</string>
+    <string name="print_order_channel_desc">Notify user when printing error</string>
 </resources>

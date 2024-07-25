@@ -26,4 +26,5 @@ android {
 
 dependencies {
     implementation(libs.pos.printer)
+    implementation(libs.kotlinx.collections.immutable)
 }

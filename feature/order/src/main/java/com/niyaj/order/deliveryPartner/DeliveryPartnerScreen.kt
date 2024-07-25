@@ -23,6 +23,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
@@ -42,7 +43,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -63,7 +63,7 @@ import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.StandardBottomSheetScaffold
 import com.niyaj.ui.event.ShareViewModel
-import com.niyaj.ui.parameterProvider.TotalDeliveryPartnerOrderPreviewParameter
+import com.niyaj.ui.parameterProvider.DeliveryPartnerPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.Screens.DELIVERY_REPORT_SCREEN
@@ -195,8 +195,9 @@ fun DeliveryPartnerScreen(
     }
 }
 
+@VisibleForTesting
 @Composable
-private fun DeliveryPartnerScreenContent(
+internal fun DeliveryPartnerScreenContent(
     modifier: Modifier = Modifier,
     selectedDate: String,
     partnerState: PartnerState,
@@ -358,9 +359,8 @@ private fun DeliveryPartnerScreenContentEmptyPreview(
 @DevicePreviews
 @Composable
 private fun DeliveryPartnerScreenContentSuccessPreview(
-    @PreviewParameter(TotalDeliveryPartnerOrderPreviewParameter::class)
-    orders: List<TotalDeliveryPartnerOrder>,
     modifier: Modifier = Modifier,
+    orders: List<TotalDeliveryPartnerOrder> = DeliveryPartnerPreviewData.partnerOrders,
 ) {
     DeliveryPartnerScreenContent(
         modifier = modifier,

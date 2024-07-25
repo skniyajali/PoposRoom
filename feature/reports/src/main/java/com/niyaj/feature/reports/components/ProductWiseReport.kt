@@ -29,6 +29,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
@@ -59,12 +60,15 @@ internal fun ProductWiseReport(
     onClickOrderType: (String) -> Unit,
     onBarClick: (String) -> Unit,
     onPrintProductWiseReport: () -> Unit,
+    containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("ProductWiseReport") {
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
-        colors = CardDefaults.elevatedCardColors(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = containerColor,
+        ),
     ) {
         StandardExpandable(
             modifier = Modifier
@@ -95,6 +99,7 @@ internal fun ProductWiseReport(
                 }
             },
             expand = null,
+            showExpandIcon = false,
             contentDesc = "Product wise report",
             content = {
                 Crossfade(

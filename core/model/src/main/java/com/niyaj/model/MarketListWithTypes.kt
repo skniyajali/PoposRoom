@@ -17,8 +17,24 @@
 
 package com.niyaj.model
 
+import com.niyaj.model.utils.toDateString
+import com.niyaj.model.utils.toJoinedDate
+
 data class MarketListWithTypes(
     val marketList: MarketList,
 
     val marketTypes: List<MarketListWithType> = emptyList(),
 )
+
+fun List<MarketListWithTypes>.searchMarketList(searchText: String): List<MarketListWithTypes> {
+    return if (searchText.isNotEmpty()) {
+        this.filter {
+            it.marketList.marketDate.toDateString.contains(searchText, true) ||
+                it.marketList.marketDate.toJoinedDate.contains(searchText, true) ||
+                it.marketList.createdAt.toDateString.contains(searchText, true) ||
+                it.marketList.updatedAt?.toDateString?.contains(searchText, true) == true
+        }
+    } else {
+        this
+    }
+}

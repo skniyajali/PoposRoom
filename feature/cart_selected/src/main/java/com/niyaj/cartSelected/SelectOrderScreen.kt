@@ -167,7 +167,9 @@ fun SelectOrderScreen(
         printViewModel.eventFlow.collectLatest { event ->
             when (event) {
                 is UiEvent.OnError -> {
-                    resultBackNavigator.setResult(event.errorMessage)
+                    scope.launch {
+                        snackbarHostState.showSnackbar(event.errorMessage)
+                    }
                 }
 
                 else -> {}
@@ -228,11 +230,11 @@ fun SelectOrderScreen(
         if (bluetoothPermissions.allPermissionsGranted) {
             if (bluetoothAdapter?.isEnabled == true) {
                 // Bluetooth is on print the receipt
-                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
+                printViewModel.enqueuePrintOrderWorker(it)
             } else {
                 // Bluetooth is off, ask user to turn it on
                 enableBluetoothContract.launch(enableBluetoothIntent)
-                printViewModel.onPrintEvent(PrintEvent.PrintOrder(it))
+                printViewModel.enqueuePrintOrderWorker(it)
             }
         } else {
             bluetoothPermissions.launchMultiplePermissionRequest()

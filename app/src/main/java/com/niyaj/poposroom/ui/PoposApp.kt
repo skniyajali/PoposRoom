@@ -54,8 +54,7 @@ fun PoposApp(
 ) {
     PoposBackground(modifier) {
         val snackbarHostState = remember { SnackbarHostState() }
-        // TODO:: Since we're not dealing with network
-//        val isOffline by appState.isOffline.collectAsStateWithLifecycle()
+
         val reportState = appState.reportState.collectAsStateWithLifecycle().value
         val deleteState = appState.deleteState.collectAsStateWithLifecycle().value
 
@@ -68,14 +67,6 @@ fun PoposApp(
                 snackbarHostState.showSnackbar("Generating Reports")
             }
         }
-
-        // TODO:: Since we're not dealing with network
-        // If user is not connected to the internet show a snack bar to inform them.
-//        LaunchedEffect(isOffline) {
-//            if (isOffline) {
-//                snackbarHostState.showSnackbar(message = "You are not connected to the internet")
-//            }
-//        }
 
         Scaffold(
             modifier = Modifier.semantics {

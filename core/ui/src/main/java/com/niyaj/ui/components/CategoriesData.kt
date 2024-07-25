@@ -110,16 +110,20 @@ fun TwoColumnLazyRowList(
 @Composable
 fun CategoryList(
     modifier: Modifier = Modifier,
-    lazyRowState: LazyListState = rememberLazyListState(),
     categories: ImmutableList<Category>,
     doesSelected: (Int) -> Boolean,
     onSelect: (Int) -> Unit,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
+    lazyRowState: LazyListState = rememberLazyListState(),
 ) = trace("CategoriesData") {
     TrackScrollJank(scrollableState = lazyRowState, stateName = "category:list")
 
     LazyRow(
         modifier = modifier.fillMaxWidth(),
         state = lazyRowState,
+        contentPadding = contentPadding,
+        horizontalArrangement = horizontalArrangement,
     ) {
         items(
             items = categories,

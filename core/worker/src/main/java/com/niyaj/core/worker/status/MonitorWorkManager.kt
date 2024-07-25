@@ -21,9 +21,11 @@ import android.content.Context
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.niyaj.core.worker.initializers.enqueueDeletionWorker
+import com.niyaj.core.worker.initializers.enqueuePrintOrderWorker
 import com.niyaj.core.worker.initializers.enqueueReportWorker
 import com.niyaj.core.worker.workers.DELETE_DATA_WORKER_TAG
 import com.niyaj.core.worker.workers.GENERATE_REPORT_WORKER_TAG
+import com.niyaj.core.worker.workers.PRINT_ORDER_WORKER_TAG
 import com.niyaj.data.utils.WorkMonitor
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -47,12 +49,20 @@ class MonitorWorkManager @Inject constructor(
         .map(List<WorkInfo>::anyRunning)
         .conflate()
 
+    override val printingError: Flow<Boolean> = workManager
+        .getWorkInfosByTagFlow(PRINT_ORDER_WORKER_TAG)
+        .map { infos -> infos.any { it.state == WorkInfo.State.FAILED } }
+
     override fun requestGenerateReport() {
         workManager.enqueueReportWorker()
     }
 
     override fun requestDeletingData() {
         workManager.enqueueDeletionWorker()
+    }
+
+    override fun enqueuePrintOrderWorker(orderId: Int) {
+        workManager.enqueuePrintOrderWorker(orderId)
     }
 }
 
