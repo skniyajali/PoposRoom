@@ -54,7 +54,7 @@ fun PoposApp(
 ) {
     PoposBackground(modifier) {
         val snackbarHostState = remember { SnackbarHostState() }
-        
+
         val reportState = appState.reportState.collectAsStateWithLifecycle().value
         val deleteState = appState.deleteState.collectAsStateWithLifecycle().value
 

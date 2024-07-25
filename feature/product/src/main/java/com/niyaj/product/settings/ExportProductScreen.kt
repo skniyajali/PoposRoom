@@ -300,6 +300,8 @@ internal fun ExportProductScreenContent(
                 .padding(paddingValues),
         ) {
             CategoryList(
+                horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
+                contentPadding = PaddingValues(SpaceSmall),
                 lazyRowState = lazyRowState,
                 categories = categories,
                 doesSelected = selectedCategory::contains,

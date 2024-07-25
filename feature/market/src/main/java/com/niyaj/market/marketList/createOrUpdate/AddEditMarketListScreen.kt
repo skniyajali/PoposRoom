@@ -27,11 +27,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
@@ -154,91 +156,101 @@ internal fun AddEditMarketListScreenContent(
         title = title,
         onBackClick = onBackClick,
     ) {
-        Column(
+        LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceMedium),
+                .fillMaxWidth(),
+            contentPadding = PaddingValues(SpaceMedium),
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        MaterialTheme.colorScheme.primaryContainer,
-                        RoundedCornerShape(SpaceMini),
-                    )
-                    .padding(SpaceSmall),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
+            item("marketDate") {
                 Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            MaterialTheme.colorScheme.primaryContainer,
+                            RoundedCornerShape(SpaceMini),
+                        )
+                        .padding(SpaceSmall),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
                 ) {
-                    CircularBox(
-                        icon = PoposIcons.CalenderMonth,
-                        doesSelected = false,
-                    )
-
-                    Column(
-                        horizontalAlignment = Alignment.Start,
-                        verticalArrangement = Arrangement.spacedBy(SpaceMini),
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
                     ) {
-                        Text(
-                            text = "Market Date".uppercase(),
-                            style = MaterialTheme.typography.bodySmall,
+                        CircularBox(
+                            icon = PoposIcons.CalenderMonth,
+                            doesSelected = false,
                         )
 
-                        Text(
-                            text = selectedDate.toPrettyDate(),
-                            style = MaterialTheme.typography.titleLarge,
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.spacedBy(SpaceMini),
+                        ) {
+                            Text(
+                                text = "Market Date".uppercase(),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+
+                            Text(
+                                text = selectedDate.toPrettyDate(),
+                                style = MaterialTheme.typography.titleLarge,
+                            )
+                        }
                     }
-                }
 
-                PoposOutlinedAssistChip(
-                    text = "Change Date",
-                    icon = PoposIcons.CalenderMonth,
-                    onClick = dialogState::show,
-                    trailingIcon = PoposIcons.ArrowDropDown,
+                    PoposOutlinedAssistChip(
+                        text = "Change Date",
+                        icon = PoposIcons.CalenderMonth,
+                        onClick = dialogState::show,
+                        trailingIcon = PoposIcons.ArrowDropDown,
+                    )
+                }
+            }
+
+            item("chooseList") {
+                Text(
+                    text = "Choose Market List Types",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
                 )
             }
 
-            Text(
-                text = "Choose Market List Types",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-            )
-
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-                horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
-                maxItemsInEachRow = 2,
-            ) {
-                listTypes.forEach {
-                    MarketTypeBox(
-                        type = it,
-                        isSelected = isTypeChecked,
-                        onListTypeClick = onListTypeClick,
-                        isListTypeChecked = isListTypeChecked,
-                    )
+            item("listTypes") {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+                    horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
+                    maxItemsInEachRow = 2,
+                ) {
+                    listTypes.forEach {
+                        MarketTypeBox(
+                            type = it,
+                            isSelected = isTypeChecked,
+                            onListTypeClick = onListTypeClick,
+                            isListTypeChecked = isListTypeChecked,
+                        )
+                    }
                 }
             }
 
-            AnimatedVisibility(
-                visible = isError,
-            ) {
-                NoteCard(text = TYPES_NOTE_TEXT)
+            item("errorMessage") {
+                AnimatedVisibility(
+                    visible = isError,
+                ) {
+                    NoteCard(text = TYPES_NOTE_TEXT)
+                }
             }
 
-            PoposButton(
-                modifier = Modifier.fillMaxWidth(),
-                text = title,
-                enabled = !isError,
-                icon = icon,
-                onClick = onCreateOrUpdateClick,
-            )
+            item("createOrUpdateButton") {
+                PoposButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = title,
+                    enabled = !isError,
+                    icon = icon,
+                    onClick = onCreateOrUpdateClick,
+                )
+            }
         }
     }
 

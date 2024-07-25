@@ -90,15 +90,15 @@ class Presets {
                 angle = Angle.RIGHT - 45,
                 spread = Spread.SMALL,
                 colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
-                emitter = Emitter(duration = 5, TimeUnit.SECONDS).perSecond(30),
-                position = Position.Relative(0.0, 0.5),
+                emitter = Emitter(duration = 5, TimeUnit.SECONDS).perSecond(40),
+                position = Position.Relative(0.0, 0.1),
             )
 
             return listOf(
                 party,
                 party.copy(
                     angle = party.angle - 90,
-                    position = Position.Relative(1.0, 0.5),
+                    position = Position.Relative(1.0, 0.1),
                 ),
             )
         }

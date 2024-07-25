@@ -1,3 +1,16 @@
 # :feature:address module
 ## Dependency graph
 ![Dependency graph](../../docs/images/graphs/dep_graph_feature_address.svg)
+
+
+
+|                                                                                                                 |                                                                                                                                             |                                                                                                                                           |
+|-----------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| ![AddOnItemScreenLoading_phone.png](./src/test/screenshots/AddressScreenLoading_phone.png)                      | ![AddEditItemScreenWithEmptyData_phone.png](./src/test/screenshots/AddressScreenEmptyContent_phone.png)                                     | ![AddressScreenSuccessContent_phone.png](./src/test/screenshots/AddressScreenSuccessContent_phone.png)                                    |
+| ![ItemsPopulatedAndSelected_phone.png](./src/test/screenshots/AddressPopulatedAndSelected_phone.png)            | ![ShowSearchBarAndGetEmptyResult_phone.png](./src/test/screenshots/ShowSearchBarAndGetEmptyResult_phone.png)                                | ![ShowSearchBarAndGetSuccessResult_phone.png](./src/test/screenshots/ShowSearchBarAndGetSuccessResult_phone.png)                          |
+| ![AddEditItemScreenWithEmptyData_phone.png](./src/test/screenshots/AddEditAddressScreenWithEmptyData_phone.png) | ![AddEditItemScreenWithDummyData_phone.png](./src/test/screenshots/AddEditAddressScreenWithDummyData_phone.png)                             | ![ShowSettingsBottomSheet_phone.png](./src/test/screenshots/ShowSettingsBottomSheet_phone.png)                                            |
+| ![ImportScreenWithEmptyData_phone.png](./src/test/screenshots/AddressImportScreenWithEmptyData_phone.png)       | ![ImportScreenWithSomeData_phone.png](./src/test/screenshots/AddressImportScreenWithSomeData_phone.png)                                     | ![ExportScreenWithEmptyData_phone.png](./src/test/screenshots/AddressExportScreenWithEmptyData_phone.png)                                 |
+| ![ExportScreenWithSomeData_phone.png](./src/test/screenshots/AddressExportScreenWithSomeData_phone.png)         | ![ExportScreenPerformSearchAndGetEmptyResult_phone.png](./src/test/screenshots/AddressExportScreenPerformSearchAndGetEmptyResult_phone.png) | ![ExportScreenPerformSearchAndGetSomeResult_phone.png](./src/test/screenshots/AddressExportScreenPerformSearchAndGetSomeResult_phone.png) |
+| ![AddressDetailsScreenLoading_phone.png](./src/test/screenshots/AddressDetailsScreenLoading_phone.png)          | ![AddressDetailsScreenEmpty_phone.png](./src/test/screenshots/AddressDetailsScreenEmpty_phone.png)                                          | ![AddressDetailsScreenPopulated_phone.png](./src/test/screenshots/AddressDetailsScreenPopulated_phone.png)                                |
+
+

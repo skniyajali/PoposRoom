@@ -18,9 +18,9 @@
 package com.niyaj.address.details
 
 import androidx.annotation.VisibleForTesting
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -156,10 +156,11 @@ internal fun AddressDetailsScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it),
+            contentPadding = PaddingValues(SpaceSmall),
+            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
             item(key = "TotalOrder Details") {
                 TotalOrderDetailsCard(details = totalOrdersState)
-                Spacer(modifier = Modifier.height(SpaceSmall))
             }
 
             item(key = "Address Details") {
@@ -171,7 +172,6 @@ internal fun AddressDetailsScreenContent(
                     doesExpanded = detailsExpanded,
                     onClickEdit = onClickEdit,
                 )
-                Spacer(modifier = Modifier.height(SpaceSmall))
             }
 
             item(key = "OrderDetails") {
@@ -183,8 +183,6 @@ internal fun AddressDetailsScreenContent(
                     },
                     onClickOrder = onClickOrder,
                 )
-
-                Spacer(modifier = Modifier.height(SpaceSmall))
             }
         }
     }

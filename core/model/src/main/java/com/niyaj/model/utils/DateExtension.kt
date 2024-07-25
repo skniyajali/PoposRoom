@@ -27,6 +27,12 @@ internal val String.toJoinedDate
         Locale.getDefault(),
     ).format(this.toLong()).toString()
 
+internal val Long.toJoinedDate
+    get() = SimpleDateFormat(
+        "dd-MM-yyyy",
+        Locale.getDefault(),
+    ).format(this.toLong()).toString()
+
 internal val String.toTime
     get() = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(this.toLong()).toString()
 

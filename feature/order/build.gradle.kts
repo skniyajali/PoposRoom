@@ -16,9 +16,10 @@
  *
  */
 plugins {
-    id("popos.android.feature")
-    id("popos.android.library.compose")
-    id("popos.android.library.jacoco")
+    alias(libs.plugins.popos.android.feature)
+    alias(libs.plugins.popos.android.library.compose)
+    alias(libs.plugins.popos.android.library.jacoco)
+    alias(libs.plugins.roborazzi)
 }
 
 android {
@@ -38,9 +39,17 @@ dependencies {
     implementation(libs.dialog.datetime)
     implementation(libs.pos.printer)
 
-    implementation(project(":feature:print_order"))
+    implementation(projects.feature.printOrder)
 
     //RaamCosta Library
     implementation(libs.raamcosta.animation.core)
     ksp(libs.raamcosta.ksp)
+
+    testImplementation(libs.hilt.android.testing)
+    testImplementation(libs.robolectric)
+    testImplementation(projects.core.testing)
+    testImplementation(projects.core.screenshotTesting)
+    testDemoImplementation(libs.roborazzi)
+
+    androidTestImplementation(projects.core.testing)
 }

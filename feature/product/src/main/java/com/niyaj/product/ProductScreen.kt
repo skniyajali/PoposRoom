@@ -20,9 +20,11 @@ package com.niyaj.product
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FabPosition
@@ -256,7 +258,9 @@ internal fun ProductScreenContent(
                 .fillMaxSize(),
         ) {
             CategoryList(
-                modifier = Modifier.padding(SpaceSmall),
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
+                contentPadding = PaddingValues(SpaceSmall),
                 lazyRowState = lazyRowState,
                 categories = categories,
                 doesSelected = { it == selectedCategory },

@@ -47,7 +47,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -61,7 +60,6 @@ import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.components.PoposOutlinedAssistChip
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.model.Order
 import com.niyaj.order.components.OrderedItemLayout
 import com.niyaj.order.destinations.DeliveryPartnerScreenDestination
 import com.niyaj.order.destinations.OrderDetailsScreenDestination
@@ -75,7 +73,7 @@ import com.niyaj.ui.components.OrderTabsContent
 import com.niyaj.ui.components.ShareableOrderDetails
 import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
 import com.niyaj.ui.event.ShareViewModel
-import com.niyaj.ui.parameterProvider.OrderPreviewParameter
+import com.niyaj.ui.parameterProvider.OrderPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -545,13 +543,10 @@ private fun OrderScreenContentEmptyPreview() {
 
 @DevicePreviews
 @Composable
-private fun OrderScreenContentSuccessPreview(
-    @PreviewParameter(OrderPreviewParameter::class)
-    orders: Pair<List<Order>, List<Order>>,
-) {
+private fun OrderScreenContentSuccessPreview() {
     OrderScreenContent(
-        dineInOrders = OrderState.Success(orders.first),
-        dineOutOrders = OrderState.Success(orders.second),
+        dineInOrders = OrderState.Success(OrderPreviewData.dineInOrders),
+        dineOutOrders = OrderState.Success(OrderPreviewData.dineOutOrders),
         selectedDate = "",
         showSearchBar = false,
         searchText = "",

@@ -53,7 +53,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.compose.ui.window.DialogProperties
@@ -79,8 +78,7 @@ import com.niyaj.order.deliveryPartner.PartnerState
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
-import com.niyaj.ui.parameterProvider.DeliveryReportPreviewParameter
-import com.niyaj.ui.parameterProvider.TotalDeliveryPartnerOrderPreviewParameter
+import com.niyaj.ui.parameterProvider.DeliveryPartnerPreviewData
 import com.niyaj.ui.utils.CaptureController
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.ScrollableCapturable
@@ -573,13 +571,11 @@ private fun DialogButtons(
     }
 }
 
-
 @DevicePreviews
 @Composable
 private fun ShareableDeliveryPartnerBodyPreview(
-    @PreviewParameter(TotalDeliveryPartnerOrderPreviewParameter::class)
-    orders: List<TotalDeliveryPartnerOrder>,
     modifier: Modifier = Modifier,
+    orders: List<TotalDeliveryPartnerOrder> = DeliveryPartnerPreviewData.partnerOrders,
 ) {
     PoposRoomTheme {
         ShareableDeliveryPartnerBody(
@@ -592,15 +588,14 @@ private fun ShareableDeliveryPartnerBodyPreview(
 @DevicePreviews
 @Composable
 private fun ShareablePartnerDetailsCardPreview(
-    @PreviewParameter(DeliveryReportPreviewParameter::class)
-    orders: List<DeliveryReport>,
     modifier: Modifier = Modifier,
+    orders: List<DeliveryReport> = DeliveryPartnerPreviewData.deliveryReports,
 ) {
     PoposRoomTheme {
         ShareablePartnerDetailsCard(
             modifier = modifier,
             state = PartnerReportState.Success(orders),
-            selectedDate = getStartTime
+            selectedDate = getStartTime,
         )
     }
 }

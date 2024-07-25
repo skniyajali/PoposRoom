@@ -16,9 +16,9 @@
  *
  */
 plugins {
-    id("popos.android.feature")
-    id("popos.android.library.compose")
-    id("popos.android.library.jacoco")
+    alias(libs.plugins.popos.android.feature)
+    alias(libs.plugins.popos.android.library.compose)
+    alias(libs.plugins.popos.android.library.jacoco)
 }
 
 android {
@@ -32,7 +32,7 @@ android {
 }
 
 dependencies {
-    api(project(":feature:printer"))
+    api(projects.feature.printer)
 
     implementation(libs.pos.printer)
 

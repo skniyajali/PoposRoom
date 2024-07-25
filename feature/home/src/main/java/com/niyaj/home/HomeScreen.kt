@@ -95,6 +95,7 @@ import kotlinx.coroutines.launch
 import nl.dionsegijn.konfetti.compose.KonfettiView
 import nl.dionsegijn.konfetti.compose.OnParticleSystemUpdateListener
 import nl.dionsegijn.konfetti.core.PartySystem
+import kotlin.random.Random
 
 @RootNavGraph(start = true)
 @Destination(route = Screens.HOME_SCREEN)
@@ -419,9 +420,13 @@ fun HomeScreenContent(
         )
 
         if (showKonfetti) {
+            val parties = remember {
+                if (Random.nextBoolean()) Presets.rain() else Presets.parade()
+            }
+
             KonfettiView(
                 modifier = Modifier.fillMaxSize(),
-                parties = Presets.rain(),
+                parties = parties,
                 updateListener = object : OnParticleSystemUpdateListener {
                     override fun onParticleSystemEnded(
                         system: PartySystem,

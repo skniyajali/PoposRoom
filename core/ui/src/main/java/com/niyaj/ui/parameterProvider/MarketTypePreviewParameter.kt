@@ -19,6 +19,7 @@ package com.niyaj.ui.parameterProvider
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.niyaj.model.MarketType
+import com.niyaj.model.MarketTypeIdAndName
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.parameterProvider.MarketTypePreviewData.marketTypes
 
@@ -112,4 +113,8 @@ object MarketTypePreviewData {
             createdAt = 1623456800000,
         ),
     )
+
+    val marketTypeIdAndNames = marketTypes.map {
+        MarketTypeIdAndName(it.typeId, it.typeName)
+    }
 }
