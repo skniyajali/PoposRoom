@@ -18,11 +18,10 @@
 package com.niyaj.ui.parameterProvider
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import com.niyaj.common.utils.getStartDateLong
 import com.niyaj.model.Charges
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.parameterProvider.ChargesPreviewData.chargesList
-import kotlinx.datetime.Clock
-import java.util.concurrent.TimeUnit
 
 class ChargesPreviewParameterProvider : PreviewParameterProvider<UiState<List<Charges>>> {
     override val values: Sequence<UiState<List<Charges>>>
@@ -34,79 +33,76 @@ class ChargesPreviewParameterProvider : PreviewParameterProvider<UiState<List<Ch
 }
 
 object ChargesPreviewData {
-
-    val currentTimeMillis = Clock.System.now().toEpochMilliseconds()
-
     val chargesList = listOf(
         Charges(
             chargesId = 1,
             chargesName = "Service Charge",
             chargesPrice = 200,
             isApplicable = true,
-            createdAt = currentTimeMillis,
+            createdAt = getStartDateLong,
         ),
         Charges(
             chargesId = 2,
             chargesName = "Tax",
             chargesPrice = 100,
             isApplicable = true,
-            createdAt = currentTimeMillis + TimeUnit.DAYS.toMillis(1),
+            createdAt = getStartDateLong,
         ),
         Charges(
             chargesId = 3,
             chargesName = "Delivery Charge",
             chargesPrice = 50,
             isApplicable = true,
-            createdAt = currentTimeMillis + TimeUnit.DAYS.toMillis(2),
+            createdAt = getStartDateLong,
         ),
         Charges(
             chargesId = 4,
             chargesName = "Discount",
             chargesPrice = -50,
             isApplicable = true,
-            createdAt = currentTimeMillis + TimeUnit.DAYS.toMillis(3),
+            createdAt = getStartDateLong,
         ),
         Charges(
             chargesId = 5,
             chargesName = "Packaging Charge",
             chargesPrice = 30,
             isApplicable = true,
-            createdAt = currentTimeMillis + TimeUnit.DAYS.toMillis(4),
+            createdAt = getStartDateLong,
         ),
         Charges(
             chargesId = 6,
             chargesName = "Handling Charge",
             chargesPrice = 20,
             isApplicable = true,
-            createdAt = currentTimeMillis + TimeUnit.DAYS.toMillis(5),
+            createdAt = getStartDateLong,
         ),
         Charges(
             chargesId = 7,
             chargesName = "Additional Fee",
             chargesPrice = 80,
             isApplicable = true,
-            createdAt = currentTimeMillis + TimeUnit.DAYS.toMillis(6),
+            createdAt = getStartDateLong,
         ),
         Charges(
             chargesId = 8,
             chargesName = "Insurance",
             chargesPrice = 150,
             isApplicable = true,
-            createdAt = currentTimeMillis + TimeUnit.DAYS.toMillis(7),
+            createdAt = getStartDateLong,
         ),
         Charges(
             chargesId = 9,
             chargesName = "VAT",
             chargesPrice = 120,
             isApplicable = true,
-            createdAt = currentTimeMillis + TimeUnit.DAYS.toMillis(8),
+            createdAt = getStartDateLong,
         ),
         Charges(
             chargesId = 10,
             chargesName = "Surcharge",
             chargesPrice = 50,
             isApplicable = true,
-            createdAt = currentTimeMillis + TimeUnit.DAYS.toMillis(9),
+            createdAt = getStartDateLong,
         ),
     )
 }

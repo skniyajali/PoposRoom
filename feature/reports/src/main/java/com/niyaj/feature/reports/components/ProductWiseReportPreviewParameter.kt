@@ -45,14 +45,14 @@ object ProductWiseReportPreviewData {
 
     val productWiseReport: List<HorizontalBarData> = List(10) {
         HorizontalBarData(
-            xValue = it.times((1..20).random()).toFloat(),
+            xValue = it.plus(2).toFloat(),
             yValue = "Product $it",
         )
     }
 
     val lastDaysReports: List<HorizontalBarData> = List(5) {
         HorizontalBarData(
-            xValue = it.plus(1).times((4000..5000).random()).toFloat(),
+            xValue = it.plus(100).toFloat(),
             yValue = "Date $it",
         )
     }
