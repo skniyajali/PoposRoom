@@ -70,8 +70,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import javax.inject.Inject
 
-class CartOrderRepositoryImpl(
+class CartOrderRepositoryImpl @Inject constructor(
     private val cartDao: CartDao,
     private val cartOrderDao: CartOrderDao,
     private val customerDao: CustomerDao,

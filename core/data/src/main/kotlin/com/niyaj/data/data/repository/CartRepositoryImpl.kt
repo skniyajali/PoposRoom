@@ -48,8 +48,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class CartRepositoryImpl(
+class CartRepositoryImpl @Inject constructor(
     private val cartDao: CartDao,
     private val cartOrderDao: CartOrderDao,
     private val selectedDao: SelectedDao,

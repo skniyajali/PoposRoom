@@ -31,8 +31,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class MarketListItemRepositoryImpl(
+class MarketListItemRepositoryImpl @Inject constructor(
     private val marketListDao: MarketListWIthItemsDao,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,

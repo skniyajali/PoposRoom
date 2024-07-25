@@ -35,8 +35,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class CustomerRepositoryImpl(
+class CustomerRepositoryImpl @Inject constructor(
     private val customerDao: CustomerDao,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,

@@ -41,13 +41,15 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class AbsentRepositoryImpl(
+class AbsentRepositoryImpl @Inject constructor(
     private val absentDao: AbsentDao,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
 ) : AbsentRepository, AbsentValidationRepository {
+
     override fun getAllEmployee(): Flow<List<Employee>> =
         absentDao.getAllEmployee().mapLatest { list ->
             list.map(EmployeeEntity::asExternalModel)

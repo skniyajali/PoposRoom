@@ -43,8 +43,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import javax.inject.Inject
 
-class MarketListRepositoryImpl(
+class MarketListRepositoryImpl @Inject constructor(
     private val marketListDao: MarketListDao,
     private val listTypeDao: MarketListWIthTypeDao,
     @Dispatcher(PoposDispatchers.IO)

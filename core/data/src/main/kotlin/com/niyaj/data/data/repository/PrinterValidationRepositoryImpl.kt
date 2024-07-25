@@ -30,8 +30,9 @@ import com.niyaj.common.tags.PrinterInfoTestTags.PRODUCT_REPORT_LENGTH_ERROR
 import com.niyaj.common.tags.PrinterInfoTestTags.PRODUCT_REPORT_LIMIT_IS_REQUIRED
 import com.niyaj.common.tags.PrinterInfoTestTags.WIDTH_IS_REQUIRED
 import com.niyaj.data.repository.validation.PrinterValidationRepository
+import javax.inject.Inject
 
-class PrinterValidationRepositoryImpl : PrinterValidationRepository {
+class PrinterValidationRepositoryImpl @Inject constructor() : PrinterValidationRepository {
 
     override fun validatePrinterDpi(dpi: Int): ValidationResult {
         if (dpi <= 0) {

@@ -41,8 +41,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class MeasureUnitRepositoryImpl(
+class MeasureUnitRepositoryImpl @Inject constructor(
     private val measureUnitDao: MeasureUnitDao,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,

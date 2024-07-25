@@ -45,8 +45,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.produceIn
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class EmployeeRepositoryImpl(
+class EmployeeRepositoryImpl @Inject constructor(
     private val employeeDao: EmployeeDao,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,

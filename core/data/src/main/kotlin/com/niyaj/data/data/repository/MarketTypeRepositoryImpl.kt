@@ -38,8 +38,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class MarketTypeRepositoryImpl(
+class MarketTypeRepositoryImpl @Inject constructor(
     private val marketTypeDao: MarketTypeDao,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,

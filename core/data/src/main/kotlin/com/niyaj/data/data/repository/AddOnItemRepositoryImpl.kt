@@ -33,8 +33,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class AddOnItemRepositoryImpl(
+class AddOnItemRepositoryImpl @Inject constructor(
     private val addOnItemDao: AddOnItemDao,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
