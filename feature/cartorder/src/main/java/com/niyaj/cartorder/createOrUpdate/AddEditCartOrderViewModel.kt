@@ -30,7 +30,8 @@ import com.niyaj.common.utils.getCapitalWord
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CartOrderRepository
-import com.niyaj.data.repository.validation.CartOrderValidationRepository
+import com.niyaj.domain.cartorder.ValidateOrderAddressNameUseCase
+import com.niyaj.domain.cartorder.ValidateOrderCustomerPhoneUseCase
 import com.niyaj.model.Address
 import com.niyaj.model.CartOrder
 import com.niyaj.model.CartOrderWithAddOnAndCharges
@@ -60,7 +61,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AddEditCartOrderViewModel @Inject constructor(
     private val cartOrderRepository: CartOrderRepository,
-    private val validationRepository: CartOrderValidationRepository,
+    private val validateAddressName: ValidateOrderAddressNameUseCase,
+    private val validateCustomerPhone: ValidateOrderCustomerPhoneUseCase,
     savedStateHandle: SavedStateHandle,
     private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
@@ -78,7 +80,7 @@ class AddEditCartOrderViewModel @Inject constructor(
 
     val customerError = orderTypeFlow.combine(customerFlow) { orderType, customer ->
         if (orderType != OrderType.DineIn) {
-            validationRepository.validateCustomerPhone(customer.customerPhone).errorMessage
+            validateCustomerPhone(customer.customerPhone).errorMessage
         } else {
             null
         }
@@ -90,7 +92,7 @@ class AddEditCartOrderViewModel @Inject constructor(
 
     val addressError = orderTypeFlow.combine(addressFlow) { orderType, address ->
         if (orderType != OrderType.DineIn) {
-            validationRepository.validateAddressName(address.addressName).errorMessage
+            validateAddressName(address.addressName).errorMessage
         } else {
             null
         }

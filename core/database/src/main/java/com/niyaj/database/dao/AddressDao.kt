@@ -93,14 +93,14 @@ interface AddressDao {
 
     @Query(
         value = """
-        SELECT * FROM address WHERE
+        SELECT addressId FROM address WHERE
             CASE WHEN :addressId IS NULL OR :addressId = 0
             THEN addressName = :addressName
             ELSE addressId != :addressId AND addressName = :addressName
             END LIMIT 1
     """,
     )
-    fun findAddressByName(addressName: String, addressId: Int?): AddressEntity?
+    fun findAddressByName(addressName: String, addressId: Int?): Int?
 
     @Query(
         """

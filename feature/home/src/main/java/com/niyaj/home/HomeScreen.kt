@@ -420,9 +420,7 @@ fun HomeScreenContent(
         )
 
         if (showKonfetti) {
-            val parties = remember {
-                if (Random.nextBoolean()) Presets.rain() else Presets.parade()
-            }
+            val parties = if (Random.nextBoolean()) Presets.rain() else Presets.parade()
 
             KonfettiView(
                 modifier = Modifier.fillMaxSize(),

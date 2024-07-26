@@ -30,7 +30,8 @@ import com.niyaj.common.utils.getAllCapitalizedLetters
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.AddressRepository
-import com.niyaj.data.repository.validation.AddressValidationRepository
+import com.niyaj.domain.address.ValidateAddressNameUseCase
+import com.niyaj.domain.address.ValidateAddressShortNameUseCase
 import com.niyaj.model.Address
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,7 +49,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AddEditAddressViewModel @Inject constructor(
     private val addressRepository: AddressRepository,
-    private val validationRepository: AddressValidationRepository,
+    private val validateAddressNameUseCase: ValidateAddressNameUseCase,
+    private val validateAddressShortNameUseCase: ValidateAddressShortNameUseCase,
     private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -68,7 +70,7 @@ class AddEditAddressViewModel @Inject constructor(
 
     val nameError: StateFlow<String?> = snapshotFlow { state.addressName }
         .mapLatest {
-            validationRepository.validateAddressName(it, addressId).errorMessage
+            validateAddressNameUseCase(it, addressId).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -77,7 +79,7 @@ class AddEditAddressViewModel @Inject constructor(
 
     val shortNameError: StateFlow<String?> = snapshotFlow { state.shortName }
         .mapLatest {
-            validationRepository.validateAddressShortName(it).errorMessage
+            validateAddressShortNameUseCase(it).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -160,7 +162,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateAddress(addressId: Int, message: 
         event = AnalyticsEvent(
             type = "address_$message",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("address_$message", addressId.toString()),
+                AnalyticsEvent.Param("address_$message", addressId.toString()),
             ),
         ),
     )

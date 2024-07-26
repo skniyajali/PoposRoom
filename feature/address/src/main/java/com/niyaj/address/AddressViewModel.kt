@@ -23,7 +23,7 @@ import com.niyaj.common.result.Resource
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.AddressRepository
-import com.niyaj.domain.DeleteAddressesUseCase
+import com.niyaj.domain.address.DeleteAddressesUseCase
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
@@ -92,9 +92,7 @@ internal fun AnalyticsHelper.logDeletedAddress(data: List<Int>) {
     logEvent(
         event = AnalyticsEvent(
             type = "address_deleted",
-            extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("address_deleted", data.toString()),
-            ),
+            extras = listOf(AnalyticsEvent.Param("address_deleted", data.toString())),
         ),
     )
 }

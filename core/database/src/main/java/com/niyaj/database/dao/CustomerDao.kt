@@ -93,14 +93,14 @@ interface CustomerDao {
 
     @Query(
         value = """
-        SELECT * FROM customer WHERE
+        SELECT customerId FROM customer WHERE
             CASE WHEN :customerId IS NULL OR :customerId = 0
             THEN customerPhone = :customerPhone
             ELSE customerId != :customerId AND customerPhone = :customerPhone
             END LIMIT 1
     """,
     )
-    fun findCustomerByPhone(customerPhone: String, customerId: Int?): CustomerEntity?
+    fun findCustomerByPhone(customerPhone: String, customerId: Int?): Int?
 
     @Query(
         """

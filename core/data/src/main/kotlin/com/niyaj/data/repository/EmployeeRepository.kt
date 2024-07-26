@@ -46,5 +46,9 @@ interface EmployeeRepository {
 
     suspend fun deleteEmployees(employeeIds: List<Int>): Resource<Boolean>
 
+    suspend fun findEmployeeByPhone(phone: String, employeeId: Int?): Boolean
+
+    suspend fun findEmployeeByName(name: String, employeeId: Int?): Boolean
+
     suspend fun importEmployeesToDatabase(employees: List<Employee>): Resource<Boolean>
 }

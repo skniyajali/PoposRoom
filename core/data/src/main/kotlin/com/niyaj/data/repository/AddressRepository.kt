@@ -32,6 +32,8 @@ interface AddressRepository {
 
     suspend fun deleteAddresses(addressIds: List<Int>): Resource<Boolean>
 
+    suspend fun findAddressNameByNameAndId(addressName: String, addressId: Int? = null): Boolean
+
     suspend fun getAddressWiseOrders(addressId: Int): Flow<List<AddressWiseOrder>>
 
     suspend fun importAddressesToDatabase(addresses: List<Address>): Resource<Boolean>

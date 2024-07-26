@@ -31,5 +31,7 @@ interface ChargesRepository {
 
     suspend fun deleteCharges(chargesIds: List<Int>): Resource<Boolean>
 
+    suspend fun findChargesByNameAndId(chargesName: String, chargesId: Int? = null): Boolean
+
     suspend fun importChargesItemsToDatabase(charges: List<Charges>): Resource<Boolean>
 }

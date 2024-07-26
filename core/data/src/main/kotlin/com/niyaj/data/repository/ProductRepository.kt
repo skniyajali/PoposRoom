@@ -41,6 +41,8 @@ interface ProductRepository {
 
     suspend fun getProductPrice(productId: Int): Int
 
+    suspend fun findProductByName(productName: String, productId: Int?): Boolean
+
     suspend fun getProductWiseOrderDetails(productId: Int): Flow<List<ProductWiseOrder>>
 
     suspend fun importProductsToDatabase(products: List<Product>): Resource<Boolean>

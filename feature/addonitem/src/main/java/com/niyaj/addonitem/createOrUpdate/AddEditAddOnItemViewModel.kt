@@ -30,7 +30,8 @@ import com.niyaj.common.utils.safeInt
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.AddOnItemRepository
-import com.niyaj.data.repository.validation.AddOnItemValidationRepository
+import com.niyaj.domain.addonitem.ValidateItemNameUseCase
+import com.niyaj.domain.addonitem.ValidateItemPriceUseCase
 import com.niyaj.model.AddOnItem
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,7 +49,8 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddEditAddOnItemViewModel @Inject constructor(
     private val repository: AddOnItemRepository,
-    private val validationRepository: AddOnItemValidationRepository,
+    private val validateItemNameUseCase: ValidateItemNameUseCase,
+    private val validateItemPriceUseCase: ValidateItemPriceUseCase,
     private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -68,7 +70,7 @@ class AddEditAddOnItemViewModel @Inject constructor(
 
     val nameError: StateFlow<String?> = snapshotFlow { addEditState.itemName }
         .mapLatest {
-            validationRepository.validateItemName(it, addOnItemId).errorMessage
+            validateItemNameUseCase(it, addOnItemId).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -77,7 +79,7 @@ class AddEditAddOnItemViewModel @Inject constructor(
 
     val priceError: StateFlow<String?> = snapshotFlow { addEditState.itemPrice }
         .mapLatest {
-            validationRepository.validateItemPrice(it).errorMessage
+            validateItemPriceUseCase(it).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),

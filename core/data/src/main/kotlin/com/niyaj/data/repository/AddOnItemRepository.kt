@@ -31,5 +31,7 @@ interface AddOnItemRepository {
 
     suspend fun deleteAddOnItems(itemIds: List<Int>): Resource<Boolean>
 
+    suspend fun findAddOnItemByName(name: String, addOnItemId: Int?): Boolean
+
     suspend fun importAddOnItemsToDatabase(addOnItems: List<AddOnItem>): Resource<Boolean>
 }

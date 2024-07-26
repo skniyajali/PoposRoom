@@ -30,7 +30,8 @@ import com.niyaj.common.utils.safeString
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.MeasureUnitRepository
-import com.niyaj.data.repository.validation.MeasureUnitValidationRepository
+import com.niyaj.domain.market.ValidateUnitNameUseCase
+import com.niyaj.domain.market.ValidateUnitValueUseCase
 import com.niyaj.model.MeasureUnit
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,7 +46,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AddEditMeasureUnitViewModel @Inject constructor(
     private val repository: MeasureUnitRepository,
-    private val validationRepository: MeasureUnitValidationRepository,
+    private val validateUnitName: ValidateUnitNameUseCase,
+    private val validateUnitValue: ValidateUnitValueUseCase,
     private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -68,11 +70,11 @@ class AddEditMeasureUnitViewModel @Inject constructor(
     }
 
     val nameError = snapshotFlow { state.unitName }.mapLatest {
-        validationRepository.validateUnitName(it, unitId).errorMessage
+        validateUnitName(it, unitId).errorMessage
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     val valueError = snapshotFlow { state.unitValue }.mapLatest {
-        validationRepository.validateUnitValue(it).errorMessage
+        validateUnitValue(it).errorMessage
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     fun onEvent(event: AddEditMeasureUnitEvent) {
@@ -108,6 +110,7 @@ class AddEditMeasureUnitViewModel @Inject constructor(
                     is Resource.Error -> {
                         _eventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
                     }
+
                     is Resource.Success -> {
                         val message = if (unitId == 0) "Created" else "Updated"
                         _eventFlow.emit(UiEvent.OnSuccess("Item $message successfully."))
@@ -134,9 +137,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateMeasureUnit(data: Int, message: S
     logEvent(
         event = AnalyticsEvent(
             type = "measure_unit_$message",
-            extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("measure_unit_$message", data.toString()),
-            ),
+            extras = listOf(AnalyticsEvent.Param("measure_unit_$message", data.toString())),
         ),
     )
 }

@@ -32,6 +32,8 @@ interface CustomerRepository {
 
     suspend fun deleteCustomers(customerIds: List<Int>): Resource<Boolean>
 
+    suspend fun findCustomerByPhone(customerPhone: String, customerId: Int?): Boolean
+
     suspend fun getCustomerWiseOrders(customerId: Int): Flow<List<CustomerWiseOrder>>
 
     suspend fun importCustomerToDatabase(customers: List<Customer>): Resource<Boolean>

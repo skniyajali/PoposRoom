@@ -31,5 +31,7 @@ interface MeasureUnitRepository {
 
     suspend fun deleteMeasureUnits(unitIds: List<Int>): Resource<Boolean>
 
+    suspend fun findMeasureUnitByName(unitName: String, unitId: Int?): Boolean
+
     suspend fun importDataFromFilesToDatabase(units: List<MeasureUnit>): Resource<Boolean>
 }

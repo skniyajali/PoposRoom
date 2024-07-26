@@ -30,8 +30,11 @@ import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.EmployeeRepository
-import com.niyaj.data.repository.EmployeeValidationRepository
 import com.niyaj.data.repository.QRCodeScanner
+import com.niyaj.domain.employee.ValidateEmployeeNameUseCase
+import com.niyaj.domain.employee.ValidateEmployeePhoneUseCase
+import com.niyaj.domain.employee.ValidateEmployeePositionUseCase
+import com.niyaj.domain.employee.ValidateEmployeeSalaryUseCase
 import com.niyaj.model.Employee
 import com.niyaj.ui.utils.QRCodeEncoder
 import com.niyaj.ui.utils.UiEvent
@@ -53,7 +56,10 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddEditEmployeeViewModel @Inject constructor(
     private val employeeRepository: EmployeeRepository,
-    private val validationRepository: EmployeeValidationRepository,
+    private val validateEmployeePhone: ValidateEmployeePhoneUseCase,
+    private val validateEmployeeName: ValidateEmployeeNameUseCase,
+    private val validateEmployeePosition: ValidateEmployeePositionUseCase,
+    private val validateEmployeeSalary: ValidateEmployeeSalaryUseCase,
     private val analyticsHelper: AnalyticsHelper,
     private val scanner: QRCodeScanner,
     savedStateHandle: SavedStateHandle,
@@ -77,7 +83,7 @@ class AddEditEmployeeViewModel @Inject constructor(
 
     val phoneError: StateFlow<String?> = snapshotFlow { state.employeePhone }
         .mapLatest {
-            validationRepository.validateEmployeePhone(it, employeeId).errorMessage
+            validateEmployeePhone(it, employeeId).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -86,7 +92,7 @@ class AddEditEmployeeViewModel @Inject constructor(
 
     val nameError: StateFlow<String?> = snapshotFlow { state.employeeName }
         .mapLatest {
-            validationRepository.validateEmployeeName(it, employeeId).errorMessage
+            validateEmployeeName(it, employeeId).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -95,7 +101,7 @@ class AddEditEmployeeViewModel @Inject constructor(
 
     val salaryError: StateFlow<String?> = snapshotFlow { state.employeeSalary }
         .mapLatest {
-            validationRepository.validateEmployeeSalary(it).errorMessage
+            validateEmployeeSalary(it).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -104,7 +110,7 @@ class AddEditEmployeeViewModel @Inject constructor(
 
     val positionError: StateFlow<String?> = snapshotFlow { state.employeePosition }
         .mapLatest {
-            validationRepository.validateEmployeePosition(it).errorMessage
+            validateEmployeePosition(it).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -244,9 +250,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateEmployee(data: Int, message: Stri
     logEvent(
         event = AnalyticsEvent(
             type = "employee_$message",
-            extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("employee_$message", data.toString()),
-            ),
+            extras = listOf(AnalyticsEvent.Param("employee_$message", data.toString())),
         ),
     )
 }

@@ -20,13 +20,8 @@ package com.niyaj.data.data.repository
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
-import com.niyaj.common.result.ValidationResult
-import com.niyaj.common.tags.AbsentScreenTags.ABSENT_DATE_EMPTY
-import com.niyaj.common.tags.AbsentScreenTags.ABSENT_DATE_EXIST
-import com.niyaj.common.tags.AbsentScreenTags.ABSENT_EMPLOYEE_NAME_EMPTY
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.AbsentRepository
-import com.niyaj.data.repository.validation.AbsentValidationRepository
 import com.niyaj.database.dao.AbsentDao
 import com.niyaj.database.model.EmployeeEntity
 import com.niyaj.database.model.EmployeeWithAbsentCrossRef
@@ -37,17 +32,17 @@ import com.niyaj.model.Employee
 import com.niyaj.model.EmployeeWithAbsents
 import com.niyaj.model.filterEmployeeWithAbsent
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class AbsentRepositoryImpl(
+class AbsentRepositoryImpl @Inject constructor(
     private val absentDao: AbsentDao,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
-) : AbsentRepository, AbsentValidationRepository {
+) : AbsentRepository {
+
     override fun getAllEmployee(): Flow<List<Employee>> =
         absentDao.getAllEmployee().mapLatest { list ->
             list.map(EmployeeEntity::asExternalModel)
@@ -81,28 +76,15 @@ class AbsentRepositoryImpl(
 
     override suspend fun upsertAbsent(newAbsent: Absent): Resource<Boolean> {
         return try {
-            val validateAbsentEmployee = validateAbsentEmployee(newAbsent.employeeId)
-            val validateAbsentDate = validateAbsentDate(
-                absentDate = newAbsent.absentDate,
-                employeeId = newAbsent.employeeId,
-                absentId = newAbsent.absentId,
-            )
+            val result = absentDao.upsertAbsent(newAbsent.toEntity())
 
-            val hasError = listOf(validateAbsentEmployee, validateAbsentDate).any { !it.successful }
-
-            if (!hasError) {
-                val result = absentDao.upsertAbsent(newAbsent.toEntity())
-
-                if (result > 0) {
-                    absentDao.upsertEmployeeWithAbsentCrossReference(
-                        EmployeeWithAbsentCrossRef(newAbsent.employeeId, result.toInt()),
-                    )
-                }
-
-                Resource.Success(result > 0)
-            } else {
-                Resource.Error("Unable to validate attendance")
+            if (result > 0) {
+                absentDao.upsertEmployeeWithAbsentCrossReference(
+                    EmployeeWithAbsentCrossRef(newAbsent.employeeId, result.toInt()),
+                )
             }
+
+            Resource.Success(result > 0)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Unable to add or update absent entry.")
         }
@@ -120,45 +102,14 @@ class AbsentRepositoryImpl(
         }
     }
 
-    override suspend fun validateAbsentDate(
+    override suspend fun findEmployeeByDate(
         absentDate: String,
-        employeeId: Int?,
+        employeeId: Int,
         absentId: Int?,
-    ): ValidationResult {
-        if (absentDate.isEmpty()) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = ABSENT_DATE_EMPTY,
-            )
+    ): Boolean {
+        return withContext(ioDispatcher) {
+            absentDao.findEmployeeByDate(absentDate, employeeId, absentId) != null
         }
-
-        if (employeeId != null) {
-            val serverResult = withContext(ioDispatcher) {
-                absentDao.findEmployeeByDate(absentDate, employeeId, absentId) != null
-            }
-
-            if (serverResult) {
-                return ValidationResult(
-                    successful = false,
-                    errorMessage = ABSENT_DATE_EXIST,
-                )
-            }
-        }
-
-        return ValidationResult(true)
-    }
-
-    override fun validateAbsentEmployee(employeeId: Int): ValidationResult {
-        if (employeeId == 0) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = ABSENT_EMPLOYEE_NAME_EMPTY,
-            )
-        }
-
-        return ValidationResult(
-            successful = true,
-        )
     }
 
     override suspend fun importAbsentDataToDatabase(absentees: List<EmployeeWithAbsents>): Resource<Boolean> {

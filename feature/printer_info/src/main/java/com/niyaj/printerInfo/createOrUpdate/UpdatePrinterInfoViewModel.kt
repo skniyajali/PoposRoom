@@ -27,7 +27,13 @@ import com.niyaj.common.utils.safeInt
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.PrinterRepository
-import com.niyaj.data.repository.validation.PrinterValidationRepository
+import com.niyaj.domain.printer.ValidateAddressReportLimitUseCase
+import com.niyaj.domain.printer.ValidateCustomerReportLimitUseCase
+import com.niyaj.domain.printer.ValidateNbrLinesUseCase
+import com.niyaj.domain.printer.ValidatePrinterDpiUseCase
+import com.niyaj.domain.printer.ValidatePrinterWidthUseCase
+import com.niyaj.domain.printer.ValidateProductNameLengthUseCase
+import com.niyaj.domain.printer.ValidateProductReportLimitUseCase
 import com.niyaj.model.Printer
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -46,7 +52,13 @@ import javax.inject.Inject
 @HiltViewModel
 class UpdatePrinterInfoViewModel @Inject constructor(
     private val repository: PrinterRepository,
-    private val validationRepository: PrinterValidationRepository,
+    private val validatePrinterDpi: ValidatePrinterDpiUseCase,
+    private val validatePrinterWidth: ValidatePrinterWidthUseCase,
+    private val validateNbrLines: ValidateNbrLinesUseCase,
+    private val validateProductNameLength: ValidateProductNameLengthUseCase,
+    private val validateProductReportLimit: ValidateProductReportLimitUseCase,
+    private val validateAddressReportLimit: ValidateAddressReportLimitUseCase,
+    private val validateCustomerReportLimit: ValidateCustomerReportLimitUseCase,
     private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
@@ -63,43 +75,43 @@ class UpdatePrinterInfoViewModel @Inject constructor(
 
     val dpiError = snapshotFlow { _state.value.printerDpi }
         .mapLatest {
-            validationRepository.validatePrinterDpi(it).errorMessage
+            validatePrinterDpi(it).errorMessage
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     val widthError = snapshotFlow { _state.value.printerWidth }
         .mapLatest {
-            validationRepository.validatePrinterWidth(it).errorMessage
+            validatePrinterWidth(it).errorMessage
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     val nbrError = snapshotFlow { _state.value.printerNbrLines }
         .mapLatest {
-            validationRepository.validatePrinterNbrLines(it).errorMessage
+            validateNbrLines(it).errorMessage
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     val nameLengthError = snapshotFlow { _state.value.productNameLength }
         .mapLatest {
-            validationRepository.validateProductNameLength(it).errorMessage
+            validateProductNameLength(it).errorMessage
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     val productLimitError = snapshotFlow { _state.value.productWiseReportLimit }
         .mapLatest {
-            validationRepository.validateProductReportLimit(it).errorMessage
+            validateProductReportLimit(it).errorMessage
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     val addressLimitError = snapshotFlow { _state.value.addressWiseReportLimit }
         .mapLatest {
-            validationRepository.validateAddressReportLimit(it).errorMessage
+            validateAddressReportLimit(it).errorMessage
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     val customerLimitError = snapshotFlow { _state.value.customerWiseReportLimit }
         .mapLatest {
-            validationRepository.validateCustomerReportLimit(it).errorMessage
+            validateCustomerReportLimit(it).errorMessage
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
@@ -231,9 +243,7 @@ internal fun AnalyticsHelper.updatedPrinterInfo() {
     logEvent(
         event = AnalyticsEvent(
             type = "updated_printer_info",
-            extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("updated_printer_info", "Yes"),
-            ),
+            extras = listOf(AnalyticsEvent.Param("updated_printer_info", "Yes")),
         ),
     )
 }

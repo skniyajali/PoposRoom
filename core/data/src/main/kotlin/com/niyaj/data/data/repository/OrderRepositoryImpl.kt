@@ -48,8 +48,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class OrderRepositoryImpl(
+class OrderRepositoryImpl @Inject constructor(
     private val orderDao: OrderDao,
     private val cartOrderDao: CartOrderDao,
     private val selectedDao: SelectedDao,

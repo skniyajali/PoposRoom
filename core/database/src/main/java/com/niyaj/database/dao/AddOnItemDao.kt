@@ -81,12 +81,12 @@ interface AddOnItemDao {
 
     @Query(
         value = """
-        SELECT * FROM addonitem WHERE
+        SELECT itemId FROM addonitem WHERE
             CASE WHEN :itemId IS NULL OR :itemId = 0
             THEN itemName = :itemName
             ELSE itemId != :itemId AND itemName = :itemName
             END LIMIT 1
     """,
     )
-    fun findAddOnItemByName(itemName: String, itemId: Int?): AddOnItemEntity?
+    fun findAddOnItemByName(itemName: String, itemId: Int?): Int?
 }

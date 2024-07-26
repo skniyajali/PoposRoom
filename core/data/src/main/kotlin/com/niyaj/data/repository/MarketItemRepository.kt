@@ -29,7 +29,10 @@ interface MarketItemRepository {
 
     suspend fun getAllMeasureUnits(searchText: String): Flow<List<MeasureUnit>>
 
-    suspend fun getAllMarketItemLists(searchText: String, removedItems: List<Int>): Flow<List<MarketItem>>
+    suspend fun getAllMarketItemLists(
+        searchText: String,
+        removedItems: List<Int>,
+    ): Flow<List<MarketItem>>
 
     suspend fun getMarketItemById(itemId: Int): Resource<MarketItem?>
 
@@ -38,6 +41,8 @@ interface MarketItemRepository {
     suspend fun upsertMarketItem(newMarketItem: MarketItem): Resource<Boolean>
 
     suspend fun deleteMarketItems(itemIds: List<Int>): Resource<Boolean>
+
+    suspend fun findItemByName(itemName: String, itemId: Int?): Boolean
 
     suspend fun importMarketItemsToDatabase(marketItems: List<MarketItem>): Resource<Boolean>
 }

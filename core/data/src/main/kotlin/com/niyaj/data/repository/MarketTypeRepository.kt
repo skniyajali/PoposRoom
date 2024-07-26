@@ -31,5 +31,7 @@ interface MarketTypeRepository {
 
     suspend fun deleteMarketTypes(items: List<Int>): Resource<Boolean>
 
+    suspend fun findMarketTypeByName(typeName: String, typeId: Int?): Boolean
+
     suspend fun importDataFromFilesToDatabase(data: List<MarketType>): Resource<Boolean>
 }

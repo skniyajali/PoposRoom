@@ -20,32 +20,28 @@ package com.niyaj.data.data.repository
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
-import com.niyaj.common.result.ValidationResult
-import com.niyaj.common.tags.PaymentScreenTags
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.PaymentRepository
-import com.niyaj.data.repository.validation.PaymentValidationRepository
 import com.niyaj.database.dao.PaymentDao
 import com.niyaj.database.model.EmployeeWithPaymentCrossRef
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Employee
 import com.niyaj.model.EmployeeWithPayments
 import com.niyaj.model.Payment
-import com.niyaj.model.PaymentMode
-import com.niyaj.model.PaymentType
 import com.niyaj.model.searchEmployeeWithPayments
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class PaymentRepositoryImpl(
+class PaymentRepositoryImpl @Inject constructor(
     private val paymentDao: PaymentDao,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
-) : PaymentRepository, PaymentValidationRepository {
+) : PaymentRepository {
 
     override fun getAllEmployee(): Flow<List<Employee>> {
         return paymentDao.getAllEmployee().mapLatest { list ->
@@ -83,41 +79,18 @@ class PaymentRepositoryImpl(
 
     override suspend fun upsertPayment(newPayment: Payment): Resource<Boolean> {
         return try {
-            val validateEmployee = validateEmployee(newPayment.employeeId)
-            val validateGivenDate = validateGivenDate(newPayment.paymentDate)
-            val validatePaymentType = validatePaymentType(newPayment.paymentType)
-            val validateSalary = validateGivenAmount(newPayment.paymentAmount)
-            val validateSalaryNote = validatePaymentNote(
-                paymentNote = newPayment.paymentNote,
-                isRequired = newPayment.paymentMode == PaymentMode.Both,
-            )
-            val validatePaymentMode = validatePaymentMode(newPayment.paymentMode)
-
-            val hasError = listOf(
-                validateEmployee,
-                validateSalary,
-                validateSalaryNote,
-                validatePaymentMode,
-                validatePaymentType,
-                validateGivenDate,
-            ).any { !it.successful }
-
-            if (!hasError) {
-                withContext(ioDispatcher) {
-                    val result = withContext(ioDispatcher) {
-                        paymentDao.upsertPayment(newPayment.toEntity())
-                    }
-
-                    if (result > 0) {
-                        paymentDao.upsertEmployeeWithPaymentCrossReference(
-                            EmployeeWithPaymentCrossRef(newPayment.employeeId, result.toInt()),
-                        )
-                    }
-
-                    Resource.Success(result > 0)
+            withContext(ioDispatcher) {
+                val result = withContext(ioDispatcher) {
+                    paymentDao.upsertPayment(newPayment.toEntity())
                 }
-            } else {
-                Resource.Error("Unable to validate employee payment")
+
+                if (result > 0) {
+                    paymentDao.upsertEmployeeWithPaymentCrossReference(
+                        EmployeeWithPaymentCrossRef(newPayment.employeeId, result.toInt()),
+                    )
+                }
+
+                Resource.Success(result > 0)
             }
         } catch (e: Exception) {
             Resource.Error("Unable to add or update employee payment")
@@ -134,94 +107,6 @@ class PaymentRepositoryImpl(
         } catch (e: Exception) {
             Resource.Error("Unable to delete employee payments")
         }
-    }
-
-    override fun validateEmployee(employeeId: Int): ValidationResult {
-        if (employeeId == 0) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = PaymentScreenTags.PAYMENT_EMPLOYEE_NAME_EMPTY,
-            )
-        }
-
-        return ValidationResult(
-            successful = true,
-        )
-    }
-
-    override fun validateGivenDate(givenDate: String): ValidationResult {
-        if (givenDate.isEmpty()) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = PaymentScreenTags.PAYMENT_GIVEN_DATE_EMPTY,
-            )
-        }
-
-        return ValidationResult(
-            successful = true,
-        )
-    }
-
-    override fun validatePaymentMode(paymentMode: PaymentMode): ValidationResult {
-        if (paymentMode.name.isEmpty()) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = PaymentScreenTags.PAYMENT_MODE_EMPTY,
-            )
-        }
-
-        return ValidationResult(true)
-    }
-
-    override fun validateGivenAmount(salary: String): ValidationResult {
-        if (salary.isEmpty()) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = PaymentScreenTags.GIVEN_AMOUNT_EMPTY,
-            )
-        }
-
-        if (salary.length < 2) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = PaymentScreenTags.GIVEN_AMOUNT_LENGTH_ERROR,
-            )
-        }
-
-        if (salary.any { !it.isDigit() }) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = PaymentScreenTags.GIVEN_AMOUNT_LETTER_ERROR,
-            )
-        }
-
-        return ValidationResult(
-            successful = true,
-        )
-    }
-
-    override fun validatePaymentNote(paymentNote: String, isRequired: Boolean): ValidationResult {
-        if (isRequired) {
-            if (paymentNote.isEmpty()) {
-                return ValidationResult(
-                    successful = false,
-                    errorMessage = PaymentScreenTags.PAYMENT_NOTE_EMPTY,
-                )
-            }
-        }
-
-        return ValidationResult(true)
-    }
-
-    override fun validatePaymentType(paymentType: PaymentType): ValidationResult {
-        if (paymentType.name.isEmpty()) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = PaymentScreenTags.PAYMENT_TYPE_EMPTY,
-            )
-        }
-
-        return ValidationResult(true)
     }
 
     override suspend fun importPaymentsToDatabase(payments: List<EmployeeWithPayments>): Resource<Boolean> {
