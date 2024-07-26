@@ -4,11 +4,11 @@ accompanistSwipeRefresh = '0.27.0'
 androidDesugarJdkLibs = "2.0.4"
 androidGradlePlugin = "8.5.1"
 androidTools = "31.5.1"
-androidxActivity = "1.9.0"
+androidxActivity = "1.9.1"
 androidxAppCompat = "1.7.0"
 androidxComposeBom = "2024.06.00"
 androidxComposeUi = "1.6.8"
-androidxComposeUiTest = "1.7.0-beta05"
+androidxComposeUiTest = "1.7.0-beta06"
 androidxComposeRuntime = "1.6.8"
 androidxComposeRuntimeTracing = "1.0.0-beta01"
 androidxComposeMaterial3 = "1.2.1"
@@ -16,7 +16,7 @@ androidxCore = "1.13.1"
 androidxCoreSplashscreen = "1.0.1"
 androidxEspresso = "3.6.1"
 androidxHiltNavigationCompose = "1.2.0"
-androidxLifecycle = "2.8.3"
+androidxLifecycle = "2.8.4"
 androidxMacroBenchmark = "1.2.4"
 androidxMetrics = "1.0.0-beta01"
 androidxNavigation = "2.7.7"
@@ -63,8 +63,8 @@ room = "2.6.1"
 robolectric = "4.12.2"
 roborazzi = "1.20.0"
 secrets = "2.0.1"
-sentryVersion = '4.6.0'
-sentryAndroidVersion = '7.9.0'
+sentryVersion = '4.10.0'
+sentryAndroidVersion = '7.12.1'
 turbine = "1.1.0"
 timberVersion = '5.0.1'
 vanpraComposeVersion = '0.9.0'
@@ -281,6 +281,7 @@ protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 room = { id = "androidx.room", version.ref = "room" }
 sentry = { id = "io.sentry.android.gradle", version.ref = "sentryVersion" }
+sentry-kotlin = { id = "io.sentry.kotlin.compiler.gradle", version.ref = "sentryVersion" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
 compiler-report = { id = "dev.shreyaspatil.compose-compiler-report-generator", version.ref = "compiler-report"}
 
