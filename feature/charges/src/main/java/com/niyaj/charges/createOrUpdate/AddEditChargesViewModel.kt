@@ -30,7 +30,8 @@ import com.niyaj.common.utils.safeInt
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.ChargesRepository
-import com.niyaj.data.repository.validation.ChargesValidationRepository
+import com.niyaj.domain.charges.ValidateChargesNameUseCase
+import com.niyaj.domain.charges.ValidateChargesPriceUseCase
 import com.niyaj.model.Charges
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,7 +49,8 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddEditChargesViewModel @Inject constructor(
     private val chargesRepository: ChargesRepository,
-    private val validationRepository: ChargesValidationRepository,
+    private val validateChargesName: ValidateChargesNameUseCase,
+    private val validateChargesPrice: ValidateChargesPriceUseCase,
     private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -68,7 +70,7 @@ class AddEditChargesViewModel @Inject constructor(
 
     val nameError: StateFlow<String?> = snapshotFlow { addEditState.chargesName }
         .mapLatest {
-            validationRepository.validateChargesName(it, chargesId).errorMessage
+            validateChargesName(it, chargesId).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -77,7 +79,7 @@ class AddEditChargesViewModel @Inject constructor(
 
     val priceError: StateFlow<String?> = snapshotFlow { addEditState.chargesPrice }
         .mapLatest {
-            validationRepository.validateChargesPrice(it).errorMessage
+            validateChargesPrice(it).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),

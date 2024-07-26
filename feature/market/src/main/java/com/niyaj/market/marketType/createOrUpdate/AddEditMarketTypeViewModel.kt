@@ -30,7 +30,9 @@ import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.MarketTypeRepository
-import com.niyaj.data.repository.validation.MarketTypeValidationRepository
+import com.niyaj.domain.market.ValidateListTypeUseCase
+import com.niyaj.domain.market.ValidateListTypesUseCase
+import com.niyaj.domain.market.ValidateTypeNameUseCase
 import com.niyaj.model.MarketType
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,7 +47,9 @@ import javax.inject.Inject
 @HiltViewModel
 class AddEditMarketTypeViewModel @Inject constructor(
     private val repository: MarketTypeRepository,
-    private val validationRepository: MarketTypeValidationRepository,
+    private val validateTypeName: ValidateTypeNameUseCase,
+    private val validateListType: ValidateListTypeUseCase,
+    private val validateListTypes: ValidateListTypesUseCase,
     private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -76,7 +80,7 @@ class AddEditMarketTypeViewModel @Inject constructor(
     }
 
     val typeNameError = snapshotFlow { state.typeName }.mapLatest {
-        validationRepository.validateTypeName(it, typeId).errorMessage
+        validateTypeName(it, typeId).errorMessage
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -84,7 +88,7 @@ class AddEditMarketTypeViewModel @Inject constructor(
     )
 
     val listNameError = snapshotFlow { state.listType }.mapLatest {
-        validationRepository.validateListType(it).errorMessage
+        validateListType(it).errorMessage
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -92,7 +96,7 @@ class AddEditMarketTypeViewModel @Inject constructor(
     )
 
     val listTypesError = snapshotFlow { selectedTypes.size }.mapLatest {
-        validationRepository.validateListTypes(selectedTypes.toList()).errorMessage
+        validateListTypes(selectedTypes.toList()).errorMessage
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -215,9 +219,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateMarketType(data: Int, message: St
     logEvent(
         event = AnalyticsEvent(
             type = "market_type_$message",
-            extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("market_type_$message", data.toString()),
-            ),
+            extras = listOf(AnalyticsEvent.Param("market_type_$message", data.toString())),
         ),
     )
 }

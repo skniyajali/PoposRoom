@@ -20,19 +20,8 @@ package com.niyaj.data.data.repository
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
-import com.niyaj.common.result.ValidationResult
-import com.niyaj.common.tags.MeasureUnitTestTags
-import com.niyaj.common.tags.MeasureUnitTestTags.UNIT_NAME_ALREADY_EXIST_ERROR
-import com.niyaj.common.tags.MeasureUnitTestTags.UNIT_NAME_DIGIT_ERROR
-import com.niyaj.common.tags.MeasureUnitTestTags.UNIT_NAME_EMPTY_ERROR
-import com.niyaj.common.tags.MeasureUnitTestTags.UNIT_NAME_LENGTH_ERROR
-import com.niyaj.common.tags.MeasureUnitTestTags.UNIT_VALUE_EMPTY_ERROR
-import com.niyaj.common.tags.MeasureUnitTestTags.UNIT_VALUE_INVALID
-import com.niyaj.common.utils.safeDouble
-import com.niyaj.common.utils.safeString
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.MeasureUnitRepository
-import com.niyaj.data.repository.validation.MeasureUnitValidationRepository
 import com.niyaj.database.dao.MeasureUnitDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.MeasureUnit
@@ -47,7 +36,7 @@ class MeasureUnitRepositoryImpl @Inject constructor(
     private val measureUnitDao: MeasureUnitDao,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
-) : MeasureUnitRepository, MeasureUnitValidationRepository {
+) : MeasureUnitRepository {
     override suspend fun getAllMeasureUnits(searchText: String): Flow<List<MeasureUnit>> {
         return withContext(ioDispatcher) {
             measureUnitDao.getAllMeasureUnits().mapLatest { list ->
@@ -72,18 +61,11 @@ class MeasureUnitRepositoryImpl @Inject constructor(
 
     override suspend fun upsertMeasureUnit(newUnit: MeasureUnit): Resource<Boolean> {
         return try {
-            val validateUnitName = validateUnitName(newUnit.unitName, newUnit.unitId)
-            val validateUnitValue = validateUnitValue(newUnit.unitValue.safeString)
-
-            if (listOf(validateUnitName, validateUnitValue).all { it.successful }) {
-                val result = withContext(ioDispatcher) {
-                    measureUnitDao.upsertMeasureUnit(newUnit.toEntity())
-                }
-
-                Resource.Success(result > 0)
-            } else {
-                Resource.Error("Unable to validate items")
+            val result = withContext(ioDispatcher) {
+                measureUnitDao.upsertMeasureUnit(newUnit.toEntity())
             }
+
+            Resource.Success(result > 0)
         } catch (e: Exception) {
             Resource.Error(e.message)
         }
@@ -101,6 +83,12 @@ class MeasureUnitRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun findMeasureUnitByName(unitName: String, unitId: Int?): Boolean {
+        return withContext(ioDispatcher) {
+            measureUnitDao.findMeasureUnitByName(unitName, unitId) != null
+        }
+    }
+
     override suspend fun importDataFromFilesToDatabase(units: List<MeasureUnit>): Resource<Boolean> {
         return try {
             units.forEach {
@@ -111,45 +99,5 @@ class MeasureUnitRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Resource.Error(e.message)
         }
-    }
-
-    override suspend fun validateUnitName(unitName: String, unitId: Int?): ValidationResult {
-        if (unitName.isEmpty()) {
-            return ValidationResult(false, UNIT_NAME_EMPTY_ERROR)
-        }
-
-        if (unitName.any { it.isDigit() }) {
-            return ValidationResult(false, UNIT_NAME_DIGIT_ERROR)
-        }
-
-        if (unitName.length < 2) {
-            return ValidationResult(false, UNIT_NAME_LENGTH_ERROR)
-        }
-
-        val result = withContext(ioDispatcher) {
-            measureUnitDao.findMeasureUnitByName(unitName, unitId)
-        }
-
-        if (result != null) {
-            return ValidationResult(false, UNIT_NAME_ALREADY_EXIST_ERROR)
-        }
-
-        return ValidationResult(true)
-    }
-
-    override fun validateUnitValue(unitValue: String): ValidationResult {
-        if (unitValue.isEmpty()) {
-            return ValidationResult(false, UNIT_VALUE_EMPTY_ERROR)
-        }
-
-        try {
-            if (unitValue.safeDouble() <= 0) {
-                return ValidationResult(false, MeasureUnitTestTags.UNIT_VALUE_LESS_THAN_FIVE_ERROR)
-            }
-        } catch (e: Exception) {
-            return ValidationResult(false, UNIT_VALUE_INVALID)
-        }
-
-        return ValidationResult(true)
     }
 }

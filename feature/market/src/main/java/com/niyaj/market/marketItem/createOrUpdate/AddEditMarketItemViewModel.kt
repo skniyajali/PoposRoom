@@ -30,7 +30,10 @@ import com.niyaj.common.utils.safeString
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.MarketItemRepository
-import com.niyaj.data.repository.validation.MarketItemValidationRepository
+import com.niyaj.domain.market.ValidateItemTypeUseCase
+import com.niyaj.domain.market.ValidateMarketItemNameUseCase
+import com.niyaj.domain.market.ValidateMarketItemPriceUseCase
+import com.niyaj.domain.market.ValidateMeasureUnitUseCase
 import com.niyaj.model.MarketItem
 import com.niyaj.model.MeasureUnit
 import com.niyaj.ui.utils.UiEvent
@@ -47,7 +50,10 @@ import javax.inject.Inject
 @HiltViewModel
 class AddEditMarketItemViewModel @Inject constructor(
     private val repository: MarketItemRepository,
-    private val validationRepository: MarketItemValidationRepository,
+    private val validateItemName: ValidateMarketItemNameUseCase,
+    private val validateItemPrice: ValidateMarketItemPriceUseCase,
+    private val validateItemType: ValidateItemTypeUseCase,
+    private val validateMeasureUnit: ValidateMeasureUnitUseCase,
     private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -82,7 +88,7 @@ class AddEditMarketItemViewModel @Inject constructor(
     )
 
     val typeError = snapshotFlow { state.marketType }.mapLatest {
-        validationRepository.validateItemType(it.typeId).errorMessage
+        validateItemType(it.typeId).errorMessage
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
@@ -90,7 +96,7 @@ class AddEditMarketItemViewModel @Inject constructor(
     )
 
     val nameError = snapshotFlow { state.itemName }.mapLatest {
-        validationRepository.validateItemName(it, itemId).errorMessage
+        validateItemName(it, itemId).errorMessage
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
@@ -98,7 +104,7 @@ class AddEditMarketItemViewModel @Inject constructor(
     )
 
     val priceError = snapshotFlow { state.itemPrice }.mapLatest {
-        validationRepository.validateItemPrice(it).errorMessage
+        validateItemPrice(it).errorMessage
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
@@ -106,7 +112,7 @@ class AddEditMarketItemViewModel @Inject constructor(
     )
 
     val unitError = snapshotFlow { state.itemMeasureUnit }.mapLatest {
-        validationRepository.validateItemMeasureUnit(it.unitId).errorMessage
+        validateMeasureUnit(it.unitId).errorMessage
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
@@ -202,9 +208,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateMarketItem(data: Int, message: St
     logEvent(
         event = AnalyticsEvent(
             type = "market_item_$message",
-            extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("market_item_$message", data.toString()),
-            ),
+            extras = listOf(AnalyticsEvent.Param("market_item_$message", data.toString())),
         ),
     )
 }

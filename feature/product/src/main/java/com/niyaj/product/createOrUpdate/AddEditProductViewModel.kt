@@ -32,7 +32,10 @@ import com.niyaj.common.utils.safeString
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.ProductRepository
-import com.niyaj.data.repository.validation.ProductValidationRepository
+import com.niyaj.domain.product.ValidateProductCategoryUseCase
+import com.niyaj.domain.product.ValidateProductNameUseCase
+import com.niyaj.domain.product.ValidateProductPriceUseCase
+import com.niyaj.domain.product.ValidateProductTagUseCase
 import com.niyaj.model.Category
 import com.niyaj.model.Product
 import com.niyaj.ui.utils.UiEvent
@@ -51,7 +54,10 @@ import javax.inject.Inject
 @HiltViewModel
 class AddEditProductViewModel @Inject constructor(
     private val productRepository: ProductRepository,
-    private val validationRepository: ProductValidationRepository,
+    private val validateProductCategory: ValidateProductCategoryUseCase,
+    private val validateProductName: ValidateProductNameUseCase,
+    private val validateProductTag: ValidateProductTagUseCase,
+    private val validateProductPrice: ValidateProductPriceUseCase,
     private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -80,7 +86,7 @@ class AddEditProductViewModel @Inject constructor(
 
     val categoryError: StateFlow<String?> = _selectedCategory
         .mapLatest {
-            validationRepository.validateCategoryId(it.categoryId).errorMessage
+            validateProductCategory(it.categoryId).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -89,7 +95,7 @@ class AddEditProductViewModel @Inject constructor(
 
     val nameError: StateFlow<String?> = snapshotFlow { state.productName }
         .mapLatest {
-            validationRepository.validateProductName(it, productId).errorMessage
+            validateProductName(it, productId).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -98,7 +104,7 @@ class AddEditProductViewModel @Inject constructor(
 
     val priceError: StateFlow<String?> = snapshotFlow { state.productPrice }
         .mapLatest {
-            validationRepository.validateProductPrice(safeString(it)).errorMessage
+            validateProductPrice(safeString(it)).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -106,7 +112,7 @@ class AddEditProductViewModel @Inject constructor(
         )
 
     val tagError = snapshotFlow { state.tagName }.mapLatest {
-        validationRepository.validateProductTag(it).errorMessage
+        validateProductTag(it).errorMessage
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),

@@ -21,20 +21,13 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
 import com.niyaj.common.result.ValidationResult
-import com.niyaj.common.tags.CartOrderTestTags.ADDRESS_NAME_INVALID
-import com.niyaj.common.tags.CartOrderTestTags.ADDRESS_NAME_LENGTH_ERROR
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_NAME_EMPTY_ERROR
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_NAME_ERROR
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_PHONE_EMPTY_ERROR
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_PHONE_ERROR
-import com.niyaj.common.tags.CartOrderTestTags.CUSTOMER_PHONE_LENGTH_ERROR
-import com.niyaj.common.tags.CartOrderTestTags.CUSTOMER_PHONE_LETTER_ERROR
-import com.niyaj.common.tags.CartOrderTestTags.ORDER_PRICE_LESS_THAN_TWO_ERROR
-import com.niyaj.common.tags.CartOrderTestTags.ORDER_SHORT_NAME_EMPTY_ERROR
 import com.niyaj.common.utils.toDate
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.CartOrderRepository
-import com.niyaj.data.repository.validation.CartOrderValidationRepository
 import com.niyaj.database.dao.AddressDao
 import com.niyaj.database.dao.CartDao
 import com.niyaj.database.dao.CartOrderDao
@@ -81,7 +74,7 @@ class CartOrderRepositoryImpl @Inject constructor(
     private val cartPriceDao: CartPriceDao,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
-) : CartOrderRepository, CartOrderValidationRepository {
+) : CartOrderRepository {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getAllProcessingCartOrders(): Flow<List<CartOrder>> {
@@ -301,20 +294,8 @@ class CartOrderRepositoryImpl @Inject constructor(
     override suspend fun addOrIgnoreAddress(newAddress: Address): Int {
         return try {
             withContext(ioDispatcher) {
-                val validateAddressName = validateAddressName(newAddress.addressName)
-                val validateAddressShortName = validateAddressShortName(newAddress.shortName)
-
-                val hasError =
-                    listOf(validateAddressName, validateAddressShortName).any { !it.successful }
-
-                if (!hasError) {
-                    withContext(ioDispatcher) {
-                        addressDao.getAddressByName(newAddress.addressName)
-                            ?: addressDao.insertOrIgnoreAddress(newAddress.toEntity()).toInt()
-                    }
-                } else {
-                    0
-                }
+                addressDao.getAddressByName(newAddress.addressName)
+                    ?: addressDao.insertOrIgnoreAddress(newAddress.toEntity()).toInt()
             }
         } catch (e: Exception) {
             0
@@ -324,14 +305,8 @@ class CartOrderRepositoryImpl @Inject constructor(
     override suspend fun addOrIgnoreCustomer(newCustomer: Customer): Int {
         return try {
             withContext(ioDispatcher) {
-                val validateCustomerPhone = validateCustomerPhone(newCustomer.customerPhone)
-
-                if (validateCustomerPhone.successful) {
-                    customerDao.getCustomerByPhone(newCustomer.customerPhone)
-                        ?: customerDao.insertOrIgnoreCustomer(newCustomer.toEntity()).toInt()
-                } else {
-                    0
-                }
+                customerDao.getCustomerByPhone(newCustomer.customerPhone)
+                    ?: customerDao.insertOrIgnoreCustomer(newCustomer.toEntity()).toInt()
             }
         } catch (e: Exception) {
             0
@@ -479,84 +454,6 @@ class CartOrderRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun validateCustomerPhone(customerPhone: String): ValidationResult {
-        if (customerPhone.isEmpty()) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = CART_ORDER_PHONE_EMPTY_ERROR,
-            )
-        }
-
-        if (customerPhone.length < 10 || customerPhone.length > 10) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = CUSTOMER_PHONE_LENGTH_ERROR,
-            )
-        }
-
-        val containsLetters = customerPhone.any { it.isLetter() }
-
-        if (containsLetters) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = CUSTOMER_PHONE_LETTER_ERROR,
-            )
-        }
-
-        return ValidationResult(
-            successful = true,
-        )
-    }
-
-    override suspend fun validateAddressName(addressName: String): ValidationResult {
-        val addressRegex = """^\S+(?:\s+\S+)+$""".toRegex()
-
-        if (addressName.isEmpty()) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = CART_ORDER_NAME_EMPTY_ERROR,
-            )
-        }
-
-        if (addressName.length < 6) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = ADDRESS_NAME_LENGTH_ERROR,
-            )
-        }
-
-        if (!addressName.matches(addressRegex)) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = ADDRESS_NAME_INVALID,
-            )
-        }
-
-        return ValidationResult(
-            successful = true,
-        )
-    }
-
-    override fun validateAddressShortName(addressShortName: String): ValidationResult {
-        if (addressShortName.isEmpty()) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = ORDER_SHORT_NAME_EMPTY_ERROR,
-            )
-        }
-
-        if (addressShortName.length < 2) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = ORDER_PRICE_LESS_THAN_TWO_ERROR,
-            )
-        }
-
-        return ValidationResult(
-            successful = true,
-        )
-    }
-
     private fun validateCustomerAddress(orderType: OrderType, addressId: Int): ValidationResult {
         if (orderType != OrderType.DineIn) {
             if (addressId == 0) {
@@ -574,9 +471,7 @@ class CartOrderRepositoryImpl @Inject constructor(
             }
         }
 
-        return ValidationResult(
-            successful = true,
-        )
+        return ValidationResult(successful = true)
     }
 
     private fun validateCustomerPhone(orderType: OrderType, customerId: Int): ValidationResult {

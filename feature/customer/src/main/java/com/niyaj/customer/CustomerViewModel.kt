@@ -23,7 +23,7 @@ import com.niyaj.common.result.Resource
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CustomerRepository
-import com.niyaj.domain.DeleteCustomersUseCase
+import com.niyaj.domain.customer.DeleteCustomersUseCase
 import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
@@ -93,9 +93,7 @@ internal fun AnalyticsHelper.logDeletedCustomers(data: List<Int>) {
     logEvent(
         event = AnalyticsEvent(
             type = "customer_deleted",
-            extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("customer_deleted", data.toString()),
-            ),
+            extras = listOf(AnalyticsEvent.Param("customer_deleted", data.toString())),
         ),
     )
 }

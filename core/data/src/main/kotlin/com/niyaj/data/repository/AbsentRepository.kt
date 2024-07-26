@@ -37,5 +37,7 @@ interface AbsentRepository {
 
     suspend fun deleteAbsents(absentIds: List<Int>): Resource<Boolean>
 
+    suspend fun findEmployeeByDate(absentDate: String, employeeId: Int, absentId: Int?): Boolean
+
     suspend fun importAbsentDataToDatabase(absentees: List<EmployeeWithAbsents>): Resource<Boolean>
 }

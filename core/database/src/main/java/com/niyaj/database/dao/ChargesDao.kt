@@ -81,12 +81,12 @@ interface ChargesDao {
 
     @Query(
         value = """
-        SELECT * FROM charges WHERE
+        SELECT chargesId FROM charges WHERE
             CASE WHEN :chargesId IS NULL OR :chargesId = 0
             THEN chargesName = :chargesName
             ELSE chargesId != :chargesId AND chargesName = :chargesName
             END LIMIT 1
     """,
     )
-    fun findChargesByName(chargesId: Int?, chargesName: String): ChargesEntity?
+    fun findChargesByName(chargesName: String, chargesId: Int?): Int?
 }

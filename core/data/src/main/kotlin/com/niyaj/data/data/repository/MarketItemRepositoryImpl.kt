@@ -20,18 +20,8 @@ package com.niyaj.data.data.repository
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
-import com.niyaj.common.result.ValidationResult
-import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_MEASURE_EMPTY_ERROR
-import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_NAME_ALREADY_EXIST_ERROR
-import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_NAME_DIGIT_ERROR
-import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_NAME_EMPTY_ERROR
-import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_NAME_LENGTH_ERROR
-import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_PRICE_INVALID
-import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_PRICE_LESS_THAN_FIVE_ERROR
-import com.niyaj.common.tags.MarketListTestTags.MARKET_ITEM_TYPE_EMPTY_ERROR
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.MarketItemRepository
-import com.niyaj.data.repository.validation.MarketItemValidationRepository
 import com.niyaj.database.dao.MarketItemDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.MarketItem
@@ -49,7 +39,7 @@ class MarketItemRepositoryImpl @Inject constructor(
     private val marketItemDao: MarketItemDao,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
-) : MarketItemRepository, MarketItemValidationRepository {
+) : MarketItemRepository {
 
     override suspend fun getAllMarketItems(searchText: String): Flow<List<MarketItem>> {
         return withContext(ioDispatcher) {
@@ -114,25 +104,9 @@ class MarketItemRepositoryImpl @Inject constructor(
     override suspend fun upsertMarketItem(newMarketItem: MarketItem): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
-                val validateItemType = validateItemType(newMarketItem.itemType.typeId)
-                val validateName = validateItemName(newMarketItem.itemName, newMarketItem.itemId)
-                val validatePrice = validateItemPrice(newMarketItem.itemPrice)
-                val validateItemUnit = validateItemMeasureUnit(newMarketItem.itemMeasureUnit.unitId)
+                val result = marketItemDao.upsertMarketItem(newMarketItem.toEntity())
 
-                val hasError = listOf(
-                    validateItemType,
-                    validateName,
-                    validatePrice,
-                    validateItemUnit,
-                ).any { !it.successful }
-
-                if (!hasError) {
-                    val result = marketItemDao.upsertMarketItem(newMarketItem.toEntity())
-
-                    Resource.Success(result > 0)
-                } else {
-                    Resource.Error("Unable to create or update item")
-                }
+                Resource.Success(result > 0)
             }
         } catch (e: Exception) {
             Resource.Error(e.message)
@@ -151,6 +125,12 @@ class MarketItemRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun findItemByName(itemName: String, itemId: Int?): Boolean {
+        return withContext(ioDispatcher) {
+            marketItemDao.findItemByName(itemName, itemId) != null
+        }
+    }
+
     override suspend fun importMarketItemsToDatabase(marketItems: List<MarketItem>): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
@@ -163,86 +143,5 @@ class MarketItemRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Resource.Error(e.message)
         }
-    }
-
-    override fun validateItemType(typeId: Int): ValidationResult {
-        if (typeId == 0) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = MARKET_ITEM_TYPE_EMPTY_ERROR,
-            )
-        }
-
-        return ValidationResult(successful = true)
-    }
-
-    override suspend fun validateItemName(itemName: String, itemId: Int?): ValidationResult {
-        if (itemName.isEmpty()) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = MARKET_ITEM_NAME_EMPTY_ERROR,
-            )
-        }
-
-        if (itemName.length < 3) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = MARKET_ITEM_NAME_LENGTH_ERROR,
-            )
-        }
-
-        val result = itemName.any { it.isDigit() }
-
-        if (result) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = MARKET_ITEM_NAME_DIGIT_ERROR,
-            )
-        }
-
-        val serverResult = withContext(ioDispatcher) {
-//            marketItemDao.findItemByName(itemName, itemId) != null
-            false
-        }
-
-        if (serverResult) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = MARKET_ITEM_NAME_ALREADY_EXIST_ERROR,
-            )
-        }
-
-        return ValidationResult(successful = true)
-    }
-
-    override fun validateItemMeasureUnit(unitId: Int): ValidationResult {
-        if (unitId == 0) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = MARKET_ITEM_MEASURE_EMPTY_ERROR,
-            )
-        }
-
-        return ValidationResult(successful = true)
-    }
-
-    override fun validateItemPrice(itemPrice: String?): ValidationResult {
-        itemPrice?.let { price ->
-            if (price.any { it.isLetter() }) {
-                return ValidationResult(
-                    successful = false,
-                    errorMessage = MARKET_ITEM_PRICE_INVALID,
-                )
-            }
-
-            if (price.toInt() <= 5) {
-                return ValidationResult(
-                    successful = false,
-                    errorMessage = MARKET_ITEM_PRICE_LESS_THAN_FIVE_ERROR,
-                )
-            }
-        }
-
-        return ValidationResult(successful = true)
     }
 }

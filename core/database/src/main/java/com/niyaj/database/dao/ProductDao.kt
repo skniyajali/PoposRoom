@@ -83,14 +83,14 @@ interface ProductDao {
 
     @Query(
         value = """
-        SELECT * FROM product WHERE
+        SELECT productId FROM product WHERE
             CASE WHEN :productId IS NULL OR :productId = 0
             THEN productName = :productName
             ELSE productId != :productId AND productName = :productName
             END LIMIT 1
     """,
     )
-    fun findProductByName(productName: String, productId: Int?): ProductEntity?
+    fun findProductByName(productName: String, productId: Int?): Int?
 
     @Query(
         value = """

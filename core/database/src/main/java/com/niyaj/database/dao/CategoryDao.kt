@@ -80,12 +80,12 @@ interface CategoryDao {
 
     @Query(
         value = """
-        SELECT * FROM category WHERE
+        SELECT categoryId FROM category WHERE
             CASE WHEN :categoryId IS NULL OR :categoryId = 0
             THEN categoryName = :categoryName
             ELSE categoryId != :categoryId AND categoryName = :categoryName
             END LIMIT 1
     """,
     )
-    fun findCategoryByName(categoryName: String, categoryId: Int?): CategoryEntity?
+    fun findCategoryByName(categoryName: String, categoryId: Int?): Int?
 }

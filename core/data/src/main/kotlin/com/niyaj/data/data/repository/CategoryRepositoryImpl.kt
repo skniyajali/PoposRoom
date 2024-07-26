@@ -20,11 +20,8 @@ package com.niyaj.data.data.repository
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.common.result.Resource
-import com.niyaj.common.result.ValidationResult
-import com.niyaj.common.tags.CategoryConstants
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.CategoryRepository
-import com.niyaj.data.repository.validation.CategoryValidationRepository
 import com.niyaj.database.dao.CategoryDao
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Category
@@ -39,7 +36,7 @@ class CategoryRepositoryImpl @Inject constructor(
     private val categoryDao: CategoryDao,
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
-) : CategoryRepository, CategoryValidationRepository {
+) : CategoryRepository {
 
     override suspend fun getAllCategory(searchText: String): Flow<List<Category>> {
         return withContext(ioDispatcher) {
@@ -64,16 +61,9 @@ class CategoryRepositoryImpl @Inject constructor(
     override suspend fun upsertCategory(newCategory: Category): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
-                val validateCategoryName =
-                    validateCategoryName(newCategory.categoryName, newCategory.categoryId)
+                val result = categoryDao.upsertCategory(newCategory.toEntity())
 
-                if (validateCategoryName.successful) {
-                    val result = categoryDao.upsertCategory(newCategory.toEntity())
-
-                    Resource.Success(result > 0)
-                } else {
-                    Resource.Error(validateCategoryName.errorMessage ?: "Unable")
-                }
+                Resource.Success(result > 0)
             }
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Unable")
@@ -94,52 +84,17 @@ class CategoryRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun validateCategoryName(
-        categoryName: String,
-        categoryId: Int?,
-    ): ValidationResult {
-        if (categoryName.isEmpty()) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = CategoryConstants.CATEGORY_NAME_EMPTY_ERROR,
-            )
-        }
-
-        if (categoryName.length < 3) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = CategoryConstants.CATEGORY_NAME_LENGTH_ERROR,
-            )
-        }
-
-        val serverResult = withContext(ioDispatcher) {
+    override suspend fun findCategoryByName(categoryName: String, categoryId: Int?): Boolean {
+        return withContext(ioDispatcher) {
             categoryDao.findCategoryByName(categoryName, categoryId) != null
         }
-
-        if (serverResult) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = CategoryConstants.CATEGORY_NAME_ALREADY_EXIST_ERROR,
-            )
-        }
-
-        return ValidationResult(
-            successful = true,
-        )
     }
 
     override suspend fun importCategoriesToDatabase(categories: List<Category>): Resource<Boolean> {
         try {
             categories.forEach { category ->
-                val validateCategoryName =
-                    validateCategoryName(category.categoryName, category.categoryId)
-
-                if (validateCategoryName.successful) {
-                    withContext(ioDispatcher) {
-                        categoryDao.upsertCategory(category.toEntity())
-                    }
-                } else {
-                    return Resource.Error(validateCategoryName.errorMessage ?: "Unable")
+                withContext(ioDispatcher) {
+                    categoryDao.upsertCategory(category.toEntity())
                 }
             }
 

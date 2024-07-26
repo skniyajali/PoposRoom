@@ -29,7 +29,8 @@ import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.AbsentRepository
-import com.niyaj.data.repository.validation.AbsentValidationRepository
+import com.niyaj.domain.absent.ValidateAbsentDateUseCase
+import com.niyaj.domain.absent.ValidateAbsentEmployeeUseCase
 import com.niyaj.model.Absent
 import com.niyaj.model.Employee
 import com.niyaj.ui.utils.UiEvent
@@ -51,7 +52,8 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddEditAbsentViewModel @Inject constructor(
     private val absentRepository: AbsentRepository,
-    private val validationRepository: AbsentValidationRepository,
+    private val validateAbsentDate: ValidateAbsentDateUseCase,
+    private val validateAbsentEmployee: ValidateAbsentEmployeeUseCase,
     private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -84,7 +86,7 @@ class AddEditAbsentViewModel @Inject constructor(
 
     val employeeError: StateFlow<String?> = _selectedEmployee
         .mapLatest {
-            validationRepository.validateAbsentEmployee(it.employeeId).errorMessage
+            validateAbsentEmployee(it.employeeId).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -94,7 +96,7 @@ class AddEditAbsentViewModel @Inject constructor(
     private val observeDate = snapshotFlow { state.absentDate }
 
     val dateError = _selectedEmployee.combine(observeDate) { emp, date ->
-        validationRepository.validateAbsentDate(
+        validateAbsentDate(
             absentDate = date,
             employeeId = emp.employeeId,
             absentId = absentId,

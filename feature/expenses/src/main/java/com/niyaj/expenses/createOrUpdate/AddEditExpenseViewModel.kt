@@ -30,7 +30,9 @@ import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.ExpenseRepository
-import com.niyaj.data.repository.ExpenseValidationRepository
+import com.niyaj.domain.expense.ValidateExpenseAmountUseCase
+import com.niyaj.domain.expense.ValidateExpenseDateUseCase
+import com.niyaj.domain.expense.ValidateExpenseNameUseCase
 import com.niyaj.model.Expense
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -50,7 +52,9 @@ import javax.inject.Inject
 @HiltViewModel
 class AddEditExpenseViewModel @Inject constructor(
     private val expenseRepository: ExpenseRepository,
-    private val validationRepository: ExpenseValidationRepository,
+    private val validateExpenseAmount: ValidateExpenseAmountUseCase,
+    private val validateExpenseDate: ValidateExpenseDateUseCase,
+    private val validateExpenseName: ValidateExpenseNameUseCase,
     private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -72,7 +76,7 @@ class AddEditExpenseViewModel @Inject constructor(
     }
 
     val nameError: StateFlow<String?> = observableName.mapLatest {
-        validationRepository.validateExpenseName(it).errorMessage
+        validateExpenseName(it).errorMessage
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -81,7 +85,7 @@ class AddEditExpenseViewModel @Inject constructor(
 
     val priceError: StateFlow<String?> = snapshotFlow { state.expenseAmount }
         .mapLatest {
-            validationRepository.validateExpenseAmount(it).errorMessage
+            validateExpenseAmount(it).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -89,7 +93,7 @@ class AddEditExpenseViewModel @Inject constructor(
         )
 
     val dateError: StateFlow<String?> = observableDate.mapLatest {
-        validationRepository.validateExpenseDate(it).errorMessage
+        validateExpenseDate(it).errorMessage
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),

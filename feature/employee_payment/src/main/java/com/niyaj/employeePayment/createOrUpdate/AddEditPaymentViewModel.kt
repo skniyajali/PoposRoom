@@ -28,7 +28,12 @@ import com.niyaj.common.result.Resource
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.PaymentRepository
-import com.niyaj.data.repository.validation.PaymentValidationRepository
+import com.niyaj.domain.payment.ValidateGivenAmountUseCase
+import com.niyaj.domain.payment.ValidateGivenDateUseCase
+import com.niyaj.domain.payment.ValidatePaymentEmployeeUseCase
+import com.niyaj.domain.payment.ValidatePaymentModeUseCase
+import com.niyaj.domain.payment.ValidatePaymentNoteUseCase
+import com.niyaj.domain.payment.ValidatePaymentTypeUseCase
 import com.niyaj.model.Employee
 import com.niyaj.model.Payment
 import com.niyaj.model.PaymentMode
@@ -50,7 +55,12 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddEditPaymentViewModel @Inject constructor(
     private val paymentRepository: PaymentRepository,
-    private val validationRepository: PaymentValidationRepository,
+    private val validateGivenAmount: ValidateGivenAmountUseCase,
+    private val validateGivenDate: ValidateGivenDateUseCase,
+    private val validatePaymentEmployee: ValidatePaymentEmployeeUseCase,
+    private val validatePaymentMode: ValidatePaymentModeUseCase,
+    private val validatePaymentNote: ValidatePaymentNoteUseCase,
+    private val validatePaymentType: ValidatePaymentTypeUseCase,
     private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -83,7 +93,7 @@ class AddEditPaymentViewModel @Inject constructor(
 
     val employeeError: StateFlow<String?> = _selectedEmployee
         .mapLatest {
-            validationRepository.validateEmployee(it.employeeId).errorMessage
+            validatePaymentEmployee(it.employeeId).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -92,7 +102,7 @@ class AddEditPaymentViewModel @Inject constructor(
 
     val amountError: StateFlow<String?> = snapshotFlow { state.paymentAmount }
         .mapLatest {
-            validationRepository.validateGivenAmount(it).errorMessage
+            validateGivenAmount(it).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -101,7 +111,7 @@ class AddEditPaymentViewModel @Inject constructor(
 
     val dateError: StateFlow<String?> = snapshotFlow { state.paymentDate }
         .mapLatest {
-            validationRepository.validateGivenDate(it).errorMessage
+            validateGivenDate(it).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -110,7 +120,7 @@ class AddEditPaymentViewModel @Inject constructor(
 
     val paymentTypeError: StateFlow<String?> = snapshotFlow { state.paymentType }
         .mapLatest {
-            validationRepository.validatePaymentType(it).errorMessage
+            validatePaymentType(it).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -119,7 +129,7 @@ class AddEditPaymentViewModel @Inject constructor(
 
     val paymentModeError: StateFlow<String?> = snapshotFlow { state.paymentMode }
         .mapLatest {
-            validationRepository.validatePaymentMode(it).errorMessage
+            validatePaymentMode(it).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -128,7 +138,7 @@ class AddEditPaymentViewModel @Inject constructor(
 
     val paymentNoteError: StateFlow<String?> = snapshotFlow { state.paymentMode }
         .mapLatest {
-            validationRepository.validatePaymentNote(
+            validatePaymentNote(
                 paymentNote = state.paymentNote,
                 isRequired = it == PaymentMode.Both,
             ).errorMessage

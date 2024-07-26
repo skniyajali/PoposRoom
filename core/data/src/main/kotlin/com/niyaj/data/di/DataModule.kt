@@ -41,7 +41,6 @@ import com.niyaj.data.data.repository.OrderRepositoryImpl
 import com.niyaj.data.data.repository.PaymentRepositoryImpl
 import com.niyaj.data.data.repository.PrintRepositoryImpl
 import com.niyaj.data.data.repository.PrinterRepositoryImpl
-import com.niyaj.data.data.repository.PrinterValidationRepositoryImpl
 import com.niyaj.data.data.repository.ProductRepositoryImpl
 import com.niyaj.data.data.repository.ProfileRepositoryImpl
 import com.niyaj.data.data.repository.ReportsRepositoryImpl
@@ -58,9 +57,7 @@ import com.niyaj.data.repository.ChargesRepository
 import com.niyaj.data.repository.CustomerRepository
 import com.niyaj.data.repository.DataDeletionRepository
 import com.niyaj.data.repository.EmployeeRepository
-import com.niyaj.data.repository.EmployeeValidationRepository
 import com.niyaj.data.repository.ExpenseRepository
-import com.niyaj.data.repository.ExpenseValidationRepository
 import com.niyaj.data.repository.HomeRepository
 import com.niyaj.data.repository.KeepDataConfigRepository
 import com.niyaj.data.repository.MarketItemRepository
@@ -76,20 +73,7 @@ import com.niyaj.data.repository.ProductRepository
 import com.niyaj.data.repository.ProfileRepository
 import com.niyaj.data.repository.ReportsRepository
 import com.niyaj.data.repository.UserDataRepository
-import com.niyaj.data.repository.validation.AbsentValidationRepository
-import com.niyaj.data.repository.validation.AddOnItemValidationRepository
-import com.niyaj.data.repository.validation.AddressValidationRepository
-import com.niyaj.data.repository.validation.CartOrderValidationRepository
-import com.niyaj.data.repository.validation.CategoryValidationRepository
-import com.niyaj.data.repository.validation.ChargesValidationRepository
-import com.niyaj.data.repository.validation.CustomerValidationRepository
 import com.niyaj.data.repository.validation.KeepDataConfigValidationRepository
-import com.niyaj.data.repository.validation.MarketItemValidationRepository
-import com.niyaj.data.repository.validation.MarketTypeValidationRepository
-import com.niyaj.data.repository.validation.MeasureUnitValidationRepository
-import com.niyaj.data.repository.validation.PaymentValidationRepository
-import com.niyaj.data.repository.validation.PrinterValidationRepository
-import com.niyaj.data.repository.validation.ProductValidationRepository
 import com.niyaj.data.repository.validation.ProfileValidationRepository
 import com.niyaj.data.utils.ConnectivityManagerNetworkMonitor
 import com.niyaj.data.utils.NetworkMonitor
@@ -113,29 +97,14 @@ abstract class DataModule {
     ): AbsentRepository
 
     @Binds
-    internal abstract fun provideAbsentValidationRepository(
-        absentRepository: AbsentRepositoryImpl,
-    ): AbsentValidationRepository
-
-    @Binds
     internal abstract fun provideAddOnItemRepository(
         addOnItemRepositoryImpl: AddOnItemRepositoryImpl,
     ): AddOnItemRepository
 
     @Binds
-    internal abstract fun provideAddOnItemValidationRepository(
-        addOnItemRepositoryImpl: AddOnItemRepositoryImpl,
-    ): AddOnItemValidationRepository
-
-    @Binds
     internal abstract fun provideAddressRepository(
         addressRepositoryImpl: AddressRepositoryImpl,
     ): AddressRepository
-
-    @Binds
-    internal abstract fun provideAddressValidationRepository(
-        addressRepositoryImpl: AddressRepositoryImpl,
-    ): AddressValidationRepository
 
     @Binds
     internal abstract fun provideCartRepository(
@@ -148,24 +117,9 @@ abstract class DataModule {
     ): CartOrderRepository
 
     @Binds
-    internal abstract fun provideCartOrderValidationRepository(
-        cartOrderRepositoryImpl: CartOrderRepositoryImpl,
-    ): CartOrderValidationRepository
-
-    @Binds
-    internal abstract fun provideCategoryValidationRepository(
-        categoryRepositoryImpl: CategoryRepositoryImpl,
-    ): CategoryValidationRepository
-
-    @Binds
     internal abstract fun provideCategoryRepository(
         categoryRepositoryImpl: CategoryRepositoryImpl,
     ): CategoryRepository
-
-    @Binds
-    internal abstract fun provideChargesValidationRepository(
-        chargesRepositoryImpl: ChargesRepositoryImpl,
-    ): ChargesValidationRepository
 
     @Binds
     internal abstract fun provideChargesRepository(
@@ -173,29 +127,14 @@ abstract class DataModule {
     ): ChargesRepository
 
     @Binds
-    internal abstract fun provideCustomerValidationRepository(
-        customerRepositoryImpl: CustomerRepositoryImpl,
-    ): CustomerValidationRepository
-
-    @Binds
     internal abstract fun provideCustomerRepository(
         customerRepositoryImpl: CustomerRepositoryImpl,
     ): CustomerRepository
 
     @Binds
-    internal abstract fun provideEmployeeValidationRepository(
-        employeeRepositoryImpl: EmployeeRepositoryImpl,
-    ): EmployeeValidationRepository
-
-    @Binds
     internal abstract fun provideEmployeeRepository(
         employeeRepositoryImpl: EmployeeRepositoryImpl,
     ): EmployeeRepository
-
-    @Binds
-    internal abstract fun provideExpenseValidationRepository(
-        expenseRepositoryImpl: ExpenseRepositoryImpl,
-    ): ExpenseValidationRepository
 
     @Binds
     internal abstract fun provideExpenseRepository(
@@ -206,11 +145,6 @@ abstract class DataModule {
     internal abstract fun provideHomeRepository(
         homeRepositoryImpl: HomeRepositoryImpl,
     ): HomeRepository
-
-    @Binds
-    internal abstract fun provideMarketListValidationRepository(
-        marketItemRepositoryImpl: MarketItemRepositoryImpl,
-    ): MarketItemValidationRepository
 
     @Binds
     internal abstract fun provideMarketItemRepository(
@@ -228,19 +162,9 @@ abstract class DataModule {
     ): MarketListRepository
 
     @Binds
-    internal abstract fun provideMarketTypeValidationRepository(
-        marketTypeRepositoryImpl: MarketTypeRepositoryImpl,
-    ): MarketTypeValidationRepository
-
-    @Binds
     internal abstract fun provideMarketTypeRepository(
         marketTypeRepositoryImpl: MarketTypeRepositoryImpl,
     ): MarketTypeRepository
-
-    @Binds
-    internal abstract fun provideMeasureUnitValidationRepository(
-        measureUnitRepositoryImpl: MeasureUnitRepositoryImpl,
-    ): MeasureUnitValidationRepository
 
     @Binds
     internal abstract fun provideMeasureUnitRepository(
@@ -253,19 +177,9 @@ abstract class DataModule {
     ): OrderRepository
 
     @Binds
-    internal abstract fun providePaymentValidationRepository(
-        paymentRepositoryImpl: PaymentRepositoryImpl,
-    ): PaymentValidationRepository
-
-    @Binds
     internal abstract fun providePaymentRepository(
         paymentRepositoryImpl: PaymentRepositoryImpl,
     ): PaymentRepository
-
-    @Binds
-    internal abstract fun providePrinterValidationRepository(
-        printerRepositoryImpl: PrinterValidationRepositoryImpl,
-    ): PrinterValidationRepository
 
     @Binds
     internal abstract fun providePrinterRepository(
@@ -278,24 +192,20 @@ abstract class DataModule {
     ): PrintRepository
 
     @Binds
-    internal abstract fun provideProductValidationRepository(
-        productRepositoryImpl: ProductRepositoryImpl,
-    ): ProductValidationRepository
-
-    @Binds
     internal abstract fun provideProductRepository(
         productRepositoryImpl: ProductRepositoryImpl,
     ): ProductRepository
 
     @Binds
-    internal abstract fun profileValidationRepository(
-        profileRepositoryImpl: ProfileRepositoryImpl,
-    ): ProfileValidationRepository
-
-    @Binds
     internal abstract fun provideProfileRepository(
         profileRepositoryImpl: ProfileRepositoryImpl,
     ): ProfileRepository
+
+    // TODO: this can be moved to :domain module
+    @Binds
+    internal abstract fun provideProfileValidationRepository(
+        profileRepositoryImpl: ProfileRepositoryImpl,
+    ): ProfileValidationRepository
 
     @Binds
     internal abstract fun provideReportsRepositoryImpl(

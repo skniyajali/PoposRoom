@@ -29,7 +29,9 @@ import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CustomerRepository
-import com.niyaj.data.repository.validation.CustomerValidationRepository
+import com.niyaj.domain.customer.ValidateCustomerEmailUseCase
+import com.niyaj.domain.customer.ValidateCustomerNameUseCase
+import com.niyaj.domain.customer.ValidateCustomerPhoneUseCase
 import com.niyaj.model.Customer
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,7 +49,9 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddEditCustomerViewModel @Inject constructor(
     private val customerRepository: CustomerRepository,
-    private val validationRepository: CustomerValidationRepository,
+    private val validateCustomerName: ValidateCustomerNameUseCase,
+    private val validateCustomerEmail: ValidateCustomerEmailUseCase,
+    private val validateCustomerPhone: ValidateCustomerPhoneUseCase,
     private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -67,7 +71,7 @@ class AddEditCustomerViewModel @Inject constructor(
 
     val phoneError: StateFlow<String?> = snapshotFlow { addEditState.customerPhone }
         .mapLatest {
-            validationRepository.validateCustomerPhone(it, customerId).errorMessage
+            validateCustomerPhone(it, customerId).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -76,7 +80,7 @@ class AddEditCustomerViewModel @Inject constructor(
 
     val nameError: StateFlow<String?> = snapshotFlow { addEditState.customerName }
         .mapLatest {
-            validationRepository.validateCustomerName(it).errorMessage
+            validateCustomerName(it).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -85,7 +89,7 @@ class AddEditCustomerViewModel @Inject constructor(
 
     val emailError: StateFlow<String?> = snapshotFlow { addEditState.customerEmail }
         .mapLatest {
-            validationRepository.validateCustomerEmail(it).errorMessage
+            validateCustomerEmail(it).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),

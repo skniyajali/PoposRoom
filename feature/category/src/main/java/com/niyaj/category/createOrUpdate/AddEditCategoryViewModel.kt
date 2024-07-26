@@ -29,7 +29,7 @@ import com.niyaj.common.utils.capitalizeWords
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CategoryRepository
-import com.niyaj.data.repository.validation.CategoryValidationRepository
+import com.niyaj.domain.category.ValidateCategoryNameUseCase
 import com.niyaj.model.Category
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,7 +47,7 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddEditCategoryViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
-    private val validationRepository: CategoryValidationRepository,
+    private val validateCategoryName: ValidateCategoryNameUseCase,
     savedStateHandle: SavedStateHandle,
     private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
@@ -67,7 +67,7 @@ class AddEditCategoryViewModel @Inject constructor(
 
     val nameError: StateFlow<String?> = snapshotFlow { addEditState.categoryName }
         .mapLatest {
-            validationRepository.validateCategoryName(it, categoryId).errorMessage
+            validateCategoryName(it, categoryId).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -141,12 +141,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateCategory(categoryId: Int, message
     logEvent(
         event = AnalyticsEvent(
             type = "category_$message",
-            extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param(
-                    "category_$message",
-                    categoryId.toString(),
-                ),
-            ),
+            extras = listOf(AnalyticsEvent.Param("category_$message", categoryId.toString())),
         ),
     )
 }
