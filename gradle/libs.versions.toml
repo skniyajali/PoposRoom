@@ -71,7 +71,7 @@ vanpraComposeVersion = '0.9.0'
 zxing = "3.5.1"
 saketSwipe = "1.2.0"
 konfetti-compose = "2.0.4"
-compiler-report = "1.3.1"
+compiler-report = "1.4.0"
 
 # App Version
 namespace = "com.niyaj.poposroom"
