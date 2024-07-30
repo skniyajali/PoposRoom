@@ -121,7 +121,7 @@ class AddOnSettingsViewModel @Inject constructor(
     }
 }
 
-internal fun AnalyticsHelper.logImportedAddOnsFromFile(totalAddOns: Int) {
+private fun AnalyticsHelper.logImportedAddOnsFromFile(totalAddOns: Int) {
     logEvent(
         event = AnalyticsEvent(
             type = "addon_item_imported_from_file",
@@ -132,7 +132,7 @@ internal fun AnalyticsHelper.logImportedAddOnsFromFile(totalAddOns: Int) {
     )
 }
 
-internal fun AnalyticsHelper.logImportedAddOnsToDatabase(totalAddOns: Int) {
+private fun AnalyticsHelper.logImportedAddOnsToDatabase(totalAddOns: Int) {
     logEvent(
         event = AnalyticsEvent(
             type = "addon_item_imported_to_database",
@@ -143,7 +143,7 @@ internal fun AnalyticsHelper.logImportedAddOnsToDatabase(totalAddOns: Int) {
     )
 }
 
-internal fun AnalyticsHelper.logExportedAddOnsToFile(totalAddOns: Int) {
+private fun AnalyticsHelper.logExportedAddOnsToFile(totalAddOns: Int) {
     logEvent(
         event = AnalyticsEvent(
             type = "addon_item_exported_to_file",
