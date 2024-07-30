@@ -90,7 +90,6 @@ import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.parameterProvider.CardOrderPreviewData
 import com.niyaj.ui.parameterProvider.DeliveryPartnerPreviewData
 import com.niyaj.ui.utils.DevicePreviews
-import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.rememberCaptureController
@@ -194,9 +193,6 @@ fun DeliveryPartnerDetailsScreen(
         onSwapSelection = viewModel::onSwapSelections,
         onBackClick = navigator::navigateUp,
         snackbarHostState = snackbarHostState,
-        onNavigateToHomeScreen = {
-            navigator.navigate(Screens.HOME_SCREEN)
-        },
         onClickOrder = {
             navigator.navigate(OrderDetailsScreenDestination(it))
         },
@@ -255,7 +251,6 @@ internal fun DeliveryPartnerDetailsScreenContent(
     onClickPrint: () -> Unit,
     onClickShare: () -> Unit,
     onBackClick: () -> Unit,
-    onNavigateToHomeScreen: () -> Unit,
     onClickOrder: (Int) -> Unit,
     onSelectDate: (String) -> Unit,
     onSelectItem: (Int) -> Unit,
@@ -372,9 +367,12 @@ internal fun DeliveryPartnerDetailsScreenContent(
 
                 is PartnerReportState.Empty -> {
                     ItemNotAvailableHalf(
-                        text = "Seems like, delivery partner not delivered any order yet, click below to create new.",
-                        buttonText = "Create New Order",
-                        onClick = onNavigateToHomeScreen,
+                        text = "Seems like, you have not delivered any order yet, click below change date.",
+                        buttonText = "Change Date",
+                        icon = PoposIcons.CalenderMonth,
+                        onClick = {
+                            dialogState.show()
+                        },
                     )
                 }
 
@@ -549,7 +547,6 @@ private fun DeliveryPartnerDetailsScreenLoadingState() {
             onClickPrint = {},
             onClickShare = {},
             onBackClick = {},
-            onNavigateToHomeScreen = {},
             onClickOrder = {},
             onSelectDate = {},
             onSelectItem = {},
@@ -580,7 +577,6 @@ private fun DeliveryPartnerDetailsScreenEmptyState() {
             onClickPrint = {},
             onClickShare = {},
             onBackClick = {},
-            onNavigateToHomeScreen = {},
             onClickOrder = {},
             onSelectDate = {},
             onSelectItem = {},
@@ -614,7 +610,6 @@ private fun DeliveryPartnerDetailsScreenSuccessState(
             onClickPrint = {},
             onClickShare = {},
             onBackClick = {},
-            onNavigateToHomeScreen = {},
             onClickOrder = {},
             onSelectDate = {},
             onSelectItem = {},

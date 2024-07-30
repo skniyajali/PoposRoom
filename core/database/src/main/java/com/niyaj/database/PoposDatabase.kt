@@ -58,6 +58,7 @@ import com.niyaj.database.model.CartChargesEntity
 import com.niyaj.database.model.CartEntity
 import com.niyaj.database.model.CartOrderEntity
 import com.niyaj.database.model.CartPriceEntity
+import com.niyaj.database.model.CartPriceView
 import com.niyaj.database.model.CategoryEntity
 import com.niyaj.database.model.CategoryWithProductCrossRef
 import com.niyaj.database.model.ChargesEntity
@@ -114,11 +115,12 @@ import com.niyaj.database.util.TimestampConverters
         MarketListWithItemsEntity::class,
         MeasureUnitEntity::class,
     ],
-    version = 28,
+    version = 31,
     autoMigrations = [],
     exportSchema = true,
     views = [
         ProductWIthQuantityView::class,
+        CartPriceView::class,
     ],
 )
 @TypeConverters(TimestampConverters::class, ListConverter::class)

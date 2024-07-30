@@ -20,7 +20,6 @@ package com.niyaj.order.deliveryPartner
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Intent
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.VisibleForTesting
@@ -65,7 +64,6 @@ import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.parameterProvider.DeliveryPartnerPreviewData
 import com.niyaj.ui.utils.DevicePreviews
-import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.Screens.DELIVERY_REPORT_SCREEN
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -153,9 +151,6 @@ fun DeliveryPartnerScreen(
         onClickViewDetails = {
             navigator.navigate(DeliveryPartnerDetailsScreenDestination(it))
         },
-        onNavigateToHomeScreen = {
-            navigator.navigate(Screens.HOME_SCREEN)
-        },
     )
 
     AnimatedVisibility(
@@ -171,7 +166,7 @@ fun DeliveryPartnerScreen(
                 printDeliveryReport()
             },
             onClickShare = captureController::captureLongScreenshot,
-            onCaptured = { bitmap, error ->
+            onCaptured = { bitmap, _ ->
                 bitmap?.let {
                     scope.launch {
                         val uri = shareViewModel.saveImage(it, context)
@@ -183,12 +178,6 @@ fun DeliveryPartnerScreen(
                             )
                         }
                     }
-                }
-                error?.let {
-                    Log.d(
-                        "Capturable",
-                        "Error: ${it.message}\n${it.stackTrace.joinToString()}",
-                    )
                 }
             },
         )
@@ -207,7 +196,6 @@ internal fun DeliveryPartnerScreenContent(
     onClickShare: () -> Unit,
     onClickPrint: (Int) -> Unit,
     onClickViewDetails: (Int) -> Unit,
-    onNavigateToHomeScreen: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) = trace("DeliveryReportScreenContent") {
     TrackScreenViewEvent(screenName = DELIVERY_REPORT_SCREEN)
@@ -256,9 +244,12 @@ internal fun DeliveryPartnerScreenContent(
 
                 is PartnerState.Empty -> {
                     ItemNotAvailable(
-                        text = "Seems like, you have not place any order yet, click below to create new.",
-                        buttonText = "Create New Order",
-                        onClick = onNavigateToHomeScreen,
+                        text = "Seems like, you have not place any order yet, click below change date.",
+                        buttonText = "Change Date",
+                        icon = PoposIcons.CalenderMonth,
+                        onClick = {
+                            dialogState.show()
+                        },
                     )
                 }
 
@@ -333,7 +324,6 @@ private fun DeliveryPartnerScreenContentLoadingPreview(
             onClickShare = {},
             onClickPrint = {},
             onClickViewDetails = {},
-            onNavigateToHomeScreen = {},
         )
     }
 }
@@ -354,7 +344,6 @@ private fun DeliveryPartnerScreenContentEmptyPreview(
             onClickShare = {},
             onClickPrint = {},
             onClickViewDetails = {},
-            onNavigateToHomeScreen = {},
         )
     }
 }
@@ -376,7 +365,6 @@ private fun DeliveryPartnerScreenContentSuccessPreview(
             onClickShare = {},
             onClickPrint = {},
             onClickViewDetails = {},
-            onNavigateToHomeScreen = {},
         )
     }
 }

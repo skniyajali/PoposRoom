@@ -167,15 +167,10 @@ class SelectedViewModel @Inject constructor(
     internal fun decreaseProductQuantity(orderId: Int, productId: Int) {
         viewModelScope.launch {
             when (
-                val result =
-                    cartRepository.removeProductFromCart(orderId, productId)
+                val result = cartRepository.removeProductFromCart(orderId, productId)
             ) {
                 is Resource.Error -> {
-                    _eventFlow.emit(
-                        UiEvent.OnError(
-                            result.message ?: "Unable to add product",
-                        ),
-                    )
+                    _eventFlow.emit(UiEvent.OnError(result.message.toString()))
                 }
 
                 is Resource.Success -> {}
@@ -186,15 +181,10 @@ class SelectedViewModel @Inject constructor(
     internal fun increaseProductQuantity(orderId: Int, productId: Int) {
         viewModelScope.launch {
             when (
-                val result =
-                    cartRepository.addProductToCart(orderId, productId)
+                val result = cartRepository.addProductToCart(orderId, productId)
             ) {
                 is Resource.Error -> {
-                    _eventFlow.emit(
-                        UiEvent.OnError(
-                            result.message ?: "Unable to add product",
-                        ),
-                    )
+                    _eventFlow.emit(UiEvent.OnError(result.message.toString()))
                 }
 
                 is Resource.Success -> {}

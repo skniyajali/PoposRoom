@@ -17,7 +17,6 @@
 
 package com.niyaj.poposroom.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -29,22 +28,16 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.designsystem.components.PoposBackground
 import com.niyaj.poposroom.navigation.PoposNavHost
 import com.ramcosta.composedestinations.spec.Route
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PoposApp(
@@ -53,21 +46,6 @@ fun PoposApp(
     startRoute: Route,
 ) {
     PoposBackground(modifier) {
-        val snackbarHostState = remember { SnackbarHostState() }
-
-        val reportState = appState.reportState.collectAsStateWithLifecycle().value
-        val deleteState = appState.deleteState.collectAsStateWithLifecycle().value
-
-        LaunchedEffect(key1 = deleteState, key2 = reportState) {
-            if (deleteState) {
-                snackbarHostState.showSnackbar("Data Deletion Running")
-            }
-
-            if (reportState) {
-                snackbarHostState.showSnackbar("Generating Reports")
-            }
-        }
-
         Scaffold(
             modifier = Modifier.semantics {
                 testTagsAsResourceId = true
@@ -75,7 +53,6 @@ fun PoposApp(
             containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground,
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
-            snackbarHost = { SnackbarHost(snackbarHostState) },
         ) { padding ->
             Box(
                 Modifier

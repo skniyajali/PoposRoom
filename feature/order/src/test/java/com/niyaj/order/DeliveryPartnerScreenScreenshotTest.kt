@@ -23,6 +23,7 @@ import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.order.deliveryPartner.DeliveryPartnerDetailsScreenContent
 import com.niyaj.order.deliveryPartner.DeliveryPartnerScreenContent
 import com.niyaj.order.deliveryPartner.PartnerReportState
+import com.niyaj.order.deliveryPartner.PartnerReportState.Success
 import com.niyaj.order.deliveryPartner.PartnerState
 import com.niyaj.poposroom.core.testing.util.captureForPhone
 import com.niyaj.ui.parameterProvider.CardOrderPreviewData
@@ -67,7 +68,6 @@ class DeliveryPartnerScreenScreenshotTest {
                     onClickShare = {},
                     onClickPrint = {},
                     onClickViewDetails = {},
-                    onNavigateToHomeScreen = {},
                 )
             }
         }
@@ -86,7 +86,6 @@ class DeliveryPartnerScreenScreenshotTest {
                     onClickShare = {},
                     onClickPrint = {},
                     onClickViewDetails = {},
-                    onNavigateToHomeScreen = {},
                 )
             }
         }
@@ -105,7 +104,6 @@ class DeliveryPartnerScreenScreenshotTest {
                     onClickShare = {},
                     onClickPrint = {},
                     onClickViewDetails = {},
-                    onNavigateToHomeScreen = {},
                 )
             }
         }
@@ -123,13 +121,19 @@ class DeliveryPartnerScreenScreenshotTest {
                     onClickPrint = {},
                     onClickShare = {},
                     onBackClick = {},
-                    onNavigateToHomeScreen = {},
                     onClickOrder = {},
                     onSelectDate = {},
                     onSelectItem = {},
                     onDeselectItems = {},
-                    onClickSelectItems = {},
+                    onSwapSelection = {},
                     onChangePartner = {},
+                    showSearchBar = false,
+                    searchText = "",
+                    placeholderText = "",
+                    onClearClick = {},
+                    onSearchTextChanged = {},
+                    onSearchIconClick = {},
+                    onCloseSearchBar = {},
                 )
             }
         }
@@ -147,13 +151,19 @@ class DeliveryPartnerScreenScreenshotTest {
                     onClickPrint = {},
                     onClickShare = {},
                     onBackClick = {},
-                    onNavigateToHomeScreen = {},
                     onClickOrder = {},
                     onSelectDate = {},
                     onSelectItem = {},
                     onDeselectItems = {},
-                    onClickSelectItems = {},
+                    onSwapSelection = {},
                     onChangePartner = {},
+                    showSearchBar = false,
+                    searchText = "",
+                    placeholderText = "",
+                    onClearClick = {},
+                    onSearchTextChanged = {},
+                    onSearchIconClick = {},
+                    onCloseSearchBar = {},
                 )
             }
         }
@@ -165,19 +175,25 @@ class DeliveryPartnerScreenScreenshotTest {
             PoposRoomTheme {
                 DeliveryPartnerDetailsScreenContent(
                     selectedDate = System.currentTimeMillis().toString(),
-                    reportState = PartnerReportState.Success(deliveryReports),
+                    reportState = Success(deliveryReports),
                     partners = partners,
                     selectedItems = persistentListOf(),
                     onClickPrint = {},
                     onClickShare = {},
                     onBackClick = {},
-                    onNavigateToHomeScreen = {},
                     onClickOrder = {},
                     onSelectDate = {},
                     onSelectItem = {},
                     onDeselectItems = {},
-                    onClickSelectItems = {},
+                    onSwapSelection = {},
                     onChangePartner = {},
+                    showSearchBar = false,
+                    searchText = "",
+                    placeholderText = "",
+                    onClearClick = {},
+                    onSearchTextChanged = {},
+                    onSearchIconClick = {},
+                    onCloseSearchBar = {},
                 )
             }
         }
@@ -196,13 +212,19 @@ class DeliveryPartnerScreenScreenshotTest {
                     onClickPrint = {},
                     onClickShare = {},
                     onBackClick = {},
-                    onNavigateToHomeScreen = {},
                     onClickOrder = {},
                     onSelectDate = {},
                     onSelectItem = {},
                     onDeselectItems = {},
-                    onClickSelectItems = {},
+                    onSwapSelection = {},
                     onChangePartner = {},
+                    showSearchBar = false,
+                    searchText = "",
+                    placeholderText = "",
+                    onClearClick = {},
+                    onSearchTextChanged = {},
+                    onSearchIconClick = {},
+                    onCloseSearchBar = {},
                 )
             }
         }

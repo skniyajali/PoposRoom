@@ -15,6 +15,8 @@
  *
  */
 
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package com.niyaj.designsystem.icon
 
 import androidx.compose.material.icons.Icons

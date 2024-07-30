@@ -52,9 +52,6 @@ import com.niyaj.common.utils.openAppSettings
 import com.niyaj.common.utils.showToast
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.core.analytics.LocalAnalyticsHelper
-import com.niyaj.data.repository.UserDataRepository
-import com.niyaj.data.utils.NetworkMonitor
-import com.niyaj.data.utils.WorkMonitor
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.home.HomeNavGraph
@@ -82,16 +79,7 @@ class MainActivity : ComponentActivity() {
     lateinit var lazyStats: dagger.Lazy<JankStats>
 
     @Inject
-    lateinit var networkMonitor: NetworkMonitor
-
-    @Inject
-    lateinit var workMonitor: WorkMonitor
-
-    @Inject
     lateinit var analyticsHelper: AnalyticsHelper
-
-    @Inject
-    lateinit var userDataRepository: UserDataRepository
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -101,7 +89,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         var uiState: MainActivityUiState by mutableStateOf(MainActivityUiState.Loading)
-
         // Update the uiState
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -110,13 +97,6 @@ class MainActivity : ComponentActivity() {
                     .collect()
             }
         }
-        // TOOD:: Removed Splash Screen Condition Check
-//        splashScreen.setKeepOnScreenCondition {
-//            when (uiState) {
-//                MainActivityUiState.Loading -> true
-//                is MainActivityUiState.Success -> false
-//            }
-//        }
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -149,12 +129,6 @@ class MainActivity : ComponentActivity() {
                 onDispose {}
             }
 
-            val appState = rememberPoposAppState(
-                networkMonitor = networkMonitor,
-                workMonitor = workMonitor,
-                userDataRepository = userDataRepository,
-            )
-
             CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
                 PoposRoomTheme(
                     darkTheme = darkTheme,
@@ -162,10 +136,9 @@ class MainActivity : ComponentActivity() {
                     disableDynamicTheming = shouldDisableDynamicTheming(uiState),
                 ) {
                     RequestAllPermissions()
-                    // TODO:: By Default Providing HomeNavGraph for this release
+
                     PoposApp(
-                        appState = appState,
-                        //  if (isLoggedIn) HomeNavGraph else AccountNavGraph
+                        appState = rememberPoposAppState(),
                         startRoute = HomeNavGraph,
                     )
                 }

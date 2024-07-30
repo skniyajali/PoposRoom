@@ -25,6 +25,8 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkerParameters
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
+import com.niyaj.common.result.Resource.Error
+import com.niyaj.common.result.Resource.Success
 import com.niyaj.data.repository.DataDeletionRepository
 import com.popos.core.notifications.Notifier
 import com.popos.core.notifications.utils.DELETION_NOTIFICATION_ID
@@ -33,10 +35,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeUnit.HOURS
 
-const val DELETE_DATA_WORKER_TAG = "Data Deletion Worker"
-const val DELETE_DATA_INTERVAL_HOUR: Long = 3
+const val DELETE_DATA_WORKER_TAG = "DataDeletionWorker"
+const val DELETE_DATA_INTERVAL_HOUR: Long = 15
 
 @HiltWorker
 class DataDeletionWorker @AssistedInject constructor(
@@ -52,16 +54,16 @@ class DataDeletionWorker @AssistedInject constructor(
         context.deletionForegroundInfo()
 
     override suspend fun doWork(): Result = withContext(ioDispatcher) {
-        // Send the notifications
-        notifier.showDataDeletionNotification()
-
         val result = deletionRepository.deleteData()
 
-        result.message?.let {
-            Result.failure()
+        when (result) {
+            is Error -> Result.failure()
+            is Success -> {
+                // Send the notifications
+                notifier.showDataDeletionNotification()
+                Result.success()
+            }
         }
-
-        Result.success()
     }
 
     companion object {
@@ -70,7 +72,7 @@ class DataDeletionWorker @AssistedInject constructor(
          */
         fun deletionWorker() = PeriodicWorkRequestBuilder<DelegatingWorker>(
             DELETE_DATA_INTERVAL_HOUR,
-            TimeUnit.DAYS,
+            HOURS,
         ).addTag(DELETE_DATA_WORKER_TAG)
             .setInputData(DataDeletionWorker::class.delegatedData())
             .build()
