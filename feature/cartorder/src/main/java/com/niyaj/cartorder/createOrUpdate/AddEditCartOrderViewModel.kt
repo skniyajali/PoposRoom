@@ -185,19 +185,13 @@ class AddEditCartOrderViewModel @Inject constructor(
 
             is AddEditCartOrderEvent.AddressChanged -> {
                 viewModelScope.launch {
-                    state = state.copy(
-                        address = event.address,
-                    )
+                    state = state.copy(address = event.address)
                 }
             }
 
             is AddEditCartOrderEvent.CustomerPhoneChanged -> {
                 viewModelScope.launch {
-                    state = state.copy(
-                        customer = Customer(
-                            customerPhone = event.customerPhone,
-                        ),
-                    )
+                    state = state.copy(customer = Customer(customerPhone = event.customerPhone))
                 }
             }
 

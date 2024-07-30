@@ -18,15 +18,12 @@
 package com.niyaj.domain.cartorder
 
 import com.niyaj.common.result.ValidationResult
-import com.niyaj.common.tags.CartOrderTestTags.ADDRESS_NAME_INVALID
 import com.niyaj.common.tags.CartOrderTestTags.ADDRESS_NAME_LENGTH_ERROR
 import com.niyaj.common.tags.CartOrderTestTags.CART_ORDER_NAME_EMPTY_ERROR
 import javax.inject.Inject
 
 class ValidateOrderAddressNameUseCase @Inject constructor() {
     operator fun invoke(addressName: String): ValidationResult {
-        val addressRegex = """^\S+(?:\s+\S+)+$""".toRegex()
-
         if (addressName.isEmpty()) {
             return ValidationResult(
                 successful = false,
@@ -38,13 +35,6 @@ class ValidateOrderAddressNameUseCase @Inject constructor() {
             return ValidationResult(
                 successful = false,
                 errorMessage = ADDRESS_NAME_LENGTH_ERROR,
-            )
-        }
-
-        if (!addressName.matches(addressRegex)) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = ADDRESS_NAME_INVALID,
             )
         }
 

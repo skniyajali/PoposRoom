@@ -42,6 +42,19 @@ class OrderPrintViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
+    init {
+        viewModelScope.launch {
+            bluetoothPrinter
+                .connectAndGetBluetoothPrinterAsync()
+                .onSuccess {
+                    _eventFlow.emit(UiEvent.OnSuccess("Printer Connected"))
+                }
+                .onFailure {
+                    _eventFlow.emit(UiEvent.OnError("Unable to Connect Printer"))
+                }
+        }
+    }
+
     fun onPrintEvent(event: PrintEvent) {
         when (event) {
             is PrintEvent.PrintOrder -> {

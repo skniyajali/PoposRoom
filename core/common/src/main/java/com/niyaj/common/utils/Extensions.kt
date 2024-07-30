@@ -107,15 +107,21 @@ fun getAllCapitalizedLetters(string: String): String {
 }
 
 fun String.getCapitalWord(): String {
-    var capitalizeLetters = ""
+    val capitalizedString = this.capitalizeWords
+    var result = ""
 
-    this.capitalizeWords.forEach {
+    if (!capitalizedString.contains(" ")) {
+        // If it's a single word, return the first two characters
+        return capitalizedString.take(2)
+    }
+
+    capitalizedString.forEach {
         if (it.isUpperCase()) {
-            capitalizeLetters += it.toString()
+            result += it.toString()
         }
     }
 
-    return capitalizeLetters
+    return result
 }
 
 val zoneId: ZoneId = ZoneId.of("Asia/Kolkata")

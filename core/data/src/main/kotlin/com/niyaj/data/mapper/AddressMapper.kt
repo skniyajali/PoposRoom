@@ -24,8 +24,8 @@ import com.niyaj.model.Address
 fun Address.toEntity(): AddressEntity {
     return AddressEntity(
         addressId = this.addressId,
-        addressName = this.addressName,
-        shortName = this.shortName,
+        addressName = this.addressName.trim(),
+        shortName = this.shortName.trim(),
         createdAt = this.createdAt.toDate,
         updatedAt = this.updatedAt?.toDate,
     )
