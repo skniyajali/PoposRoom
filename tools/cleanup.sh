@@ -20,6 +20,9 @@ cleanup_code_for_pr() {
       echo "Applying code style"
       ./gradlew spotlessApply --init-script gradle/init.gradle.kts --no-configuration-cache
 
+      echo "Check code style"
+      ./gradlew spotlessCheck --init-script gradle/init.gradle.kts --no-configuration-cache
+
       echo "Updating Dependency Guard Baseline"
       ./gradlew dependencyGuardBaseline
 
