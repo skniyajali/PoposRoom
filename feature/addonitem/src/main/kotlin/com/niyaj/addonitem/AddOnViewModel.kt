@@ -87,7 +87,7 @@ class AddOnViewModel @Inject constructor(
     }
 }
 
-internal fun AnalyticsHelper.logDeletedAddOnItem(data: List<Int>) {
+private fun AnalyticsHelper.logDeletedAddOnItem(data: List<Int>) {
     logEvent(
         event = AnalyticsEvent(
             type = "addon_deleted",
