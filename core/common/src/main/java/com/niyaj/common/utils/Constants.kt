@@ -31,6 +31,7 @@ object Constants {
     const val SEARCH_ITEM_PLACEHOLDER = "Search for items..."
 
     const val STANDARD_BACK_BUTTON = "StandardBackButton"
+    const val STANDARD_FAB_BUTTON = "StandardBackButton"
     const val SEARCH_BAR_CLEAR_BUTTON = "SearchBarClearButton"
     const val STANDARD_SEARCH_BAR = "StandardSearchBar"
     const val FAB_TEXT = "Create New"

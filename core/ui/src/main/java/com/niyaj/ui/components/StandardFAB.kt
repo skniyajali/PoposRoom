@@ -35,8 +35,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import com.niyaj.common.utils.Constants
+import com.niyaj.common.utils.Constants.STANDARD_FAB_BUTTON
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceSmall
 
@@ -79,6 +81,7 @@ fun StandardFAB(
             label = "FloatingActionButton",
         ) {
             ExtendedFloatingActionButton(
+                modifier = Modifier.testTag(STANDARD_FAB_BUTTON),
                 containerColor = fabContainerColor,
                 onClick = onFabClick,
                 expanded = !showScrollToTop,

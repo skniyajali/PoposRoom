@@ -13,26 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- *
  */
-plugins {
-    alias(libs.plugins.popos.android.library)
-    alias(libs.plugins.popos.android.hilt)
-}
 
-android {
-    namespace = "com.niyaj.core.testing"
-}
+package com.niyaj.testing.util
 
-dependencies {
-    api(libs.kotlinx.coroutines.test)
-    api(projects.core.analytics)
-    api(projects.core.data)
-    api(projects.core.model)
-    api(projects.core.notifications)
-    testApi(libs.turbine)
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 
-    implementation(libs.androidx.test.rules)
-    implementation(libs.hilt.android.testing)
-    implementation(libs.kotlinx.datetime)
+class TestAnalyticsHelper : AnalyticsHelper {
+
+    private val events = mutableListOf<AnalyticsEvent>()
+
+    override fun logEvent(event: AnalyticsEvent) {
+        events.add(event)
+    }
+
+    fun hasLogged(event: AnalyticsEvent) = event in events
 }

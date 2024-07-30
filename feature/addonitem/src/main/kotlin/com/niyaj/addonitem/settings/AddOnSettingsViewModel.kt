@@ -20,6 +20,8 @@ package com.niyaj.addonitem.settings
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
+import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.AddOnItemRepository
 import com.niyaj.model.AddOnItem
 import com.niyaj.ui.event.BaseViewModel
@@ -37,6 +39,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddOnSettingsViewModel @Inject constructor(
     private val addOnItemRepository: AddOnItemRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel() {
 
     val addonItems = snapshotFlow { mSearchText.value }.flatMapLatest {
@@ -74,6 +77,7 @@ class AddOnSettingsViewModel @Inject constructor(
                         }
 
                         _exportedItems.emit(list.toList())
+                        analyticsHelper.logExportedAddOnsToFile(list.size)
                     }
                 }
             }
@@ -86,6 +90,8 @@ class AddOnSettingsViewModel @Inject constructor(
                         totalItems = event.data.map { it.itemId }
                         _importedItems.value = event.data
                     }
+
+                    analyticsHelper.logImportedAddOnsFromFile(event.data.size)
                 }
             }
 
@@ -103,12 +109,47 @@ class AddOnSettingsViewModel @Inject constructor(
                         is Resource.Error -> {
                             mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
                         }
+
                         is Resource.Success -> {
                             mEventFlow.emit(UiEvent.OnSuccess("${data.size} items has been imported successfully"))
+                            analyticsHelper.logImportedAddOnsToDatabase(data.size)
                         }
                     }
                 }
             }
         }
     }
+}
+
+internal fun AnalyticsHelper.logImportedAddOnsFromFile(totalAddOns: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "addon_item_imported_from_file",
+            extras = listOf(
+                AnalyticsEvent.Param("addon_item_imported_from_file", totalAddOns.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logImportedAddOnsToDatabase(totalAddOns: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "addon_item_imported_to_database",
+            extras = listOf(
+                AnalyticsEvent.Param("addon_item_imported_to_database", totalAddOns.toString()),
+            ),
+        ),
+    )
+}
+
+internal fun AnalyticsHelper.logExportedAddOnsToFile(totalAddOns: Int) {
+    logEvent(
+        event = AnalyticsEvent(
+            type = "addon_item_exported_to_file",
+            extras = listOf(
+                AnalyticsEvent.Param("addon_item_exported_to_file", totalAddOns.toString()),
+            ),
+        ),
+    )
 }

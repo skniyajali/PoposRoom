@@ -13,26 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- *
  */
-plugins {
-    alias(libs.plugins.popos.android.library)
-    alias(libs.plugins.popos.android.hilt)
-}
 
-android {
-    namespace = "com.niyaj.core.testing"
-}
+package com.niyaj.testing.notifications
 
-dependencies {
-    api(libs.kotlinx.coroutines.test)
-    api(projects.core.analytics)
-    api(projects.core.data)
-    api(projects.core.model)
-    api(projects.core.notifications)
-    testApi(libs.turbine)
+import com.popos.core.notifications.Notifier
 
-    implementation(libs.androidx.test.rules)
-    implementation(libs.hilt.android.testing)
-    implementation(libs.kotlinx.datetime)
+class TestNotifier : Notifier {
+    override fun showDataDeletionNotification() = Unit
+
+    override fun showReportGenerationNotification() = Unit
+
+    override fun showPrintingErrorNotification(orderId: Int) = Unit
 }

@@ -38,6 +38,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -70,6 +72,9 @@ internal fun AddOnItemData(
         modifier = modifier
             .height(IntrinsicSize.Max)
             .testTag(ADDON_ITEM_TAG.plus(item.itemId))
+            .semantics {
+                selected = doesSelected(item.itemId)
+            }
             .padding(SpaceSmall)
             .then(
                 borderStroke?.let {

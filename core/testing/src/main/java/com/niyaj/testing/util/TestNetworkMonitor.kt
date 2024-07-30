@@ -13,26 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- *
  */
-plugins {
-    alias(libs.plugins.popos.android.library)
-    alias(libs.plugins.popos.android.hilt)
-}
 
-android {
-    namespace = "com.niyaj.core.testing"
-}
+package com.niyaj.testing.util
 
-dependencies {
-    api(libs.kotlinx.coroutines.test)
-    api(projects.core.analytics)
-    api(projects.core.data)
-    api(projects.core.model)
-    api(projects.core.notifications)
-    testApi(libs.turbine)
+import com.niyaj.data.utils.NetworkMonitor
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 
-    implementation(libs.androidx.test.rules)
-    implementation(libs.hilt.android.testing)
-    implementation(libs.kotlinx.datetime)
+class TestNetworkMonitor : NetworkMonitor {
+
+    private val connectivityFlow = MutableStateFlow(true)
+
+    override val isOnline: Flow<Boolean> = connectivityFlow
+
+    /**
+     * A test-only API to set the connectivity state from tests.
+     */
+    fun setConnected(isConnected: Boolean) {
+        connectivityFlow.value = isConnected
+    }
 }

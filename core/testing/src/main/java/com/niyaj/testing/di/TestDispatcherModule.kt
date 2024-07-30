@@ -13,26 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- *
  */
-plugins {
-    alias(libs.plugins.popos.android.library)
-    alias(libs.plugins.popos.android.hilt)
-}
 
-android {
-    namespace = "com.niyaj.core.testing"
-}
+package com.niyaj.testing.di
 
-dependencies {
-    api(libs.kotlinx.coroutines.test)
-    api(projects.core.analytics)
-    api(projects.core.data)
-    api(projects.core.model)
-    api(projects.core.notifications)
-    testApi(libs.turbine)
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import javax.inject.Singleton
 
-    implementation(libs.androidx.test.rules)
-    implementation(libs.hilt.android.testing)
-    implementation(libs.kotlinx.datetime)
+@Module
+@InstallIn(SingletonComponent::class)
+internal object TestDispatcherModule {
+    @Provides
+    @Singleton
+    fun providesTestDispatcher(): TestDispatcher = UnconfinedTestDispatcher()
 }

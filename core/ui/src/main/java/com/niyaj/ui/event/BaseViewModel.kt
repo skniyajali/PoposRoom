@@ -35,9 +35,6 @@ import javax.inject.Inject
 @HiltViewModel
 open class BaseViewModel @Inject constructor() : ViewModel() {
 
-    private val _fetchData = MutableStateFlow(false)
-    val fetchData = _fetchData.asStateFlow()
-
     private val _showSearchBar = MutableStateFlow(false)
     val showSearchBar = _showSearchBar.asStateFlow()
 
@@ -49,8 +46,7 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
 
     open var totalItems: List<Int> = emptyList()
 
-    val mEventFlow =
-        MutableSharedFlow<UiEvent>()
+    val mEventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = mEventFlow.asSharedFlow()
 
     private var count: Int = 0
