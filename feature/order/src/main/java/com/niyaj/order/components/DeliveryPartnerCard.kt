@@ -33,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -41,7 +42,6 @@ import androidx.compose.ui.util.trace
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.components.PoposTonalIconButton
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.LightColor6
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.TotalDeliveryPartnerOrder
@@ -50,10 +50,10 @@ import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 internal fun DeliveryPartnerCard(
-    modifier: Modifier = Modifier,
     order: TotalDeliveryPartnerOrder,
+    modifier: Modifier = Modifier,
     showPrintBtn: Boolean = true,
-    containerColor: Color = LightColor6,
+    containerColor: Color = MaterialTheme.colorScheme.background,
     height: Dp = 70.dp,
     onClickPrint: (Int) -> Unit = {},
     onClickViewDetails: (Int) -> Unit = {},
@@ -85,7 +85,6 @@ internal fun DeliveryPartnerCard(
                 icon = PoposIcons.DeliveryDining,
                 doesSelected = false,
                 text = order.partnerName ?: "Unmanaged",
-                backgroundColor = MaterialTheme.colorScheme.background,
             )
         },
         trailingContent = {
@@ -110,8 +109,6 @@ internal fun DeliveryPartnerCard(
                 )
             }
         },
-        shadowElevation = 2.dp,
-        tonalElevation = 2.dp,
         colors = ListItemDefaults.colors(
             containerColor = containerColor,
         ),
@@ -121,7 +118,8 @@ internal fun DeliveryPartnerCard(
             .clip(RoundedCornerShape(SpaceSmall))
             .clickable {
                 onClickViewDetails(order.partnerId)
-            },
+            }
+            .shadow(1.dp, RoundedCornerShape(SpaceSmall)),
     )
 }
 

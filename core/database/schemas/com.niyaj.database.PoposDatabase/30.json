@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 26,
-    "identityHash": "5dad63b79e579535fd2869475ed71b7d",
+    "version": 30,
+    "identityHash": "2431c1a8732dbf63ccdeeacf59f9e9be",
     "entities": [
       {
         "tableName": "account",
@@ -2163,12 +2163,16 @@
     "views": [
       {
         "viewName": "product_with_quantity",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT DISTINCT product.categoryId, product.productId, productName,\n        productPrice, COALESCE(cart.quantity, 0) as quantity, product.tags\n        FROM product\n        LEFT JOIN cart ON product.productId = cart.productId \n        AND (SELECT orderId FROM selected LIMIT 1) = cart.orderId"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS WITH selected_order AS (\n            SELECT orderId FROM selected LIMIT 1\n        )\n        SELECT DISTINCT p.categoryId, p.productId, p.productName,\n            p.productPrice, COALESCE(c.quantity, 0) as quantity, p.tags\n        FROM product p\n        LEFT JOIN (\n            SELECT productId, quantity\n            FROM cart\n            WHERE orderId = (SELECT orderId FROM selected_order)\n        ) c ON p.productId = c.productId"
+      },
+      {
+        "viewName": "CartPriceView",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS WITH OrderPrices AS (\n            SELECT \n                o.orderId,\n                COALESCE(SUM(ci.quantity * p.productPrice), 0) AS productTotal,\n                COALESCE((\n                    SELECT SUM(CASE WHEN ai.isApplicable = 0 THEN ai.itemPrice ELSE 0 END)\n                    FROM cart_addon_items cai\n                    JOIN addonitem ai ON cai.itemId = ai.itemId\n                    WHERE cai.orderId = o.orderId\n                ), 0) AS nonApplicableAddons,\n                COALESCE((\n                    SELECT SUM(CASE WHEN ai.isApplicable = 1 THEN ai.itemPrice ELSE 0 END)\n                    FROM cart_addon_items cai\n                    JOIN addonitem ai ON cai.itemId = ai.itemId\n                    WHERE cai.orderId = o.orderId\n                ), 0) AS applicableAddons,\n                COALESCE((\n                    SELECT SUM(ch.chargesPrice)\n                    FROM cart_charges cc\n                    JOIN charges ch ON cc.chargesId = ch.chargesId\n                    WHERE cc.orderId = o.orderId\n                ), 0) AS chargesTotal,\n                CASE WHEN o.doesChargesIncluded THEN \n                    COALESCE((\n                        SELECT SUM(ch.chargesPrice)\n                        FROM charges ch WHERE ch.isApplicable = 1\n                    ), 0)\n                ELSE 0 END AS includedCharges\n            FROM cartorder o\n            LEFT JOIN cart ci ON o.orderId = ci.orderId\n            LEFT JOIN product p ON ci.productId = p.productId\n            GROUP BY o.orderId\n        )\n        SELECT\n            orderId,\n            (productTotal + applicableAddons + nonApplicableAddons + includedCharges + chargesTotal) AS basePrice,\n            nonApplicableAddons AS discountPrice,\n            ((productTotal + applicableAddons + nonApplicableAddons + includedCharges + chargesTotal) - nonApplicableAddons) AS totalPrice\n        FROM OrderPrices\n        ORDER BY orderId DESC"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5dad63b79e579535fd2869475ed71b7d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2431c1a8732dbf63ccdeeacf59f9e9be')"
     ]
   }
 }

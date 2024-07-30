@@ -20,7 +20,6 @@ package com.niyaj.order.deliveryPartner
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Intent
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.VisibleForTesting
@@ -30,10 +29,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,7 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.SpaceMedium
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.TotalDeliveryPartnerOrder
 import com.niyaj.model.TotalOrders
@@ -61,11 +60,10 @@ import com.niyaj.print.PrintEvent
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.components.NoteCard
-import com.niyaj.ui.components.StandardBottomSheetScaffold
+import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.parameterProvider.DeliveryPartnerPreviewData
 import com.niyaj.ui.utils.DevicePreviews
-import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.Screens.DELIVERY_REPORT_SCREEN
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
@@ -153,9 +151,6 @@ fun DeliveryPartnerScreen(
         onClickViewDetails = {
             navigator.navigate(DeliveryPartnerDetailsScreenDestination(it))
         },
-        onNavigateToHomeScreen = {
-            navigator.navigate(Screens.HOME_SCREEN)
-        },
     )
 
     AnimatedVisibility(
@@ -171,7 +166,7 @@ fun DeliveryPartnerScreen(
                 printDeliveryReport()
             },
             onClickShare = captureController::captureLongScreenshot,
-            onCaptured = { bitmap, error ->
+            onCaptured = { bitmap, _ ->
                 bitmap?.let {
                     scope.launch {
                         val uri = shareViewModel.saveImage(it, context)
@@ -183,12 +178,6 @@ fun DeliveryPartnerScreen(
                             )
                         }
                     }
-                }
-                error?.let {
-                    Log.d(
-                        "Capturable",
-                        "Error: ${it.message}\n${it.stackTrace.joinToString()}",
-                    )
                 }
             },
         )
@@ -207,7 +196,6 @@ internal fun DeliveryPartnerScreenContent(
     onClickShare: () -> Unit,
     onClickPrint: (Int) -> Unit,
     onClickViewDetails: (Int) -> Unit,
-    onNavigateToHomeScreen: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) = trace("DeliveryReportScreenContent") {
     TrackScreenViewEvent(screenName = DELIVERY_REPORT_SCREEN)
@@ -225,10 +213,12 @@ internal fun DeliveryPartnerScreenContent(
         TotalOrders()
     }
 
-    StandardBottomSheetScaffold(
+    PoposSecondaryScaffold(
         modifier = modifier,
         title = "Delivery Reports",
-        showBottomBar = true,
+        showBottomBar = partnerState is PartnerState.Success,
+        showBackButton = true,
+        showSecondaryBottomBar = true,
         bottomBar = {
             TotalDeliveryReportCard(
                 modifier = Modifier
@@ -243,19 +233,23 @@ internal fun DeliveryPartnerScreenContent(
         },
         onBackClick = onBackClick,
         snackbarHostState = snackbarHostState,
-    ) {
+    ) { paddingValues ->
         Crossfade(
             targetState = partnerState,
             label = "DeliveryReportState",
+            modifier = Modifier.padding(paddingValues),
         ) { state ->
             when (state) {
                 is PartnerState.Loading -> LoadingIndicator()
 
                 is PartnerState.Empty -> {
                     ItemNotAvailable(
-                        text = "Seems like, you have not place any order yet, click below to create new.",
-                        buttonText = "Create New Order",
-                        onClick = onNavigateToHomeScreen,
+                        text = "Seems like, you have not place any order yet, click below change date.",
+                        buttonText = "Change Date",
+                        icon = PoposIcons.CalenderMonth,
+                        onClick = {
+                            dialogState.show()
+                        },
                     )
                 }
 
@@ -268,10 +262,7 @@ internal fun DeliveryPartnerScreenContent(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize(),
-                        contentPadding = PaddingValues(
-                            horizontal = SpaceMedium,
-                            vertical = SpaceSmall,
-                        ),
+                        contentPadding = PaddingValues(SpaceSmall),
                         verticalArrangement = Arrangement.spacedBy(SpaceSmall),
                         state = lazyListState,
                     ) {
@@ -279,7 +270,6 @@ internal fun DeliveryPartnerScreenContent(
                             NoteCard(
                                 icon = PoposIcons.Info,
                                 text = "Click an item to view details",
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
                             )
                         }
 
@@ -323,18 +313,19 @@ internal fun DeliveryPartnerScreenContent(
 private fun DeliveryPartnerScreenContentLoadingPreview(
     modifier: Modifier = Modifier,
 ) {
-    DeliveryPartnerScreenContent(
-        modifier = modifier,
-        selectedDate = System.currentTimeMillis().toString(),
-        partnerState = PartnerState.Loading,
-        onBackClick = {},
-        onSelectDate = {},
-        onClickPrintAll = {},
-        onClickShare = {},
-        onClickPrint = {},
-        onClickViewDetails = {},
-        onNavigateToHomeScreen = {},
-    )
+    PoposRoomTheme {
+        DeliveryPartnerScreenContent(
+            modifier = modifier,
+            selectedDate = System.currentTimeMillis().toString(),
+            partnerState = PartnerState.Loading,
+            onBackClick = {},
+            onSelectDate = {},
+            onClickPrintAll = {},
+            onClickShare = {},
+            onClickPrint = {},
+            onClickViewDetails = {},
+        )
+    }
 }
 
 @DevicePreviews
@@ -342,18 +333,19 @@ private fun DeliveryPartnerScreenContentLoadingPreview(
 private fun DeliveryPartnerScreenContentEmptyPreview(
     modifier: Modifier = Modifier,
 ) {
-    DeliveryPartnerScreenContent(
-        modifier = modifier,
-        selectedDate = System.currentTimeMillis().toString(),
-        partnerState = PartnerState.Empty,
-        onBackClick = {},
-        onSelectDate = {},
-        onClickPrintAll = {},
-        onClickShare = {},
-        onClickPrint = {},
-        onClickViewDetails = {},
-        onNavigateToHomeScreen = {},
-    )
+    PoposRoomTheme {
+        DeliveryPartnerScreenContent(
+            modifier = modifier,
+            selectedDate = System.currentTimeMillis().toString(),
+            partnerState = PartnerState.Empty,
+            onBackClick = {},
+            onSelectDate = {},
+            onClickPrintAll = {},
+            onClickShare = {},
+            onClickPrint = {},
+            onClickViewDetails = {},
+        )
+    }
 }
 
 @DevicePreviews
@@ -362,16 +354,17 @@ private fun DeliveryPartnerScreenContentSuccessPreview(
     modifier: Modifier = Modifier,
     orders: List<TotalDeliveryPartnerOrder> = DeliveryPartnerPreviewData.partnerOrders,
 ) {
-    DeliveryPartnerScreenContent(
-        modifier = modifier,
-        selectedDate = System.currentTimeMillis().toString(),
-        partnerState = PartnerState.Success(orders = orders),
-        onBackClick = {},
-        onSelectDate = {},
-        onClickPrintAll = {},
-        onClickShare = {},
-        onClickPrint = {},
-        onClickViewDetails = {},
-        onNavigateToHomeScreen = {},
-    )
+    PoposRoomTheme {
+        DeliveryPartnerScreenContent(
+            modifier = modifier,
+            selectedDate = System.currentTimeMillis().toString(),
+            partnerState = PartnerState.Success(orders = orders),
+            onBackClick = {},
+            onSelectDate = {},
+            onClickPrintAll = {},
+            onClickShare = {},
+            onClickPrint = {},
+            onClickViewDetails = {},
+        )
+    }
 }

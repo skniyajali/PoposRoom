@@ -34,3 +34,16 @@ data class DeliveryReport(
 
     val orderDate: Date,
 )
+
+fun List<DeliveryReport>.searchOrder(searchText: String): List<DeliveryReport> {
+    return if (searchText.isNotEmpty()) {
+        this.filter {
+            it.customerAddress.contains(searchText, ignoreCase = true) ||
+                it.customerPhone.contains(searchText, ignoreCase = true) ||
+                it.orderId.toString().contains(searchText, ignoreCase = true) ||
+                it.orderPrice.toString().contains(searchText, ignoreCase = true)
+        }
+    } else {
+        this
+    }
+}

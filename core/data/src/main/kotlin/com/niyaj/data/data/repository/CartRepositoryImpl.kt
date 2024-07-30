@@ -45,7 +45,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -87,7 +86,8 @@ class CartRepositoryImpl @Inject constructor(
 
     override suspend fun getCartItemByOrderId(orderId: Int): Flow<CartItem> {
         return withContext(ioDispatcher) {
-            cartDao.getCartItemByOrderId(orderId).map(::mapCartOrderToCartItemAsync)
+            cartDao.getCartItemByOrderId(orderId)
+                .mapLatest(::mapCartOrderToCartItemAsync)
         }
     }
 
@@ -102,9 +102,7 @@ class CartRepositoryImpl @Inject constructor(
                     val result = cartDao.updateQuantity(orderId, productId, qty)
 
                     if (result > 0) {
-                        async(ioDispatcher) {
-                            increaseCartProductPrice(orderId, productId)
-                        }.await()
+                        increaseCartProductPrice(orderId, productId)
                     }
 
                     Resource.Success(result > 0)
@@ -118,9 +116,7 @@ class CartRepositoryImpl @Inject constructor(
                     val result = cartDao.addOrRemoveCartProduct(newCartEntity)
 
                     if (result > 0) {
-                        async(ioDispatcher) {
-                            increaseCartProductPrice(orderId, productId)
-                        }.await()
+                        increaseCartProductPrice(orderId, productId)
                     }
 
                     Resource.Success(result > 0)
@@ -141,21 +137,21 @@ class CartRepositoryImpl @Inject constructor(
                         val result = cartDao.deleteProductFromCart(orderId, productId)
 
                         if (result > 0) {
-                            async(ioDispatcher) {
-                                decreaseCartProductPrice(orderId, productId)
-                            }.await()
+                            decreaseCartProductPrice(orderId, productId)
                         }
 
                         Resource.Success(result > 0)
                     } else {
                         val qty = cart.quantity - 1
 
-                        val result = cartDao.updateQuantity(orderId, productId, qty)
+                        val result = if (qty >= 1) {
+                            cartDao.updateQuantity(orderId, productId, qty)
+                        } else {
+                            0
+                        }
 
                         if (result > 0) {
-                            async(ioDispatcher) {
-                                decreaseCartProductPrice(orderId, productId)
-                            }.await()
+                            decreaseCartProductPrice(orderId, productId)
                         }
 
                         Resource.Success(result > 0)
@@ -163,6 +159,46 @@ class CartRepositoryImpl @Inject constructor(
                 } else {
                     Resource.Error("Unable to find cart order")
                 }
+            }
+        } catch (e: Exception) {
+            Resource.Error(e.message)
+        }
+    }
+
+    override suspend fun updateAddOnItem(orderId: Int, itemId: Int): Resource<Boolean> {
+        return try {
+            withContext(ioDispatcher) {
+                val item = cartOrderDao.getCartAddOnItemById(orderId, itemId)
+
+                val result = if (item != null) {
+                    cartDao.deleteCartAddOnItem(orderId, itemId)
+                    removeAddOnItemPrice(orderId, itemId)
+                } else {
+                    cartDao.insertCartAddOnItem(CartAddOnItemsEntity(orderId, itemId)).toInt()
+                    insertAddOnItemPrice(orderId, itemId)
+                }
+
+                Resource.Success(result > 0)
+            }
+        } catch (e: Exception) {
+            Resource.Error(e.message)
+        }
+    }
+
+    override suspend fun updateCharges(orderId: Int, chargesId: Int): Resource<Boolean> {
+        return try {
+            withContext(ioDispatcher) {
+                val item = cartOrderDao.getCartChargesById(orderId, chargesId)
+
+                val result = if (item != null) {
+                    cartOrderDao.deleteCartCharges(orderId, chargesId)
+                    removeChargesPrice(orderId, chargesId)
+                } else {
+                    cartOrderDao.insertCartCharge(CartChargesEntity(orderId, chargesId)).toInt()
+                    insertChargesPrice(orderId, chargesId)
+                }
+
+                Resource.Success(result > 0)
             }
         } catch (e: Exception) {
             Resource.Error(e.message)
@@ -201,52 +237,6 @@ class CartRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateAddOnItem(orderId: Int, itemId: Int): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val item = cartOrderDao.getCartAddOnItemById(orderId, itemId)
-
-                val result = if (item != null) {
-                    cartDao.deleteCartAddOnItem(orderId, itemId)
-
-                    async(ioDispatcher) {
-                        removeAddOnItemPrice(orderId, itemId)
-                    }.await()
-                } else {
-                    cartDao.insertCartAddOnItem(CartAddOnItemsEntity(orderId, itemId)).toInt()
-
-                    async(ioDispatcher) {
-                        insertAddOnItemPrice(orderId, itemId)
-                    }.await()
-                }
-
-                Resource.Success(result > 0)
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message)
-        }
-    }
-
-    override suspend fun updateCharges(orderId: Int, chargesId: Int): Resource<Boolean> {
-        return try {
-            withContext(ioDispatcher) {
-                val item = cartOrderDao.getCartChargesById(orderId, chargesId)
-
-                val result = if (item != null) {
-                    cartOrderDao.deleteCartCharges(orderId, chargesId)
-                    removeChargesPrice(orderId, chargesId)
-                } else {
-                    cartOrderDao.insertCartCharge(CartChargesEntity(orderId, chargesId)).toInt()
-                    insertChargesPrice(orderId, chargesId)
-                }
-
-                Resource.Success(result > 0)
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message)
-        }
-    }
-
     override suspend fun updateDeliveryPartner(
         orderId: Int,
         deliveryPartnerId: Int,
@@ -264,7 +254,9 @@ class CartRepositoryImpl @Inject constructor(
 
     override suspend fun deleteProductFromCart(orderId: Int, productId: Int): Resource<Boolean> {
         return try {
-            val result = cartDao.deleteProductFromCart(orderId, productId)
+            val result = withContext(ioDispatcher) {
+                cartDao.deleteProductFromCart(orderId, productId)
+            }
 
             Resource.Success(result > 0)
         } catch (e: Exception) {
@@ -278,110 +270,10 @@ class CartRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun mapCartOrdersToCartItemAsync(cartOrders: List<CartItemDto>): List<CartItem> {
-        return withContext(ioDispatcher) {
-            val productMap = withContext(ioDispatcher) {
-                val productIds = cartOrders.flatMap { it.cartItems }.map { it.productId }.toSet()
-                cartDao.getProductsById(productIds.toList())
-                    .associateBy { it.productId } // Create map for efficient lookup by product ID
-            }
-
-            cartOrders
-                .filter { it.cartItems.isNotEmpty() }
-                .map { order ->
-                    val cartProducts = order.cartItems.map { cartItem ->
-                        val product = productMap[cartItem.productId] ?: ProductEntity()
-
-                        CartProductItem(
-                            productId = product.productId,
-                            productName = product.productName,
-                            productPrice = product.productPrice,
-                            productQuantity = cartItem.quantity,
-                        )
-                    }
-
-                    CartItem(
-                        orderId = order.cartOrder.orderId,
-                        orderType = order.cartOrder.orderType,
-                        cartProducts = cartProducts.toImmutableList(),
-                        addOnItems = order.addOnItems.toImmutableList(),
-                        charges = order.charges.toImmutableList(),
-                        customerPhone = order.customerPhone,
-                        customerAddress = order.customerAddress,
-                        updatedAt = (
-                            order.cartOrder.updatedAt
-                                ?: order.cartOrder.createdAt
-                            ).toTimeSpan,
-                        orderPrice = order.orderPrice.totalPrice,
-                        deliveryPartnerId = order.cartOrder.deliveryPartnerId,
-                    )
-                }
-        }
-    }
-
-    private suspend fun mapCartOrderToCartItemAsync(itemDto: CartItemDto?): CartItem {
-        return withContext(ioDispatcher) {
-            itemDto?.let {
-                val productMap = withContext(ioDispatcher) {
-                    val productIds = itemDto.cartItems.map { it.productId }.toSet()
-                    cartDao.getProductsById(productIds.toList())
-                        .associateBy { it.productId } // Create map for efficient lookup by product ID
-                }
-
-                val cartProducts = itemDto.cartItems.map { cartItem ->
-                    val product = productMap[cartItem.productId] ?: ProductEntity()
-
-                    CartProductItem(
-                        productId = product.productId,
-                        productName = product.productName,
-                        productPrice = product.productPrice,
-                        productQuantity = cartItem.quantity,
-                    )
-                }
-
-                CartItem(
-                    orderId = itemDto.cartOrder.orderId,
-                    orderType = itemDto.cartOrder.orderType,
-                    cartProducts = cartProducts.toImmutableList(),
-                    addOnItems = itemDto.addOnItems.toImmutableList(),
-                    charges = itemDto.charges.toImmutableList(),
-                    customerPhone = itemDto.customerPhone,
-                    customerAddress = itemDto.customerAddress,
-                    updatedAt = (
-                        itemDto.cartOrder.updatedAt
-                            ?: itemDto.cartOrder.createdAt
-                        ).toTimeSpan,
-                    orderPrice = itemDto.orderPrice.totalPrice,
-                    deliveryPartnerId = itemDto.cartOrder.deliveryPartnerId,
-                )
-            } ?: CartItem()
-        }
-    }
-
-    private suspend fun updateOrDeleteSelectedOrder() {
-        withContext(ioDispatcher) {
-            val lastId = cartOrderDao.getLastProcessingId()
-
-            lastId?.let {
-                selectedDao.insertOrUpdateSelectedOrder(
-                    SelectedEntity(
-                        selectedId = SELECTED_ID,
-                        orderId = it,
-                    ),
-                )
-            } ?: selectedDao.deleteSelectedOrder(SELECTED_ID)
-        }
-    }
-
     private suspend fun increaseCartProductPrice(orderId: Int, productId: Int): Int {
         return withContext(ioDispatcher) {
-            val productPrice = async(ioDispatcher) {
-                cartOrderDao.getProductPrice(productId)
-            }.await()
-
-            val cartPrice = async(ioDispatcher) {
-                cartPriceDao.getCartPriceByOrderId(orderId)
-            }.await()
+            val productPrice = cartOrderDao.getProductPrice(productId)
+            val cartPrice = cartPriceDao.getCartPriceByOrderId(orderId)
 
             val cartBasePrice = cartPrice.basePrice + productPrice
             val cartTotalPrice = cartPrice.totalPrice + productPrice
@@ -400,16 +292,11 @@ class CartRepositoryImpl @Inject constructor(
 
     private suspend fun decreaseCartProductPrice(orderId: Int, productId: Int): Int {
         return withContext(ioDispatcher) {
-            val productPrice = async(ioDispatcher) {
-                cartOrderDao.getProductPrice(productId)
-            }.await()
+            val productPrice = cartOrderDao.getProductPrice(productId)
+            val cartPrice = cartPriceDao.getCartPriceByOrderId(orderId)
 
-            val cartPrice = async(ioDispatcher) {
-                cartPriceDao.getCartPriceByOrderId(orderId)
-            }.await()
-
-            val cartBasePrice = cartPrice.basePrice - productPrice
-            val cartTotalPrice = cartPrice.totalPrice - productPrice
+            val cartBasePrice = (cartPrice.basePrice - productPrice).coerceAtLeast(0)
+            val cartTotalPrice = (cartPrice.totalPrice - productPrice).coerceAtLeast(0)
 
             val updateCartPrice = CartPriceEntity(
                 orderId = orderId,
@@ -538,6 +425,101 @@ class CartRepositoryImpl @Inject constructor(
             )
 
             cartPriceDao.updateCartPrice(priceEntity)
+        }
+    }
+
+    private suspend fun mapCartOrdersToCartItemAsync(cartOrders: List<CartItemDto>): List<CartItem> {
+        return withContext(ioDispatcher) {
+            val productMap = withContext(ioDispatcher) {
+                val productIds = cartOrders.flatMap { it.cartItems }.map { it.productId }.toSet()
+                cartDao.getProductsById(productIds.toList())
+                    .associateBy { it.productId } // Create map for efficient lookup by product ID
+            }
+
+            cartOrders
+                .filter { it.cartItems.isNotEmpty() }
+                .map { order ->
+                    val cartProducts = order.cartItems.map { cartItem ->
+                        val product = productMap[cartItem.productId] ?: ProductEntity()
+
+                        CartProductItem(
+                            productId = product.productId,
+                            productName = product.productName,
+                            productPrice = product.productPrice,
+                            productQuantity = cartItem.quantity,
+                        )
+                    }
+
+                    CartItem(
+                        orderId = order.cartOrder.orderId,
+                        orderType = order.cartOrder.orderType,
+                        cartProducts = cartProducts.toImmutableList(),
+                        addOnItems = order.addOnItems.toImmutableList(),
+                        charges = order.charges.toImmutableList(),
+                        customerPhone = order.customerPhone,
+                        customerAddress = order.customerAddress,
+                        updatedAt = (
+                            order.cartOrder.updatedAt
+                                ?: order.cartOrder.createdAt
+                            ).toTimeSpan,
+                        orderPrice = order.orderPrice.totalPrice,
+                        deliveryPartnerId = order.cartOrder.deliveryPartnerId,
+                    )
+                }
+        }
+    }
+
+    private suspend fun mapCartOrderToCartItemAsync(itemDto: CartItemDto?): CartItem {
+        return withContext(ioDispatcher) {
+            itemDto?.let {
+                val productMap = withContext(ioDispatcher) {
+                    val productIds = itemDto.cartItems.map { it.productId }.toSet()
+                    cartDao.getProductsById(productIds.toList())
+                        .associateBy { it.productId } // Create map for efficient lookup by product ID
+                }
+
+                val cartProducts = itemDto.cartItems.map { cartItem ->
+                    val product = productMap[cartItem.productId] ?: ProductEntity()
+
+                    CartProductItem(
+                        productId = product.productId,
+                        productName = product.productName,
+                        productPrice = product.productPrice,
+                        productQuantity = cartItem.quantity,
+                    )
+                }
+
+                CartItem(
+                    orderId = itemDto.cartOrder.orderId,
+                    orderType = itemDto.cartOrder.orderType,
+                    cartProducts = cartProducts.toImmutableList(),
+                    addOnItems = itemDto.addOnItems.toImmutableList(),
+                    charges = itemDto.charges.toImmutableList(),
+                    customerPhone = itemDto.customerPhone,
+                    customerAddress = itemDto.customerAddress,
+                    updatedAt = (
+                        itemDto.cartOrder.updatedAt
+                            ?: itemDto.cartOrder.createdAt
+                        ).toTimeSpan,
+                    orderPrice = itemDto.orderPrice.totalPrice,
+                    deliveryPartnerId = itemDto.cartOrder.deliveryPartnerId,
+                )
+            } ?: CartItem()
+        }
+    }
+
+    private suspend fun updateOrDeleteSelectedOrder() {
+        withContext(ioDispatcher) {
+            val lastId = cartOrderDao.getLastProcessingId()
+
+            lastId?.let {
+                selectedDao.insertOrUpdateSelectedOrder(
+                    SelectedEntity(
+                        selectedId = SELECTED_ID,
+                        orderId = it,
+                    ),
+                )
+            } ?: selectedDao.deleteSelectedOrder(SELECTED_ID)
         }
     }
 }

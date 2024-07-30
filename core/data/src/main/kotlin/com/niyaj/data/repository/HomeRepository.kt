@@ -31,5 +31,8 @@ interface HomeRepository {
 
     suspend fun getSelectedOrderAddress(orderId: Int): String?
 
-    suspend fun getProductsWithQuantities(searchText: String, selectedCategory: Int = 0): Flow<List<ProductWithQuantity>>
+    suspend fun getProductsWithQuantities(
+        searchText: String,
+        selectedCategory: Int = 0,
+    ): Flow<List<ProductWithQuantity>>
 }

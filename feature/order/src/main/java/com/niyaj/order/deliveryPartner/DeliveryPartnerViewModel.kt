@@ -58,19 +58,20 @@ class DeliveryPartnerViewModel @Inject constructor(
         initialValue = PartnerState.Loading,
     )
 
-    val deliveryReports = _selectedDate.combine(snapshotFlow { partnerId }) { date, partnerId ->
-        orderRepository.getPartnerDeliveryReports(date, partnerId)
-    }.flatMapLatest { listFlow ->
-        listFlow.map { items ->
-            totalItems = items.map { it.orderId }
+    val deliveryReports =
+        _selectedDate.combine(snapshotFlow { mSearchText.value }) { date, searchText ->
+            orderRepository.getPartnerDeliveryReports(date, partnerId, searchText)
+        }.flatMapLatest { listFlow ->
+            listFlow.map { items ->
+                totalItems = items.map { it.orderId }
 
-            if (items.isEmpty()) PartnerReportState.Empty else PartnerReportState.Success(items)
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = PartnerReportState.Loading,
-    )
+                if (items.isEmpty()) PartnerReportState.Empty else PartnerReportState.Success(items)
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = PartnerReportState.Loading,
+        )
 
     val partners = snapshotFlow { partnerId }.flatMapLatest {
         orderRepository.getDeliveryPartners()
@@ -98,7 +99,7 @@ class DeliveryPartnerViewModel @Inject constructor(
         }
     }
 
-    fun selectUnselectedOrders() {
+    fun onSwapSelections() {
         viewModelScope.launch {
             val unselectedItems = totalItems.filter {
                 it !in mSelectedItems

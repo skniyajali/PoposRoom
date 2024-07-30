@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 26,
-    "identityHash": "5dad63b79e579535fd2869475ed71b7d",
+    "version": 27,
+    "identityHash": "222dbf4b9053fcb0a1ff9fb38bea5ee7",
     "entities": [
       {
         "tableName": "account",
@@ -2163,12 +2163,12 @@
     "views": [
       {
         "viewName": "product_with_quantity",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT DISTINCT product.categoryId, product.productId, productName,\n        productPrice, COALESCE(cart.quantity, 0) as quantity, product.tags\n        FROM product\n        LEFT JOIN cart ON product.productId = cart.productId \n        AND (SELECT orderId FROM selected LIMIT 1) = cart.orderId"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS WITH selected_order AS (\n            SELECT orderId FROM selected LIMIT 1\n        )\n        SELECT DISTINCT p.categoryId, p.productId, p.productName,\n            p.productPrice, COALESCE(c.quantity, 0) as quantity, p.tags\n        FROM product p\n        LEFT JOIN (\n            SELECT productId, quantity\n            FROM cart\n            WHERE orderId = (SELECT orderId FROM selected_order)\n        ) c ON p.productId = c.productId"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5dad63b79e579535fd2869475ed71b7d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '222dbf4b9053fcb0a1ff9fb38bea5ee7')"
     ]
   }
 }

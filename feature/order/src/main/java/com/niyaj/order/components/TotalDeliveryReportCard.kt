@@ -38,7 +38,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,6 +60,7 @@ import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.components.PoposOutlinedButton
 import com.niyaj.designsystem.components.PoposOutlinedDropdownButton
 import com.niyaj.designsystem.components.PoposSuggestionChip
+import com.niyaj.designsystem.components.PoposTextButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
@@ -69,7 +69,6 @@ import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.TotalOrders
 import com.niyaj.ui.components.CircularBox
-import com.niyaj.ui.components.StandardCheckboxWithText
 import com.niyaj.ui.parameterProvider.CardOrderPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 import kotlinx.collections.immutable.toImmutableList
@@ -206,8 +205,8 @@ internal fun TotalDeliveryReportCard(
     onClickPrint: () -> Unit,
     onClickShare: () -> Unit,
     onChangeDate: () -> Unit,
-    onClickSelectItems: () -> Unit,
     onChangePartner: (Int) -> Unit,
+    onSwapSelection: () -> Unit,
     partners: List<EmployeeNameAndId>,
     primaryBtnColor: Color = MaterialTheme.colorScheme.primary,
     secBtnColor: Color = MaterialTheme.colorScheme.secondary,
@@ -216,16 +215,8 @@ internal fun TotalDeliveryReportCard(
     var expanded by remember { mutableStateOf(false) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
-    var isSelected by remember { mutableStateOf(false) }
-
     val unselectedCount = remember(selectedCount, totalOrders) {
         totalOrders.totalOrders.toInt() - selectedCount
-    }
-
-    LaunchedEffect(isInSelectionMode) {
-        if (!isInSelectionMode) {
-            isSelected = false
-        }
     }
 
     Surface(
@@ -260,87 +251,81 @@ internal fun TotalDeliveryReportCard(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
-                                text = "$selectedCount Order Selected",
+                                text = (
+                                    if (unselectedCount == 0) {
+                                        "All"
+                                    } else {
+                                        "$selectedCount of ${totalOrders.totalOrders}"
+                                    }
+                                    )
+                                    .plus(" Order Selected"),
                                 fontWeight = FontWeight.SemiBold,
                             )
 
                             AnimatedVisibility(
-                                visible = !isSelected,
+                                visible = unselectedCount != 0,
                             ) {
-                                Text(
-                                    text = "$unselectedCount Order Not Selected",
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.error,
+                                PoposTextButton(
+                                    icon = PoposIcons.SwapVert,
+                                    text = "Swap Selections",
+                                    onClick = onSwapSelection,
                                 )
                             }
                         }
 
-                        StandardCheckboxWithText(
-                            text = "Select Unselected Items",
-                            onCheckedChange = {
-                                isSelected = !isSelected
-                                onClickSelectItems()
+                        ExposedDropdownMenuBox(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(SpaceMedium),
+                            expanded = expanded,
+                            onExpandedChange = {
+                                expanded = !expanded
                             },
-                            checked = isSelected,
-                        )
-
-                        AnimatedVisibility(
-                            visible = isSelected,
                         ) {
-                            ExposedDropdownMenuBox(
+                            PoposOutlinedDropdownButton(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(SpaceMedium),
-                                expanded = expanded,
-                                onExpandedChange = {
-                                    expanded = !expanded
+                                    .onGloballyPositioned { coordinates ->
+                                        // This is used to assign to the DropDown the same width
+                                        textFieldSize = coordinates.size.toSize()
+                                    }
+                                    .menuAnchor(),
+                                text = "Change Delivery Partner",
+                                leadingIcon = PoposIcons.Edit,
+                                trailingIcon = if (expanded) PoposIcons.KeyboardArrowUp else PoposIcons.ArrowDown,
+                                onClick = {
+                                    expanded = true
                                 },
+                            )
+
+                            DropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = {
+                                    expanded = false
+                                },
+                                properties = PopupProperties(
+                                    focusable = false,
+                                    dismissOnBackPress = true,
+                                    dismissOnClickOutside = true,
+                                    excludeFromSystemGesture = true,
+                                    clippingEnabled = true,
+                                ),
+                                modifier = Modifier
+                                    .width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
                             ) {
-                                PoposOutlinedDropdownButton(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .onGloballyPositioned { coordinates ->
-                                            // This is used to assign to the DropDown the same width
-                                            textFieldSize = coordinates.size.toSize()
-                                        }
-                                        .menuAnchor(),
-                                    text = "Change Delivery Partner",
-                                    leadingIcon = PoposIcons.Edit,
-                                    trailingIcon = if (expanded) PoposIcons.KeyboardArrowUp else PoposIcons.ArrowDown,
-                                    onClick = {
-                                        expanded = true
-                                    },
-                                )
+                                partners.forEachIndexed { i, item ->
+                                    DropdownMenuItem(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = {
+                                            Text(text = item.employeeName)
+                                        },
+                                        onClick = {
+                                            onChangePartner(item.employeeId)
+                                        },
+                                    )
 
-                                DropdownMenu(
-                                    expanded = expanded,
-                                    onDismissRequest = {
-                                        expanded = false
-                                    },
-                                    properties = PopupProperties(
-                                        focusable = false,
-                                        dismissOnBackPress = true,
-                                        dismissOnClickOutside = true,
-                                        excludeFromSystemGesture = true,
-                                        clippingEnabled = true,
-                                    ),
-                                    modifier = Modifier
-                                        .width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
-                                ) {
-                                    partners.forEachIndexed { i, item ->
-                                        DropdownMenuItem(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            text = {
-                                                Text(text = item.employeeName)
-                                            },
-                                            onClick = {
-                                                onChangePartner(item.employeeId)
-                                            },
-                                        )
-
-                                        if (i != partners.lastIndex) {
-                                            HorizontalDivider()
-                                        }
+                                    if (i != partners.lastIndex) {
+                                        HorizontalDivider()
                                     }
                                 }
                             }
@@ -484,14 +469,14 @@ private fun TotalDeliveryReportCardWithSelectedPreview(
         TotalDeliveryReportCard(
             totalOrders = TotalOrders(5, 500),
             selectedDate = System.currentTimeMillis().toString(),
-            selectedCount = 3,
+            selectedCount = 2,
             isInSelectionMode = true,
             partners = CardOrderPreviewData.sampleEmployeeNameAndIds.toImmutableList(),
             onClickPrint = {},
             onClickShare = {},
             onChangeDate = {},
             onChangePartner = {},
-            onClickSelectItems = {},
+            onSwapSelection = {},
         )
     }
 }

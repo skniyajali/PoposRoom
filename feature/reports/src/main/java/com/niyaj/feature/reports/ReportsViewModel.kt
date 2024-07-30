@@ -59,7 +59,7 @@ class ReportsViewModel @Inject constructor(
 
     private val info = bluetoothPrinter.printerInfo.value
 
-    private val _selectedDate = MutableStateFlow(getStartTime)
+    private val _selectedDate = MutableStateFlow("")
     val selectedDate = _selectedDate.asStateFlow()
 
     private val _productOrderType = MutableStateFlow("")
@@ -84,8 +84,11 @@ class ReportsViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        analyticsHelper.logScreenView(Screens.REPORT_SCREEN)
+        viewModelScope.launch {
+            _selectedDate.update { getStartTime }
+        }
         generateReport()
+        analyticsHelper.logScreenView(Screens.REPORT_SCREEN)
     }
 
     // Get report on selected date

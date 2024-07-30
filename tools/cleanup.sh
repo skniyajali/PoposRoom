@@ -16,7 +16,7 @@
 #      limitations under the License.
 #
 
-cleanup_code_for_pr() {
+  cleanup_code_for_pr() {
       echo "Applying code style"
       ./gradlew spotlessApply --init-script gradle/init.gradle.kts --no-configuration-cache
 
@@ -34,4 +34,4 @@ cleanup_code_for_pr() {
 
       echo "Running Tests"
       ./gradlew testDemoDebug :lint:test
-}
+  }

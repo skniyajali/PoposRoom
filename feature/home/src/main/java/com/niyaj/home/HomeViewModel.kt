@@ -111,7 +111,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = cartRepository.addProductToCart(orderId, productId)) {
                 is Resource.Error -> {
-                    mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable to add product"))
+                    mEventFlow.emit(UiEvent.OnError(result.message.toString()))
                 }
 
                 is Resource.Success -> {

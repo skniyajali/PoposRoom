@@ -23,11 +23,17 @@ import com.niyaj.model.ProductWithQuantity
 
 @DatabaseView(
     value = """
-        SELECT product.categoryId, product.productId, productName, productPrice, COALESCE(cart.quantity, 0) as quantity, product.tags
-        FROM product
-        LEFT JOIN cart ON product.productId = cart.productId 
-        AND CASE WHEN (SELECT orderId FROM selected LIMIT 1) IS NOT NULL
-        THEN cart.orderId = COALESCE((SELECT orderId FROM selected LIMIT 1), 0) ELSE 0 END
+        WITH selected_order AS (
+            SELECT orderId FROM selected LIMIT 1
+        )
+        SELECT DISTINCT p.categoryId, p.productId, p.productName,
+            p.productPrice, COALESCE(c.quantity, 0) as quantity, p.tags
+        FROM product p
+        LEFT JOIN (
+            SELECT productId, quantity
+            FROM cart
+            WHERE orderId = (SELECT orderId FROM selected_order)
+        ) c ON p.productId = c.productId
     """,
     viewName = "product_with_quantity",
 )

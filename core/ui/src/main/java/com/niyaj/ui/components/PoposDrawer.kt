@@ -172,10 +172,31 @@ fun PoposDrawer(
 
                 PoposDrawerItem(
                     text = "View Market List",
-                    icon = if (currentRoute == Screens.MARKET_LIST_SCREEN) PoposIcons.ShoppingBag else PoposIcons.OutlinedShoppingBag,
+                    icon = if (currentRoute == Screens.MARKET_LIST_SCREEN) {
+                        PoposIcons.ShoppingBag
+                    } else {
+                        PoposIcons.OutlinedShoppingBag
+                    },
                     selected = currentRoute == Screens.MARKET_LIST_SCREEN,
                     onClick = {
                         onNavigateToScreen(Screens.MARKET_LIST_SCREEN)
+                    },
+                )
+            }
+
+            item(Screens.DELIVERY_REPORT_SCREEN) {
+                Spacer(modifier = Modifier.height(SpaceSmall))
+
+                PoposDrawerItem(
+                    text = "Delivery Reports",
+                    icon = if (currentRoute == Screens.DELIVERY_REPORT_SCREEN) {
+                        PoposIcons.DeliveryDining
+                    } else {
+                        PoposIcons.OutlinedDeliveryDining
+                    },
+                    selected = currentRoute == Screens.DELIVERY_REPORT_SCREEN,
+                    onClick = {
+                        onNavigateToScreen(Screens.DELIVERY_REPORT_SCREEN)
                     },
                 )
             }
