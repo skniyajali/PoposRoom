@@ -123,12 +123,16 @@
         <meta-data android:name="io.sentry.traces.sample-rate" android:value="1.0" />
         <!-- enable profiling when starting transactions, adjust in production env -->
         <meta-data android:name="io.sentry.traces.profiling.sample-rate" android:value="1.0" />
+        <meta-data android:name="io.sentry.traces.profiling.enable-app-start" android:value="true" />
         <meta-data android:name="io.sentry.breadcrumbs.user-interaction" android:value="true" />
         <meta-data android:name="io.sentry.session-tracking.enable" android:value="true" />
         <!-- https://developer.android.com/studio/build/manifest-build-variables -->
         <meta-data android:name="io.sentry.environment" android:value="${sentryEnvironment}" />
         <meta-data android:name="io.sentry.anr.enable" android:value="true" />
-        <meta-data android:name="io.sentry.release" android:value="io.poposroom@1.0.0" />
+        <meta-data android:name="io.sentry.release" android:value="io.poposroom@1.0.0-alpha.4" />
+        <meta-data android:name="io.sentry.session-replay.error-sample-rate" android:value="1.0" />
+        <meta-data android:name="io.sentry.session-replay.session-sample-rate" android:value="1.0" />
+        <meta-data android:name="io.sentry.enable-metrics" android:value="true" />
     </application>
 
 </manifest>
