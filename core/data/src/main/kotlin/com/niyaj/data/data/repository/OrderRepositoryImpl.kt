@@ -140,6 +140,7 @@ class OrderRepositoryImpl @Inject constructor(
     override suspend fun getPartnerDeliveryReports(
         date: String,
         partnerId: Int?,
+        searchText: String,
     ): Flow<List<DeliveryReport>> {
         return withContext(ioDispatcher) {
             val startDate = if (date.isNotEmpty()) {
@@ -154,7 +155,9 @@ class OrderRepositoryImpl @Inject constructor(
                 getEndDateLong
             }
 
-            orderDao.getPartnerDeliveryReport(startDate, endDate, partnerId)
+            orderDao
+                .getPartnerDeliveryReport(startDate, endDate, partnerId)
+                .mapLatest { it.searchOrder(searchText) }
         }
     }
 

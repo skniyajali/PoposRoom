@@ -38,112 +38,7 @@ import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.automirrored.outlined.StickyNote2
-import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AddAPhoto
-import androidx.compose.material.icons.filled.AllInbox
-import androidx.compose.material.icons.filled.Api
-import androidx.compose.material.icons.filled.Approval
-import androidx.compose.material.icons.filled.Apps
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.Assessment
-import androidx.compose.material.icons.filled.AutoDelete
-import androidx.compose.material.icons.filled.AutoGraph
-import androidx.compose.material.icons.filled.BluetoothConnected
-import androidx.compose.material.icons.filled.BluetoothDisabled
-import androidx.compose.material.icons.filled.Bolt
-import androidx.compose.material.icons.filled.BreakfastDining
-import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.CalendarViewDay
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.CheckCircleOutline
-import androidx.compose.material.icons.filled.Checklist
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.CollectionsBookmark
-import androidx.compose.material.icons.filled.ControlPoint
-import androidx.compose.material.icons.filled.CurrencyRupee
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DeleteSweep
-import androidx.compose.material.icons.filled.DeliveryDining
-import androidx.compose.material.icons.filled.DensityMedium
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Details
-import androidx.compose.material.icons.filled.DinnerDining
-import androidx.compose.material.icons.filled.Dns
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.EditCalendar
-import androidx.compose.material.icons.filled.EditLocationAlt
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.EventBusy
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.FileOpen
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.HowToReg
-import androidx.compose.material.icons.filled.Inbox
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.InsertLink
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Kitchen
-import androidx.compose.material.icons.filled.LineWeight
-import androidx.compose.material.icons.filled.Link
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.ManageAccounts
-import androidx.compose.material.icons.filled.Margin
-import androidx.compose.material.icons.filled.Merge
-import androidx.compose.material.icons.filled.ModeStandby
-import androidx.compose.material.icons.filled.Money
-import androidx.compose.material.icons.filled.MonitorWeight
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.NearbyOff
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Password
-import androidx.compose.material.icons.filled.Payments
-import androidx.compose.material.icons.filled.PeopleAlt
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Person4
-import androidx.compose.material.icons.filled.PersonPin
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.PhoneAndroid
-import androidx.compose.material.icons.filled.PostAdd
-import androidx.compose.material.icons.filled.QrCode
-import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material.icons.filled.Radar
-import androidx.compose.material.icons.filled.RadioButtonChecked
-import androidx.compose.material.icons.filled.RadioButtonUnchecked
-import androidx.compose.material.icons.filled.Receipt
-import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.filled.Restaurant
-import androidx.compose.material.icons.filled.Restore
-import androidx.compose.material.icons.filled.RoomService
-import androidx.compose.material.icons.filled.SaveAlt
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.ShoppingBag
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.SwitchAccount
-import androidx.compose.material.icons.filled.Sync
-import androidx.compose.material.icons.filled.Tag
-import androidx.compose.material.icons.filled.TaskAlt
-import androidx.compose.material.icons.filled.TurnedInNot
-import androidx.compose.material.icons.filled.Update
-import androidx.compose.material.icons.filled.Upload
-import androidx.compose.material.icons.filled.ViewAgenda
-import androidx.compose.material.icons.filled.ViewHeadline
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material.icons.filled.WidthNormal
-import androidx.compose.material.icons.filled.WorkOutline
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.AddCircleOutline
@@ -155,6 +50,7 @@ import androidx.compose.material.icons.outlined.BreakfastDining
 import androidx.compose.material.icons.outlined.Business
 import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.CurrencyRupee
+import androidx.compose.material.icons.outlined.DeliveryDining
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.EventBusy
 import androidx.compose.material.icons.outlined.Home
@@ -183,8 +79,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 /**
  * Popos icons. Material icons are [ImageVector]s, custom icons are drawable resource IDs.
  */
+@Suppress("no-wildcard-imports")
 object PoposIcons {
 
+    val SwapVert: ImageVector = Icons.Default.SwapVert
     val AutoDelete: ImageVector = Icons.Default.AutoDelete
     val DeleteSweep: ImageVector = Icons.Default.DeleteSweep
     val VisibilityOff: ImageVector = Icons.Default.VisibilityOff
@@ -343,6 +241,7 @@ object PoposIcons {
     val Checklist: ImageVector = Icons.Default.Checklist
     val PhoneAndroid: ImageVector = Icons.Default.PhoneAndroid
     val DeliveryDining: ImageVector = Icons.Default.DeliveryDining
+    val OutlinedDeliveryDining: ImageVector = Icons.Outlined.DeliveryDining
     val DinnerDining: ImageVector = Icons.Default.DinnerDining
     val OpenInNew: ImageVector = Icons.AutoMirrored.Filled.OpenInNew
     val TaskAlt: ImageVector = Icons.Default.TaskAlt

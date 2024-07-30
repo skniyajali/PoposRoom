@@ -43,6 +43,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -58,16 +59,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.niyaj.common.utils.Constants.CLEAR_ICON
+import com.niyaj.common.utils.createDottedString
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.icon.PoposIcons
-import com.niyaj.designsystem.theme.LightColor6
 import com.niyaj.designsystem.theme.PoposRoomTheme
-import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.DeliveryReport
@@ -81,7 +83,9 @@ import com.niyaj.print.PrintEvent
 import com.niyaj.ui.components.CircularBox
 import com.niyaj.ui.components.ItemNotAvailableHalf
 import com.niyaj.ui.components.LoadingIndicator
-import com.niyaj.ui.components.StandardBottomSheetScaffold
+import com.niyaj.ui.components.NAV_SEARCH_BTN
+import com.niyaj.ui.components.PoposSecondaryScaffold
+import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.event.ShareViewModel
 import com.niyaj.ui.parameterProvider.CardOrderPreviewData
 import com.niyaj.ui.parameterProvider.DeliveryPartnerPreviewData
@@ -92,7 +96,6 @@ import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.rememberCaptureController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
@@ -103,7 +106,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Date
 
-@Destination(style = DestinationStyleBottomSheet::class)
+@Destination
 @Composable
 fun DeliveryPartnerDetailsScreen(
     partnerId: Int,
@@ -121,6 +124,9 @@ fun DeliveryPartnerDetailsScreen(
     val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
     val showShareDialog by shareViewModel.showDialog.collectAsStateWithLifecycle()
     val partners by viewModel.partners.collectAsStateWithLifecycle()
+
+    val showSearchBar by viewModel.showSearchBar.collectAsStateWithLifecycle()
+    val searchText = viewModel.searchText.value
 
     val selectedItems = viewModel.selectedItems.toList()
 
@@ -172,13 +178,20 @@ fun DeliveryPartnerDetailsScreen(
         reportState = reportState,
         selectedItems = selectedItems.toImmutableList(),
         partners = partners.toImmutableList(),
+        showSearchBar = showSearchBar,
+        searchText = searchText,
+        placeholderText = "Search orders..",
+        onClearClick = viewModel::clearSearchText,
+        onSearchTextChanged = viewModel::searchTextChanged,
+        onSearchIconClick = viewModel::openSearchBar,
+        onCloseSearchBar = viewModel::closeSearchBar,
         onClickPrint = printDeliveryReport,
         onClickShare = shareViewModel::onShowDialog,
         onSelectDate = viewModel::selectDate,
         onSelectItem = viewModel::selectItem,
         onDeselectItems = viewModel::deselectItems,
-        onClickSelectItems = viewModel::selectUnselectedOrders,
         onChangePartner = viewModel::onChangeDeliveryPartner,
+        onSwapSelection = viewModel::onSwapSelections,
         onBackClick = navigator::navigateUp,
         snackbarHostState = snackbarHostState,
         onNavigateToHomeScreen = {
@@ -232,6 +245,13 @@ internal fun DeliveryPartnerDetailsScreenContent(
     reportState: PartnerReportState,
     selectedItems: ImmutableList<Int>,
     partners: ImmutableList<EmployeeNameAndId>,
+    showSearchBar: Boolean,
+    searchText: String,
+    placeholderText: String,
+    onClearClick: () -> Unit,
+    onSearchTextChanged: (String) -> Unit,
+    onSearchIconClick: () -> Unit,
+    onCloseSearchBar: () -> Unit,
     onClickPrint: () -> Unit,
     onClickShare: () -> Unit,
     onBackClick: () -> Unit,
@@ -240,8 +260,8 @@ internal fun DeliveryPartnerDetailsScreenContent(
     onSelectDate: (String) -> Unit,
     onSelectItem: (Int) -> Unit,
     onDeselectItems: () -> Unit,
-    onClickSelectItems: () -> Unit,
     onChangePartner: (Int) -> Unit,
+    onSwapSelection: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) = trace("DeliveryPartnerDetailsScreenContent") {
     val lazyListState = rememberLazyListState()
@@ -268,19 +288,23 @@ internal fun DeliveryPartnerDetailsScreenContent(
     }
 
     val onClickBack: () -> Unit = {
-        if (selectedItems.isEmpty()) {
-            onBackClick()
-        } else {
+        if (showSearchBar) {
+            onCloseSearchBar()
+        } else if (selectedItems.isNotEmpty()) {
             onDeselectItems()
+        } else {
+            onBackClick()
         }
     }
 
     BackHandler { onClickBack() }
 
-    StandardBottomSheetScaffold(
+    PoposSecondaryScaffold(
         modifier = modifier,
         title = if (selectedItems.isEmpty()) title else "${selectedItems.size} Selected",
-        showBottomBar = true,
+        showBottomBar = reportState is PartnerReportState.Success,
+        showSecondaryBottomBar = true,
+        showBackButton = selectedItems.isEmpty(),
         bottomBar = {
             TotalDeliveryReportCard(
                 modifier = Modifier
@@ -291,23 +315,57 @@ internal fun DeliveryPartnerDetailsScreenContent(
                 selectedDate = selectedDate.ifEmpty { System.currentTimeMillis().toString() },
                 selectedCount = selectedItems.size,
                 isInSelectionMode = selectedItems.isNotEmpty(),
-                onClickSelectItems = onClickSelectItems,
                 onChangePartner = onChangePartner,
                 partners = partners,
                 onClickPrint = onClickPrint,
                 onClickShare = onClickShare,
+                onSwapSelection = onSwapSelection,
                 onChangeDate = dialogState::show,
                 primaryBtnColor = MaterialTheme.colorScheme.secondary,
                 secBtnColor = MaterialTheme.colorScheme.outline,
                 color = MaterialTheme.colorScheme.secondary,
             )
         },
+        navActions = {
+            if (showSearchBar) {
+                StandardSearchBar(
+                    searchText = searchText,
+                    placeholderText = placeholderText,
+                    onClearClick = onClearClick,
+                    onSearchTextChanged = onSearchTextChanged,
+                )
+            } else {
+                if (reportState is PartnerReportState.Success) {
+                    IconButton(
+                        onClick = onSearchIconClick,
+                        modifier = Modifier.testTag(NAV_SEARCH_BTN),
+                    ) {
+                        Icon(
+                            imageVector = PoposIcons.Search,
+                            contentDescription = "Search Icon",
+                        )
+                    }
+                }
+            }
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = onDeselectItems,
+                modifier = Modifier.testTag(CLEAR_ICON),
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Close Icon",
+                )
+            }
+        },
         onBackClick = onClickBack,
         snackbarHostState = snackbarHostState,
-    ) {
+    ) { paddingValues ->
         Crossfade(
             targetState = reportState,
             label = "ReportState",
+            modifier = Modifier.padding(paddingValues),
         ) { state ->
             when (state) {
                 is PartnerReportState.Loading -> LoadingIndicator()
@@ -324,10 +382,7 @@ internal fun DeliveryPartnerDetailsScreenContent(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize(),
-                        contentPadding = PaddingValues(
-                            horizontal = SpaceMedium,
-                            vertical = SpaceSmall,
-                        ),
+                        contentPadding = PaddingValues(SpaceSmall),
                         verticalArrangement = Arrangement.spacedBy(SpaceSmall),
                         state = lazyListState,
                     ) {
@@ -381,7 +436,7 @@ internal fun DeliveryReportCard(
     isSelected: (Int) -> Boolean,
     onClickOrder: (Int) -> Unit,
     onSelectItem: (Int) -> Unit,
-    containerColor: Color = LightColor6,
+    containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("DeliveryReportCard") {
     ElevatedCard(
         modifier = modifier
@@ -406,16 +461,16 @@ internal fun DeliveryReportCard(
                 .fillMaxWidth()
                 .padding(SpaceSmall),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(SpaceMini),
         ) {
             Row(
+                modifier = Modifier.weight(0.7f),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
                 CircularBox(
                     icon = PoposIcons.Tag,
                     doesSelected = isSelected(order.orderId),
-                    backgroundColor = MaterialTheme.colorScheme.background,
                     modifier = Modifier,
                 )
 
@@ -428,25 +483,26 @@ internal fun DeliveryReportCard(
             }
 
             Text(
-                text = order.customerAddress,
+                modifier = Modifier.weight(0.7f, true),
+                text = createDottedString(order.customerAddress, 15),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
 
             Text(
+                modifier = Modifier.weight(0.8f, true),
                 text = order.customerPhone,
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier,
             )
 
             Text(
                 text = order.orderPrice.toRupee,
                 style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Start,
-                modifier = Modifier,
             )
 
             Icon(
@@ -467,9 +523,9 @@ private fun DeliveryReportCardPreview(
         modifier = modifier,
         order = DeliveryReport(
             orderId = 8911,
-            customerAddress = "eros",
-            customerPhone = "(964) 177-5350",
-            orderPrice = 8601,
+            customerAddress = "eros post office block",
+            customerPhone = "9078563412",
+            orderPrice = 8400,
             partnerId = 9182,
             partnerName = null,
             orderDate = Date(),
@@ -498,8 +554,15 @@ private fun DeliveryPartnerDetailsScreenLoadingState() {
             onSelectDate = {},
             onSelectItem = {},
             onDeselectItems = {},
-            onClickSelectItems = {},
             onChangePartner = {},
+            showSearchBar = false,
+            searchText = "",
+            placeholderText = "",
+            onClearClick = {},
+            onSearchTextChanged = {},
+            onSearchIconClick = {},
+            onCloseSearchBar = {},
+            onSwapSelection = {},
         )
     }
 }
@@ -522,8 +585,15 @@ private fun DeliveryPartnerDetailsScreenEmptyState() {
             onSelectDate = {},
             onSelectItem = {},
             onDeselectItems = {},
-            onClickSelectItems = {},
             onChangePartner = {},
+            showSearchBar = false,
+            searchText = "",
+            placeholderText = "",
+            onClearClick = {},
+            onSearchTextChanged = {},
+            onSearchIconClick = {},
+            onCloseSearchBar = {},
+            onSwapSelection = {},
         )
     }
 }
@@ -549,8 +619,15 @@ private fun DeliveryPartnerDetailsScreenSuccessState(
             onSelectDate = {},
             onSelectItem = {},
             onDeselectItems = {},
-            onClickSelectItems = {},
             onChangePartner = {},
+            showSearchBar = false,
+            searchText = "",
+            placeholderText = "",
+            onClearClick = {},
+            onSearchTextChanged = {},
+            onSearchIconClick = {},
+            onCloseSearchBar = {},
+            onSwapSelection = {},
         )
     }
 }
