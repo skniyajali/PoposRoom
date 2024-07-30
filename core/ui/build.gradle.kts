@@ -25,10 +25,6 @@ plugins {
 
 android {
     namespace = "com.niyaj.core.ui"
-
-    defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
 }
 
 dependencies {
@@ -38,8 +34,6 @@ dependencies {
     api(projects.core.model)
     api(projects.core.common)
     api(libs.androidx.tracing.ktx)
-
-    androidTestImplementation(projects.core.testing)
 
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.hilt.navigation.compose)
@@ -57,4 +51,7 @@ dependencies {
     implementation(libs.zxing.core)
 
     implementation(libs.accompanist.permissions)
+
+    androidTestImplementation(libs.bundles.androidx.compose.ui.test)
+    androidTestImplementation(projects.core.testing)
 }

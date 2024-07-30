@@ -76,7 +76,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.niyaj.common.utils.Constants
+import com.niyaj.common.utils.Constants.CLEAR_ICON
+import com.niyaj.common.utils.Constants.DRAWER_ICON
 import com.niyaj.common.utils.Constants.STANDARD_BACK_BUTTON
 import com.niyaj.designsystem.components.PoposLargeTopAppBar
 import com.niyaj.designsystem.icon.PoposIcons
@@ -88,6 +89,8 @@ import com.niyaj.designsystem.theme.RoyalPurple
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.ui.utils.DevicePreviews
 import kotlinx.coroutines.launch
+
+const val PRIMARY_APP_DRAWER = "primaryAppDrawer"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -134,7 +137,7 @@ fun PoposPrimaryScaffold(
         drawerState = drawerState,
         drawerContent = {
             PoposDrawer(
-                modifier = Modifier.testTag("primaryAppDrawer"),
+                modifier = Modifier.testTag(PRIMARY_APP_DRAWER),
                 currentRoute = currentRoute,
                 onNavigateToScreen = onNavigateToScreen,
             )
@@ -174,7 +177,7 @@ fun PoposPrimaryScaffold(
                                 if (state.currentState != 0) {
                                     IconButton(
                                         onClick = onDeselect,
-                                        modifier = Modifier.testTag(Constants.CLEAR_ICON),
+                                        modifier = Modifier.testTag(CLEAR_ICON),
                                     ) {
                                         Icon(
                                             imageVector = PoposIcons.Close,
@@ -189,7 +192,7 @@ fun PoposPrimaryScaffold(
                                             }
                                         },
                                         modifier = Modifier
-                                            .testTag("drawerIconBtn"),
+                                            .testTag(DRAWER_ICON),
                                     ) {
                                         Icon(
                                             imageVector = PoposIcons.App,

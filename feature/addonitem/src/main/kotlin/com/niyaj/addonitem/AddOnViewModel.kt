@@ -27,7 +27,6 @@ import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -44,8 +43,7 @@ class AddOnViewModel @Inject constructor(
 
     override var totalItems: List<Int> = emptyList()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val addOnItems = snapshotFlow { searchText.value }
+    val addOnItems = snapshotFlow { mSearchText.value }
         .flatMapLatest { it ->
             itemRepository.getAllAddOnItem(it)
                 .onStart { UiState.Loading }
@@ -74,13 +72,13 @@ class AddOnViewModel @Inject constructor(
                             "${selectedItems.size} item deleted successfully",
                         ),
                     )
+                    analyticsHelper.logDeletedAddOnItem(selectedItems.toList())
                 }
 
                 is Resource.Error -> {
                     mEventFlow.emit(
                         UiEvent.OnError(result.message ?: "Unable to delete items"),
                     )
-                    analyticsHelper.logDeletedAddOnItem(selectedItems.toList())
                 }
             }
 
@@ -93,9 +91,7 @@ internal fun AnalyticsHelper.logDeletedAddOnItem(data: List<Int>) {
     logEvent(
         event = AnalyticsEvent(
             type = "addon_deleted",
-            extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("addon_deleted", data.toString()),
-            ),
+            extras = listOf(AnalyticsEvent.Param("addon_deleted", data.toString())),
         ),
     )
 }

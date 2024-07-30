@@ -37,11 +37,12 @@ dependencies {
     implementation(libs.raamcosta.animation.core)
     ksp(libs.raamcosta.ksp)
 
+    testImplementation(projects.core.testing)
     testImplementation(libs.hilt.android.testing)
     testImplementation(libs.robolectric)
-    testImplementation(projects.core.testing)
-    testImplementation(projects.core.screenshotTesting)
-    testDemoImplementation(libs.roborazzi)
+    testDemoImplementation(projects.core.screenshotTesting)
+    testImplementation(libs.turbine)
 
+    androidTestImplementation(libs.bundles.androidx.compose.ui.test)
     androidTestImplementation(projects.core.testing)
 }

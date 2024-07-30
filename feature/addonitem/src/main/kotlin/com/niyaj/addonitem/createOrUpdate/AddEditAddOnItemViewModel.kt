@@ -55,11 +55,11 @@ class AddEditAddOnItemViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val addOnItemId = savedStateHandle.get<Int>("itemId") ?: 0
+    private val addOnItemId = savedStateHandle.getStateFlow("itemId", 0)
 
     var addEditState by mutableStateOf(AddEditAddOnItemState())
 
-    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    private val _eventFlow = MutableSharedFlow<UiEvent>(replay = 0)
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
@@ -70,7 +70,7 @@ class AddEditAddOnItemViewModel @Inject constructor(
 
     val nameError: StateFlow<String?> = snapshotFlow { addEditState.itemName }
         .mapLatest {
-            validateItemNameUseCase(it, addOnItemId).errorMessage
+            validateItemNameUseCase(it, addOnItemId.value).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -101,7 +101,7 @@ class AddEditAddOnItemViewModel @Inject constructor(
             }
 
             is AddEditAddOnItemEvent.CreateUpdateAddOnItem -> {
-                createOrUpdateAddOnItem(addOnItemId)
+                createOrUpdateAddOnItem(addOnItemId.value)
             }
         }
     }

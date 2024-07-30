@@ -300,7 +300,7 @@ dependencies {
     testDemoImplementation(libs.roborazzi)
     testDemoImplementation(projects.core.screenshotTesting)
 
-
+    androidTestImplementation(kotlin("test"))
     androidTestImplementation(projects.core.testing)
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(libs.androidx.navigation.testing)
