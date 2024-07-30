@@ -50,12 +50,13 @@ import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 internal fun GroupedOrders(
+    modifier: Modifier = Modifier,
     customerPhone: String,
     orderDetails: List<AddressWiseOrder>,
     onClickOrder: (Int) -> Unit,
 ) = trace("Address::GroupedOrders") {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
     ) {
         Row(
@@ -117,7 +118,7 @@ private fun GroupedOrderDetails(
     FlowRow(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.tertiaryContainer)
+            .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .padding(horizontal = SpaceSmall),
         horizontalArrangement = Arrangement.spacedBy(SpaceSmall, Alignment.Start),
         verticalArrangement = Arrangement.Center,
