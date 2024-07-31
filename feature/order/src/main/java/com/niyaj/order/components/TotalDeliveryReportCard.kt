@@ -235,7 +235,7 @@ internal fun TotalDeliveryReportCard(
             elevation = CardDefaults.elevatedCardElevation(),
         ) {
             AnimatedContent(
-                targetState = isInSelectionMode,
+                targetState = isInSelectionMode && partners.isNotEmpty(),
                 label = "isInSelectionMode",
             ) { selected ->
                 if (selected) {
