@@ -399,6 +399,7 @@ fun HomeScreenContent(
 
                         is UiState.Success -> {
                             HomeScreenProducts(
+                                modifier = Modifier.testTag("homeScreenProducts"),
                                 lazyListState = lazyListState,
                                 products = productState.data,
                                 onIncrease = onIncreaseQuantity,

@@ -18,10 +18,12 @@
 package com.niyaj.poposroom.benchmarks
 
 import android.Manifest.permission
+import android.content.Intent
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import androidx.benchmark.macro.MacrobenchmarkScope
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiObject2
@@ -65,7 +67,6 @@ fun MacrobenchmarkScope.allowAllPermission() {
         device.executeShellCommand(bleConnect)
         device.executeShellCommand(bleScan)
     }
-
     device.executeShellCommand(blePer)
     device.executeShellCommand(bleAdmin)
 }
@@ -77,6 +78,16 @@ fun MacrobenchmarkScope.allowAllPermission() {
 fun MacrobenchmarkScope.startActivityAndGrantPermission() {
     startActivityAndWait()
     allowAllPermission()
+}
+
+fun MacrobenchmarkScope.restoreDatabase() {
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    val intent = Intent("com.niyaj.poposroom.demo.ACTION_RESTORE_DATABASE")
+    intent.setPackage(context.packageName)
+    context.sendOrderedBroadcast(intent, "com.niyaj.poposroom.demo.BENCHMARK_PERMISSION")
+
+    // Wait for the restoration to complete
+    device.waitForIdle()
 }
 
 /**
