@@ -57,7 +57,9 @@ class PoposAppState(
     val navController: NavHostController,
     val bottomSheetNavigator: BottomSheetNavigator,
     coroutineScope: CoroutineScope,
-)
+) {
+    val currentRoute: String? = navController.currentDestination?.route
+}
 
 /**
  * Stores information about navigation events to be used with JankStats
