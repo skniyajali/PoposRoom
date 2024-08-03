@@ -52,8 +52,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.niyaj.common.utils.Constants.CLEAR_ICON
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceMedium
@@ -62,9 +64,9 @@ import com.niyaj.designsystem.theme.SpaceMedium
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StandardBottomSheetScaffold(
-    modifier: Modifier = Modifier,
     title: String,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
     showBottomBar: Boolean = false,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     bottomBar: @Composable () -> Unit = {},
@@ -136,8 +138,8 @@ fun StandardBottomSheetScaffold(
 
 @Composable
 fun StandardBottomSheet(
-    modifier: Modifier = Modifier,
     title: String,
+    modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     closeButtonColor: Color = MaterialTheme.colorScheme.error,
     windowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
@@ -145,6 +147,7 @@ fun StandardBottomSheet(
 ) {
     Surface(
         modifier = modifier
+            .testTag(title)
             .consumeWindowInsets(windowInsets)
             .imePadding(),
         color = MaterialTheme.colorScheme.background,
@@ -176,7 +179,9 @@ fun StandardBottomSheet(
                     )
                     IconButton(
                         onClick = onBackClick,
-                        modifier = Modifier.size(29.dp),
+                        modifier = Modifier
+                            .size(29.dp)
+                            .testTag(CLEAR_ICON),
                     ) {
                         Icon(
                             imageVector = PoposIcons.Close,

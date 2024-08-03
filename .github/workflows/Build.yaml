@@ -94,8 +94,6 @@ jobs:
         run: |
           ./gradlew dependencyGuardBaseline
 
-
-
       - name: Push new Dependency Guard baselines if available
         uses: stefanzweifel/git-auto-commit-action@v5
         if: steps.dependencyguard_baseline.outcome == 'success'
@@ -172,7 +170,11 @@ jobs:
           java-version: 17
 
       - name: Build all debug build type and flavor permutations
-        run: ./gradlew :app:assembleDebug
+        run: ./gradlew :app:assembleDebug :benchmarks:assemble
+          -x pixel6Api33ProdNonMinifiedReleaseAndroidTest
+          -x pixel6Api33DemoNonMinifiedReleaseAndroidTest
+          -x collectDemoNonMinifiedReleaseBaselineProfile
+          -x collectProdNonMinifiedReleaseBaselineProfile
 
       - name: Build and upload to Maestro Cloud (Native Android)
         uses: mobile-dev-inc/action-maestro-cloud@v1

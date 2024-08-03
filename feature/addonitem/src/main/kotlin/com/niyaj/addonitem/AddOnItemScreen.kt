@@ -207,7 +207,9 @@ internal fun AddOnItemScreenContent(
                 showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = onEditClick,
-                onDeleteClick = onDeleteClick,
+                onDeleteClick = {
+                    openDialog.value = true
+                },
                 onSettingsClick = onSettingsClick,
                 onSelectAllClick = onSelectAllClick,
                 onClearClick = onClearSearchClick,

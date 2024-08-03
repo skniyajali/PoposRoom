@@ -67,9 +67,9 @@ import com.niyaj.designsystem.utils.drawAnimatedBorder
 
 @Composable
 fun PoposTextButton(
-    modifier: Modifier = Modifier,
     text: String,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
     shape: Shape = ButtonDefaults.textShape,
@@ -86,7 +86,7 @@ fun PoposTextButton(
 
     TextButton(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier.testTag(text),
         enabled = enabled,
         shape = shape,
         colors = colors,

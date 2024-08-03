@@ -25,8 +25,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import com.niyaj.addonitem.destinations.AddOnExportScreenDestination
 import com.niyaj.addonitem.destinations.AddOnImportScreenDestination
+import com.niyaj.common.tags.AddOnTestTags.ADDON_ITEM_LIST
 import com.niyaj.common.tags.AddOnTestTags.ADDON_SETTINGS_TITLE
 import com.niyaj.common.tags.AddOnTestTags.EXPORT_ADDON_TITLE
 import com.niyaj.common.tags.AddOnTestTags.IMPORT_ADDON_TITLE
@@ -80,7 +82,8 @@ internal fun AddOnSettingsScreenContent(
 
         LazyColumn(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .testTag(ADDON_ITEM_LIST),
             contentPadding = PaddingValues(SpaceMedium),
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),

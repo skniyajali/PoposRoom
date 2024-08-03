@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -58,6 +59,9 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.niyaj.common.utils.Constants.BLUETOOTH_PER_DENY_TEXT
 import com.niyaj.common.utils.Constants.BLUETOOTH_PER_RATIONAL_TEXT
+import com.niyaj.common.utils.Constants.DIALOG_CONFIRM_TEXT
+import com.niyaj.common.utils.Constants.DIALOG_DISMISS_TEXT
+import com.niyaj.common.utils.Constants.STANDARD_DELETE_DIALOG
 import com.niyaj.core.ui.R
 import com.niyaj.designsystem.components.PoposTextButton
 import com.niyaj.designsystem.icon.PoposIcons
@@ -229,8 +233,8 @@ fun StandardDialog(
     message: String,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
-    onConfirmText: String = "Delete",
-    onDismissText: String = "Maybe Later",
+    onConfirmText: String = DIALOG_CONFIRM_TEXT,
+    onDismissText: String = DIALOG_DISMISS_TEXT,
     boxColor: Brush = gradient2,
     tint: Color = MaterialTheme.colorScheme.error,
     shape: Shape = AlertDialogDefaults.shape,
@@ -243,9 +247,9 @@ fun StandardDialog(
 
     BasicAlertDialog(
         onDismissRequest = onDismiss,
+        modifier = modifier.testTag(STANDARD_DELETE_DIALOG),
     ) {
         Surface(
-            modifier = modifier,
             shape = shape,
             color = containerColor,
             tonalElevation = tonalElevation,
@@ -308,6 +312,7 @@ fun StandardDialog(
 
                 Box(
                     modifier = Modifier
+                        .testTag(onConfirmText)
                         .fillMaxWidth()
                         .background(tint)
                         .clickable { onConfirm() }
