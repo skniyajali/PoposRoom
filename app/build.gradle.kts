@@ -302,6 +302,7 @@ dependencies {
 
     androidTestImplementation(kotlin("test"))
     androidTestImplementation(projects.core.testing)
+    androidTestImplementation(projects.core.databaseTest)
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(libs.androidx.navigation.testing)
     androidTestImplementation(libs.androidx.compose.ui.test)

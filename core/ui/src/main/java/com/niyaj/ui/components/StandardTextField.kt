@@ -35,11 +35,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import com.niyaj.common.utils.Constants.CLEAR_ICON
 import com.niyaj.common.utils.Constants.PASSWORD_HIDDEN_ICON
 import com.niyaj.common.utils.Constants.PASSWORD_SHOWN_ICON
 import com.niyaj.common.utils.Constants.TEXT_FIELD_LEADING_ICON
@@ -283,7 +286,9 @@ private fun ClearIconButton(
     ) {
         IconButton(
             onClick = onClickClearIcon,
-            modifier = modifier,
+            modifier = modifier.semantics {
+                contentDescription = CLEAR_ICON
+            },
         ) {
             Icon(
                 imageVector = clearIcon,

@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -107,7 +108,8 @@ fun ItemNotAvailable(
 
                 if (buttonText.isNotEmpty()) {
                     PoposElevatedButton(
-                        modifier = btnModifier,
+                        modifier = btnModifier
+                            .testTag(buttonText),
                         text = buttonText,
                         icon = icon,
                         onClick = onClick,

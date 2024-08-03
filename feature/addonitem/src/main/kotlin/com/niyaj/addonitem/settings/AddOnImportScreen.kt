@@ -53,7 +53,6 @@ import com.niyaj.common.tags.AddOnTestTags.IMPORT_ADDON_BTN_TEXT
 import com.niyaj.common.tags.AddOnTestTags.IMPORT_ADDON_NOTE_TEXT
 import com.niyaj.common.tags.AddOnTestTags.IMPORT_ADDON_OPN_FILE
 import com.niyaj.common.tags.AddOnTestTags.IMPORT_ADDON_TITLE
-import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
@@ -64,6 +63,7 @@ import com.niyaj.domain.utils.ImportExport
 import com.niyaj.model.AddOnItem
 import com.niyaj.ui.components.EmptyImportScreen
 import com.niyaj.ui.components.InfoText
+import com.niyaj.ui.components.NAV_SELECT_ALL_BTN
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.parameterProvider.AddOnPreviewData
@@ -139,7 +139,6 @@ fun AddOnImportScreen(
     TrackScreenViewEvent(screenName = ADD_ON_IMPORT_SCREEN)
 
     AddOnImportScreenContent(
-        modifier = Modifier,
         importedItems = importedItems.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         onClickSelectItem = viewModel::selectItem,
@@ -154,13 +153,13 @@ fun AddOnImportScreen(
             }
         },
         onBackClick = navigator::navigateUp,
+        modifier = Modifier,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun AddOnImportScreenContent(
-    modifier: Modifier = Modifier,
     importedItems: ImmutableList<AddOnItem>,
     selectedItems: ImmutableList<Int>,
     onClickSelectItem: (Int) -> Unit,
@@ -169,6 +168,7 @@ internal fun AddOnImportScreenContent(
     onClickImport: () -> Unit,
     onClickOpenFile: () -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
     padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
 ) {
     val scope = rememberCoroutineScope()
@@ -191,7 +191,7 @@ internal fun AddOnImportScreenContent(
                 ) {
                     Icon(
                         imageVector = PoposIcons.Checklist,
-                        contentDescription = Constants.SELECT_ALL_ICON,
+                        contentDescription = NAV_SELECT_ALL_BTN,
                     )
                 }
             }
@@ -288,7 +288,6 @@ internal fun AddOnImportScreenContent(
 private fun AddOnImportScreenEmptyContentPreview() {
     PoposRoomTheme {
         AddOnImportScreenContent(
-            modifier = Modifier,
             importedItems = persistentListOf(),
             selectedItems = persistentListOf(),
             onClickSelectItem = {},
@@ -297,6 +296,7 @@ private fun AddOnImportScreenEmptyContentPreview() {
             onClickImport = {},
             onClickOpenFile = {},
             onBackClick = {},
+            modifier = Modifier,
         )
     }
 }
@@ -308,7 +308,6 @@ private fun AddOnImportScreenContentPreview(
 ) {
     PoposRoomTheme {
         AddOnImportScreenContent(
-            modifier = Modifier,
             importedItems = items,
             selectedItems = persistentListOf(),
             onClickSelectItem = {},
@@ -317,6 +316,7 @@ private fun AddOnImportScreenContentPreview(
             onClickImport = {},
             onClickOpenFile = {},
             onBackClick = {},
+            modifier = Modifier,
         )
     }
 }

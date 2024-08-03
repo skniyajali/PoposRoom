@@ -22,6 +22,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -49,12 +50,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.addonitem.components.AddOnItemData
 import com.niyaj.addonitem.destinations.AddEditAddOnItemScreenDestination
 import com.niyaj.common.tags.AddOnTestTags
+import com.niyaj.common.tags.AddOnTestTags.ADDON_ITEM_LIST
 import com.niyaj.common.tags.AddOnTestTags.ADDON_NOT_AVAILABLE
+import com.niyaj.common.tags.AddOnTestTags.ADDON_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.AddOnTestTags.EXPORT_ADDON_BTN
 import com.niyaj.common.tags.AddOnTestTags.EXPORT_ADDON_BTN_TEXT
 import com.niyaj.common.tags.AddOnTestTags.EXPORT_ADDON_FILE_NAME
 import com.niyaj.common.tags.AddOnTestTags.EXPORT_ADDON_TITLE
-import com.niyaj.common.utils.Constants
+import com.niyaj.common.utils.Constants.CLEAR_ICON
 import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
@@ -67,6 +70,7 @@ import com.niyaj.model.AddOnItem
 import com.niyaj.ui.components.InfoText
 import com.niyaj.ui.components.ItemNotAvailable
 import com.niyaj.ui.components.NAV_SEARCH_BTN
+import com.niyaj.ui.components.NAV_SELECT_ALL_BTN
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.ScrollToTop
 import com.niyaj.ui.components.StandardSearchBar
@@ -136,7 +140,6 @@ fun AddOnExportScreen(
         }
 
     AddOnExportScreenContent(
-        modifier = Modifier,
         addOnItems = addOnItems.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         showSearchBar = showSearchBar,
@@ -162,14 +165,13 @@ fun AddOnExportScreen(
         onClickToAddItem = {
             navigator.navigate(AddEditAddOnItemScreenDestination())
         },
+        modifier = Modifier,
     )
 }
 
-// TODO:: fix bottomBar padding issue
 @VisibleForTesting
 @Composable
 internal fun AddOnExportScreenContent(
-    modifier: Modifier = Modifier,
     addOnItems: ImmutableList<AddOnItem>,
     selectedItems: ImmutableList<Int>,
     showSearchBar: Boolean,
@@ -184,6 +186,7 @@ internal fun AddOnExportScreenContent(
     onClickExport: () -> Unit,
     onBackClick: () -> Unit,
     onClickToAddItem: () -> Unit,
+    modifier: Modifier = Modifier,
     padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
 ) {
     TrackScreenViewEvent(screenName = ADD_ON_EXPORT_SCREEN)
@@ -211,7 +214,7 @@ internal fun AddOnExportScreenContent(
             if (showSearchBar) {
                 StandardSearchBar(
                     searchText = searchText,
-                    placeholderText = "Search for addon items...",
+                    placeholderText = ADDON_SEARCH_PLACEHOLDER,
                     onClearClick = onClearClick,
                     onSearchTextChanged = onSearchTextChanged,
                 )
@@ -219,10 +222,11 @@ internal fun AddOnExportScreenContent(
                 if (addOnItems.isNotEmpty()) {
                     IconButton(
                         onClick = onClickSelectAll,
+                        modifier = Modifier.testTag(NAV_SELECT_ALL_BTN),
                     ) {
                         Icon(
                             imageVector = PoposIcons.Checklist,
-                            contentDescription = Constants.SELECT_ALL_ICON,
+                            contentDescription = "Select All",
                         )
                     }
 
@@ -276,6 +280,7 @@ internal fun AddOnExportScreenContent(
         navigationIcon = {
             IconButton(
                 onClick = onClickDeselect,
+                modifier = Modifier.testTag(CLEAR_ICON),
             ) {
                 Icon(
                     imageVector = PoposIcons.Close,
@@ -285,14 +290,14 @@ internal fun AddOnExportScreenContent(
         },
     ) { paddingValues ->
         AddOnExportScreenData(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            emptyText = emptyText,
             addOnItems = addOnItems,
             onClickToAddItem = onClickToAddItem,
             onSelectItem = onSelectItem,
             doesSelected = selectedItems::contains,
+            modifier = modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            emptyText = emptyText,
             lazyGridState = lazyGridState,
         )
     }
@@ -300,40 +305,43 @@ internal fun AddOnExportScreenContent(
 
 @Composable
 private fun AddOnExportScreenData(
-    modifier: Modifier = Modifier,
-    emptyText: String = ADDON_NOT_AVAILABLE,
     addOnItems: ImmutableList<AddOnItem>,
     onClickToAddItem: () -> Unit,
     onSelectItem: (Int) -> Unit,
     doesSelected: (Int) -> Boolean,
+    modifier: Modifier = Modifier,
+    emptyText: String = ADDON_NOT_AVAILABLE,
     lazyGridState: LazyGridState = rememberLazyGridState(),
 ) {
-    if (addOnItems.isEmpty()) {
-        ItemNotAvailable(
-            text = emptyText,
-            buttonText = AddOnTestTags.CREATE_NEW_ADD_ON,
-            onClick = onClickToAddItem,
-        )
-    } else {
-        TrackScrollJank(scrollableState = lazyGridState, stateName = "addon-export:list")
+    Box(modifier) {
+        if (addOnItems.isEmpty()) {
+            ItemNotAvailable(
+                text = emptyText,
+                buttonText = AddOnTestTags.CREATE_NEW_ADD_ON,
+                onClick = onClickToAddItem,
+            )
+        } else {
+            TrackScrollJank(scrollableState = lazyGridState, stateName = "addon-export:list")
 
-        LazyVerticalGrid(
-            modifier = modifier
-                .fillMaxSize(),
-            contentPadding = PaddingValues(SpaceSmall),
-            columns = GridCells.Fixed(2),
-            state = lazyGridState,
-        ) {
-            items(
-                items = addOnItems,
-                key = { it.itemId },
-            ) { item: AddOnItem ->
-                AddOnItemData(
-                    item = item,
-                    doesSelected = doesSelected,
-                    onClick = onSelectItem,
-                    onLongClick = onSelectItem,
-                )
+            LazyVerticalGrid(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .testTag(ADDON_ITEM_LIST),
+                contentPadding = PaddingValues(SpaceSmall),
+                columns = GridCells.Fixed(2),
+                state = lazyGridState,
+            ) {
+                items(
+                    items = addOnItems,
+                    key = { it.itemId },
+                ) { item: AddOnItem ->
+                    AddOnItemData(
+                        item = item,
+                        doesSelected = doesSelected,
+                        onClick = onSelectItem,
+                        onLongClick = onSelectItem,
+                    )
+                }
             }
         }
     }
@@ -346,7 +354,6 @@ private fun AddOnExportScreenContentPreview(
 ) {
     PoposRoomTheme {
         AddOnExportScreenContent(
-            modifier = Modifier,
             addOnItems = items,
             selectedItems = persistentListOf(),
             showSearchBar = false,
@@ -361,6 +368,7 @@ private fun AddOnExportScreenContentPreview(
             onClickExport = {},
             onBackClick = {},
             onClickToAddItem = {},
+            modifier = Modifier,
         )
     }
 }

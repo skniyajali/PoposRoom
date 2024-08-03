@@ -48,8 +48,10 @@ import com.niyaj.common.tags.AddOnTestTags.ADDON_NAME_FIELD
 import com.niyaj.common.tags.AddOnTestTags.ADDON_PRICE_ERROR_TAG
 import com.niyaj.common.tags.AddOnTestTags.ADDON_PRICE_FIELD
 import com.niyaj.common.tags.AddOnTestTags.ADD_EDIT_ADDON_SCREEN
+import com.niyaj.common.tags.AddOnTestTags.APPLIED_TEXT
 import com.niyaj.common.tags.AddOnTestTags.CREATE_NEW_ADD_ON
 import com.niyaj.common.tags.AddOnTestTags.EDIT_ADD_ON_ITEM
+import com.niyaj.common.tags.AddOnTestTags.NOT_APPLIED_TEXT
 import com.niyaj.common.utils.safeString
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.icon.PoposIcons
@@ -210,9 +212,9 @@ internal fun AddEditAddOnItemScreenContent(
                     Spacer(modifier = Modifier.width(SpaceSmall))
                     Text(
                         text = if (state.isApplicable) {
-                            "Marked as applied"
+                            APPLIED_TEXT
                         } else {
-                            "Marked as not applied"
+                            NOT_APPLIED_TEXT
                         },
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onBackground,

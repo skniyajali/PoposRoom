@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.icon.PoposIcons
@@ -40,17 +41,18 @@ import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun SettingsCard(
-    modifier: Modifier = Modifier,
     title: String,
     subtitle: String,
     icon: ImageVector,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
     leadingColor: Color = MaterialTheme.colorScheme.surfaceContainerHighest,
     leadingTint: Color = MaterialTheme.colorScheme.tertiary,
 ) {
     ListItem(
         modifier = modifier
+            .testTag(title)
             .fillMaxWidth()
             .clip(RoundedCornerShape(SpaceMini))
             .clickable {

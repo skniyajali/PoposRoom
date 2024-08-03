@@ -52,8 +52,8 @@ import com.niyaj.designsystem.icon.PoposIcons
 
 @Composable
 fun StandardSearchBar(
-    modifier: Modifier = Modifier,
     searchText: String,
+    modifier: Modifier = Modifier,
     placeholderText: String = "",
     onSearchTextChanged: (String) -> Unit = {},
     onClearClick: () -> Unit = {},

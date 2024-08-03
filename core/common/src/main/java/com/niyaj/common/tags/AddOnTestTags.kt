@@ -36,12 +36,14 @@ object AddOnTestTags {
     const val EDIT_ADD_ON_ITEM = "Update AddOn Item"
 
     const val ADDON_NAME_FIELD = "AddOn Name"
-    const val ADDON_NAME_ERROR_TAG = "AddOn Name Error"
+    const val ADDON_NAME_ERROR_TAG = "AddOnNameError"
 
     const val ADDON_PRICE_FIELD = "AddOn Price"
-    const val ADDON_PRICE_ERROR_TAG = "AddOn Price Error"
+    const val ADDON_PRICE_ERROR_TAG = "AddOnPriceError"
 
     const val ADDON_APPLIED_SWITCH = "AddOn Applied Switch"
+    const val APPLIED_TEXT = "Marked as applied"
+    const val NOT_APPLIED_TEXT = "Marked as not applied"
 
     const val ADDON_NAME_EMPTY_ERROR = "AddOn item name must not be empty."
     const val ADDON_NAME_DIGIT_ERROR = "AddOn item name must not contains any digit."

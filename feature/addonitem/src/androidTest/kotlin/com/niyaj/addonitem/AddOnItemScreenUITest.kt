@@ -59,7 +59,7 @@ import com.niyaj.ui.parameterProvider.AddOnPreviewData
 import org.junit.Rule
 import org.junit.Test
 
-class AddOnItemScreenTest {
+class AddOnItemScreenUITest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
