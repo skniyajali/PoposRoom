@@ -110,11 +110,12 @@ jobs:
           java-version: 17
       - name: Build APKs
         run: |
-          ./gradlew :app:assembleDebug :benchmarks:assemble 
-            -x pixel6Api33ProdNonMinifiedReleaseAndroidTest 
-            -x pixel6Api33DemoNonMinifiedReleaseAndroidTest 
-            -x collectDemoNonMinifiedReleaseBaselineProfile 
-            -x collectProdNonMinifiedReleaseBaselineProfile
+          ./gradlew :app:assembleDebug
+#            :benchmarks:assemble
+#            -x pixel6Api33ProdNonMinifiedReleaseAndroidTest
+#            -x pixel6Api33DemoNonMinifiedReleaseAndroidTest
+#            -x collectDemoNonMinifiedReleaseBaselineProfile
+#            -x collectProdNonMinifiedReleaseBaselineProfile
       - name: Check badging
         run: ./gradlew :app:checkProdReleaseBadging
       - name: Upload to Maestro Cloud
