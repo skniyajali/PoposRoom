@@ -66,7 +66,6 @@ object AddOnTestTags {
     const val IMPORT_ADDON_NOTE_TEXT = "Make sure to open addon.json file."
 
     const val EXPORT_ADDON_TITLE = "Export AddOn Item"
-    const val EXPORT_ADDON_BTN_TEXT = "Export AddOn"
     const val EXPORT_ADDON_BTN = "Export AddOn"
 
     const val EXPORT_ADDON_FILE_NAME = "addon"

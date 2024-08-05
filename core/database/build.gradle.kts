@@ -24,11 +24,6 @@ plugins {
 
 android {
     namespace = "com.niyaj.core.database"
-
-    defaultConfig {
-        testInstrumentationRunner = "com.niyaj.testing.PoposTestRunner"
-    }
-
 }
 
 dependencies {
@@ -38,5 +33,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.collections.immutable)
 
-    androidTestImplementation(project(":core:testing"))
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 }

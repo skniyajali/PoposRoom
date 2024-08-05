@@ -17,6 +17,7 @@
  */
 plugins {
     alias(libs.plugins.popos.android.library)
+    alias(libs.plugins.popos.android.library.compose)
     alias(libs.plugins.popos.android.hilt)
 }
 
@@ -25,13 +26,20 @@ android {
 }
 
 dependencies {
+    api(libs.bundles.androidx.compose.ui.test)
     api(libs.kotlinx.coroutines.test)
     api(projects.core.analytics)
     api(projects.core.data)
+    api(projects.core.databaseTest)
     api(projects.core.model)
     api(projects.core.notifications)
-    testApi(libs.turbine)
+    api(libs.turbine)
 
+    implementation(kotlin("test"))
+    implementation(libs.raamcosta.animation.core)
+    implementation(libs.androidx.navigation.testing)
+    implementation(libs.kotlinx.collections.immutable)
+    implementation(libs.androidx.test.espresso.core)
     implementation(libs.androidx.test.rules)
     implementation(libs.hilt.android.testing)
     implementation(libs.kotlinx.datetime)

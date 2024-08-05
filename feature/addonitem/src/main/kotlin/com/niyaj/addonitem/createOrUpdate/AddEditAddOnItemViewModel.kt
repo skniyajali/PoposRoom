@@ -39,10 +39,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.TestOnly
 import javax.inject.Inject
 
 @HiltViewModel
@@ -52,7 +53,7 @@ class AddEditAddOnItemViewModel @Inject constructor(
     private val validateItemNameUseCase: ValidateItemNameUseCase,
     private val validateItemPriceUseCase: ValidateItemPriceUseCase,
     private val analyticsHelper: AnalyticsHelper,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val addOnItemId = savedStateHandle.getStateFlow("itemId", 0)
@@ -60,7 +61,7 @@ class AddEditAddOnItemViewModel @Inject constructor(
     var addEditState by mutableStateOf(AddEditAddOnItemState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>(replay = 0)
-    val eventFlow = _eventFlow.asSharedFlow()
+    val eventFlow = _eventFlow.shareIn(viewModelScope, SharingStarted.Eagerly, 1)
 
     init {
         savedStateHandle.get<Int>("itemId")?.let { addOnItemId ->
@@ -161,6 +162,11 @@ class AddEditAddOnItemViewModel @Inject constructor(
                 addEditState = AddEditAddOnItemState()
             }
         }
+    }
+
+    @TestOnly
+    internal fun setAddOnItemId(addOnItemId: Int) {
+        savedStateHandle["itemId"] = addOnItemId
     }
 }
 

@@ -35,6 +35,7 @@ dependencies {
     api(projects.core.common)
     api(libs.androidx.tracing.ktx)
 
+    implementation(libs.kotlinx.coroutines.test)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.navigation.compose)

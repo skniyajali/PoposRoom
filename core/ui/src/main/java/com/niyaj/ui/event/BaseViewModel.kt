@@ -27,13 +27,17 @@ import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 open class BaseViewModel @Inject constructor() : ViewModel() {
+
+    val mIsLoading = MutableStateFlow(false)
+    val isLoading = mIsLoading.asStateFlow()
 
     private val _showSearchBar = MutableStateFlow(false)
     val showSearchBar = _showSearchBar.asStateFlow()
@@ -47,7 +51,11 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
     open var totalItems: List<Int> = emptyList()
 
     val mEventFlow = MutableSharedFlow<UiEvent>()
-    val eventFlow = mEventFlow.asSharedFlow()
+    val eventFlow = mEventFlow.shareIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        replay = 1,
+    )
 
     private var count: Int = 0
 

@@ -393,7 +393,7 @@ fun PoposDrawer(
                         customersExpanded.value = it
                     },
                     title = {
-                        Text(text = "Customers, Addresses")
+                        Text(text = "Customer, Address")
                     },
                     leading = {
                         Icon(
@@ -421,7 +421,7 @@ fun PoposDrawer(
                             modifier = Modifier.padding(SpaceSmall),
                         ) {
                             PoposDrawerItem(
-                                text = "Customers",
+                                text = "Customer",
                                 icon = if (currentRoute == Screens.CUSTOMER_SCREEN) {
                                     PoposIcons.PeopleAlt
                                 } else {
@@ -436,7 +436,7 @@ fun PoposDrawer(
                             Spacer(modifier = Modifier.height(SpaceSmall))
 
                             PoposDrawerItem(
-                                text = "Addresses",
+                                text = "Address",
                                 icon = if (currentRoute == Screens.ADDRESS_SCREEN) {
                                     PoposIcons.Address
                                 } else {
@@ -471,7 +471,7 @@ fun PoposDrawer(
                         employeeExpanded.value = it
                     },
                     title = {
-                        Text(text = "Employee, Salary, Advance")
+                        Text(text = "Employees, Salary, Advance")
                     },
                     leading = {
                         Icon(
@@ -830,7 +830,7 @@ fun PoposDrawerItem(
         icon = {
             Icon(
                 imageVector = icon,
-                contentDescription = text.plus("Icon"),
+                contentDescription = text.plus("DrIcon"),
                 tint = iconColor,
             )
         },

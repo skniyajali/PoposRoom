@@ -78,4 +78,19 @@ class TestAddOnItemRepository : AddOnItemRepository {
     fun updateAddOnData(items: List<AddOnItem>) {
         addOnItems.value = items.toMutableList()
     }
+
+    @TestOnly
+    suspend fun createTestItem(): AddOnItem {
+        val newItem = AddOnItem(
+            itemId = 1,
+            itemName = "Test Item",
+            itemPrice = 10,
+            isApplicable = true,
+            createdAt = System.currentTimeMillis(),
+            updatedAt = null,
+        )
+        upsertAddOnItem(newItem)
+
+        return newItem
+    }
 }
