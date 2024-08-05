@@ -43,7 +43,7 @@ class CategoryViewModel @Inject constructor(
 
     override var totalItems: List<Int> = emptyList()
 
-    val addOnItems = snapshotFlow { searchText.value }
+    val categories = snapshotFlow { searchText.value }
         .flatMapLatest { it ->
             categoryRepository.getAllCategory(it)
                 .onStart { UiState.Loading }

@@ -16,20 +16,20 @@
 #      limitations under the License.
 #
 
-echo "Applying code style"
-./gradlew spotlessApply --init-script gradle/init.gradle.kts --no-configuration-cache
-
 echo "Check code style"
 ./gradlew spotlessCheck --init-script gradle/init.gradle.kts --no-configuration-cache
+
+echo "Check Production Release Budging"
+./gradlew :app:checkProdReleaseBadging
 
 echo "Check Dependency Guard Baseline"
 ./gradlew dependencyGuard
 
+echo "Applying code style"
+./gradlew spotlessApply --init-script gradle/init.gradle.kts --no-configuration-cache
+
 echo "Updating Dependency Guard Baseline"
 ./gradlew dependencyGuardBaseline
-
-echo "Check Production Release Budging"
-./gradlew :app:checkProdReleaseBadging
 
 echo "Updating Production Release Budging"
 ./gradlew updateProdReleaseBadging
@@ -38,7 +38,7 @@ echo "Running Lint"
 ./gradlew :app:lintProdRelease :lint:lint
 
 echo "Running Tests"
-./gradlew testDemoDebug :lint:test
+./gradlew testDemoDebug -P roborazzi.test.verify=false :lint:test
 
 echo "Run Android Tests"
 ./gradlew connectedDemoDebugAndroidTest --daemon

@@ -37,10 +37,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.TestOnly
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,16 +49,20 @@ import javax.inject.Inject
 class AddEditCategoryViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val validateCategoryName: ValidateCategoryNameUseCase,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
-    private var categoryId = savedStateHandle.get<Int>("categoryId") ?: 0
+    private var categoryId = savedStateHandle.getStateFlow("categoryId", 0)
 
-    var addEditState by mutableStateOf(AddEditCategoryState())
+    var state by mutableStateOf(AddEditCategoryState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
-    val eventFlow = _eventFlow.asSharedFlow()
+    val eventFlow = _eventFlow.shareIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        replay = 1,
+    )
 
     init {
         savedStateHandle.get<Int>("categoryId")?.let { categoryId ->
@@ -65,9 +70,9 @@ class AddEditCategoryViewModel @Inject constructor(
         }
     }
 
-    val nameError: StateFlow<String?> = snapshotFlow { addEditState.categoryName }
+    val nameError: StateFlow<String?> = snapshotFlow { state.categoryName }
         .mapLatest {
-            validateCategoryName(it, categoryId).errorMessage
+            validateCategoryName(it, categoryId.value).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -77,15 +82,15 @@ class AddEditCategoryViewModel @Inject constructor(
     fun onEvent(event: AddEditCategoryEvent) {
         when (event) {
             is AddEditCategoryEvent.CategoryNameChanged -> {
-                addEditState = addEditState.copy(categoryName = event.categoryName)
+                state = state.copy(categoryName = event.categoryName)
             }
 
             is AddEditCategoryEvent.CategoryAvailabilityChanged -> {
-                addEditState = addEditState.copy(isAvailable = !addEditState.isAvailable)
+                state = state.copy(isAvailable = !state.isAvailable)
             }
 
             is AddEditCategoryEvent.CreateUpdateAddEditCategory -> {
-                createOrUpdateCategory(categoryId)
+                createOrUpdateCategory(categoryId.value)
             }
         }
     }
@@ -99,7 +104,7 @@ class AddEditCategoryViewModel @Inject constructor(
 
                 is Resource.Success -> {
                     result.data?.let { category ->
-                        addEditState = addEditState.copy(
+                        state = state.copy(
                             categoryName = category.categoryName,
                             isAvailable = category.isAvailable,
                         )
@@ -114,8 +119,8 @@ class AddEditCategoryViewModel @Inject constructor(
             if (nameError.value == null) {
                 val addOnItem = Category(
                     categoryId = categoryId,
-                    categoryName = addEditState.categoryName.trimEnd().capitalizeWords,
-                    isAvailable = addEditState.isAvailable,
+                    categoryName = state.categoryName.trimEnd().capitalizeWords,
+                    isAvailable = state.isAvailable,
                     createdAt = System.currentTimeMillis(),
                     updatedAt = if (categoryId != 0) System.currentTimeMillis() else null,
                 )
@@ -131,9 +136,14 @@ class AddEditCategoryViewModel @Inject constructor(
                         analyticsHelper.logOnCreateOrUpdateCategory(categoryId, message)
                     }
                 }
-                addEditState = AddEditCategoryState()
+                state = AddEditCategoryState()
             }
         }
+    }
+
+    @TestOnly
+    internal fun setCategoryId(id: Int) {
+        savedStateHandle["categoryId"] = id
     }
 }
 

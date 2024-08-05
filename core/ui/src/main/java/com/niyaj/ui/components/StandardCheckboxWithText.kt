@@ -36,12 +36,16 @@ fun StandardCheckboxWithText(
     onCheckedChange: () -> Unit,
 ) {
     Row(
-        modifier = modifier
+        modifier = Modifier
             .wrapContentWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
     ) {
-        Checkbox(checked = checked, onCheckedChange = { onCheckedChange() })
+        Checkbox(
+            modifier = modifier,
+            checked = checked,
+            onCheckedChange = { onCheckedChange() },
+        )
 
         Text(
             text = text,

@@ -25,10 +25,10 @@ object CategoryConstants {
 
     const val CREATE_NEW_CATEGORY = "Create New Category"
     const val UPDATE_CATEGORY = "Update Category"
-    const val ADD_EDIT_CATEGORY_SCREEN = "AddUpdate Category Screen"
+    const val ADD_EDIT_CATEGORY_BTN = "AddEditCategoryBtn"
 
     const val CATEGORY_NAME_FIELD = "Category Name"
-    const val CATEGORY_NAME_ERROR_TAG = "Category Name Error"
+    const val CATEGORY_NAME_ERROR_TAG = "CategoryNameError"
 
     const val CATEGORY_AVAILABLE_SWITCH = "Category Available Switch"
 
@@ -41,21 +41,16 @@ object CategoryConstants {
         "Are you sure to delete these categories? This action cannot be undone."
 
     const val CATEGORY_ITEM_TAG = "Category-"
+    const val CATEGORY_LIST = "CategoryList"
 
     const val CATEGORY_SETTINGS_TITLE = "Category Settings"
 
     const val IMPORT_CATEGORY_TITLE = "Import Categories"
     const val IMPORT_CATEGORY_NOTE = "Click here to import data from file."
-
-    const val IMPORT_CATEGORY_BTN_TEXT = "Import Categories"
-    const val IMPORT_CATEGORY_OPN_FILE = "Open File"
     const val IMPORT_CATEGORY_NOTE_TEXT = "Make sure to open categories.json file."
 
     const val EXPORT_CATEGORY_TITLE = "Export Categories"
     const val EXPORT_CATEGORY_TITLE_NOTE = "Click here to export category to file."
-
-    const val EXPORT_CATEGORY_BTN_TEXT = "Export Categories"
-    const val EXPORT_CATEGORY_BTN = "Export Categories"
 
     const val EXPORT_CATEGORY_FILE_NAME = "categories"
 }
