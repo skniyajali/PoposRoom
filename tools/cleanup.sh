@@ -16,37 +16,35 @@
 #      limitations under the License.
 #
 
-  cleanup_code_for_pr() {
-      echo "Applying code style"
-      ./gradlew spotlessApply --init-script gradle/init.gradle.kts --no-configuration-cache
+echo "Applying code style"
+./gradlew spotlessApply --init-script gradle/init.gradle.kts --no-configuration-cache
 
-      echo "Check code style"
-      ./gradlew spotlessCheck --init-script gradle/init.gradle.kts --no-configuration-cache
+echo "Check code style"
+./gradlew spotlessCheck --init-script gradle/init.gradle.kts --no-configuration-cache
 
-      echo "Check Dependency Guard Baseline"
-      ./gradlew dependencyGuard
+echo "Check Dependency Guard Baseline"
+./gradlew dependencyGuard
 
-      echo "Updating Dependency Guard Baseline"
-      ./gradlew dependencyGuardBaseline
+echo "Updating Dependency Guard Baseline"
+./gradlew dependencyGuardBaseline
 
-      echo "Check Production Release Budging"
-      ./gradlew :app:checkProdReleaseBadging
+echo "Check Production Release Budging"
+./gradlew :app:checkProdReleaseBadging
 
-      echo "Updating Production Release Budging"
-      ./gradlew updateProdReleaseBadging
+echo "Updating Production Release Budging"
+./gradlew updateProdReleaseBadging
 
-      echo "Running Lint"
-      ./gradlew :app:lintProdRelease :lint:lint
+echo "Running Lint"
+./gradlew :app:lintProdRelease :lint:lint
 
-      echo "Running Tests"
-      ./gradlew testDemoDebug :lint:test
+echo "Running Tests"
+./gradlew testDemoDebug :lint:test
 
-      echo "Run Android Tests"
-      ./gradlew connectedDemoDebugAndroidTest --daemon
+echo "Run Android Tests"
+./gradlew connectedDemoDebugAndroidTest --daemon
 
-      echo "Run local tests (including Roborazzi) for the combined coverage report (only API 30)"
-      ./gradlew testDemoDebugUnitTest -Proborazzi.test.verify=false
+echo "Run local tests (including Roborazzi) for the combined coverage report (only API 30)"
+./gradlew testDemoDebugUnitTest -P roborazzi.test.verify=false
 
-      echo "Generate coverage reports for Debug variants (only API 30)"
-      ./gradlew createDemoDebugCombinedCoverageReport
-  }
+echo "Generate coverage reports for Debug variants (only API 30)"
+./gradlew createDemoDebugCombinedCoverageReport
