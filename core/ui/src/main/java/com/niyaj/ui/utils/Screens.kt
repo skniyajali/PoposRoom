@@ -60,6 +60,7 @@ object Screens {
     const val ADD_EDIT_PRODUCT_SCREEN = "add_edit_product_screen"
 
     const val ADDRESS_SCREEN = "address_screen"
+    const val ADD_EDIT_ADDRESS_SCREEN = "add_edit_address_screen"
     const val ADDRESS_IMPORT_SCREEN = "address_import_screen"
     const val ADDRESS_EXPORT_SCREEN = "address_export_screen"
     const val ADDRESS_DETAILS_SCREEN = "address_details_screen"

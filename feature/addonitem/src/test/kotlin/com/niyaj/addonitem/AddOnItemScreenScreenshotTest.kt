@@ -266,6 +266,7 @@ class AddOnItemScreenScreenshotTest {
                 AddOnImportScreenContent(
                     importedItems = persistentListOf(),
                     selectedItems = persistentListOf(),
+                    isLoading = false,
                     onClickSelectItem = {},
                     onClickSelectAll = {},
                     onClickDeselect = {},
@@ -284,6 +285,7 @@ class AddOnItemScreenScreenshotTest {
                 AddOnImportScreenContent(
                     importedItems = addOnItemList.toImmutableList(),
                     selectedItems = persistentListOf(),
+                    isLoading = false,
                     onClickSelectItem = {},
                     onClickSelectAll = {},
                     onClickDeselect = {},

@@ -901,3 +901,45 @@ inline fun Int.ifZero(defaultValue: () -> Int): Int {
     }
     return if (this == 0) defaultValue() else this
 }
+
+fun createExportNote(selectedItems: List<Int>, totalItems: Int, itemName: String): String {
+    val count = if (selectedItems.isEmpty()) totalItems else selectedItems.size
+    val itemText = pluralize(itemName, count)
+
+    return when {
+        selectedItems.isEmpty() -> "All $totalItems $itemText will be exported."
+        selectedItems.size == 1 -> "1 $itemText will be exported."
+        else -> "$count $itemText will be exported."
+    }
+}
+
+fun createImportNote(selectedItems: List<Int>, totalItems: Int, itemName: String): String {
+    val count = if (selectedItems.isEmpty()) totalItems else selectedItems.size
+    val itemText = pluralize(itemName, count)
+
+    return when {
+        selectedItems.isEmpty() -> "All $totalItems $itemText will be imported."
+        selectedItems.size == 1 -> "1 $itemText will be imported."
+        else -> "$count $itemText will be imported."
+    }
+}
+
+fun pluralize(word: String, count: Int): String {
+    if (count == 1) return word
+
+    return when (word.lowercase()) {
+        "address" -> "addresses"
+        "category" -> "categories"
+        // Add more irregular plurals as needed
+        else -> when {
+            word.endsWith("s") || word.endsWith("sh") || word.endsWith("ch") || word.endsWith("x") || word.endsWith("z") -> "${word}es"
+            word.endsWith("y") && word.length > 1 && !isVowel(word[word.length - 2]) -> "${word.dropLast(1)}ies"
+            word.endsWith("fe") -> "${word.dropLast(2)}ves"
+            word.endsWith("f") -> "${word.dropLast(1)}ves"
+            word.endsWith("o") && !isVowel(word[word.length - 2]) -> "${word}es"
+            else -> "${word}s"
+        }
+    }
+}
+
+fun isVowel(char: Char): Boolean = "aeiou".contains(char.lowercaseChar())

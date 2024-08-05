@@ -39,7 +39,7 @@ class ValidateAddressNameUseCase @Inject constructor(
             )
         }
 
-        if (addressName.length < 2) {
+        if (addressName.length < 5) {
             return ValidationResult(
                 successful = false,
                 errorMessage = AddressTestTags.ADDRESS_NAME_LENGTH_ERROR,

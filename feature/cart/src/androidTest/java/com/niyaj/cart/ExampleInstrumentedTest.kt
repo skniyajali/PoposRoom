@@ -34,6 +34,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.niyaj.cart", appContext.packageName)
+        assertEquals("com.niyaj.feature.cart.test", appContext.packageName)
     }
 }

@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -97,6 +98,7 @@ class AddOnSettingsViewModel @Inject constructor(
 
             is AddOnSettingsEvent.ImportAddOnItemsToDatabase -> {
                 viewModelScope.launch {
+                    mIsLoading.update { true }
                     val data = if (mSelectedItems.isNotEmpty()) {
                         mSelectedItems.flatMap { itemId ->
                             _importedItems.value.filter { it.itemId == itemId }
@@ -107,10 +109,12 @@ class AddOnSettingsViewModel @Inject constructor(
 
                     when (val result = addOnItemRepository.importAddOnItemsToDatabase(data)) {
                         is Resource.Error -> {
+                            mIsLoading.update { false }
                             mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
                         }
 
                         is Resource.Success -> {
+                            mIsLoading.update { false }
                             mEventFlow.emit(UiEvent.OnSuccess("${data.size} items has been imported successfully"))
                             analyticsHelper.logImportedAddOnsToDatabase(data.size)
                         }

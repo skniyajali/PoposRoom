@@ -33,7 +33,7 @@ class ValidateAddressShortNameUseCase @Inject constructor() {
         if (shortName.length < 2) {
             return ValidationResult(
                 successful = false,
-                errorMessage = AddressTestTags.ADDRESS_PRICE_LESS_THAN_TWO_ERROR,
+                errorMessage = AddressTestTags.ADDRESS_S_NAME_LESS_THAN_TWO_ERROR,
             )
         }
 

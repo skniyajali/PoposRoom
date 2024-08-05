@@ -60,9 +60,6 @@ class MarketTypeSettingsViewModel @Inject constructor(
     private val _importedItems = MutableStateFlow<List<MarketType>>(emptyList())
     val importedItems = _importedItems.asStateFlow()
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading = _isLoading.asStateFlow()
-
     fun onEvent(event: MarketTypeSettingsEvent) {
         when (event) {
             is MarketTypeSettingsEvent.GetExportedItems -> {
@@ -100,7 +97,7 @@ class MarketTypeSettingsViewModel @Inject constructor(
 
             is MarketTypeSettingsEvent.ImportItemsToDatabase -> {
                 viewModelScope.launch {
-                    _isLoading.update { true }
+                    mIsLoading.update { true }
                     val data = if (mSelectedItems.isNotEmpty()) {
                         mSelectedItems.flatMap { typeId ->
                             _importedItems.value.filter { it.typeId == typeId }
@@ -111,12 +108,12 @@ class MarketTypeSettingsViewModel @Inject constructor(
 
                     when (val result = repository.importDataFromFilesToDatabase(data)) {
                         is Resource.Error -> {
-                            _isLoading.update { false }
+                            mIsLoading.update { false }
                             mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
                         }
 
                         is Resource.Success -> {
-                            _isLoading.update { false }
+                            mIsLoading.update { false }
                             mEventFlow.emit(UiEvent.OnSuccess("${data.size} items imported successfully"))
                             analyticsHelper.logImportedTypesToDatabase(data.size)
                         }

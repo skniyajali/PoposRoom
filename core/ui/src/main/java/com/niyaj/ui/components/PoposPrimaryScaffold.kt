@@ -212,6 +212,7 @@ fun PoposPrimaryScaffold(
                         titleContentColor = MaterialTheme.colorScheme.onPrimary,
                         actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
                     ),
+                    modifier = Modifier.testTag("primaryTopAppBar"),
                 )
             },
             bottomBar = {
@@ -238,10 +239,10 @@ fun PoposPrimaryScaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
             modifier = modifier
                 .testTag(title)
+                .testTag("primaryScaffold")
                 .fillMaxSize()
                 .navigationBarsPadding()
-                .imePadding()
-                .testTag("primaryScaffold"),
+                .imePadding(),
         ) { padding ->
             ElevatedCard(
                 modifier = Modifier

@@ -22,16 +22,22 @@ import com.niyaj.ui.event.BaseViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class BaseViewModelTest {
     @get:Rule
     val dispatcherRule = MainDispatcherRule()
 
-    private val viewModel = BaseViewModel()
+    private lateinit var viewModel: BaseViewModel
+
+    @Before
+    fun setup() {
+        viewModel = BaseViewModel()
+    }
 
     @Test
     fun `selectItem adds item when not present`() = runTest {
