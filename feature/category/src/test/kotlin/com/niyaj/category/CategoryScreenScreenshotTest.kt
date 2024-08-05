@@ -267,6 +267,7 @@ class CategoryScreenScreenshotTest {
                 ImportCategoryScreenContent(
                     importedItems = persistentListOf(),
                     selectedItems = persistentListOf(),
+                    isLoading = false,
                     onClickSelectItem = {},
                     onClickSelectAll = {},
                     onClickDeselect = {},
@@ -285,6 +286,7 @@ class CategoryScreenScreenshotTest {
                 ImportCategoryScreenContent(
                     importedItems = categoryList,
                     selectedItems = persistentListOf(),
+                    isLoading = false,
                     onClickSelectItem = {},
                     onClickSelectAll = {},
                     onClickDeselect = {},

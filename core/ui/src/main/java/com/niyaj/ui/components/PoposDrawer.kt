@@ -393,7 +393,7 @@ fun PoposDrawer(
                         customersExpanded.value = it
                     },
                     title = {
-                        Text(text = "Customer, Address")
+                        Text(text = "Customers, Addresses")
                     },
                     leading = {
                         Icon(
@@ -421,7 +421,7 @@ fun PoposDrawer(
                             modifier = Modifier.padding(SpaceSmall),
                         ) {
                             PoposDrawerItem(
-                                text = "Customer",
+                                text = "View Customers",
                                 icon = if (currentRoute == Screens.CUSTOMER_SCREEN) {
                                     PoposIcons.PeopleAlt
                                 } else {
@@ -436,7 +436,7 @@ fun PoposDrawer(
                             Spacer(modifier = Modifier.height(SpaceSmall))
 
                             PoposDrawerItem(
-                                text = "Address",
+                                text = "View Addresses",
                                 icon = if (currentRoute == Screens.ADDRESS_SCREEN) {
                                     PoposIcons.Address
                                 } else {
@@ -499,7 +499,7 @@ fun PoposDrawer(
                             modifier = Modifier.padding(SpaceSmall),
                         ) {
                             PoposDrawerItem(
-                                text = "Employees",
+                                text = "View Employees",
                                 icon = if (currentRoute == Screens.EMPLOYEE_SCREEN) {
                                     PoposIcons.SwitchAccount
                                 } else {
@@ -595,7 +595,7 @@ fun PoposDrawer(
                             modifier = Modifier.padding(SpaceSmall),
                         ) {
                             PoposDrawerItem(
-                                text = "Categories",
+                                text = "View Categories",
                                 icon = if (currentRoute == Screens.CATEGORY_SCREEN) {
                                     PoposIcons.Category
                                 } else {
@@ -610,7 +610,7 @@ fun PoposDrawer(
                             Spacer(modifier = Modifier.height(SpaceSmall))
 
                             PoposDrawerItem(
-                                text = "Products",
+                                text = "View Products",
                                 icon = if (currentRoute == Screens.PRODUCT_SCREEN) {
                                     PoposIcons.Dns
                                 } else {
@@ -625,7 +625,7 @@ fun PoposDrawer(
                             Spacer(modifier = Modifier.height(SpaceSmall))
 
                             PoposDrawerItem(
-                                text = "AddOn Item",
+                                text = "View AddOn Items",
                                 icon = if (currentRoute == Screens.ADD_ON_ITEM_SCREEN) {
                                     PoposIcons.InsertLink
                                 } else {
@@ -640,7 +640,7 @@ fun PoposDrawer(
                             Spacer(modifier = Modifier.height(SpaceSmall))
 
                             PoposDrawerItem(
-                                text = "Charges Item",
+                                text = "View Charges",
                                 icon = if (currentRoute == Screens.CHARGES_SCREEN) {
                                     PoposIcons.Bolt
                                 } else {

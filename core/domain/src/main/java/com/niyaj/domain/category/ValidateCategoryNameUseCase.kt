@@ -31,7 +31,10 @@ class ValidateCategoryNameUseCase @Inject constructor(
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
 ) {
-    suspend operator fun invoke(categoryName: String, categoryId: Int? = null): ValidationResult {
+    suspend operator fun invoke(
+        categoryName: String,
+        categoryId: Int? = null,
+    ): ValidationResult {
         if (categoryName.isEmpty()) {
             return ValidationResult(
                 successful = false,

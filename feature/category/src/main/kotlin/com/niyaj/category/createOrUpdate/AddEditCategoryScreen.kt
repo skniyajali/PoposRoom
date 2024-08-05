@@ -20,28 +20,21 @@ package com.niyaj.category.createOrUpdate
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.niyaj.common.tags.AddressTestTags
-import com.niyaj.common.tags.CategoryConstants.ADD_EDIT_CATEGORY_SCREEN
+import com.niyaj.common.tags.CategoryConstants.ADD_EDIT_CATEGORY_BTN
 import com.niyaj.common.tags.CategoryConstants.CATEGORY_AVAILABLE_SWITCH
 import com.niyaj.common.tags.CategoryConstants.CATEGORY_NAME_ERROR_TAG
 import com.niyaj.common.tags.CategoryConstants.CATEGORY_NAME_FIELD
@@ -53,6 +46,7 @@ import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.PoposSecondaryScaffold
+import com.niyaj.ui.components.StandardCheckboxWithText
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
@@ -94,7 +88,7 @@ fun AddEditCategoryScreen(
         modifier = Modifier,
         title = title,
         icon = icon,
-        state = viewModel.addEditState,
+        state = viewModel.state,
         nameError = nameError,
         onEvent = viewModel::onEvent,
         onBackClick = navigator::navigateUp,
@@ -123,7 +117,7 @@ internal fun AddEditCategoryScreenContent(
             PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(AddressTestTags.ADD_EDIT_ADDRESS_BTN),
+                    .testTag(ADD_EDIT_CATEGORY_BTN),
                 text = title,
                 icon = icon,
                 enabled = nameError == null,
@@ -137,7 +131,6 @@ internal fun AddEditCategoryScreenContent(
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
-                .testTag(ADD_EDIT_CATEGORY_SCREEN)
                 .fillMaxWidth()
                 .padding(paddingValues),
             contentPadding = PaddingValues(SpaceMedium),
@@ -162,27 +155,18 @@ internal fun AddEditCategoryScreenContent(
             }
 
             item(CATEGORY_AVAILABLE_SWITCH) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Checkbox(
-                        modifier = Modifier.testTag(CATEGORY_AVAILABLE_SWITCH),
-                        checked = state.isAvailable,
-                        onCheckedChange = {
-                            onEvent(AddEditCategoryEvent.CategoryAvailabilityChanged)
-                        },
-                    )
-                    Spacer(modifier = Modifier.width(SpaceSmall))
-                    Text(
-                        text = if (state.isAvailable) {
-                            "Marked as available"
-                        } else {
-                            "Marked as not available"
-                        },
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                }
+                StandardCheckboxWithText(
+                    modifier = Modifier.testTag(CATEGORY_AVAILABLE_SWITCH),
+                    checked = state.isAvailable,
+                    text = if (state.isAvailable) {
+                        "Marked as available"
+                    } else {
+                        "Marked as not available"
+                    },
+                    onCheckedChange = {
+                        onEvent(AddEditCategoryEvent.CategoryAvailabilityChanged)
+                    },
+                )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
             }

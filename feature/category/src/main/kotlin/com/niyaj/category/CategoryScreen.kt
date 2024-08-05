@@ -21,13 +21,8 @@ import androidx.activity.compose.BackHandler
 import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.SnackbarHostState
@@ -41,7 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.niyaj.category.components.CategoryData
+import com.niyaj.category.components.CategoryList
 import com.niyaj.category.destinations.AddEditCategoryScreenDestination
 import com.niyaj.category.destinations.CategorySettingsScreenDestination
 import com.niyaj.category.destinations.ExportCategoryScreenDestination
@@ -75,6 +70,7 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -91,7 +87,7 @@ fun CategoryScreen(
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
 
-    val state by viewModel.addOnItems.collectAsStateWithLifecycle()
+    val state by viewModel.categories.collectAsStateWithLifecycle()
     val showSearchBar by viewModel.showSearchBar.collectAsStateWithLifecycle()
     val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
@@ -206,7 +202,6 @@ private fun HandleResultRecipients(
 @VisibleForTesting
 @Composable
 internal fun CategoryScreenContent(
-    modifier: Modifier = Modifier,
     uiState: UiState<List<Category>>,
     selectedItems: List<Int>,
     showSearchBar: Boolean,
@@ -224,6 +219,7 @@ internal fun CategoryScreenContent(
     onClickCreateNew: () -> Unit,
     onClickEdit: (Int) -> Unit,
     onClickSettings: () -> Unit,
+    modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
@@ -307,33 +303,20 @@ internal fun CategoryScreenContent(
                 is UiState.Success -> {
                     TrackScrollJank(scrollableState = lazyGridState, stateName = "Category::List")
 
-                    LazyVerticalGrid(
-                        modifier = Modifier
+                    CategoryList(
+                        modifier = modifier
                             .fillMaxSize(),
-                        contentPadding = PaddingValues(SpaceMedium),
-                        columns = GridCells.Fixed(2),
-                        state = lazyGridState,
-                        horizontalArrangement = Arrangement.spacedBy(SpaceMedium),
-                        verticalArrangement = Arrangement.spacedBy(SpaceMedium),
-                    ) {
-                        items(
-                            items = state.data,
-                            key = { it.categoryId },
-                        ) { item: Category ->
-                            CategoryData(
-                                item = item,
-                                doesSelected = {
-                                    selectedItems.contains(it)
-                                },
-                                onClick = {
-                                    if (selectedItems.isNotEmpty()) {
-                                        onClickSelectItem(it)
-                                    }
-                                },
-                                onLongClick = onClickSelectItem,
-                            )
-                        }
-                    }
+                        padding = SpaceMedium,
+                        items = state.data.toImmutableList(),
+                        onClick = {
+                            if (selectedItems.isNotEmpty()) {
+                                onClickSelectItem(it)
+                            }
+                        },
+                        onLongClick = onClickSelectItem,
+                        doesSelected = selectedItems::contains,
+                        lazyGridState = lazyGridState,
+                    )
                 }
             }
         }
