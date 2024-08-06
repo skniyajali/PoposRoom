@@ -20,36 +20,29 @@ package com.niyaj.charges.createOrUpdate
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.niyaj.common.tags.ChargesTestTags.ADD_EDIT_CHARGES_BUTTON
-import com.niyaj.common.tags.ChargesTestTags.ADD_EDIT_CHARGES_SCREEN
-import com.niyaj.common.tags.ChargesTestTags.CHARGES_AMOUNT_ERROR
+import com.niyaj.common.tags.ChargesTestTags.ADD_EDIT_CHARGES_BTN
+import com.niyaj.common.tags.ChargesTestTags.CHARGES_AMOUNT_ERROR_TAG
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_AMOUNT_FIELD
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_APPLIED_SWITCH
-import com.niyaj.common.tags.ChargesTestTags.CHARGES_NAME_ERROR
+import com.niyaj.common.tags.ChargesTestTags.CHARGES_NAME_ERROR_TAG
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_NAME_FIELD
 import com.niyaj.common.tags.ChargesTestTags.CREATE_NEW_CHARGES
 import com.niyaj.common.tags.ChargesTestTags.EDIT_CHARGES_ITEM
@@ -60,8 +53,10 @@ import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.ui.components.PoposSecondaryScaffold
+import com.niyaj.ui.components.StandardCheckboxWithText
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.utils.DevicePreviews
+import com.niyaj.ui.utils.Screens.ADD_EDIT_CHARGES_SCREEN
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
@@ -69,7 +64,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
-@Destination
+@Destination(route = ADD_EDIT_CHARGES_SCREEN)
 @Composable
 fun AddEditChargesScreen(
     chargesId: Int = 0,
@@ -104,7 +99,7 @@ fun AddEditChargesScreen(
         modifier = Modifier,
         title = title,
         icon = icon,
-        state = viewModel.addEditState,
+        state = viewModel.state,
         nameError = nameError,
         priceError = priceError,
         onEvent = viewModel::onEvent,
@@ -136,7 +131,7 @@ internal fun AddEditChargesScreenContent(
             PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(ADD_EDIT_CHARGES_BUTTON),
+                    .testTag(ADD_EDIT_CHARGES_BTN),
                 text = title,
                 icon = icon,
                 enabled = enableBtn,
@@ -155,7 +150,6 @@ internal fun AddEditChargesScreenContent(
 
         LazyColumn(
             modifier = Modifier
-                .testTag(ADD_EDIT_CHARGES_SCREEN)
                 .fillMaxSize()
                 .padding(paddingValues),
             contentPadding = PaddingValues(SpaceMedium),
@@ -169,7 +163,7 @@ internal fun AddEditChargesScreenContent(
                     leadingIcon = PoposIcons.Category,
                     isError = nameError != null,
                     errorText = nameError,
-                    errorTextTag = CHARGES_NAME_ERROR,
+                    errorTextTag = CHARGES_NAME_ERROR_TAG,
                     showClearIcon = state.chargesName.isNotEmpty(),
                     onValueChange = {
                         onEvent(AddEditChargesEvent.ChargesNameChanged(it))
@@ -188,7 +182,7 @@ internal fun AddEditChargesScreenContent(
                     isError = priceError != null,
                     errorText = priceError,
                     keyboardType = KeyboardType.Number,
-                    errorTextTag = CHARGES_AMOUNT_ERROR,
+                    errorTextTag = CHARGES_AMOUNT_ERROR_TAG,
                     showClearIcon = state.chargesPrice.safeString.isNotEmpty(),
                     onValueChange = {
                         onEvent(AddEditChargesEvent.ChargesPriceChanged(it))
@@ -200,27 +194,18 @@ internal fun AddEditChargesScreenContent(
             }
 
             item(CHARGES_APPLIED_SWITCH) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Checkbox(
-                        modifier = Modifier.testTag(CHARGES_APPLIED_SWITCH),
-                        checked = state.chargesApplicable,
-                        onCheckedChange = {
-                            onEvent(AddEditChargesEvent.ChargesApplicableChanged)
-                        },
-                    )
-                    Spacer(modifier = Modifier.width(SpaceSmall))
-                    Text(
-                        text = if (state.chargesApplicable) {
-                            "Marked as applied"
-                        } else {
-                            "Marked as not applied"
-                        },
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                }
+                StandardCheckboxWithText(
+                    modifier = Modifier.testTag(CHARGES_APPLIED_SWITCH),
+                    checked = state.chargesApplicable,
+                    onCheckedChange = {
+                        onEvent(AddEditChargesEvent.ChargesApplicableChanged)
+                    },
+                    text = if (state.chargesApplicable) {
+                        "Marked as applied"
+                    } else {
+                        "Marked as not applied"
+                    },
+                )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
             }

@@ -29,7 +29,7 @@ import org.jetbrains.annotations.TestOnly
 
 class TestCategoryRepository : CategoryRepository {
     /**
-     * The backing address list for testing
+     * The backing category list for testing
      */
     private val items = MutableStateFlow(mutableListOf<Category>())
 

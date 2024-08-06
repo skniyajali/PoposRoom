@@ -29,10 +29,10 @@ import androidx.compose.ui.Modifier
 import com.niyaj.charges.destinations.ChargesExportScreenDestination
 import com.niyaj.charges.destinations.ChargesImportScreenDestination
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_SETTINGS_TITLE
-import com.niyaj.common.tags.ChargesTestTags.EXPORT_CHARGES_BTN_TEXT
 import com.niyaj.common.tags.ChargesTestTags.EXPORT_CHARGES_SUB_TEXT
-import com.niyaj.common.tags.ChargesTestTags.IMPORT_CHARGES_BTN_TEXT
+import com.niyaj.common.tags.ChargesTestTags.EXPORT_CHARGES_TITLE
 import com.niyaj.common.tags.ChargesTestTags.IMPORT_CHARGES_SUB_TEXT
+import com.niyaj.common.tags.ChargesTestTags.IMPORT_CHARGES_TITLE
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
@@ -87,18 +87,18 @@ internal fun ChargesSettingsScreenContent(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
-            item(IMPORT_CHARGES_BTN_TEXT) {
+            item(IMPORT_CHARGES_TITLE) {
                 SettingsCard(
-                    title = IMPORT_CHARGES_BTN_TEXT,
+                    title = IMPORT_CHARGES_TITLE,
                     subtitle = IMPORT_CHARGES_SUB_TEXT,
                     icon = PoposIcons.Import,
                     onClick = onImportClick,
                 )
             }
 
-            item(EXPORT_CHARGES_BTN_TEXT) {
+            item(EXPORT_CHARGES_TITLE) {
                 SettingsCard(
-                    title = EXPORT_CHARGES_BTN_TEXT,
+                    title = EXPORT_CHARGES_TITLE,
                     subtitle = EXPORT_CHARGES_SUB_TEXT,
                     icon = PoposIcons.Upload,
                     onClick = onExportClick,

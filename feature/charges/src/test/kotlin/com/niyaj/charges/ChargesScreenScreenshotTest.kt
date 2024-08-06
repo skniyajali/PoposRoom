@@ -267,6 +267,7 @@ class ChargesScreenScreenshotTest {
                 ChargesImportScreenContent(
                     importedItems = persistentListOf(),
                     selectedItems = persistentListOf(),
+                    isLoading = false,
                     onClickSelectItem = {},
                     onClickSelectAll = {},
                     onClickDeselect = {},
@@ -285,6 +286,7 @@ class ChargesScreenScreenshotTest {
                 ChargesImportScreenContent(
                     importedItems = chargesList.toImmutableList(),
                     selectedItems = persistentListOf(),
+                    isLoading = false,
                     onClickSelectItem = {},
                     onClickSelectAll = {},
                     onClickDeselect = {},

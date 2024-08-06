@@ -43,7 +43,7 @@ object ChargesPreviewData {
         ),
         Charges(
             chargesId = 2,
-            chargesName = "Tax",
+            chargesName = "Tax Charge",
             chargesPrice = 100,
             isApplicable = true,
             createdAt = getStartDateLong,
@@ -58,7 +58,7 @@ object ChargesPreviewData {
         Charges(
             chargesId = 4,
             chargesName = "Discount",
-            chargesPrice = -50,
+            chargesPrice = 50,
             isApplicable = true,
             createdAt = getStartDateLong,
         ),
@@ -92,7 +92,7 @@ object ChargesPreviewData {
         ),
         Charges(
             chargesId = 9,
-            chargesName = "VAT",
+            chargesName = "VAT Charge",
             chargesPrice = 120,
             isApplicable = true,
             createdAt = getStartDateLong,

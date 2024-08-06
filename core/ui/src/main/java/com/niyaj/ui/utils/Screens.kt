@@ -78,6 +78,7 @@ object Screens {
     const val CART_ORDER_SETTINGS_SCREEN = "cart_order_settings_screen"
 
     const val CHARGES_SCREEN = "charges_screen"
+    const val ADD_EDIT_CHARGES_SCREEN = "add_edit_charges_screen"
     const val CHARGES_IMPORT_SCREEN = "charges_import_screen"
     const val CHARGES_EXPORT_SCREEN = "charges_export_screen"
 

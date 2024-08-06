@@ -930,6 +930,7 @@ fun pluralize(word: String, count: Int): String {
     return when (word.lowercase()) {
         "address" -> "addresses"
         "category" -> "categories"
+        "charges" -> "charges"
         // Add more irregular plurals as needed
         else -> when {
             word.endsWith("s") || word.endsWith("sh") || word.endsWith("ch") || word.endsWith("x") || word.endsWith("z") -> "${word}es"

@@ -21,63 +21,34 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.VisibleForTesting
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.niyaj.charges.components.ChargesData
+import com.niyaj.charges.components.ChargesList
 import com.niyaj.charges.destinations.AddEditChargesScreenDestination
-import com.niyaj.common.tags.ChargesTestTags
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_NOT_AVAILABLE
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_SEARCH_PLACEHOLDER
-import com.niyaj.common.tags.ChargesTestTags.EXPORT_CHARGES_BTN
-import com.niyaj.common.tags.ChargesTestTags.EXPORT_CHARGES_BTN_TEXT
+import com.niyaj.common.tags.ChargesTestTags.CREATE_NEW_CHARGES
 import com.niyaj.common.tags.ChargesTestTags.EXPORT_CHARGES_FILE_NAME
-import com.niyaj.common.utils.Constants
+import com.niyaj.common.tags.ChargesTestTags.EXPORT_CHARGES_TITLE
 import com.niyaj.common.utils.Constants.SEARCH_ITEM_NOT_FOUND
-import com.niyaj.designsystem.components.PoposButton
-import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.common.utils.createExportNote
 import com.niyaj.designsystem.theme.PoposRoomTheme
-import com.niyaj.designsystem.theme.SpaceLarge
-import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.domain.utils.ImportExport
 import com.niyaj.model.Charges
-import com.niyaj.ui.components.InfoText
-import com.niyaj.ui.components.ItemNotAvailable
-import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.ScrollToTop
-import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.components.ExportScaffold
 import com.niyaj.ui.parameterProvider.ChargesPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens.CHARGES_EXPORT_SCREEN
 import com.niyaj.ui.utils.TrackScreenViewEvent
-import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
@@ -189,13 +160,12 @@ internal fun ChargesExportScreenContent(
     onClickToAddItem: () -> Unit,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
-    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
 ) {
-    TrackScreenViewEvent(screenName = "ChargesExportScreen")
+    TrackScreenViewEvent(screenName = CHARGES_EXPORT_SCREEN)
 
     val text = if (searchText.isEmpty()) CHARGES_NOT_AVAILABLE else SEARCH_ITEM_NOT_FOUND
     val title =
-        if (selectedItems.isEmpty()) EXPORT_CHARGES_BTN_TEXT else "${selectedItems.size} Selected"
+        if (selectedItems.isEmpty()) EXPORT_CHARGES_TITLE else "${selectedItems.size} Selected"
 
     BackHandler {
         if (selectedItems.isNotEmpty()) {
@@ -207,144 +177,42 @@ internal fun ChargesExportScreenContent(
         }
     }
 
-    PoposSecondaryScaffold(
+    ExportScaffold(
         title = title,
-        showBackButton = selectedItems.isEmpty() || showSearchBar,
+        exportNote = createExportNote(selectedItems, items.size, "charges"),
+        searchPlaceholder = CHARGES_SEARCH_PLACEHOLDER,
+        exportButtonText = EXPORT_CHARGES_TITLE,
+        emptyButtonText = CREATE_NEW_CHARGES,
+        emptyText = text,
         showBottomBar = items.isNotEmpty(),
-        showSecondaryBottomBar = true,
-        navActions = {
-            if (showSearchBar) {
-                StandardSearchBar(
-                    searchText = searchText,
-                    placeholderText = CHARGES_SEARCH_PLACEHOLDER,
-                    onClearClick = onClearClick,
-                    onSearchTextChanged = onSearchTextChanged,
-                )
-            } else {
-                if (items.isNotEmpty()) {
-                    IconButton(
-                        onClick = onClickSelectAll,
-                    ) {
-                        Icon(
-                            imageVector = PoposIcons.Checklist,
-                            contentDescription = Constants.SELECT_ALL_ICON,
-                        )
-                    }
-
-                    IconButton(
-                        onClick = onClickOpenSearch,
-                        modifier = Modifier.testTag(NAV_SEARCH_BTN),
-                    ) {
-                        Icon(
-                            imageVector = PoposIcons.Search,
-                            contentDescription = "Search Icon",
-                        )
-                    }
-                }
+        showBackButton = selectedItems.isEmpty(),
+        searchText = searchText,
+        showSearchBar = showSearchBar,
+        showScrollToTop = !lazyGridState.isScrollingUp(),
+        onBackClick = onBackClick,
+        onClickDeselect = onClickDeselect,
+        onClickSelectAll = onClickSelectAll,
+        onClickOpenSearch = onClickOpenSearch,
+        onClickCloseSearch = onClickCloseSearch,
+        onClearClick = onClearClick,
+        onSearchTextChanged = onSearchTextChanged,
+        onClickExport = onClickExport,
+        onClickEmptyBtn = onClickToAddItem,
+        onClickScrollToTop = {
+            scope.launch {
+                lazyGridState.animateScrollToItem(0)
             }
         },
-        bottomBar = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(padding),
-                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-            ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} charges will be exported.")
-
-                PoposButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag(EXPORT_CHARGES_BTN),
-                    enabled = items.isNotEmpty(),
-                    text = EXPORT_CHARGES_BTN_TEXT,
-                    icon = PoposIcons.Upload,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                    ),
-                    onClick = onClickExport,
-                )
-            }
-        },
-        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyGridState.isScrollingUp(),
-                onClick = {
-                    scope.launch {
-                        lazyGridState.animateScrollToItem(index = 0)
-                    }
-                },
-            )
-        },
-        navigationIcon = {
-            IconButton(
-                onClick = onClickDeselect,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Deselect All",
-                )
-            }
-        },
+        modifier = modifier,
     ) {
-        ChargesExportScreenData(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(it),
-            emptyText = text,
-            items = items,
-            onClickToAddItem = onClickToAddItem,
-            onSelectItem = onSelectItem,
+        ChargesList(
+            chargesList = items,
             doesSelected = selectedItems::contains,
+            onClick = onSelectItem,
+            onLongClick = onSelectItem,
+            modifier = Modifier.fillMaxSize(),
             lazyGridState = lazyGridState,
         )
-    }
-}
-
-@Composable
-private fun ChargesExportScreenData(
-    modifier: Modifier = Modifier,
-    emptyText: String = CHARGES_NOT_AVAILABLE,
-    items: ImmutableList<Charges>,
-    onClickToAddItem: () -> Unit,
-    onSelectItem: (Int) -> Unit,
-    doesSelected: (Int) -> Boolean,
-    lazyGridState: LazyGridState = rememberLazyGridState(),
-) {
-    Box(modifier) {
-        if (items.isEmpty()) {
-            ItemNotAvailable(
-                text = emptyText,
-                buttonText = ChargesTestTags.CREATE_NEW_CHARGES,
-                onClick = onClickToAddItem,
-            )
-        } else {
-            TrackScrollJank(scrollableState = lazyGridState, stateName = "Exported Charges::List")
-
-            LazyVerticalGrid(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentPadding = PaddingValues(SpaceSmall),
-                horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
-                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-                columns = GridCells.Fixed(2),
-                state = lazyGridState,
-            ) {
-                items(
-                    items = items,
-                    key = { it.chargesId },
-                ) { item: Charges ->
-                    ChargesData(
-                        item = item,
-                        doesSelected = doesSelected,
-                        onClick = onSelectItem,
-                        onLongClick = onSelectItem,
-                    )
-                }
-            }
-        }
     }
 }
 
@@ -371,37 +239,5 @@ private fun ChargesExportScreenContentPreview(
             onBackClick = {},
             onClickToAddItem = {},
         )
-    }
-}
-
-@DevicePreviews
-@Composable
-private fun ChargesExportScreenEmptyDataPreview() {
-    PoposRoomTheme {
-        Surface {
-            ChargesExportScreenData(
-                items = persistentListOf(),
-                onClickToAddItem = {},
-                onSelectItem = {},
-                doesSelected = { false },
-            )
-        }
-    }
-}
-
-@DevicePreviews
-@Composable
-private fun ChargesExportScreenDataPreview(
-    items: ImmutableList<Charges> = ChargesPreviewData.chargesList.toImmutableList(),
-) {
-    PoposRoomTheme {
-        Surface {
-            ChargesExportScreenData(
-                items = items,
-                onClickToAddItem = {},
-                onSelectItem = {},
-                doesSelected = { false },
-            )
-        }
     }
 }
