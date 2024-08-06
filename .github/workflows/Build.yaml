@@ -2,7 +2,7 @@ name: Build and Test
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
 
 concurrency:
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        check: [build_logic, spotless, dependency_guard]
+        check: [ build_logic, spotless, dependency_guard ]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -99,7 +99,7 @@ jobs:
           commit_message: "🤖 Updates screenshots"
 
   build:
-    needs: [checks, tests_and_lint, screenshot_tests]
+    needs: [ checks, tests_and_lint, screenshot_tests ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -107,14 +107,14 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 17
+
       - name: Build APKs
-        run: |
-          ./gradlew :app:assembleDebug
-#            :benchmarks:assemble
-#            -x pixel6Api33ProdNonMinifiedReleaseAndroidTest
-#            -x pixel6Api33DemoNonMinifiedReleaseAndroidTest
-#            -x collectDemoNonMinifiedReleaseBaselineProfile
-#            -x collectProdNonMinifiedReleaseBaselineProfile
+        run: ./gradlew :app:assemble :benchmarks:assemble
+          -x pixel6Api33ProdNonMinifiedReleaseAndroidTest
+          -x pixel6Api33DemoNonMinifiedReleaseAndroidTest
+          -x collectDemoNonMinifiedReleaseBaselineProfile
+          -x collectProdNonMinifiedReleaseBaselineProfile
+
       - name: Check badging
         run: ./gradlew :app:checkProdReleaseBadging
       - name: Upload APKs
@@ -122,6 +122,16 @@ jobs:
         with:
           name: APKs
           path: '**/build/outputs/apk/**/*.apk'
+
+      - name: Slack Upload APK For Testing
+        uses: MeilCli/slack-upload-file@v3
+        with:
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+          channel_id: ${{ secrets.SLACK_CHANNEL }}
+          file_path: './app/build/outputs/apk/demo/debug/app-demo-debug.apk'
+          file_name: 'app-demo-debug.apk'
+          file_type: 'apk'
+          initial_comment: 'demo-debug APK'
 
   androidTest:
     runs-on: ubuntu-latest
