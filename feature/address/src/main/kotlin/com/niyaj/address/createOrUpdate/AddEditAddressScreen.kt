@@ -134,7 +134,6 @@ internal fun AddEditAddressScreenContent(
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
-                .testTag(title)
                 .fillMaxSize()
                 .padding(paddingValues),
             contentPadding = PaddingValues(SpaceMedium),

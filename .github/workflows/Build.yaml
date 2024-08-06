@@ -19,8 +19,7 @@ jobs:
           distribution: 'zulu'
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-home-cache-cleanup: true
+
       - name: Cache Gradle and build outputs
         uses: actions/cache@v4
         with:
@@ -166,7 +165,6 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           validate-wrappers: true
-          gradle-home-cache-cleanup: true
 
       - name: Build projects and run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
