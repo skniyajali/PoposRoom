@@ -158,7 +158,7 @@ internal fun CustomerImportScreenContent(
         isLoading = isLoading,
         importFileNote = IMPORT_CUSTOMER_NOTE_TEXT,
         importButtonText = IMPORT_CUSTOMER_TITLE,
-        importNote = createImportNote(selectedItems, importedItems.size, "charges"),
+        importNote = createImportNote(selectedItems, importedItems.size, "customer"),
         showBottomBar = importedItems.isNotEmpty(),
         showBackButton = selectedItems.isEmpty(),
         showScrollToTop = !lazyListState.isScrollingUp(),

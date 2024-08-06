@@ -18,7 +18,6 @@
 package com.niyaj.ui.parameterProvider
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.niyaj.common.utils.getDateInMilliseconds
 import com.niyaj.model.Address
 import com.niyaj.model.AddressWiseOrder
 import com.niyaj.model.TotalOrderDetails
@@ -258,8 +257,8 @@ object AddressPreviewData {
         totalOrder = 7419,
         repeatedOrder = 8110,
         datePeriod = Pair(
-            getDateInMilliseconds(13),
-            getDateInMilliseconds(17),
+            "1683415235000",
+            "1683502800000",
         ),
     )
 }
