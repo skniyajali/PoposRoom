@@ -44,9 +44,11 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_RECENT_ORDERS
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
 import com.niyaj.common.utils.toTime
@@ -66,18 +68,18 @@ import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 internal fun CustomerRecentOrders(
-    modifier: Modifier = Modifier,
     customerWiseOrders: UiState<List<CustomerWiseOrder>>,
     onExpanded: () -> Unit,
     doesExpanded: Boolean,
     onClickOrder: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(4.dp),
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CustomerRecentOrders") {
     ElevatedCard(
         onClick = onExpanded,
         modifier = modifier
-            .testTag("CustomerRecentOrders")
+            .testTag(CUSTOMER_RECENT_ORDERS)
             .fillMaxWidth(),
         shape = shape,
         colors = CardDefaults.elevatedCardColors().copy(
@@ -149,26 +151,34 @@ internal fun CustomerRecentOrders(
                                                 }
                                                 .padding(SpaceSmall),
                                             verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            horizontalArrangement = Arrangement.spacedBy(SpaceMini),
                                         ) {
                                             IconWithText(
+                                                modifier = Modifier
+                                                    .testTag("Order-${order.orderId}")
+                                                    .weight(0.5f),
                                                 text = "${order.orderId}",
                                                 icon = PoposIcons.Tag,
                                                 isTitle = true,
                                             )
 
                                             Text(
+                                                modifier = Modifier.weight(1f),
                                                 text = order.customerAddress,
                                                 textAlign = TextAlign.Start,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
                                             )
 
                                             Text(
+                                                modifier = Modifier.weight(0.8f),
                                                 text = order.totalPrice.toRupee,
-                                                textAlign = TextAlign.Start,
+                                                textAlign = TextAlign.End,
                                                 fontWeight = FontWeight.SemiBold,
                                             )
 
                                             Text(
+                                                modifier = Modifier.weight(0.7f),
                                                 text = order.updatedAt.toTime,
                                                 textAlign = TextAlign.End,
                                             )

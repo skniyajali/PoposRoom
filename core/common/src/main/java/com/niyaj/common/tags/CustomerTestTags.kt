@@ -23,21 +23,21 @@ object CustomerTestTags {
     const val CUSTOMER_NOT_AVAILABLE = "Customer Not Available"
     const val CUSTOMER_SEARCH_PLACEHOLDER = "Search for Customer..."
 
+    const val CUSTOMER_DETAILS_TITLE = "Customer Details"
+
     const val CREATE_NEW_CUSTOMER = "Create New Customer"
     const val EDIT_CUSTOMER_ITEM = "Update Customer"
 
-    const val ADD_EDIT_CUSTOMER_SCREEN = "AddEdit Customer Screen"
+    const val ADD_EDIT_CUSTOMER_BTN = "AddEditCustomerBtn"
 
     const val CUSTOMER_NAME_FIELD = "Customer Name"
-    const val CUSTOMER_NAME_ERROR = "Customer Name Error"
+    const val CUSTOMER_NAME_ERROR = "NameError"
 
     const val CUSTOMER_PHONE_FIELD = "Customer Phone"
-    const val CUSTOMER_PHONE_ERROR = "Customer Phone Error"
+    const val CUSTOMER_PHONE_ERROR = "PhoneError"
 
     const val CUSTOMER_EMAIL_FIELD = "Customer Email"
-    const val CUSTOMER_EMAIL_ERROR = "Customer Email Error"
-
-    const val ADD_EDIT_CUSTOMER_BUTTON = "AddEdit Customer"
+    const val CUSTOMER_EMAIL_ERROR = "EmailError"
 
     const val CUSTOMER_NAME_LENGTH_ERROR = "Customer name must be 3 characters long."
 
@@ -53,17 +53,20 @@ object CustomerTestTags {
         "Are you sure to delete these customers, all corresponding orders will be deleted."
 
     const val CUSTOMER_TAG = "Customer-"
+    const val CUSTOMER_LIST = "CustomerList"
 
     const val CUSTOMER_SETTINGS_TITLE = "Customer Settings"
 
-    const val IMPORT_CUSTOMER_BTN_TEXT = "Import Customers"
+    const val IMPORT_CUSTOMER_TITLE = "Import Customers"
     const val IMPORT_CUSTOMER_SUB_TITLE = "Click here to import data from file."
-
     const val IMPORT_CUSTOMER_NOTE_TEXT = "Make sure to open customers.json file."
-    const val IMPORT_CUSTOMER_OPN_FILE = "Open File"
 
-    const val EXPORT_CUSTOMER_BTN_TEXT = "Export Customers"
+    const val EXPORT_CUSTOMER_TITLE = "Export Customers"
     const val EXPORT_CUSTOMER_SUB_TITLE = "Click here to export data from file."
 
     const val EXPORT_CUSTOMER_FILE_NAME = "customers"
+
+    const val CUSTOMER_DETAILS_CARD = "CustomerDetailsCard"
+    const val CUSTOMER_RECENT_ORDERS = "CustomerRecentOrders"
+    const val TOTAL_ORDER_DETAILS_CARD = "TotalOrderDetailsCard"
 }

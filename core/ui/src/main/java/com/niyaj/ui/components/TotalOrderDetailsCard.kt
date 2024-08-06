@@ -54,10 +54,10 @@ import com.niyaj.model.TotalOrderDetails
 @Composable
 fun TotalOrderDetailsCard(
     details: TotalOrderDetails,
+    modifier: Modifier = Modifier,
 ) {
     ElevatedCard(
-        modifier = Modifier
-            .testTag("CalculateSalary")
+        modifier = modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.elevatedCardColors(

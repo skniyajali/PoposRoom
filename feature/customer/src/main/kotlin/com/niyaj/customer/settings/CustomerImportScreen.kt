@@ -21,47 +21,27 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.VisibleForTesting
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.niyaj.common.tags.CustomerTestTags.IMPORT_CUSTOMER_BTN_TEXT
 import com.niyaj.common.tags.CustomerTestTags.IMPORT_CUSTOMER_NOTE_TEXT
-import com.niyaj.common.tags.CustomerTestTags.IMPORT_CUSTOMER_OPN_FILE
-import com.niyaj.common.utils.Constants
+import com.niyaj.common.tags.CustomerTestTags.IMPORT_CUSTOMER_TITLE
+import com.niyaj.common.utils.createImportNote
 import com.niyaj.customer.components.CustomersData
-import com.niyaj.designsystem.components.PoposButton
-import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
-import com.niyaj.designsystem.theme.SpaceLarge
-import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.domain.utils.ImportExport
 import com.niyaj.model.Customer
-import com.niyaj.ui.components.EmptyImportScreen
-import com.niyaj.ui.components.InfoText
-import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.ScrollToTop
+import com.niyaj.ui.components.ImportScaffold
 import com.niyaj.ui.parameterProvider.CustomerPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens.CUSTOMER_IMPORT_SCREEN
@@ -89,6 +69,7 @@ fun CustomerImportScreen(
     val scope = rememberCoroutineScope()
 
     val importedItems by viewModel.importedItems.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     val selectedItems = viewModel.selectedItems.toList()
@@ -126,6 +107,7 @@ fun CustomerImportScreen(
 
     CustomerImportScreenContent(
         modifier = Modifier,
+        isLoading = isLoading,
         importedItems = importedItems.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         onClickSelectItem = viewModel::selectItem,
@@ -144,7 +126,7 @@ fun CustomerImportScreen(
 @VisibleForTesting
 @Composable
 internal fun CustomerImportScreenContent(
-    modifier: Modifier = Modifier,
+    isLoading: Boolean,
     importedItems: ImmutableList<Customer>,
     selectedItems: ImmutableList<Int>,
     onClickSelectItem: (Int) -> Unit,
@@ -153,11 +135,14 @@ internal fun CustomerImportScreenContent(
     onClickImport: () -> Unit,
     onClickOpenFile: () -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
-    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     TrackScreenViewEvent(screenName = CUSTOMER_IMPORT_SCREEN)
+    val title =
+        if (selectedItems.isEmpty()) IMPORT_CUSTOMER_TITLE else "${selectedItems.size} Selected"
 
     BackHandler {
         if (selectedItems.isNotEmpty()) {
@@ -167,96 +152,37 @@ internal fun CustomerImportScreenContent(
         }
     }
 
-    PoposSecondaryScaffold(
+    ImportScaffold(
+        title = title,
         modifier = modifier,
-        title = if (selectedItems.isEmpty()) IMPORT_CUSTOMER_BTN_TEXT else "${selectedItems.size} Selected",
-        showBackButton = selectedItems.isEmpty(),
+        isLoading = isLoading,
+        importFileNote = IMPORT_CUSTOMER_NOTE_TEXT,
+        importButtonText = IMPORT_CUSTOMER_TITLE,
+        importNote = createImportNote(selectedItems, importedItems.size, "charges"),
         showBottomBar = importedItems.isNotEmpty(),
-        showSecondaryBottomBar = true,
-        navActions = {
-            AnimatedVisibility(
-                visible = importedItems.isNotEmpty(),
-            ) {
-                IconButton(
-                    onClick = onClickSelectAll,
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.Checklist,
-                        contentDescription = Constants.SELECT_ALL_ICON,
-                    )
-                }
-            }
-        },
-        bottomBar = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(padding),
-                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-            ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} customers item will be imported.")
-
-                PoposButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag(IMPORT_CUSTOMER_BTN_TEXT),
-                    enabled = true,
-                    text = IMPORT_CUSTOMER_BTN_TEXT,
-                    icon = PoposIcons.Download,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                    ),
-                    onClick = onClickImport,
-                )
-            }
-        },
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyListState.isScrollingUp(),
-                onClick = {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(index = 0)
-                    }
-                },
-            )
-        },
+        showBackButton = selectedItems.isEmpty(),
+        showScrollToTop = !lazyListState.isScrollingUp(),
+        snackbarHostState = snackbarHostState,
         onBackClick = onBackClick,
-        navigationIcon = {
-            IconButton(
-                onClick = onClickDeselect,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Deselect All",
-                )
+        onClickDeselect = onClickDeselect,
+        onClickSelectAll = onClickSelectAll,
+        onClickImport = onClickImport,
+        onClickOpenFile = onClickOpenFile,
+        onClickScrollToTop = {
+            scope.launch {
+                lazyListState.animateScrollToItem(index = 0)
             }
         },
-    ) { paddingValues ->
-        Crossfade(
-            targetState = importedItems.isEmpty(),
-            label = "Imported Items",
-            modifier = Modifier.padding(paddingValues),
-        ) { itemAvailable ->
-            if (itemAvailable) {
-                EmptyImportScreen(
-                    text = IMPORT_CUSTOMER_NOTE_TEXT,
-                    buttonText = IMPORT_CUSTOMER_OPN_FILE,
-                    icon = PoposIcons.FileOpen,
-                    onClick = onClickOpenFile,
-                )
-            } else {
-                CustomersData(
-                    modifier = Modifier,
-                    customers = importedItems,
-                    isInSelectionMode = true,
-                    doesSelected = selectedItems::contains,
-                    onClickSelectItem = onClickSelectItem,
-                    onNavigateToDetails = {},
-                    lazyListState = lazyListState,
-                )
-            }
-        }
+    ) {
+        CustomersData(
+            customers = importedItems,
+            isInSelectionMode = true,
+            doesSelected = selectedItems::contains,
+            onClickSelectItem = onClickSelectItem,
+            onNavigateToDetails = {},
+            modifier = Modifier.fillMaxSize(),
+            lazyListState = lazyListState,
+        )
     }
 }
 
@@ -266,6 +192,7 @@ private fun CustomerImportScreenEmptyContentPreview() {
     PoposRoomTheme {
         CustomerImportScreenContent(
             modifier = Modifier,
+            isLoading = false,
             importedItems = persistentListOf(),
             selectedItems = persistentListOf(),
             onClickSelectItem = {},
@@ -286,6 +213,7 @@ private fun CustomerImportScreenContentPreview(
     PoposRoomTheme {
         CustomerImportScreenContent(
             modifier = Modifier,
+            isLoading = false,
             importedItems = items,
             selectedItems = persistentListOf(),
             onClickSelectItem = {},

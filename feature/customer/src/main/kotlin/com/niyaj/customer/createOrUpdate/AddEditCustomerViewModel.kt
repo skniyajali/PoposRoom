@@ -39,10 +39,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.TestOnly
 import javax.inject.Inject
 
 @HiltViewModel
@@ -53,15 +54,19 @@ class AddEditCustomerViewModel @Inject constructor(
     private val validateCustomerEmail: ValidateCustomerEmailUseCase,
     private val validateCustomerPhone: ValidateCustomerPhoneUseCase,
     private val analyticsHelper: AnalyticsHelper,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private var customerId = savedStateHandle.get<Int>("customerId") ?: 0
+    private var customerId = savedStateHandle.getStateFlow("customerId", 0)
 
-    var addEditState by mutableStateOf(AddEditCustomerState())
+    var state by mutableStateOf(AddEditCustomerState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
-    val eventFlow = _eventFlow.asSharedFlow()
+    val eventFlow = _eventFlow.shareIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        replay = 1,
+    )
 
     init {
         savedStateHandle.get<Int>("customerId")?.let { customerId ->
@@ -69,16 +74,16 @@ class AddEditCustomerViewModel @Inject constructor(
         }
     }
 
-    val phoneError: StateFlow<String?> = snapshotFlow { addEditState.customerPhone }
+    val phoneError: StateFlow<String?> = snapshotFlow { state.customerPhone }
         .mapLatest {
-            validateCustomerPhone(it, customerId).errorMessage
+            validateCustomerPhone(it, customerId.value).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = null,
         )
 
-    val nameError: StateFlow<String?> = snapshotFlow { addEditState.customerName }
+    val nameError: StateFlow<String?> = snapshotFlow { state.customerName }
         .mapLatest {
             validateCustomerName(it).errorMessage
         }.stateIn(
@@ -87,7 +92,7 @@ class AddEditCustomerViewModel @Inject constructor(
             initialValue = null,
         )
 
-    val emailError: StateFlow<String?> = snapshotFlow { addEditState.customerEmail }
+    val emailError: StateFlow<String?> = snapshotFlow { state.customerEmail }
         .mapLatest {
             validateCustomerEmail(it).errorMessage
         }.stateIn(
@@ -99,19 +104,19 @@ class AddEditCustomerViewModel @Inject constructor(
     fun onEvent(event: AddEditCustomerEvent) {
         when (event) {
             is AddEditCustomerEvent.CustomerNameChanged -> {
-                addEditState = addEditState.copy(customerName = event.customerName)
+                state = state.copy(customerName = event.customerName)
             }
 
             is AddEditCustomerEvent.CustomerPhoneChanged -> {
-                addEditState = addEditState.copy(customerPhone = event.customerPhone)
+                state = state.copy(customerPhone = event.customerPhone)
             }
 
             is AddEditCustomerEvent.CustomerEmailChanged -> {
-                addEditState = addEditState.copy(customerEmail = event.customerEmail)
+                state = state.copy(customerEmail = event.customerEmail)
             }
 
             is AddEditCustomerEvent.CreateOrUpdateCustomer -> {
-                createOrUpdateCustomer(customerId)
+                createOrUpdateCustomer(customerId.value)
             }
         }
     }
@@ -126,9 +131,7 @@ class AddEditCustomerViewModel @Inject constructor(
 
                     is Resource.Success -> {
                         result.data?.let { customer ->
-                            this@AddEditCustomerViewModel.customerId = customer.customerId
-
-                            addEditState = addEditState.copy(
+                            state = state.copy(
                                 customerPhone = customer.customerPhone,
                                 customerName = customer.customerName,
                                 customerEmail = customer.customerEmail,
@@ -145,9 +148,9 @@ class AddEditCustomerViewModel @Inject constructor(
             if (phoneError.value == null && nameError.value == null && emailError.value == null) {
                 val newCustomer = Customer(
                     customerId = customerId,
-                    customerPhone = addEditState.customerPhone.trimEnd(),
-                    customerName = addEditState.customerName?.trimEnd()?.capitalizeWords,
-                    customerEmail = addEditState.customerEmail?.trimEnd(),
+                    customerPhone = state.customerPhone.trimEnd(),
+                    customerName = state.customerName?.trimEnd()?.capitalizeWords,
+                    customerEmail = state.customerEmail?.trimEnd(),
                     createdAt = System.currentTimeMillis(),
                     updatedAt = if (customerId != 0) System.currentTimeMillis() else null,
                 )
@@ -165,9 +168,14 @@ class AddEditCustomerViewModel @Inject constructor(
                     }
                 }
 
-                addEditState = AddEditCustomerState()
+                state = AddEditCustomerState()
             }
         }
+    }
+
+    @TestOnly
+    fun setCustomerId(id: Int) {
+        savedStateHandle["customerId"] = id
     }
 }
 

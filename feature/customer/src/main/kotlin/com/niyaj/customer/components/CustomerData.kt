@@ -40,8 +40,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_LIST
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_TAG
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
@@ -55,18 +58,19 @@ import com.niyaj.ui.utils.TrackScrollJank
 
 @Composable
 internal fun CustomersData(
-    modifier: Modifier = Modifier,
     customers: List<Customer>,
     isInSelectionMode: Boolean,
     doesSelected: (Int) -> Boolean,
     onClickSelectItem: (Int) -> Unit,
     onNavigateToDetails: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
-    TrackScrollJank(scrollableState = lazyListState, stateName = "")
+    TrackScrollJank(scrollableState = lazyListState, stateName = CUSTOMER_LIST)
 
     LazyColumn(
         modifier = modifier
+            .testTag(CUSTOMER_LIST)
             .fillMaxSize(),
         contentPadding = PaddingValues(SpaceMedium),
         verticalArrangement = Arrangement.spacedBy(SpaceMedium),
@@ -95,11 +99,11 @@ internal fun CustomersData(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun CustomerData(
-    modifier: Modifier = Modifier,
     item: Customer,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CustomerData") {
@@ -108,6 +112,9 @@ internal fun CustomerData(
     ListItem(
         modifier = modifier
             .testTag(CUSTOMER_TAG.plus(item.customerId))
+            .semantics {
+                selected = doesSelected(item.customerId)
+            }
             .fillMaxWidth()
             .shadow(2.dp, RoundedCornerShape(SpaceMini))
             .then(
@@ -164,7 +171,6 @@ private fun CustomerDataPreview(
 ) {
     PoposRoomTheme {
         CustomerData(
-            modifier = modifier,
             item = Customer(
                 customerId = 1,
                 customerPhone = "9078563412",
@@ -174,6 +180,7 @@ private fun CustomerDataPreview(
             doesSelected = { true },
             onClick = {},
             onLongClick = {},
+            modifier = modifier,
         )
     }
 }
@@ -186,12 +193,12 @@ private fun CustomersDataPreview(
 ) {
     PoposRoomTheme {
         CustomersData(
-            modifier = modifier,
             customers = customers,
             isInSelectionMode = true,
             doesSelected = { it % 2 == 0 },
             onClickSelectItem = {},
             onNavigateToDetails = {},
+            modifier = modifier,
         )
     }
 }

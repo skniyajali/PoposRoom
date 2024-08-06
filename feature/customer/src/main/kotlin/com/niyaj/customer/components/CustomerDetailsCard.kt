@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_DETAILS_CARD
 import com.niyaj.common.utils.toFormattedDateAndTime
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.icon.PoposIcons
@@ -71,7 +72,7 @@ internal fun CustomerDetailsCard(
             containerColor = containerColor,
         ),
         elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 2.dp,
+            defaultElevation = 1.dp,
         ),
     ) {
         StandardExpandable(
@@ -116,9 +117,12 @@ internal fun CustomerDetailsCard(
                 Crossfade(
                     targetState = customerState,
                     label = "Customer State",
+                    modifier = Modifier
+                        .testTag(CUSTOMER_DETAILS_CARD),
                 ) { state ->
                     when (state) {
                         is UiState.Loading -> LoadingIndicatorHalf()
+
                         is UiState.Empty -> {
                             ItemNotAvailableHalf(
                                 text = "Unable to get customer details",

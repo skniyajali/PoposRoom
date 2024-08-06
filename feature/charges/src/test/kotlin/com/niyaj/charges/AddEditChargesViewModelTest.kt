@@ -72,7 +72,7 @@ class AddEditChargesViewModelTest {
     }
 
     @Test
-    fun `init with chargesId loads address`() = runTest {
+    fun `init with chargesId loads charges`() = runTest {
         val charge = repository.createTestCharges()
 
         val savedStateHandle = SavedStateHandle()

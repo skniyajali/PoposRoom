@@ -238,11 +238,11 @@ internal fun CustomerScreenContent(
                 is UiState.Success -> {
                     CustomersData(
                         customers = state.data,
-                        doesSelected = selectedItems::contains,
                         isInSelectionMode = selectedItems.isNotEmpty(),
-                        lazyListState = lazyListState,
+                        doesSelected = selectedItems::contains,
                         onClickSelectItem = onClickSelectItem,
                         onNavigateToDetails = onNavigateToDetails,
+                        lazyListState = lazyListState,
                     )
                 }
             }
