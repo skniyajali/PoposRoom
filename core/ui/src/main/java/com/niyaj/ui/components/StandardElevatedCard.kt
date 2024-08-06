@@ -28,6 +28,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.theme.SpaceMini
@@ -51,6 +53,9 @@ fun StandardElevatedCard(
     ElevatedCard(
         modifier = modifier
             .testTag(testTag)
+            .semantics {
+                selected = doesSelected
+            }
             .then(
                 borderStroke?.let {
                     Modifier.border(it, CardDefaults.elevatedShape)

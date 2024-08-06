@@ -21,56 +21,31 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.VisibleForTesting
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.niyaj.charges.components.ChargesData
-import com.niyaj.common.tags.ChargesTestTags.IMPORT_CHARGES_BTN_TEXT
+import com.niyaj.charges.components.ChargesList
 import com.niyaj.common.tags.ChargesTestTags.IMPORT_CHARGES_NOTE_TEXT
-import com.niyaj.common.tags.ChargesTestTags.IMPORT_CHARGES_OPN_FILE
-import com.niyaj.common.utils.Constants
-import com.niyaj.designsystem.components.PoposButton
-import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.common.tags.ChargesTestTags.IMPORT_CHARGES_TITLE
+import com.niyaj.common.utils.createImportNote
 import com.niyaj.designsystem.theme.PoposRoomTheme
-import com.niyaj.designsystem.theme.SpaceLarge
-import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.domain.utils.ImportExport
 import com.niyaj.model.Charges
-import com.niyaj.ui.components.EmptyImportScreen
-import com.niyaj.ui.components.InfoText
-import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.ScrollToTop
+import com.niyaj.ui.components.ImportScaffold
 import com.niyaj.ui.parameterProvider.ChargesPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens.CHARGES_IMPORT_SCREEN
 import com.niyaj.ui.utils.TrackScreenViewEvent
-import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrollingUp
 import com.ramcosta.composedestinations.annotation.Destination
@@ -94,6 +69,7 @@ fun ChargesImportScreen(
     val scope = rememberCoroutineScope()
 
     val importedItems by viewModel.importedItems.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     val selectedItems = viewModel.selectedItems.toList()
@@ -132,6 +108,7 @@ fun ChargesImportScreen(
         modifier = Modifier,
         importedItems = importedItems.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
+        isLoading = isLoading,
         onClickSelectItem = viewModel::selectItem,
         onClickSelectAll = viewModel::selectAllItems,
         onClickDeselect = viewModel::deselectItems,
@@ -151,6 +128,7 @@ internal fun ChargesImportScreenContent(
     modifier: Modifier = Modifier,
     importedItems: ImmutableList<Charges>,
     selectedItems: ImmutableList<Int>,
+    isLoading: Boolean,
     onClickSelectItem: (Int) -> Unit,
     onClickSelectAll: () -> Unit,
     onClickDeselect: () -> Unit,
@@ -159,9 +137,11 @@ internal fun ChargesImportScreenContent(
     onBackClick: () -> Unit,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
-    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
-    TrackScreenViewEvent(screenName = "Charges Import Screen")
+    TrackScreenViewEvent(screenName = CHARGES_IMPORT_SCREEN)
+    val title =
+        if (selectedItems.isEmpty()) IMPORT_CHARGES_TITLE else "${selectedItems.size} Selected"
 
     BackHandler {
         if (selectedItems.isNotEmpty()) {
@@ -171,113 +151,37 @@ internal fun ChargesImportScreenContent(
         }
     }
 
-    PoposSecondaryScaffold(
+    ImportScaffold(
+        title = title,
         modifier = modifier,
-        title = if (selectedItems.isEmpty()) IMPORT_CHARGES_BTN_TEXT else "${selectedItems.size} Selected",
-        showBackButton = selectedItems.isEmpty(),
+        isLoading = isLoading,
+        importFileNote = IMPORT_CHARGES_NOTE_TEXT,
+        importButtonText = IMPORT_CHARGES_TITLE,
+        importNote = createImportNote(selectedItems, importedItems.size, "charges"),
         showBottomBar = importedItems.isNotEmpty(),
-        showSecondaryBottomBar = true,
-        navActions = {
-            AnimatedVisibility(
-                visible = importedItems.isNotEmpty(),
-            ) {
-                IconButton(
-                    onClick = onClickSelectAll,
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.Checklist,
-                        contentDescription = Constants.SELECT_ALL_ICON,
-                    )
-                }
-            }
-        },
-        bottomBar = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(padding),
-                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-            ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} charges item will be imported.")
-
-                PoposButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag(IMPORT_CHARGES_BTN_TEXT),
-                    enabled = true,
-                    text = IMPORT_CHARGES_BTN_TEXT,
-                    icon = PoposIcons.Download,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                    ),
-                    onClick = onClickImport,
-                )
-            }
-        },
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyGridState.isScrollingUp(),
-                onClick = {
-                    scope.launch {
-                        lazyGridState.animateScrollToItem(index = 0)
-                    }
-                },
-            )
-        },
+        showBackButton = selectedItems.isEmpty(),
+        showScrollToTop = !lazyGridState.isScrollingUp(),
+        snackbarHostState = snackbarHostState,
         onBackClick = onBackClick,
-        navigationIcon = {
-            IconButton(
-                onClick = onClickDeselect,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Deselect All",
-                )
+        onClickDeselect = onClickDeselect,
+        onClickSelectAll = onClickSelectAll,
+        onClickImport = onClickImport,
+        onClickOpenFile = onClickOpenFile,
+        onClickScrollToTop = {
+            scope.launch {
+                lazyGridState.animateScrollToItem(index = 0)
             }
         },
-    ) { paddingValues ->
-        Crossfade(
-            targetState = importedItems.isEmpty(),
-            label = "Imported Items",
-            modifier = Modifier.padding(paddingValues),
-        ) { itemAvailable ->
-            if (itemAvailable) {
-                EmptyImportScreen(
-                    text = IMPORT_CHARGES_NOTE_TEXT,
-                    buttonText = IMPORT_CHARGES_OPN_FILE,
-                    icon = PoposIcons.FileOpen,
-                    onClick = onClickOpenFile,
-                )
-            } else {
-                TrackScrollJank(
-                    scrollableState = lazyGridState,
-                    stateName = "Imported Item::List",
-                )
-
-                LazyVerticalGrid(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentPadding = PaddingValues(SpaceSmall),
-                    horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
-                    verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-                    columns = GridCells.Fixed(2),
-                    state = lazyGridState,
-                ) {
-                    items(
-                        items = importedItems,
-                        key = { it.chargesId },
-                    ) { item: Charges ->
-                        ChargesData(
-                            item = item,
-                            doesSelected = selectedItems::contains,
-                            onClick = onClickSelectItem,
-                            onLongClick = onClickSelectItem,
-                        )
-                    }
-                }
-            }
-        }
+    ) {
+        ChargesList(
+            modifier = modifier
+                .fillMaxSize(),
+            chargesList = importedItems,
+            onClick = onClickSelectItem,
+            onLongClick = onClickSelectItem,
+            doesSelected = selectedItems::contains,
+            lazyGridState = lazyGridState,
+        )
     }
 }
 
@@ -289,6 +193,7 @@ private fun ChargesImportScreenEmptyContentPreview() {
             modifier = Modifier,
             importedItems = persistentListOf(),
             selectedItems = persistentListOf(),
+            isLoading = false,
             onClickSelectItem = {},
             onClickSelectAll = {},
             onClickDeselect = {},
@@ -309,6 +214,7 @@ private fun ChargesImportScreenContentPreview(
             modifier = Modifier,
             importedItems = items,
             selectedItems = persistentListOf(),
+            isLoading = false,
             onClickSelectItem = {},
             onClickSelectAll = {},
             onClickDeselect = {},

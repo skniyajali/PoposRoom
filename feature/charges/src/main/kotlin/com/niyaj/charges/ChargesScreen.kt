@@ -21,13 +21,7 @@ import androidx.activity.compose.BackHandler
 import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.SnackbarHostState
@@ -41,7 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.niyaj.charges.components.ChargesData
+import com.niyaj.charges.components.ChargesList
 import com.niyaj.charges.destinations.AddEditChargesScreenDestination
 import com.niyaj.charges.destinations.ChargesExportScreenDestination
 import com.niyaj.charges.destinations.ChargesImportScreenDestination
@@ -67,7 +61,6 @@ import com.niyaj.ui.parameterProvider.ChargesPreviewParameterProvider
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
-import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
 import com.ramcosta.composedestinations.annotation.Destination
@@ -75,6 +68,7 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -165,10 +159,10 @@ internal fun ChargesScreenContent(
     TrackScreenViewEvent(screenName = Screens.CHARGES_SCREEN)
 
     BackHandler {
-        if (selectedItems.isNotEmpty()) {
-            onClickDeselect()
-        } else if (showSearchBar) {
+        if (showSearchBar) {
             onCloseSearchBar()
+        } else if (selectedItems.isNotEmpty()) {
+            onClickDeselect()
         } else {
             onClickBack()
         }
@@ -225,7 +219,7 @@ internal fun ChargesScreenContent(
     ) {
         Crossfade(
             targetState = uiState,
-            label = "::UiState",
+            label = "Charges::UiState",
         ) { state ->
             when (state) {
                 is UiState.Loading -> LoadingIndicator()
@@ -239,35 +233,17 @@ internal fun ChargesScreenContent(
                 }
 
                 is UiState.Success -> {
-                    TrackScrollJank(scrollableState = lazyGridState, stateName = "Charges::List")
-
-                    LazyVerticalGrid(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        contentPadding = PaddingValues(SpaceMedium),
-                        columns = GridCells.Fixed(2),
-                        state = lazyGridState,
-                        horizontalArrangement = Arrangement.spacedBy(SpaceMedium),
-                        verticalArrangement = Arrangement.spacedBy(SpaceMedium),
-                    ) {
-                        items(
-                            items = state.data,
-                            key = { it.chargesId },
-                        ) { item: Charges ->
-                            ChargesData(
-                                item = item,
-                                doesSelected = {
-                                    selectedItems.contains(it)
-                                },
-                                onClick = {
-                                    if (selectedItems.isNotEmpty()) {
-                                        onClickSelectItem(it)
-                                    }
-                                },
-                                onLongClick = onClickSelectItem,
-                            )
-                        }
-                    }
+                    ChargesList(
+                        chargesList = state.data.toImmutableList(),
+                        doesSelected = selectedItems::contains,
+                        padding = SpaceMedium,
+                        onClick = {
+                            if (selectedItems.isNotEmpty()) {
+                                onClickSelectItem(it)
+                            }
+                        },
+                        onLongClick = onClickSelectItem,
+                    )
                 }
             }
         }

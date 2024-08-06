@@ -39,10 +39,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.TestOnly
 import javax.inject.Inject
 
 @HiltViewModel
@@ -52,15 +53,19 @@ class AddEditChargesViewModel @Inject constructor(
     private val validateChargesName: ValidateChargesNameUseCase,
     private val validateChargesPrice: ValidateChargesPriceUseCase,
     private val analyticsHelper: AnalyticsHelper,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val chargesId = savedStateHandle.get<Int>("chargesId") ?: 0
+    private val chargesId = savedStateHandle.getStateFlow("chargesId", 0)
 
-    var addEditState by mutableStateOf(AddEditChargesState())
+    var state by mutableStateOf(AddEditChargesState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
-    val eventFlow = _eventFlow.asSharedFlow()
+    val eventFlow = _eventFlow.shareIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        replay = 1,
+    )
 
     init {
         savedStateHandle.get<Int>("chargesId")?.let { chargesId ->
@@ -68,16 +73,16 @@ class AddEditChargesViewModel @Inject constructor(
         }
     }
 
-    val nameError: StateFlow<String?> = snapshotFlow { addEditState.chargesName }
+    val nameError: StateFlow<String?> = snapshotFlow { state.chargesName }
         .mapLatest {
-            validateChargesName(it, chargesId).errorMessage
+            validateChargesName(it, chargesId.value).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = null,
         )
 
-    val priceError: StateFlow<String?> = snapshotFlow { addEditState.chargesPrice }
+    val priceError: StateFlow<String?> = snapshotFlow { state.chargesPrice }
         .mapLatest {
             validateChargesPrice(it).errorMessage
         }.stateIn(
@@ -89,20 +94,20 @@ class AddEditChargesViewModel @Inject constructor(
     fun onEvent(event: AddEditChargesEvent) {
         when (event) {
             is AddEditChargesEvent.ChargesNameChanged -> {
-                addEditState = addEditState.copy(chargesName = event.chargesName)
+                state = state.copy(chargesName = event.chargesName)
             }
 
             is AddEditChargesEvent.ChargesPriceChanged -> {
-                addEditState = addEditState.copy(chargesPrice = event.chargesPrice.safeInt())
+                state = state.copy(chargesPrice = event.chargesPrice.safeInt())
             }
 
             is AddEditChargesEvent.ChargesApplicableChanged -> {
-                addEditState =
-                    addEditState.copy(chargesApplicable = !addEditState.chargesApplicable)
+                state =
+                    state.copy(chargesApplicable = !state.chargesApplicable)
             }
 
             is AddEditChargesEvent.CreateOrUpdateCharges -> {
-                createOrUpdateCharges(chargesId)
+                createOrUpdateCharges(chargesId.value)
             }
         }
     }
@@ -117,7 +122,7 @@ class AddEditChargesViewModel @Inject constructor(
 
                     is Resource.Success -> {
                         result.data?.let { charges ->
-                            addEditState = addEditState.copy(
+                            state = state.copy(
                                 chargesName = charges.chargesName,
                                 chargesPrice = charges.chargesPrice,
                                 chargesApplicable = charges.isApplicable,
@@ -134,9 +139,9 @@ class AddEditChargesViewModel @Inject constructor(
             if (nameError.value == null && priceError.value == null) {
                 val addOnItem = Charges(
                     chargesId = chargesId,
-                    chargesName = addEditState.chargesName.trimEnd().capitalizeWords,
-                    chargesPrice = addEditState.chargesPrice,
-                    isApplicable = addEditState.chargesApplicable,
+                    chargesName = state.chargesName.trimEnd().capitalizeWords,
+                    chargesPrice = state.chargesPrice,
+                    isApplicable = state.chargesApplicable,
                     createdAt = System.currentTimeMillis(),
                     updatedAt = if (chargesId != 0) System.currentTimeMillis() else null,
                 )
@@ -153,9 +158,14 @@ class AddEditChargesViewModel @Inject constructor(
                     }
                 }
 
-                addEditState = AddEditChargesState()
+                state = AddEditChargesState()
             }
         }
+    }
+
+    @TestOnly
+    internal fun setChargesId(chargesId: Int) {
+        savedStateHandle["chargesId"] = chargesId
     }
 }
 
