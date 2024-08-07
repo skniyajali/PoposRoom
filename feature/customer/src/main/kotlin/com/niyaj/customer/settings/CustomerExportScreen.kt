@@ -21,52 +21,30 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.VisibleForTesting
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.common.tags.CustomerTestTags.CREATE_NEW_CUSTOMER
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_NOT_AVAILABLE
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_SEARCH_PLACEHOLDER
-import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_BTN_TEXT
 import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_FILE_NAME
+import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_TITLE
 import com.niyaj.common.utils.Constants
+import com.niyaj.common.utils.createExportNote
 import com.niyaj.customer.components.CustomersData
 import com.niyaj.customer.destinations.AddEditCustomerScreenDestination
-import com.niyaj.designsystem.components.PoposButton
-import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
-import com.niyaj.designsystem.theme.SpaceLarge
-import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.domain.utils.ImportExport
 import com.niyaj.model.Customer
-import com.niyaj.ui.components.InfoText
-import com.niyaj.ui.components.ItemNotAvailable
-import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.ScrollToTop
-import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.components.ExportScaffold
 import com.niyaj.ui.parameterProvider.CustomerPreviewData
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens.CUSTOMER_EXPORT_SCREEN
@@ -131,7 +109,6 @@ fun CustomerExportScreen(
         }
 
     CustomerExportScreenContent(
-        modifier = Modifier,
         items = customers.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         showSearchBar = showSearchBar,
@@ -157,13 +134,13 @@ fun CustomerExportScreen(
         onClickToAddItem = {
             navigator.navigate(AddEditCustomerScreenDestination())
         },
+        modifier = Modifier,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun CustomerExportScreenContent(
-    modifier: Modifier = Modifier,
     items: ImmutableList<Customer>,
     selectedItems: ImmutableList<Int>,
     showSearchBar: Boolean,
@@ -178,130 +155,63 @@ internal fun CustomerExportScreenContent(
     onClickExport: () -> Unit,
     onBackClick: () -> Unit,
     onClickToAddItem: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
-    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
 ) {
     TrackScreenViewEvent(screenName = CUSTOMER_EXPORT_SCREEN)
 
     val text = if (searchText.isEmpty()) CUSTOMER_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND
-    val title = if (selectedItems.isEmpty()) EXPORT_CUSTOMER_BTN_TEXT else "${selectedItems.size} Selected"
+    val title =
+        if (selectedItems.isEmpty()) EXPORT_CUSTOMER_TITLE else "${selectedItems.size} Selected"
 
     BackHandler {
-        if (selectedItems.isNotEmpty()) {
-            onClickDeselect()
-        } else if (showSearchBar) {
+        if (showSearchBar) {
             onClickCloseSearch()
+        } else if (selectedItems.isNotEmpty()) {
+            onClickDeselect()
         } else {
             onBackClick()
         }
     }
 
-    PoposSecondaryScaffold(
+    ExportScaffold(
         title = title,
-        showBackButton = selectedItems.isEmpty() || showSearchBar,
+        exportNote = createExportNote(selectedItems, items.size, "customer"),
+        searchPlaceholder = CUSTOMER_SEARCH_PLACEHOLDER,
+        exportButtonText = EXPORT_CUSTOMER_TITLE,
+        emptyButtonText = CREATE_NEW_CUSTOMER,
+        emptyText = text,
         showBottomBar = items.isNotEmpty(),
-        showSecondaryBottomBar = true,
-        navActions = {
-            if (showSearchBar) {
-                StandardSearchBar(
-                    searchText = searchText,
-                    placeholderText = CUSTOMER_SEARCH_PLACEHOLDER,
-                    onClearClick = onClearClick,
-                    onSearchTextChanged = onSearchTextChanged,
-                )
-            } else {
-                if (items.isNotEmpty()) {
-                    IconButton(
-                        onClick = onClickSelectAll,
-                    ) {
-                        Icon(
-                            imageVector = PoposIcons.Checklist,
-                            contentDescription = Constants.SELECT_ALL_ICON,
-                        )
-                    }
-
-                    IconButton(
-                        onClick = onClickOpenSearch,
-                        modifier = Modifier.testTag(NAV_SEARCH_BTN),
-                    ) {
-                        Icon(
-                            imageVector = PoposIcons.Search,
-                            contentDescription = "Search Icon",
-                        )
-                    }
-                }
+        showBackButton = selectedItems.isEmpty(),
+        searchText = searchText,
+        showSearchBar = showSearchBar,
+        showScrollToTop = !lazyListState.isScrollingUp(),
+        onBackClick = onBackClick,
+        onClickDeselect = onClickDeselect,
+        onClickSelectAll = onClickSelectAll,
+        onClickOpenSearch = onClickOpenSearch,
+        onClickCloseSearch = onClickCloseSearch,
+        onClearClick = onClearClick,
+        onSearchTextChanged = onSearchTextChanged,
+        onClickExport = onClickExport,
+        onClickEmptyBtn = onClickToAddItem,
+        onClickScrollToTop = {
+            scope.launch {
+                lazyListState.animateScrollToItem(0)
             }
         },
-        bottomBar = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(padding),
-                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-            ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} customers will be exported.")
-
-                PoposButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag(EXPORT_CUSTOMER_BTN_TEXT),
-                    enabled = items.isNotEmpty(),
-                    text = EXPORT_CUSTOMER_BTN_TEXT,
-                    icon = PoposIcons.Upload,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                    ),
-                    onClick = onClickExport,
-                )
-            }
-        },
-        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyListState.isScrollingUp(),
-                onClick = {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(index = 0)
-                    }
-                },
-            )
-        },
-        navigationIcon = {
-            IconButton(
-                onClick = onClickDeselect,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Deselect All",
-                )
-            }
-        },
+        modifier = modifier,
     ) {
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(it),
-        ) {
-            if (items.isEmpty()) {
-                ItemNotAvailable(
-                    text = text,
-                    buttonText = CREATE_NEW_CUSTOMER,
-                    onClick = onClickToAddItem,
-                )
-            } else {
-                CustomersData(
-                    modifier = Modifier,
-                    customers = items,
-                    isInSelectionMode = true,
-                    doesSelected = selectedItems::contains,
-                    onClickSelectItem = onSelectItem,
-                    onNavigateToDetails = {},
-                    lazyListState = lazyListState,
-                )
-            }
-        }
+        CustomersData(
+            customers = items,
+            isInSelectionMode = true,
+            doesSelected = selectedItems::contains,
+            onClickSelectItem = onSelectItem,
+            onNavigateToDetails = {},
+            modifier = Modifier.fillMaxSize(),
+            lazyListState = lazyListState,
+        )
     }
 }
 
@@ -312,7 +222,6 @@ private fun CustomerExportScreenContentPreview(
 ) {
     PoposRoomTheme {
         CustomerExportScreenContent(
-            modifier = Modifier,
             items = items,
             selectedItems = persistentListOf(),
             showSearchBar = false,
@@ -327,6 +236,7 @@ private fun CustomerExportScreenContentPreview(
             onClickExport = {},
             onBackClick = {},
             onClickToAddItem = {},
+            modifier = Modifier,
         )
     }
 }

@@ -243,9 +243,9 @@ class CustomerScreenScreenshotTest {
             PoposRoomTheme {
                 AddEditCustomerScreenContent(
                     state = AddEditCustomerState(),
-                    phoneError = "Customer phone should not empty",
                     onEvent = {},
                     onBackClick = {},
+                    phoneError = "Customer phone should not empty",
                 )
             }
         }
@@ -272,6 +272,7 @@ class CustomerScreenScreenshotTest {
         composeTestRule.captureForPhone("ImportScreenWithEmptyData") {
             PoposRoomTheme {
                 CustomerImportScreenContent(
+                    isLoading = false,
                     importedItems = persistentListOf(),
                     selectedItems = persistentListOf(),
                     onClickSelectItem = {},
@@ -290,6 +291,7 @@ class CustomerScreenScreenshotTest {
         composeTestRule.captureForPhone("ImportScreenWithSomeData") {
             PoposRoomTheme {
                 CustomerImportScreenContent(
+                    isLoading = false,
                     importedItems = customerList.toImmutableList(),
                     selectedItems = persistentListOf(),
                     onClickSelectItem = {},

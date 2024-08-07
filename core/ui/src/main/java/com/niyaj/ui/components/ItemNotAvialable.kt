@@ -144,6 +144,7 @@ fun ItemNotAvailableHalf(
 ) {
     Column(
         modifier = modifier
+            .testTag("ItemNotAvailableHalf")
             .fillMaxWidth()
             .height(IntrinsicSize.Min),
         verticalArrangement = Arrangement.Center,

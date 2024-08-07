@@ -17,7 +17,6 @@
 
 package com.niyaj.customer.details
 
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,16 +32,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import org.jetbrains.annotations.TestOnly
 import javax.inject.Inject
 
 @HiltViewModel
 class CustomerDetailsViewModel @Inject constructor(
     private val customerRepository: CustomerRepository,
     private val analyticsHelper: AnalyticsHelper,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val customerId = savedStateHandle.get<Int>("customerId") ?: 0
+    private val customerId = savedStateHandle.getStateFlow("customerId", 0)
 
     init {
         savedStateHandle.get<Int>("customerId")?.let {
@@ -53,7 +53,7 @@ class CustomerDetailsViewModel @Inject constructor(
     private val _totalOrders = MutableStateFlow(TotalOrderDetails())
     val totalOrders = _totalOrders.asStateFlow()
 
-    val customerDetails = snapshotFlow { customerId }.mapLatest {
+    val customerDetails = customerId.mapLatest {
         val data = customerRepository.getCustomerById(it).data
 
         if (data == null) UiState.Empty else UiState.Success(data)
@@ -63,7 +63,7 @@ class CustomerDetailsViewModel @Inject constructor(
         initialValue = UiState.Loading,
     )
 
-    val orderDetails = snapshotFlow { customerId }.flatMapLatest { customerId ->
+    val orderDetails = customerId.flatMapLatest { customerId ->
         customerRepository.getCustomerWiseOrders(customerId).mapLatest { orders ->
             if (orders.isEmpty()) {
                 UiState.Empty
@@ -89,6 +89,11 @@ class CustomerDetailsViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = UiState.Loading,
     )
+
+    @TestOnly
+    internal fun setCustomerId(customerId: Int) {
+        savedStateHandle["customerId"] = customerId
+    }
 }
 
 internal fun AnalyticsHelper.logViewCustomerDetails(customerId: Int) {

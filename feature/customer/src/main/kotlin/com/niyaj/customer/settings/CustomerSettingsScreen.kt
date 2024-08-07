@@ -27,10 +27,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_SETTINGS_TITLE
-import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_BTN_TEXT
 import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_SUB_TITLE
-import com.niyaj.common.tags.CustomerTestTags.IMPORT_CUSTOMER_BTN_TEXT
+import com.niyaj.common.tags.CustomerTestTags.EXPORT_CUSTOMER_TITLE
 import com.niyaj.common.tags.CustomerTestTags.IMPORT_CUSTOMER_SUB_TITLE
+import com.niyaj.common.tags.CustomerTestTags.IMPORT_CUSTOMER_TITLE
 import com.niyaj.customer.destinations.CustomerExportScreenDestination
 import com.niyaj.customer.destinations.CustomerImportScreenDestination
 import com.niyaj.designsystem.icon.PoposIcons
@@ -87,18 +87,18 @@ internal fun CustomerSettingsScreenContent(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         ) {
-            item(IMPORT_CUSTOMER_BTN_TEXT) {
+            item(IMPORT_CUSTOMER_TITLE) {
                 SettingsCard(
-                    title = IMPORT_CUSTOMER_BTN_TEXT,
+                    title = IMPORT_CUSTOMER_TITLE,
                     subtitle = IMPORT_CUSTOMER_SUB_TITLE,
                     icon = PoposIcons.Import,
                     onClick = onImportClick,
                 )
             }
 
-            item(EXPORT_CUSTOMER_BTN_TEXT) {
+            item(EXPORT_CUSTOMER_TITLE) {
                 SettingsCard(
-                    title = EXPORT_CUSTOMER_BTN_TEXT,
+                    title = EXPORT_CUSTOMER_TITLE,
                     subtitle = EXPORT_CUSTOMER_SUB_TITLE,
                     icon = PoposIcons.Upload,
                     onClick = onExportClick,

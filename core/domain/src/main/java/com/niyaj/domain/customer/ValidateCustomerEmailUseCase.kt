@@ -17,7 +17,6 @@
 
 package com.niyaj.domain.customer
 
-import android.util.Patterns
 import com.niyaj.common.result.ValidationResult
 import com.niyaj.common.tags.CustomerTestTags
 import javax.inject.Inject
@@ -25,7 +24,8 @@ import javax.inject.Inject
 class ValidateCustomerEmailUseCase @Inject constructor() {
     operator fun invoke(customerEmail: String?): ValidationResult {
         if (!customerEmail.isNullOrEmpty()) {
-            if (!Patterns.EMAIL_ADDRESS.matcher(customerEmail).matches()) {
+            val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\$"
+            if (!customerEmail.matches(emailRegex.toRegex())) {
                 return ValidationResult(
                     successful = false,
                     errorMessage = CustomerTestTags.CUSTOMER_EMAIL_VALID_ERROR,

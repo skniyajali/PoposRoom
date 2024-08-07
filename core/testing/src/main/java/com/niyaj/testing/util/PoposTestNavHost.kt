@@ -27,6 +27,7 @@ import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultAnimations
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
+import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 
@@ -45,6 +46,7 @@ fun PoposTestNavHost(
     appState: PoposTestAppState,
     navGraphSpec: NavGraphSpec,
     modifier: Modifier = Modifier,
+    manualComposableCallsBuilder: ManualComposableCallsBuilder.() -> Unit = {},
 ) {
     val bottomSheetNavigator = appState.bottomSheetNavigator
     appState.navController.navigatorProvider += bottomSheetNavigator
@@ -68,7 +70,7 @@ fun PoposTestNavHost(
             dependenciesContainerBuilder = {
                 dependency(navController)
             },
-            manualComposableCallsBuilder = {},
+            manualComposableCallsBuilder = manualComposableCallsBuilder,
         )
     }
 }

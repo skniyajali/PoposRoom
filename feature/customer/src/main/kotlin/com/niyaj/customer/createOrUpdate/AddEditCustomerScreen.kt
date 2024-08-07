@@ -36,8 +36,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.niyaj.common.tags.CustomerTestTags.ADD_EDIT_CUSTOMER_BUTTON
-import com.niyaj.common.tags.CustomerTestTags.ADD_EDIT_CUSTOMER_SCREEN
+import com.niyaj.common.tags.CustomerTestTags.ADD_EDIT_CUSTOMER_BTN
 import com.niyaj.common.tags.CustomerTestTags.CREATE_NEW_CUSTOMER
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_EMAIL_ERROR
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_EMAIL_FIELD
@@ -55,13 +54,14 @@ import com.niyaj.ui.components.PhoneNoCountBox
 import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.utils.DevicePreviews
+import com.niyaj.ui.utils.Screens.ADD_EDIT_CUSTOMER_SCREEN
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 
-@Destination
+@Destination(route = ADD_EDIT_CUSTOMER_SCREEN)
 @Composable
 fun AddEditCustomerScreen(
     customerId: Int = 0,
@@ -92,30 +92,30 @@ fun AddEditCustomerScreen(
     }
 
     AddEditCustomerScreenContent(
+        state = viewModel.state,
+        onEvent = viewModel::onEvent,
+        onBackClick = navigator::navigateUp,
         modifier = Modifier,
         title = title,
         icon = icon,
-        state = viewModel.addEditState,
         phoneError = phoneError,
         nameError = nameError,
         emailError = emailError,
-        onEvent = viewModel::onEvent,
-        onBackClick = navigator::navigateUp,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun AddEditCustomerScreenContent(
+    state: AddEditCustomerState,
+    onEvent: (AddEditCustomerEvent) -> Unit,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     title: String = CREATE_NEW_CUSTOMER,
     icon: ImageVector = PoposIcons.Add,
-    state: AddEditCustomerState,
     phoneError: String? = null,
     nameError: String? = null,
     emailError: String? = null,
-    onEvent: (AddEditCustomerEvent) -> Unit,
-    onBackClick: () -> Unit,
 ) {
     val enableBtn = phoneError == null && nameError == null && emailError == null
 
@@ -131,7 +131,7 @@ internal fun AddEditCustomerScreenContent(
             PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(ADD_EDIT_CUSTOMER_BUTTON),
+                    .testTag(ADD_EDIT_CUSTOMER_BTN),
                 text = title,
                 icon = icon,
                 enabled = enableBtn,
@@ -144,7 +144,6 @@ internal fun AddEditCustomerScreenContent(
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
-                .testTag(ADD_EDIT_CUSTOMER_SCREEN)
                 .fillMaxSize()
                 .padding(paddingValues),
             contentPadding = PaddingValues(SpaceMedium),
@@ -220,17 +219,17 @@ private fun AddEditCustomerScreenContentPreview(
 ) {
     PoposRoomTheme {
         AddEditCustomerScreenContent(
-            modifier = modifier,
             state = AddEditCustomerState(
                 customerPhone = "9078563412",
                 customerName = "New Customer",
                 customerEmail = "new@gmail.com",
             ),
+            onEvent = {},
+            onBackClick = {},
+            modifier = modifier,
             phoneError = null,
             nameError = null,
             emailError = null,
-            onEvent = {},
-            onBackClick = {},
         )
     }
 }

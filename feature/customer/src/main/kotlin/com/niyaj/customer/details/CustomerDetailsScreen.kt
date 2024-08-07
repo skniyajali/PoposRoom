@@ -35,9 +35,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_DETAILS_CARD
+import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_DETAILS_TITLE
+import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_LIST
+import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_RECENT_ORDERS
+import com.niyaj.common.tags.CustomerTestTags.TOTAL_ORDER_DETAILS_CARD
 import com.niyaj.customer.components.CustomerDetailsCard
 import com.niyaj.customer.components.CustomerRecentOrders
 import com.niyaj.customer.destinations.AddEditCustomerScreenDestination
@@ -93,13 +99,13 @@ fun CustomerDetailsScreen(
 @VisibleForTesting
 @Composable
 internal fun CustomerDetailsScreenContent(
-    modifier: Modifier = Modifier,
     customerState: UiState<Customer>,
     customerWiseOrders: UiState<List<CustomerWiseOrder>>,
     totalOrders: TotalOrderDetails,
     onBackClick: () -> Unit,
     onClickEdit: () -> Unit,
     onClickOrder: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
@@ -108,7 +114,7 @@ internal fun CustomerDetailsScreenContent(
 
     PoposSecondaryScaffold(
         modifier = modifier,
-        title = "Customer Details",
+        title = CUSTOMER_DETAILS_TITLE,
         showBackButton = true,
         showBottomBar = false,
         navActions = {},
@@ -130,17 +136,22 @@ internal fun CustomerDetailsScreenContent(
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
+                .testTag(CUSTOMER_LIST)
                 .fillMaxSize()
                 .padding(it),
             contentPadding = PaddingValues(SpaceSmall),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         ) {
-            item(key = "TotalOrder Details") {
-                TotalOrderDetailsCard(details = totalOrders)
+            item(key = TOTAL_ORDER_DETAILS_CARD) {
+                TotalOrderDetailsCard(
+                    details = totalOrders,
+                    modifier = Modifier.testTag(TOTAL_ORDER_DETAILS_CARD),
+                )
             }
 
-            item(key = "Address Details") {
+            item(key = CUSTOMER_DETAILS_CARD) {
                 CustomerDetailsCard(
+                    modifier = Modifier.testTag(CUSTOMER_DETAILS_CARD),
                     customerState = customerState,
                     onExpanded = {
                         detailsExpanded = !detailsExpanded
@@ -150,7 +161,7 @@ internal fun CustomerDetailsScreenContent(
                 )
             }
 
-            item(key = "OrderDetails") {
+            item(key = CUSTOMER_RECENT_ORDERS) {
                 CustomerRecentOrders(
                     customerWiseOrders = customerWiseOrders,
                     doesExpanded = orderExpanded,
