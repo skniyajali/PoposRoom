@@ -1,23 +1,21 @@
 /*
- * Copyright 2024 Sk Niyaj Ali
+ *      Copyright 2024 Sk Niyaj Ali
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
  */
 
 package com.niyaj.testing.repository
 
-import androidx.compose.runtime.mutableStateListOf
 import com.niyaj.common.result.Resource
 import com.niyaj.common.utils.getStartTime
 import com.niyaj.data.repository.EmployeeRepository
@@ -31,19 +29,18 @@ import com.niyaj.model.EmployeeType.FullTime
 import com.niyaj.model.searchEmployee
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.update
 import org.jetbrains.annotations.TestOnly
 
-class TestEmployeeRepository : EmployeeRepository {
+class TestEmployeeRepository: EmployeeRepository {
 
     /**
      * The backing employee list for testing
      */
     private val employeeList = MutableStateFlow(mutableListOf<Employee>())
-    private val employeePayments = mutableStateListOf(EmployeePayments())
-    private val employeeAbsentDates = mutableStateListOf(EmployeeAbsentDates())
+    private val employeePayments = MutableStateFlow(listOf<EmployeePayments>())
+    private val employeeAbsentDates = MutableStateFlow(listOf<EmployeeAbsentDates>())
     private val employeeMonthlyDate = MutableStateFlow(listOf<EmployeeMonthlyDate>())
     private val employeeSalaryEstimation = MutableStateFlow(EmployeeSalaryEstimation())
 
@@ -63,11 +60,11 @@ class TestEmployeeRepository : EmployeeRepository {
     }
 
     override suspend fun getEmployeeAbsentDates(employeeId: Int): Flow<List<EmployeeAbsentDates>> {
-        return flowOf(employeeAbsentDates.toList())
+        return employeeAbsentDates
     }
 
     override suspend fun getEmployeePayments(employeeId: Int): Flow<List<EmployeePayments>> {
-        return flowOf(employeePayments.toList())
+        return employeePayments
     }
 
     override suspend fun getSalaryCalculableDate(employeeId: Int): List<EmployeeMonthlyDate> {
@@ -119,7 +116,7 @@ class TestEmployeeRepository : EmployeeRepository {
 
     @TestOnly
     fun updateEmployeePayments(payments: List<EmployeePayments>) {
-        employeePayments.addAll(payments)
+        employeePayments.update { payments.toMutableList() }
     }
 
     @TestOnly
@@ -129,7 +126,7 @@ class TestEmployeeRepository : EmployeeRepository {
 
     @TestOnly
     fun updateAbsentDates(absentDates: List<EmployeeAbsentDates>) {
-        employeeAbsentDates.addAll(absentDates)
+        employeeAbsentDates.update { absentDates.toMutableList() }
     }
 
     @TestOnly
@@ -143,7 +140,7 @@ class TestEmployeeRepository : EmployeeRepository {
     }
 
     fun createTestItem(): Employee {
-        val newEmployee = Employee(
+        val newEmployee =  Employee(
             employeeId = 1,
             employeeName = "Test Employee",
             employeePhone = "1234567890",
