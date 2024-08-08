@@ -130,7 +130,7 @@ internal fun EmployeeDetails(
                                     .testTag("EmployeeDetailsContent")
                                     .fillMaxWidth()
                                     .padding(SpaceSmall),
-                                verticalArrangement = Arrangement.spacedBy(SpaceSmall)
+                                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
                             ) {
                                 IconWithText(
                                     modifier = Modifier.testTag(state.data.employeeName),

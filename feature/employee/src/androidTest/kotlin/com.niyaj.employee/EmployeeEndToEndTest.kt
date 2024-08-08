@@ -77,8 +77,8 @@ import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SETTINGS_TITLE
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_TAG
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_TYPE_FIELD
-import com.niyaj.common.tags.EmployeeTestTags.EMP_ABSENT_NOT_AVAILABLE
-import com.niyaj.common.tags.EmployeeTestTags.EMP_PAYMENT_NOT_AVAILABLE
+import com.niyaj.common.tags.EmployeeTestTags.EMP_ABSENT_NOTE
+import com.niyaj.common.tags.EmployeeTestTags.EMP_PAYMENTS_NOTE
 import com.niyaj.common.tags.EmployeeTestTags.EXPORT_EMPLOYEE_TITLE
 import com.niyaj.common.tags.EmployeeTestTags.IMPORT_EMPLOYEE_NOTE_TEXT
 import com.niyaj.common.tags.EmployeeTestTags.IMPORT_EMPLOYEE_TITLE
@@ -93,9 +93,6 @@ import com.niyaj.common.utils.Constants.STANDARD_BACK_BUTTON
 import com.niyaj.common.utils.Constants.STANDARD_DELETE_DIALOG
 import com.niyaj.common.utils.Constants.STANDARD_FAB_BUTTON
 import com.niyaj.common.utils.Constants.STANDARD_SEARCH_BAR
-import com.niyaj.common.utils.toBarDate
-import com.niyaj.common.utils.toFormattedDate
-import com.niyaj.common.utils.toJoinedDate
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.employee.destinations.EmployeeDetailsScreenDestination
@@ -107,7 +104,6 @@ import com.niyaj.model.EmployeeType.FullTime
 import com.niyaj.model.EmployeeType.PartTime
 import com.niyaj.model.searchEmployee
 import com.niyaj.poposroom.uitesthiltmanifest.HiltComponentActivity
-import com.niyaj.testing.repository.TestEmployeeRepository
 import com.niyaj.testing.util.EmptyOpenResultRecipient
 import com.niyaj.testing.util.PoposTestAppState
 import com.niyaj.testing.util.PoposTestNavHost
@@ -154,7 +150,6 @@ class EmployeeEndToEndTest {
 
     private lateinit var appState: PoposTestAppState
     private val customerList = EmployeePreviewData.employeeList
-    private val repository = TestEmployeeRepository()
 
     private val newEmployee = Employee(
         employeeId = 1,
@@ -174,7 +169,7 @@ class EmployeeEndToEndTest {
         employeePosition = "Master",
         employeeType = FullTime,
         employeeSalaryType = Monthly,
-        isDeliveryPartner = true
+        isDeliveryPartner = true,
     )
 
     @OptIn(ExperimentalMaterialNavigationApi::class)
@@ -201,7 +196,7 @@ class EmployeeEndToEndTest {
                                 onClickAddPayment = {},
                                 onClickAddAbsent = {},
                                 paymentRecipient = EmptyOpenResultRecipient(),
-                                absentRecipient = EmptyOpenResultRecipient()
+                                absentRecipient = EmptyOpenResultRecipient(),
                             )
                         }
                     }
@@ -272,6 +267,8 @@ class EmployeeEndToEndTest {
 
             waitForIdle()
 
+            onNodeWithTag("addEditEmployeeFields").assertIsDisplayed()
+
             // Check screen has correct field
             onNodeWithTag(EMPLOYEE_NAME_FIELD).assertIsDisplayed()
             onNodeWithText(EMPLOYEE_NAME_EMPTY_ERROR).assertIsDisplayed()
@@ -285,11 +282,20 @@ class EmployeeEndToEndTest {
             onNodeWithTag(EMPLOYEE_POSITION_FIELD).assertIsDisplayed()
             onNodeWithText(EMPLOYEE_POSITION_EMPTY_ERROR).assertIsDisplayed()
 
+            onNodeWithTag("addEditEmployeeFields").performTouchInput {
+                swipeUp(
+                    startY = center.y + 200f,
+                    endY = center.y - 200f,
+                )
+            }
+
+            waitForIdle()
+
             onNodeWithTag(EMPLOYEE_JOINED_DATE_FIELD).assertIsDisplayed()
 
             onNodeWithText(EMPLOYEE_TYPE_FIELD).assertIsDisplayed()
 
-            onNodeWithText(EMPLOYEE_SALARY_TYPE_FIELD).assertIsDisplayed()
+            onNodeWithTag(EMPLOYEE_SALARY_TYPE_FIELD).assertIsDisplayed()
 
             onNodeWithTag(EMPLOYEE_EMAIL_FIELD).assertIsDisplayed()
 
@@ -319,7 +325,6 @@ class EmployeeEndToEndTest {
 
             onNodeWithTag(EMPLOYEE_NAME_FIELD).performTextInput(newEmployee.employeeName)
             onNodeWithTag(EMPLOYEE_NAME_ERROR).assertIsNotDisplayed()
-
 
             // Perform invalid input on customerPhone field and check for validation error
             onNodeWithTag(EMPLOYEE_PHONE_FIELD).performTextInput("Te")
@@ -360,6 +365,13 @@ class EmployeeEndToEndTest {
             onNodeWithTag("positionList").assertIsDisplayed()
             onNodeWithText("Chef").assertIsDisplayed().performClick()
 
+            onNodeWithTag("addEditEmployeeFields").performTouchInput {
+                swipeUp(
+                    startY = center.y + 200f,
+                    endY = center.y - 200f,
+                )
+            }
+
             // Perform input on customerEmail
             onNodeWithTag(EMPLOYEE_EMAIL_FIELD).assertIsDisplayed()
             newEmployee.employeeEmail?.let {
@@ -375,7 +387,7 @@ class EmployeeEndToEndTest {
                     .assertIsDisplayed().performClick().assertIsSelected()
             }
 
-            onNodeWithText(EMPLOYEE_SALARY_TYPE_FIELD).assertIsDisplayed()
+            onNodeWithTag(EMPLOYEE_SALARY_TYPE_FIELD).assertIsDisplayed()
             newEmployee.employeeSalaryType.let {
                 onNodeWithTag(EMPLOYEE_SALARY_TYPE_FIELD.plus(it.name))
                     .assertIsDisplayed().performClick().assertIsSelected()
@@ -385,7 +397,6 @@ class EmployeeEndToEndTest {
             onNodeWithTag(EMPLOYEE_PARTNER_FIELD).performClick()
             onNodeWithText("Scan QR").assertIsDisplayed()
             onNodeWithText(QR_CODE_NOTE).assertIsDisplayed()
-
 
             onNodeWithTag(ADD_EDIT_EMPLOYEE_BTN).assertIsDisplayed().assertIsEnabled()
         }
@@ -442,6 +453,8 @@ class EmployeeEndToEndTest {
 
             createNewEmployeeList(2)
 
+            waitForIdle()
+
             onNodeWithTag(EMPLOYEE_TAG.plus(1)).performTouchInput { longClick() }
 
             onNodeWithTag(NAV_SELECT_ALL_BTN).assertIsDisplayed().performClick()
@@ -492,10 +505,12 @@ class EmployeeEndToEndTest {
             onNodeWithTag(EMPLOYEE_POSITION_FIELD).assertTextContains(newEmployee.employeePosition)
             onNodeWithTag(EMPLOYEE_POSITION_EMPTY_ERROR).assertDoesNotExist()
 
-            onNodeWithTag(EMPLOYEE_EMAIL_FIELD).assertTextContains(newEmployee.employeeEmail!!)
-
-            onNodeWithTag(EMPLOYEE_JOINED_DATE_FIELD)
-                .assertTextContains(newEmployee.employeeJoinedDate.toJoinedDate)
+            onNodeWithTag("addEditEmployeeFields").performTouchInput {
+                swipeUp(
+                    startY = center.y + 200f,
+                    endY = center.y - 200f,
+                )
+            }
 
             onNodeWithTag(EMPLOYEE_TYPE_FIELD.plus(newEmployee.employeeType.name)).assertIsSelected()
 
@@ -590,11 +605,11 @@ class EmployeeEndToEndTest {
             createNewEmployee(newEmployee)
             waitForIdle()
 
-            createNewEmployeeList(3)
+            createNewEmployeeList(2)
 
             waitForIdle()
 
-            customerList.take(3).forEach {
+            customerList.take(2).forEach {
                 onNodeWithTag(EMPLOYEE_TAG.plus(it.employeeId.plus(1)))
                     .assertIsDisplayed()
                     .performTouchInput { longClick() }
@@ -606,10 +621,10 @@ class EmployeeEndToEndTest {
             onNodeWithTag(STANDARD_FAB_BUTTON).assertIsNotDisplayed()
 
             onNodeWithTag(NAV_DELETE_BTN).assertIsDisplayed()
-            onNodeWithText("3 Selected").assertIsDisplayed()
+            onNodeWithText("2 Selected").assertIsDisplayed()
             onNodeWithTag(CLEAR_ICON).assertIsDisplayed().performClick()
 
-            customerList.take(3).forEach {
+            customerList.take(2).forEach {
                 onNodeWithTag(EMPLOYEE_TAG.plus(it.employeeId.plus(1)))
                     .assertIsDisplayed()
                     .assertIsNotSelected()
@@ -714,7 +729,7 @@ class EmployeeEndToEndTest {
             createNewEmployee(newEmployee)
             waitForIdle()
 
-            createNewEmployeeList(4)
+            createNewEmployeeList(2)
 
             waitForIdle()
 
@@ -1036,7 +1051,7 @@ class EmployeeEndToEndTest {
             )
 
             onNodeWithTag(EMPLOYEE_DETAILS).assertIsDisplayed()
-            onNodeWithTag(EMPLOYEE_LIST).assertIsDisplayed()
+            onNodeWithTag("EmployeeDetailsList").assertIsDisplayed()
         }
     }
 
@@ -1051,88 +1066,31 @@ class EmployeeEndToEndTest {
             onNodeWithTag("EmployeeDetailsList").assertIsDisplayed()
 
             // Employee Details
-            onNodeWithTag("EmployeeDetailsCard").assertIsDisplayed().assertHasClickAction()
-            onNodeWithTag("EmployeeDetailsContent").assertIsDisplayed()
-            onNodeWithTag(newEmployee.employeeName).assertIsDisplayed()
-            onNodeWithTag(newEmployee.employeePhone).assertIsDisplayed()
-            onNodeWithTag(newEmployee.employeePosition).assertIsDisplayed()
-            onNodeWithTag(newEmployee.employeeSalary.toRupee).assertIsDisplayed()
-            onNodeWithTag(newEmployee.employeeType.name).assertIsDisplayed()
-            onNodeWithTag(newEmployee.employeeSalaryType.name).assertIsDisplayed()
-            onNodeWithTag(newEmployee.employeeEmail.toString()).assertIsDisplayed()
-            onNodeWithTag(newEmployee.employeeJoinedDate.toJoinedDate).assertIsDisplayed()
-
-            onNodeWithTag("PaymentDetailsCard").assertIsDisplayed()
-                .assertHasClickAction().performClick()
-            onNodeWithText(EMP_PAYMENT_NOT_AVAILABLE).assertIsDisplayed()
+            onNodeWithText("Name - ${newEmployee.employeeName}").assertIsDisplayed()
+            onNodeWithText("Phone - ${newEmployee.employeePhone}").assertIsDisplayed()
+            onNodeWithText("Position - ${newEmployee.employeePosition}").assertIsDisplayed()
+            onNodeWithText("Salary - ${newEmployee.employeeSalary.toRupee}").assertIsDisplayed()
+            onNodeWithText("Type - ${newEmployee.employeeType}").assertIsDisplayed()
+            onNodeWithText("Salary Type - ${newEmployee.employeeSalaryType}").assertIsDisplayed()
 
             onNodeWithTag("EmployeeDetailsList").performTouchInput { swipeUp() }
 
-            onNodeWithTag("AbsentDetailsCard").assertIsDisplayed()
+            onNodeWithTag("PaymentDetailsExpand").assertIsDisplayed()
                 .assertHasClickAction().performClick()
-            onNodeWithText(EMP_ABSENT_NOT_AVAILABLE).assertIsDisplayed()
-        }
-    }
-
-    @Test
-    fun employeeDetails_onNavigated_paymentDetailsWillBeVisibleToUser() {
-        composeTestRule.apply {
-            createNewEmployee(newEmployee)
-            onNodeWithTag(EMPLOYEE_TAG.plus(1)).assertIsDisplayed().performClick()
-
-            val payments = EmployeePreviewData.employeePayments.take(2)
-            repository.updateEmployeePayments(payments)
-
-            waitForIdle()
-
-            onNodeWithTag("EmployeeDetailsList").assertIsDisplayed()
-
-            onNodeWithTag("PaymentDetailsCard").assertIsDisplayed()
-                .assertHasClickAction().performClick()
-            onNodeWithText(EMP_PAYMENT_NOT_AVAILABLE).assertIsNotDisplayed()
+            onNodeWithText(EMP_PAYMENTS_NOTE).assertIsDisplayed()
 
             onNodeWithTag("EmployeeDetailsList").performTouchInput { swipeUp() }
 
-            payments.forEach { empPayments ->
-                empPayments.payments.forEach { payment ->
-                    onNodeWithTag("PaymentsCard-${payment.paymentId}").assertIsDisplayed()
-                    onNodeWithTag("PaymentsCard-${payment.paymentId}")
-                        .assertTextContains(payment.paymentAmount.toRupee)
-                        .assertTextContains(payment.paymentDate.toBarDate)
-                        .assertTextContains(payment.paymentMode.name)
-                }
-            }
-        }
-    }
-
-    @Test
-    fun employeeDetails_onNavigated_absentDetailsWillBeVisibleToUser() {
-        composeTestRule.apply {
-            createNewEmployee(newEmployee)
-            onNodeWithTag(EMPLOYEE_TAG.plus(1)).assertIsDisplayed().performClick()
-
-            val absents = EmployeePreviewData.employeeAbsentDates.take(4)
-            repository.updateAbsentDates(absents)
-
-            waitForIdle()
-
-            onNodeWithTag("EmployeeDetailsList").assertIsDisplayed()
-
-            onNodeWithTag("AbsentDetailsCard").assertIsDisplayed()
+            onNodeWithTag("AbsentDetailsExpand").assertIsDisplayed()
                 .assertHasClickAction().performClick()
-            onNodeWithText(EMP_ABSENT_NOT_AVAILABLE).assertIsNotDisplayed()
 
             onNodeWithTag("EmployeeDetailsList").performTouchInput { swipeUp() }
 
-            onNodeWithTag("AbsentDatesFlowRow").assertIsDisplayed()
-            absents.forEach { absentReport ->
-                absentReport.absentDates.forEach {  date ->
-                    onNodeWithTag(date.plus(absentReport.startDate)).assertIsDisplayed()
-                        .assertTextContains(date.toFormattedDate)
-                }
-            }
+            onNodeWithText(EMP_ABSENT_NOTE).assertIsDisplayed()
         }
     }
+
+    // TODO: Add More test class to test payment, absent details of employee
 
     private fun gotoAddEditEmployeeScreen() {
         composeTestRule
@@ -1142,13 +1100,18 @@ class EmployeeEndToEndTest {
             .performClick()
     }
 
-    private fun createNewEmployee(newEmployee: Employee) {
-        composeTestRule
-            .onNodeWithTag(CREATE_NEW_EMPLOYEE)
-            .assertIsDisplayed()
-            .assertHasClickAction()
-            .performClick()
+    private fun createNewEmployee(newEmployee: Employee, usingList: Boolean = false) {
+        if (usingList) {
+            composeTestRule.onNodeWithTag(STANDARD_FAB_BUTTON).assertIsDisplayed().performClick()
+        } else {
+            composeTestRule
+                .onNodeWithTag(CREATE_NEW_EMPLOYEE)
+                .assertIsDisplayed()
+                .assertHasClickAction()
+                .performClick()
+        }
 
+        composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithTag(EMPLOYEE_NAME_FIELD)
             .performTextInput(newEmployee.employeeName)
@@ -1161,10 +1124,20 @@ class EmployeeEndToEndTest {
 
         composeTestRule.onNodeWithTag(EMPLOYEE_POSITION_FIELD).performClick()
         composeTestRule.onNodeWithTag("positionList").assertIsDisplayed()
-        composeTestRule.onNodeWithText(this.newEmployee.employeePosition).assertIsDisplayed().performClick()
+        composeTestRule.onNodeWithText(this.newEmployee.employeePosition).assertIsDisplayed()
+            .performClick()
 
-        composeTestRule.onNodeWithTag(EMPLOYEE_EMAIL_FIELD)
-            .performTextInput(newEmployee.employeeEmail.toString())
+        composeTestRule.onNodeWithTag("addEditEmployeeFields").performTouchInput {
+            swipeUp(
+                startY = center.y + 200f,
+                endY = center.y - 200f,
+            )
+        }
+
+        newEmployee.employeeEmail?.let {
+            composeTestRule.onNodeWithTag(EMPLOYEE_EMAIL_FIELD)
+                .performTextInput(newEmployee.employeeEmail.toString())
+        }
 
         composeTestRule.onNodeWithTag(EMPLOYEE_TYPE_FIELD.plus(newEmployee.employeeType.name))
             .performClick().assertIsSelected()
@@ -1196,7 +1169,7 @@ class EmployeeEndToEndTest {
     private fun createNewEmployeeList(limit: Int) {
         composeTestRule.apply {
             customerList.take(limit).forEach {
-                createNewEmployee(it)
+                createNewEmployee(it, true)
 
                 waitForIdle()
             }

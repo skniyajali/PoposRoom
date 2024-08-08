@@ -77,7 +77,7 @@ class AddEditEmployeeViewModel @Inject constructor(
     val eventFlow = _eventFlow.shareIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
-        replay = 1
+        replay = 1,
     )
 
     init {

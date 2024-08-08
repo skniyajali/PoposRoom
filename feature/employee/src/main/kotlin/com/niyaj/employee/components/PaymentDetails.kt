@@ -48,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.common.tags.EmployeeTestTags.EMP_PAYMENTS_NOTE
 import com.niyaj.common.tags.EmployeeTestTags.EMP_PAYMENT_NOT_AVAILABLE
 import com.niyaj.common.utils.toBarDate
 import com.niyaj.common.utils.toFormattedDate
@@ -83,14 +84,14 @@ internal fun PaymentDetails(
 ) = trace("PaymentDetails") {
     Card(
         modifier = modifier
+            .testTag("PaymentDetailsCard")
             .fillMaxWidth()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
             ) {
                 onExpanded()
-            }
-            .testTag("PaymentDetailsCard"),
+            },
         shape = RoundedCornerShape(4.dp),
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 1.dp,
@@ -113,7 +114,7 @@ internal fun PaymentDetails(
             rowClickable = false,
             expand = { modifier: Modifier ->
                 IconButton(
-                    modifier = modifier,
+                    modifier = modifier.testTag("PaymentDetailsExpand"),
                     onClick = {
                         onExpanded()
                     },
@@ -214,7 +215,7 @@ private fun EmployeePaymentsList(
 
                     if (salaries.payments.isEmpty()) {
                         NoteText(
-                            text = "Payments were not made on this date period!",
+                            text = EMP_PAYMENTS_NOTE,
                             modifier = Modifier
                                 .padding(vertical = SpaceMini)
                                 .align(Alignment.CenterHorizontally),

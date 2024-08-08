@@ -166,17 +166,17 @@ fun AddEditEmployeeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AddEditEmployeeScreenContent(
-    modifier: Modifier = Modifier,
-    title: String = CREATE_NEW_EMPLOYEE,
-    icon: ImageVector = PoposIcons.Add,
     state: AddEditEmployeeState,
+    onEvent: (AddEditEmployeeEvent) -> Unit,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
     phoneError: String? = null,
     nameError: String? = null,
     salaryError: String? = null,
     positionError: String? = null,
     scannedBitmap: ImageBitmap? = null,
-    onBackClick: () -> Unit,
-    onEvent: (AddEditEmployeeEvent) -> Unit,
+    title: String = CREATE_NEW_EMPLOYEE,
+    icon: ImageVector = PoposIcons.Add,
 ) {
     val lazyListState = rememberLazyListState()
     val dialogState = rememberMaterialDialogState()
@@ -212,6 +212,7 @@ internal fun AddEditEmployeeScreenContent(
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
+                .testTag("addEditEmployeeFields")
                 .fillMaxSize()
                 .padding(paddingValues),
             contentPadding = PaddingValues(SpaceMedium),
@@ -434,6 +435,7 @@ internal fun AddEditEmployeeScreenContent(
             item(EMPLOYEE_SALARY_TYPE_FIELD) {
                 Column(
                     modifier = Modifier
+                        .testTag(EMPLOYEE_SALARY_TYPE_FIELD)
                         .fillMaxWidth()
                         .padding(horizontal = SpaceSmall),
                 ) {
@@ -447,13 +449,12 @@ internal fun AddEditEmployeeScreenContent(
                     Row {
                         EmployeeSalaryType.entries.forEach { type ->
                             StandardRoundedFilterChip(
-                                modifier = Modifier.testTag(EMPLOYEE_SALARY_TYPE_FIELD.plus(type.name)),
+                                modifier = Modifier
+                                    .testTag(EMPLOYEE_SALARY_TYPE_FIELD.plus(type.name)),
                                 text = type.name,
                                 selected = state.employeeSalaryType == type,
                                 onClick = {
-                                    onEvent(
-                                        AddEditEmployeeEvent.EmployeeSalaryTypeChanged(type),
-                                    )
+                                    onEvent(AddEditEmployeeEvent.EmployeeSalaryTypeChanged(type))
                                 },
                             )
 

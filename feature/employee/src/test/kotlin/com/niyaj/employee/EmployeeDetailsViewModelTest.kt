@@ -98,7 +98,6 @@ class EmployeeDetailsViewModelTest {
         job.cancel()
     }
 
-
     @Test
     fun `employeeAbsentDates is empty, when no employeeAbsentDates found`() = runTest {
         val job = launch(UnconfinedTestDispatcher()) { viewModel.employeeAbsentDates.collect() }

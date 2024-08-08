@@ -17,6 +17,7 @@
 
 package com.niyaj.testing.util
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -77,8 +78,8 @@ fun PoposTestNavHost(
     }
 }
 
-
 class EmptyOpenResultRecipient<R> : OpenResultRecipient<R> {
+    @SuppressLint("ComposableNaming")
     @Composable
     override fun onNavResult(listener: (NavResult<R>) -> Unit) = Unit
 }

@@ -52,7 +52,7 @@ object EmployeeTestTags {
     const val EMPLOYEE_POSITION_ERROR = "Employee PositionError"
 
     const val EMPLOYEE_JOINED_DATE_FIELD = "Employee JoinedDate"
-    
+
     const val EMPLOYEE_NAME_EMPTY_ERROR = "Employee name must not be empty"
     const val EMPLOYEE_NAME_DIGIT_ERROR = "Employee name must not contain any digit"
     const val EMPLOYEE_NAME_LENGTH_ERROR = "Employee name must be more than 4 characters"
@@ -92,4 +92,6 @@ object EmployeeTestTags {
 
     const val EMP_PAYMENT_NOT_AVAILABLE = "You have not paid any amount to this employee."
     const val EMP_ABSENT_NOT_AVAILABLE = "Employee absent reports not available"
+    const val EMP_PAYMENTS_NOTE = "Payments were not made on this date period!"
+    const val EMP_ABSENT_NOTE = "Did not take a leave on this date period!"
 }

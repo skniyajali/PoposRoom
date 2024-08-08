@@ -48,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.common.tags.EmployeeTestTags.EMP_ABSENT_NOTE
 import com.niyaj.common.tags.EmployeeTestTags.EMP_ABSENT_NOT_AVAILABLE
 import com.niyaj.common.utils.toFormattedDate
 import com.niyaj.designsystem.icon.PoposIcons
@@ -77,14 +78,14 @@ internal fun AbsentDetails(
 ) = trace("AbsentDetails") {
     Card(
         modifier = Modifier
+            .testTag("AbsentDetailsCard")
             .fillMaxWidth()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
             ) {
                 onExpanded()
-            }
-            .testTag("AbsentDetailsCard"),
+            },
         shape = RoundedCornerShape(4.dp),
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 1.dp,
@@ -107,7 +108,8 @@ internal fun AbsentDetails(
             rowClickable = false,
             expand = { modifier: Modifier ->
                 IconButton(
-                    modifier = modifier,
+                    modifier = modifier
+                        .testTag("AbsentDetailsExpand"),
                     onClick = onExpanded,
                 ) {
                     Icon(
@@ -199,7 +201,7 @@ internal fun AbsentDetails(
 
                                             if (absentReport.absentDates.isEmpty()) {
                                                 NoteText(
-                                                    text = "Did not take a leave on this date period!",
+                                                    text = EMP_ABSENT_NOTE,
                                                     modifier = Modifier,
                                                 )
                                             }
