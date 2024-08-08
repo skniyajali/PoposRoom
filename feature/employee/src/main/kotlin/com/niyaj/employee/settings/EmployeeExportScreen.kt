@@ -21,52 +21,30 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.VisibleForTesting
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.niyaj.common.tags.EmployeeTestTags
+import com.niyaj.common.tags.EmployeeTestTags.CREATE_NEW_EMPLOYEE
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_NOT_AVAILABLE
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.EmployeeTestTags.EXPORT_EMPLOYEE_FILE_NAME
 import com.niyaj.common.tags.EmployeeTestTags.EXPORT_EMPLOYEE_TITLE
 import com.niyaj.common.utils.Constants
-import com.niyaj.designsystem.components.PoposButton
-import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.common.utils.createExportNote
 import com.niyaj.designsystem.theme.PoposRoomTheme
-import com.niyaj.designsystem.theme.SpaceLarge
-import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.domain.utils.ImportExport
 import com.niyaj.employee.components.EmployeeList
 import com.niyaj.employee.destinations.AddEditEmployeeScreenDestination
 import com.niyaj.model.Employee
-import com.niyaj.ui.components.InfoText
-import com.niyaj.ui.components.ItemNotAvailable
-import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.ScrollToTop
-import com.niyaj.ui.components.StandardSearchBar
+import com.niyaj.ui.components.ExportScaffold
 import com.niyaj.ui.parameterProvider.EmployeePreviewData
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens.EMPLOYEE_EXPORT_SCREEN
@@ -181,12 +159,12 @@ internal fun EmployeeExportScreenContent(
     onClickToAddItem: () -> Unit,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
-    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
 ) {
     TrackScreenViewEvent(screenName = "EmployeeExportScreen")
 
     val text = if (searchText.isEmpty()) EMPLOYEE_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND
-    val title = if (selectedItems.isEmpty()) EXPORT_EMPLOYEE_TITLE else "${selectedItems.size} Selected"
+    val title =
+        if (selectedItems.isEmpty()) EXPORT_EMPLOYEE_TITLE else "${selectedItems.size} Selected"
 
     BackHandler {
         if (selectedItems.isNotEmpty()) {
@@ -198,112 +176,44 @@ internal fun EmployeeExportScreenContent(
         }
     }
 
-    PoposSecondaryScaffold(
+    ExportScaffold(
         title = title,
-        showBackButton = selectedItems.isEmpty() || showSearchBar,
+        exportNote = createExportNote(selectedItems, items.size, "employee"),
+        searchPlaceholder = EMPLOYEE_SEARCH_PLACEHOLDER,
+        exportButtonText = EXPORT_EMPLOYEE_TITLE,
+        emptyButtonText = CREATE_NEW_EMPLOYEE,
+        emptyText = text,
         showBottomBar = items.isNotEmpty(),
-        showSecondaryBottomBar = true,
-        navActions = {
-            if (showSearchBar) {
-                StandardSearchBar(
-                    searchText = searchText,
-                    placeholderText = EMPLOYEE_SEARCH_PLACEHOLDER,
-                    onClearClick = onClearClick,
-                    onSearchTextChanged = onSearchTextChanged,
-                )
-            } else {
-                if (items.isNotEmpty()) {
-                    IconButton(
-                        onClick = onClickSelectAll,
-                    ) {
-                        Icon(
-                            imageVector = PoposIcons.Checklist,
-                            contentDescription = Constants.SELECT_ALL_ICON,
-                        )
-                    }
-
-                    IconButton(
-                        onClick = onClickOpenSearch,
-                        modifier = Modifier.testTag(NAV_SEARCH_BTN),
-                    ) {
-                        Icon(
-                            imageVector = PoposIcons.Search,
-                            contentDescription = "Search Icon",
-                        )
-                    }
-                }
+        showBackButton = selectedItems.isEmpty(),
+        searchText = searchText,
+        showSearchBar = showSearchBar,
+        showScrollToTop = !lazyListState.isScrollingUp(),
+        onBackClick = onBackClick,
+        onClickDeselect = onClickDeselect,
+        onClickSelectAll = onClickSelectAll,
+        onClickOpenSearch = onClickOpenSearch,
+        onClickCloseSearch = onClickCloseSearch,
+        onClearClick = onClearClick,
+        onSearchTextChanged = onSearchTextChanged,
+        onClickExport = onClickExport,
+        onClickEmptyBtn = onClickToAddItem,
+        onClickScrollToTop = {
+            scope.launch {
+                lazyListState.animateScrollToItem(0)
             }
         },
-        bottomBar = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(padding),
-                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-            ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} employee will be exported.")
-
-                PoposButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag(EXPORT_EMPLOYEE_TITLE),
-                    enabled = items.isNotEmpty(),
-                    text = EXPORT_EMPLOYEE_TITLE,
-                    icon = PoposIcons.Upload,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                    ),
-                    onClick = onClickExport,
-                )
-            }
-        },
-        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyListState.isScrollingUp(),
-                onClick = {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(index = 0)
-                    }
-                },
-            )
-        },
-        navigationIcon = {
-            IconButton(
-                onClick = onClickDeselect,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Deselect All",
-                )
-            }
-        },
+        modifier = modifier,
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
-        ) {
-            if (items.isEmpty()) {
-                ItemNotAvailable(
-                    text = text,
-                    buttonText = EmployeeTestTags.CREATE_NEW_EMPLOYEE,
-                    onClick = onClickToAddItem,
-                )
-            } else {
-                EmployeeList(
-                    modifier = modifier
-                        .fillMaxSize(),
-                    employees = items,
-                    isInSelectionMode = true,
-                    onSelectItem = onSelectItem,
-                    doesSelected = selectedItems::contains,
-                    onNavigateToDetails = {},
-                    lazyListState = lazyListState,
-                )
-            }
-        }
+        EmployeeList(
+            modifier = modifier
+                .fillMaxSize(),
+            employees = items,
+            isInSelectionMode = true,
+            onSelectItem = onSelectItem,
+            doesSelected = selectedItems::contains,
+            onNavigateToDetails = {},
+            lazyListState = lazyListState,
+        )
     }
 }
 

@@ -64,7 +64,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.niyaj.common.tags.EmployeeTestTags.ADD_EDIT_EMPLOYEE_BUTTON
+import com.niyaj.common.tags.EmployeeTestTags.ADD_EDIT_EMPLOYEE_BTN
 import com.niyaj.common.tags.EmployeeTestTags.CREATE_NEW_EMPLOYEE
 import com.niyaj.common.tags.EmployeeTestTags.EDIT_EMPLOYEE
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_EMAIL_FIELD
@@ -197,7 +197,7 @@ internal fun AddEditEmployeeScreenContent(
             PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(ADD_EDIT_EMPLOYEE_BUTTON),
+                    .testTag(ADD_EDIT_EMPLOYEE_BTN),
                 text = title,
                 icon = icon,
                 enabled = enableBtn,
@@ -314,6 +314,7 @@ internal fun AddEditEmployeeScreenContent(
                     if (positions.isNotEmpty()) {
                         DropdownMenu(
                             modifier = Modifier
+                                .testTag("positionList")
                                 .width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
                             expanded = expanded,
                             onDismissRequest = { expanded = false },
@@ -372,6 +373,7 @@ internal fun AddEditEmployeeScreenContent(
                     trailingIcon = {
                         IconButton(
                             onClick = { dialogState.show() },
+                            modifier = Modifier.testTag("datePicker"),
                         ) {
                             Icon(
                                 imageVector = PoposIcons.CalenderMonth,
@@ -403,7 +405,7 @@ internal fun AddEditEmployeeScreenContent(
                         .padding(horizontal = SpaceSmall),
                 ) {
                     IconWithText(
-                        text = "Employee Type",
+                        text = EMPLOYEE_TYPE_FIELD,
                         icon = PoposIcons.PersonPin,
                     )
 
@@ -436,7 +438,7 @@ internal fun AddEditEmployeeScreenContent(
                         .padding(horizontal = SpaceSmall),
                 ) {
                     IconWithText(
-                        text = "Employee Salary Type",
+                        text = EMPLOYEE_SALARY_TYPE_FIELD,
                         icon = PoposIcons.CalenderMonth,
                     )
 
@@ -474,6 +476,7 @@ internal fun AddEditEmployeeScreenContent(
                     ) {
                         StandardCheckboxWithText(
                             modifier = Modifier
+                                .testTag(EMPLOYEE_PARTNER_FIELD)
                                 .weight(2f, false),
                             text = if (state.isDeliveryPartner) {
                                 EMPLOYEE_PARTNER_CHECKED_FIELD

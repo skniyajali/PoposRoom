@@ -278,6 +278,7 @@ class EmployeeScreenScreenshotTest {
                 EmployeeImportScreenContent(
                     importedItems = persistentListOf(),
                     selectedItems = persistentListOf(),
+                    isLoading = false,
                     onClickSelectItem = {},
                     onClickSelectAll = {},
                     onClickDeselect = {},
@@ -296,6 +297,7 @@ class EmployeeScreenScreenshotTest {
                 EmployeeImportScreenContent(
                     importedItems = employeeList.toImmutableList(),
                     selectedItems = persistentListOf(),
+                    isLoading = false,
                     onClickSelectItem = {},
                     onClickSelectAll = {},
                     onClickDeselect = {},

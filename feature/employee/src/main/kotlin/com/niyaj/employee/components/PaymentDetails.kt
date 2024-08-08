@@ -48,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.common.tags.EmployeeTestTags.EMP_PAYMENT_NOT_AVAILABLE
 import com.niyaj.common.utils.toBarDate
 import com.niyaj.common.utils.toFormattedDate
 import com.niyaj.common.utils.toRupee
@@ -89,7 +90,7 @@ internal fun PaymentDetails(
             ) {
                 onExpanded()
             }
-            .testTag("PaymentDetails"),
+            .testTag("PaymentDetailsCard"),
         shape = RoundedCornerShape(4.dp),
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 1.dp,
@@ -134,7 +135,7 @@ internal fun PaymentDetails(
 
                         is UiState.Empty -> {
                             ItemNotAvailableHalf(
-                                text = "You have not paid any amount to this employee.",
+                                text = EMP_PAYMENT_NOT_AVAILABLE,
                                 showImage = false,
                             )
                         }
@@ -239,7 +240,7 @@ private fun EmployeePayment(
     Box(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
-                .testTag("Payment Tag")
+                .testTag("PaymentsCard-${payment.paymentId}")
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,

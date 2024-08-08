@@ -48,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.common.tags.EmployeeTestTags.EMP_ABSENT_NOT_AVAILABLE
 import com.niyaj.common.utils.toFormattedDate
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.LightColor6
@@ -83,7 +84,7 @@ internal fun AbsentDetails(
             ) {
                 onExpanded()
             }
-            .testTag("AbsentDetails"),
+            .testTag("AbsentDetailsCard"),
         shape = RoundedCornerShape(4.dp),
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 1.dp,
@@ -126,7 +127,7 @@ internal fun AbsentDetails(
 
                         is UiState.Empty -> {
                             ItemNotAvailableHalf(
-                                text = "Employee absent reports not available",
+                                text = EMP_ABSENT_NOT_AVAILABLE,
                                 showImage = false,
                             )
                         }
@@ -171,6 +172,7 @@ internal fun AbsentDetails(
 
                                         FlowRow(
                                             modifier = Modifier
+                                                .testTag("AbsentDatesFlowRow")
                                                 .fillMaxWidth()
                                                 .padding(SpaceSmall),
                                             horizontalArrangement = if (absentReport.absentDates.isEmpty()) Arrangement.Center else Arrangement.Start,

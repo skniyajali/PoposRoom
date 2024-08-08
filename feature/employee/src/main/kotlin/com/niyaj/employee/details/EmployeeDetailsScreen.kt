@@ -34,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -204,6 +205,7 @@ internal fun EmployeeDetailsScreenContent(
     ) {
         LazyColumn(
             modifier = Modifier
+                .testTag("EmployeeDetailsList")
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             state = lazyListState,

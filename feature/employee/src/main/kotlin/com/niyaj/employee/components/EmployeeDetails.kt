@@ -18,10 +18,9 @@
 package com.niyaj.employee.components
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -56,8 +55,8 @@ import com.niyaj.ui.utils.DevicePreviews
  */
 @Composable
 internal fun EmployeeDetails(
-    modifier: Modifier = Modifier,
     employeeState: UiState<Employee>,
+    modifier: Modifier = Modifier,
     employeeDetailsExpanded: Boolean = false,
     onClickEdit: () -> Unit = {},
     onExpanded: () -> Unit = {},
@@ -65,7 +64,7 @@ internal fun EmployeeDetails(
     Card(
         onClick = onExpanded,
         modifier = modifier
-            .testTag("EmployeeDetails")
+            .testTag("EmployeeDetailsCard")
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
         elevation = CardDefaults.elevatedCardElevation(
@@ -128,57 +127,65 @@ internal fun EmployeeDetails(
                         is UiState.Success -> {
                             Column(
                                 modifier = Modifier
+                                    .testTag("EmployeeDetailsContent")
                                     .fillMaxWidth()
                                     .padding(SpaceSmall),
+                                verticalArrangement = Arrangement.spacedBy(SpaceSmall)
                             ) {
                                 IconWithText(
                                     modifier = Modifier.testTag(state.data.employeeName),
                                     text = "Name - ${state.data.employeeName}",
                                     icon = PoposIcons.Person,
                                 )
-                                Spacer(modifier = Modifier.height(SpaceSmall))
+
                                 IconWithText(
                                     modifier = Modifier.testTag(state.data.employeePhone),
                                     text = "Phone - ${state.data.employeePhone}",
                                     icon = PoposIcons.PhoneAndroid,
                                 )
-                                Spacer(modifier = Modifier.height(SpaceSmall))
+                                state.data.employeeEmail?.let {
+                                    IconWithText(
+                                        modifier = Modifier.testTag(it),
+                                        text = "Email - ${state.data.employeeEmail}",
+                                        icon = PoposIcons.Email,
+                                    )
+                                }
+
                                 IconWithText(
                                     modifier = Modifier.testTag(state.data.employeeSalary.toRupee),
                                     text = "Salary - ${state.data.employeeSalary.toRupee}",
                                     icon = PoposIcons.Rupee,
                                 )
-                                Spacer(modifier = Modifier.height(SpaceSmall))
+
                                 IconWithText(
                                     modifier = Modifier.testTag(state.data.employeeSalaryType.name),
                                     text = "Salary Type - ${state.data.employeeSalaryType}",
                                     icon = PoposIcons.Merge,
                                 )
-                                Spacer(modifier = Modifier.height(SpaceSmall))
+
                                 IconWithText(
                                     modifier = Modifier.testTag(state.data.employeePosition),
                                     text = "Position - ${state.data.employeePosition}",
                                     icon = PoposIcons.Approval,
                                 )
-                                Spacer(modifier = Modifier.height(SpaceSmall))
+
                                 IconWithText(
                                     modifier = Modifier.testTag(state.data.employeeType.name),
                                     text = "Type - ${state.data.employeeType}",
                                     icon = PoposIcons.MergeType,
                                 )
-                                Spacer(modifier = Modifier.height(SpaceSmall))
+
                                 IconWithText(
                                     modifier = Modifier.testTag(state.data.employeeJoinedDate.toDate),
                                     text = "Joined Date : ${state.data.employeeJoinedDate.toJoinedDate}",
                                     icon = PoposIcons.CalenderMonth,
                                 )
-                                Spacer(modifier = Modifier.height(SpaceSmall))
+
                                 IconWithText(
                                     text = "Created At : ${state.data.createdAt.toPrettyDate()}",
                                     icon = PoposIcons.AccessTime,
                                 )
                                 state.data.updatedAt?.let {
-                                    Spacer(modifier = Modifier.height(SpaceSmall))
                                     IconWithText(
                                         text = "Updated At : ${it.toPrettyDate()}",
                                         icon = PoposIcons.Login,
@@ -202,8 +209,8 @@ private fun EmployeeDetailsPreview(
 ) {
     PoposRoomTheme {
         EmployeeDetails(
-            modifier = modifier,
             employeeState = employeeState,
+            modifier = modifier,
             employeeDetailsExpanded = true,
             onClickEdit = {},
             onExpanded = {},

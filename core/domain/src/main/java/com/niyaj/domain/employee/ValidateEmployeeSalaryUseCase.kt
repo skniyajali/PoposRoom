@@ -37,7 +37,7 @@ class ValidateEmployeeSalaryUseCase @Inject constructor() {
             )
         }
 
-        if (salary.any { it.isLetter() }) {
+        if (salary.any { !it.isDigit() }) {
             return ValidationResult(
                 successful = false,
                 errorMessage = EmployeeTestTags.EMPLOYEE_SALARY_LETTER_ERROR,

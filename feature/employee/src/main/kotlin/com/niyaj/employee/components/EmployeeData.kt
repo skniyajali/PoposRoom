@@ -42,9 +42,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_LIST
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_TAG
 import com.niyaj.designsystem.components.StandardAssistChip
 import com.niyaj.designsystem.icon.PoposIcons
@@ -74,7 +77,7 @@ fun EmployeeList(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .testTag("employeeList"),
+            .testTag(EMPLOYEE_LIST),
         contentPadding = PaddingValues(SpaceMedium),
         verticalArrangement = Arrangement.spacedBy(SpaceMedium),
         state = lazyListState,
@@ -101,7 +104,7 @@ fun EmployeeList(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EmployeeData(
+private fun EmployeeData(
     modifier: Modifier = Modifier,
     item: Employee,
     doesSelected: (Int) -> Boolean,
@@ -115,6 +118,9 @@ fun EmployeeData(
     ListItem(
         modifier = modifier
             .testTag(EMPLOYEE_TAG.plus(item.employeeId))
+            .semantics {
+                selected = doesSelected(item.employeeId)
+            }
             .fillMaxWidth()
             .shadow(2.dp, RoundedCornerShape(SpaceMini))
             .then(

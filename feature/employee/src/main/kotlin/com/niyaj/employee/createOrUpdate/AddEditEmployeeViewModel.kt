@@ -44,12 +44,13 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.TestOnly
 import javax.inject.Inject
 
 @HiltViewModel
@@ -62,10 +63,10 @@ class AddEditEmployeeViewModel @Inject constructor(
     private val validateEmployeeSalary: ValidateEmployeeSalaryUseCase,
     private val analyticsHelper: AnalyticsHelper,
     private val scanner: QRCodeScanner,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private var employeeId = savedStateHandle.get<Int>("employeeId") ?: 0
+    private var employeeId = savedStateHandle.getStateFlow("employeeId", 0)
 
     var state by mutableStateOf(AddEditEmployeeState())
 
@@ -73,7 +74,11 @@ class AddEditEmployeeViewModel @Inject constructor(
     val scannedBitmap = _scannedBitmap.asStateFlow()
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
-    val eventFlow = _eventFlow.asSharedFlow()
+    val eventFlow = _eventFlow.shareIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        replay = 1
+    )
 
     init {
         savedStateHandle.get<Int>("employeeId")?.let { employeeId ->
@@ -83,7 +88,7 @@ class AddEditEmployeeViewModel @Inject constructor(
 
     val phoneError: StateFlow<String?> = snapshotFlow { state.employeePhone }
         .mapLatest {
-            validateEmployeePhone(it, employeeId).errorMessage
+            validateEmployeePhone(it, employeeId.value).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -92,7 +97,7 @@ class AddEditEmployeeViewModel @Inject constructor(
 
     val nameError: StateFlow<String?> = snapshotFlow { state.employeeName }
         .mapLatest {
-            validateEmployeeName(it, employeeId).errorMessage
+            validateEmployeeName(it, employeeId.value).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -164,7 +169,7 @@ class AddEditEmployeeViewModel @Inject constructor(
             }
 
             is AddEditEmployeeEvent.CreateOrUpdateEmployee -> {
-                createOrUpdateEmployee(employeeId)
+                createOrUpdateEmployee(employeeId.value)
             }
         }
     }
@@ -198,9 +203,7 @@ class AddEditEmployeeViewModel @Inject constructor(
                 if (!it.isNullOrEmpty()) {
                     _scannedBitmap.value = QRCodeEncoder().encodeBitmap(it)
 
-                    state = state.copy(
-                        partnerQRCode = it,
-                    )
+                    state = state.copy(partnerQRCode = it)
                 }
             }
         }
@@ -243,6 +246,11 @@ class AddEditEmployeeViewModel @Inject constructor(
                 state = AddEditEmployeeState()
             }
         }
+    }
+
+    @TestOnly
+    internal fun setEmployeeId(id: Int) {
+        savedStateHandle["employeeId"] = id
     }
 }
 

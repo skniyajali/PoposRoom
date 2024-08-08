@@ -21,11 +21,11 @@ object EmployeeTestTags {
 
     const val EMPLOYEE_SCREEN_TITLE = "Employees"
     const val EMPLOYEE_NOT_AVAILABLE = "Employee Not Available"
-    const val NO_ITEMS_IN_EMPLOYEE = "Employees Not Found"
     const val EMPLOYEE_SEARCH_PLACEHOLDER = "Search for Employee..."
 
     const val CREATE_NEW_EMPLOYEE = "Create New Employee"
     const val EDIT_EMPLOYEE = "Update Employee"
+    const val ADD_EDIT_EMPLOYEE_BTN = "AddEditEmployeeButton"
 
     const val EMPLOYEE_NAME_FIELD = "Employee Name"
     const val EMPLOYEE_NAME_ERROR = "Employee NameError"
@@ -52,9 +52,7 @@ object EmployeeTestTags {
     const val EMPLOYEE_POSITION_ERROR = "Employee PositionError"
 
     const val EMPLOYEE_JOINED_DATE_FIELD = "Employee JoinedDate"
-
-    const val ADD_EDIT_EMPLOYEE_BUTTON = "AddEdit EmployeeButton"
-
+    
     const val EMPLOYEE_NAME_EMPTY_ERROR = "Employee name must not be empty"
     const val EMPLOYEE_NAME_DIGIT_ERROR = "Employee name must not contain any digit"
     const val EMPLOYEE_NAME_LENGTH_ERROR = "Employee name must be more than 4 characters"
@@ -74,7 +72,8 @@ object EmployeeTestTags {
     const val DELETE_EMPLOYEE_TITLE = "Delete Employee?"
     const val DELETE_EMPLOYEE_MESSAGE = "Are you sure to delete these employee? This action cannot be undone."
 
-    const val EMPLOYEE_TAG = "Customer-"
+    const val EMPLOYEE_TAG = "Employee-"
+    const val EMPLOYEE_LIST = "EmployeeList"
 
     // Details screen tags
     const val EMPLOYEE_DETAILS = "Employee Details"
@@ -84,12 +83,13 @@ object EmployeeTestTags {
 
     const val IMPORT_EMPLOYEE_TITLE = "Import Employees"
     const val IMPORT_EMPLOYEE_SUB_TITLE = "Click here to import data from file."
-
     const val IMPORT_EMPLOYEE_NOTE_TEXT = "Make sure to open employees.json file."
-    const val IMPORT_EMPLOYEE_OPN_FILE = "Open File"
 
     const val EXPORT_EMPLOYEE_TITLE = "Export Employees"
     const val EXPORT_EMPLOYEE_SUB_TITLE = "Click here to export data to file."
 
     const val EXPORT_EMPLOYEE_FILE_NAME = "employees"
+
+    const val EMP_PAYMENT_NOT_AVAILABLE = "You have not paid any amount to this employee."
+    const val EMP_ABSENT_NOT_AVAILABLE = "Employee absent reports not available"
 }

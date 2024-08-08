@@ -24,7 +24,10 @@ import javax.inject.Inject
 class ValidateEmployeePositionUseCase @Inject constructor() {
     operator fun invoke(position: String): ValidationResult {
         if (position.isEmpty()) {
-            return ValidationResult(false, EmployeeTestTags.EMPLOYEE_POSITION_EMPTY_ERROR)
+            return ValidationResult(
+                false,
+                EmployeeTestTags.EMPLOYEE_POSITION_EMPTY_ERROR,
+            )
         }
 
         return ValidationResult(true)
