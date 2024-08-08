@@ -16,7 +16,6 @@
  */
 
 package com.niyaj.employee
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -33,11 +32,11 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
-import com.niyaj.common.tags.EmployreTestTags.EMPLOYEE_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.EmployeeTestTags.CREATE_NEW_EMPLOYEE
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_LIST
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_NOT_AVAILABLE
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SCREEN_TITLE
+import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_TAG
 import com.niyaj.common.utils.Constants.CLEAR_ICON
 import com.niyaj.common.utils.Constants.DRAWER_ICON
