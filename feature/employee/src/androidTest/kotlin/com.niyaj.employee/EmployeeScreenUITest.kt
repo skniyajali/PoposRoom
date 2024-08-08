@@ -33,7 +33,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
-import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_SEARCH_PLACEHOLDER
+import com.niyaj.common.tags.EmployreTestTags.EMPLOYEE_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.EmployeeTestTags.CREATE_NEW_EMPLOYEE
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_LIST
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_NOT_AVAILABLE
@@ -223,7 +223,7 @@ class EmployeeScreenUITest {
             onNodeWithTag(NAV_SEARCH_BTN).assertIsNotDisplayed()
             onNodeWithTag(STANDARD_BACK_BUTTON).assertIsDisplayed().assertHasClickAction()
             onNodeWithTag(STANDARD_SEARCH_BAR).assertIsDisplayed()
-            onNodeWithTag(STANDARD_SEARCH_BAR).assertTextContains(CUSTOMER_SEARCH_PLACEHOLDER)
+            onNodeWithTag(STANDARD_SEARCH_BAR).assertTextContains(EMPLOYEE_SEARCH_PLACEHOLDER)
                 .assertIsDisplayed()
 
             onNodeWithTag(SEARCH_BAR_CLEAR_BUTTON).assertIsNotDisplayed()
