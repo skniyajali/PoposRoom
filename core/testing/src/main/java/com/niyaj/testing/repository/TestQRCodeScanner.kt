@@ -15,21 +15,21 @@
  *
  */
 
-package com.niyaj.domain.employee
+package com.niyaj.testing.repository
 
-import com.niyaj.common.result.ValidationResult
-import com.niyaj.common.tags.EmployeeTestTags
-import javax.inject.Inject
+import com.niyaj.data.repository.QRCodeScanner
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
+import org.jetbrains.annotations.TestOnly
 
-class ValidateEmployeePositionUseCase @Inject constructor() {
-    operator fun invoke(position: String): ValidationResult {
-        if (position.isEmpty()) {
-            return ValidationResult(
-                false,
-                EmployeeTestTags.EMPLOYEE_POSITION_EMPTY_ERROR,
-            )
-        }
+class TestQRCodeScanner : QRCodeScanner {
+    private val qrCode = MutableStateFlow(null as String?)
 
-        return ValidationResult(true)
+    override fun startScanning(): Flow<String?> = qrCode
+
+    @TestOnly
+    fun setQRCode(code: String) {
+        qrCode.update { code }
     }
 }

@@ -17,6 +17,7 @@
 
 package com.niyaj.testing.util
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,6 +30,8 @@ import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultA
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
 import com.ramcosta.composedestinations.navigation.dependency
+import com.ramcosta.composedestinations.result.NavResult
+import com.ramcosta.composedestinations.result.OpenResultRecipient
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 
 /**
@@ -73,4 +76,10 @@ fun PoposTestNavHost(
             manualComposableCallsBuilder = manualComposableCallsBuilder,
         )
     }
+}
+
+class EmptyOpenResultRecipient<R> : OpenResultRecipient<R> {
+    @SuppressLint("ComposableNaming")
+    @Composable
+    override fun onNavResult(listener: (NavResult<R>) -> Unit) = Unit
 }
