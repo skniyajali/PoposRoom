@@ -21,7 +21,6 @@ object AbsentScreenTags {
 
     const val ABSENT_SCREEN_TITLE = "Absent Employees"
     const val ABSENT_NOT_AVAILABLE = "Absent Employees Not Available"
-    const val NO_ITEMS_IN_ABSENT = "Absent Employees Not Found"
     const val ABSENT_SEARCH_PLACEHOLDER = "Search For Absents Employee..."
 
     const val CREATE_NEW_ABSENT = "Add Absent Employee"
@@ -49,6 +48,7 @@ object AbsentScreenTags {
         "Are you sure to delete these entries? This action cannot be undone."
 
     const val ABSENT_TAG = "Absent-"
+    const val ABSENT_LIST = "AbsentList"
 
     const val ABSENT_SETTINGS_NOTE = "Make Sure To Import Employee Before Importing Employee Absent Dates."
 

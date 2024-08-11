@@ -40,12 +40,13 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.TestOnly
 import javax.inject.Inject
 
 @HiltViewModel
@@ -55,15 +56,19 @@ class AddEditAbsentViewModel @Inject constructor(
     private val validateAbsentDate: ValidateAbsentDateUseCase,
     private val validateAbsentEmployee: ValidateAbsentEmployeeUseCase,
     private val analyticsHelper: AnalyticsHelper,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val absentId = savedStateHandle.get<Int>("absentId") ?: 0
+    private val absentId = savedStateHandle.getStateFlow("absentId", 0)
 
     var state by mutableStateOf(AddEditAbsentState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
-    val eventFlow = _eventFlow.asSharedFlow()
+    val eventFlow = _eventFlow.shareIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        replay = 1,
+    )
 
     val employees = absentRepository.getAllEmployee().stateIn(
         scope = viewModelScope,
@@ -99,7 +104,7 @@ class AddEditAbsentViewModel @Inject constructor(
         validateAbsentDate(
             absentDate = date,
             employeeId = emp.employeeId,
-            absentId = absentId,
+            absentId = absentId.value,
         ).errorMessage
     }.stateIn(
         scope = viewModelScope,
@@ -118,7 +123,7 @@ class AddEditAbsentViewModel @Inject constructor(
             }
 
             is AddEditAbsentEvent.CreateOrUpdateAbsent -> {
-                createOrUpdateAbsent(absentId)
+                createOrUpdateAbsent(absentId.value)
             }
 
             is AddEditAbsentEvent.OnSelectEmployee -> {
@@ -187,6 +192,11 @@ class AddEditAbsentViewModel @Inject constructor(
                 state = AddEditAbsentState()
             }
         }
+    }
+
+    @TestOnly
+    internal fun setAbsentId(id: Int) {
+        savedStateHandle["absentId"] = id
     }
 }
 

@@ -22,6 +22,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsEvent.Param
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.AbsentRepository
 import com.niyaj.ui.event.BaseViewModel
@@ -31,7 +32,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -44,27 +44,25 @@ class AbsentViewModel @Inject constructor(
 
     override var totalItems: List<Int> = emptyList()
 
+    private val _selectedEmployee = mutableStateListOf<Int>()
+    val selectedEmployee = _selectedEmployee
+
     val absents = snapshotFlow { searchText.value }
         .flatMapLatest { it ->
             absentRepository.getAllEmployeeAbsents(it)
-                .onStart { UiState.Loading }
-                .map { items ->
-                    totalItems = items.flatMap { item -> item.absents.map { it.absentId } }
+        }.map { items ->
+            totalItems = items.flatMap { item -> item.absents.map { it.absentId } }
 
-                    if (items.all { it.absents.isEmpty() }) {
-                        UiState.Empty
-                    } else {
-                        UiState.Success(items)
-                    }
-                }
+            if (items.all { it.absents.isEmpty() }) {
+                UiState.Empty
+            } else {
+                UiState.Success(items)
+            }
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = UiState.Loading,
         )
-
-    private val _selectedEmployee = mutableStateListOf<Int>()
-    val selectedEmployee = _selectedEmployee
 
     fun selectEmployee(employeeId: Int) {
         viewModelScope.launch {
@@ -101,7 +99,10 @@ internal fun AnalyticsHelper.logDeletedAbsentees(data: List<Int>) {
         event = AnalyticsEvent(
             type = "absent_employee_deleted",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("absent_employee_deleted", data.toString()),
+                Param(
+                    "absent_employee_deleted",
+                    data.toString(),
+                ),
             ),
         ),
     )

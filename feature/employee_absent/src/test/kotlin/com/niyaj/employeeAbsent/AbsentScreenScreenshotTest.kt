@@ -26,7 +26,7 @@ import com.niyaj.employeeAbsent.settings.AbsentExportScreenContent
 import com.niyaj.employeeAbsent.settings.AbsentImportScreenContent
 import com.niyaj.employeeAbsent.settings.AbsentSettingsScreenContent
 import com.niyaj.model.Employee
-import com.niyaj.model.filterEmployeeWithAbsent
+import com.niyaj.model.searchAbsentees
 import com.niyaj.poposroom.core.testing.util.captureForPhone
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.parameterProvider.AbsentPreviewData
@@ -212,7 +212,7 @@ class AbsentScreenScreenshotTest {
         composeTestRule.captureForPhone("ShowSearchBarAndGetSuccessResult") {
             PoposRoomTheme {
                 AbsentScreenContent(
-                    uiState = UiState.Success(absentsList.filterEmployeeWithAbsent("Personal")),
+                    uiState = UiState.Success(absentsList.searchAbsentees("Personal")),
                     selectedItems = listOf(),
                     showSearchBar = true,
                     searchText = "Personal",
@@ -384,7 +384,7 @@ class AbsentScreenScreenshotTest {
             PoposRoomTheme {
                 AbsentExportScreenContent(
                     items = absentsList
-                        .filterEmployeeWithAbsent("text").toImmutableList(),
+                        .searchAbsentees("text").toImmutableList(),
                     selectedItems = persistentListOf(),
                     selectedEmployees = emptyList(),
                     onSelectEmployee = {},
@@ -411,7 +411,7 @@ class AbsentScreenScreenshotTest {
             PoposRoomTheme {
                 AbsentExportScreenContent(
                     items = absentsList
-                        .filterEmployeeWithAbsent("Sick").toImmutableList(),
+                        .searchAbsentees("Sick").toImmutableList(),
                     selectedItems = persistentListOf(),
                     selectedEmployees = listOf(1, 2, 3),
                     onSelectEmployee = {},

@@ -18,11 +18,14 @@
 package com.niyaj.testing.repository
 
 import com.niyaj.common.result.Resource
+import com.niyaj.common.utils.getStartTime
 import com.niyaj.data.repository.AbsentRepository
 import com.niyaj.model.Absent
 import com.niyaj.model.Employee
+import com.niyaj.model.EmployeeSalaryType.Monthly
+import com.niyaj.model.EmployeeType.FullTime
 import com.niyaj.model.EmployeeWithAbsents
-import com.niyaj.model.filterEmployeeWithAbsent
+import com.niyaj.model.searchAbsentees
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.mapLatest
@@ -45,7 +48,7 @@ class TestAbsentRepository : AbsentRepository {
     }
 
     override suspend fun getAllEmployeeAbsents(searchText: String): Flow<List<EmployeeWithAbsents>> {
-        return employeeAbsents.mapLatest { it.filterEmployeeWithAbsent(searchText) }
+        return employeeAbsents.mapLatest { it.searchAbsentees(searchText) }
     }
 
     override suspend fun getAbsentById(absentId: Int): Resource<Absent?> {
@@ -74,15 +77,12 @@ class TestAbsentRepository : AbsentRepository {
         employeeId: Int,
         absentId: Int?,
     ): Boolean {
-        return employeeAbsents.value.any { withAbsents ->
-            if (absentId != null) {
-                withAbsents.employee.employeeId == employeeId && withAbsents.absents.any {
-                    it.absentDate == absentDate && it.absentId != absentId
-                }
+        return absentList.value.any {
+            if (absentId == null) {
+                it.absentDate == absentDate && it.employeeId == employeeId
             } else {
-                withAbsents.employee.employeeId == employeeId && withAbsents.absents.any {
-                    it.absentDate == absentDate
-                }
+                it.absentId != absentId && it.absentDate == absentDate &&
+                    it.employeeId == employeeId
             }
         }
     }
@@ -91,6 +91,20 @@ class TestAbsentRepository : AbsentRepository {
         employeeAbsents.update { absentees.toMutableList() }
 
         return Resource.Success(true)
+    }
+
+    @TestOnly
+    fun createTestData(): Absent {
+        val newAbsent = Absent(
+            absentId = 1,
+            employeeId = 1,
+            absentDate = getStartTime,
+            absentReason = "Sick",
+        )
+
+        absentList.value.add(newAbsent)
+
+        return newAbsent
     }
 
     @TestOnly
@@ -106,5 +120,25 @@ class TestAbsentRepository : AbsentRepository {
     @TestOnly
     fun updateAbsentData(absents: List<Absent>) {
         absentList.update { absents.toMutableList() }
+    }
+
+    @TestOnly
+    fun createTestItem(): Employee {
+        val newEmployee = Employee(
+            employeeId = 1,
+            employeeName = "Test Employee",
+            employeePhone = "1234567890",
+            employeeSalary = "10000",
+            employeePosition = "Chef",
+            employeeJoinedDate = getStartTime,
+            employeeEmail = "test@gmail.com",
+            employeeSalaryType = Monthly,
+            employeeType = FullTime,
+            isDeliveryPartner = true,
+        )
+
+        employeeList.value.add(newEmployee)
+
+        return newEmployee
     }
 }

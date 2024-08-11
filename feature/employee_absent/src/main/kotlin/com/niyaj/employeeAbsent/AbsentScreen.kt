@@ -31,9 +31,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.niyaj.common.tags.AbsentScreenTags.ABSENT_LIST
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_NOT_AVAILABLE
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_SCREEN_TITLE
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_SEARCH_PLACEHOLDER
@@ -236,7 +238,7 @@ internal fun AbsentScreenContent(
 
                 is UiState.Success -> {
                     AbsentEmployeeList(
-                        modifier = Modifier,
+                        modifier = Modifier.testTag(ABSENT_LIST),
                         items = state.data,
                         showTrailingIcon = true,
                         expanded = selectedEmployees::contains,
