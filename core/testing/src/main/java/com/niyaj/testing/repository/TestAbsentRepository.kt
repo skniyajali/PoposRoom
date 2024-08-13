@@ -18,6 +18,7 @@
 package com.niyaj.testing.repository
 
 import com.niyaj.common.result.Resource
+import com.niyaj.common.utils.getDateInMilliseconds
 import com.niyaj.common.utils.getStartTime
 import com.niyaj.data.repository.AbsentRepository
 import com.niyaj.model.Absent
@@ -130,7 +131,7 @@ class TestAbsentRepository : AbsentRepository {
             employeePhone = "1234567890",
             employeeSalary = "10000",
             employeePosition = "Chef",
-            employeeJoinedDate = getStartTime,
+            employeeJoinedDate = getDateInMilliseconds(hour = 8, day = -30),
             employeeEmail = "test@gmail.com",
             employeeSalaryType = Monthly,
             employeeType = FullTime,

@@ -38,11 +38,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_TAG
+import com.niyaj.common.tags.AbsentScreenTags.AB_EMPLOYEE_TAG
 import com.niyaj.common.utils.toDate
 import com.niyaj.common.utils.toMonthAndYear
 import com.niyaj.designsystem.components.StandardAssistChip
@@ -62,14 +64,14 @@ import com.niyaj.ui.utils.TrackScrollJank
 
 @Composable
 internal fun AbsentEmployeeList(
-    modifier: Modifier = Modifier,
     items: List<EmployeeWithAbsents>,
-    showTrailingIcon: Boolean = false,
     expanded: (Int) -> Boolean,
     onExpandChanged: (Int) -> Unit,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    showTrailingIcon: Boolean = false,
     onChipClick: (Int) -> Unit = {},
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
@@ -89,13 +91,13 @@ internal fun AbsentEmployeeList(
             if (item.absents.isNotEmpty()) {
                 EmployeeWithAbsentDates(
                     item = item,
-                    showTrailingIcon = showTrailingIcon,
                     expanded = expanded,
+                    onExpandChanged = onExpandChanged,
                     doesSelected = doesSelected,
                     onClick = onClick,
-                    onExpandChanged = onExpandChanged,
                     onLongClick = onLongClick,
                     onChipClick = onChipClick,
+                    showTrailingIcon = showTrailingIcon,
                 )
             }
         }
@@ -104,13 +106,13 @@ internal fun AbsentEmployeeList(
 
 @Composable
 private fun EmployeeWithAbsentDates(
-    modifier: Modifier = Modifier,
     item: EmployeeWithAbsents,
     expanded: (Int) -> Boolean,
     onExpandChanged: (Int) -> Unit,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     onChipClick: (Int) -> Unit = {},
     showTrailingIcon: Boolean = true,
     containerColor: Color = MaterialTheme.colorScheme.background,
@@ -128,7 +130,9 @@ private fun EmployeeWithAbsentDates(
         ),
     ) {
         StandardExpandable(
-            modifier = Modifier.padding(vertical = SpaceSmall),
+            modifier = Modifier
+                .testTag(AB_EMPLOYEE_TAG.plus(item.employee.employeeId))
+                .padding(vertical = SpaceSmall),
             expanded = expanded(item.employee.employeeId),
             onExpandChanged = {
                 onExpandChanged(item.employee.employeeId)
@@ -169,11 +173,11 @@ private fun EmployeeWithAbsentDates(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun EmployeeAbsentData(
-    modifier: Modifier = Modifier,
     groupedAbsents: Map<String, List<Absent>>,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("EmployeeAbsentData") {
     Column(
         modifier = Modifier
@@ -231,13 +235,13 @@ private fun AbsentEmployeeListPreview(
 ) {
     PoposRoomTheme {
         AbsentEmployeeList(
-            modifier = modifier,
             items = items,
             expanded = { true },
             onExpandChanged = {},
             doesSelected = { false },
             onClick = {},
             onLongClick = {},
+            modifier = modifier,
             onChipClick = {},
         )
     }
