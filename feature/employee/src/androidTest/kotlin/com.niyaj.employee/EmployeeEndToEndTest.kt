@@ -430,7 +430,6 @@ class EmployeeEndToEndTest {
                 onNodeWithTag(EMPLOYEE_SALARY_TYPE_FIELD.plus(it.name))
                     .assertIsDisplayed().performClick().assertIsSelected()
             }
-
         }
     }
 
