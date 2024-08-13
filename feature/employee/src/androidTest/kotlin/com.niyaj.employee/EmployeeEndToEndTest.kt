@@ -19,6 +19,7 @@ package com.niyaj.employee
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.test.assertContentDescriptionContains
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -31,6 +32,7 @@ import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.longClick
+import androidx.compose.ui.test.onChild
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -50,19 +52,25 @@ import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_DETAILS
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_EMAIL_FIELD
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_JOINED_DATE_FIELD
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_LIST
+import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_NAME_DIGIT_ERROR
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_NAME_EMPTY_ERROR
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_NAME_ERROR
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_NAME_FIELD
+import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_NAME_LENGTH_ERROR
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_NOT_AVAILABLE
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_PARTNER_FIELD
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_PHONE_EMPTY_ERROR
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_PHONE_ERROR
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_PHONE_FIELD
+import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_PHONE_LENGTH_ERROR
+import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_PHONE_LETTER_ERROR
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_POSITION_EMPTY_ERROR
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_POSITION_FIELD
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SALARY_EMPTY_ERROR
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SALARY_ERROR
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SALARY_FIELD
+import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SALARY_LENGTH_ERROR
+import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SALARY_LETTER_ERROR
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SALARY_TYPE_FIELD
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SCREEN_TITLE
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SEARCH_PLACEHOLDER
@@ -72,6 +80,7 @@ import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_TYPE_FIELD
 import com.niyaj.common.tags.EmployeeTestTags.EXPORT_EMPLOYEE_TITLE
 import com.niyaj.common.tags.EmployeeTestTags.IMPORT_EMPLOYEE_NOTE_TEXT
 import com.niyaj.common.tags.EmployeeTestTags.IMPORT_EMPLOYEE_TITLE
+import com.niyaj.common.tags.EmployeeTestTags.QR_CODE_NOTE
 import com.niyaj.common.utils.Constants.CLEAR_ICON
 import com.niyaj.common.utils.Constants.DIALOG_CONFIRM_TEXT
 import com.niyaj.common.utils.Constants.DIALOG_DISMISS_TEXT
@@ -291,7 +300,6 @@ class EmployeeEndToEndTest {
         }
     }
 
-    /*
     @Test
     fun check_addEditEmployeeScreen_validationErrors() {
         composeTestRule.apply {
@@ -370,6 +378,13 @@ class EmployeeEndToEndTest {
             onNodeWithTag(EMPLOYEE_JOINED_DATE_FIELD).assertIsDisplayed()
             onNodeWithTag("datePicker").assertIsDisplayed().assertHasClickAction()
 
+            onNodeWithTag("addEditEmployeeFields").performTouchInput {
+                swipeUp(
+                    startY = center.y + 200f,
+                    endY = center.y - 200f,
+                )
+            }
+
             onNodeWithText(EMPLOYEE_TYPE_FIELD).assertIsDisplayed()
             newEmployee.employeeType.let {
                 onNodeWithTag(EMPLOYEE_TYPE_FIELD.plus(it.name))
@@ -390,7 +405,6 @@ class EmployeeEndToEndTest {
             onNodeWithTag(ADD_EDIT_EMPLOYEE_BTN).assertIsDisplayed().assertIsEnabled()
         }
     }
-     */
 
     @Test
     fun onCreatedNewItem_shouldBe_addedAndVisibleToUser() {
