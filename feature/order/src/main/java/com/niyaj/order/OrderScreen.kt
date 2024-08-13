@@ -60,6 +60,7 @@ import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.components.PoposOutlinedAssistChip
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.order.components.OrderedItemLayout
 import com.niyaj.order.destinations.DeliveryPartnerScreenDestination
 import com.niyaj.order.destinations.OrderDetailsScreenDestination
@@ -498,68 +499,74 @@ internal fun OrderScreenContent(
 @DevicePreviews
 @Composable
 private fun OrderScreenContentLoadingPreview() {
-    OrderScreenContent(
-        dineInOrders = OrderState.Loading,
-        dineOutOrders = OrderState.Loading,
-        selectedDate = "",
-        showSearchBar = false,
-        searchText = "",
-        onOpenSearchBar = {},
-        onSearchTextChanged = {},
-        onClearClick = {},
-        onBackClick = {},
-        onClickPrintDeliveryReport = {},
-        onClickPrintOrder = {},
-        onOrderEvent = {},
-        onNavigateToHomeScreen = {},
-        onClickOrderDetails = {},
-        onClickEditOrder = {},
-        onClickShareOrder = {},
-    )
+    PoposRoomTheme {
+        OrderScreenContent(
+            dineInOrders = OrderState.Loading,
+            dineOutOrders = OrderState.Loading,
+            selectedDate = "",
+            showSearchBar = false,
+            searchText = "",
+            onOpenSearchBar = {},
+            onSearchTextChanged = {},
+            onClearClick = {},
+            onBackClick = {},
+            onClickPrintDeliveryReport = {},
+            onClickPrintOrder = {},
+            onOrderEvent = {},
+            onNavigateToHomeScreen = {},
+            onClickOrderDetails = {},
+            onClickEditOrder = {},
+            onClickShareOrder = {},
+        )
+    }
 }
 
 @DevicePreviews
 @Composable
 private fun OrderScreenContentEmptyPreview() {
-    OrderScreenContent(
-        dineInOrders = OrderState.Empty,
-        dineOutOrders = OrderState.Empty,
-        selectedDate = "",
-        showSearchBar = false,
-        searchText = "",
-        onOpenSearchBar = {},
-        onSearchTextChanged = {},
-        onClearClick = {},
-        onBackClick = {},
-        onClickPrintDeliveryReport = {},
-        onClickPrintOrder = {},
-        onOrderEvent = {},
-        onNavigateToHomeScreen = {},
-        onClickOrderDetails = {},
-        onClickEditOrder = {},
-        onClickShareOrder = {},
-    )
+    PoposRoomTheme {
+        OrderScreenContent(
+            dineInOrders = OrderState.Empty,
+            dineOutOrders = OrderState.Empty,
+            selectedDate = "",
+            showSearchBar = false,
+            searchText = "",
+            onOpenSearchBar = {},
+            onSearchTextChanged = {},
+            onClearClick = {},
+            onBackClick = {},
+            onClickPrintDeliveryReport = {},
+            onClickPrintOrder = {},
+            onOrderEvent = {},
+            onNavigateToHomeScreen = {},
+            onClickOrderDetails = {},
+            onClickEditOrder = {},
+            onClickShareOrder = {},
+        )
+    }
 }
 
 @DevicePreviews
 @Composable
 private fun OrderScreenContentSuccessPreview() {
-    OrderScreenContent(
-        dineInOrders = OrderState.Success(OrderPreviewData.dineInOrders),
-        dineOutOrders = OrderState.Success(OrderPreviewData.dineOutOrders),
-        selectedDate = "",
-        showSearchBar = false,
-        searchText = "",
-        onOpenSearchBar = {},
-        onSearchTextChanged = {},
-        onClearClick = {},
-        onBackClick = {},
-        onClickPrintDeliveryReport = {},
-        onClickPrintOrder = {},
-        onOrderEvent = {},
-        onNavigateToHomeScreen = {},
-        onClickOrderDetails = {},
-        onClickEditOrder = {},
-        onClickShareOrder = {},
-    )
+    PoposRoomTheme {
+        OrderScreenContent(
+            dineInOrders = OrderState.Success(OrderPreviewData.dineInOrders),
+            dineOutOrders = OrderState.Success(OrderPreviewData.dineOutOrders),
+            selectedDate = "",
+            showSearchBar = false,
+            searchText = "",
+            onOpenSearchBar = {},
+            onSearchTextChanged = {},
+            onClearClick = {},
+            onBackClick = {},
+            onClickPrintDeliveryReport = {},
+            onClickPrintOrder = {},
+            onOrderEvent = {},
+            onNavigateToHomeScreen = {},
+            onClickOrderDetails = {},
+            onClickEditOrder = {},
+            onClickShareOrder = {},
+        )
+    }
 }
