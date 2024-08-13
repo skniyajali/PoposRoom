@@ -77,6 +77,8 @@ import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SETTINGS_TITLE
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_TAG
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_TYPE_FIELD
+import com.niyaj.common.tags.EmployeeTestTags.EMP_ABSENT_NOTE
+import com.niyaj.common.tags.EmployeeTestTags.EMP_PAYMENTS_NOTE
 import com.niyaj.common.tags.EmployeeTestTags.EXPORT_EMPLOYEE_TITLE
 import com.niyaj.common.tags.EmployeeTestTags.IMPORT_EMPLOYEE_NOTE_TEXT
 import com.niyaj.common.tags.EmployeeTestTags.IMPORT_EMPLOYEE_TITLE
@@ -91,6 +93,7 @@ import com.niyaj.common.utils.Constants.STANDARD_BACK_BUTTON
 import com.niyaj.common.utils.Constants.STANDARD_DELETE_DIALOG
 import com.niyaj.common.utils.Constants.STANDARD_FAB_BUTTON
 import com.niyaj.common.utils.Constants.STANDARD_SEARCH_BAR
+import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.employee.destinations.EmployeeDetailsScreenDestination
 import com.niyaj.employee.details.EmployeeDetailsScreen
@@ -301,7 +304,7 @@ class EmployeeEndToEndTest {
     }
 
     @Test
-    fun check_addEditEmployeeScreen_validationErrors() {
+    fun check_addEditEmployeeScreen_nameFieldsError() {
         composeTestRule.apply {
             gotoAddEditEmployeeScreen()
 
@@ -322,6 +325,13 @@ class EmployeeEndToEndTest {
 
             onNodeWithTag(EMPLOYEE_NAME_FIELD).performTextInput(newEmployee.employeeName)
             onNodeWithTag(EMPLOYEE_NAME_ERROR).assertIsNotDisplayed()
+        }
+    }
+
+    @Test
+    fun check_addEditEmployeeScreen_employeePhoneError() {
+        composeTestRule.apply {
+            gotoAddEditEmployeeScreen()
 
             // Perform invalid input on customerPhone field and check for validation error
             onNodeWithTag(EMPLOYEE_PHONE_FIELD).performTextInput("90")
@@ -340,7 +350,15 @@ class EmployeeEndToEndTest {
 
             onNodeWithTag(EMPLOYEE_PHONE_FIELD).performTextInput(newEmployee.employeePhone)
             onNodeWithTag(EMPLOYEE_PHONE_ERROR).assertIsNotDisplayed()
+        }
+    }
 
+    @Test
+    fun check_addEditEmployeeScreen_employeeSalaryError() {
+        composeTestRule.apply {
+            gotoAddEditEmployeeScreen()
+
+            // Perform invalid input on employeeSalary field and check for validation error
             onNodeWithTag(EMPLOYEE_SALARY_FIELD).performTextInput("1200")
             onNodeWithText(EMPLOYEE_SALARY_LENGTH_ERROR).assertIsDisplayed()
             onNodeWithTag(EMPLOYEE_SALARY_FIELD)
@@ -357,7 +375,15 @@ class EmployeeEndToEndTest {
 
             onNodeWithTag(EMPLOYEE_SALARY_FIELD).performTextInput(newEmployee.employeeSalary)
             onNodeWithTag(EMPLOYEE_SALARY_ERROR).assertIsNotDisplayed()
+        }
+    }
 
+    @Test
+    fun check_addEditEmployeeScreen_employeePositionAndEmailError() {
+        composeTestRule.apply {
+            gotoAddEditEmployeeScreen()
+
+            // Perform invalid input on employeeSalary field and check for validation error
             onNodeWithTag(EMPLOYEE_POSITION_FIELD).assertIsDisplayed().performClick()
             onNodeWithTag("positionList").assertIsDisplayed()
             onNodeWithText("Chef").assertIsDisplayed().performClick()
@@ -377,7 +403,15 @@ class EmployeeEndToEndTest {
 
             onNodeWithTag(EMPLOYEE_JOINED_DATE_FIELD).assertIsDisplayed()
             onNodeWithTag("datePicker").assertIsDisplayed().assertHasClickAction()
+        }
+    }
 
+    @Test
+    fun check_addEditEmployeeScreen_employeeTypeError() {
+        composeTestRule.apply {
+            gotoAddEditEmployeeScreen()
+
+            // Perform invalid input on employeeSalary field and check for validation error
             onNodeWithTag("addEditEmployeeFields").performTouchInput {
                 swipeUp(
                     startY = center.y + 200f,
@@ -397,12 +431,35 @@ class EmployeeEndToEndTest {
                     .assertIsDisplayed().performClick().assertIsSelected()
             }
 
+        }
+    }
+
+    @Test
+    fun check_addEditEmployeeScreen_deliveryPartnerError() {
+        composeTestRule.apply {
+            gotoAddEditEmployeeScreen()
+
+            // Perform invalid input on employeeSalary field and check for validation error
+            onNodeWithTag("addEditEmployeeFields").performTouchInput {
+                swipeUp(
+                    startY = center.y + 200f,
+                    endY = center.y - 200f,
+                )
+            }
+
             onNodeWithTag(EMPLOYEE_PARTNER_FIELD).assertIsDisplayed()
             onNodeWithTag(EMPLOYEE_PARTNER_FIELD).performClick()
+
+            // Perform invalid input on employeeSalary field and check for validation error
+            onNodeWithTag("addEditEmployeeFields").performTouchInput {
+                swipeUp(
+                    startY = center.y + 200f,
+                    endY = center.y - 200f,
+                )
+            }
+
             onNodeWithText("Scan QR").assertIsDisplayed()
             onNodeWithText(QR_CODE_NOTE).assertIsDisplayed()
-
-            onNodeWithTag(ADD_EDIT_EMPLOYEE_BTN).assertIsDisplayed().assertIsEnabled()
         }
     }
 
@@ -1059,7 +1116,6 @@ class EmployeeEndToEndTest {
         }
     }
 
-    /*
     @Test
     fun employeeDetails_onNavigated_detailsWillBeVisibleToUser() {
         composeTestRule.apply {
@@ -1094,7 +1150,47 @@ class EmployeeEndToEndTest {
             onNodeWithText(EMP_ABSENT_NOTE).assertIsDisplayed()
         }
     }
-     */
+
+    @Test
+    fun employeeDetails_onNavigated_employeePaymentsWillBeVisibleToUser() {
+        composeTestRule.apply {
+            createNewEmployee(newEmployee)
+            onNodeWithTag(EMPLOYEE_TAG.plus(1)).assertIsDisplayed().performClick()
+
+            waitForIdle()
+
+            onNodeWithTag("EmployeeDetailsList").assertIsDisplayed()
+            onNodeWithTag("EmployeeDetailsCard").assertIsDisplayed().performClick()
+
+            onNodeWithTag("EmployeeDetailsList").performTouchInput { swipeUp() }
+
+            onNodeWithTag("PaymentDetailsExpand").assertIsDisplayed()
+                .assertHasClickAction().performClick()
+            onNodeWithText(EMP_PAYMENTS_NOTE).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun employeeDetails_onNavigated_employeeAbsentsWillBeVisibleToUser() {
+        composeTestRule.apply {
+            createNewEmployee(newEmployee)
+            onNodeWithTag(EMPLOYEE_TAG.plus(1)).assertIsDisplayed().performClick()
+
+            waitForIdle()
+
+            onNodeWithTag("EmployeeDetailsList").assertIsDisplayed()
+            onNodeWithTag("EmployeeDetailsCard").assertIsDisplayed().performClick()
+
+            onNodeWithTag("EmployeeDetailsList").performTouchInput { swipeUp() }
+
+            onNodeWithTag("AbsentDetailsExpand").assertIsDisplayed()
+                .assertHasClickAction().performClick()
+
+            onNodeWithTag("EmployeeDetailsList").performTouchInput { swipeUp() }
+
+            onNodeWithText(EMP_ABSENT_NOTE).assertIsDisplayed()
+        }
+    }
 
     // TODO: Add More test class to test payment, absent details of employee
 
