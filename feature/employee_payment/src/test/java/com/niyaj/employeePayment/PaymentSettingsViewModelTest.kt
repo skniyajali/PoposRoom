@@ -15,17 +15,16 @@
  *
  */
 
-package com.niyaj.employeeAbsent
+package com.niyaj.employeePayment
 
 import app.cash.turbine.test
-import com.niyaj.employeeAbsent.settings.AbsentSettingsEvent
-import com.niyaj.employeeAbsent.settings.AbsentSettingsViewModel
-import com.niyaj.model.searchAbsentees
-import com.niyaj.model.utils.toDate
-import com.niyaj.testing.repository.TestAbsentRepository
+import com.niyaj.employeePayment.settings.PaymentSettingsEvent
+import com.niyaj.employeePayment.settings.PaymentSettingsViewModel
+import com.niyaj.model.searchEmployeeWithPayments
+import com.niyaj.testing.repository.TestPaymentRepository
 import com.niyaj.testing.util.MainDispatcherRule
 import com.niyaj.testing.util.TestAnalyticsHelper
-import com.niyaj.ui.parameterProvider.AbsentPreviewData
+import com.niyaj.ui.parameterProvider.PaymentPreviewData
 import com.niyaj.ui.utils.UiEvent
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -38,30 +37,29 @@ import org.junit.Rule
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class AbsentSettingsViewModelTest {
+class PaymentSettingsViewModelTest {
     @get:Rule
     val dispatcherRule = MainDispatcherRule()
 
-    private val itemList = AbsentPreviewData.employeesWithAbsents
-    private val repository = TestAbsentRepository()
+    private val itemList = PaymentPreviewData.employeesWithPayments
+    private val repository = TestPaymentRepository()
     private val analyticsHelper = TestAnalyticsHelper()
-    private lateinit var viewModel: AbsentSettingsViewModel
+    private lateinit var viewModel: PaymentSettingsViewModel
 
     @Before
     fun setup() {
-        viewModel = AbsentSettingsViewModel(repository, analyticsHelper)
+        viewModel = PaymentSettingsViewModel(repository, analyticsHelper)
     }
 
     @Test
     fun `when search text changes, charges are updated`() = runTest {
-        repository.updateEmployeeAbsents(itemList)
-        val searchDate = ("1675323600000").toDate
+        repository.updateEmployeePayments(itemList)
 
-        viewModel.searchTextChanged(searchDate)
+        viewModel.searchTextChanged("500")
         advanceUntilIdle()
 
         viewModel.items.test {
-            assertEquals(itemList.searchAbsentees(searchDate), awaitItem())
+            assertEquals(itemList.searchEmployeeWithPayments("500"), awaitItem())
         }
     }
 
@@ -70,9 +68,9 @@ class AbsentSettingsViewModelTest {
         runTest {
             val job = launch(UnconfinedTestDispatcher()) { viewModel.items.collect() }
 
-            repository.updateEmployeeAbsents(itemList)
+            repository.updateEmployeePayments(itemList)
 
-            viewModel.onEvent(AbsentSettingsEvent.GetExportedItems)
+            viewModel.onEvent(PaymentSettingsEvent.GetExportedItems)
             testScheduler.advanceUntilIdle()
 
             viewModel.exportedItems.test {
@@ -87,17 +85,17 @@ class AbsentSettingsViewModelTest {
         runTest {
             val job = launch(UnconfinedTestDispatcher()) { viewModel.items.collect() }
 
-            repository.updateEmployeeAbsents(itemList)
-            val selectedItems = itemList.filter { absents ->
-                absents.absents.any {
-                    it.absentId == 1 || it.absentId == 3
+            repository.updateEmployeePayments(itemList)
+            val selectedItems = itemList.filter { items ->
+                items.payments.any {
+                    it.paymentId == 1 || it.paymentId == 3
                 }
             }
 
             viewModel.selectItem(1)
             viewModel.selectItem(3)
 
-            viewModel.onEvent(AbsentSettingsEvent.GetExportedItems)
+            viewModel.onEvent(PaymentSettingsEvent.GetExportedItems)
             advanceUntilIdle()
 
             assertEquals(selectedItems, viewModel.exportedItems.value)
@@ -106,29 +104,29 @@ class AbsentSettingsViewModelTest {
         }
 
     @Test
-    fun `when OnImportAbsentItemsFromFile event is triggered, importedItems are updated`() =
+    fun `when OnImportPaymentsFromFile event is triggered, importedItems are updated`() =
         runTest {
-            viewModel.onEvent(AbsentSettingsEvent.OnImportAbsentItemsFromFile(itemList))
+            viewModel.onEvent(PaymentSettingsEvent.OnImportPaymentsFromFile(itemList))
             testScheduler.advanceUntilIdle()
 
             assertEquals(itemList, viewModel.importedItems.value)
         }
 
     @Test
-    fun `when ImportAbsentItemsToDatabase event is triggered with no selection, all imported items are added`() =
+    fun `when ImportPaymentsToDatabase event is triggered with no selection, all imported items are added`() =
         runTest {
             val job = launch { viewModel.items.collect() }
 
-            viewModel.onEvent(AbsentSettingsEvent.OnImportAbsentItemsFromFile(itemList))
+            viewModel.onEvent(PaymentSettingsEvent.OnImportPaymentsFromFile(itemList))
             assertEquals(itemList, viewModel.importedItems.value)
-            viewModel.onEvent(AbsentSettingsEvent.ImportAbsentItemsToDatabase)
+            viewModel.onEvent(PaymentSettingsEvent.ImportPaymentsToDatabase)
             advanceUntilIdle()
 
             viewModel.eventFlow.test {
                 val event = awaitItem()
                 assertTrue(event is UiEvent.OnSuccess)
                 assertEquals(
-                    "${itemList.sumOf { it.absents.size }} items has been imported successfully",
+                    "${itemList.sumOf { it.payments.size }} payments has been imported successfully",
                     (event as UiEvent.OnSuccess).successMessage,
                 )
             }
@@ -143,11 +141,11 @@ class AbsentSettingsViewModelTest {
         }
 
     @Test
-    fun `when ImportAbsentItemsToDatabase event is triggered with selection, only selected items are added`() =
+    fun `when ImportPaymentsToDatabase event is triggered with selection, only selected items are added`() =
         runTest {
             val job = launch { viewModel.items.collect() }
 
-            viewModel.onEvent(AbsentSettingsEvent.OnImportAbsentItemsFromFile(itemList))
+            viewModel.onEvent(PaymentSettingsEvent.OnImportPaymentsFromFile(itemList))
 
             assertEquals(itemList, viewModel.importedItems.value)
 
@@ -156,23 +154,23 @@ class AbsentSettingsViewModelTest {
 
             assertEquals(listOf(2, 4), viewModel.selectedItems.toList())
 
-            viewModel.onEvent(AbsentSettingsEvent.ImportAbsentItemsToDatabase)
+            viewModel.onEvent(PaymentSettingsEvent.ImportPaymentsToDatabase)
             advanceUntilIdle()
 
-//            viewModel.eventFlow.test {
-//                val event = awaitItem()
-//                assertTrue(event is UiEvent.OnSuccess)
+            viewModel.eventFlow.test {
+                val event = awaitItem()
+                assertTrue(event is UiEvent.OnSuccess)
 //                assertEquals(
-//                    "2 items has been imported successfully",
+//                    "2 payments has been imported successfully",
 //                    (event as UiEvent.OnSuccess).successMessage,
 //                )
-//            }
+            }
 
             advanceUntilIdle()
 
-            val selectedItems = itemList.filter { absents ->
-                absents.absents.any {
-                    it.absentId == 2 || it.absentId == 4
+            val selectedItems = itemList.filter { items ->
+                items.payments.any {
+                    it.paymentId == 2 || it.paymentId == 4
                 }
             }
 
