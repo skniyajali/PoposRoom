@@ -26,7 +26,7 @@ import com.niyaj.employeeAbsent.settings.AbsentExportScreenContent
 import com.niyaj.employeeAbsent.settings.AbsentImportScreenContent
 import com.niyaj.employeeAbsent.settings.AbsentSettingsScreenContent
 import com.niyaj.model.Employee
-import com.niyaj.model.filterEmployeeWithAbsent
+import com.niyaj.model.searchAbsentees
 import com.niyaj.poposroom.core.testing.util.captureForPhone
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.parameterProvider.AbsentPreviewData
@@ -64,6 +64,7 @@ class AbsentScreenScreenshotTest {
                 AbsentScreenContent(
                     uiState = UiState.Loading,
                     selectedItems = listOf(),
+                    selectedEmployees = listOf(),
                     showSearchBar = false,
                     searchText = "",
                     onClickSearchIcon = {},
@@ -79,9 +80,8 @@ class AbsentScreenScreenshotTest {
                     onClickCreateNew = {},
                     onClickEdit = {},
                     onClickSettings = {},
-                    onAbsentAddClick = {},
                     onSelectEmployee = {},
-                    selectedEmployees = listOf(),
+                    onAbsentAddClick = {},
                 )
             }
         }
@@ -94,6 +94,7 @@ class AbsentScreenScreenshotTest {
                 AbsentScreenContent(
                     uiState = UiState.Empty,
                     selectedItems = listOf(),
+                    selectedEmployees = listOf(),
                     showSearchBar = false,
                     searchText = "",
                     onClickSearchIcon = {},
@@ -109,9 +110,8 @@ class AbsentScreenScreenshotTest {
                     onClickCreateNew = {},
                     onClickEdit = {},
                     onClickSettings = {},
-                    onAbsentAddClick = {},
                     onSelectEmployee = {},
-                    selectedEmployees = listOf(),
+                    onAbsentAddClick = {},
                 )
             }
         }
@@ -124,6 +124,7 @@ class AbsentScreenScreenshotTest {
                 AbsentScreenContent(
                     uiState = UiState.Success(absentsList),
                     selectedItems = listOf(),
+                    selectedEmployees = listOf(1, 2, 3),
                     showSearchBar = false,
                     searchText = "",
                     onClickSearchIcon = {},
@@ -139,9 +140,8 @@ class AbsentScreenScreenshotTest {
                     onClickCreateNew = {},
                     onClickEdit = {},
                     onClickSettings = {},
-                    onAbsentAddClick = {},
                     onSelectEmployee = {},
-                    selectedEmployees = listOf(1, 2, 3),
+                    onAbsentAddClick = {},
                 )
             }
         }
@@ -154,6 +154,7 @@ class AbsentScreenScreenshotTest {
                 AbsentScreenContent(
                     uiState = UiState.Success(absentsList),
                     selectedItems = listOf(2, 5, 8),
+                    selectedEmployees = listOf(1, 2, 3),
                     showSearchBar = false,
                     searchText = "",
                     onClickSearchIcon = {},
@@ -169,9 +170,8 @@ class AbsentScreenScreenshotTest {
                     onClickCreateNew = {},
                     onClickEdit = {},
                     onClickSettings = {},
-                    onAbsentAddClick = {},
                     onSelectEmployee = {},
-                    selectedEmployees = listOf(1, 2, 3),
+                    onAbsentAddClick = {},
                 )
             }
         }
@@ -184,6 +184,7 @@ class AbsentScreenScreenshotTest {
                 AbsentScreenContent(
                     uiState = UiState.Empty,
                     selectedItems = listOf(),
+                    selectedEmployees = listOf(),
                     showSearchBar = true,
                     searchText = "search",
                     onClickSearchIcon = {},
@@ -199,9 +200,8 @@ class AbsentScreenScreenshotTest {
                     onClickCreateNew = {},
                     onClickEdit = {},
                     onClickSettings = {},
-                    onAbsentAddClick = {},
                     onSelectEmployee = {},
-                    selectedEmployees = listOf(),
+                    onAbsentAddClick = {},
                 )
             }
         }
@@ -212,8 +212,9 @@ class AbsentScreenScreenshotTest {
         composeTestRule.captureForPhone("ShowSearchBarAndGetSuccessResult") {
             PoposRoomTheme {
                 AbsentScreenContent(
-                    uiState = UiState.Success(absentsList.filterEmployeeWithAbsent("Personal")),
+                    uiState = UiState.Success(absentsList.searchAbsentees("Personal")),
                     selectedItems = listOf(),
+                    selectedEmployees = listOf(1),
                     showSearchBar = true,
                     searchText = "Personal",
                     onClickSearchIcon = {},
@@ -229,9 +230,8 @@ class AbsentScreenScreenshotTest {
                     onClickCreateNew = {},
                     onClickEdit = {},
                     onClickSettings = {},
-                    onAbsentAddClick = {},
                     onSelectEmployee = {},
-                    selectedEmployees = listOf(1),
+                    onAbsentAddClick = {},
                 )
             }
         }
@@ -255,14 +255,14 @@ class AbsentScreenScreenshotTest {
         composeTestRule.captureForPhone("AddEditItemScreenWithEmptyData") {
             PoposRoomTheme {
                 AddEditAbsentScreenContent(
-                    state = AddEditAbsentState(),
                     employees = emptyList(),
-                    employeeError = "Employee name should not empty",
-                    dateError = "Absent date should not empty",
+                    state = AddEditAbsentState(),
+                    selectedEmployee = Employee(),
                     onEvent = {},
                     onBackClick = {},
                     onClickAddEmployee = {},
-                    selectedEmployee = Employee(),
+                    employeeError = "Employee name should not empty",
+                    dateError = "Absent date should not empty",
                 )
             }
         }
@@ -273,14 +273,14 @@ class AbsentScreenScreenshotTest {
         composeTestRule.captureForPhone("AddEditItemScreenWithDummyData") {
             PoposRoomTheme {
                 AddEditAbsentScreenContent(
+                    employees = employeeList,
                     state = AddEditAbsentState(
                         absentReason = "Sick Leave",
                     ),
-                    employees = employeeList,
+                    selectedEmployee = employeeList.first(),
                     onEvent = {},
                     onBackClick = {},
                     onClickAddEmployee = {},
-                    selectedEmployee = employeeList.first(),
                 )
             }
         }
@@ -294,6 +294,7 @@ class AbsentScreenScreenshotTest {
                     importedItems = persistentListOf(),
                     selectedItems = persistentListOf(),
                     selectedEmployees = emptyList(),
+                    isLoading = false,
                     onSelectEmployee = {},
                     onClickSelectItem = {},
                     onClickSelectAll = {},
@@ -314,6 +315,7 @@ class AbsentScreenScreenshotTest {
                     importedItems = absentsList.toImmutableList(),
                     selectedItems = persistentListOf(2, 3),
                     selectedEmployees = listOf(1, 2, 3),
+                    isLoading = false,
                     onSelectEmployee = {},
                     onClickSelectItem = {},
                     onClickSelectAll = {},
@@ -334,7 +336,6 @@ class AbsentScreenScreenshotTest {
                     items = persistentListOf(),
                     selectedItems = persistentListOf(),
                     selectedEmployees = emptyList(),
-                    onSelectEmployee = {},
                     showSearchBar = false,
                     searchText = "",
                     onClearClick = {},
@@ -344,6 +345,7 @@ class AbsentScreenScreenshotTest {
                     onClickSelectAll = {},
                     onClickDeselect = {},
                     onSelectItem = {},
+                    onSelectEmployee = {},
                     onClickExport = {},
                     onBackClick = {},
                     onClickToAddItem = {},
@@ -360,7 +362,6 @@ class AbsentScreenScreenshotTest {
                     items = absentsList.toImmutableList(),
                     selectedItems = persistentListOf(1, 3, 6),
                     selectedEmployees = listOf(1, 2, 3),
-                    onSelectEmployee = {},
                     showSearchBar = false,
                     searchText = "",
                     onClearClick = {},
@@ -370,6 +371,7 @@ class AbsentScreenScreenshotTest {
                     onClickSelectAll = {},
                     onClickDeselect = {},
                     onSelectItem = {},
+                    onSelectEmployee = {},
                     onClickExport = {},
                     onBackClick = {},
                     onClickToAddItem = {},
@@ -384,10 +386,9 @@ class AbsentScreenScreenshotTest {
             PoposRoomTheme {
                 AbsentExportScreenContent(
                     items = absentsList
-                        .filterEmployeeWithAbsent("text").toImmutableList(),
+                        .searchAbsentees("text").toImmutableList(),
                     selectedItems = persistentListOf(),
                     selectedEmployees = emptyList(),
-                    onSelectEmployee = {},
                     showSearchBar = true,
                     searchText = "text",
                     onClearClick = {},
@@ -397,6 +398,7 @@ class AbsentScreenScreenshotTest {
                     onClickSelectAll = {},
                     onClickDeselect = {},
                     onSelectItem = {},
+                    onSelectEmployee = {},
                     onClickExport = {},
                     onBackClick = {},
                     onClickToAddItem = {},
@@ -411,10 +413,9 @@ class AbsentScreenScreenshotTest {
             PoposRoomTheme {
                 AbsentExportScreenContent(
                     items = absentsList
-                        .filterEmployeeWithAbsent("Sick").toImmutableList(),
+                        .searchAbsentees("Sick").toImmutableList(),
                     selectedItems = persistentListOf(),
                     selectedEmployees = listOf(1, 2, 3),
-                    onSelectEmployee = {},
                     showSearchBar = true,
                     searchText = "Sick",
                     onClearClick = {},
@@ -424,6 +425,7 @@ class AbsentScreenScreenshotTest {
                     onClickSelectAll = {},
                     onClickDeselect = {},
                     onSelectItem = {},
+                    onSelectEmployee = {},
                     onClickExport = {},
                     onBackClick = {},
                     onClickToAddItem = {},

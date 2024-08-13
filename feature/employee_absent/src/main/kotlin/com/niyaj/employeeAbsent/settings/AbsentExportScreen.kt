@@ -21,28 +21,14 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.VisibleForTesting
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_NOT_AVAILABLE
@@ -51,23 +37,14 @@ import com.niyaj.common.tags.AbsentScreenTags.CREATE_NEW_ABSENT
 import com.niyaj.common.tags.AbsentScreenTags.EXPORT_ABSENT_FILE_NAME
 import com.niyaj.common.tags.AbsentScreenTags.EXPORT_ABSENT_TITLE
 import com.niyaj.common.utils.Constants
-import com.niyaj.designsystem.components.PoposButton
-import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.common.utils.createExportNote
 import com.niyaj.designsystem.theme.PoposRoomTheme
-import com.niyaj.designsystem.theme.SpaceLarge
-import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.domain.utils.ImportExport
 import com.niyaj.employeeAbsent.components.AbsentEmployeeList
 import com.niyaj.employeeAbsent.destinations.AddEditAbsentScreenDestination
 import com.niyaj.model.EmployeeWithAbsents
-import com.niyaj.ui.components.InfoText
-import com.niyaj.ui.components.ItemNotAvailable
-import com.niyaj.ui.components.NAV_SEARCH_BTN
-import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.ScrollToTop
-import com.niyaj.ui.components.StandardSearchBar
-import com.niyaj.ui.parameterProvider.AbsentPreviewData
+import com.niyaj.ui.components.ExportScaffold
+import com.niyaj.ui.parameterProvider.AbsentPreviewData.employeesWithAbsents
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens.ABSENT_EXPORT_SCREEN
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -134,7 +111,6 @@ fun AbsentExportScreen(
         }
 
     AbsentExportScreenContent(
-        modifier = Modifier,
         items = items.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         selectedEmployees = selectedEmployee,
@@ -162,13 +138,13 @@ fun AbsentExportScreen(
         onClickToAddItem = {
             navigator.navigate(AddEditAbsentScreenDestination())
         },
+        modifier = Modifier,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun AbsentExportScreenContent(
-    modifier: Modifier = Modifier,
     items: ImmutableList<EmployeeWithAbsents>,
     selectedItems: ImmutableList<Int>,
     selectedEmployees: List<Int>,
@@ -185,9 +161,9 @@ internal fun AbsentExportScreenContent(
     onClickExport: () -> Unit,
     onBackClick: () -> Unit,
     onClickToAddItem: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
-    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
 ) {
     TrackScreenViewEvent(screenName = "AbsentExportScreen")
 
@@ -205,114 +181,45 @@ internal fun AbsentExportScreenContent(
         }
     }
 
-    PoposSecondaryScaffold(
-        modifier = modifier,
+    ExportScaffold(
         title = title,
-        showBackButton = selectedItems.isEmpty() || showSearchBar,
+        exportNote = createExportNote(selectedItems, items.size, "absent"),
+        searchPlaceholder = ABSENT_SEARCH_PLACEHOLDER,
+        exportButtonText = EXPORT_ABSENT_TITLE,
+        emptyButtonText = CREATE_NEW_ABSENT,
+        emptyText = text,
         showBottomBar = items.isNotEmpty(),
-        showSecondaryBottomBar = true,
-        navActions = {
-            if (showSearchBar) {
-                StandardSearchBar(
-                    searchText = searchText,
-                    placeholderText = ABSENT_SEARCH_PLACEHOLDER,
-                    onClearClick = onClearClick,
-                    onSearchTextChanged = onSearchTextChanged,
-                )
-            } else {
-                if (items.isNotEmpty()) {
-                    IconButton(
-                        onClick = onClickSelectAll,
-                    ) {
-                        Icon(
-                            imageVector = PoposIcons.Checklist,
-                            contentDescription = Constants.SELECT_ALL_ICON,
-                        )
-                    }
-
-                    IconButton(
-                        onClick = onClickOpenSearch,
-                        modifier = Modifier.testTag(NAV_SEARCH_BTN),
-                    ) {
-                        Icon(
-                            imageVector = PoposIcons.Search,
-                            contentDescription = "Search Icon",
-                        )
-                    }
-                }
+        showBackButton = selectedItems.isEmpty(),
+        searchText = searchText,
+        showSearchBar = showSearchBar,
+        showScrollToTop = !lazyListState.isScrollingUp(),
+        onBackClick = onBackClick,
+        onClickDeselect = onClickDeselect,
+        onClickSelectAll = onClickSelectAll,
+        onClickOpenSearch = onClickOpenSearch,
+        onClickCloseSearch = onClickCloseSearch,
+        onClearClick = onClearClick,
+        onSearchTextChanged = onSearchTextChanged,
+        onClickExport = onClickExport,
+        onClickEmptyBtn = onClickToAddItem,
+        onClickScrollToTop = {
+            scope.launch {
+                lazyListState.animateScrollToItem(0)
             }
         },
-        bottomBar = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(padding),
-                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-            ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} absentees will be exported.")
-
-                PoposButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag(EXPORT_ABSENT_TITLE),
-                    enabled = items.isNotEmpty(),
-                    text = EXPORT_ABSENT_TITLE,
-                    icon = PoposIcons.Upload,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                    ),
-                    onClick = onClickExport,
-                )
-            }
-        },
-        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyListState.isScrollingUp(),
-                onClick = {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(index = 0)
-                    }
-                },
-            )
-        },
-        navigationIcon = {
-            IconButton(
-                onClick = onClickDeselect,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Deselect All",
-                )
-            }
-        },
+        modifier = modifier,
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
-        ) {
-            if (items.isEmpty()) {
-                ItemNotAvailable(
-                    text = text,
-                    buttonText = CREATE_NEW_ABSENT,
-                    onClick = onClickToAddItem,
-                )
-            } else {
-                AbsentEmployeeList(
-                    modifier = Modifier,
-                    items = items,
-                    expanded = selectedEmployees::contains,
-                    onExpandChanged = onSelectEmployee,
-                    doesSelected = selectedItems::contains,
-                    onClick = onSelectItem,
-                    onLongClick = onSelectItem,
-                    onChipClick = {},
-                    lazyListState = lazyListState,
-                )
-            }
-        }
+        AbsentEmployeeList(
+            items = items,
+            expanded = selectedEmployees::contains,
+            onExpandChanged = onSelectEmployee,
+            doesSelected = selectedItems::contains,
+            onClick = onSelectItem,
+            onLongClick = onSelectItem,
+            modifier = Modifier,
+            onChipClick = {},
+            lazyListState = lazyListState,
+        )
     }
 }
 
@@ -321,7 +228,6 @@ internal fun AbsentExportScreenContent(
 private fun AbsentExportScreenEmptyDataPreview() {
     PoposRoomTheme {
         AbsentExportScreenContent(
-            modifier = Modifier,
             items = persistentListOf(),
             selectedItems = persistentListOf(),
             selectedEmployees = listOf(),
@@ -338,6 +244,7 @@ private fun AbsentExportScreenEmptyDataPreview() {
             onClickExport = {},
             onBackClick = {},
             onClickToAddItem = {},
+            modifier = Modifier,
         )
     }
 }
@@ -345,11 +252,10 @@ private fun AbsentExportScreenEmptyDataPreview() {
 @DevicePreviews
 @Composable
 private fun AbsentExportScreenContentPreview(
-    items: ImmutableList<EmployeeWithAbsents> = AbsentPreviewData.employeesWithAbsents.toImmutableList(),
+    items: ImmutableList<EmployeeWithAbsents> = employeesWithAbsents.toImmutableList(),
 ) {
     PoposRoomTheme {
         AbsentExportScreenContent(
-            modifier = Modifier,
             items = items,
             selectedItems = persistentListOf(),
             selectedEmployees = listOf(1, 2, 3),
@@ -366,6 +272,7 @@ private fun AbsentExportScreenContentPreview(
             onClickExport = {},
             onBackClick = {},
             onClickToAddItem = {},
+            modifier = Modifier,
         )
     }
 }

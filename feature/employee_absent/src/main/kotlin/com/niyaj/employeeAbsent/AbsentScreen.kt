@@ -31,9 +31,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.niyaj.common.tags.AbsentScreenTags.ABSENT_LIST
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_NOT_AVAILABLE
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_SCREEN_TITLE
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_SEARCH_PLACEHOLDER
@@ -87,7 +89,6 @@ fun AbsentScreen(
     val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
 
     AbsentScreenContent(
-        modifier = Modifier,
         uiState = uiState,
         selectedItems = viewModel.selectedItems.toList(),
         selectedEmployees = viewModel.selectedEmployee.toList(),
@@ -101,7 +102,6 @@ fun AbsentScreen(
         onClickSelectAll = viewModel::selectAllItems,
         onClickDeselect = viewModel::deselectItems,
         onClickDelete = viewModel::deleteItems,
-        onSelectEmployee = viewModel::selectEmployee,
         onClickBack = navigator::popBackStack,
         onNavigateToScreen = navigator::navigate,
         onClickCreateNew = {
@@ -113,9 +113,11 @@ fun AbsentScreen(
         onClickSettings = {
             navigator.navigate(AbsentSettingsScreenDestination())
         },
+        onSelectEmployee = viewModel::selectEmployee,
         onAbsentAddClick = {
             navigator.navigate(AddEditAbsentScreenDestination(employeeId = it))
         },
+        modifier = Modifier,
         snackbarState = snackbarState,
     )
 
@@ -133,7 +135,6 @@ fun AbsentScreen(
 @androidx.annotation.VisibleForTesting
 @Composable
 internal fun AbsentScreenContent(
-    modifier: Modifier = Modifier,
     uiState: UiState<List<EmployeeWithAbsents>>,
     selectedItems: List<Int>,
     selectedEmployees: List<Int>,
@@ -154,6 +155,7 @@ internal fun AbsentScreenContent(
     onClickSettings: () -> Unit,
     onSelectEmployee: (Int) -> Unit,
     onAbsentAddClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
@@ -236,9 +238,7 @@ internal fun AbsentScreenContent(
 
                 is UiState.Success -> {
                     AbsentEmployeeList(
-                        modifier = Modifier,
                         items = state.data,
-                        showTrailingIcon = true,
                         expanded = selectedEmployees::contains,
                         onExpandChanged = onSelectEmployee,
                         doesSelected = selectedItems::contains,
@@ -248,6 +248,8 @@ internal fun AbsentScreenContent(
                             }
                         },
                         onLongClick = onClickSelectItem,
+                        modifier = Modifier.testTag(ABSENT_LIST),
+                        showTrailingIcon = true,
                         onChipClick = onAbsentAddClick,
                         lazyListState = lazyListState,
                     )
@@ -349,7 +351,6 @@ private fun AbsentScreenPreview(
 ) {
     PoposRoomTheme {
         AbsentScreenContent(
-            modifier = modifier,
             uiState = uiState,
             selectedItems = listOf(),
             selectedEmployees = listOf(1, 2, 3),
@@ -368,8 +369,9 @@ private fun AbsentScreenPreview(
             onClickCreateNew = {},
             onClickEdit = {},
             onClickSettings = {},
-            onAbsentAddClick = {},
             onSelectEmployee = {},
+            onAbsentAddClick = {},
+            modifier = modifier,
         )
     }
 }

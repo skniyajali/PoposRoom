@@ -140,6 +140,7 @@ class TestEmployeeRepository : EmployeeRepository {
         employeeSalaryEstimation.update { salaryEstimation }
     }
 
+    @TestOnly
     fun createTestItem(): Employee {
         val newEmployee = Employee(
             employeeId = 1,

@@ -327,14 +327,14 @@ class EmployeeEndToEndTest {
             onNodeWithTag(EMPLOYEE_NAME_ERROR).assertIsNotDisplayed()
 
             // Perform invalid input on customerPhone field and check for validation error
-            onNodeWithTag(EMPLOYEE_PHONE_FIELD).performTextInput("Te")
+            onNodeWithTag(EMPLOYEE_PHONE_FIELD).performTextInput("90")
             onNodeWithText(EMPLOYEE_PHONE_LENGTH_ERROR).assertIsDisplayed()
             onNodeWithTag(EMPLOYEE_PHONE_FIELD)
                 .onChild()
                 .assertContentDescriptionContains(CLEAR_ICON)
                 .performClick()
 
-            onNodeWithTag(EMPLOYEE_PHONE_FIELD).performTextInput("Test123444")
+            onNodeWithTag(EMPLOYEE_PHONE_FIELD).performTextInput("907856432a")
             onNodeWithText(EMPLOYEE_PHONE_LETTER_ERROR).assertIsDisplayed()
             onNodeWithTag(EMPLOYEE_PHONE_FIELD)
                 .onChild()

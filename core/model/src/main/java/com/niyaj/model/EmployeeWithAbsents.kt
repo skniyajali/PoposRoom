@@ -47,7 +47,7 @@ fun List<Absent>.filterAbsent(searchText: String): List<Absent> {
     }
 }
 
-fun List<EmployeeWithAbsents>.filterEmployeeWithAbsent(searchText: String): List<EmployeeWithAbsents> {
+fun List<EmployeeWithAbsents>.searchAbsentees(searchText: String): List<EmployeeWithAbsents> {
     return if (searchText.isNotEmpty()) {
         this.map {
             EmployeeWithAbsents(

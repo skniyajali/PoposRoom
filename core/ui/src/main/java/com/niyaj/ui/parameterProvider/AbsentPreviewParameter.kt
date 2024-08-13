@@ -238,4 +238,6 @@ object AbsentPreviewData {
             ),
         ),
     )
+
+    val absents = employeesWithAbsents.flatMap { it.absents }
 }

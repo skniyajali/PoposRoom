@@ -43,7 +43,7 @@ class AbsentSettingsViewModel @Inject constructor(
     private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel() {
 
-    val items = snapshotFlow { mSearchText.value }.flatMapLatest {
+    val items = snapshotFlow { searchText.value }.flatMapLatest {
         repository.getAllEmployeeAbsents(it)
     }.mapLatest { list ->
         totalItems = list.flatMap { item -> item.absents.map { it.absentId } }

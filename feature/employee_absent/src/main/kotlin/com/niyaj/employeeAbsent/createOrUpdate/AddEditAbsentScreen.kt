@@ -33,7 +33,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -62,13 +61,14 @@ import com.niyaj.common.tags.AbsentScreenTags.ABSENT_DATE_FIELD
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_EMPLOYEE_NAME_ERROR
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_EMPLOYEE_NAME_FIELD
 import com.niyaj.common.tags.AbsentScreenTags.ABSENT_REASON_FIELD
-import com.niyaj.common.tags.AbsentScreenTags.ADD_EDIT_ABSENT_ENTRY_BUTTON
+import com.niyaj.common.tags.AbsentScreenTags.ADD_EDIT_ABSENT_BTN
 import com.niyaj.common.tags.AbsentScreenTags.ADD_EDIT_ABSENT_SCREEN
 import com.niyaj.common.tags.AbsentScreenTags.CREATE_NEW_ABSENT
 import com.niyaj.common.tags.AbsentScreenTags.EDIT_ABSENT_ITEM
 import com.niyaj.common.utils.toMilliSecond
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.designsystem.components.PoposButton
+import com.niyaj.designsystem.components.PoposTonalIconButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
@@ -80,6 +80,7 @@ import com.niyaj.ui.components.PoposSecondaryScaffold
 import com.niyaj.ui.components.StandardOutlinedTextField
 import com.niyaj.ui.parameterProvider.EmployeePreviewData
 import com.niyaj.ui.utils.DevicePreviews
+import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.TrackScrollJank
 import com.niyaj.ui.utils.UiEvent
@@ -91,7 +92,7 @@ import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.time.LocalDate
 
-@Destination
+@Destination(route = Screens.ADD_EDIT_ABSENT_SCREEN)
 @Composable
 fun AddEditAbsentScreen(
     absentId: Int = 0,
@@ -124,37 +125,37 @@ fun AddEditAbsentScreen(
     val title = if (absentId == 0) CREATE_NEW_ABSENT else EDIT_ABSENT_ITEM
     val icon = if (absentId == 0) PoposIcons.Add else PoposIcons.EditCalender
 
-    TrackScreenViewEvent(screenName = "Add/Edit Absent Screen/employeeId: $employeeId/absentId: $absentId")
+    TrackScreenViewEvent(screenName = "${ADD_EDIT_ABSENT_SCREEN}/employeeId: $employeeId/absentId: $absentId")
 
     AddEditAbsentScreenContent(
-        modifier = Modifier,
-        title = title,
-        icon = icon,
         employees = employees,
         state = viewModel.state,
         selectedEmployee = selectedEmployee,
-        employeeError = employeeError,
-        dateError = dateError,
         onEvent = viewModel::onEvent,
         onBackClick = navigator::navigateUp,
         onClickAddEmployee = onClickAddEmployee,
+        modifier = Modifier,
+        employeeError = employeeError,
+        dateError = dateError,
+        title = title,
+        icon = icon,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun AddEditAbsentScreenContent(
-    modifier: Modifier = Modifier,
-    title: String = CREATE_NEW_ABSENT,
-    icon: ImageVector = PoposIcons.Add,
     employees: List<Employee>,
     state: AddEditAbsentState,
     selectedEmployee: Employee,
-    employeeError: String? = null,
-    dateError: String? = null,
     onEvent: (AddEditAbsentEvent) -> Unit,
     onBackClick: () -> Unit,
     onClickAddEmployee: () -> Unit,
+    modifier: Modifier = Modifier,
+    employeeError: String? = null,
+    dateError: String? = null,
+    title: String = CREATE_NEW_ABSENT,
+    icon: ImageVector = PoposIcons.Add,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     val dialogState = rememberMaterialDialogState()
@@ -174,7 +175,7 @@ internal fun AddEditAbsentScreenContent(
             PoposButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(ADD_EDIT_ABSENT_ENTRY_BUTTON),
+                    .testTag(ADD_EDIT_ABSENT_BTN),
                 enabled = enableBtn,
                 text = title,
                 icon = icon,
@@ -190,7 +191,6 @@ internal fun AddEditAbsentScreenContent(
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
-                .testTag(ADD_EDIT_ABSENT_SCREEN)
                 .fillMaxSize()
                 .padding(paddingValues),
             contentPadding = PaddingValues(SpaceMedium),
@@ -321,14 +321,11 @@ internal fun AddEditAbsentScreenContent(
                     label = ABSENT_DATE_FIELD,
                     leadingIcon = PoposIcons.CalenderToday,
                     trailingIcon = {
-                        FilledTonalIconButton(
-                            onClick = { dialogState.show() },
-                        ) {
-                            Icon(
-                                imageVector = PoposIcons.CalenderMonth,
-                                contentDescription = "Choose a date",
-                            )
-                        }
+                        PoposTonalIconButton(
+                            modifier = Modifier.testTag("ChooseDate"),
+                            icon = PoposIcons.CalenderMonth,
+                            onClick = dialogState::show,
+                        )
                     },
                     isError = dateError != null,
                     errorText = dateError,
@@ -394,17 +391,17 @@ private fun AddEditAbsentScreenContentPreview(
 ) {
     PoposRoomTheme {
         AddEditAbsentScreenContent(
-            modifier = modifier,
             employees = employees,
             state = AddEditAbsentState(
                 absentReason = "Seek Leave",
             ),
             selectedEmployee = selectedEmployee,
-            employeeError = null,
-            dateError = null,
             onEvent = {},
             onBackClick = {},
             onClickAddEmployee = {},
+            modifier = modifier,
+            employeeError = null,
+            dateError = null,
         )
     }
 }
