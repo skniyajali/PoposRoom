@@ -54,8 +54,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_LIST
 import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_TAG
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
@@ -73,12 +76,12 @@ import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScrollJank
 
 @Composable
-fun ExpensesList(
-    modifier: Modifier = Modifier,
+internal fun ExpensesList(
     items: List<Expense>,
     doesSelected: (Int) -> Boolean,
     isInSelectionMode: Boolean,
     onSelectItem: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     TrackScrollJank(scrollableState = lazyListState, stateName = "Expenses::List")
@@ -87,6 +90,7 @@ fun ExpensesList(
 
     LazyColumn(
         modifier = modifier
+            .testTag(EXPENSE_LIST)
             .fillMaxSize(),
         contentPadding = PaddingValues(0.dp),
         verticalArrangement = Arrangement.spacedBy(SpaceSmall),
@@ -125,19 +129,20 @@ fun ExpensesList(
 }
 
 @Composable
-fun ExpensesList(
-    modifier: Modifier = Modifier,
+internal fun ExpensesList(
     items: List<Expense>,
     doesSelected: (Int) -> Boolean,
     onSelectItem: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     TrackScrollJank(scrollableState = lazyListState, stateName = "Expenses::List")
 
     LazyColumn(
         modifier = modifier
+            .testTag(EXPENSE_LIST)
             .fillMaxSize(),
-        contentPadding = PaddingValues(0.dp),
+        contentPadding = PaddingValues(SpaceSmall),
         verticalArrangement = Arrangement.spacedBy(SpaceSmall),
         state = lazyListState,
     ) {
@@ -157,7 +162,7 @@ fun ExpensesList(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ExpensesData(
+private fun ExpensesData(
     modifier: Modifier = Modifier,
     item: Expense,
     doesSelected: (Int) -> Boolean,
@@ -169,6 +174,8 @@ fun ExpensesData(
 
     Card(
         modifier = modifier
+            .testTag(EXPENSE_TAG.plus(item.expenseId))
+            .semantics { selected = doesSelected(item.expenseId) }
             .fillMaxWidth()
             .then(
                 borderStroke?.let {
@@ -189,51 +196,45 @@ fun ExpensesData(
         ),
         elevation = CardDefaults.elevatedCardElevation(),
     ) {
-        Column(
-            modifier = modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.SpaceBetween,
-        ) {
-            ListItem(
-                modifier = Modifier
-                    .testTag(EXPENSE_TAG.plus(item.expenseId))
-                    .fillMaxWidth(),
-                headlineContent = {
-                    Text(
-                        text = item.expenseName,
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                },
-                supportingContent = {
-                    Text(text = item.expenseAmount.toRupee)
-                },
-                leadingContent = {
-                    CircularBox(
-                        icon = PoposIcons.Person,
-                        doesSelected = doesSelected(item.expenseId),
-                        text = item.expenseName,
-                    )
-                },
-                trailingContent = {
-                    NoteText(
-                        text = item.expenseDate.toPrettyDate(),
-                        icon = PoposIcons.CalenderMonth,
-                    )
-                },
-                colors = ListItemDefaults.colors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                ),
-            )
-
-            if (item.expenseNote.isNotEmpty()) {
-                NoteText(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = SpaceSmall, horizontal = SpaceMedium),
-                    text = item.expenseNote,
-                    icon = PoposIcons.TurnedInNot,
-                    color = MaterialTheme.colorScheme.onSecondary,
+        ListItem(
+            modifier = Modifier
+                .fillMaxWidth(),
+            headlineContent = {
+                Text(
+                    text = item.expenseName,
+                    style = MaterialTheme.typography.labelLarge,
                 )
-            }
+            },
+            supportingContent = {
+                Text(text = item.expenseAmount.toRupee)
+            },
+            leadingContent = {
+                CircularBox(
+                    icon = PoposIcons.Person,
+                    doesSelected = doesSelected(item.expenseId),
+                    text = item.expenseName,
+                )
+            },
+            trailingContent = {
+                NoteText(
+                    text = item.expenseDate.toPrettyDate(),
+                    icon = PoposIcons.CalenderMonth,
+                )
+            },
+            colors = ListItemDefaults.colors(
+                containerColor = MaterialTheme.colorScheme.background,
+            ),
+        )
+
+        if (item.expenseNote.isNotEmpty()) {
+            NoteText(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = SpaceSmall, horizontal = SpaceMedium),
+                text = item.expenseNote,
+                icon = PoposIcons.TurnedInNot,
+                color = MaterialTheme.colorScheme.onSecondary,
+            )
         }
     }
 }
@@ -241,11 +242,11 @@ fun ExpensesData(
 @OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 private fun GroupedExpensesData(
-    modifier: Modifier = Modifier,
     items: List<Expense>,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
 ) = trace("GroupedExpensesData") {
     val item = items.first()
@@ -309,6 +310,7 @@ private fun GroupedExpensesData(
                     ElevatedCard(
                         modifier = modifier
                             .testTag(EXPENSE_TAG.plus(expense.expenseId))
+                            .semantics { selected = doesSelected(expense.expenseId) }
                             .then(
                                 borderStroke?.let {
                                     Modifier.border(it, RoundedCornerShape(SpaceMini))
@@ -392,11 +394,11 @@ private fun ExpensesListPreview(
 ) {
     PoposRoomTheme {
         ExpensesList(
-            modifier = modifier,
             items = ExpensePreviewData.expenses,
             doesSelected = { it % 2 == 0 },
             isInSelectionMode = false,
             onSelectItem = {},
+            modifier = modifier,
         )
     }
 }

@@ -40,12 +40,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.TestOnly
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -56,15 +57,19 @@ class AddEditExpenseViewModel @Inject constructor(
     private val validateExpenseDate: ValidateExpenseDateUseCase,
     private val validateExpenseName: ValidateExpenseNameUseCase,
     private val analyticsHelper: AnalyticsHelper,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val expenseId: Int = savedStateHandle.get<Int>("expenseId") ?: 0
+    private val expenseId = savedStateHandle.getStateFlow("expenseId", 0)
 
     var state by mutableStateOf(AddEditExpenseState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
-    val eventFlow = _eventFlow.asSharedFlow()
+    val eventFlow = _eventFlow.shareIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        replay = 1,
+    )
 
     private val observableName = snapshotFlow { state.expenseName }
     private val observableDate = snapshotFlow { state.expenseDate }
@@ -140,7 +145,7 @@ class AddEditExpenseViewModel @Inject constructor(
             }
 
             is AddEditExpenseEvent.AddOrUpdateExpense -> {
-                addOrUpdateExpense(expenseId)
+                addOrUpdateExpense(expenseId.value)
             }
         }
     }
@@ -192,7 +197,7 @@ class AddEditExpenseViewModel @Inject constructor(
 
                     is Resource.Success -> {
                         val message = if (expenseId == 0) "added" else "updated"
-                        _eventFlow.emit(UiEvent.OnSuccess("Expense $message successfully"))
+                        _eventFlow.emit(UiEvent.OnSuccess("Expense $message successfully."))
                         analyticsHelper.logOnCreateOrUpdateExpenses(expenseId, message)
                     }
                 }
@@ -200,6 +205,11 @@ class AddEditExpenseViewModel @Inject constructor(
                 state = AddEditExpenseState()
             }
         }
+    }
+
+    @TestOnly
+    internal fun setExpenseId(expenseId: Int) {
+        savedStateHandle["expenseId"] = expenseId
     }
 }
 

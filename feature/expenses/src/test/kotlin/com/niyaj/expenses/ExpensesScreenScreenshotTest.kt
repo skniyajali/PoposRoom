@@ -62,9 +62,9 @@ class ExpensesScreenScreenshotTest {
             PoposRoomTheme {
                 ExpensesScreenContent(
                     uiState = UiState.Loading,
+                    selectedDate = getStartTime,
                     selectedItems = listOf(),
                     showSearchBar = false,
-                    selectedDate = getStartTime,
                     searchText = "",
                     onClickSearchIcon = {},
                     onSearchTextChanged = {},
@@ -74,12 +74,12 @@ class ExpensesScreenScreenshotTest {
                     onClickSelectAll = {},
                     onClickDeselect = {},
                     onClickDelete = {},
+                    onSelectDate = {},
                     onClickBack = {},
                     onNavigateToScreen = {},
                     onClickCreateNew = {},
                     onClickEdit = {},
                     onClickSettings = {},
-                    onSelectDate = {},
                 )
             }
         }
@@ -91,9 +91,9 @@ class ExpensesScreenScreenshotTest {
             PoposRoomTheme {
                 ExpensesScreenContent(
                     uiState = UiState.Empty,
+                    selectedDate = getStartTime,
                     selectedItems = listOf(),
                     showSearchBar = false,
-                    selectedDate = getStartTime,
                     searchText = "",
                     onClickSearchIcon = {},
                     onSearchTextChanged = {},
@@ -103,12 +103,12 @@ class ExpensesScreenScreenshotTest {
                     onClickSelectAll = {},
                     onClickDeselect = {},
                     onClickDelete = {},
+                    onSelectDate = {},
                     onClickBack = {},
                     onNavigateToScreen = {},
                     onClickCreateNew = {},
                     onClickEdit = {},
                     onClickSettings = {},
-                    onSelectDate = {},
                 )
             }
         }
@@ -120,9 +120,9 @@ class ExpensesScreenScreenshotTest {
             PoposRoomTheme {
                 ExpensesScreenContent(
                     uiState = UiState.Success(expenseList),
+                    selectedDate = getStartTime,
                     selectedItems = listOf(),
                     showSearchBar = false,
-                    selectedDate = getStartTime,
                     searchText = "",
                     onClickSearchIcon = {},
                     onSearchTextChanged = {},
@@ -132,12 +132,12 @@ class ExpensesScreenScreenshotTest {
                     onClickSelectAll = {},
                     onClickDeselect = {},
                     onClickDelete = {},
+                    onSelectDate = {},
                     onClickBack = {},
                     onNavigateToScreen = {},
                     onClickCreateNew = {},
                     onClickEdit = {},
                     onClickSettings = {},
-                    onSelectDate = {},
                 )
             }
         }
@@ -149,9 +149,9 @@ class ExpensesScreenScreenshotTest {
             PoposRoomTheme {
                 ExpensesScreenContent(
                     uiState = UiState.Success(expenseList),
+                    selectedDate = getStartTime,
                     selectedItems = listOf(2, 5, 8),
                     showSearchBar = false,
-                    selectedDate = getStartTime,
                     searchText = "",
                     onClickSearchIcon = {},
                     onSearchTextChanged = {},
@@ -161,12 +161,12 @@ class ExpensesScreenScreenshotTest {
                     onClickSelectAll = {},
                     onClickDeselect = {},
                     onClickDelete = {},
+                    onSelectDate = {},
                     onClickBack = {},
                     onNavigateToScreen = {},
                     onClickCreateNew = {},
                     onClickEdit = {},
                     onClickSettings = {},
-                    onSelectDate = {},
                 )
             }
         }
@@ -178,8 +178,8 @@ class ExpensesScreenScreenshotTest {
             PoposRoomTheme {
                 ExpensesScreenContent(
                     uiState = UiState.Empty,
-                    selectedItems = listOf(),
                     selectedDate = getStartTime,
+                    selectedItems = listOf(),
                     showSearchBar = true,
                     searchText = "search",
                     onClickSearchIcon = {},
@@ -190,12 +190,12 @@ class ExpensesScreenScreenshotTest {
                     onClickSelectAll = {},
                     onClickDeselect = {},
                     onClickDelete = {},
+                    onSelectDate = {},
                     onClickBack = {},
                     onNavigateToScreen = {},
                     onClickCreateNew = {},
                     onClickEdit = {},
                     onClickSettings = {},
-                    onSelectDate = {},
                 )
             }
         }
@@ -207,9 +207,9 @@ class ExpensesScreenScreenshotTest {
             PoposRoomTheme {
                 ExpensesScreenContent(
                     uiState = UiState.Success(expenseList.searchExpense("Groceries")),
+                    selectedDate = getStartTime,
                     selectedItems = listOf(),
                     showSearchBar = true,
-                    selectedDate = getStartTime,
                     searchText = "Groceries",
                     onClickSearchIcon = {},
                     onSearchTextChanged = {},
@@ -219,12 +219,12 @@ class ExpensesScreenScreenshotTest {
                     onClickSelectAll = {},
                     onClickDeselect = {},
                     onClickDelete = {},
+                    onSelectDate = {},
                     onClickBack = {},
                     onNavigateToScreen = {},
                     onClickCreateNew = {},
                     onClickEdit = {},
                     onClickSettings = {},
-                    onSelectDate = {},
                 )
             }
         }
@@ -289,6 +289,7 @@ class ExpensesScreenScreenshotTest {
                 ExpensesImportScreenContent(
                     importedItems = persistentListOf(),
                     selectedItems = persistentListOf(),
+                    isLoading = false,
                     onClickSelectItem = {},
                     onClickSelectAll = {},
                     onClickDeselect = {},
@@ -306,6 +307,7 @@ class ExpensesScreenScreenshotTest {
             PoposRoomTheme {
                 ExpensesImportScreenContent(
                     importedItems = expenseList.toImmutableList(),
+                    isLoading = false,
                     selectedItems = persistentListOf(),
                     onClickSelectItem = {},
                     onClickSelectAll = {},

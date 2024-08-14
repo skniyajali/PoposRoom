@@ -21,47 +21,26 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.VisibleForTesting
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.niyaj.common.tags.ExpenseTestTags.IMPORT_EXPENSE_NOTE_TEXT
-import com.niyaj.common.tags.ExpenseTestTags.IMPORT_EXPENSE_OPN_FILE
 import com.niyaj.common.tags.ExpenseTestTags.IMPORT_EXPENSE_TITLE
-import com.niyaj.common.utils.Constants
-import com.niyaj.designsystem.components.PoposButton
-import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.common.utils.createImportNote
 import com.niyaj.designsystem.theme.PoposRoomTheme
-import com.niyaj.designsystem.theme.SpaceLarge
-import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.domain.utils.ImportExport
 import com.niyaj.expenses.components.ExpensesList
 import com.niyaj.model.Expense
-import com.niyaj.ui.components.EmptyImportScreen
-import com.niyaj.ui.components.InfoText
-import com.niyaj.ui.components.PoposSecondaryScaffold
-import com.niyaj.ui.components.ScrollToTop
+import com.niyaj.ui.components.ImportScaffold
 import com.niyaj.ui.parameterProvider.ExpensePreviewData
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.TrackScreenViewEvent
@@ -88,6 +67,7 @@ fun ExpensesImportScreen(
     val scope = rememberCoroutineScope()
 
     val importedItems by viewModel.importedItems.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val event by viewModel.eventFlow.collectAsStateWithLifecycle(initialValue = null)
     val selectedItems = viewModel.selectedItems.toList()
 
@@ -126,6 +106,7 @@ fun ExpensesImportScreen(
         modifier = Modifier,
         importedItems = importedItems.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
+        isLoading = isLoading,
         onClickSelectItem = viewModel::selectItem,
         onClickSelectAll = viewModel::selectAllItems,
         onClickDeselect = viewModel::deselectItems,
@@ -145,6 +126,7 @@ internal fun ExpensesImportScreenContent(
     modifier: Modifier = Modifier,
     importedItems: ImmutableList<Expense>,
     selectedItems: ImmutableList<Int>,
+    isLoading: Boolean,
     onClickSelectItem: (Int) -> Unit,
     onClickSelectAll: () -> Unit,
     onClickDeselect: () -> Unit,
@@ -153,9 +135,11 @@ internal fun ExpensesImportScreenContent(
     onBackClick: () -> Unit,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
-    padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     TrackScreenViewEvent(screenName = "Expenses Import Screen")
+    val title =
+        if (selectedItems.isEmpty()) IMPORT_EXPENSE_TITLE else "${selectedItems.size} Selected"
 
     BackHandler {
         if (selectedItems.isNotEmpty()) {
@@ -165,94 +149,35 @@ internal fun ExpensesImportScreenContent(
         }
     }
 
-    PoposSecondaryScaffold(
+    ImportScaffold(
+        title = title,
         modifier = modifier,
-        title = if (selectedItems.isEmpty()) IMPORT_EXPENSE_TITLE else "${selectedItems.size} Selected",
-        showBackButton = selectedItems.isEmpty(),
+        isLoading = isLoading,
+        importFileNote = IMPORT_EXPENSE_NOTE_TEXT,
+        importButtonText = IMPORT_EXPENSE_TITLE,
+        importNote = createImportNote(selectedItems, importedItems.size, "expense"),
         showBottomBar = importedItems.isNotEmpty(),
-        showSecondaryBottomBar = true,
-        navActions = {
-            AnimatedVisibility(
-                visible = importedItems.isNotEmpty(),
-            ) {
-                IconButton(
-                    onClick = onClickSelectAll,
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.Checklist,
-                        contentDescription = Constants.SELECT_ALL_ICON,
-                    )
-                }
-            }
-        },
-        bottomBar = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(padding),
-                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-            ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} expenses will be imported.")
-
-                PoposButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag(IMPORT_EXPENSE_TITLE),
-                    enabled = true,
-                    text = IMPORT_EXPENSE_TITLE,
-                    icon = PoposIcons.Download,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                    ),
-                    onClick = onClickImport,
-                )
-            }
-        },
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyListState.isScrollingUp(),
-                onClick = {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(index = 0)
-                    }
-                },
-            )
-        },
+        showBackButton = selectedItems.isEmpty(),
+        showScrollToTop = !lazyListState.isScrollingUp(),
+        snackbarHostState = snackbarHostState,
         onBackClick = onBackClick,
-        navigationIcon = {
-            IconButton(
-                onClick = onClickDeselect,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Deselect All",
-                )
+        onClickDeselect = onClickDeselect,
+        onClickSelectAll = onClickSelectAll,
+        onClickImport = onClickImport,
+        onClickOpenFile = onClickOpenFile,
+        onClickScrollToTop = {
+            scope.launch {
+                lazyListState.animateScrollToItem(index = 0)
             }
         },
-    ) { paddingValues ->
-        Crossfade(
-            targetState = importedItems.isEmpty(),
-            label = "Imported Items",
-            modifier = Modifier.padding(paddingValues),
-        ) { itemAvailable ->
-            if (itemAvailable) {
-                EmptyImportScreen(
-                    text = IMPORT_EXPENSE_NOTE_TEXT,
-                    buttonText = IMPORT_EXPENSE_OPN_FILE,
-                    icon = PoposIcons.FileOpen,
-                    onClick = onClickOpenFile,
-                )
-            } else {
-                ExpensesList(
-                    modifier = Modifier,
-                    items = importedItems,
-                    doesSelected = selectedItems::contains,
-                    onSelectItem = onClickSelectItem,
-                    lazyListState = lazyListState,
-                )
-            }
-        }
+    ) {
+        ExpensesList(
+            items = importedItems,
+            doesSelected = selectedItems::contains,
+            onSelectItem = onClickSelectItem,
+            modifier = Modifier,
+            lazyListState = lazyListState,
+        )
     }
 }
 
@@ -264,6 +189,7 @@ private fun ExpensesImportScreenEmptyContentPreview() {
             modifier = Modifier,
             importedItems = persistentListOf(),
             selectedItems = persistentListOf(),
+            isLoading = false,
             onClickSelectItem = {},
             onClickSelectAll = {},
             onClickDeselect = {},
@@ -284,6 +210,7 @@ private fun ExpensesImportScreenContentPreview(
             modifier = Modifier,
             importedItems = items,
             selectedItems = persistentListOf(),
+            isLoading = false,
             onClickSelectItem = {},
             onClickSelectAll = {},
             onClickDeselect = {},
