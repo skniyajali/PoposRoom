@@ -18,10 +18,15 @@
 package com.niyaj.testing.repository
 
 import com.niyaj.common.result.Resource
+import com.niyaj.common.utils.getDateInMilliseconds
+import com.niyaj.common.utils.getStartTime
 import com.niyaj.data.repository.PaymentRepository
 import com.niyaj.model.Employee
+import com.niyaj.model.EmployeeSalaryType.Monthly
+import com.niyaj.model.EmployeeType.FullTime
 import com.niyaj.model.EmployeeWithPayments
 import com.niyaj.model.Payment
+import com.niyaj.model.PaymentType
 import com.niyaj.model.searchEmployeeWithPayments
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -88,5 +93,41 @@ class TestPaymentRepository : PaymentRepository {
     @TestOnly
     fun updatePaymentData(payments: List<Payment>) {
         paymentList.update { payments.toMutableList() }
+    }
+
+    @TestOnly
+    fun createTestEmployee(): Employee {
+        val newEmployee = Employee(
+            employeeId = 1,
+            employeeName = "Test Employee",
+            employeePhone = "1234567890",
+            employeeSalary = "10000",
+            employeePosition = "Chef",
+            employeeJoinedDate = getDateInMilliseconds(hour = 8, day = -30),
+            employeeEmail = "test@gmail.com",
+            employeeSalaryType = Monthly,
+            employeeType = FullTime,
+            isDeliveryPartner = true,
+        )
+
+        employeeList.value.add(newEmployee)
+
+        return newEmployee
+    }
+
+    @TestOnly
+    fun createTestPayment(): Payment {
+        val newPayment = Payment(
+            paymentId = 1,
+            employeeId = 1,
+            paymentDate = getStartTime,
+            paymentAmount = "1000",
+            paymentType = PaymentType.Advanced,
+            paymentNote = "Salary",
+        )
+
+        paymentList.value.add(newPayment)
+
+        return newPayment
     }
 }

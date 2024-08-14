@@ -138,6 +138,9 @@ jobs:
     timeout-minutes: 360
     strategy:
       matrix:
+        arch: [ x86_64 ]
+        target: [ google_apis ]
+        channel: [ stable ]
         api-level: [ 30 ]
 
     steps:
@@ -176,15 +179,46 @@ jobs:
         with:
           validate-wrappers: true
 
+      - name: Gradle cache
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: AVD cache
+        uses: actions/cache@v4
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-cached-${{ matrix.api-level }}-${{ matrix.os }}-${{ matrix.target }}
+
+      - name: create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          target: ${{ matrix.target }}
+          arch: ${{ matrix.arch }}
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
+
       - name: Build projects and run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
-          arch: x86_64
+          target: ${{ matrix.target }}
+          arch: ${{ matrix.arch }}
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           disk-size: 6000M
           heap-size: 600M
-          script: ./gradlew connectedDemoDebugAndroidTest --daemon
+          script: |
+            touch emulator.log                    # create log file
+            chmod 777 emulator.log                # allow writing to log file
+            adb logcat >> emulator.log &          # pipe all logcat messages into log file as a background process
+            ./gradlew connectedDemoDebugAndroidTest --daemon
 
       - name: Run local tests (including Roborazzi) for the combined coverage report (only API 30)
         if: matrix.api-level == 30
@@ -201,7 +235,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-reports-${{ matrix.api-level }}
-          path: '**/build/reports/androidTests'
+          path: |
+            emulator.log
+            '**/build/reports/androidTests'
 
       - name: Display local test coverage (only API 30)
         if: matrix.api-level == 30

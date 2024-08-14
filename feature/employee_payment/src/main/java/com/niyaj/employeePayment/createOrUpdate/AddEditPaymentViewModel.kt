@@ -44,11 +44,12 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.TestOnly
 import javax.inject.Inject
 
 @HiltViewModel
@@ -62,15 +63,19 @@ class AddEditPaymentViewModel @Inject constructor(
     private val validatePaymentNote: ValidatePaymentNoteUseCase,
     private val validatePaymentType: ValidatePaymentTypeUseCase,
     private val analyticsHelper: AnalyticsHelper,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val paymentId = savedStateHandle.get<Int>("paymentId") ?: 0
+    private val paymentId = savedStateHandle.getStateFlow("paymentId", 0)
 
     var state by mutableStateOf(AddEditPaymentState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
-    val eventFlow = _eventFlow.asSharedFlow()
+    val eventFlow = _eventFlow.shareIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        replay = 1,
+    )
 
     val employees = paymentRepository.getAllEmployee().stateIn(
         scope = viewModelScope,
@@ -171,7 +176,7 @@ class AddEditPaymentViewModel @Inject constructor(
             }
 
             is AddEditPaymentEvent.CreateOrUpdatePayment -> {
-                createOrUpdatePayment(paymentId)
+                createOrUpdatePayment(paymentId.value)
             }
 
             is AddEditPaymentEvent.OnSelectEmployee -> {
@@ -253,6 +258,11 @@ class AddEditPaymentViewModel @Inject constructor(
                 state = AddEditPaymentState()
             }
         }
+    }
+
+    @TestOnly
+    internal fun setPaymentId(paymentId: Int) {
+        savedStateHandle["paymentId"] = paymentId
     }
 }
 

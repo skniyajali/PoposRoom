@@ -15,19 +15,24 @@
  *
  */
 
-package com.niyaj.employeePayment
+package com.niyaj.domain
 
-import org.junit.Assert.assertEquals
+import com.niyaj.domain.payment.ValidatePaymentModeUseCase
+import com.niyaj.model.PaymentMode
+import com.niyaj.testing.util.MainDispatcherRule
+import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertNull
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
-class ExampleUnitTest {
+class ValidatePaymentModeUseCaseTest {
+    @get:Rule
+    val dispatcherRule = MainDispatcherRule()
+    val useCase = ValidatePaymentModeUseCase()
+
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun `given valid payment mode return success`() {
+        val result = useCase(PaymentMode.Cash)
+        assert(result.successful)
+        assertNull(result.errorMessage)
     }
 }

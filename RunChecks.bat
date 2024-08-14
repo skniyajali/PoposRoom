@@ -12,6 +12,7 @@ call :run_gradle_task "spotlessApply --init-script gradle/init.gradle.kts --no-c
 call :run_gradle_task "dependencyGuardBaseline"
 call :run_gradle_task "updateProdReleaseBadging"
 call :run_gradle_task ":app:lintProdRelease :lint:lint"
+call :run_gradle_task "testDemoDebug -P roborazzi.test.verify=false :lint:test"
 
 echo All checks and tests completed successfully.
 exit /b 0

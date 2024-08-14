@@ -72,12 +72,12 @@ class AddEditAbsentViewModelTest {
     }
 
     @Test
-    fun `init with absentId loads charges`() = runTest {
+    fun `init with absentId loads absent`() = runTest {
         val employee = repository.createTestItem()
-        val charge = repository.createTestData()
+        val absent = repository.createTestData()
 
         val savedStateHandle = SavedStateHandle()
-        savedStateHandle["absentId"] = charge.absentId
+        savedStateHandle["absentId"] = absent.absentId
         savedStateHandle["employeeId"] = employee.employeeId
 
         viewModel = AddEditAbsentViewModel(
@@ -88,10 +88,10 @@ class AddEditAbsentViewModelTest {
             savedStateHandle = savedStateHandle,
         )
 
-        assertEquals(charge.absentDate, viewModel.state.absentDate)
-        assertEquals(charge.absentReason, viewModel.state.absentReason)
+        assertEquals(absent.absentDate, viewModel.state.absentDate)
+        assertEquals(absent.absentReason, viewModel.state.absentReason)
         viewModel.selectedEmployee.test {
-            assertEquals(charge.employeeId, awaitItem().employeeId)
+            assertEquals(absent.employeeId, awaitItem().employeeId)
         }
     }
 
