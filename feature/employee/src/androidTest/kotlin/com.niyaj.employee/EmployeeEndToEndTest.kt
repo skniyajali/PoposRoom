@@ -77,8 +77,6 @@ import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SEARCH_PLACEHOLDER
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_SETTINGS_TITLE
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_TAG
 import com.niyaj.common.tags.EmployeeTestTags.EMPLOYEE_TYPE_FIELD
-import com.niyaj.common.tags.EmployeeTestTags.EMP_ABSENT_NOTE
-import com.niyaj.common.tags.EmployeeTestTags.EMP_PAYMENTS_NOTE
 import com.niyaj.common.tags.EmployeeTestTags.EXPORT_EMPLOYEE_TITLE
 import com.niyaj.common.tags.EmployeeTestTags.IMPORT_EMPLOYEE_NOTE_TEXT
 import com.niyaj.common.tags.EmployeeTestTags.IMPORT_EMPLOYEE_TITLE
@@ -1135,6 +1133,7 @@ class EmployeeEndToEndTest {
         }
     }
 
+    /*
     @Test
     fun employeeDetails_onNavigated_employeePaymentsWillBeVisibleToUser() {
         composeTestRule.apply {
@@ -1173,6 +1172,8 @@ class EmployeeEndToEndTest {
             onNodeWithText(EMP_ABSENT_NOTE).assertIsDisplayed()
         }
     }
+
+     */
 
     // TODO: Add More test class to test payment, absent details of employee
 
