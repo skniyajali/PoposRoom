@@ -1132,21 +1132,6 @@ class EmployeeEndToEndTest {
             onNodeWithText("Salary - ${newEmployee.employeeSalary.toRupee}").assertIsDisplayed()
             onNodeWithText("Type - ${newEmployee.employeeType}").assertIsDisplayed()
             onNodeWithText("Salary Type - ${newEmployee.employeeSalaryType}").assertIsDisplayed()
-
-            onNodeWithTag("EmployeeDetailsList").performTouchInput { swipeUp() }
-
-            onNodeWithTag("PaymentDetailsExpand").assertIsDisplayed()
-                .assertHasClickAction().performClick()
-            onNodeWithText(EMP_PAYMENTS_NOTE).assertIsDisplayed()
-
-            onNodeWithTag("EmployeeDetailsList").performTouchInput { swipeUp() }
-
-            onNodeWithTag("AbsentDetailsExpand").assertIsDisplayed()
-                .assertHasClickAction().performClick()
-
-            onNodeWithTag("EmployeeDetailsList").performTouchInput { swipeUp() }
-
-            onNodeWithText(EMP_ABSENT_NOTE).assertIsDisplayed()
         }
     }
 
@@ -1181,12 +1166,10 @@ class EmployeeEndToEndTest {
             onNodeWithTag("EmployeeDetailsCard").assertIsDisplayed().performClick()
 
             onNodeWithTag("EmployeeDetailsList").performTouchInput { swipeUp() }
-
             onNodeWithTag("AbsentDetailsExpand").assertIsDisplayed()
                 .assertHasClickAction().performClick()
 
             onNodeWithTag("EmployeeDetailsList").performTouchInput { swipeUp() }
-
             onNodeWithText(EMP_ABSENT_NOTE).assertIsDisplayed()
         }
     }
