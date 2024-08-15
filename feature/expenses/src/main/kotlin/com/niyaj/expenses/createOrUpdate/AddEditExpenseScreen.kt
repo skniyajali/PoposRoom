@@ -308,6 +308,7 @@ internal fun AddEditExpenseScreenContent(
                     trailingIcon = {
                         IconButton(
                             onClick = dialogState::show,
+                            modifier = Modifier.testTag("changeDate"),
                         ) {
                             Icon(
                                 imageVector = PoposIcons.CalenderMonth,

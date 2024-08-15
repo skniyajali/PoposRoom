@@ -104,7 +104,6 @@ fun ExpensesScreen(
     val searchText = viewModel.searchText.value
 
     ExpensesScreenContent(
-        modifier = Modifier,
         uiState = state,
         selectedDate = selectedDate,
         selectedItems = selectedItems,
@@ -130,6 +129,7 @@ fun ExpensesScreen(
         onClickSettings = {
             navigator.navigate(ExpensesSettingsScreenDestination())
         },
+        modifier = Modifier,
         snackbarState = snackbarState,
     )
 
@@ -147,7 +147,6 @@ fun ExpensesScreen(
 @VisibleForTesting
 @Composable
 internal fun ExpensesScreenContent(
-    modifier: Modifier = Modifier,
     uiState: UiState<List<Expense>>,
     selectedDate: String,
     selectedItems: List<Int>,
@@ -167,6 +166,7 @@ internal fun ExpensesScreenContent(
     onClickCreateNew: () -> Unit,
     onClickEdit: (Int) -> Unit,
     onClickSettings: () -> Unit,
+    modifier: Modifier = Modifier,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
@@ -281,11 +281,11 @@ internal fun ExpensesScreenContent(
 
                     is UiState.Success -> {
                         ExpensesList(
-                            modifier = Modifier,
                             items = state.data,
                             doesSelected = selectedItems::contains,
                             isInSelectionMode = selectedItems.isNotEmpty(),
                             onSelectItem = onClickSelectItem,
+                            modifier = Modifier,
                             lazyListState = lazyListState,
                         )
                     }
@@ -403,7 +403,6 @@ private fun ExpensesScreenPreview(
 ) {
     PoposRoomTheme {
         ExpensesScreenContent(
-            modifier = modifier,
             uiState = uiState,
             selectedDate = Clock.System.now().toEpochMilliseconds().toString(),
             selectedItems = listOf(),
@@ -423,6 +422,7 @@ private fun ExpensesScreenPreview(
             onClickCreateNew = {},
             onClickEdit = {},
             onClickSettings = {},
+            modifier = modifier,
         )
     }
 }

@@ -18,6 +18,8 @@
 package com.niyaj.ui.parameterProvider
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import com.niyaj.common.utils.getDateInMilliseconds
+import com.niyaj.common.utils.getStartTime
 import com.niyaj.model.Expense
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.parameterProvider.ExpensePreviewData.expenses
@@ -34,72 +36,72 @@ class ExpensePreviewParameter : PreviewParameterProvider<UiState<List<Expense>>>
 object ExpensePreviewData {
     val expenses = listOf(
         Expense(
-            expenseId = 10,
-            expenseName = "Subscription",
-            expenseAmount = "999",
-            expenseDate = "${System.currentTimeMillis()}",
-            expenseNote = "Streaming service subscription",
-        ),
-        Expense(
             expenseId = 1,
             expenseName = "Groceries",
             expenseAmount = "3500",
-            expenseDate = "${System.currentTimeMillis()}",
+            expenseDate = getStartTime,
             expenseNote = "Weekly grocery shopping",
         ),
         Expense(
             expenseId = 2,
             expenseName = "Rent",
             expenseAmount = "2000",
-            expenseDate = "${System.currentTimeMillis()}",
+            expenseDate = getStartTime,
             expenseNote = "Apartment rent for June",
         ),
         Expense(
             expenseId = 3,
             expenseName = "Rent",
             expenseAmount = "2400",
-            expenseDate = "${System.currentTimeMillis() - 172800000}",
-            expenseNote = "Fillup for the car",
+            expenseDate = getStartTime,
+            expenseNote = "Fill up for the car",
         ),
         Expense(
             expenseId = 4,
             expenseName = "Groceries",
             expenseAmount = "1750",
-            expenseDate = "${System.currentTimeMillis()}",
+            expenseDate = getDateInMilliseconds(0, -2),
         ),
         Expense(
             expenseId = 5,
             expenseName = "Groceries",
             expenseAmount = "5300",
-            expenseDate = "${System.currentTimeMillis()}",
+            expenseDate = getStartTime,
         ),
         Expense(
             expenseId = 6,
             expenseName = "Utilities",
             expenseAmount = "8100",
-            expenseDate = "${System.currentTimeMillis() - 86400000}",
+            expenseDate = getDateInMilliseconds(0, -2),
             expenseNote = "Electricity bill",
         ),
         Expense(
             expenseId = 7,
             expenseName = "Utilities",
             expenseAmount = "1100",
-            expenseDate = "${System.currentTimeMillis()}",
+            expenseDate = getStartTime,
             expenseNote = "Movie tickets",
         ),
         Expense(
             expenseId = 8,
             expenseName = "Utilities",
             expenseAmount = "2200",
-            expenseDate = "${System.currentTimeMillis()}",
+            expenseDate = getStartTime,
             expenseNote = "Snacks and beverages",
         ),
         Expense(
             expenseId = 9,
             expenseName = "Transportation",
             expenseAmount = "850",
-            expenseDate = "${System.currentTimeMillis()}",
+            expenseDate = getStartTime,
             expenseNote = "Bus fare",
+        ),
+        Expense(
+            expenseId = 10,
+            expenseName = "Subscription",
+            expenseAmount = "999",
+            expenseDate = getStartTime,
+            expenseNote = "Streaming service subscription",
         ),
     )
 
@@ -108,10 +110,8 @@ object ExpensePreviewData {
         "Rent",
         "Gas",
         "Dining",
-        "Groceries",
         "Utilities",
         "Entertainment",
-        "Groceries",
         "Transportation",
         "Subscription",
     )

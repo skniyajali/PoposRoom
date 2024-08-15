@@ -18,6 +18,7 @@
 package com.niyaj.domain.expense
 
 import com.niyaj.common.result.ValidationResult
+import com.niyaj.common.tags.ExpenseTestTags.EXPENSES_PRICE_IS_NOT_VALID
 import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_PRICE_EMPTY_ERROR
 import com.niyaj.common.tags.ExpenseTestTags.EXPENSE_PRICE_LESS_THAN_TEN_ERROR
 import javax.inject.Inject
@@ -41,7 +42,7 @@ class ValidateExpenseAmountUseCase @Inject constructor() {
         } catch (e: NumberFormatException) {
             return ValidationResult(
                 successful = false,
-                errorMessage = "Expenses amount is not valid.",
+                errorMessage = EXPENSES_PRICE_IS_NOT_VALID,
             )
         }
 

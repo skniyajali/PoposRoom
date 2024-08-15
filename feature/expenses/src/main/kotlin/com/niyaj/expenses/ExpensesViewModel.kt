@@ -28,7 +28,6 @@ import com.niyaj.ui.event.BaseViewModel
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -51,25 +50,23 @@ class ExpensesViewModel @Inject constructor(
 
     private val observableSearchText = snapshotFlow { searchText.value }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val expenses = observableSearchText.combine(_selectedDate) { text, date ->
         expenseRepository.getAllExpensesOnSpecificDate(text, date)
-    }
-        .flatMapLatest { it ->
-            it.map { items ->
-                totalItems = items.map { it.expenseId }
+    }.flatMapLatest { it ->
+        it.map { items ->
+            totalItems = items.map { it.expenseId }
 
-                if (items.isEmpty()) {
-                    UiState.Empty
-                } else {
-                    UiState.Success(items)
-                }
+            if (items.isEmpty()) {
+                UiState.Empty
+            } else {
+                UiState.Success(items)
             }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = UiState.Loading,
-        )
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = UiState.Loading,
+    )
 
     fun selectDate(selectedDate: String) {
         viewModelScope.launch {

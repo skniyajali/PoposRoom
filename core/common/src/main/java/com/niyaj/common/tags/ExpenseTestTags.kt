@@ -21,7 +21,6 @@ object ExpenseTestTags {
 
     const val EXPENSE_SCREEN_TITLE = "Expenses"
     const val EXPENSE_NOT_AVAILABLE = "Expenses Not Available"
-    const val NO_ITEMS_IN_EXPENSE = "Expenses Not Found"
     const val EXPENSE_SEARCH_PLACEHOLDER = "Search for Expenses..."
 
     const val CREATE_NEW_EXPENSE = "Add New Expense"
@@ -45,22 +44,24 @@ object ExpenseTestTags {
 
     const val EXPENSE_PRICE_EMPTY_ERROR = "Expense price must not be empty."
     const val EXPENSE_PRICE_LESS_THAN_TEN_ERROR = "Expense price must greater than 10 rupees."
+    const val EXPENSES_PRICE_IS_NOT_VALID = "Expenses amount is not valid."
 
     const val EXPENSE_DATE_EMPTY_ERROR = "Expense date must not be empty."
 
-    const val EXPENSES_AMOUNT_ALREADY_EXISTS = "Expenses already added on given expense name and chosen date."
+    const val EXPENSES_AMOUNT_ALREADY_EXISTS =
+        "Expenses already added on given expense name and chosen date."
 
     const val DELETE_EXPENSE_TITLE = "Delete Expense?"
     const val DELETE_EXPENSE_MESSAGE = "Are you sure to delete these expenses?"
 
     const val EXPENSE_TAG = "Expense-"
+    const val EXPENSE_LIST = "ExpenseList"
 
     const val EXPENSE_SETTINGS_TITLE = "Expenses Settings"
 
     const val IMPORT_EXPENSE_TITLE = "Import Expenses"
     const val IMPORT_EXPENSE_SUB_TITLE = "Click here to import data from file."
     const val IMPORT_EXPENSE_NOTE_TEXT = "Make sure to open expenses.json file."
-    const val IMPORT_EXPENSE_OPN_FILE = "Open File"
 
     const val EXPORT_EXPENSE_TITLE = "Export Expenses"
     const val EXPORT_EXPENSE_SUB_TITLE = "Click here to export expenses to file."
