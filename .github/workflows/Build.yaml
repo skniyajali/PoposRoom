@@ -52,6 +52,7 @@ jobs:
             ./gradlew dependencyGuard
           fi
 
+
   tests_and_lint:
     needs: setup
     runs-on: ubuntu-latest
@@ -72,6 +73,22 @@ jobs:
           path: |
             **/build/reports/lint-results-*.html
             **/build/test-results/test*UnitTest/**.xml
+
+      - name: Upload unit test reports
+        uses: MeilCli/slack-upload-file@v4
+        with:
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+          channel_id: ${{ secrets.SLACK_CHANNEL }}
+          file_path: '**/build/test-results/test*UnitTest/**.xml'
+          initial_comment: 'Unit Test Reports'
+
+      - name: Upload lint reports
+        uses: MeilCli/slack-upload-file@v4
+        with:
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+          channel_id: ${{ secrets.SLACK_CHANNEL }}
+          file_path: '**/build/reports/lint-results-*.html'
+          initial_comment: 'Lint Reports'
 
   screenshot_tests:
     needs: setup
@@ -138,9 +155,6 @@ jobs:
     timeout-minutes: 360
     strategy:
       matrix:
-        arch: [ x86_64 ]
-        target: [ google_apis ]
-        channel: [ stable ]
         api-level: [ 30 ]
 
     steps:
@@ -179,46 +193,15 @@ jobs:
         with:
           validate-wrappers: true
 
-      - name: Gradle cache
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: AVD cache
-        uses: actions/cache@v4
-        id: avd-cache
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: avd-cached-${{ matrix.api-level }}-${{ matrix.os }}-${{ matrix.target }}
-
-      - name: create AVD and generate snapshot for caching
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          target: ${{ matrix.target }}
-          arch: ${{ matrix.arch }}
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
-          script: echo "Generated AVD snapshot for caching."
-
       - name: Build projects and run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
-          target: ${{ matrix.target }}
-          arch: ${{ matrix.arch }}
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          arch: x86_64
           disable-animations: true
           disk-size: 6000M
           heap-size: 600M
-          script: |
-            touch emulator.log                    # create log file
-            chmod 777 emulator.log                # allow writing to log file
-            adb logcat >> emulator.log &          # pipe all logcat messages into log file as a background process
-            ./gradlew connectedDemoDebugAndroidTest --daemon
+          script: ./gradlew connectedDemoDebugAndroidTest --daemon
 
       - name: Run local tests (including Roborazzi) for the combined coverage report (only API 30)
         if: matrix.api-level == 30
@@ -238,6 +221,14 @@ jobs:
           path: |
             emulator.log
             '**/build/reports/androidTests'
+
+      - name: Upload test reports
+        uses: MeilCli/slack-upload-file@v4
+        with:
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+          channel_id: ${{ secrets.SLACK_CHANNEL }}
+          file_path: '**/build/reports/androidTests'
+          initial_comment: 'Android Test Reports'
 
       - name: Display local test coverage (only API 30)
         if: matrix.api-level == 30
@@ -260,3 +251,11 @@ jobs:
           compression-level: 1
           overwrite: false
           path: '**/build/reports/jacoco/'
+
+      - name: Upload local coverage reports
+        uses: MeilCli/slack-upload-file@v4
+        with:
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+          channel_id: ${{ secrets.SLACK_CHANNEL }}
+          file_path: '**/build/reports/jacoco/'
+          initial_comment: 'Local Coverage Reports'
