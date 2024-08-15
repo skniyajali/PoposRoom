@@ -354,7 +354,7 @@ class ExpensesEndToEndTest {
             createNewExpense(newExpense)
             composeTestRule.waitForIdle()
 
-            createNewExpensesList(2)
+            createNewExpensesList(3)
 
             onNodeWithTag(EXPENSE_TAG.plus(1)).performTouchInput { longClick() }
 
@@ -362,7 +362,7 @@ class ExpensesEndToEndTest {
 
             onNodeWithTag(EXPENSE_TAG.plus(2)).assertIsSelected()
             onNodeWithTag(EXPENSE_TAG.plus(3)).assertIsSelected()
-            onNodeWithText("3 Selected").assertIsDisplayed()
+            onNodeWithText("4 Selected").assertIsDisplayed()
 
             onNodeWithTag(NAV_SELECT_ALL_BTN).assertIsDisplayed().performClick()
 
