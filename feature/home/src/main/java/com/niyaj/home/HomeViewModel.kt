@@ -143,7 +143,10 @@ internal fun AnalyticsHelper.logAddProductToCart(orderId: Int, productId: Int) {
         event = AnalyticsEvent(
             type = "product_added_to_cart",
             extras = listOf(
-                AnalyticsEvent.Param("product_added_to_cart", "orderId - $orderId & productId - $productId"),
+                AnalyticsEvent.Param(
+                    "product_added_to_cart",
+                    "orderId - $orderId & productId - $productId",
+                ),
             ),
         ),
     )
@@ -154,7 +157,10 @@ internal fun AnalyticsHelper.logRemoveProductFromCart(orderId: Int, productId: I
         event = AnalyticsEvent(
             type = "product_removed_from_cart",
             extras = listOf(
-                AnalyticsEvent.Param("product_removed_from_cart", "orderId - $orderId & productId - $productId"),
+                AnalyticsEvent.Param(
+                    "product_removed_from_cart",
+                    "orderId - $orderId & productId - $productId",
+                ),
             ),
         ),
     )

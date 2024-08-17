@@ -27,7 +27,7 @@ import com.niyaj.market.marketType.createOrUpdate.defaultListTypes
 import com.niyaj.market.marketType.settings.ExportMarketTypeScreenContent
 import com.niyaj.market.marketType.settings.ImportMarketTypeScreenContent
 import com.niyaj.market.marketType.settings.MarketTypeSettingsScreenContent
-import com.niyaj.model.searchItems
+import com.niyaj.model.searchMarketType
 import com.niyaj.poposroom.core.testing.util.captureForPhone
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.parameterProvider.MarketTypePreviewData
@@ -201,7 +201,7 @@ class MarketTypeScreenScreenshotTest {
         composeTestRule.captureForPhone("MarketTypeShowSearchBarAndGetSuccessResult") {
             PoposRoomTheme {
                 MarketTypeScreenContent(
-                    uiState = UiState.Success(marketTypes.searchItems("Fruits")),
+                    uiState = UiState.Success(marketTypes.searchMarketType("Fruits")),
                     selectedItems = listOf(),
                     showSearchBar = true,
                     searchText = "Fruits",
@@ -372,7 +372,7 @@ class MarketTypeScreenScreenshotTest {
             PoposRoomTheme {
                 ExportMarketTypeScreenContent(
                     items = marketTypes
-                        .searchItems("text").toImmutableList(),
+                        .searchMarketType("text").toImmutableList(),
                     selectedItems = persistentListOf(),
                     isLoading = false,
                     showSearchBar = true,
@@ -398,7 +398,7 @@ class MarketTypeScreenScreenshotTest {
             PoposRoomTheme {
                 ExportMarketTypeScreenContent(
                     items = marketTypes
-                        .searchItems("Bakery").toImmutableList(),
+                        .searchMarketType("Bakery").toImmutableList(),
                     selectedItems = persistentListOf(),
                     showSearchBar = true,
                     isLoading = false,

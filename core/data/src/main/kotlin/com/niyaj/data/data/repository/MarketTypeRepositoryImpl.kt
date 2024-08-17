@@ -26,7 +26,7 @@ import com.niyaj.database.dao.MarketTypeDao
 import com.niyaj.database.model.MarketTypeEntity
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.MarketType
-import com.niyaj.model.searchItems
+import com.niyaj.model.searchMarketType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
@@ -42,7 +42,7 @@ class MarketTypeRepositoryImpl @Inject constructor(
         return withContext(ioDispatcher) {
             marketTypeDao.getAllMarketTypes()
                 .mapLatest(List<MarketTypeEntity>::asExternalModel)
-                .mapLatest { it.searchItems(searchText) }
+                .mapLatest { it.searchMarketType(searchText) }
         }
     }
 

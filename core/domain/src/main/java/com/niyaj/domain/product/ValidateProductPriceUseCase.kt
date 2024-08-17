@@ -23,7 +23,7 @@ import com.niyaj.common.tags.ProductTestTags.PRODUCT_PRICE_LENGTH_ERROR
 import javax.inject.Inject
 
 class ValidateProductPriceUseCase @Inject constructor() {
-    operator fun invoke(productPrice: Int, type: String? = null): ValidationResult {
+    operator fun invoke(productPrice: Int): ValidationResult {
         if (productPrice == 0) {
             return ValidationResult(
                 successful = false,
@@ -31,7 +31,7 @@ class ValidateProductPriceUseCase @Inject constructor() {
             )
         }
 
-        if (type.isNullOrEmpty() && productPrice < 10) {
+        if (productPrice < 10) {
             return ValidationResult(
                 successful = false,
                 errorMessage = PRODUCT_PRICE_LENGTH_ERROR,

@@ -81,10 +81,6 @@ class ProductSettingsViewModel @Inject constructor(
     private val _productPrice = mutableIntStateOf(0)
     val productPrice: State<Int> = _productPrice
 
-    private fun getProducts(categoryId: Int): List<Int> {
-        return products.value.filter { it.categoryId == categoryId }.map { it.productId }
-    }
-
     /**
      *
      */
@@ -258,6 +254,10 @@ class ProductSettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _selectedCategory.clear()
         }
+    }
+
+    private fun getProducts(categoryId: Int): List<Int> {
+        return products.value.filter { it.categoryId == categoryId }.map { it.productId }
     }
 }
 

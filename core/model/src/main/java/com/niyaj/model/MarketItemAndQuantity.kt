@@ -39,7 +39,7 @@ data class MarketItemAndQuantity(
     val itemQuantity: Double? = null,
 )
 
-fun List<MarketItemAndQuantity>.searchItems(searchText: String): List<MarketItemAndQuantity> {
+fun List<MarketItemAndQuantity>.searchMarketType(searchText: String): List<MarketItemAndQuantity> {
     return if (searchText.isNotEmpty()) {
         this.filter {
             it.itemName.contains(searchText, true) ||

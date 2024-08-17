@@ -24,7 +24,7 @@ import com.niyaj.data.repository.MarketListItemRepository
 import com.niyaj.database.dao.MarketListWIthItemsDao
 import com.niyaj.model.MarketItemAndQuantity
 import com.niyaj.model.MarketListAndType
-import com.niyaj.model.searchItems
+import com.niyaj.model.searchMarketType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -47,7 +47,7 @@ class MarketListItemRepositoryImpl @Inject constructor(
             marketListDao
                 .getAllMarketItemsById(listTypeId)
                 .distinctUntilChanged()
-                .mapLatest { it.searchItems(searchText) }
+                .mapLatest { it.searchMarketType(searchText) }
         }
     }
 
@@ -58,7 +58,7 @@ class MarketListItemRepositoryImpl @Inject constructor(
         return withContext(ioDispatcher) {
             marketListDao.getAllMarketItemsByIds(listTypeIds)
                 .distinctUntilChanged()
-                .mapLatest { it.searchItems(searchText) }
+                .mapLatest { it.searchMarketType(searchText) }
         }
     }
 

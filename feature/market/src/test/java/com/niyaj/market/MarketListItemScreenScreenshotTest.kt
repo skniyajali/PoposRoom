@@ -21,7 +21,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.market.marketListItem.MarketListItemScreenContent
-import com.niyaj.model.searchItems
+import com.niyaj.model.searchMarketType
 import com.niyaj.poposroom.core.testing.util.captureForPhone
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.parameterProvider.MarketItemAndQuantityData
@@ -132,7 +132,7 @@ class MarketListItemScreenScreenshotTest {
         composeTestRule.captureForPhone("MarketListItemShowSearchBarAndGetEmptyResult") {
             PoposRoomTheme {
                 MarketListItemScreenContent(
-                    uiState = UiState.Success(marketItemAndQuantity.searchItems("search")),
+                    uiState = UiState.Success(marketItemAndQuantity.searchMarketType("search")),
                     marketDetails = maretListAndType,
                     showSearchBar = true,
                     searchText = "search",
@@ -158,7 +158,7 @@ class MarketListItemScreenScreenshotTest {
         composeTestRule.captureForPhone("MarketListItemShowSearchBarAndGetSuccessResult") {
             PoposRoomTheme {
                 MarketListItemScreenContent(
-                    uiState = UiState.Success(marketItemAndQuantity.searchItems("Tomatoes")),
+                    uiState = UiState.Success(marketItemAndQuantity.searchMarketType("Tomatoes")),
                     marketDetails = maretListAndType,
                     showSearchBar = true,
                     searchText = "Tomatoes",
