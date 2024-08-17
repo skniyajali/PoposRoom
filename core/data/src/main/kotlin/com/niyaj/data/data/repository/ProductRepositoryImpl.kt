@@ -29,7 +29,7 @@ import com.niyaj.model.Category
 import com.niyaj.model.Product
 import com.niyaj.model.ProductIdWithPrice
 import com.niyaj.model.ProductWiseOrder
-import com.niyaj.model.filterProducts
+import com.niyaj.model.searchProducts
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
@@ -74,7 +74,7 @@ class ProductRepositoryImpl @Inject constructor(
                     list
                 }
             }.mapLatest {
-                it.filterProducts(searchText)
+                it.searchProducts(searchText)
             }
         }
     }

@@ -18,7 +18,6 @@
 package com.niyaj.domain.market
 
 import com.niyaj.common.result.ValidationResult
-import com.niyaj.common.tags.MeasureUnitTestTags
 import com.niyaj.common.tags.MeasureUnitTestTags.UNIT_VALUE_EMPTY_ERROR
 import com.niyaj.common.tags.MeasureUnitTestTags.UNIT_VALUE_INVALID
 import com.niyaj.common.utils.safeDouble
@@ -32,7 +31,7 @@ class ValidateUnitValueUseCase @Inject constructor() {
 
         try {
             if (unitValue.safeDouble() <= 0) {
-                return ValidationResult(false, MeasureUnitTestTags.UNIT_VALUE_LESS_THAN_FIVE_ERROR)
+                return ValidationResult(false, UNIT_VALUE_INVALID)
             }
         } catch (e: Exception) {
             return ValidationResult(false, UNIT_VALUE_INVALID)

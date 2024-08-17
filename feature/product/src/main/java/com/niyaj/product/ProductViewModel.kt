@@ -21,6 +21,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsEvent.Param
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.ProductRepository
 import com.niyaj.ui.event.BaseViewModel
@@ -28,7 +29,6 @@ import com.niyaj.ui.event.UiState
 import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -51,18 +51,13 @@ class ProductViewModel @Inject constructor(
 
     private val observableSearchText = snapshotFlow { searchText.value }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val products = observableSearchText.combine(_selectedCategory) { text, category ->
         productRepository.getAllProduct(text, category)
     }.flatMapLatest { it ->
         it.map { items ->
             totalItems = items.map { it.productId }
 
-            if (items.isEmpty()) {
-                UiState.Empty
-            } else {
-                UiState.Success(items)
-            }
+            if (items.isEmpty()) UiState.Empty else UiState.Success(items)
         }
     }.stateIn(
         scope = viewModelScope,
@@ -110,9 +105,7 @@ internal fun AnalyticsHelper.logDeletedProducts(data: List<Int>) {
     logEvent(
         event = AnalyticsEvent(
             type = "products_deleted",
-            extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("products_deleted", data.toString()),
-            ),
+            extras = listOf(Param("products_deleted", data.toString())),
         ),
     )
 }

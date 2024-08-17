@@ -36,7 +36,7 @@ data class MarketType(
     val updatedAt: Long? = null,
 )
 
-fun List<MarketType>.searchItems(searchText: String): List<MarketType> {
+fun List<MarketType>.searchMarketType(searchText: String): List<MarketType> {
     return if (searchText.isNotEmpty()) {
         this.filter {
             it.typeName.contains(searchText, ignoreCase = true)

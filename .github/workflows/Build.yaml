@@ -79,7 +79,7 @@ jobs:
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
           channel_id: ${{ secrets.SLACK_CHANNEL }}
-          file_path: '**/build/test-results/test*UnitTest/**.xml'
+          file_path: './app/build/test-results/test*UnitTest/**.xml'
           initial_comment: 'Unit Test Reports'
 
       - name: Upload lint reports
@@ -87,7 +87,7 @@ jobs:
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
           channel_id: ${{ secrets.SLACK_CHANNEL }}
-          file_path: '**/build/reports/lint-results-*.html'
+          file_path: './app/build/reports/lint-results-*.html'
           initial_comment: 'Lint Reports'
 
   screenshot_tests:
@@ -257,5 +257,5 @@ jobs:
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
           channel_id: ${{ secrets.SLACK_CHANNEL }}
-          file_path: '**/build/reports/jacoco/'
+          file_path: './app/build/reports/jacoco/'
           initial_comment: 'Local Coverage Reports'

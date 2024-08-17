@@ -24,7 +24,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.niyaj.common.utils.toBarDate
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.model.Category
-import com.niyaj.model.filterProducts
+import com.niyaj.model.searchProducts
 import com.niyaj.poposroom.core.testing.util.captureForPhone
 import com.niyaj.product.createOrUpdate.AddEditProductScreenContent
 import com.niyaj.product.createOrUpdate.AddEditProductState
@@ -208,7 +208,7 @@ class ProductScreenScreenshotTest {
         composeTestRule.captureForPhone("ShowSearchBarAndGetEmptyResult") {
             PoposRoomTheme {
                 ProductScreenContent(
-                    uiState = UiState.Success(productList.filterProducts("search")),
+                    uiState = UiState.Success(productList.searchProducts("search")),
                     selectedItems = listOf(),
                     categories = categoryList,
                     selectedCategory = 0,
@@ -239,7 +239,7 @@ class ProductScreenScreenshotTest {
         composeTestRule.captureForPhone("ShowSearchBarAndGetSuccessResult") {
             PoposRoomTheme {
                 ProductScreenContent(
-                    uiState = UiState.Success(productList.filterProducts("Chicken")),
+                    uiState = UiState.Success(productList.searchProducts("Chicken")),
                     selectedItems = listOf(),
                     categories = categoryList,
                     selectedCategory = 0,
@@ -546,7 +546,7 @@ class ProductScreenScreenshotTest {
         composeTestRule.captureForPhone("ExportScreenPerformSearchAndGetEmptyResult") {
             PoposRoomTheme {
                 ExportProductScreenContent(
-                    items = productList.filterProducts("search").toImmutableList(),
+                    items = productList.searchProducts("search").toImmutableList(),
                     selectedItems = persistentListOf(),
                     selectedCategory = emptyList(),
                     categories = categoryList,
@@ -573,7 +573,7 @@ class ProductScreenScreenshotTest {
         composeTestRule.captureForPhone("ExportScreenPerformSearchAndGetSomeResult") {
             PoposRoomTheme {
                 ExportProductScreenContent(
-                    items = productList.filterProducts("Vegetable").toImmutableList(),
+                    items = productList.searchProducts("Vegetable").toImmutableList(),
                     selectedItems = persistentListOf(),
                     selectedCategory = emptyList(),
                     categories = categoryList,

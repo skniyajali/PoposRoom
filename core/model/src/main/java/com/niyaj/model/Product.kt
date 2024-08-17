@@ -44,7 +44,7 @@ data class Product(
 /**
  * Filter products
  */
-fun List<Product>.filterProducts(searchText: String): List<Product> {
+fun List<Product>.searchProducts(searchText: String): List<Product> {
     return if (searchText.isNotEmpty()) {
         this.filter {
             it.productName.contains(searchText, true) ||
