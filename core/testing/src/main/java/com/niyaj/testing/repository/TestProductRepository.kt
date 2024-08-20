@@ -29,6 +29,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.update
 import org.jetbrains.annotations.TestOnly
@@ -70,14 +71,16 @@ class TestProductRepository : ProductRepository {
     }
 
     override suspend fun upsertProduct(newProduct: Product): Resource<Boolean> {
-        val index = productList.value.indexOfFirst { it.productId == newProduct.productId }
-        return if (index != -1) {
-            productList.value[index] = newProduct
-            Resource.Success(true)
-        } else {
-            productList.value.add(newProduct)
-            Resource.Success(true)
-        }
+        val result = productList.value.find { it.productId == newProduct.productId }
+
+        return Resource.Success(
+            if (result == null) {
+                productList.value.add(newProduct)
+            } else {
+                productList.value.remove(result)
+                productList.value.add(newProduct)
+            },
+        )
     }
 
     override suspend fun deleteProducts(productIds: List<Int>): Resource<Boolean> {
@@ -111,12 +114,15 @@ class TestProductRepository : ProductRepository {
 
     override suspend fun increaseProductsPrice(products: List<ProductIdWithPrice>): Resource<Boolean> {
         products.forEach { (productId, price) ->
-            productList.value.indexOfFirst { it.productId == productId }
-                .takeIf { it != -1 }
-                ?.let { index ->
-                    productList.value[index] = productList.value[index]
-                        .copy(productPrice = productList.value[index].productPrice + price)
-                }
+            productList.getAndUpdate {
+                it.map { product ->
+                    if (product.productId == productId) {
+                        product.copy(productPrice = price)
+                    } else {
+                        product
+                    }
+                }.toMutableList()
+            }
         }
 
         return Resource.Success(true)
@@ -124,12 +130,15 @@ class TestProductRepository : ProductRepository {
 
     override suspend fun decreaseProductsPrice(products: List<ProductIdWithPrice>): Resource<Boolean> {
         products.forEach { (productId, price) ->
-            productList.value.indexOfFirst { it.productId == productId }
-                .takeIf { it != -1 }
-                ?.let { index ->
-                    productList.value[index] = productList.value[index]
-                        .copy(productPrice = productList.value[index].productPrice - price)
-                }
+            productList.getAndUpdate {
+                it.map { product ->
+                    if (product.productId == productId) {
+                        product.copy(productPrice = price)
+                    } else {
+                        product
+                    }
+                }.toMutableList()
+            }
         }
 
         return Resource.Success(true)
@@ -159,6 +168,7 @@ class TestProductRepository : ProductRepository {
             categoryId = 1,
             productDescription = "Test Description",
             createdAt = getStartDateLong,
+            tags = listOf("Test", "Tags"),
         )
 
         productList.value.add(product)

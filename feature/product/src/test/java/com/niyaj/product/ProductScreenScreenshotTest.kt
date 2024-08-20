@@ -178,9 +178,9 @@ class ProductScreenScreenshotTest {
             PoposRoomTheme {
                 ProductScreenContent(
                     uiState = UiState.Success(productList),
-                    selectedItems = listOf(3, 6, 8),
                     categories = categoryList,
                     selectedCategory = 0,
+                    selectedItems = listOf(3, 6, 8),
                     showSearchBar = false,
                     searchText = "",
                     onClickSearchIcon = {},
@@ -209,9 +209,9 @@ class ProductScreenScreenshotTest {
             PoposRoomTheme {
                 ProductScreenContent(
                     uiState = UiState.Success(productList.searchProducts("search")),
-                    selectedItems = listOf(),
                     categories = categoryList,
                     selectedCategory = 0,
+                    selectedItems = listOf(),
                     showSearchBar = true,
                     searchText = "search",
                     onClickSearchIcon = {},
@@ -240,9 +240,9 @@ class ProductScreenScreenshotTest {
             PoposRoomTheme {
                 ProductScreenContent(
                     uiState = UiState.Success(productList.searchProducts("Chicken")),
-                    selectedItems = listOf(),
                     categories = categoryList,
                     selectedCategory = 0,
+                    selectedItems = listOf(),
                     showSearchBar = true,
                     searchText = "Chicken",
                     onClickSearchIcon = {},

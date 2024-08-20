@@ -24,8 +24,11 @@ import com.niyaj.product.settings.ProductSettingsViewModel
 import com.niyaj.testing.repository.TestProductRepository
 import com.niyaj.testing.util.MainDispatcherRule
 import com.niyaj.testing.util.TestAnalyticsHelper
+import com.niyaj.ui.parameterProvider.CategoryPreviewData
 import com.niyaj.ui.parameterProvider.ProductPreviewData
 import com.niyaj.ui.utils.UiEvent
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -61,6 +64,164 @@ class ProductSettingsViewModelTest {
         viewModel.products.test {
             assertEquals(itemList.searchProducts("Chicken Biryani"), awaitItem())
         }
+    }
+
+    @Test
+    fun category_isEmpty_whenDataIsEmpty() = runTest {
+        val job = launch(UnconfinedTestDispatcher()) { viewModel.categories.collect() }
+
+        assertEquals(persistentListOf(), viewModel.categories.value)
+
+        job.cancel()
+    }
+
+    @Test
+    fun category_available_whenDataIsAvailable() = runTest {
+        val job = launch(UnconfinedTestDispatcher()) { viewModel.categories.collect() }
+        val categoryList = CategoryPreviewData.categoryList
+        repository.setCategoryList(categoryList)
+
+        assertEquals(categoryList.toImmutableList(), viewModel.categories.value)
+
+        job.cancel()
+    }
+
+    @Test
+    fun onSelectCategory_shouldUpdateSelectedCategory() = runTest {
+        val category = CategoryPreviewData.categoryList.first()
+
+        viewModel.onEvent(ProductSettingsEvent.OnSelectCategory(category.categoryId))
+
+        assertEquals(listOf(category.categoryId), viewModel.selectedCategory.toList())
+    }
+
+    @Test
+    fun onSelectCategory_shouldUpdateSelectedProducts() = runTest {
+        val job = launch(UnconfinedTestDispatcher()) { viewModel.products.collect() }
+        val category = CategoryPreviewData.categoryList.first()
+        val productList = itemList.filter { it.categoryId == category.categoryId }
+
+        repository.setProductList(itemList)
+        viewModel.onEvent(ProductSettingsEvent.OnSelectCategory(category.categoryId))
+        val selectedItems = viewModel.selectedItems.toList()
+        assertEquals(productList.map { it.productId }, selectedItems)
+
+        job.cancel()
+    }
+
+    @Test
+    fun onSelectExistingCategory_shouldUpdateSelectedProductsAndDeselectSelectedCategory() = runTest {
+        val job = launch(UnconfinedTestDispatcher()) { viewModel.products.collect() }
+        val category = CategoryPreviewData.categoryList.first()
+        val productList = itemList.filter { it.categoryId == category.categoryId }
+
+        repository.setProductList(itemList)
+        viewModel.onEvent(ProductSettingsEvent.OnSelectCategory(category.categoryId))
+
+        val selectedItems = viewModel.selectedItems.toList()
+        assertEquals(productList.map { it.productId }, selectedItems)
+
+        viewModel.onEvent(ProductSettingsEvent.OnSelectCategory(category.categoryId))
+        assertEquals(listOf(), viewModel.selectedCategory.toList())
+
+        job.cancel()
+    }
+
+    @Test
+    fun `onChangeProductPrice should update productPrice`() = runTest {
+        viewModel.onEvent(ProductSettingsEvent.OnChangeProductPrice("10"))
+
+        assertEquals(10, viewModel.productPrice.value)
+    }
+
+    @Test
+    fun `onIncreaseProductPrice with no selection should increase all products productPrice`() = runTest {
+        val job = launch(UnconfinedTestDispatcher()) { viewModel.products.collect() }
+        repository.setProductList(itemList)
+
+        viewModel.onEvent(ProductSettingsEvent.OnChangeProductPrice("10"))
+        viewModel.onEvent(ProductSettingsEvent.OnIncreaseProductPrice)
+
+        assertEquals(10, viewModel.productPrice.value)
+        val updatedProducts = itemList.map { it.copy(productPrice = it.productPrice + 10) }
+
+        viewModel.products.test {
+            assertEquals(updatedProducts, awaitItem())
+        }
+
+        job.cancel()
+    }
+
+    @Test
+    fun `onIncreaseProductPrice with selection should increase selected products productPrice`() = runTest {
+        val job = launch(UnconfinedTestDispatcher()) { viewModel.products.collect() }
+        repository.setProductList(itemList)
+
+        viewModel.onEvent(ProductSettingsEvent.OnChangeProductPrice("10"))
+        viewModel.selectItem(1)
+        viewModel.selectItem(3)
+
+        viewModel.onEvent(ProductSettingsEvent.OnIncreaseProductPrice)
+
+        assertEquals(10, viewModel.productPrice.value)
+        val updatedProducts = itemList.map {
+            if (it.productId == 1 || it.productId == 3) {
+                it.copy(productPrice = it.productPrice + 10)
+            } else {
+                it
+            }
+        }
+
+        viewModel.products.test {
+            assertEquals(updatedProducts, awaitItem())
+        }
+
+        job.cancel()
+    }
+
+    @Test
+    fun `OnDecreaseProductPrice with no selection should increase all products productPrice`() = runTest {
+        val job = launch(UnconfinedTestDispatcher()) { viewModel.products.collect() }
+        repository.setProductList(itemList)
+
+        viewModel.onEvent(ProductSettingsEvent.OnChangeProductPrice("10"))
+        viewModel.onEvent(ProductSettingsEvent.OnDecreaseProductPrice)
+
+        assertEquals(10, viewModel.productPrice.value)
+        val updatedProducts = itemList.map { it.copy(productPrice = it.productPrice - 10) }
+
+        viewModel.products.test {
+            assertEquals(updatedProducts, awaitItem())
+        }
+
+        job.cancel()
+    }
+
+    @Test
+    fun `OnDecreaseProductPrice with selection should increase selected products productPrice`() = runTest {
+        val job = launch(UnconfinedTestDispatcher()) { viewModel.products.collect() }
+        repository.setProductList(itemList)
+
+        viewModel.onEvent(ProductSettingsEvent.OnChangeProductPrice("10"))
+        viewModel.selectItem(1)
+        viewModel.selectItem(3)
+
+        viewModel.onEvent(ProductSettingsEvent.OnDecreaseProductPrice)
+
+        assertEquals(10, viewModel.productPrice.value)
+        val updatedProducts = itemList.map {
+            if (it.productId == 1 || it.productId == 3) {
+                it.copy(productPrice = it.productPrice - 10)
+            } else {
+                it
+            }
+        }
+
+        viewModel.products.test {
+            assertEquals(updatedProducts, awaitItem())
+        }
+
+        job.cancel()
     }
 
     @Test

@@ -17,6 +17,7 @@
 
 package com.niyaj.domain.market
 
+import com.niyaj.common.tags.MarketTypeTags.TYPE_NAME_EXISTS
 import com.niyaj.common.tags.MarketTypeTags.TYPE_NAME_IS_REQUIRED
 import com.niyaj.common.tags.MarketTypeTags.TYPE_NAME_LEAST
 import com.niyaj.testing.repository.TestMarketTypeRepository
@@ -67,7 +68,7 @@ class ValidateTypeNameUseCaseTest {
         val result = useCase(type.typeName)
 
         assert(result.successful.not())
-        assertEquals(TYPE_NAME_IS_REQUIRED, result.errorMessage)
+        assertEquals(TYPE_NAME_EXISTS, result.errorMessage)
     }
 
     @Test

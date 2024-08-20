@@ -62,6 +62,7 @@ object ProductTestTags {
     const val DELETE_PRODUCT_MESSAGE = "Are you sure to delete these products?"
 
     const val PRODUCT_TAG = "Product-"
+    const val PRODUCT_LIST = "ProductList"
 
     const val PRODUCT_SETTINGS_TITLE = "Product Settings"
 

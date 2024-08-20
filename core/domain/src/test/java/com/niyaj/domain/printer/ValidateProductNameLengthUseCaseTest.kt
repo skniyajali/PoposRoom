@@ -46,8 +46,8 @@ class ValidateProductNameLengthUseCaseTest {
     }
 
     @Test
-    fun `validate length 10 returns success`() {
-        val result = useCase(10)
+    fun `validate length more than 10 returns success`() {
+        val result = useCase(11)
 
         assertEquals(true, result.successful)
         assertEquals(null, result.errorMessage)

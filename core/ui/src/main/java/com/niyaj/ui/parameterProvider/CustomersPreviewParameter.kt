@@ -18,7 +18,6 @@
 package com.niyaj.ui.parameterProvider
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.niyaj.common.utils.getDateInMilliseconds
 import com.niyaj.model.Customer
 import com.niyaj.model.CustomerWiseOrder
 import com.niyaj.model.TotalOrderDetails
@@ -186,8 +185,8 @@ object CustomerPreviewData {
         totalOrder = 7419,
         repeatedOrder = 8110,
         datePeriod = Pair(
-            getDateInMilliseconds(13),
-            getDateInMilliseconds(17),
+            "1720722600000",
+            "1720837800000",
         ),
     )
 }
