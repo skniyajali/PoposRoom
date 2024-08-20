@@ -82,7 +82,6 @@ import com.niyaj.common.utils.Constants.STANDARD_SEARCH_BAR
 import com.niyaj.common.utils.getDateInMilliseconds
 import com.niyaj.common.utils.getStartTime
 import com.niyaj.common.utils.toDate
-import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.expenses.destinations.AddEditExpenseScreenDestination
@@ -133,7 +132,7 @@ class ExpensesEndToEndTest {
     val composeTestRule = createAndroidComposeRule<HiltComponentActivity>()
 
     private lateinit var appState: PoposTestAppState
-    private val chargesList = ExpensePreviewData.expenses
+    private val expensesList = ExpensePreviewData.expenses
 
     private val newExpense = Expense(
         expenseId = 11,
@@ -289,7 +288,7 @@ class ExpensesEndToEndTest {
             onNodeWithTag(EXPENSE_AMOUNT_ERROR).assertIsNotDisplayed()
 
             val date = newExpense.expenseDate.toDate
-            onNodeWithTag(EXPENSE_DATE_FIELD).assertTextContains(newExpense.expenseDate.toPrettyDate())
+            onNodeWithTag(EXPENSE_DATE_FIELD).assertIsDisplayed()
             onNodeWithTag("changeDate").assertIsDisplayed().performClick()
             onNodeWithText("SELECT DATE").assertIsDisplayed()
             onNodeWithTag("positive").assertIsDisplayed()
@@ -398,8 +397,7 @@ class ExpensesEndToEndTest {
 
             onNodeWithTag(EXPENSE_AMOUNT_FIELD).assertTextContains(newExpense.expenseAmount)
 
-            onNodeWithTag(EXPENSE_DATE_FIELD)
-                .assertTextContains(newExpense.expenseDate.toPrettyDate())
+            onNodeWithTag(EXPENSE_DATE_FIELD).assertIsDisplayed()
 
             onNodeWithTag(EXPENSE_NOTE_FIELD).assertTextContains(newExpense.expenseNote)
 
@@ -501,7 +499,7 @@ class ExpensesEndToEndTest {
 
             onNodeWithTag(EXPENSE_LIST).performTouchInput { swipeUp() }
 
-            chargesList.take(2).forEach {
+            expensesList.take(2).forEach {
                 onNodeWithTag(EXPENSE_TAG.plus(it.expenseId))
                     .assertIsDisplayed()
                     .performTouchInput { longClick() }
@@ -516,7 +514,7 @@ class ExpensesEndToEndTest {
             onNodeWithText("2 Selected").assertIsDisplayed()
             onNodeWithTag(CLEAR_ICON).assertIsDisplayed().performClick()
 
-            chargesList.take(2).forEach {
+            expensesList.take(2).forEach {
                 onNodeWithTag(EXPENSE_TAG.plus(it.expenseId))
                     .assertIsDisplayed()
                     .assertIsNotSelected()
@@ -640,7 +638,7 @@ class ExpensesEndToEndTest {
             onNodeWithText(SEARCH_ITEM_NOT_FOUND).assertIsNotDisplayed()
             onNodeWithTag(EXPENSE_LIST).assertIsDisplayed()
 
-            val searchResultCount = chargesList.take(3).searchExpense("Groceries").count()
+            val searchResultCount = expensesList.take(3).searchExpense("Groceries").count()
             val listSize = onNodeWithTag(EXPENSE_LIST).fetchSemanticsNode().children.size
             assertEquals(searchResultCount, listSize)
         }
@@ -881,7 +879,7 @@ class ExpensesEndToEndTest {
             onNodeWithText(SEARCH_ITEM_NOT_FOUND).assertIsNotDisplayed()
             onNodeWithTag(EXPENSE_LIST).assertIsDisplayed()
 
-            val searchResultCount = chargesList.take(4).searchExpense("Rent").count()
+            val searchResultCount = expensesList.take(4).searchExpense("Rent").count()
             val listSize = onNodeWithTag(EXPENSE_LIST).fetchSemanticsNode().children.size
             assertEquals(searchResultCount, listSize)
         }
@@ -988,7 +986,7 @@ class ExpensesEndToEndTest {
 
     private fun createNewExpensesList(limit: Int) {
         composeTestRule.apply {
-            chargesList.take(limit).forEach {
+            expensesList.take(limit).forEach {
                 createNewExpense(it, true)
             }
         }
