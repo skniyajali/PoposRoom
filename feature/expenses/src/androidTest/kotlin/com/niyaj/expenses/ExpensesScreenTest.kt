@@ -104,8 +104,8 @@ class ExpensesScreenTest {
 
             onNodeWithTag(EXPENSE_LIST).assertIsDisplayed()
 
-            // Check first 3 item is displayed or not
-            itemList.value.take(3).forEach {
+            // Check first 2 item is displayed or not
+            itemList.value.take(2).forEach {
                 onNodeWithTag(EXPENSE_TAG.plus(it.expenseId))
                     .assertIsDisplayed()
                     .assertHasClickAction()

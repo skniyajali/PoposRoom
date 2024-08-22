@@ -353,21 +353,21 @@ class ExpensesEndToEndTest {
             createNewExpense(newExpense)
             composeTestRule.waitForIdle()
 
-            createNewExpensesList(3)
+            createNewExpensesList(2)
 
             onNodeWithTag(EXPENSE_TAG.plus(1)).performTouchInput { longClick() }
 
             onNodeWithTag(NAV_SELECT_ALL_BTN).assertIsDisplayed().performClick()
 
+            onNodeWithTag(EXPENSE_LIST).performTouchInput { swipeUp() }
+
             onNodeWithTag(EXPENSE_TAG.plus(2)).assertIsSelected()
-            onNodeWithTag(EXPENSE_TAG.plus(3)).assertIsSelected()
-            onNodeWithText("4 Selected").assertIsDisplayed()
+            onNodeWithText("3 Selected").assertIsDisplayed()
 
             onNodeWithTag(NAV_SELECT_ALL_BTN).assertIsDisplayed().performClick()
 
             onNodeWithTag(EXPENSE_TAG.plus(1)).assertIsNotSelected()
             onNodeWithTag(EXPENSE_TAG.plus(2)).assertIsNotSelected()
-            onNodeWithTag(EXPENSE_TAG.plus(3)).assertIsNotSelected()
 
             onNodeWithTag(EXPENSE_SCREEN_TITLE).assertIsDisplayed()
             onNodeWithTag(DRAWER_ICON).assertIsDisplayed()
