@@ -74,22 +74,6 @@ jobs:
             **/build/reports/lint-results-*.html
             **/build/test-results/test*UnitTest/**.xml
 
-      - name: Upload unit test reports
-        uses: MeilCli/slack-upload-file@v4
-        with:
-          slack_token: ${{ secrets.SLACK_TOKEN }}
-          channel_id: ${{ secrets.SLACK_CHANNEL }}
-          file_path: './app/build/test-results/test*UnitTest/**.xml'
-          initial_comment: 'Unit Test Reports'
-
-      - name: Upload lint reports
-        uses: MeilCli/slack-upload-file@v4
-        with:
-          slack_token: ${{ secrets.SLACK_TOKEN }}
-          channel_id: ${{ secrets.SLACK_CHANNEL }}
-          file_path: './app/build/reports/lint-results-*.html'
-          initial_comment: 'Lint Reports'
-
   screenshot_tests:
     needs: setup
     runs-on: ubuntu-latest
@@ -145,7 +129,7 @@ jobs:
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
           channel_id: ${{ secrets.SLACK_CHANNEL }}
-          file_path: './app/build/outputs/apk/demo/debug/app-demo-debug.apk'
+          file_path: './app/build/outputs/apk/**/*.apk'
           file_name: 'app-demo-debug.apk'
           file_type: 'apk'
           initial_comment: 'demo-debug APK'
@@ -222,14 +206,6 @@ jobs:
             emulator.log
             '**/build/reports/androidTests'
 
-      - name: Upload test reports
-        uses: MeilCli/slack-upload-file@v4
-        with:
-          slack_token: ${{ secrets.SLACK_TOKEN }}
-          channel_id: ${{ secrets.SLACK_CHANNEL }}
-          file_path: '**/build/reports/androidTests'
-          initial_comment: 'Android Test Reports'
-
       - name: Display local test coverage (only API 30)
         if: matrix.api-level == 30
         id: jacoco
@@ -251,11 +227,3 @@ jobs:
           compression-level: 1
           overwrite: false
           path: '**/build/reports/jacoco/'
-
-      - name: Upload local coverage reports
-        uses: MeilCli/slack-upload-file@v4
-        with:
-          slack_token: ${{ secrets.SLACK_TOKEN }}
-          channel_id: ${{ secrets.SLACK_CHANNEL }}
-          file_path: './app/build/reports/jacoco/'
-          initial_comment: 'Local Coverage Reports'
