@@ -18,7 +18,6 @@
 package com.niyaj.ui.parameterProvider
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.niyaj.common.utils.getStartDateLong
 import com.niyaj.model.MarketItemAndQuantity
 import com.niyaj.model.MarketListAndType
 import com.niyaj.ui.event.UiState
@@ -159,8 +158,8 @@ object MarketItemAndQuantityData {
 
     val maretListAndType = MarketListAndType(
         marketId = 2,
-        marketDate = getStartDateLong,
-        createdAt = getStartDateLong,
+        marketDate = 1720722600000,
+        createdAt = 1720722600000,
         listWithTypeId = 1,
         typeId = 1,
         typeName = "Vegetable",

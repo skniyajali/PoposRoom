@@ -44,11 +44,12 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.TestOnly
 import javax.inject.Inject
 
 @HiltViewModel
@@ -59,15 +60,19 @@ class AddEditProductViewModel @Inject constructor(
     private val validateProductTag: ValidateProductTagUseCase,
     private val validateProductPrice: ValidateProductPriceUseCase,
     private val analyticsHelper: AnalyticsHelper,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val productId = savedStateHandle.get<Int>("productId") ?: 0
+    private val productId = savedStateHandle.getStateFlow("productId", 0)
 
     var state by mutableStateOf(AddEditProductState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
-    val eventFlow = _eventFlow.asSharedFlow()
+    val eventFlow = _eventFlow.shareIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        replay = 1,
+    )
 
     private val _selectedCategory = MutableStateFlow(Category())
     val selectedCategory = _selectedCategory.asStateFlow()
@@ -95,7 +100,7 @@ class AddEditProductViewModel @Inject constructor(
 
     val nameError: StateFlow<String?> = snapshotFlow { state.productName }
         .mapLatest {
-            validateProductName(it, productId).errorMessage
+            validateProductName(it, productId.value).errorMessage
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -190,7 +195,7 @@ class AddEditProductViewModel @Inject constructor(
             }
 
             is AddEditProductEvent.AddOrUpdateProduct -> {
-                createOrUpdateProduct(productId)
+                createOrUpdateProduct(productId.value)
             }
         }
     }
@@ -270,6 +275,11 @@ class AddEditProductViewModel @Inject constructor(
                 _selectedCategory.value = category
             }
         }
+    }
+
+    @TestOnly
+    internal fun setProductId(productId: Int) {
+        savedStateHandle["productId"] = productId
     }
 }
 

@@ -246,11 +246,11 @@ internal fun ImportProductScreenContent(
                 )
             } else {
                 ProductList(
-                    modifier = Modifier,
                     items = importedItems,
                     isInSelectionMode = true,
                     doesSelected = selectedItems::contains,
                     onSelectItem = onClickSelectItem,
+                    modifier = Modifier,
                     onNavigateToDetails = {},
                     showItemNotFound = false,
                     onClickCreateNew = {},

@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.common.tags.ProductTestTags
 import com.niyaj.common.tags.ProductTestTags.CREATE_NEW_PRODUCT
+import com.niyaj.common.tags.ProductTestTags.PRODUCT_LIST
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
@@ -67,11 +68,11 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun ProductList(
-    modifier: Modifier = Modifier,
     items: ImmutableList<Product>,
     isInSelectionMode: Boolean,
     doesSelected: (Int) -> Boolean,
     onSelectItem: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     onNavigateToDetails: (Int) -> Unit = {},
     showItemNotFound: Boolean = false,
     onClickCreateNew: () -> Unit = {},
@@ -80,7 +81,7 @@ internal fun ProductList(
     TrackScrollJank(scrollableState = lazyListState, stateName = "Product::List")
 
     LazyColumn(
-        modifier = modifier,
+        modifier = modifier.testTag(PRODUCT_LIST),
         state = lazyListState,
         contentPadding = PaddingValues(SpaceSmall),
         verticalArrangement = Arrangement.spacedBy(SpaceSmall),
@@ -119,11 +120,11 @@ internal fun ProductList(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ProductCard(
-    modifier: Modifier = Modifier,
     item: Product,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     showArrow: Boolean = true,
     containerColor: Color = MaterialTheme.colorScheme.background,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
@@ -223,11 +224,11 @@ private fun ProductListPreview(
 ) {
     PoposRoomTheme {
         ProductList(
-            modifier = modifier,
             items = ProductPreviewData.productList.toImmutableList(),
             isInSelectionMode = false,
             doesSelected = { it % 2 == 0 },
             onSelectItem = {},
+            modifier = modifier,
             onNavigateToDetails = {},
             showItemNotFound = false,
             onClickCreateNew = {},

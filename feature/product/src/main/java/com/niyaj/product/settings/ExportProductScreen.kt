@@ -316,11 +316,11 @@ internal fun ExportProductScreenContent(
                 )
             } else {
                 ProductList(
-                    modifier = Modifier,
                     items = items,
                     isInSelectionMode = true,
                     doesSelected = selectedItems::contains,
                     onSelectItem = onSelectItem,
+                    modifier = Modifier,
                     lazyListState = lazyListState,
                 )
             }

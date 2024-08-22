@@ -108,7 +108,6 @@ fun ProductScreen(
     val selectedItems = viewModel.selectedItems.toList()
 
     ProductScreenContent(
-        modifier = Modifier,
         uiState = state,
         categories = categories,
         selectedCategory = selectedCategory,
@@ -138,6 +137,7 @@ fun ProductScreen(
         onNavigateToDetails = {
             navigator.navigate(ProductDetailsScreenDestination(it))
         },
+        modifier = Modifier,
         snackbarState = snackbarState,
     )
 
@@ -157,7 +157,6 @@ fun ProductScreen(
 @androidx.annotation.VisibleForTesting
 @Composable
 internal fun ProductScreenContent(
-    modifier: Modifier = Modifier,
     uiState: UiState<List<Product>>,
     categories: ImmutableList<Category>,
     selectedCategory: Int,
@@ -179,6 +178,7 @@ internal fun ProductScreenContent(
     onClickEdit: (Int) -> Unit,
     onClickSettings: () -> Unit,
     onNavigateToDetails: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
@@ -284,11 +284,11 @@ internal fun ProductScreenContent(
 
                     is UiState.Success -> {
                         ProductList(
-                            modifier = Modifier.weight(1f),
                             items = state.data.toImmutableList(),
                             isInSelectionMode = selectedItems.isNotEmpty(),
                             doesSelected = selectedItems::contains,
                             onSelectItem = onClickSelectItem,
+                            modifier = Modifier.weight(1f),
                             onNavigateToDetails = onNavigateToDetails,
                             showItemNotFound = true,
                             onClickCreateNew = onClickCreateNew,
@@ -418,7 +418,6 @@ private fun ProductScreenPreview(
 ) {
     PoposRoomTheme {
         ProductScreenContent(
-            modifier = modifier,
             uiState = uiState,
             categories = categories,
             selectedCategory = 0,
@@ -440,6 +439,7 @@ private fun ProductScreenPreview(
             onClickEdit = {},
             onClickSettings = {},
             onNavigateToDetails = {},
+            modifier = modifier,
         )
     }
 }

@@ -40,7 +40,7 @@ class ValidateProductPriceUseCaseTest {
 
     @Test
     fun `when product price is less than 10 return error`() {
-        val result = useCase(10)
+        val result = useCase(8)
         assertFalse(result.successful)
         assertEquals(PRODUCT_PRICE_LENGTH_ERROR, result.errorMessage)
     }

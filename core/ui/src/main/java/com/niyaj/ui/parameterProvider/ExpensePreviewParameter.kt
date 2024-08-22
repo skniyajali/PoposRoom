@@ -51,7 +51,7 @@ object ExpensePreviewData {
         ),
         Expense(
             expenseId = 3,
-            expenseName = "Rent",
+            expenseName = "Chicken",
             expenseAmount = "2400",
             expenseDate = getStartTime,
             expenseNote = "Fill up for the car",
