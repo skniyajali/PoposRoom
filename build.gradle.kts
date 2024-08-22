@@ -47,6 +47,8 @@ plugins {
     alias(libs.plugins.room) apply false
     alias(libs.plugins.module.graph) apply true
     alias(libs.plugins.compiler.report) apply false
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.detekt.compiler)
 }
 
 // Task to print all the module paths in the project e.g. :core:data
@@ -58,3 +60,28 @@ tasks.register("printModulePaths") {
         }
     }
 }
+
+val detektFormatting = libs.detekt.formatting
+val twitterComposeRules = libs.twitter.detekt.compose
+
+subprojects {
+    apply {
+        plugin("io.gitlab.arturbosch.detekt")
+    }
+
+    tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+        config.from(rootProject.file("config/detekt.yml"))
+
+        reports {
+            html.required.set(true)
+            sarif.required.set(true)
+            md.required.set(true)
+        }
+    }
+
+    dependencies {
+        detektPlugins(detektFormatting)
+        detektPlugins(twitterComposeRules)
+    }
+}
+
