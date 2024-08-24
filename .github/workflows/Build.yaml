@@ -202,9 +202,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-reports-${{ matrix.api-level }}
-          path: |
-            emulator.log
-            '**/build/reports/androidTests'
+          path: '**/build/reports/androidTests'
 
       - name: Display local test coverage (only API 30)
         if: matrix.api-level == 30
