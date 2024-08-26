@@ -62,7 +62,7 @@ jobs:
 
       - name: Fix formatting if verification failed
         id: fix_formatting
-        if: ${{ matrix.check == 'detekt' && steps.run_check.outcome == 'success' && github.event_name == 'pull_request' }}
+        if: ${{ matrix.check == 'spotless' && steps.run_check.outcome == 'success' && github.event_name == 'pull_request' }}
         run: ./gradlew spotlessApply --init-script gradle/init.gradle.kts --no-configuration-cache
       - name: Push new changes if available
         uses: stefanzweifel/git-auto-commit-action@v5
