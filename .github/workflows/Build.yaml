@@ -60,7 +60,16 @@ jobs:
           path: |
             **/build/reports/detekt/detekt.md
 
-
+      - name: Fix formatting if verification failed
+        id: fix_formatting
+        if: ${{ matrix.check == 'detekt' && steps.run_check.outcome == 'success' && github.event_name == 'pull_request' }}
+        run: ./gradlew spotlessApply --init-script gradle/init.gradle.kts --no-configuration-cache
+      - name: Push new changes if available
+        uses: stefanzweifel/git-auto-commit-action@v5
+        if: steps.fix_formatting.outcome == 'success'
+        with:
+          disable_globbing: true
+          commit_message: "🤖 Updates Formatting"
 
   dependency_guard:
     needs: setup
@@ -143,6 +152,7 @@ jobs:
           path: |
             **/build/reports/lint-results-*.html
             **/build/test-results/test*UnitTest/**.xml
+
 
 
 
