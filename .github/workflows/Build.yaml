@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        check: [ build_logic, spotless, dependency_guard ]
+        check: [ build_logic, spotless, detekt ]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
