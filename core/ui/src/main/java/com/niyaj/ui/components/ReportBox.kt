@@ -47,16 +47,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.niyaj.common.utils.toRupee
+import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun ReportBox(
     title: String,
     amount: String,
     icon: ImageVector,
-    enabled: Boolean = true,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     elevation: Dp = 1.dp,
     minusWidth: Dp = 15.dp,
     containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
@@ -67,7 +71,7 @@ fun ReportBox(
 
     ElevatedCard(
         onClick = onClick,
-        modifier = Modifier
+        modifier = modifier
             .width(screenWidth.div(2F).minus(minusWidth)),
         elevation = CardDefaults.cardElevation(elevation, disabledElevation = elevation),
         enabled = enabled,
@@ -121,12 +125,12 @@ fun ReportBox(
 
 @Composable
 fun ReportCardBox(
-    modifier: Modifier = Modifier,
     title: String,
     subtitle: String,
     icon: ImageVector,
-    enabled: Boolean = true,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     elevation: Dp = 1.dp,
     minusWidth: Dp = 20.dp,
     containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
@@ -139,7 +143,11 @@ fun ReportCardBox(
     ElevatedCard(
         onClick = onClick,
         modifier = modifier
-            .width(screenWidth.div(2f).minus(minusWidth))
+            .width(
+                screenWidth
+                    .div(2f)
+                    .minus(minusWidth),
+            )
             .height(IntrinsicSize.Min),
         elevation = CardDefaults.elevatedCardElevation(elevation, disabledElevation = elevation),
         enabled = enabled,
@@ -192,5 +200,37 @@ fun ReportCardBox(
                 )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ReportBoxPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ReportBox(
+            title = "Total Earnings",
+            amount = "₹ 1,00,000",
+            icon = PoposIcons.Money,
+            onClick = {},
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ReportCardBoxPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ReportCardBox(
+            title = "Total Earnings",
+            subtitle = "₹ 1,00,000",
+            icon = PoposIcons.Money,
+            onClick = {},
+            modifier = modifier,
+        )
     }
 }

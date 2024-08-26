@@ -95,11 +95,12 @@ import java.time.LocalDate
 @Destination(route = Screens.ADD_EDIT_ABSENT_SCREEN)
 @Composable
 fun AddEditAbsentScreen(
-    absentId: Int = 0,
-    employeeId: Int = 0,
     navigator: DestinationsNavigator,
     onClickAddEmployee: () -> Unit,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    absentId: Int = 0,
+    employeeId: Int = 0,
     viewModel: AddEditAbsentViewModel = hiltViewModel(),
 ) {
     val employees by viewModel.employees.collectAsStateWithLifecycle()
@@ -134,7 +135,7 @@ fun AddEditAbsentScreen(
         onEvent = viewModel::onEvent,
         onBackClick = navigator::navigateUp,
         onClickAddEmployee = onClickAddEmployee,
-        modifier = Modifier,
+        modifier = modifier,
         employeeError = employeeError,
         dateError = dateError,
         title = title,
@@ -144,6 +145,7 @@ fun AddEditAbsentScreen(
 
 @VisibleForTesting
 @Composable
+@Suppress("LongMethod")
 internal fun AddEditAbsentScreenContent(
     employees: List<Employee>,
     state: AddEditAbsentState,
@@ -166,11 +168,12 @@ internal fun AddEditAbsentScreenContent(
     val enableBtn = listOf(employeeError, dateError).all { it == null }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
         onBackClick = onBackClick,
-        showBottomBar = true,
+        modifier = modifier,
         showBackButton = true,
+        showBottomBar = true,
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
         bottomBar = {
             PoposButton(
                 modifier = Modifier
@@ -184,7 +187,6 @@ internal fun AddEditAbsentScreenContent(
                 },
             )
         },
-        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "Add/Edit Absent Screen Field")
 
@@ -204,6 +206,10 @@ internal fun AddEditAbsentScreenContent(
                     },
                 ) {
                     StandardOutlinedTextField(
+                        label = ABSENT_EMPLOYEE_NAME_FIELD,
+                        leadingIcon = PoposIcons.Person4,
+                        value = selectedEmployee.employeeName,
+                        onValueChange = {},
                         modifier = Modifier
                             .fillMaxWidth()
                             .onGloballyPositioned { coordinates ->
@@ -211,19 +217,15 @@ internal fun AddEditAbsentScreenContent(
                                 textFieldSize = coordinates.size.toSize()
                             }
                             .menuAnchor(),
-                        value = selectedEmployee.employeeName,
-                        label = ABSENT_EMPLOYEE_NAME_FIELD,
-                        leadingIcon = PoposIcons.Person4,
                         isError = employeeError != null,
                         errorText = employeeError,
-                        readOnly = true,
-                        errorTextTag = ABSENT_EMPLOYEE_NAME_ERROR,
-                        onValueChange = {},
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(
                                 expanded = employeeToggled,
                             )
                         },
+                        readOnly = true,
+                        errorTextTag = ABSENT_EMPLOYEE_NAME_ERROR,
                     )
 
                     DropdownMenu(
@@ -249,10 +251,10 @@ internal fun AddEditAbsentScreenContent(
                                 leadingIcon = {
                                     CircularBox(
                                         icon = PoposIcons.Person4,
-                                        doesSelected = false,
-                                        size = 30.dp,
-                                        showBorder = false,
+                                        selected = false,
                                         text = employee.employeeName,
+                                        showBorder = false,
+                                        size = 30.dp,
                                     )
                                 },
                             )
@@ -317,21 +319,21 @@ internal fun AddEditAbsentScreenContent(
 
             item(ABSENT_DATE_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.absentDate.toPrettyDate(),
                     label = ABSENT_DATE_FIELD,
                     leadingIcon = PoposIcons.CalenderToday,
-                    trailingIcon = {
-                        PoposTonalIconButton(
-                            modifier = Modifier.testTag("ChooseDate"),
-                            icon = PoposIcons.CalenderMonth,
-                            onClick = dialogState::show,
-                        )
-                    },
+                    value = state.absentDate.toPrettyDate(),
+                    onValueChange = {},
                     isError = dateError != null,
                     errorText = dateError,
+                    trailingIcon = {
+                        PoposTonalIconButton(
+                            icon = PoposIcons.CalenderMonth,
+                            onClick = dialogState::show,
+                            modifier = Modifier.testTag("ChooseDate"),
+                        )
+                    },
                     readOnly = true,
                     errorTextTag = ABSENT_DATE_ERROR,
-                    onValueChange = {},
                     suffix = {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -346,13 +348,13 @@ internal fun AddEditAbsentScreenContent(
 
             item(ABSENT_REASON_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.absentReason,
                     label = ABSENT_REASON_FIELD,
                     leadingIcon = PoposIcons.Description,
-                    showClearIcon = state.absentReason.isNotEmpty(),
+                    value = state.absentReason,
                     onValueChange = {
                         onEvent(AddEditAbsentEvent.AbsentReasonChanged(it))
                     },
+                    showClearIcon = state.absentReason.isNotEmpty(),
                     onClickClearIcon = {
                         onEvent(AddEditAbsentEvent.AbsentReasonChanged(""))
                     },

@@ -72,10 +72,11 @@ internal fun CategoryWiseReport(
     onClickOrderType: (String) -> Unit,
     onProductClick: (productId: Int) -> Unit,
     onPrintProductWiseReport: () -> Unit,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CategoryWiseReport") {
     ElevatedCard(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.elevatedCardColors(
@@ -83,36 +84,10 @@ internal fun CategoryWiseReport(
         ),
     ) {
         StandardExpandable(
-            modifier = Modifier
-                .padding(SpaceSmall)
-                .fillMaxWidth(),
             expanded = reportExpanded,
             onExpandChanged = {
                 onExpandChanged()
             },
-            title = {
-                IconWithText(
-                    text = "Category Wise Report",
-                    icon = PoposIcons.Category,
-                )
-            },
-            trailing = {
-                Row {
-                    OrderTypeDropdown(
-                        text = orderType.ifEmpty { "All" },
-                    ) {
-                        onClickOrderType(it)
-                    }
-
-                    PoposIconButton(
-                        icon = PoposIcons.Print,
-                        onClick = onPrintProductWiseReport,
-                    )
-                }
-            },
-            expand = null,
-            showExpandIcon = false,
-            contentDesc = "Category wise report",
             content = {
                 Crossfade(
                     targetState = categoryState,
@@ -139,6 +114,32 @@ internal fun CategoryWiseReport(
                     }
                 }
             },
+            modifier = Modifier
+                .padding(SpaceSmall)
+                .fillMaxWidth(),
+            showExpandIcon = false,
+            title = {
+                IconWithText(
+                    text = "Category Wise Report",
+                    icon = PoposIcons.Category,
+                )
+            },
+            trailing = {
+                Row {
+                    OrderTypeDropdown(
+                        text = orderType.ifEmpty { "All" },
+                    ) {
+                        onClickOrderType(it)
+                    }
+
+                    PoposIconButton(
+                        icon = PoposIcons.Print,
+                        onClick = onPrintProductWiseReport,
+                    )
+                }
+            },
+            expand = null,
+            contentDesc = "Category wise report",
         )
     }
 }
@@ -149,10 +150,11 @@ private fun CategoryWiseReportCard(
     selectedCategory: String,
     onExpandChanged: (String) -> Unit,
     onProductClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
 ) = trace("CategoryWiseReportCard") {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(SpaceSmall),
     ) {
@@ -160,36 +162,9 @@ private fun CategoryWiseReportCard(
             val totalQty = products.sumOf { it.quantity }
             if (products.isNotEmpty()) {
                 StandardExpandable(
-                    modifier = Modifier
-                        .fillMaxWidth(),
                     expanded = categoryName == selectedCategory,
                     onExpandChanged = {
                         onExpandChanged(categoryName)
-                    },
-                    title = {
-                        IconWithText(
-                            text = categoryName,
-                            icon = PoposIcons.Category,
-                            isTitle = true,
-                        )
-                    },
-                    trailing = {
-                        CountBox(count = totalQty.toString())
-                    },
-                    rowClickable = true,
-                    expand = { modifier: Modifier ->
-                        IconButton(
-                            modifier = modifier,
-                            onClick = {
-                                onExpandChanged(categoryName)
-                            },
-                        ) {
-                            Icon(
-                                imageVector = PoposIcons.ArrowDown,
-                                contentDescription = "Expand More",
-                                tint = MaterialTheme.colorScheme.secondary,
-                            )
-                        }
                     },
                     content = {
                         Column(
@@ -209,6 +184,33 @@ private fun CategoryWiseReportCard(
                             }
                         }
                     },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    rowClickable = true,
+                    title = {
+                        IconWithText(
+                            text = categoryName,
+                            icon = PoposIcons.Category,
+                            isTitle = true,
+                        )
+                    },
+                    trailing = {
+                        CountBox(count = totalQty.toString())
+                    },
+                    expand = { modifier: Modifier ->
+                        IconButton(
+                            modifier = modifier,
+                            onClick = {
+                                onExpandChanged(categoryName)
+                            },
+                        ) {
+                            Icon(
+                                imageVector = PoposIcons.ArrowDown,
+                                contentDescription = "Expand More",
+                                tint = MaterialTheme.colorScheme.secondary,
+                            )
+                        }
+                    },
                 )
 
                 if (index != report.size - 1) {
@@ -225,9 +227,10 @@ private fun CategoryWiseReportCard(
 private fun ProductReportCard(
     report: ProductWiseReport,
     onProductClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("ProductReportCard") {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable {
                 onProductClick(report.productId)
@@ -264,6 +267,7 @@ private fun CategoryWiseReportPreview(
     PoposRoomTheme {
         CategoryWiseReport(
             categoryState = categoryState,
+            modifier = modifier,
             orderType = "All",
             reportExpanded = true,
             selectedCategory = "Category 1",

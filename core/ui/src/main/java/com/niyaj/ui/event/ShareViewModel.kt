@@ -28,7 +28,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
-import com.niyaj.core.analytics.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +43,6 @@ import javax.inject.Inject
 open class ShareViewModel @Inject constructor(
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
-    private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
     private val _showDialog = MutableStateFlow(false)

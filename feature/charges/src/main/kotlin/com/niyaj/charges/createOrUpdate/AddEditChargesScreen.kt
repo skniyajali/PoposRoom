@@ -67,9 +67,10 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 @Destination(route = ADD_EDIT_CHARGES_SCREEN)
 @Composable
 fun AddEditChargesScreen(
-    chargesId: Int = 0,
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    chargesId: Int = 0,
     viewModel: AddEditChargesViewModel = hiltViewModel(),
 ) {
     val nameError by viewModel.nameError.collectAsStateWithLifecycle()
@@ -96,10 +97,10 @@ fun AddEditChargesScreen(
     TrackScreenViewEvent(screenName = "Add Edit Charges Screen - $chargesId")
 
     AddEditChargesScreenContent(
-        modifier = Modifier,
         title = title,
         icon = icon,
         state = viewModel.state,
+        modifier = modifier,
         nameError = nameError,
         priceError = priceError,
         onEvent = viewModel::onEvent,
@@ -110,23 +111,25 @@ fun AddEditChargesScreen(
 @VisibleForTesting
 @Composable
 internal fun AddEditChargesScreenContent(
+    state: AddEditChargesState,
+    onEvent: (AddEditChargesEvent) -> Unit,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     title: String = CREATE_NEW_CHARGES,
     icon: ImageVector = PoposIcons.Add,
-    state: AddEditChargesState,
     nameError: String? = null,
     priceError: String? = null,
-    onEvent: (AddEditChargesEvent) -> Unit,
-    onBackClick: () -> Unit,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     val enableBtn = nameError == null && priceError == null
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = true,
         showBottomBar = true,
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
         bottomBar = {
             PoposButton(
                 modifier = Modifier
@@ -140,8 +143,6 @@ internal fun AddEditChargesScreenContent(
                 },
             )
         },
-        onBackClick = onBackClick,
-        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     ) { paddingValues ->
         TrackScrollJank(
             scrollableState = lazyListState,
@@ -158,16 +159,16 @@ internal fun AddEditChargesScreenContent(
         ) {
             item(CHARGES_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.chargesName,
                     label = CHARGES_NAME_FIELD,
                     leadingIcon = PoposIcons.Category,
-                    isError = nameError != null,
-                    errorText = nameError,
-                    errorTextTag = CHARGES_NAME_ERROR_TAG,
-                    showClearIcon = state.chargesName.isNotEmpty(),
+                    value = state.chargesName,
                     onValueChange = {
                         onEvent(AddEditChargesEvent.ChargesNameChanged(it))
                     },
+                    isError = nameError != null,
+                    errorText = nameError,
+                    showClearIcon = state.chargesName.isNotEmpty(),
+                    errorTextTag = CHARGES_NAME_ERROR_TAG,
                     onClickClearIcon = {
                         onEvent(AddEditChargesEvent.ChargesNameChanged(""))
                     },
@@ -176,17 +177,17 @@ internal fun AddEditChargesScreenContent(
 
             item(CHARGES_AMOUNT_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.chargesPrice.safeString,
                     label = CHARGES_AMOUNT_FIELD,
                     leadingIcon = PoposIcons.Rupee,
-                    isError = priceError != null,
-                    errorText = priceError,
-                    keyboardType = KeyboardType.Number,
-                    errorTextTag = CHARGES_AMOUNT_ERROR_TAG,
-                    showClearIcon = state.chargesPrice.safeString.isNotEmpty(),
+                    value = state.chargesPrice.safeString,
                     onValueChange = {
                         onEvent(AddEditChargesEvent.ChargesPriceChanged(it))
                     },
+                    isError = priceError != null,
+                    errorText = priceError,
+                    keyboardType = KeyboardType.Number,
+                    showClearIcon = state.chargesPrice.safeString.isNotEmpty(),
+                    errorTextTag = CHARGES_AMOUNT_ERROR_TAG,
                     onClickClearIcon = {
                         onEvent(AddEditChargesEvent.ChargesPriceChanged(""))
                     },
@@ -195,16 +196,16 @@ internal fun AddEditChargesScreenContent(
 
             item(CHARGES_APPLIED_SWITCH) {
                 StandardCheckboxWithText(
-                    modifier = Modifier.testTag(CHARGES_APPLIED_SWITCH),
-                    checked = state.chargesApplicable,
-                    onCheckedChange = {
-                        onEvent(AddEditChargesEvent.ChargesApplicableChanged)
-                    },
                     text = if (state.chargesApplicable) {
                         "Marked as applied"
                     } else {
                         "Marked as not applied"
                     },
+                    checked = state.chargesApplicable,
+                    onCheckedChange = {
+                        onEvent(AddEditChargesEvent.ChargesApplicableChanged)
+                    },
+                    modifier = Modifier.testTag(CHARGES_APPLIED_SWITCH),
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))

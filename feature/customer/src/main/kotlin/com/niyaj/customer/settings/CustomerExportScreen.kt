@@ -65,6 +65,7 @@ import kotlinx.coroutines.launch
 fun CustomerExportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: CustomerSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -134,7 +135,7 @@ fun CustomerExportScreen(
         onClickToAddItem = {
             navigator.navigate(AddEditCustomerScreenDestination())
         },
-        modifier = Modifier,
+        modifier = modifier,
     )
 }
 

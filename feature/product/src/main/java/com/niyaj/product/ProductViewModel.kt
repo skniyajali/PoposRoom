@@ -53,8 +53,8 @@ class ProductViewModel @Inject constructor(
 
     val products = observableSearchText.combine(_selectedCategory) { text, category ->
         productRepository.getAllProduct(text, category)
-    }.flatMapLatest { it ->
-        it.map { items ->
+    }.flatMapLatest { data ->
+        data.map { items ->
             totalItems = items.map { it.productId }
 
             if (items.isEmpty()) UiState.Empty else UiState.Success(items)

@@ -63,6 +63,7 @@ import kotlinx.coroutines.launch
 fun CustomerImportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: CustomerSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -106,7 +107,7 @@ fun CustomerImportScreen(
     }
 
     CustomerImportScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         isLoading = isLoading,
         importedItems = importedItems.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),

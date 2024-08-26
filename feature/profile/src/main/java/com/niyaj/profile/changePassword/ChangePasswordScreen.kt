@@ -59,8 +59,9 @@ import kotlinx.coroutines.flow.collectLatest
 fun ChangePasswordScreen(
     resId: Int,
     navController: DestinationsNavigator,
-    viewModel: ChangePasswordViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    viewModel: ChangePasswordViewModel = hiltViewModel(),
 ) {
     val lazyListState = rememberLazyListState()
     val passwordError = viewModel.passwordError.collectAsStateWithLifecycle().value
@@ -102,6 +103,7 @@ fun ChangePasswordScreen(
         title = "Change Password",
         onBackClick = navController::navigateUp,
         showBottomBar = true,
+        modifier = modifier,
         bottomBar = {
             PoposButton(
                 modifier = Modifier
@@ -128,19 +130,19 @@ fun ChangePasswordScreen(
             item {
                 StandardOutlinedTextField(
                     label = "Current Password",
-                    value = viewModel.state.currentPassword,
                     leadingIcon = PoposIcons.Password,
+                    value = viewModel.state.currentPassword,
+                    onValueChange = {
+                        viewModel.onEvent(ChangePasswordEvent.CurrentPasswordChanged(it))
+                    },
                     keyboardType = KeyboardType.Password,
+                    textStyle = LocalTextStyle.current.copy(
+                        fontFamily = FontFamily.Cursive,
+                    ),
                     isPasswordVisible = showCurrent,
                     onPasswordToggleClick = {
                         showCurrent = !showCurrent
                     },
-                    onValueChange = {
-                        viewModel.onEvent(ChangePasswordEvent.CurrentPasswordChanged(it))
-                    },
-                    textStyle = LocalTextStyle.current.copy(
-                        fontFamily = FontFamily.Cursive,
-                    ),
                 )
             }
 
@@ -149,19 +151,19 @@ fun ChangePasswordScreen(
                     label = "New Password",
                     leadingIcon = PoposIcons.Password,
                     value = viewModel.state.newPassword,
+                    onValueChange = {
+                        viewModel.onEvent(ChangePasswordEvent.NewPasswordChanged(it))
+                    },
                     isError = passwordError != null,
                     errorText = passwordError,
                     keyboardType = KeyboardType.Password,
+                    textStyle = LocalTextStyle.current.copy(
+                        fontFamily = FontFamily.Cursive,
+                    ),
                     isPasswordVisible = showNew,
                     onPasswordToggleClick = {
                         showNew = !showNew
                     },
-                    onValueChange = {
-                        viewModel.onEvent(ChangePasswordEvent.NewPasswordChanged(it))
-                    },
-                    textStyle = LocalTextStyle.current.copy(
-                        fontFamily = FontFamily.Cursive,
-                    ),
                 )
             }
 
@@ -170,19 +172,19 @@ fun ChangePasswordScreen(
                     label = "Confirm Password",
                     leadingIcon = PoposIcons.Password,
                     value = viewModel.state.confirmPassword,
+                    onValueChange = {
+                        viewModel.onEvent(ChangePasswordEvent.ConfirmPasswordChanged(it))
+                    },
                     isError = confirmError != null,
                     errorText = confirmError,
                     keyboardType = KeyboardType.Password,
+                    textStyle = LocalTextStyle.current.copy(
+                        fontFamily = FontFamily.Cursive,
+                    ),
                     isPasswordVisible = showConfirm,
                     onPasswordToggleClick = {
                         showConfirm = !showConfirm
                     },
-                    onValueChange = {
-                        viewModel.onEvent(ChangePasswordEvent.ConfirmPasswordChanged(it))
-                    },
-                    textStyle = LocalTextStyle.current.copy(
-                        fontFamily = FontFamily.Cursive,
-                    ),
                 )
             }
 

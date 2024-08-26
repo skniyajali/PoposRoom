@@ -53,10 +53,10 @@ import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun CartItemTotalPriceSection(
-    modifier: Modifier = Modifier,
     itemCount: Int,
     totalPrice: Long,
     orderType: OrderType,
+    modifier: Modifier = Modifier,
     showPrintBtn: Boolean = true,
     onClickPlaceOrder: () -> Unit = {},
     onClickPrintOrder: () -> Unit = {},
@@ -108,10 +108,10 @@ fun CartItemTotalPriceSection(
             ) {
                 PoposOutlinedButton(
                     text = "Place Order",
+                    onClick = onClickPlaceOrder,
                     enabled = itemCount > 0,
                     shape = CutCornerShape(4.dp),
                     color = contentColor,
-                    onClick = onClickPlaceOrder,
                 )
 
                 if (showPrintBtn) {
@@ -121,8 +121,8 @@ fun CartItemTotalPriceSection(
                         icon = PoposIcons.Print,
                         onClick = onClickPrintOrder,
                         enabled = itemCount > 0,
-                        shape = CutCornerShape(4.dp),
                         btnHeight = 30.dp,
+                        shape = CutCornerShape(4.dp),
                         containerColor = contentColor,
                         contentColor = MaterialTheme.colorScheme.primaryContainer,
                     )
@@ -141,10 +141,10 @@ private fun CartItemTotalPriceSectionPreview(
 ) {
     PoposRoomTheme {
         CartItemTotalPriceSection(
-            modifier = modifier,
             itemCount = 1523,
             totalPrice = 3072,
             orderType = orderType,
+            modifier = modifier,
             showPrintBtn = orderType == OrderType.DineOut,
             onClickPlaceOrder = {},
             onClickPrintOrder = {},

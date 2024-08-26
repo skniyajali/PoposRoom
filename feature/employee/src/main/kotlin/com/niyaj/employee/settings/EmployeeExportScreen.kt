@@ -65,6 +65,7 @@ import kotlinx.coroutines.launch
 fun EmployeeExportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: EmployeeSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -110,7 +111,7 @@ fun EmployeeExportScreen(
         }
 
     EmployeeExportScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         items = employees.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         showSearchBar = showSearchBar,
@@ -142,7 +143,6 @@ fun EmployeeExportScreen(
 @VisibleForTesting
 @Composable
 internal fun EmployeeExportScreenContent(
-    modifier: Modifier = Modifier,
     items: ImmutableList<Employee>,
     selectedItems: ImmutableList<Int>,
     showSearchBar: Boolean,
@@ -157,6 +157,7 @@ internal fun EmployeeExportScreenContent(
     onClickExport: () -> Unit,
     onBackClick: () -> Unit,
     onClickToAddItem: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
@@ -205,7 +206,7 @@ internal fun EmployeeExportScreenContent(
         modifier = modifier,
     ) {
         EmployeeList(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize(),
             employees = items,
             isInSelectionMode = true,

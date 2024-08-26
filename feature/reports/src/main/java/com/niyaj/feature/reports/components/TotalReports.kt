@@ -44,11 +44,11 @@ import com.niyaj.ui.utils.DevicePreviews
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun TotalReports(
-    modifier: Modifier = Modifier,
     uiState: UiState<Reports>,
     onOrderClick: () -> Unit,
     onExpensesClick: () -> Unit,
     onRegenerateReport: () -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("ReportBoxData") {
     Column(
         modifier = modifier
@@ -110,8 +110,8 @@ internal fun TotalReports(
                             title = "Total Amount",
                             amount = totalAmount,
                             icon = PoposIcons.Money,
-                            enabled = false,
                             onClick = {},
+                            enabled = false,
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
                         )
                     }

@@ -113,9 +113,9 @@ fun PoposTextButton(
 
 @Composable
 fun PoposButton(
-    modifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier,
     text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
     btnHeight: Dp = ButtonSize,
@@ -123,7 +123,6 @@ fun PoposButton(
     colors: ButtonColors = ButtonDefaults.buttonColors(),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     style: TextStyle = MaterialTheme.typography.labelLarge,
-    onClick: () -> Unit,
 ) {
     Button(
         onClick = onClick,
@@ -139,7 +138,6 @@ fun PoposButton(
             Icon(
                 imageVector = icon,
                 contentDescription = text,
-                modifier = iconModifier,
             )
             Spacer(modifier = Modifier.width(SpaceMini))
         }
@@ -153,16 +151,15 @@ fun PoposButton(
 
 @Composable
 fun PoposButton(
-    modifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier,
     text: String,
+    color: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
     btnHeight: Dp = ButtonSize,
     shape: Shape = RoundedCornerShape(SpaceMini),
-    color: Color,
     style: TextStyle = MaterialTheme.typography.labelLarge,
-    onClick: () -> Unit,
 ) {
     Button(
         onClick = onClick,
@@ -179,7 +176,6 @@ fun PoposButton(
             Icon(
                 imageVector = icon,
                 contentDescription = text,
-                modifier = iconModifier,
             )
             Spacer(modifier = Modifier.width(SpaceMini))
         }
@@ -193,14 +189,13 @@ fun PoposButton(
 
 @Composable
 fun PoposElevatedButton(
-    modifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier,
     text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
     shape: Shape = RoundedCornerShape(SpaceMini),
     colors: ButtonColors = ButtonDefaults.elevatedButtonColors(),
-    onClick: () -> Unit,
 ) {
     ElevatedButton(
         onClick = onClick,
@@ -215,7 +210,6 @@ fun PoposElevatedButton(
             Icon(
                 imageVector = icon,
                 contentDescription = text.plus("button"),
-                modifier = iconModifier,
             )
             Spacer(modifier = Modifier.width(SpaceMini))
         }
@@ -228,9 +222,9 @@ fun PoposElevatedButton(
 
 @Composable
 fun PoposIconTextButton(
-    modifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier,
     icon: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     text: String? = null,
     contentDescription: String? = icon.name,
     enabled: Boolean = true,
@@ -239,7 +233,6 @@ fun PoposIconTextButton(
     colors: ButtonColors = ButtonDefaults.buttonColors(),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     style: TextStyle = MaterialTheme.typography.labelLarge,
-    onClick: () -> Unit,
 ) {
     Button(
         onClick = onClick,
@@ -253,7 +246,6 @@ fun PoposIconTextButton(
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
-            modifier = iconModifier,
         )
 
         text?.let {
@@ -269,16 +261,15 @@ fun PoposIconTextButton(
 
 @Composable
 fun PoposOutlinedButton(
-    modifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier,
     text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
     btnHeight: Dp = ButtonSize,
     shape: Shape = RoundedCornerShape(SpaceMini),
     color: Color = MaterialTheme.colorScheme.secondary,
     style: TextStyle = MaterialTheme.typography.labelLarge,
-    onClick: () -> Unit,
 ) {
     OutlinedButton(
         onClick = onClick,
@@ -300,7 +291,6 @@ fun PoposOutlinedButton(
             Icon(
                 imageVector = icon,
                 contentDescription = text,
-                modifier = iconModifier,
             )
             Spacer(modifier = Modifier.width(SpaceMini))
         }
@@ -313,18 +303,17 @@ fun PoposOutlinedButton(
 
 @Composable
 fun PoposOutlinedDropdownButton(
-    modifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier,
     text: String,
     leadingIcon: ImageVector,
     trailingIcon: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     btnHeight: Dp = ButtonSize,
     showAnimatedBorder: Boolean = false,
     shape: Shape = RoundedCornerShape(SpaceMini),
     color: Color = MaterialTheme.colorScheme.secondary,
     style: TextStyle = MaterialTheme.typography.labelLarge,
-    onClick: () -> Unit,
 ) {
     OutlinedButton(
         onClick = onClick,
@@ -367,7 +356,6 @@ fun PoposOutlinedDropdownButton(
                 Icon(
                     imageVector = leadingIcon,
                     contentDescription = text,
-                    modifier = iconModifier,
                 )
                 Text(
                     text = text.uppercase(),
@@ -380,7 +368,6 @@ fun PoposOutlinedDropdownButton(
             Icon(
                 imageVector = trailingIcon,
                 contentDescription = text,
-                modifier = iconModifier,
             )
         }
     }
@@ -388,16 +375,15 @@ fun PoposOutlinedDropdownButton(
 
 @Composable
 fun PoposIconButton(
-    modifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier,
     icon: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     contentDescription: String = icon.name,
     enabled: Boolean = true,
     btnHeight: Dp = 40.dp,
     shape: Shape = RoundedCornerShape(SpaceMini),
     containerColor: Color = IconButtonDefaults.iconButtonColors().containerColor,
     contentColor: Color = contentColorFor(backgroundColor = containerColor),
-    onClick: () -> Unit,
 ) {
     IconButton(
         modifier = modifier
@@ -413,16 +399,15 @@ fun PoposIconButton(
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
-            modifier = iconModifier,
         )
     }
 }
 
 @Composable
 fun PoposTonalIconButton(
-    modifier: Modifier = Modifier,
     icon: ImageVector,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     containerColor: Color = MaterialTheme.colorScheme.outlineVariant,
     contentColor: Color = contentColorFor(backgroundColor = containerColor),
@@ -448,9 +433,9 @@ fun PoposTonalIconButton(
 
 @Composable
 fun PoposOutlinedIconButton(
-    modifier: Modifier = Modifier,
     icon: ImageVector,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     borderColor: Color = MaterialTheme.colorScheme.outlineVariant,
     colors: IconButtonColors = IconButtonDefaults.outlinedIconButtonColors(
@@ -484,6 +469,7 @@ private fun PoposIconButtonEnabledPreview(
             PoposIconButton(
                 icon = PoposIcons.Share,
                 onClick = {},
+                modifier = modifier,
             )
         }
     }
@@ -497,6 +483,7 @@ private fun PoposIconButtonDisabledPreview(
     PoposRoomTheme {
         Surface {
             PoposIconButton(
+                modifier = modifier,
                 icon = PoposIcons.Share,
                 onClick = {},
                 enabled = false,

@@ -40,6 +40,7 @@ fun DineInScreen(
     onClickEditOrder: (Int) -> Unit,
     onClickOrderDetails: (Int) -> Unit,
     onNavigateToOrderScreen: () -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: CartViewModel = hiltViewModel(),
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -74,7 +75,6 @@ fun DineInScreen(
     }
 
     CartScreenContent(
-        modifier = Modifier,
         uiState = uiState,
         selectedItems = selectedDineInOrder,
         addOnItems = addOnItems,
@@ -88,6 +88,7 @@ fun DineInScreen(
             viewModel.onEvent(DineInEvent.PlaceAllDineInCart)
         },
         onEvent = viewModel::onEvent,
+        modifier = modifier,
         snackbarHostState = snackbarHostState,
     )
 }

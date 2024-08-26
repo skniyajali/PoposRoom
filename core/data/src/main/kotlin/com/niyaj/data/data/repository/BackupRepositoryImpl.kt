@@ -29,6 +29,7 @@ import com.niyaj.data.utils.logBackupRestorePerformed
 import com.niyaj.database.PoposDatabase
 import com.niyaj.database.util.DatabaseHelper
 import okio.use
+import timber.log.Timber
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileInputStream
@@ -116,7 +117,7 @@ class BackupRepositoryImpl @Inject constructor(
                 putImagesToZip(output)
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e)
         }
 
         return zipFile
@@ -179,7 +180,7 @@ class BackupRepositoryImpl @Inject constructor(
             }
             File("$inputPath/$fileName").delete()
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e)
         }
     }
 
@@ -193,7 +194,7 @@ class BackupRepositoryImpl @Inject constructor(
                 }
             }
         } catch (e: IOException) {
-            e.printStackTrace()
+            Timber.e(e)
         }
     }
 
@@ -208,7 +209,7 @@ class BackupRepositoryImpl @Inject constructor(
                 }
             }
         } catch (e: IOException) {
-            e.printStackTrace()
+            Timber.e(e)
         }
     }
 
@@ -239,7 +240,7 @@ class BackupRepositoryImpl @Inject constructor(
             }
             destinationFile
         } catch (e: IOException) {
-            e.printStackTrace()
+            Timber.e(e)
             null
         }
     }
@@ -261,7 +262,7 @@ class BackupRepositoryImpl @Inject constructor(
             }
             return false
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e)
             return false
         }
     }

@@ -66,9 +66,10 @@ import kotlinx.coroutines.launch
 @Destination(route = Screens.ADDRESS_DETAILS_SCREEN)
 @Composable
 fun AddressDetailsScreen(
-    addressId: Int = 0,
+    addressId: Int,
     navigator: DestinationsNavigator,
     onClickOrder: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: AddressDetailsViewModel = hiltViewModel(),
 ) {
     val addressState by viewModel.addressDetails.collectAsStateWithLifecycle()
@@ -78,7 +79,6 @@ fun AddressDetailsScreen(
     TrackScreenViewEvent(screenName = Screens.ADDRESS_DETAILS_SCREEN + addressId)
 
     AddressDetailsScreenContent(
-        modifier = Modifier,
         addressState = addressState,
         orderDetailsState = orderDetailsState,
         totalOrdersState = totalOrdersState,
@@ -87,19 +87,20 @@ fun AddressDetailsScreen(
             navigator.navigate(AddEditAddressScreenDestination(addressId))
         },
         onClickOrder = onClickOrder,
+        modifier = modifier,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun AddressDetailsScreenContent(
-    modifier: Modifier = Modifier,
     addressState: UiState<Address>,
     orderDetailsState: UiState<List<AddressWiseOrder>>,
     totalOrdersState: TotalOrderDetails,
     onBackClick: () -> Unit,
     onClickEdit: () -> Unit,
     onClickOrder: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
@@ -111,24 +112,11 @@ internal fun AddressDetailsScreenContent(
     }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = "Address Details",
         onBackClick = onBackClick,
+        modifier = modifier,
         showFab = true,
         fabPosition = FabPosition.End,
-        floatingActionButton = {
-            StandardFAB(
-                fabVisible = lazyListState.isScrollingUp(),
-                onFabClick = { /*TODO: Add Share functionality*/ },
-                onClickScroll = {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(index = 0)
-                    }
-                },
-                showScrollToTop = !lazyListState.isScrollingUp(),
-                fabIcon = PoposIcons.Share,
-            )
-        },
         navActions = {
             IconButton(
                 onClick = { /*TODO*/ },
@@ -147,6 +135,19 @@ internal fun AddressDetailsScreenContent(
                     contentDescription = "Print Address Details",
                 )
             }
+        },
+        floatingActionButton = {
+            StandardFAB(
+                fabVisible = lazyListState.isScrollingUp(),
+                onFabClick = { /*TODO: Add Share functionality*/ },
+                onClickScroll = {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(index = 0)
+                    }
+                },
+                showScrollToTop = !lazyListState.isScrollingUp(),
+                fabIcon = PoposIcons.Share,
+            )
         },
     ) {
         TrackScrollJank(scrollableState = lazyListState, stateName = "Address Details::List")
@@ -169,7 +170,7 @@ internal fun AddressDetailsScreenContent(
                     onExpanded = {
                         detailsExpanded = !detailsExpanded
                     },
-                    doesExpanded = detailsExpanded,
+                    expanded = detailsExpanded,
                     onClickEdit = onClickEdit,
                 )
             }
@@ -198,13 +199,13 @@ private fun AddressDetailsScreenContentPreview(
 ) {
     PoposRoomTheme {
         AddressDetailsScreenContent(
-            modifier = Modifier,
             addressState = addressState,
             orderDetailsState = ordersState,
             totalOrdersState = totalOrderDetails,
             onBackClick = {},
             onClickEdit = {},
             onClickOrder = {},
+            modifier = Modifier,
         )
     }
 }

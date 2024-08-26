@@ -66,10 +66,11 @@ internal fun CustomerWiseReport(
     onExpandChanged: () -> Unit,
     onCustomerClick: (Int) -> Unit,
     onPrintCustomerWiseReport: () -> Unit,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CustomerWiseReport") {
     ElevatedCard(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.elevatedCardColors().copy(
@@ -77,40 +78,10 @@ internal fun CustomerWiseReport(
         ),
     ) {
         StandardExpandable(
-            modifier = Modifier
-                .padding(SpaceSmall)
-                .fillMaxWidth(),
             expanded = customerWiseRepExpanded,
             onExpandChanged = {
                 onExpandChanged()
             },
-            title = {
-                IconWithText(
-                    text = "Customer Wise Report",
-                    icon = PoposIcons.PeopleAlt,
-                )
-            },
-            trailing = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(SpaceMini),
-                ) {
-                    CountBox(count = totalReports.totalAmount.toRupee)
-
-                    CountBox(
-                        count = totalReports.totalOrders.toString(),
-                        backgroundColor = MaterialTheme.colorScheme.secondary,
-                    )
-
-                    PoposIconButton(
-                        icon = PoposIcons.Print,
-                        onClick = onPrintCustomerWiseReport,
-                    )
-                }
-            },
-            rowClickable = true,
-            expand = null,
-            showExpandIcon = false,
             content = {
                 Crossfade(
                     targetState = customerState,
@@ -145,6 +116,36 @@ internal fun CustomerWiseReport(
                     }
                 }
             },
+            modifier = Modifier
+                .padding(SpaceSmall)
+                .fillMaxWidth(),
+            rowClickable = true,
+            showExpandIcon = false,
+            title = {
+                IconWithText(
+                    text = "Customer Wise Report",
+                    icon = PoposIcons.PeopleAlt,
+                )
+            },
+            trailing = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(SpaceMini),
+                ) {
+                    CountBox(count = totalReports.totalAmount.toRupee)
+
+                    CountBox(
+                        count = totalReports.totalOrders.toString(),
+                        backgroundColor = MaterialTheme.colorScheme.secondary,
+                    )
+
+                    PoposIconButton(
+                        icon = PoposIcons.Print,
+                        onClick = onPrintCustomerWiseReport,
+                    )
+                }
+            },
+            expand = null,
             contentDesc = "Customer wise report",
         )
     }
@@ -152,9 +153,9 @@ internal fun CustomerWiseReport(
 
 @Composable
 private fun CustomerReportCard(
-    modifier: Modifier = Modifier,
     customerReport: CustomerWiseReport,
     onClickCustomer: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("CustomerReportCard") {
     Row(
         modifier = modifier
@@ -227,6 +228,7 @@ private fun CustomerWiseReportPreview(
                 totalAmount = 5000L,
                 totalOrders = 5,
             ),
+            modifier = modifier,
             customerWiseRepExpanded = true,
             onExpandChanged = {},
             onCustomerClick = {},

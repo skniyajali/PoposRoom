@@ -49,9 +49,9 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 @Composable
 fun EmployeeSettingsScreen(
     navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
 ) {
     EmployeeSettingsScreenContent(
-        modifier = Modifier,
         onBackClick = navigator::navigateUp,
         onImportClick = {
             navigator.navigate(EmployeeImportScreenDestination())
@@ -59,16 +59,17 @@ fun EmployeeSettingsScreen(
         onExportClick = {
             navigator.navigate(EmployeeExportScreenDestination())
         },
+        modifier = modifier,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun EmployeeSettingsScreenContent(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onImportClick: () -> Unit,
     onExportClick: () -> Unit,
+    modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     TrackScreenViewEvent(screenName = "Employee Settings Screen")
@@ -115,10 +116,10 @@ private fun EmployeeSettingsScreenContentPreview(
 ) {
     PoposRoomTheme {
         EmployeeSettingsScreenContent(
-            modifier = modifier,
             onBackClick = {},
             onImportClick = {},
             onExportClick = {},
+            modifier = modifier,
         )
     }
 }

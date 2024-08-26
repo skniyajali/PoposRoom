@@ -145,6 +145,7 @@ fun SelectOrderScreen(
     navigator: DestinationsNavigator,
     onEditClick: (Int) -> Unit,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: SelectedViewModel = hiltViewModel(),
     printViewModel: OrderPrintViewModel = hiltViewModel(),
     shareViewModel: ShareViewModel = hiltViewModel(),
@@ -247,7 +248,7 @@ fun SelectOrderScreen(
         multiplePermissionsState = bluetoothPermissions,
         onSuccessful = {
             SelectOrderScreenContent(
-                modifier = Modifier,
+                modifier = modifier,
                 state = state,
                 selectedOrder = selectedOrder,
                 orderDetails = orderDetails,
@@ -275,14 +276,14 @@ fun SelectOrderScreen(
         },
         onError = { shouldShowRationale ->
             BluetoothPermissionDialog(
+                shouldShowRationale = shouldShowRationale,
                 onClickRequestPermission = {
                     bluetoothPermissions.launchMultiplePermissionRequest()
                 },
-                onDismissRequest = navigator::navigateUp,
-                shouldShowRationale = shouldShowRationale,
                 onClickOpenSettings = {
                     context.findActivity().openAppSettings()
                 },
+                onDismissRequest = navigator::navigateUp,
             )
         },
     )
@@ -326,7 +327,6 @@ fun SelectOrderScreen(
 @VisibleForTesting
 @Composable
 internal fun SelectOrderScreenContent(
-    modifier: Modifier = Modifier,
     state: UiState<List<CartOrder>>,
     selectedOrder: Int,
     orderDetails: SelectedOrderDetails,
@@ -344,6 +344,7 @@ internal fun SelectOrderScreenContent(
     onEditClick: (Int) -> Unit,
     onShareClick: (Int) -> Unit,
     onClickCreateOrder: () -> Unit,
+    modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
@@ -480,7 +481,6 @@ internal fun SelectOrderScreenContent(
 
 @Composable
 private fun SelectedCartOrderData(
-    modifier: Modifier = Modifier,
     cartOrder: CartOrder,
     orderDetails: SelectedOrderDetails,
     addOnItems: List<AddOnItem>,
@@ -494,6 +494,7 @@ private fun SelectedCartOrderData(
     onUpdateDeliveryPartner: (orderId: Int, partnerId: Int) -> Unit,
     onPlaceOrder: (orderId: Int) -> Unit,
     onPrintOrder: (orderId: Int) -> Unit,
+    modifier: Modifier = Modifier,
     showDeliveryPartner: Boolean = deliveryPartners.isNotEmpty() &&
         cartOrder.orderType == OrderType.DineOut,
 ) = trace("CartOrders") {
@@ -523,10 +524,10 @@ private fun SelectedCartOrderData(
                 is SelectedOrderDetails.Empty -> {
                     NoteText(
                         text = "You have not added any products yet.",
-                        style = MaterialTheme.typography.labelMedium,
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
                             .padding(bottom = SpaceSmall),
+                        style = MaterialTheme.typography.labelMedium,
                     )
                 }
 
@@ -562,7 +563,7 @@ private fun SelectedCartOrderData(
 
                                 CartDeliveryPartners(
                                     partners = deliveryPartners,
-                                    doesSelected = {
+                                    selected = {
                                         it == orderDetails.cartItem.deliveryPartnerId
                                     },
                                     onClick = {
@@ -635,13 +636,13 @@ private fun SelectedCartOrderData(
 
 @Composable
 private fun CartOrderData(
-    modifier: Modifier = Modifier,
     cartOrder: CartOrder,
     doesSelected: (Int) -> Boolean,
     onSelectOrder: (Int) -> Unit,
     onDeleteClick: (Int) -> Unit,
     onEditClick: (Int) -> Unit,
     onShareClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     containerColor: Color = containerColorFor(cartOrder.orderType),
     contentColor: Color = contentColorFor(cartOrder.orderType),
     icon: ImageVector = getIconFor(cartOrder.orderType),
@@ -679,7 +680,7 @@ private fun CartOrderData(
                 ) {
                     CircularBox(
                         icon = PoposIcons.Tag,
-                        doesSelected = doesSelected(cartOrder.orderId),
+                        selected = doesSelected(cartOrder.orderId),
                         size = 30.dp,
                     )
 
@@ -718,22 +719,22 @@ private fun CartOrderData(
         PoposIconButton(
             icon = PoposIcons.Edit,
             onClick = { onEditClick(cartOrder.orderId) },
-            containerColor = MaterialTheme.colorScheme.primary,
             shape = RoundedCornerShape(SpaceMini),
+            containerColor = MaterialTheme.colorScheme.primary,
         )
 
         PoposIconButton(
             icon = PoposIcons.Delete,
             onClick = { onDeleteClick(cartOrder.orderId) },
-            containerColor = MaterialTheme.colorScheme.secondary,
             shape = RoundedCornerShape(SpaceMini),
+            containerColor = MaterialTheme.colorScheme.secondary,
         )
 
         PoposIconButton(
             icon = PoposIcons.Share,
             onClick = { onShareClick(cartOrder.orderId) },
-            containerColor = MaterialTheme.colorScheme.tertiary,
             shape = RoundedCornerShape(SpaceMini),
+            containerColor = MaterialTheme.colorScheme.tertiary,
         )
     }
 }

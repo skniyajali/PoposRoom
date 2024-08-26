@@ -54,7 +54,7 @@ fun GroupedBarChart(
     modifier: Modifier = Modifier,
     onBarClick: (BarData) -> Unit = {},
     barDimens: ChartDimens = ChartDimensDefaults.chartDimesDefaults(),
-    axisConfig: AxisConfig = AxisConfigDefaults.axisConfigDefaults(isSystemInDarkTheme()),
+    axisConfig: AxisConfig = AxisConfigDefaults.configDefaults(isSystemInDarkTheme()),
     barConfig: BarConfig = BarConfigDefaults.barConfigDimesDefaults(),
 ) {
     val barWidth = remember { mutableFloatStateOf(0F) }
@@ -72,9 +72,11 @@ fun GroupedBarChart(
             }
             .padding(horizontal = barDimens.padding)
             .pointerInput(Unit) {
-                detectTapGestures(onPress = { offset ->
-                    clickedBar.value = offset
-                })
+                detectTapGestures(
+                    onPress = { offset ->
+                        clickedBar.value = offset
+                    },
+                )
             },
     ) {
         barWidth.floatValue = size.width.div(totalItems.times(1.2F))
@@ -82,11 +84,14 @@ fun GroupedBarChart(
         val groupedBarDataColor: List<Color> = groupedBarData.flatMap { it.colors }
         val groupedBarDataCount = groupedBarData.flatMap { it.barData }.count()
 
-        if (groupedBarDataColor.count() != groupedBarDataCount) throw Exception("Total colors cannot be more then $groupedBarDataCount")
+        if (groupedBarDataColor.count() != groupedBarDataCount) {
+            throw Exception("Total colors cannot be more then $groupedBarDataCount")
+        }
 
         groupedBarData.flatMap { it.barData }
             .forEachIndexed { index, data ->
-                val topLeft = getTopLeft(index, barWidth.floatValue, size, data.yValue, yScalableFactor)
+                val topLeft =
+                    getTopLeft(index, barWidth.floatValue, size, data.yValue, yScalableFactor)
                 val topRight =
                     getTopRight(index, barWidth.floatValue, size, data.yValue, yScalableFactor)
                 val barHeight = data.yValue.times(yScalableFactor)

@@ -54,9 +54,10 @@ fun TotalExpenses(
     totalItem: String,
     selectedDate: String,
     onDateClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("TotalExpenses") {
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(SpaceSmall),
         color = MaterialTheme.colorScheme.background,
@@ -78,7 +79,7 @@ fun TotalExpenses(
                 ) {
                     CircularBox(
                         icon = PoposIcons.TrendingUp,
-                        doesSelected = false,
+                        selected = false,
                     )
                     Spacer(modifier = Modifier.width(SpaceSmall))
                     Text(
@@ -91,8 +92,8 @@ fun TotalExpenses(
                 PoposOutlinedAssistChip(
                     text = selectedDate.toPrettyDate(),
                     icon = PoposIcons.CalenderMonth,
-                    onClick = onDateClick,
                     trailingIcon = PoposIcons.ArrowDown,
+                    onClick = onDateClick,
                 )
             }
 
@@ -132,6 +133,7 @@ private fun TotalExpensesPreview(
             totalItem = "10",
             selectedDate = Clock.System.now().toEpochMilliseconds().toString(),
             onDateClick = {},
+            modifier = modifier,
         )
     }
 }

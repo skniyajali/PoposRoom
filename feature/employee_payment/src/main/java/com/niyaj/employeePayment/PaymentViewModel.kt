@@ -44,8 +44,8 @@ class PaymentViewModel @Inject constructor(
     override var totalItems: List<Int> = emptyList()
 
     val payments = snapshotFlow { mSearchText.value }
-        .flatMapLatest { it ->
-            paymentRepository.getAllEmployeePayments(it)
+        .flatMapLatest { data ->
+            paymentRepository.getAllEmployeePayments(data)
                 .onStart { UiState.Loading }
                 .map { items ->
                     totalItems = items.flatMap { payment -> payment.payments.map { it.paymentId } }
@@ -72,7 +72,11 @@ class PaymentViewModel @Inject constructor(
                 }
 
                 is Resource.Success -> {
-                    mEventFlow.emit(UiEvent.OnSuccess("${selectedItems.size} payments has been deleted"))
+                    mEventFlow.emit(
+                        UiEvent.OnSuccess(
+                            "${selectedItems.size} payments has been deleted",
+                        ),
+                    )
                     analyticsHelper.logDeletedPayments(selectedItems.toList())
                 }
             }

@@ -118,10 +118,11 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 @Destination(route = Screens.ADD_EDIT_CART_ORDER_SCREEN)
 @Composable
 fun AddEditCartOrderScreen(
-    cartOrderId: Int = 0,
     navigator: DestinationsNavigator,
-    viewModel: AddEditCartOrderViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    cartOrderId: Int = 0,
+    viewModel: AddEditCartOrderViewModel = hiltViewModel(),
 ) {
     val customers by viewModel.customers.collectAsStateWithLifecycle()
     val addresses by viewModel.addresses.collectAsStateWithLifecycle()
@@ -156,10 +157,10 @@ fun AddEditCartOrderScreen(
     TrackScreenViewEvent(screenName = Screens.ADD_EDIT_CART_ORDER_SCREEN)
 
     AddEditCartOrderScreenContent(
-        modifier = Modifier,
         title = title,
         icon = icon,
         orderId = orderId.toString(),
+        modifier = modifier,
         state = viewModel.state,
         addresses = addresses,
         customers = customers,
@@ -176,21 +177,22 @@ fun AddEditCartOrderScreen(
 @VisibleForTesting
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+@Suppress("LongMethod")
 internal fun AddEditCartOrderScreenContent(
-    modifier: Modifier = Modifier,
-    title: String = CREATE_NEW_CART_ORDER,
-    icon: ImageVector = PoposIcons.Add,
     orderId: String,
     state: AddEditCartOrderState,
     addresses: List<Address>,
     customers: List<Customer>,
-    addressError: String? = null,
-    customerError: String? = null,
     addOnState: UiState<List<AddOnItem>>,
     chargesState: UiState<List<Charges>>,
     partnerState: UiState<List<EmployeeNameAndId>>,
     onBackClick: () -> Unit,
     onEvent: (AddEditCartOrderEvent) -> Unit,
+    modifier: Modifier = Modifier,
+    addressError: String? = null,
+    customerError: String? = null,
+    title: String = CREATE_NEW_CART_ORDER,
+    icon: ImageVector = PoposIcons.Add,
 ) {
     val lazyListState = rememberLazyListState()
     val height = (LocalConfiguration.current.screenHeightDp / 2).dp
@@ -205,8 +207,9 @@ internal fun AddEditCartOrderScreenContent(
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = true,
         showBottomBar = true,
         bottomBar = {
@@ -222,7 +225,6 @@ internal fun AddEditCartOrderScreenContent(
                 },
             )
         },
-        onBackClick = onBackClick,
     ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "CreateOrUpdate Cart Order")
 
@@ -245,9 +247,8 @@ internal fun AddEditCartOrderScreenContent(
                 )
 
                 MultiSelector(
-                    options = orderTypes,
-                    icons = icons,
                     selectedOption = state.orderType.name,
+                    options = orderTypes,
                     onOptionSelect = { option ->
                         onEvent(
                             AddEditCartOrderEvent.OrderTypeChanged(OrderType.valueOf(option)),
@@ -257,6 +258,7 @@ internal fun AddEditCartOrderScreenContent(
                         .height(48.dp)
                         .testTag(ORDER_TYPE_FIELD)
                         .fillMaxWidth(),
+                    icons = icons,
                 )
 
                 Spacer(modifier = Modifier.height(SpaceMedium))
@@ -264,11 +266,11 @@ internal fun AddEditCartOrderScreenContent(
 
             item(ORDER_ID_FIELD) {
                 StandardOutlinedTextField(
-                    value = orderId,
                     label = ORDER_ID_FIELD,
                     leadingIcon = PoposIcons.Tag,
-                    readOnly = true,
+                    value = orderId,
                     onValueChange = {},
+                    readOnly = true,
                 )
             }
 
@@ -287,6 +289,13 @@ internal fun AddEditCartOrderScreenContent(
                         },
                     ) {
                         StandardOutlinedTextField(
+                            label = ADDRESS_NAME_FIELD,
+                            leadingIcon = PoposIcons.Address,
+                            value = state.address.addressName,
+                            onValueChange = {
+                                onEvent(AddEditCartOrderEvent.AddressNameChanged(it))
+                                addressToggled = true
+                            },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .onGloballyPositioned { coordinates ->
@@ -294,25 +303,18 @@ internal fun AddEditCartOrderScreenContent(
                                     textFieldSize = coordinates.size.toSize()
                                 }
                                 .menuAnchor(),
-                            value = state.address.addressName,
-                            label = ADDRESS_NAME_FIELD,
-                            leadingIcon = PoposIcons.Address,
                             isError = addressError != null,
                             errorText = addressError,
-                            errorTextTag = ADDRESS_NAME_ERROR_FIELD,
-                            showClearIcon = state.address.addressName.isNotEmpty(),
-                            onClickClearIcon = {
-                                onEvent(AddEditCartOrderEvent.AddressNameChanged(""))
-                                addressToggled = true
-                            },
-                            onValueChange = {
-                                onEvent(AddEditCartOrderEvent.AddressNameChanged(it))
-                                addressToggled = true
-                            },
                             trailingIcon = {
                                 ExposedDropdownMenuDefaults.TrailingIcon(
                                     expanded = addressToggled,
                                 )
+                            },
+                            showClearIcon = state.address.addressName.isNotEmpty(),
+                            errorTextTag = ADDRESS_NAME_ERROR_FIELD,
+                            onClickClearIcon = {
+                                onEvent(AddEditCartOrderEvent.AddressNameChanged(""))
+                                addressToggled = true
                             },
                         )
                         if (addresses.isNotEmpty()) {
@@ -349,10 +351,10 @@ internal fun AddEditCartOrderScreenContent(
                                         leadingIcon = {
                                             CircularBox(
                                                 icon = PoposIcons.Address,
-                                                doesSelected = false,
-                                                size = 30.dp,
-                                                showBorder = false,
+                                                selected = false,
                                                 text = address.addressName,
+                                                showBorder = false,
+                                                size = 30.dp,
                                             )
                                         },
                                     )
@@ -386,6 +388,15 @@ internal fun AddEditCartOrderScreenContent(
                         },
                     ) {
                         StandardOutlinedTextField(
+                            label = CUSTOMER_PHONE_FIELD,
+                            leadingIcon = PoposIcons.PhoneAndroid,
+                            value = state.customer.customerPhone,
+                            onValueChange = {
+                                onEvent(
+                                    AddEditCartOrderEvent.CustomerPhoneChanged(it),
+                                )
+                                customerToggled = true
+                            },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .onGloballyPositioned { coordinates ->
@@ -393,24 +404,16 @@ internal fun AddEditCartOrderScreenContent(
                                     textFieldSize = coordinates.size.toSize()
                                 }
                                 .menuAnchor(),
-                            value = state.customer.customerPhone,
-                            label = CUSTOMER_PHONE_FIELD,
-                            leadingIcon = PoposIcons.PhoneAndroid,
                             isError = customerError != null,
                             errorText = customerError,
-                            errorTextTag = CUSTOMER_PHONE_ERROR_FIELD,
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(
+                                    expanded = customerToggled,
+                                )
+                            },
                             keyboardType = KeyboardType.Number,
                             showClearIcon = state.customer.customerPhone.isNotEmpty(),
-                            onClickClearIcon = {
-                                onEvent(AddEditCartOrderEvent.CustomerPhoneChanged(""))
-                                customerToggled = true
-                            },
-                            onValueChange = {
-                                onEvent(
-                                    AddEditCartOrderEvent.CustomerPhoneChanged(it),
-                                )
-                                customerToggled = true
-                            },
+                            errorTextTag = CUSTOMER_PHONE_ERROR_FIELD,
                             suffix = {
                                 AnimatedVisibility(
                                     visible = state.customer.customerPhone.length != 10,
@@ -420,10 +423,9 @@ internal fun AddEditCartOrderScreenContent(
                                     )
                                 }
                             },
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(
-                                    expanded = customerToggled,
-                                )
+                            onClickClearIcon = {
+                                onEvent(AddEditCartOrderEvent.CustomerPhoneChanged(""))
+                                customerToggled = true
                             },
                         )
 
@@ -461,9 +463,9 @@ internal fun AddEditCartOrderScreenContent(
                                         leadingIcon = {
                                             CircularBox(
                                                 icon = PoposIcons.PhoneAndroid,
-                                                doesSelected = false,
-                                                size = 30.dp,
+                                                selected = false,
                                                 showBorder = false,
+                                                size = 30.dp,
                                             )
                                         },
                                     )
@@ -539,7 +541,7 @@ internal fun AddEditCartOrderScreenContent(
 
                                     CartDeliveryPartners(
                                         partners = uiState.data,
-                                        doesSelected = {
+                                        selected = {
                                             state.deliveryPartnerId == it
                                         },
                                         onClick = {

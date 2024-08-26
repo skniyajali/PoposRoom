@@ -96,17 +96,17 @@ internal fun ChargesList(
 
 @Composable
 private fun ChargesData(
-    modifier: Modifier = Modifier,
     item: Charges,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("ChargesData") {
     StandardElevatedCard(
         modifier = modifier
             .height(IntrinsicSize.Max),
         testTag = CHARGES_TAG.plus(item.chargesId),
-        doesSelected = doesSelected(item.chargesId),
+        selected = doesSelected(item.chargesId),
         onClick = {
             onClick(item.chargesId)
         },
@@ -140,7 +140,7 @@ private fun ChargesData(
 
             CircularBox(
                 icon = PoposIcons.Bolt,
-                doesSelected = doesSelected(item.chargesId),
+                selected = doesSelected(item.chargesId),
                 showBorder = !item.isApplicable,
             )
         }
@@ -154,7 +154,6 @@ private fun ChargesDataPreview(
 ) {
     PoposRoomTheme {
         ChargesData(
-            modifier = modifier,
             item = Charges(
                 chargesId = 1,
                 chargesName = "New Charges check for clipping data in the card",
@@ -164,6 +163,7 @@ private fun ChargesDataPreview(
             doesSelected = { true },
             onClick = {},
             onLongClick = {},
+            modifier = modifier,
         )
     }
 }

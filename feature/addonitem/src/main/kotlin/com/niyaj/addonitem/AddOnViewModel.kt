@@ -30,7 +30,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -43,23 +42,20 @@ class AddOnViewModel @Inject constructor(
 
     override var totalItems: List<Int> = emptyList()
 
-    val addOnItems = snapshotFlow { mSearchText.value }
-        .flatMapLatest { it ->
-            itemRepository.getAllAddOnItem(it)
-                .onStart { UiState.Loading }
-                .map { items ->
-                    totalItems = items.map { it.itemId }
-                    if (items.isEmpty()) {
-                        UiState.Empty
-                    } else {
-                        UiState.Success(items)
-                    }
-                }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = UiState.Loading,
-        )
+    val addOnItems = snapshotFlow { mSearchText.value }.flatMapLatest {
+        itemRepository.getAllAddOnItem(it)
+    }.map { items ->
+        totalItems = items.map { it.itemId }
+        if (items.isEmpty()) {
+            UiState.Empty
+        } else {
+            UiState.Success(items)
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = UiState.Loading,
+    )
 
     override fun deleteItems() {
         super.deleteItems()

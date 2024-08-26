@@ -89,6 +89,7 @@ import kotlinx.coroutines.launch
 fun PaymentImportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: PaymentSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -131,7 +132,7 @@ fun PaymentImportScreen(
     }
 
     PaymentImportScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         importedItems = importedItems.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         onClickSelectItem = viewModel::selectItem,
@@ -150,7 +151,6 @@ fun PaymentImportScreen(
 @VisibleForTesting
 @Composable
 internal fun PaymentImportScreenContent(
-    modifier: Modifier = Modifier,
     importedItems: ImmutableList<EmployeeWithPayments>,
     selectedItems: ImmutableList<Int>,
     onClickSelectItem: (Int) -> Unit,
@@ -159,6 +159,7 @@ internal fun PaymentImportScreenContent(
     onClickImport: () -> Unit,
     onClickOpenFile: () -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
     padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
@@ -176,11 +177,23 @@ internal fun PaymentImportScreenContent(
     var viewType by remember { mutableStateOf(ViewType.CARD) }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = if (selectedItems.isEmpty()) IMPORT_PAYMENT_TITLE else "${selectedItems.size} Selected",
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = selectedItems.isEmpty(),
         showBottomBar = importedItems.isNotEmpty(),
         showSecondaryBottomBar = true,
+        fabPosition = FabPosition.End,
+        navigationIcon = {
+            IconButton(
+                onClick = onClickDeselect,
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Deselect All",
+                )
+            }
+        },
         navActions = {
             AnimatedVisibility(
                 visible = importedItems.isNotEmpty(),
@@ -215,6 +228,16 @@ internal fun PaymentImportScreenContent(
                 }
             }
         },
+        floatingActionButton = {
+            ScrollToTop(
+                visible = !lazyListState.isScrollingUp(),
+                onClick = {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(index = 0)
+                    }
+                },
+            )
+        },
         bottomBar = {
             Column(
                 modifier = Modifier
@@ -222,7 +245,15 @@ internal fun PaymentImportScreenContent(
                     .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} payments will be imported.")
+                InfoText(
+                    text = "${
+                        if (selectedItems.isEmpty()) {
+                            "All"
+                        } else {
+                            "${selectedItems.size}"
+                        }
+                    } payments will be imported.",
+                )
 
                 PoposButton(
                     modifier = Modifier
@@ -235,28 +266,6 @@ internal fun PaymentImportScreenContent(
                         containerColor = MaterialTheme.colorScheme.primary,
                     ),
                     onClick = onClickImport,
-                )
-            }
-        },
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyListState.isScrollingUp(),
-                onClick = {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(index = 0)
-                    }
-                },
-            )
-        },
-        onBackClick = onBackClick,
-        navigationIcon = {
-            IconButton(
-                onClick = onClickDeselect,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Deselect All",
                 )
             }
         },
@@ -276,11 +285,11 @@ internal fun PaymentImportScreenContent(
                 )
             } else {
                 EmployeePaymentList(
-                    modifier = Modifier,
                     viewType = viewType,
                     items = importedItems,
                     doesSelected = selectedItems::contains,
                     onSelectItem = onClickSelectItem,
+                    modifier = Modifier,
                     isInSelectionMode = true,
                     lazyListState = lazyListState,
                 )

@@ -47,7 +47,6 @@ class DatabaseHelper @Inject constructor(
                 return it.count > 0
             }
         } catch (e: Exception) {
-            e.printStackTrace()
             return false
         } finally {
             newDatabase?.close()
@@ -66,7 +65,6 @@ class DatabaseHelper @Inject constructor(
 
             return true
         } catch (e: Exception) {
-            e.printStackTrace()
             return false
         } finally {
             newDatabase?.close()

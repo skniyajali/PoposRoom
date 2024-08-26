@@ -49,9 +49,10 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 @Composable
 fun ChargesSettingsScreen(
     navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
 ) {
     ChargesSettingsScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         onBackClick = navigator::navigateUp,
         onImportClick = {
             navigator.navigate(ChargesImportScreenDestination())
@@ -65,10 +66,10 @@ fun ChargesSettingsScreen(
 @VisibleForTesting
 @Composable
 internal fun ChargesSettingsScreenContent(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onImportClick: () -> Unit,
     onExportClick: () -> Unit,
+    modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     TrackScreenViewEvent(screenName = "Charges Settings Screen")

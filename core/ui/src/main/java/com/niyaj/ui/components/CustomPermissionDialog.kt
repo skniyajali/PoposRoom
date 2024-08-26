@@ -66,54 +66,18 @@ import com.niyaj.core.ui.R
 import com.niyaj.designsystem.components.PoposTextButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.IconSizeExtraLarge
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.ProfilePictureSizeExtraLarge
 import com.niyaj.designsystem.theme.ProfilePictureSizeMedium
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
 import com.niyaj.designsystem.theme.gradient2
-
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun HandleBluetoothPermissionState(
-    multiplePermissionsState: MultiplePermissionsState,
-    onSuccessful: @Composable () -> Unit,
-    onError: @Composable (Boolean) -> Unit,
-) {
-    if (multiplePermissionsState.allPermissionsGranted) {
-        onSuccessful.invoke()
-    } else {
-        onError.invoke(multiplePermissionsState.shouldShowRationale)
-    }
-}
-
-@Composable
-fun BluetoothPermissionDialog(
-    modifier: Modifier = Modifier,
-    shouldShowRationale: Boolean,
-    onClickRequestPermission: () -> Unit,
-    onClickOpenSettings: () -> Unit,
-    onDismissRequest: () -> Unit,
-) {
-    val text = if (shouldShowRationale) BLUETOOTH_PER_RATIONAL_TEXT else BLUETOOTH_PER_DENY_TEXT
-
-    CustomPermissionDialog(
-        modifier = modifier,
-        title = "Nearby Devices",
-        text = text,
-        icon = PoposIcons.NearbyOff,
-        image = ImageVector.vectorResource(R.drawable.bluetooth_icon),
-        shouldShowRationale = shouldShowRationale,
-        onClickRequestPermission = onClickRequestPermission,
-        onClickOpenSettings = onClickOpenSettings,
-        onDismissRequest = onDismissRequest,
-    )
-}
+import com.niyaj.ui.utils.DevicePreviews
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomPermissionDialog(
-    modifier: Modifier = Modifier,
     title: String,
     text: String,
     icon: ImageVector,
@@ -121,6 +85,7 @@ fun CustomPermissionDialog(
     onClickRequestPermission: () -> Unit,
     onClickOpenSettings: () -> Unit,
     onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
     image: ImageVector? = null,
     shape: Shape = AlertDialogDefaults.shape,
     containerColor: Color = AlertDialogDefaults.containerColor,
@@ -225,14 +190,51 @@ fun CustomPermissionDialog(
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun HandleBluetoothPermissionState(
+    multiplePermissionsState: MultiplePermissionsState,
+    onSuccessful: @Composable () -> Unit,
+    onError: @Composable (Boolean) -> Unit,
+) {
+    if (multiplePermissionsState.allPermissionsGranted) {
+        onSuccessful.invoke()
+    } else {
+        onError.invoke(multiplePermissionsState.shouldShowRationale)
+    }
+}
+
+@Composable
+fun BluetoothPermissionDialog(
+    shouldShowRationale: Boolean,
+    onClickRequestPermission: () -> Unit,
+    onClickOpenSettings: () -> Unit,
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val text = if (shouldShowRationale) BLUETOOTH_PER_RATIONAL_TEXT else BLUETOOTH_PER_DENY_TEXT
+
+    CustomPermissionDialog(
+        title = "Nearby Devices",
+        text = text,
+        icon = PoposIcons.NearbyOff,
+        shouldShowRationale = shouldShowRationale,
+        onClickRequestPermission = onClickRequestPermission,
+        onClickOpenSettings = onClickOpenSettings,
+        onDismissRequest = onDismissRequest,
+        modifier = modifier,
+        image = ImageVector.vectorResource(R.drawable.bluetooth_icon),
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StandardDialog(
-    modifier: Modifier = Modifier,
     title: String,
     message: String,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
     onConfirmText: String = DIALOG_CONFIRM_TEXT,
     onDismissText: String = DIALOG_DISMISS_TEXT,
     boxColor: Brush = gradient2,
@@ -329,5 +331,57 @@ fun StandardDialog(
                 }
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CustomPermissionDialogPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        CustomPermissionDialog(
+            title = "Nearby Devices",
+            text = BLUETOOTH_PER_RATIONAL_TEXT,
+            icon = PoposIcons.NearbyOff,
+            shouldShowRationale = true,
+            onClickRequestPermission = {},
+            onClickOpenSettings = {},
+            onDismissRequest = {},
+            modifier = modifier,
+            image = ImageVector.vectorResource(R.drawable.bluetooth_icon),
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun BluetoothPermissionDialogPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        BluetoothPermissionDialog(
+            shouldShowRationale = true,
+            onClickRequestPermission = {},
+            onClickOpenSettings = {},
+            onDismissRequest = {},
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun StandardDialogPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardDialog(
+            title = "Delete Account",
+            message = "Are you sure you want to delete your account?",
+            onConfirm = {},
+            onDismiss = {},
+            modifier = modifier,
+        )
     }
 }

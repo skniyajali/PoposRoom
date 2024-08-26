@@ -23,6 +23,7 @@ import com.niyaj.common.result.Resource
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.CustomerRepository
 import com.niyaj.database.dao.CustomerDao
+import com.niyaj.database.model.CustomerEntity
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Customer
 import com.niyaj.model.CustomerWiseOrder
@@ -41,10 +42,8 @@ class CustomerRepositoryImpl @Inject constructor(
 
     override suspend fun getAllCustomer(searchText: String): Flow<List<Customer>> {
         return withContext(ioDispatcher) {
-            customerDao.getAllCustomer().mapLatest { it ->
-                it.map {
-                    it.asExternalModel()
-                }.searchCustomer(searchText)
+            customerDao.getAllCustomer().mapLatest {
+                it.map(CustomerEntity::asExternalModel).searchCustomer(searchText)
             }
         }
     }

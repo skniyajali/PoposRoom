@@ -83,6 +83,7 @@ import kotlinx.coroutines.launch
 fun MarketListItemsScreen(
     listTypeIds: IntArray,
     navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
     viewModel: MarketListItemsViewModel = hiltViewModel(),
     shareViewModel: ShareViewModel = hiltViewModel(),
 ) {
@@ -118,7 +119,6 @@ fun MarketListItemsScreen(
     TrackScreenViewEvent(screenName = "$UPDATE_LIST/listIds/${listTypeIds.joinToString(", ")}")
 
     MarketListItemsScreenContent(
-        modifier = Modifier,
         uiState = uiState,
         marketDetails = marketDetails,
         showSearchBar = showSearchBar,
@@ -137,6 +137,7 @@ fun MarketListItemsScreen(
         onClickAddNewMarketItem = {
             navigator.navigate(AddEditMarketItemScreenDestination())
         },
+        modifier = modifier,
         snackbarState = snackbarState,
     )
 
@@ -175,7 +176,6 @@ fun MarketListItemsScreen(
 @VisibleForTesting
 @Composable
 internal fun MarketListItemsScreenContent(
-    modifier: Modifier = Modifier,
     uiState: UiState<List<MarketItemAndQuantity>>,
     marketDetails: MarketListAndType?,
     showSearchBar: Boolean,
@@ -192,6 +192,7 @@ internal fun MarketListItemsScreenContent(
     onIncreaseQuantity: (listTypeId: Int, itemId: Int) -> Unit,
     onBackClick: () -> Unit,
     onClickAddNewMarketItem: () -> Unit,
+    modifier: Modifier = Modifier,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
@@ -206,8 +207,9 @@ internal fun MarketListItemsScreenContent(
     val showFab = uiState is UiState.Success
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = UPDATE_LIST,
+        onBackClick = if (showSearchBar) onCloseSearchBar else onBackClick,
+        modifier = modifier,
         showBackButton = true,
         showFab = false,
         snackbarHostState = snackbarState,
@@ -249,7 +251,6 @@ internal fun MarketListItemsScreenContent(
                 }
             }
         },
-        onBackClick = if (showSearchBar) onCloseSearchBar else onBackClick,
     ) { paddingValues ->
         Column(
             modifier = Modifier

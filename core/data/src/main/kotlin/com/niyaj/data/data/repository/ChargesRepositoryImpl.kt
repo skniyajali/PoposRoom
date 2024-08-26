@@ -23,6 +23,7 @@ import com.niyaj.common.result.Resource
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.ChargesRepository
 import com.niyaj.database.dao.ChargesDao
+import com.niyaj.database.model.ChargesEntity
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Charges
 import com.niyaj.model.searchCharges
@@ -40,10 +41,8 @@ class ChargesRepositoryImpl @Inject constructor(
 
     override suspend fun getAllCharges(searchText: String): Flow<List<Charges>> {
         return withContext(ioDispatcher) {
-            chargesDao.getAllCharges().mapLatest { it ->
-                it.map {
-                    it.asExternalModel()
-                }.searchCharges(searchText)
+            chargesDao.getAllCharges().mapLatest {
+                it.map(ChargesEntity::asExternalModel).searchCharges(searchText)
             }
         }
     }

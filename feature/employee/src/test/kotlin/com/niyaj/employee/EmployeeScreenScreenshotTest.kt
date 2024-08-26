@@ -417,12 +417,12 @@ class EmployeeScreenScreenshotTest {
                     paymentsState = UiState.Loading,
                     absentState = UiState.Loading,
                     salaryDates = persistentListOf(),
-                    selectedSalaryDate = null,
                     onEvent = {},
                     onBackClick = {},
                     onClickAddPayment = {},
                     onClickAddAbsent = {},
                     onClickEdit = {},
+                    selectedSalaryDate = null,
                 )
             }
         }
@@ -438,12 +438,12 @@ class EmployeeScreenScreenshotTest {
                     paymentsState = UiState.Empty,
                     absentState = UiState.Empty,
                     salaryDates = persistentListOf(),
-                    selectedSalaryDate = null,
                     onEvent = {},
                     onBackClick = {},
                     onClickAddPayment = {},
                     onClickAddAbsent = {},
                     onClickEdit = {},
+                    selectedSalaryDate = null,
                 )
             }
         }
@@ -459,12 +459,12 @@ class EmployeeScreenScreenshotTest {
                     paymentsState = UiState.Success(EmployeePreviewData.employeePayments),
                     absentState = UiState.Success(EmployeePreviewData.employeeAbsentDates),
                     salaryDates = EmployeePreviewData.employeeMonthlyDates.toImmutableList(),
-                    selectedSalaryDate = null,
                     onEvent = {},
                     onBackClick = {},
                     onClickAddPayment = {},
                     onClickAddAbsent = {},
                     onClickEdit = {},
+                    selectedSalaryDate = null,
                 )
             }
         }

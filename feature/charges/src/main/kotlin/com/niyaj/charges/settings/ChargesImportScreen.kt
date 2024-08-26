@@ -63,6 +63,7 @@ import kotlinx.coroutines.launch
 fun ChargesImportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: ChargesSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -105,7 +106,7 @@ fun ChargesImportScreen(
     }
 
     ChargesImportScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         importedItems = importedItems.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         isLoading = isLoading,
@@ -125,7 +126,6 @@ fun ChargesImportScreen(
 @VisibleForTesting
 @Composable
 internal fun ChargesImportScreenContent(
-    modifier: Modifier = Modifier,
     importedItems: ImmutableList<Charges>,
     selectedItems: ImmutableList<Int>,
     isLoading: Boolean,
@@ -135,6 +135,7 @@ internal fun ChargesImportScreenContent(
     onClickImport: () -> Unit,
     onClickOpenFile: () -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
@@ -174,7 +175,7 @@ internal fun ChargesImportScreenContent(
         },
     ) {
         ChargesList(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize(),
             chargesList = importedItems,
             onClick = onClickSelectItem,

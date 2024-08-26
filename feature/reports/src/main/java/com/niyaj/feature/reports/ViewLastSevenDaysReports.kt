@@ -60,6 +60,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Composable
 fun ViewLastSevenDaysReports(
     navController: DestinationsNavigator,
+    modifier: Modifier = Modifier,
     reportsViewModel: ReportsViewModel = hiltViewModel(),
 ) {
     val lazyListState = rememberLazyListState()
@@ -69,8 +70,9 @@ fun ViewLastSevenDaysReports(
 
     PoposSecondaryScaffold(
         title = "Last 7 Days Reports",
-        showBackButton = true,
         onBackClick = navController::navigateUp,
+        showBackButton = true,
+        modifier = modifier,
     ) {
         Crossfade(
             targetState = uiState,

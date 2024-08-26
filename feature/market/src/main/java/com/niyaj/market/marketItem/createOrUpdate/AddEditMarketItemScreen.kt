@@ -89,10 +89,11 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 @Destination
 @Composable
 fun AddEditMarketItemScreen(
-    itemId: Int = 0,
     navigator: DestinationsNavigator,
-    viewModel: AddEditMarketItemViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    itemId: Int = 0,
+    viewModel: AddEditMarketItemViewModel = hiltViewModel(),
 ) {
     val typeError by viewModel.typeError.collectAsStateWithLifecycle()
     val nameError by viewModel.nameError.collectAsStateWithLifecycle()
@@ -120,7 +121,7 @@ fun AddEditMarketItemScreen(
     val icon = if (itemId == 0) PoposIcons.Add else PoposIcons.Edit
 
     AddEditMarketItemScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         title = title,
         icon = icon,
         state = viewModel.state,
@@ -143,10 +144,8 @@ fun AddEditMarketItemScreen(
 
 @VisibleForTesting
 @Composable
+@Suppress("LongMethod")
 internal fun AddEditMarketItemScreenContent(
-    modifier: Modifier = Modifier,
-    title: String = CREATE_NEW_ITEM,
-    icon: ImageVector = PoposIcons.Add,
     state: AddEditMarketItemState,
     typeNames: List<MarketTypeIdAndName>,
     measureUnits: List<MeasureUnit>,
@@ -158,6 +157,9 @@ internal fun AddEditMarketItemScreenContent(
     onBackClick: () -> Unit,
     onClickAddMarketType: (String) -> Unit,
     onClickAddMeasureUnit: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    title: String = CREATE_NEW_ITEM,
+    icon: ImageVector = PoposIcons.Add,
 ) {
     val lazyListState = rememberLazyListState()
     val enableBtn = listOf(typeError, nameError, amountError, unitError).all {
@@ -169,10 +171,11 @@ internal fun AddEditMarketItemScreenContent(
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
-        showBottomBar = true,
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = true,
+        showBottomBar = true,
         bottomBar = {
             PoposButton(
                 modifier = Modifier
@@ -186,7 +189,6 @@ internal fun AddEditMarketItemScreenContent(
                 },
             )
         },
-        onBackClick = onBackClick,
     ) { paddingValues ->
         TrackScrollJank(
             scrollableState = lazyListState,
@@ -205,20 +207,9 @@ internal fun AddEditMarketItemScreenContent(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     StandardOutlinedTextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .onGloballyPositioned { coordinates ->
-                                // This is used to assign to the DropDown the same width
-                                textFieldSize = coordinates.size.toSize()
-                            },
-                        value = state.marketType.typeName,
                         label = MARKET_ITEM_TYPE_FIELD,
                         leadingIcon = PoposIcons.Radar,
-                        isError = typeError != null,
-                        errorText = typeError,
-                        errorTextTag = MARKET_ITEM_TYPE_ERROR_TAG,
-                        readOnly = false,
-                        showClearIcon = state.marketType.typeName.isNotEmpty(),
+                        value = state.marketType.typeName,
                         onValueChange = {
                             expanded = true
                             onEvent(
@@ -227,6 +218,20 @@ internal fun AddEditMarketItemScreenContent(
                                 ),
                             )
                         },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onGloballyPositioned { coordinates ->
+                                // This is used to assign to the DropDown the same width
+                                textFieldSize = coordinates.size.toSize()
+                            },
+                        isError = typeError != null,
+                        errorText = typeError,
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                        },
+                        showClearIcon = state.marketType.typeName.isNotEmpty(),
+                        readOnly = false,
+                        errorTextTag = MARKET_ITEM_TYPE_ERROR_TAG,
                         onClickClearIcon = {
                             expanded = true
                             onEvent(
@@ -234,9 +239,6 @@ internal fun AddEditMarketItemScreenContent(
                                     MarketTypeIdAndName(typeId = 0, typeName = ""),
                                 ),
                             )
-                        },
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                         },
                     )
 
@@ -331,16 +333,16 @@ internal fun AddEditMarketItemScreenContent(
 
             item(MARKET_ITEM_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.itemName,
                     label = MARKET_ITEM_NAME_FIELD,
                     leadingIcon = PoposIcons.WorkOutline,
-                    isError = nameError != null,
-                    errorText = nameError,
-                    errorTextTag = MARKET_ITEM_NAME_ERROR_TAG,
-                    showClearIcon = state.itemName.isNotEmpty(),
+                    value = state.itemName,
                     onValueChange = {
                         onEvent(AddEditMarketItemEvent.ItemNameChanged(it))
                     },
+                    isError = nameError != null,
+                    errorText = nameError,
+                    showClearIcon = state.itemName.isNotEmpty(),
+                    errorTextTag = MARKET_ITEM_NAME_ERROR_TAG,
                     onClickClearIcon = {
                         onEvent(AddEditMarketItemEvent.ItemNameChanged(""))
                     },
@@ -352,30 +354,30 @@ internal fun AddEditMarketItemScreenContent(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     StandardOutlinedTextField(
+                        label = MARKET_ITEM_MEASURE_FIELD,
+                        leadingIcon = PoposIcons.MonitorWeight,
+                        value = state.itemMeasureUnit.unitName,
+                        onValueChange = {
+                            measureExpanded = true
+                            onEvent(AddEditMarketItemEvent.ItemMeasureUnitNameChanged(it))
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .onGloballyPositioned { coordinates ->
                                 // This is used to assign to the DropDown the same width
                                 textFieldSize = coordinates.size.toSize()
                             },
-                        value = state.itemMeasureUnit.unitName,
-                        label = MARKET_ITEM_MEASURE_FIELD,
-                        leadingIcon = PoposIcons.MonitorWeight,
                         isError = unitError != null,
                         errorText = unitError,
-                        errorTextTag = MARKET_ITEM_MEASURE_ERROR_TAG,
-                        readOnly = false,
-                        showClearIcon = state.itemMeasureUnit.unitName.isNotEmpty(),
-                        onValueChange = {
-                            measureExpanded = true
-                            onEvent(AddEditMarketItemEvent.ItemMeasureUnitNameChanged(it))
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = measureExpanded)
                         },
+                        showClearIcon = state.itemMeasureUnit.unitName.isNotEmpty(),
+                        readOnly = false,
+                        errorTextTag = MARKET_ITEM_MEASURE_ERROR_TAG,
                         onClickClearIcon = {
                             measureExpanded = true
                             onEvent(AddEditMarketItemEvent.ItemMeasureUnitNameChanged(""))
-                        },
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = measureExpanded)
                         },
                     )
 
@@ -470,17 +472,17 @@ internal fun AddEditMarketItemScreenContent(
 
             item(MARKET_ITEM_PRICE_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.itemPrice ?: "",
                     label = MARKET_ITEM_PRICE_FIELD,
                     leadingIcon = PoposIcons.Rupee,
-                    isError = amountError != null,
-                    errorText = amountError,
-                    errorTextTag = MARKET_ITEM_PRICE_ERROR_TAG,
-                    keyboardType = KeyboardType.Number,
-                    showClearIcon = !state.itemPrice.isNullOrEmpty(),
+                    value = state.itemPrice ?: "",
                     onValueChange = {
                         onEvent(AddEditMarketItemEvent.ItemPriceChanged(it))
                     },
+                    isError = amountError != null,
+                    errorText = amountError,
+                    keyboardType = KeyboardType.Number,
+                    showClearIcon = !state.itemPrice.isNullOrEmpty(),
+                    errorTextTag = MARKET_ITEM_PRICE_ERROR_TAG,
                     onClickClearIcon = {
                         onEvent(AddEditMarketItemEvent.ItemPriceChanged(""))
                     },
@@ -489,13 +491,13 @@ internal fun AddEditMarketItemScreenContent(
 
             item(MARKET_LIST_ITEM_DESC) {
                 StandardOutlinedTextField(
-                    value = state.itemDesc ?: "",
                     label = MARKET_LIST_ITEM_DESC,
                     leadingIcon = PoposIcons.Note,
-                    showClearIcon = !state.itemDesc.isNullOrEmpty(),
+                    value = state.itemDesc ?: "",
                     onValueChange = {
                         onEvent(AddEditMarketItemEvent.ItemDescriptionChanged(it))
                     },
+                    showClearIcon = !state.itemDesc.isNullOrEmpty(),
                     onClickClearIcon = {
                         onEvent(AddEditMarketItemEvent.ItemDescriptionChanged(""))
                     },

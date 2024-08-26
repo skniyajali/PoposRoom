@@ -116,10 +116,11 @@ import java.time.LocalDate
 @Composable
 @Destination(route = Screens.ADD_EDIT_EMPLOYEE_SCREEN)
 fun AddEditEmployeeScreen(
-    employeeId: Int = 0,
     navigator: DestinationsNavigator,
-    viewModel: AddEditEmployeeViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    employeeId: Int = 0,
+    viewModel: AddEditEmployeeViewModel = hiltViewModel(),
 ) {
     val phoneError by viewModel.phoneError.collectAsStateWithLifecycle()
     val nameError by viewModel.nameError.collectAsStateWithLifecycle()
@@ -151,6 +152,7 @@ fun AddEditEmployeeScreen(
     AddEditEmployeeScreenContent(
         title = title,
         icon = icon,
+        modifier = modifier,
         state = viewModel.state,
         phoneError = phoneError,
         nameError = nameError,
@@ -165,6 +167,7 @@ fun AddEditEmployeeScreen(
 @VisibleForTesting
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+@Suppress("LongMethod")
 internal fun AddEditEmployeeScreenContent(
     state: AddEditEmployeeState,
     onEvent: (AddEditEmployeeEvent) -> Unit,
@@ -188,10 +191,10 @@ internal fun AddEditEmployeeScreenContent(
     }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
-        showBackButton = true,
         onBackClick = onBackClick,
+        modifier = modifier,
+        showBackButton = true,
         showBottomBar = true,
         bottomBar = {
             PoposButton(
@@ -220,16 +223,16 @@ internal fun AddEditEmployeeScreenContent(
         ) {
             item(EMPLOYEE_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.employeeName,
                     label = EMPLOYEE_NAME_FIELD,
                     leadingIcon = PoposIcons.Person,
-                    isError = nameError != null,
-                    errorText = nameError,
-                    errorTextTag = EMPLOYEE_NAME_ERROR,
-                    showClearIcon = state.employeeName.isNotEmpty(),
+                    value = state.employeeName,
                     onValueChange = {
                         onEvent(AddEditEmployeeEvent.EmployeeNameChanged(it))
                     },
+                    isError = nameError != null,
+                    errorText = nameError,
+                    showClearIcon = state.employeeName.isNotEmpty(),
+                    errorTextTag = EMPLOYEE_NAME_ERROR,
                     onClickClearIcon = {
                         onEvent(AddEditEmployeeEvent.EmployeeNameChanged(""))
                     },
@@ -238,14 +241,17 @@ internal fun AddEditEmployeeScreenContent(
 
             item(EMPLOYEE_PHONE_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.employeePhone,
                     label = EMPLOYEE_PHONE_FIELD,
                     leadingIcon = PoposIcons.PhoneAndroid,
+                    value = state.employeePhone,
+                    onValueChange = {
+                        onEvent(AddEditEmployeeEvent.EmployeePhoneChanged(it))
+                    },
                     isError = phoneError != null,
                     errorText = phoneError,
-                    errorTextTag = EMPLOYEE_PHONE_ERROR,
                     keyboardType = KeyboardType.Number,
                     showClearIcon = state.employeePhone.isNotEmpty(),
+                    errorTextTag = EMPLOYEE_PHONE_ERROR,
                     suffix = {
                         AnimatedVisibility(
                             visible = state.employeePhone.length != 10,
@@ -255,9 +261,6 @@ internal fun AddEditEmployeeScreenContent(
                             )
                         }
                     },
-                    onValueChange = {
-                        onEvent(AddEditEmployeeEvent.EmployeePhoneChanged(it))
-                    },
                     onClickClearIcon = {
                         onEvent(AddEditEmployeeEvent.EmployeePhoneChanged(""))
                     },
@@ -266,17 +269,17 @@ internal fun AddEditEmployeeScreenContent(
 
             item(EMPLOYEE_SALARY_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.employeeSalary,
                     label = EMPLOYEE_SALARY_FIELD,
                     leadingIcon = PoposIcons.Money,
-                    keyboardType = KeyboardType.Number,
-                    isError = salaryError != null,
-                    errorText = salaryError,
-                    errorTextTag = EMPLOYEE_SALARY_ERROR,
-                    showClearIcon = state.employeeSalary.isNotEmpty(),
+                    value = state.employeeSalary,
                     onValueChange = {
                         onEvent(AddEditEmployeeEvent.EmployeeSalaryChanged(it))
                     },
+                    isError = salaryError != null,
+                    errorText = salaryError,
+                    keyboardType = KeyboardType.Number,
+                    showClearIcon = state.employeeSalary.isNotEmpty(),
+                    errorTextTag = EMPLOYEE_SALARY_ERROR,
                     onClickClearIcon = {
                         onEvent(AddEditEmployeeEvent.EmployeeSalaryChanged(""))
                     },
@@ -290,6 +293,10 @@ internal fun AddEditEmployeeScreenContent(
                     onExpandedChange = { expanded = !expanded },
                 ) {
                     StandardOutlinedTextField(
+                        label = EMPLOYEE_POSITION_FIELD,
+                        leadingIcon = PoposIcons.Radar,
+                        value = state.employeePosition,
+                        onValueChange = {},
                         modifier = Modifier
                             .fillMaxWidth()
                             .onGloballyPositioned { coordinates ->
@@ -297,19 +304,15 @@ internal fun AddEditEmployeeScreenContent(
                                 textFieldSize = coordinates.size.toSize()
                             }
                             .menuAnchor(),
-                        value = state.employeePosition,
-                        label = EMPLOYEE_POSITION_FIELD,
-                        leadingIcon = PoposIcons.Radar,
                         isError = positionError != null,
                         errorText = positionError,
-                        errorTextTag = EMPLOYEE_POSITION_ERROR,
-                        readOnly = true,
-                        onValueChange = {},
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(
                                 expanded = expanded,
                             )
                         },
+                        readOnly = true,
+                        errorTextTag = EMPLOYEE_POSITION_ERROR,
                     )
 
                     if (positions.isNotEmpty()) {
@@ -352,14 +355,14 @@ internal fun AddEditEmployeeScreenContent(
 
             item(EMPLOYEE_EMAIL_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.employeeEmail ?: "",
                     label = EMPLOYEE_EMAIL_FIELD,
                     leadingIcon = PoposIcons.Email,
-                    keyboardType = KeyboardType.Email,
-                    showClearIcon = !state.employeeEmail.isNullOrEmpty(),
+                    value = state.employeeEmail ?: "",
                     onValueChange = {
                         onEvent(AddEditEmployeeEvent.EmployeeEmailChanged(it))
                     },
+                    keyboardType = KeyboardType.Email,
+                    showClearIcon = !state.employeeEmail.isNullOrEmpty(),
                     onClickClearIcon = {
                         onEvent(AddEditEmployeeEvent.EmployeeEmailChanged(""))
                     },
@@ -368,9 +371,10 @@ internal fun AddEditEmployeeScreenContent(
 
             item(EMPLOYEE_JOINED_DATE_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.employeeJoinedDate.toJoinedDate,
                     label = EMPLOYEE_JOINED_DATE_FIELD,
                     leadingIcon = PoposIcons.CalenderToday,
+                    value = state.employeeJoinedDate.toJoinedDate,
+                    onValueChange = {},
                     trailingIcon = {
                         IconButton(
                             onClick = { dialogState.show() },
@@ -383,7 +387,6 @@ internal fun AddEditEmployeeScreenContent(
                         }
                     },
                     readOnly = true,
-                    onValueChange = {},
                     suffix = {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -415,15 +418,15 @@ internal fun AddEditEmployeeScreenContent(
                     Row {
                         EmployeeType.entries.forEach { type ->
                             StandardRoundedFilterChip(
-                                modifier = Modifier.testTag(EMPLOYEE_TYPE_FIELD.plus(type.name)),
                                 text = type.name,
+                                modifier = Modifier.testTag(EMPLOYEE_TYPE_FIELD.plus(type.name)),
                                 selected = state.employeeType == type,
+                                selectedColor = MaterialTheme.colorScheme.primaryContainer,
                                 onClick = {
                                     onEvent(
                                         AddEditEmployeeEvent.EmployeeTypeChanged(type),
                                     )
                                 },
-                                selectedColor = MaterialTheme.colorScheme.primaryContainer,
                             )
 
                             Spacer(modifier = Modifier.width(SpaceMini))
@@ -449,9 +452,9 @@ internal fun AddEditEmployeeScreenContent(
                     Row {
                         EmployeeSalaryType.entries.forEach { type ->
                             StandardRoundedFilterChip(
+                                text = type.name,
                                 modifier = Modifier
                                     .testTag(EMPLOYEE_SALARY_TYPE_FIELD.plus(type.name)),
-                                text = type.name,
                                 selected = state.employeeSalaryType == type,
                                 onClick = {
                                     onEvent(AddEditEmployeeEvent.EmployeeSalaryTypeChanged(type))
@@ -476,9 +479,6 @@ internal fun AddEditEmployeeScreenContent(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         StandardCheckboxWithText(
-                            modifier = Modifier
-                                .testTag(EMPLOYEE_PARTNER_FIELD)
-                                .weight(2f, false),
                             text = if (state.isDeliveryPartner) {
                                 EMPLOYEE_PARTNER_CHECKED_FIELD
                             } else {
@@ -488,9 +488,12 @@ internal fun AddEditEmployeeScreenContent(
                             onCheckedChange = {
                                 onEvent(AddEditEmployeeEvent.UpdateDeliveryPartner)
                             },
+                            modifier = Modifier
+                                .testTag(EMPLOYEE_PARTNER_FIELD)
+                                .weight(2f, false),
                         )
 
-                        Spacer(modifier.width(SpaceSmall))
+                        Spacer(Modifier.width(SpaceSmall))
 
                         AnimatedVisibility(
                             visible = state.isDeliveryPartner,

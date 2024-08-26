@@ -50,10 +50,10 @@ import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 internal fun GroupedOrders(
-    modifier: Modifier = Modifier,
     customerPhone: String,
     orderDetails: List<AddressWiseOrder>,
     onClickOrder: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("Address::GroupedOrders") {
     Column(
         modifier = modifier
@@ -111,9 +111,9 @@ internal fun GroupedOrders(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun GroupedOrderDetails(
-    modifier: Modifier = Modifier,
     orderDetails: List<AddressWiseOrder>,
     onClickOrder: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("GroupedOrderDetails") {
     FlowRow(
         modifier = modifier
@@ -142,7 +142,7 @@ private fun GroupedOrdersPreview(
     orderDetails: List<AddressWiseOrder> = AddressPreviewData.groupedAddressWiseOrder,
 ) {
     PoposRoomTheme {
-        Surface {
+        Surface(modifier) {
             Column {
                 orderDetails.groupBy { it.customerPhone }.forEach { (phone, orders) ->
                     GroupedOrders(
@@ -164,9 +164,9 @@ private fun GroupedOrderDetailsPreview(
 ) {
     PoposRoomTheme {
         GroupedOrderDetails(
-            modifier = modifier,
             orderDetails = orderDetails,
             onClickOrder = {},
+            modifier = modifier,
         )
     }
 }

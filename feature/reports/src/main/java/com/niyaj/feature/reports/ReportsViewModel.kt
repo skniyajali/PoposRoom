@@ -219,6 +219,7 @@ class ReportsViewModel @Inject constructor(
         initialValue = UiState.Loading,
     )
 
+    @Suppress("CyclomaticComplexMethod")
     fun onReportEvent(event: ReportsEvent) {
         when (event) {
             is ReportsEvent.SelectDate -> {

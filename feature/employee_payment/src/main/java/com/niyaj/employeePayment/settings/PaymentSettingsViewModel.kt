@@ -69,8 +69,8 @@ class PaymentSettingsViewModel @Inject constructor(
                         val list = mutableListOf<EmployeeWithPayments>()
 
                         mSelectedItems.forEach { paymentId ->
-                            items.value.find { it ->
-                                it.payments.any { it.paymentId == paymentId }
+                            items.value.find { list ->
+                                list.payments.any { it.paymentId == paymentId }
                             }?.let {
                                 list.add(it)
                             }
@@ -115,7 +115,11 @@ class PaymentSettingsViewModel @Inject constructor(
                         }
 
                         is Resource.Success -> {
-                            mEventFlow.emit(UiEvent.OnSuccess("${data.sumOf { it.payments.size }} payments has been imported successfully"))
+                            mEventFlow.emit(
+                                UiEvent.OnSuccess(
+                                    "${data.sumOf { it.payments.size }} payments has been imported successfully",
+                                ),
+                            )
                             analyticsHelper.logImportedPaymentToDatabase(data.sumOf { it.payments.size })
                         }
                     }

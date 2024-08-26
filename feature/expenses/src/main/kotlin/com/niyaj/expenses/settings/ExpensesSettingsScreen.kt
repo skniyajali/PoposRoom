@@ -49,9 +49,10 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 @Composable
 fun ExpensesSettingsScreen(
     navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
 ) {
     ExpensesSettingsScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         onBackClick = navigator::navigateUp,
         onImportClick = {
             navigator.navigate(ExpensesImportScreenDestination())
@@ -65,10 +66,10 @@ fun ExpensesSettingsScreen(
 @VisibleForTesting
 @Composable
 internal fun ExpensesSettingsScreenContent(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onImportClick: () -> Unit,
     onExportClick: () -> Unit,
+    modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     TrackScreenViewEvent(screenName = EXPENSE_SETTINGS_TITLE)

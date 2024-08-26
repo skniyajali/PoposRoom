@@ -70,6 +70,7 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 fun UpdatePrinterInfoScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: UpdatePrinterInfoViewModel = hiltViewModel(),
 ) {
     val state = rememberLazyListState()
@@ -103,9 +104,10 @@ fun UpdatePrinterInfoScreen(
 
     PoposSecondaryScaffold(
         title = UPDATE_PRINTER_INFO,
-        showBackButton = true,
         onBackClick = navigator::navigateUp,
+        showBackButton = true,
         showBottomBar = !hasError,
+        modifier = modifier,
         bottomBar = {
             PoposButton(
                 modifier = Modifier
@@ -131,99 +133,99 @@ fun UpdatePrinterInfoScreen(
         ) {
             item(PRINTER_DPI_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.printerDpi.toString(),
-                    leadingIcon = PoposIcons.DensityMedium,
                     label = PRINTER_DPI_FIELD,
-                    isError = dpiError != null,
-                    errorText = dpiError,
-                    message = PRINTER_DPI_MESSAGE,
+                    leadingIcon = PoposIcons.DensityMedium,
+                    value = viewModel.state.printerDpi.toString(),
                     onValueChange = {
                         viewModel.onEvent(UpdatePrinterInfoEvent.PrinterDpiChanged(it))
                     },
+                    isError = dpiError != null,
+                    errorText = dpiError,
+                    message = PRINTER_DPI_MESSAGE,
                 )
             }
 
             item(PRINTER_WIDTH_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.printerWidth.toString(),
                     label = PRINTER_WIDTH_FIELD,
                     leadingIcon = PoposIcons.WidthNormal,
-                    isError = widthError != null,
-                    errorText = widthError,
-                    message = PRINTER_WIDTH_MESSAGE,
+                    value = viewModel.state.printerWidth.toString(),
                     onValueChange = {
                         viewModel.onEvent(UpdatePrinterInfoEvent.PrinterWidthChanged(it))
                     },
+                    isError = widthError != null,
+                    errorText = widthError,
+                    message = PRINTER_WIDTH_MESSAGE,
                 )
             }
 
             item(PRINTER_NBR_LINES_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.printerNbrLines.toString(),
                     label = PRINTER_NBR_LINES_FIELD,
                     leadingIcon = PoposIcons.ViewHeadline,
-                    isError = nbrError != null,
-                    errorText = nbrError,
-                    message = PRINTER_NBR_LINES_MESSAGE,
+                    value = viewModel.state.printerNbrLines.toString(),
                     onValueChange = {
                         viewModel.onEvent(UpdatePrinterInfoEvent.PrinterNbrLinesChanged(it))
                     },
+                    isError = nbrError != null,
+                    errorText = nbrError,
+                    message = PRINTER_NBR_LINES_MESSAGE,
                 )
             }
 
             item(PRINTER_PRODUCT_NAME_LENGTH_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.productNameLength.toString(),
                     label = PRINTER_PRODUCT_NAME_LENGTH_FIELD,
                     leadingIcon = PoposIcons.Margin,
-                    isError = nameLengthError != null,
-                    errorText = nameLengthError,
-                    message = PRINTER_PRODUCT_NAME_LENGTH_MESSAGE,
+                    value = viewModel.state.productNameLength.toString(),
                     onValueChange = {
                         viewModel.onEvent(UpdatePrinterInfoEvent.ProductNameLengthChanged(it))
                     },
+                    isError = nameLengthError != null,
+                    errorText = nameLengthError,
+                    message = PRINTER_PRODUCT_NAME_LENGTH_MESSAGE,
                 )
             }
 
             item(PRODUCT_REPORT_LIMIT_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.productWiseReportLimit.toString(),
                     label = PRODUCT_REPORT_LIMIT_FIELD,
                     leadingIcon = PoposIcons.ReceiptLong,
-                    isError = productLimitError != null,
-                    errorText = productLimitError,
-                    message = PRODUCT_REPORT_LIMIT_MESSAGE,
+                    value = viewModel.state.productWiseReportLimit.toString(),
                     onValueChange = {
                         viewModel.onEvent(UpdatePrinterInfoEvent.ProductReportLimitChanged(it))
                     },
+                    isError = productLimitError != null,
+                    errorText = productLimitError,
+                    message = PRODUCT_REPORT_LIMIT_MESSAGE,
                 )
             }
 
             item(ADDRESS_REPORT_LIMIT_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.addressWiseReportLimit.toString(),
                     label = ADDRESS_REPORT_LIMIT_FIELD,
                     leadingIcon = PoposIcons.Receipt,
-                    isError = addressLimitError != null,
-                    errorText = addressLimitError,
-                    message = ADDRESS_REPORT_LIMIT_MESSAGE,
+                    value = viewModel.state.addressWiseReportLimit.toString(),
                     onValueChange = {
                         viewModel.onEvent(UpdatePrinterInfoEvent.AddressReportLimitChanged(it))
                     },
+                    isError = addressLimitError != null,
+                    errorText = addressLimitError,
+                    message = ADDRESS_REPORT_LIMIT_MESSAGE,
                 )
             }
 
             item(CUSTOMER_REPORT_LIMIT_FIELD) {
                 StandardOutlinedTextField(
-                    value = viewModel.state.customerWiseReportLimit.toString(),
                     label = CUSTOMER_REPORT_LIMIT_FIELD,
                     leadingIcon = PoposIcons.Receipt,
-                    isError = customerLimitError != null,
-                    errorText = customerLimitError,
-                    message = CUSTOMER_REPORT_LIMIT_MESSAGE,
+                    value = viewModel.state.customerWiseReportLimit.toString(),
                     onValueChange = {
                         viewModel.onEvent(UpdatePrinterInfoEvent.CustomerReportLimitChanged(it))
                     },
+                    isError = customerLimitError != null,
+                    errorText = customerLimitError,
+                    message = CUSTOMER_REPORT_LIMIT_MESSAGE,
                 )
             }
 

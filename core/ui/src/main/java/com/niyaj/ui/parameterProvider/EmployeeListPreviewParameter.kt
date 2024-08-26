@@ -79,6 +79,7 @@ class EmployeeAbsentsPreviewParameter : PreviewParameterProvider<UiState<List<Em
         )
 }
 
+@Suppress("MaxLineLength")
 object EmployeePreviewData {
 
     val employeeList = listOf(

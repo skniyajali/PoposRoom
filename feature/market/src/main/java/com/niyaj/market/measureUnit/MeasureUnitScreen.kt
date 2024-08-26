@@ -73,10 +73,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun MeasureUnitScreen(
     navigator: DestinationsNavigator,
-    viewModel: MeasureUnitViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditMeasureUnitScreenDestination, String>,
     exportRecipient: ResultRecipient<ExportMeasureUnitScreenDestination, String>,
     importRecipient: ResultRecipient<ImportMeasureUnitScreenDestination, String>,
+    modifier: Modifier = Modifier,
+    viewModel: MeasureUnitViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -89,7 +90,6 @@ fun MeasureUnitScreen(
     val searchText = viewModel.searchText.value
 
     MeasureUnitScreenContent(
-        modifier = Modifier,
         uiState = state,
         selectedItems = selectedItems,
         showSearchBar = showSearchBar,
@@ -113,6 +113,7 @@ fun MeasureUnitScreen(
         onClickSettings = {
             navigator.navigate(MeasureUnitSettingsScreenDestination())
         },
+        modifier = modifier,
         snackbarState = snackbarState,
     )
 
@@ -130,7 +131,6 @@ fun MeasureUnitScreen(
 @androidx.annotation.VisibleForTesting
 @Composable
 internal fun MeasureUnitScreenContent(
-    modifier: Modifier = Modifier,
     uiState: UiState<List<MeasureUnit>>,
     selectedItems: List<Int>,
     showSearchBar: Boolean,
@@ -148,6 +148,7 @@ internal fun MeasureUnitScreenContent(
     onClickCreateNew: () -> Unit,
     onClickEdit: (Int) -> Unit,
     onClickSettings: () -> Unit,
+    modifier: Modifier = Modifier,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
@@ -168,9 +169,9 @@ internal fun MeasureUnitScreenContent(
     val openDialog = remember { mutableStateOf(false) }
 
     PoposPrimaryScaffold(
-        modifier = modifier,
         currentRoute = MEASURE_UNIT_SCREEN,
         title = if (selectedItems.isEmpty()) UNIT_SCREEN_TITLE else "${selectedItems.size} Selected",
+        selectionCount = selectedItems.size,
         floatingActionButton = {
             StandardFAB(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
@@ -186,10 +187,7 @@ internal fun MeasureUnitScreenContent(
         },
         navActions = {
             ScaffoldNavActions(
-                placeholderText = UNIT_SEARCH_PLACEHOLDER,
-                showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchBar = showSearchBar,
                 showSearchIcon = showFab,
                 searchText = searchText,
                 onEditClick = {
@@ -198,20 +196,23 @@ internal fun MeasureUnitScreenContent(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = onClickSettings,
                 onSelectAllClick = onClickSelectAll,
                 onClearClick = onClickClear,
                 onSearchIconClick = onClickSearchIcon,
                 onSearchTextChanged = onSearchTextChanged,
+                showSearchBar = showSearchBar,
+                showSettingsIcon = true,
+                onSettingsClick = onClickSettings,
+                placeholderText = UNIT_SEARCH_PLACEHOLDER,
             )
         },
+        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
+        onNavigateToScreen = onNavigateToScreen,
+        modifier = modifier,
         fabPosition = if (lazyGridState.isScrolled) FabPosition.End else FabPosition.Center,
-        selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
         onDeselect = onClickDeselect,
-        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
         snackbarHostState = snackbarState,
-        onNavigateToScreen = onNavigateToScreen,
     ) {
         Crossfade(
             targetState = uiState,
@@ -230,11 +231,11 @@ internal fun MeasureUnitScreenContent(
 
                 is UiState.Success -> {
                     MeasureUnitItems(
-                        modifier = Modifier,
                         items = state.data.toImmutableList(),
                         isInSelectionMode = selectedItems.isNotEmpty(),
                         doesSelected = selectedItems::contains,
                         onSelectItem = onClickSelectItem,
+                        modifier = Modifier,
                         lazyGridState = lazyGridState,
                     )
                 }

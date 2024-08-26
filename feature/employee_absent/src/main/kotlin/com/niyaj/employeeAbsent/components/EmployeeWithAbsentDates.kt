@@ -130,30 +130,9 @@ private fun EmployeeWithAbsentDates(
         ),
     ) {
         StandardExpandable(
-            modifier = Modifier
-                .testTag(AB_EMPLOYEE_TAG.plus(item.employee.employeeId))
-                .padding(vertical = SpaceSmall),
             expanded = expanded(item.employee.employeeId),
             onExpandChanged = {
                 onExpandChanged(item.employee.employeeId)
-            },
-            title = {
-                IconWithText(
-                    text = item.employee.employeeName,
-                    icon = PoposIcons.Person,
-                    isTitle = true,
-                    tintColor = MaterialTheme.colorScheme.secondary,
-                )
-            },
-            trailing = {
-                if (showTrailingIcon) {
-                    StandardAssistChip(
-                        modifier = Modifier.wrapContentSize(),
-                        text = "Add Entry",
-                        icon = PoposIcons.Add,
-                        onClick = { onChipClick(item.employee.employeeId) },
-                    )
-                }
             },
             content = {
                 EmployeeAbsentData(
@@ -162,6 +141,27 @@ private fun EmployeeWithAbsentDates(
                     onClick = onClick,
                     onLongClick = onLongClick,
                 )
+            },
+            modifier = Modifier
+                .testTag(AB_EMPLOYEE_TAG.plus(item.employee.employeeId))
+                .padding(vertical = SpaceSmall),
+            title = {
+                IconWithText(
+                    text = item.employee.employeeName,
+                    icon = PoposIcons.Person,
+                    tintColor = MaterialTheme.colorScheme.secondary,
+                    isTitle = true,
+                )
+            },
+            trailing = {
+                if (showTrailingIcon) {
+                    StandardAssistChip(
+                        text = "Add Entry",
+                        icon = PoposIcons.Add,
+                        modifier = Modifier.wrapContentSize(),
+                        onClick = { onChipClick(item.employee.employeeId) },
+                    )
+                }
             },
         )
     }
@@ -185,10 +185,10 @@ private fun EmployeeAbsentData(
     ) {
         groupedAbsents.forEach { grouped ->
             TextWithBorderCount(
-                modifier = Modifier,
                 text = grouped.key,
-                leadingIcon = PoposIcons.CalenderMonth,
                 count = grouped.value.size,
+                modifier = Modifier,
+                leadingIcon = PoposIcons.CalenderMonth,
             )
 
             FlowRow(
@@ -204,7 +204,7 @@ private fun EmployeeAbsentData(
                         containerColor = MaterialTheme.colorScheme.background,
                         elevation = 1.dp,
                         testTag = ABSENT_TAG.plus(item.absentId),
-                        doesSelected = doesSelected(item.absentId),
+                        selected = doesSelected(item.absentId),
                         onClick = {
                             onClick(item.absentId)
                         },

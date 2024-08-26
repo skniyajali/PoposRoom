@@ -57,6 +57,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun DataDeletionSettingsScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: DataDeletionSettingsViewModel = hiltViewModel(),
 ) {
     val reportError by viewModel.reportIntervalError.collectAsStateWithLifecycle()
@@ -80,7 +81,7 @@ fun DataDeletionSettingsScreen(
     }
 
     DataDeletionSettingsScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         state = viewModel.state,
         reportError = reportError,
         orderError = orderError,
@@ -95,8 +96,6 @@ fun DataDeletionSettingsScreen(
 @VisibleForTesting
 @Composable
 internal fun DataDeletionSettingsScreenContent(
-    modifier: Modifier = Modifier,
-    title: String = "Data Deletion Settings",
     state: DataDeletionSettingsState,
     reportError: String?,
     orderError: String?,
@@ -105,6 +104,8 @@ internal fun DataDeletionSettingsScreenContent(
     marketListError: String?,
     onEvent: (DataDeletionEvent) -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    title: String = "Data Deletion Settings",
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     TrackScrollJank(scrollableState = lazyListState, stateName = "Data Deletion Settings::Fields")
@@ -113,8 +114,9 @@ internal fun DataDeletionSettingsScreenContent(
         listOf(reportError, orderError, cartError, expenseError, marketListError).all { it == null }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = true,
         showBottomBar = true,
         bottomBar = {
@@ -130,7 +132,6 @@ internal fun DataDeletionSettingsScreenContent(
                 },
             )
         },
-        onBackClick = onBackClick,
     ) { paddingValues ->
         LazyColumn(
             state = lazyListState,
@@ -146,11 +147,11 @@ internal fun DataDeletionSettingsScreenContent(
                     label = "Report Interval",
                     leadingIcon = PoposIcons.Receipt,
                     value = state.reportInterval,
-                    errorText = reportError,
+                    onValueChange = { onEvent(DataDeletionEvent.OnReportIntervalChange(it)) },
                     isError = reportError != null,
+                    errorText = reportError,
                     keyboardType = KeyboardType.Number,
                     message = "Report will be deleted before these days",
-                    onValueChange = { onEvent(DataDeletionEvent.OnReportIntervalChange(it)) },
                 )
             }
 
@@ -159,11 +160,11 @@ internal fun DataDeletionSettingsScreenContent(
                     label = "Order Interval",
                     leadingIcon = PoposIcons.Order,
                     value = state.orderInterval,
-                    errorText = orderError,
+                    onValueChange = { onEvent(DataDeletionEvent.OnOrderIntervalChange(it)) },
                     isError = orderError != null,
+                    errorText = orderError,
                     keyboardType = KeyboardType.Number,
                     message = "Orders will be deleted before these days",
-                    onValueChange = { onEvent(DataDeletionEvent.OnOrderIntervalChange(it)) },
                 )
             }
 
@@ -172,11 +173,11 @@ internal fun DataDeletionSettingsScreenContent(
                     label = "Cart Interval",
                     leadingIcon = PoposIcons.Cart,
                     value = state.cartInterval,
-                    errorText = cartError,
+                    onValueChange = { onEvent(DataDeletionEvent.OnCartIntervalChange(it)) },
                     isError = cartError != null,
+                    errorText = cartError,
                     keyboardType = KeyboardType.Number,
                     message = "Cart data will be deleted before these days",
-                    onValueChange = { onEvent(DataDeletionEvent.OnCartIntervalChange(it)) },
                 )
             }
 
@@ -185,11 +186,11 @@ internal fun DataDeletionSettingsScreenContent(
                     label = "Expense Interval",
                     leadingIcon = PoposIcons.TrendingUp,
                     value = state.expenseInterval,
-                    errorText = expenseError,
+                    onValueChange = { onEvent(DataDeletionEvent.OnExpenseIntervalChange(it)) },
                     isError = expenseError != null,
+                    errorText = expenseError,
                     keyboardType = KeyboardType.Number,
                     message = "Expenses will be deleted before these days",
-                    onValueChange = { onEvent(DataDeletionEvent.OnExpenseIntervalChange(it)) },
                 )
             }
 
@@ -198,11 +199,11 @@ internal fun DataDeletionSettingsScreenContent(
                     label = "Market List Interval",
                     leadingIcon = PoposIcons.ShoppingBag,
                     value = state.marketListInterval,
-                    errorText = marketListError,
+                    onValueChange = { onEvent(DataDeletionEvent.OnMarketListIntervalChange(it)) },
                     isError = marketListError != null,
+                    errorText = marketListError,
                     keyboardType = KeyboardType.Number,
                     message = "Market list will be deleted before these days",
-                    onValueChange = { onEvent(DataDeletionEvent.OnMarketListIntervalChange(it)) },
                 )
             }
 

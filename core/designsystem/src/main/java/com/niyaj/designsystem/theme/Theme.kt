@@ -116,6 +116,7 @@ val LightAndroidBackgroundTheme = BackgroundTheme(color = DarkGreenGray95)
  */
 val DarkAndroidBackgroundTheme = BackgroundTheme(color = Color.Black)
 
+@Suppress("CyclomaticComplexMethod")
 @Composable
 fun PoposRoomTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

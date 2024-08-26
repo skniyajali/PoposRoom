@@ -65,15 +65,15 @@ import kotlinx.collections.immutable.toImmutableList
  */
 @Composable
 internal fun SalaryEstimationCard(
-    modifier: Modifier = Modifier,
     uiState: UiState<EmployeeSalaryEstimation>,
-    selectedSalaryDate: Pair<String, String>? = null,
     salaryDates: ImmutableList<EmployeeMonthlyDate>,
     onDateClick: (Pair<String, String>) -> Unit,
     onClickPaymentCount: () -> Unit,
     onClickAbsentCount: () -> Unit,
     onClickAbsentEntry: () -> Unit,
     onClickSalaryEntry: () -> Unit,
+    modifier: Modifier = Modifier,
+    selectedSalaryDate: Pair<String, String>? = null,
 ) = trace("SalaryEstimationCard") {
     val dropdownText = selectedSalaryDate?.first?.toYearAndMonth
         ?: if (salaryDates.isNotEmpty()) salaryDates.first().startDate.toYearAndMonth else ""
@@ -240,7 +240,6 @@ private fun SalaryEstimationCardPreview(
 ) {
     PoposRoomTheme {
         SalaryEstimationCard(
-            modifier = modifier,
             uiState = uiState,
             salaryDates = salaryDates.toImmutableList(),
             onDateClick = {},
@@ -248,6 +247,7 @@ private fun SalaryEstimationCardPreview(
             onClickAbsentCount = {},
             onClickAbsentEntry = {},
             onClickSalaryEntry = {},
+            modifier = modifier,
         )
     }
 }

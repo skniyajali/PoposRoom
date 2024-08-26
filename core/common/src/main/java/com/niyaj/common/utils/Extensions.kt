@@ -15,25 +15,21 @@
  *
  */
 
+@file:Suppress("TooManyFunctions")
+
 package com.niyaj.common.utils
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.text.format.DateUtils
 import com.niyaj.common.result.Resource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 import java.math.RoundingMode
-import java.nio.ByteBuffer
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -49,8 +45,7 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
-val API_KEY = "WQBvKOC4PBQ8EZUqOrVpslYSavvudON84Q5RyZavmPMHhZ00VvgfeIpXL2C5jFyM"
-
+@Suppress("ReturnCount")
 fun isValidPassword(password: String): Boolean {
     if (password.length < 8) return false
     if (password.firstOrNull { it.isDigit() } == null) return false
@@ -751,12 +746,6 @@ val Pair<String, String>.isSameDay: Boolean
 val String.isToday: Boolean
     get() = DateUtils.isToday(this.toLong())
 
-// Create a list of all measure units.
-val measureUnitLists = listOf(
-    "kg", "gm", "li", "bottle", "packet",
-    "tsp", "tbsp", "cup", "pcs",
-)
-
 fun List<Int>.toListString(): String {
     val sb = StringBuilder()
     for (item in this) {
@@ -781,16 +770,6 @@ fun Double.toSafeString(): String {
         this == this.toInt().toDouble() -> this.toInt().toString()
         else -> this.toString()
     }
-}
-
-fun Uri.toBitmap(context: Context): Bitmap? {
-    val inputStream = context.contentResolver.openInputStream(this)
-
-    val bitmap: Bitmap? = BitmapFactory.decodeStream(inputStream)
-
-    inputStream?.close()
-
-    return bitmap
 }
 
 suspend fun Context.saveImageToInternalStorage(
@@ -835,68 +814,6 @@ private fun InputStream.copyTo(
     }
 }
 
-fun drawableToByteArray(context: Context, imageRes: Int): ByteArray {
-    // Get the drawable from the resources
-    val drawable: Drawable? = context.getDrawable(imageRes)
-
-    // Convert the drawable to a Bitmap
-    val bitmap = Bitmap.createBitmap(
-        drawable?.intrinsicWidth ?: 0,
-        drawable?.intrinsicHeight ?: 0,
-        Bitmap.Config.ARGB_8888,
-    )
-    val canvas = Canvas(bitmap)
-    drawable?.setBounds(0, 0, canvas.width, canvas.height)
-    drawable?.draw(canvas)
-
-    // Convert the Bitmap to a byte array
-    val stream = ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-    val byteArray = stream.toByteArray()
-
-    // Clean up resources
-    stream.close()
-    bitmap.recycle()
-
-    // Now you have the byte array representing the drawable
-
-    return byteArray
-}
-
-/**
- * Convert bitmap to byte array using ByteBuffer.
- */
-fun Bitmap.convertToByteArray(): ByteArray {
-    // minimum number of bytes that can be used to store this bitmaps pixels
-    val size = this.byteCount
-
-    // allocate new instances which will hold bitmap
-    val buffer = ByteBuffer.allocate(size)
-    val bytes = ByteArray(size)
-
-    // copy the bitmap's pixels into the specified buffer
-    this.copyPixelsToBuffer(buffer)
-
-    // rewinds buffer (buffer position is set to zero and the mark is discarded)
-    buffer.rewind()
-
-    // transfer bytes from buffer into the given destination array
-    buffer.get(bytes)
-
-    // return bitmaps pixels
-    return bytes
-}
-
-fun Bitmap.toByteArray(): ByteArray {
-    val stream = ByteArrayOutputStream()
-    this.compress(Bitmap.CompressFormat.PNG, 100, stream)
-    return stream.toByteArray()
-}
-
-fun ByteArray.toBitmap(): Bitmap {
-    return BitmapFactory.decodeByteArray(this, 0, this.size)
-}
-
 @OptIn(ExperimentalContracts::class)
 inline fun Int.ifZero(defaultValue: () -> Int): Int {
     contract {
@@ -936,7 +853,8 @@ fun pluralize(word: String, count: Int): String {
         "charges" -> "charges"
         // Add more irregular plurals as needed
         else -> when {
-            word.endsWith("s") || word.endsWith("sh") || word.endsWith("ch") || word.endsWith("x") || word.endsWith("z") -> "${word}es"
+            word.endsWith("s") || word.endsWith("sh") || word.endsWith("ch") ||
+                word.endsWith("x") || word.endsWith("z") -> "${word}es"
             word.endsWith("y") && word.length > 1 && !isVowel(word[word.length - 2]) -> "${word.dropLast(1)}ies"
             word.endsWith("fe") -> "${word.dropLast(2)}ves"
             word.endsWith("f") -> "${word.dropLast(1)}ves"

@@ -52,7 +52,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
+import com.niyaj.ui.utils.DevicePreviews
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
@@ -192,11 +195,11 @@ enum class MultiSelectorOption {
 
 @Composable
 fun MultiSelector(
-    modifier: Modifier = Modifier,
-    options: List<String>,
-    icons: List<ImageVector> = emptyList(),
     selectedOption: String,
+    options: List<String>,
     onOptionSelect: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    icons: List<ImageVector> = emptyList(),
     selectedColor: Color = MaterialTheme.colorScheme.onSecondary,
     unSelectedColor: Color = MaterialTheme.colorScheme.onSurface,
     state: MultiSelectorState = rememberMultiSelectorState(
@@ -295,5 +298,25 @@ fun MultiSelector(
                 )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun MultiSelectorPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        MultiSelector(
+            selectedOption = "Option 1",
+            options = listOf("Option 1", "Option 2", "Option 3"),
+            onOptionSelect = {},
+            modifier = modifier,
+            icons = listOf(
+                PoposIcons.Check,
+                PoposIcons.Add,
+                PoposIcons.Edit,
+            ),
+        )
     }
 }

@@ -50,9 +50,10 @@ import com.niyaj.ui.components.IconWithText
 @Composable
 internal fun MarketListItemHeader(
     marketList: MarketListAndType,
+    modifier: Modifier = Modifier,
 ) = trace("MarketListItemHeader") {
     ElevatedCard(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(SpaceSmall),
         colors = CardDefaults.elevatedCardColors(
@@ -72,7 +73,7 @@ internal fun MarketListItemHeader(
             ) {
                 CircularBox(
                     icon = PoposIcons.CalenderMonth,
-                    doesSelected = false,
+                    selected = false,
                 )
 
                 Column(
@@ -96,8 +97,8 @@ internal fun MarketListItemHeader(
             ) {
                 StandardFilterChip(
                     text = marketList.typeName.uppercase(),
-                    containerColor = MaterialTheme.colorScheme.secondary,
                     icon = PoposIcons.Category,
+                    containerColor = MaterialTheme.colorScheme.secondary,
                     textStyle = TextStyle(
                         fontFamily = FontFamily.Default,
                         fontWeight = FontWeight.SemiBold,
@@ -124,9 +125,10 @@ internal fun MarketListItemHeader(
 @Composable
 internal fun MarketListItemHeader(
     marketDate: Long,
+    modifier: Modifier = Modifier,
 ) = trace("MarketListItemHeader") {
     ElevatedCard(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(SpaceSmall),
         colors = CardDefaults.elevatedCardColors(
@@ -146,7 +148,7 @@ internal fun MarketListItemHeader(
             ) {
                 CircularBox(
                     icon = PoposIcons.CalenderMonth,
-                    doesSelected = false,
+                    selected = false,
                 )
                 Text(
                     text = "Market Date".uppercase(),

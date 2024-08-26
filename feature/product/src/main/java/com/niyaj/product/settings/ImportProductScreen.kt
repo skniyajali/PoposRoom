@@ -81,8 +81,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun ImportProductScreen(
     navigator: DestinationsNavigator,
-    viewModel: ProductSettingsViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    viewModel: ProductSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -123,7 +124,7 @@ fun ImportProductScreen(
     }
 
     ImportProductScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         importedItems = importedProducts.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         onClickSelectItem = viewModel::selectItem,
@@ -142,7 +143,6 @@ fun ImportProductScreen(
 @VisibleForTesting
 @Composable
 internal fun ImportProductScreenContent(
-    modifier: Modifier = Modifier,
     importedItems: ImmutableList<Product>,
     selectedItems: ImmutableList<Int>,
     onClickSelectItem: (Int) -> Unit,
@@ -151,6 +151,7 @@ internal fun ImportProductScreenContent(
     onClickImport: () -> Unit,
     onClickOpenFile: () -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
     padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
@@ -166,11 +167,23 @@ internal fun ImportProductScreenContent(
     }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = if (selectedItems.isEmpty()) IMPORT_PRODUCTS_TITLE else "${selectedItems.size} Selected",
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = selectedItems.isEmpty(),
         showBottomBar = importedItems.isNotEmpty(),
         showSecondaryBottomBar = true,
+        fabPosition = FabPosition.End,
+        navigationIcon = {
+            IconButton(
+                onClick = onClickDeselect,
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Deselect All",
+                )
+            }
+        },
         navActions = {
             AnimatedVisibility(
                 visible = importedItems.isNotEmpty(),
@@ -185,6 +198,16 @@ internal fun ImportProductScreenContent(
                 }
             }
         },
+        floatingActionButton = {
+            ScrollToTop(
+                visible = !lazyListState.isScrollingUp(),
+                onClick = {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(index = 0)
+                    }
+                },
+            )
+        },
         bottomBar = {
             Column(
                 modifier = Modifier
@@ -192,7 +215,15 @@ internal fun ImportProductScreenContent(
                     .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} products will be imported.")
+                InfoText(
+                    text = "${
+                        if (selectedItems.isEmpty()) {
+                            "All"
+                        } else {
+                            "${selectedItems.size}"
+                        }
+                    } products will be imported.",
+                )
 
                 PoposButton(
                     modifier = Modifier
@@ -205,28 +236,6 @@ internal fun ImportProductScreenContent(
                         containerColor = MaterialTheme.colorScheme.primary,
                     ),
                     onClick = onClickImport,
-                )
-            }
-        },
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyListState.isScrollingUp(),
-                onClick = {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(index = 0)
-                    }
-                },
-            )
-        },
-        onBackClick = onBackClick,
-        navigationIcon = {
-            IconButton(
-                onClick = onClickDeselect,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Deselect All",
                 )
             }
         },

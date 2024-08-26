@@ -27,13 +27,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun StandardCheckboxWithText(
-    modifier: Modifier = Modifier,
     text: String,
     checked: Boolean,
     onCheckedChange: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = Modifier
@@ -52,6 +54,21 @@ fun StandardCheckboxWithText(
             style = MaterialTheme.typography.labelMedium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun StandardCheckboxWithTextPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardCheckboxWithText(
+            text = "Standard Checkbox With Text",
+            checked = true,
+            onCheckedChange = {},
+            modifier = modifier,
         )
     }
 }

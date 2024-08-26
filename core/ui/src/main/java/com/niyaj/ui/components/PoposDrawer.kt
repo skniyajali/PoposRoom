@@ -67,6 +67,7 @@ import com.niyaj.ui.utils.Screens
 
 @Stable
 @Composable
+@Suppress("LongMethod", "CyclomaticComplexMethod")
 fun PoposDrawer(
     currentRoute: String,
     onNavigateToScreen: (String) -> Unit,
@@ -146,7 +147,11 @@ fun PoposDrawer(
 
                 PoposDrawerItem(
                     text = "View Reports",
-                    icon = if (currentRoute == Screens.REPORT_SCREEN) PoposIcons.Assessment else PoposIcons.OutlinedAssessment,
+                    icon = if (currentRoute == Screens.REPORT_SCREEN) {
+                        PoposIcons.Assessment
+                    } else {
+                        PoposIcons.OutlinedAssessment
+                    },
                     selected = currentRoute == Screens.REPORT_SCREEN,
                     onClick = {
                         onNavigateToScreen(Screens.REPORT_SCREEN)
@@ -159,7 +164,11 @@ fun PoposDrawer(
 
                 PoposDrawerItem(
                     text = "View Expenses",
-                    icon = if (currentRoute == Screens.EXPENSES_SCREEN) PoposIcons.StickyNote2 else PoposIcons.OutlinedStickyNote2,
+                    icon = if (currentRoute == Screens.EXPENSES_SCREEN) {
+                        PoposIcons.StickyNote2
+                    } else {
+                        PoposIcons.OutlinedStickyNote2
+                    },
                     selected = currentRoute == Screens.EXPENSES_SCREEN,
                     onClick = {
                         onNavigateToScreen(Screens.EXPENSES_SCREEN)
@@ -217,37 +226,9 @@ fun PoposDrawer(
                 )
 
                 StandardExpandable(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = IconSizeSmall),
-                    dividerModifier = Modifier.padding(end = IconSizeSmall),
                     expanded = ordersExpanded.value || doesExpanded,
                     onExpandChanged = {
                         ordersExpanded.value = it
-                    },
-                    title = {
-                        Text(text = "Orders, Cart Orders..")
-                    },
-                    leading = {
-                        Icon(
-                            imageVector = PoposIcons.OutlinedAllInbox,
-                            contentDescription = "Cart Order Icon",
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                        Spacer(modifier = Modifier.width(SpaceSmall))
-                    },
-                    expand = { modifier: Modifier ->
-                        IconButton(
-                            modifier = modifier,
-                            onClick = {
-                                ordersExpanded.value = !ordersExpanded.value
-                            },
-                        ) {
-                            Icon(
-                                imageVector = PoposIcons.ArrowDown,
-                                contentDescription = "Expand Cart Order",
-                            )
-                        }
                     },
                     content = {
                         Column(
@@ -281,6 +262,34 @@ fun PoposDrawer(
                             )
                         }
                     },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = IconSizeSmall),
+                    dividerModifier = Modifier.padding(end = IconSizeSmall),
+                    leading = {
+                        Icon(
+                            imageVector = PoposIcons.OutlinedAllInbox,
+                            contentDescription = "Cart Order Icon",
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Spacer(modifier = Modifier.width(SpaceSmall))
+                    },
+                    title = {
+                        Text(text = "Orders, Cart Orders..")
+                    },
+                    expand = { md: Modifier ->
+                        IconButton(
+                            modifier = md,
+                            onClick = {
+                                ordersExpanded.value = !ordersExpanded.value
+                            },
+                        ) {
+                            Icon(
+                                imageVector = PoposIcons.ArrowDown,
+                                contentDescription = "Expand Cart Order",
+                            )
+                        }
+                    },
                 )
             }
 
@@ -294,37 +303,9 @@ fun PoposDrawer(
                 )
 
                 StandardExpandable(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = IconSizeSmall),
-                    dividerModifier = Modifier.padding(end = IconSizeSmall),
                     expanded = marketItemExpanded.value || doesExpanded,
                     onExpandChanged = {
                         marketItemExpanded.value = it
-                    },
-                    title = {
-                        Text(text = "Market Item, Measure Units..")
-                    },
-                    leading = {
-                        Icon(
-                            imageVector = PoposIcons.OutlinedKitchen,
-                            contentDescription = "Market Item, Measure Units Icon",
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                        Spacer(modifier = Modifier.width(SpaceSmall))
-                    },
-                    expand = { modifier: Modifier ->
-                        IconButton(
-                            modifier = modifier,
-                            onClick = {
-                                marketItemExpanded.value = !marketItemExpanded.value
-                            },
-                        ) {
-                            Icon(
-                                imageVector = PoposIcons.ArrowDown,
-                                contentDescription = "Expand Cart Order",
-                            )
-                        }
                     },
                     content = {
                         Column(
@@ -372,6 +353,34 @@ fun PoposDrawer(
                             )
                         }
                     },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = IconSizeSmall),
+                    dividerModifier = Modifier.padding(end = IconSizeSmall),
+                    leading = {
+                        Icon(
+                            imageVector = PoposIcons.OutlinedKitchen,
+                            contentDescription = "Market Item, Measure Units Icon",
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Spacer(modifier = Modifier.width(SpaceSmall))
+                    },
+                    title = {
+                        Text(text = "Market Item, Measure Units..")
+                    },
+                    expand = { md: Modifier ->
+                        IconButton(
+                            modifier = md,
+                            onClick = {
+                                marketItemExpanded.value = !marketItemExpanded.value
+                            },
+                        ) {
+                            Icon(
+                                imageVector = PoposIcons.ArrowDown,
+                                contentDescription = "Expand Cart Order",
+                            )
+                        }
+                    },
                 )
             }
 
@@ -384,37 +393,9 @@ fun PoposDrawer(
                 )
 
                 StandardExpandable(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = IconSizeSmall),
-                    dividerModifier = Modifier.padding(end = IconSizeSmall),
                     expanded = customersExpanded.value || doesExpanded,
                     onExpandChanged = {
                         customersExpanded.value = it
-                    },
-                    title = {
-                        Text(text = "Customers, Addresses")
-                    },
-                    leading = {
-                        Icon(
-                            imageVector = PoposIcons.OutlinedBadge,
-                            contentDescription = "Customers, Addresses Icon",
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                        Spacer(modifier = Modifier.width(SpaceSmall))
-                    },
-                    expand = { modifier: Modifier ->
-                        IconButton(
-                            modifier = modifier,
-                            onClick = {
-                                customersExpanded.value = !customersExpanded.value
-                            },
-                        ) {
-                            Icon(
-                                imageVector = PoposIcons.ArrowDown,
-                                contentDescription = "Expand Customer, Addresses",
-                            )
-                        }
                     },
                     content = {
                         Column(
@@ -449,6 +430,34 @@ fun PoposDrawer(
                             )
                         }
                     },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = IconSizeSmall),
+                    dividerModifier = Modifier.padding(end = IconSizeSmall),
+                    leading = {
+                        Icon(
+                            imageVector = PoposIcons.OutlinedBadge,
+                            contentDescription = "Customers, Addresses Icon",
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Spacer(modifier = Modifier.width(SpaceSmall))
+                    },
+                    title = {
+                        Text(text = "Customers, Addresses")
+                    },
+                    expand = { md: Modifier ->
+                        IconButton(
+                            modifier = md,
+                            onClick = {
+                                customersExpanded.value = !customersExpanded.value
+                            },
+                        ) {
+                            Icon(
+                                imageVector = PoposIcons.ArrowDown,
+                                contentDescription = "Expand Customer, Addresses",
+                            )
+                        }
+                    },
                 )
             }
 
@@ -462,37 +471,9 @@ fun PoposDrawer(
                 )
 
                 StandardExpandable(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = IconSizeSmall),
-                    dividerModifier = Modifier.padding(end = IconSizeSmall),
                     expanded = employeeExpanded.value || doesExpanded,
                     onExpandChanged = {
                         employeeExpanded.value = it
-                    },
-                    title = {
-                        Text(text = "Employees, Salary, Advance")
-                    },
-                    leading = {
-                        Icon(
-                            imageVector = PoposIcons.OutlinedPeopleAlt,
-                            contentDescription = "Employee, Salary, Advance Icon",
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                        Spacer(modifier = Modifier.width(SpaceSmall))
-                    },
-                    expand = { modifier: Modifier ->
-                        IconButton(
-                            modifier = modifier,
-                            onClick = {
-                                employeeExpanded.value = !employeeExpanded.value
-                            },
-                        ) {
-                            Icon(
-                                imageVector = PoposIcons.ArrowDown,
-                                contentDescription = "Expand Employee",
-                            )
-                        }
                     },
                     content = {
                         Column(
@@ -542,6 +523,34 @@ fun PoposDrawer(
                             )
                         }
                     },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = IconSizeSmall),
+                    dividerModifier = Modifier.padding(end = IconSizeSmall),
+                    leading = {
+                        Icon(
+                            imageVector = PoposIcons.OutlinedPeopleAlt,
+                            contentDescription = "Employee, Salary, Advance Icon",
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Spacer(modifier = Modifier.width(SpaceSmall))
+                    },
+                    title = {
+                        Text(text = "Employees, Salary, Advance")
+                    },
+                    expand = { md: Modifier ->
+                        IconButton(
+                            modifier = md,
+                            onClick = {
+                                employeeExpanded.value = !employeeExpanded.value
+                            },
+                        ) {
+                            Icon(
+                                imageVector = PoposIcons.ArrowDown,
+                                contentDescription = "Expand Employee",
+                            )
+                        }
+                    },
                 )
             }
 
@@ -556,39 +565,9 @@ fun PoposDrawer(
                 )
 
                 StandardExpandable(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = IconSizeSmall)
-                        .testTag("productCategories"),
-                    dividerModifier = Modifier.padding(end = IconSizeSmall),
                     expanded = expanded.value || doesExpanded,
                     onExpandChanged = {
                         expanded.value = it
-                    },
-                    title = {
-                        Text(text = "Products, Categories..")
-                    },
-                    leading = {
-                        Icon(
-                            imageVector = PoposIcons.OutlinedWidgets,
-                            contentDescription = "Products, Categories Icon",
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-
-                        Spacer(modifier = Modifier.width(SpaceSmall))
-                    },
-                    expand = { modifier ->
-                        IconButton(
-                            modifier = modifier,
-                            onClick = {
-                                expanded.value = !expanded.value
-                            },
-                        ) {
-                            Icon(
-                                imageVector = PoposIcons.ArrowDown,
-                                contentDescription = "Expand Product/Category",
-                            )
-                        }
                     },
                     content = {
                         Column(
@@ -653,6 +632,36 @@ fun PoposDrawer(
                             )
                         }
                     },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = IconSizeSmall)
+                        .testTag("productCategories"),
+                    dividerModifier = Modifier.padding(end = IconSizeSmall),
+                    leading = {
+                        Icon(
+                            imageVector = PoposIcons.OutlinedWidgets,
+                            contentDescription = "Products, Categories Icon",
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+
+                        Spacer(modifier = Modifier.width(SpaceSmall))
+                    },
+                    title = {
+                        Text(text = "Products, Categories..")
+                    },
+                    expand = { md ->
+                        IconButton(
+                            modifier = md,
+                            onClick = {
+                                expanded.value = !expanded.value
+                            },
+                        ) {
+                            Icon(
+                                imageVector = PoposIcons.ArrowDown,
+                                contentDescription = "Expand Product/Category",
+                            )
+                        }
+                    },
                 )
             }
 
@@ -660,37 +669,9 @@ fun PoposDrawer(
                 Spacer(modifier = Modifier.height(SpaceSmall))
 
                 StandardExpandable(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = IconSizeSmall),
-                    dividerModifier = Modifier.padding(end = IconSizeSmall),
                     expanded = settingsExpanded.value,
                     onExpandChanged = {
                         settingsExpanded.value = it
-                    },
-                    title = {
-                        Text(text = "App Settings, Reminders")
-                    },
-                    leading = {
-                        Icon(
-                            imageVector = PoposIcons.OutlinedSettings,
-                            contentDescription = "Settings Icon",
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                        Spacer(modifier = Modifier.width(SpaceSmall))
-                    },
-                    expand = { modifier: Modifier ->
-                        IconButton(
-                            modifier = modifier,
-                            onClick = {
-                                settingsExpanded.value = !settingsExpanded.value
-                            },
-                        ) {
-                            Icon(
-                                imageVector = PoposIcons.ArrowDown,
-                                contentDescription = "Expand Settings",
-                            )
-                        }
                     },
                     content = {
                         Column(
@@ -737,6 +718,34 @@ fun PoposDrawer(
                             )
                         }
                     },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = IconSizeSmall),
+                    dividerModifier = Modifier.padding(end = IconSizeSmall),
+                    leading = {
+                        Icon(
+                            imageVector = PoposIcons.OutlinedSettings,
+                            contentDescription = "Settings Icon",
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Spacer(modifier = Modifier.width(SpaceSmall))
+                    },
+                    title = {
+                        Text(text = "App Settings, Reminders")
+                    },
+                    expand = { md: Modifier ->
+                        IconButton(
+                            modifier = md,
+                            onClick = {
+                                settingsExpanded.value = !settingsExpanded.value
+                            },
+                        ) {
+                            Icon(
+                                imageVector = PoposIcons.ArrowDown,
+                                contentDescription = "Expand Settings",
+                            )
+                        }
+                    },
                 )
             }
         }
@@ -762,9 +771,10 @@ fun PoposDrawer(
 @Composable
 fun PoposDrawerHeader(
     onNavigateToScreen: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -824,6 +834,7 @@ fun PoposDrawerItem(
     icon: ImageVector,
     selected: Boolean,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     iconColor: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     NavigationDrawerItem(
@@ -838,7 +849,7 @@ fun PoposDrawerItem(
         shape = RoundedCornerShape(SpaceMini),
         selected = selected,
         onClick = onClick,
-        modifier = Modifier
+        modifier = modifier
             .height(48.dp)
             .padding(NavigationDrawerItemDefaults.ItemPadding)
             .testTag(text),

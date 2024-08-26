@@ -65,19 +65,21 @@ import com.niyaj.ui.components.StandardExpandable
 import com.niyaj.ui.event.UiState
 import com.niyaj.ui.parameterProvider.EmployeeAbsentsPreviewParameter
 import com.niyaj.ui.utils.DevicePreviews
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 /**
  *
  */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun AbsentDetails(
     absentState: UiState<List<EmployeeAbsentDates>>,
-    absentReportsExpanded: Boolean = false,
     onExpanded: () -> Unit,
+    modifier: Modifier = Modifier,
+    absentReportsExpanded: Boolean = false,
 ) = trace("AbsentDetails") {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .testTag("AbsentDetailsCard")
             .fillMaxWidth()
             .clickable(
@@ -92,32 +94,9 @@ internal fun AbsentDetails(
         ),
     ) {
         StandardExpandable(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
             expanded = absentReportsExpanded,
             onExpandChanged = {
                 onExpanded()
-            },
-            title = {
-                IconWithText(
-                    text = "Absent Details",
-                    icon = PoposIcons.EventBusy,
-                )
-            },
-            rowClickable = false,
-            expand = { modifier: Modifier ->
-                IconButton(
-                    modifier = modifier
-                        .testTag("AbsentDetailsExpand"),
-                    onClick = onExpanded,
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.ArrowDown,
-                        contentDescription = "Expand Absent Details",
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
             },
             content = {
                 Crossfade(
@@ -137,89 +116,134 @@ internal fun AbsentDetails(
                         is UiState.Success -> {
                             Spacer(modifier = Modifier.height(SpaceSmall))
 
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = SpaceMini),
-                            ) {
-                                state.data.forEachIndexed { index, absentReport ->
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        horizontalAlignment = Alignment.Start,
-                                    ) {
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(horizontal = SpaceSmall, vertical = SpaceMini),
-                                            horizontalArrangement = Arrangement.SpaceBetween,
-                                            verticalAlignment = Alignment.CenterVertically,
-                                        ) {
-                                            IconWithText(
-                                                text = "${absentReport.startDate.toFormattedDate} - ${absentReport.endDate.toFormattedDate}",
-                                                icon = PoposIcons.CalenderMonth,
-                                                fontWeight = FontWeight.Bold,
-                                                tintColor = MaterialTheme.colorScheme.tertiary,
-                                            )
-                                            Spacer(modifier = Modifier.height(SpaceSmall))
-                                            Text(
-                                                text = "${absentReport.absentDates.size} Days Absent",
-                                                fontWeight = FontWeight.SemiBold,
-                                            )
-                                        }
-
-                                        Spacer(modifier = Modifier.height(SpaceMini))
-                                        HorizontalDivider(modifier = Modifier.fillMaxWidth())
-                                        Spacer(modifier = Modifier.height(SpaceMini))
-
-                                        FlowRow(
-                                            modifier = Modifier
-                                                .testTag("AbsentDatesFlowRow")
-                                                .fillMaxWidth()
-                                                .padding(SpaceSmall),
-                                            horizontalArrangement = if (absentReport.absentDates.isEmpty()) Arrangement.Center else Arrangement.Start,
-                                        ) {
-                                            absentReport.absentDates.forEach { date ->
-                                                Card(
-                                                    modifier = Modifier
-                                                        .testTag(date.plus(absentReport.startDate)),
-                                                    colors = CardDefaults.cardColors(
-                                                        containerColor = LightColor6,
-                                                    ),
-                                                ) {
-                                                    Text(
-                                                        text = date.toFormattedDate,
-                                                        style = MaterialTheme.typography.labelMedium,
-                                                        textAlign = TextAlign.Start,
-                                                        fontWeight = FontWeight.SemiBold,
-                                                        modifier = Modifier
-                                                            .padding(SpaceSmall),
-                                                    )
-                                                }
-                                                Spacer(modifier = Modifier.width(SpaceMini))
-                                            }
-
-                                            if (absentReport.absentDates.isEmpty()) {
-                                                NoteText(
-                                                    text = EMP_ABSENT_NOTE,
-                                                    modifier = Modifier,
-                                                )
-                                            }
-                                        }
-                                    }
-
-                                    if (index != state.data.size - 1) {
-                                        Spacer(modifier = Modifier.height(SpaceMini))
-                                        HorizontalDivider(modifier = Modifier.fillMaxWidth())
-                                        Spacer(modifier = Modifier.height(SpaceMini))
-                                    }
-                                }
-                            }
+                            AbsentDetailsData(
+                                items = state.data.toImmutableList(),
+                                modifier = Modifier,
+                            )
                         }
                     }
                 }
             },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SpaceSmall),
+            rowClickable = false,
+            title = {
+                IconWithText(
+                    text = "Absent Details",
+                    icon = PoposIcons.EventBusy,
+                )
+            },
+            expand = { modifier: Modifier ->
+                IconButton(
+                    modifier = modifier
+                        .testTag("AbsentDetailsExpand"),
+                    onClick = onExpanded,
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.ArrowDown,
+                        contentDescription = "Expand Absent Details",
+                        tint = MaterialTheme.colorScheme.secondary,
+                    )
+                }
+            },
         )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun AbsentDetailsData(
+    items: ImmutableList<EmployeeAbsentDates>,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = SpaceMini),
+    ) {
+        items.forEachIndexed { index, absentReport ->
+            val arrangement = if (absentReport.absentDates.isEmpty()) {
+                Arrangement.Center
+            } else {
+                Arrangement.Start
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.Start,
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = SpaceSmall,
+                            vertical = SpaceMini,
+                        ),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    IconWithText(
+                        text = "${absentReport.startDate.toFormattedDate} " +
+                            "- ${absentReport.endDate.toFormattedDate}",
+                        icon = PoposIcons.CalenderMonth,
+                        fontWeight = FontWeight.Bold,
+                        tintColor = MaterialTheme.colorScheme.tertiary,
+                    )
+                    Spacer(modifier = Modifier.height(SpaceSmall))
+                    Text(
+                        text = "${absentReport.absentDates.size} Days Absent",
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(SpaceMini))
+                HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(SpaceMini))
+
+                FlowRow(
+                    modifier = Modifier
+                        .testTag("AbsentDatesFlowRow")
+                        .fillMaxWidth()
+                        .padding(SpaceSmall),
+                    horizontalArrangement = arrangement,
+                ) {
+                    absentReport.absentDates.forEach { date ->
+                        Card(
+                            modifier = Modifier
+                                .testTag(date.plus(absentReport.startDate)),
+                            colors = CardDefaults.cardColors(
+                                containerColor = LightColor6,
+                            ),
+                        ) {
+                            Text(
+                                text = date.toFormattedDate,
+                                style = MaterialTheme.typography.labelMedium,
+                                textAlign = TextAlign.Start,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier
+                                    .padding(SpaceSmall),
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(SpaceMini))
+                    }
+
+                    if (absentReport.absentDates.isEmpty()) {
+                        NoteText(
+                            text = EMP_ABSENT_NOTE,
+                            modifier = Modifier,
+                        )
+                    }
+                }
+            }
+
+            if (index != items.size - 1) {
+                Spacer(modifier = Modifier.height(SpaceMini))
+                HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(SpaceMini))
+            }
+        }
     }
 }
 
@@ -234,6 +258,7 @@ private fun AbsentDetailsPreview(
         AbsentDetails(
             absentState = absentState,
             absentReportsExpanded = true,
+            modifier = modifier,
             onExpanded = {},
         )
     }

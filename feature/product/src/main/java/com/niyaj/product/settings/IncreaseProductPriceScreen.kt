@@ -86,8 +86,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun IncreaseProductPriceScreen(
     navigator: DestinationsNavigator,
-    viewModel: ProductSettingsViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    viewModel: ProductSettingsViewModel = hiltViewModel(),
 ) {
     val categories by viewModel.categories.collectAsStateWithLifecycle()
     val products by viewModel.products.collectAsStateWithLifecycle()
@@ -114,7 +115,7 @@ fun IncreaseProductPriceScreen(
     }
 
     IncreaseProductPriceScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         items = products.toImmutableList(),
         categories = categories,
         selectedItems = selectedItems.toImmutableList(),
@@ -148,7 +149,6 @@ fun IncreaseProductPriceScreen(
 @VisibleForTesting
 @Composable
 internal fun IncreaseProductPriceScreenContent(
-    modifier: Modifier = Modifier,
     items: ImmutableList<Product>,
     categories: ImmutableList<Category>,
     selectedItems: ImmutableList<Int>,
@@ -168,6 +168,7 @@ internal fun IncreaseProductPriceScreenContent(
     onIncreaseClick: () -> Unit,
     onBackClick: () -> Unit,
     onClickToAddItem: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
     lazyRowState: LazyListState = rememberLazyListState(),
@@ -176,7 +177,8 @@ internal fun IncreaseProductPriceScreenContent(
     TrackScreenViewEvent(screenName = "IncreaseProductPriceScreen")
 
     val text = if (searchText.isEmpty()) NO_ITEMS_IN_PRODUCT else Constants.SEARCH_ITEM_NOT_FOUND
-    val title = if (selectedItems.isEmpty()) INCREASE_PRODUCTS_TITLE else "${selectedItems.size} Selected"
+    val title =
+        if (selectedItems.isEmpty()) INCREASE_PRODUCTS_TITLE else "${selectedItems.size} Selected"
 
     BackHandler {
         if (selectedItems.isNotEmpty()) {
@@ -189,11 +191,23 @@ internal fun IncreaseProductPriceScreenContent(
     }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
+        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
+        modifier = modifier,
         showBackButton = selectedItems.isEmpty() || showSearchBar,
         showBottomBar = items.isNotEmpty(),
         showSecondaryBottomBar = true,
+        fabPosition = FabPosition.End,
+        navigationIcon = {
+            IconButton(
+                onClick = onClickDeselect,
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Deselect All",
+                )
+            }
+        },
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
@@ -225,6 +239,16 @@ internal fun IncreaseProductPriceScreenContent(
                 }
             }
         },
+        floatingActionButton = {
+            ScrollToTop(
+                visible = !lazyListState.isScrollingUp(),
+                onClick = {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(index = 0)
+                    }
+                },
+            )
+        },
         bottomBar = {
             Column(
                 modifier = Modifier
@@ -232,7 +256,15 @@ internal fun IncreaseProductPriceScreenContent(
                     .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} product price will be increase.")
+                InfoText(
+                    text = "${
+                        if (selectedItems.isEmpty()) {
+                            "All"
+                        } else {
+                            "${selectedItems.size}"
+                        }
+                    } product price will be increase.",
+                )
 
                 PoposButton(
                     modifier = Modifier
@@ -248,28 +280,6 @@ internal fun IncreaseProductPriceScreenContent(
                 )
             }
         },
-        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyListState.isScrollingUp(),
-                onClick = {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(index = 0)
-                    }
-                },
-            )
-        },
-        navigationIcon = {
-            IconButton(
-                onClick = onClickDeselect,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Deselect All",
-                )
-            }
-        },
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -277,29 +287,29 @@ internal fun IncreaseProductPriceScreenContent(
                 .padding(paddingValues),
         ) {
             StandardTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = productPrice,
                 label = ProductTestTags.PRODUCT_PRICE_TEXT_FIELD,
                 leadingIcon = PoposIcons.Rupee,
-                keyboardType = KeyboardType.Number,
+                value = productPrice,
                 onValueChange = onPriceChanged,
+                modifier = Modifier.fillMaxWidth(),
                 isError = productPrice.isEmpty(),
+                keyboardType = KeyboardType.Number,
             )
 
             CategoryList(
-                horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
-                contentPadding = PaddingValues(SpaceSmall),
-                lazyRowState = lazyRowState,
                 categories = categories,
-                doesSelected = selectedCategories::contains,
+                selected = selectedCategories::contains,
                 onSelect = onSelectCategory,
+                contentPadding = PaddingValues(SpaceSmall),
+                horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
+                lazyRowState = lazyRowState,
             )
 
             if (items.isEmpty()) {
                 ItemNotAvailableHalf(
-                    modifier = Modifier,
                     text = text,
                     buttonText = ProductTestTags.CREATE_NEW_PRODUCT,
+                    modifier = Modifier,
                     onClick = onClickToAddItem,
                 )
             } else {

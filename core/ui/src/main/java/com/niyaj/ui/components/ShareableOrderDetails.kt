@@ -96,7 +96,6 @@ import com.niyaj.ui.utils.ScrollableCapturable
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShareableOrderDetails(
-    modifier: Modifier = Modifier,
     captureController: CaptureController,
     orderDetails: UiState<OrderDetails>,
     charges: List<Charges>,
@@ -104,6 +103,7 @@ fun ShareableOrderDetails(
     onClickShare: () -> Unit,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
     onClickPrintOrder: (orderId: Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("ShareableOrderDetails") {
     var changeLayout by remember { mutableStateOf(true) }
 
@@ -169,7 +169,6 @@ fun ShareableOrderDetails(
                                 }
 
                             CapturableCard(
-                                modifier = Modifier.weight(2.5f),
                                 captureController = captureController,
                                 orderDetails = state.data,
                                 charges = chargesList,
@@ -178,11 +177,12 @@ fun ShareableOrderDetails(
                                 icon = icon,
                                 onCaptured = onCaptured,
                                 layoutChanged = changeLayout,
+                                modifier = Modifier.weight(2.5f),
                             )
 
                             DialogButtons(
-                                shareButtonColor = containerColor,
                                 layoutChanged = changeLayout,
+                                shareButtonColor = containerColor,
                                 onDismiss = onDismiss,
                                 onClickShare = onClickShare,
                                 onClickChangeLayout = {
@@ -202,7 +202,6 @@ fun ShareableOrderDetails(
 
 @Composable
 private fun CapturableCard(
-    modifier: Modifier,
     captureController: CaptureController,
     orderDetails: OrderDetails,
     charges: List<Charges>,
@@ -211,6 +210,7 @@ private fun CapturableCard(
     icon: ImageVector,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
     layoutChanged: Boolean,
+    modifier: Modifier = Modifier,
 ) = trace("CapturableCard") {
     ScrollableCapturable(
         controller = captureController,
@@ -236,9 +236,9 @@ private fun CapturableCard(
                     )
                 } else {
                     CartItemOrderDetailsCard(
+                        icon = icon,
                         orderDetails = orderDetails,
                         charges = charges,
-                        icon = icon,
                         containerColor = containerColor,
                         backgroundColor = backgroundColor,
                     )
@@ -250,9 +250,9 @@ private fun CapturableCard(
 
 @Composable
 private fun CartItemOrderDetails(
-    modifier: Modifier = Modifier,
     orderDetails: OrderDetails,
     charges: List<Charges>,
+    modifier: Modifier = Modifier,
 ) = trace("CartItemOrderDetails") {
     Card(
         modifier = modifier
@@ -272,12 +272,12 @@ private fun CartItemOrderDetails(
             if (orderDetails.cartProducts.isNotEmpty()) {
                 CartItemOrderProductDetails(
                     orderType = orderDetails.cartOrder.orderType,
-                    doesChargesIncluded = orderDetails.cartOrder.doesChargesIncluded,
+                    orderPrice = orderDetails.orderPrice,
+                    chargesIncluded = orderDetails.cartOrder.doesChargesIncluded,
                     cartProducts = orderDetails.cartProducts,
                     addOnItems = orderDetails.addOnItems,
                     charges = charges,
                     additionalCharges = orderDetails.charges,
-                    orderPrice = orderDetails.orderPrice,
                 )
             } else {
                 Text(text = "Looks, like you have not added any product!")
@@ -288,12 +288,12 @@ private fun CartItemOrderDetails(
 
 @Composable
 private fun CartItemOrderDetailsCard(
-    modifier: Modifier = Modifier,
+    icon: ImageVector,
     orderDetails: OrderDetails,
     charges: List<Charges>,
-    icon: ImageVector,
     containerColor: Color,
     backgroundColor: Brush,
+    modifier: Modifier = Modifier,
 ) = trace("CartItemOrderDetailsCard") {
     ElevatedCard(
         modifier = modifier
@@ -323,33 +323,33 @@ private fun CartItemOrderDetailsCard(
                 )
 
                 CircularBox(
+                    icon = icon,
+                    selected = false,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .offset(y = 40.dp),
-                    icon = icon,
                     showBorder = true,
-                    doesSelected = false,
-                    borderStroke = BorderStroke(3.dp, rainbowColorsBrush),
-                    unselectedTint = containerColor,
                     size = 80.dp,
+                    unselectedTint = containerColor,
+                    borderStroke = BorderStroke(3.dp, rainbowColorsBrush),
                 )
             }
 
             ShareableCartOrderDetailsCard(
-                modifier = Modifier.padding(top = 40.dp),
                 cartOrder = orderDetails.cartOrder,
                 icon = icon,
                 color = containerColor,
+                modifier = Modifier.padding(top = 40.dp),
             )
 
             ShareableCartProductsDetails(
+                orderPrice = orderDetails.orderPrice,
+                doesChargesIncluded = orderDetails.cartOrder.doesChargesIncluded,
+                orderType = orderDetails.cartOrder.orderType,
                 cartProducts = orderDetails.cartProducts,
                 charges = charges,
                 additionalCharges = orderDetails.charges,
                 addOnItems = orderDetails.addOnItems,
-                orderPrice = orderDetails.orderPrice,
-                doesChargesIncluded = orderDetails.cartOrder.doesChargesIncluded,
-                orderType = orderDetails.cartOrder.orderType,
             )
         }
     }
@@ -357,10 +357,10 @@ private fun CartItemOrderDetailsCard(
 
 @Composable
 private fun ShareableCartOrderDetailsCard(
-    modifier: Modifier,
     cartOrder: CartOrder,
     icon: ImageVector,
     color: Color,
+    modifier: Modifier = Modifier,
 ) = trace("ShareableCartOrderDetailsCard") {
     Column(
         modifier = modifier
@@ -385,14 +385,14 @@ private fun ShareableCartOrderDetailsCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             PoposSuggestionChip(
-                icon = PoposIcons.Tag,
                 text = cartOrder.orderId.toString(),
+                icon = PoposIcons.Tag,
                 borderColor = color,
             )
 
             PoposSuggestionChip(
-                icon = icon,
                 text = cartOrder.orderType.name,
+                icon = icon,
                 borderColor = color,
             )
         }
@@ -405,17 +405,17 @@ private fun ShareableCartOrderDetailsCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             PoposSuggestionChip(
-                icon = PoposIcons.ModeStandby,
                 text = cartOrder.orderStatus.name,
+                icon = PoposIcons.ModeStandby,
                 borderColor = color,
             )
 
             PoposSuggestionChip(
-                icon = PoposIcons.CalenderMonth,
                 text = (
                     cartOrder.updatedAt
                         ?: cartOrder.createdAt
                     ).toFormattedDateAndTime,
+                icon = PoposIcons.CalenderMonth,
                 borderColor = color,
             )
         }
@@ -448,8 +448,8 @@ private fun ShareableCartOrderDetailsCard(
 
 @Composable
 private fun ShareableCartOrderDetails(
-    modifier: Modifier = Modifier,
     cartOrder: CartOrder,
+    modifier: Modifier = Modifier,
 ) = trace("ShareableCartOrderDetails") {
     Column(
         modifier = modifier
@@ -504,14 +504,14 @@ private fun ShareableCartOrderDetails(
 
 @Composable
 private fun ShareableCartProductsDetails(
-    modifier: Modifier = Modifier,
+    orderPrice: OrderPrice,
+    doesChargesIncluded: Boolean,
+    orderType: OrderType,
     cartProducts: List<CartProductItem>,
     charges: List<Charges>,
     additionalCharges: List<Charges>,
     addOnItems: List<AddOnItem>,
-    orderPrice: OrderPrice,
-    doesChargesIncluded: Boolean,
-    orderType: OrderType,
+    modifier: Modifier = Modifier,
 ) = trace("ShareableCartProductsDetails") {
     Card(
         modifier = modifier
@@ -679,8 +679,8 @@ private fun ShareableCartProductsDetails(
 
 @Composable
 private fun CartProduct(
-    modifier: Modifier = Modifier,
     cartProduct: CartProductItem,
+    modifier: Modifier = Modifier,
 ) = trace("CartProduct") {
     key(cartProduct.productId) {
         Row(
@@ -742,13 +742,13 @@ private fun CartProduct(
 
 @Composable
 private fun DialogButtons(
-    modifier: Modifier = Modifier,
     layoutChanged: Boolean,
     shareButtonColor: Color,
     onDismiss: () -> Unit,
     onClickShare: () -> Unit,
     onClickChangeLayout: () -> Unit,
     onClickPrintOrder: () -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("DialogButtons") {
     Row(
         modifier = modifier
@@ -759,26 +759,26 @@ private fun DialogButtons(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         PoposOutlinedIconButton(
-            modifier = Modifier
-                .size(ButtonSize),
             icon = PoposIcons.Close,
             onClick = onDismiss,
+            modifier = Modifier
+                .size(ButtonSize),
             borderColor = MaterialTheme.colorScheme.error,
         )
 
         PoposOutlinedIconButton(
-            modifier = Modifier
-                .size(ButtonSize),
             icon = PoposIcons.Print,
             onClick = onClickPrintOrder,
+            modifier = Modifier
+                .size(ButtonSize),
             borderColor = MaterialTheme.colorScheme.secondary,
         )
 
         PoposOutlinedIconButton(
-            modifier = Modifier
-                .size(ButtonSize),
             icon = if (layoutChanged) PoposIcons.ViewAgenda else PoposIcons.CalendarViewDay,
             onClick = onClickChangeLayout,
+            modifier = Modifier
+                .size(ButtonSize),
             borderColor = MaterialTheme.colorScheme.primary,
         )
 
@@ -804,8 +804,8 @@ private fun ShareableCartOrderDetailsPreview(
     PoposRoomTheme {
         Surface {
             ShareableCartOrderDetails(
-                modifier = modifier,
                 cartOrder = CardOrderPreviewData.sampleDineOutOrder,
+                modifier = modifier,
             )
         }
     }
@@ -819,10 +819,10 @@ private fun ShareableCartOrderDetailsCardPreview(
     PoposRoomTheme {
         Surface {
             ShareableCartOrderDetailsCard(
-                modifier = modifier,
                 cartOrder = CardOrderPreviewData.sampleDineOutOrder,
                 icon = PoposIcons.DeliveryDining,
                 color = MaterialTheme.colorScheme.primary,
+                modifier = modifier,
             )
         }
     }

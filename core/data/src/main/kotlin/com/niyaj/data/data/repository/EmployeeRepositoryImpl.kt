@@ -28,6 +28,7 @@ import com.niyaj.common.utils.toRupee
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.EmployeeRepository
 import com.niyaj.database.dao.EmployeeDao
+import com.niyaj.database.model.EmployeeEntity
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Employee
 import com.niyaj.model.EmployeeAbsentDates
@@ -52,10 +53,8 @@ class EmployeeRepositoryImpl @Inject constructor(
 
     override suspend fun getAllEmployee(searchText: String): Flow<List<Employee>> {
         return withContext(ioDispatcher) {
-            employeeDao.getAllEmployee().mapLatest { it ->
-                it.map {
-                    it.asExternalModel()
-                }.searchEmployee(searchText)
+            employeeDao.getAllEmployee().mapLatest {
+                it.map(EmployeeEntity::asExternalModel).searchEmployee(searchText)
             }
         }
     }

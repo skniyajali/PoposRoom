@@ -65,6 +65,7 @@ import kotlinx.coroutines.launch
 fun ChargesExportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: ChargesSettingsViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -111,7 +112,6 @@ fun ChargesExportScreen(
         }
 
     ChargesExportScreenContent(
-        modifier = Modifier,
         items = charges.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         showSearchBar = showSearchBar,
@@ -137,13 +137,13 @@ fun ChargesExportScreen(
         onClickToAddItem = {
             navigator.navigate(AddEditChargesScreenDestination())
         },
+        modifier = modifier,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun ChargesExportScreenContent(
-    modifier: Modifier = Modifier,
     items: ImmutableList<Charges>,
     selectedItems: ImmutableList<Int>,
     showSearchBar: Boolean,
@@ -158,6 +158,7 @@ internal fun ChargesExportScreenContent(
     onClickExport: () -> Unit,
     onBackClick: () -> Unit,
     onClickToAddItem: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
 ) {

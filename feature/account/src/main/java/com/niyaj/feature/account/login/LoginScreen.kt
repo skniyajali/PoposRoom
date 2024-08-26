@@ -58,6 +58,7 @@ import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.components.PoposTextButton
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.Ivory
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -66,6 +67,7 @@ import com.niyaj.feature.account.R
 import com.niyaj.feature.account.destinations.RegisterScreenDestination
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.StandardOutlinedTextField
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
@@ -84,6 +86,7 @@ import com.ramcosta.composedestinations.navigation.navigate
 @Composable
 fun LoginScreen(
     navController: NavController,
+    modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val lazyListState = rememberLazyListState()
@@ -137,7 +140,7 @@ fun LoginScreen(
     TrackScreenViewEvent(screenName = Screens.LOGIN_SCREEN)
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(gradient6),
         verticalArrangement = Arrangement.SpaceBetween,
@@ -168,15 +171,8 @@ fun LoginScreen(
             ),
         ) {
             LoginForm(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(SpaceMedium),
-                lazyListState = lazyListState,
                 emailOrPhone = viewModel.state.emailOrPhone,
                 password = viewModel.state.password,
-                emailError = viewModel.state.emailError,
-                passwordError = viewModel.state.passwordError,
-                errorMessage = error,
                 showPassword = showPassword,
                 onTogglePassword = {
                     showPassword = !showPassword
@@ -193,6 +189,13 @@ fun LoginScreen(
                 onClickRegister = {
                     navController.navigate(RegisterScreenDestination())
                 },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(SpaceMedium),
+                emailError = viewModel.state.emailError,
+                passwordError = viewModel.state.passwordError,
+                errorMessage = error,
+                lazyListState = lazyListState,
             )
         }
     }
@@ -218,19 +221,19 @@ fun LoginScreen(
  */
 @Composable
 fun LoginForm(
-    modifier: Modifier = Modifier,
-    lazyListState: LazyListState,
     emailOrPhone: String,
     password: String,
     showPassword: Boolean,
     onTogglePassword: (Boolean) -> Unit,
-    emailError: String? = null,
-    passwordError: String? = null,
-    errorMessage: String? = null,
     onEmailOrPhoneChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
     onClickLogin: () -> Unit,
     onClickRegister: () -> Unit,
+    modifier: Modifier = Modifier,
+    emailError: String? = null,
+    passwordError: String? = null,
+    errorMessage: String? = null,
+    lazyListState: LazyListState = rememberLazyListState(),
 ) {
     LazyColumn(
         modifier = modifier
@@ -265,12 +268,12 @@ fun LoginForm(
 
         item("Email/Phone_Field") {
             StandardOutlinedTextField(
-                value = emailOrPhone,
+                label = stringResource(R.string.email_phone),
                 leadingIcon = PoposIcons.Email,
+                value = emailOrPhone,
+                onValueChange = onEmailOrPhoneChanged,
                 isError = emailError != null,
                 errorText = emailError,
-                label = stringResource(R.string.email_phone),
-                onValueChange = onEmailOrPhoneChanged,
                 textStyle = LocalTextStyle.current.copy(
                     fontFamily = FontFamily.Cursive,
                 ),
@@ -285,12 +288,12 @@ fun LoginForm(
                 onValueChange = onPasswordChanged,
                 isError = passwordError != null,
                 errorText = passwordError,
-                isPasswordToggleDisplayed = true,
-                isPasswordVisible = showPassword,
-                onPasswordToggleClick = onTogglePassword,
                 textStyle = LocalTextStyle.current.copy(
                     fontFamily = FontFamily.Cursive,
                 ),
+                isPasswordToggleDisplayed = true,
+                isPasswordVisible = showPassword,
+                onPasswordToggleClick = onTogglePassword,
             )
         }
 
@@ -335,5 +338,25 @@ fun LoginForm(
                 )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun LoginFormPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        LoginForm(
+            emailOrPhone = "9078563421",
+            password = "password",
+            showPassword = false,
+            onTogglePassword = {},
+            onEmailOrPhoneChanged = {},
+            onPasswordChanged = {},
+            onClickLogin = {},
+            onClickRegister = {},
+            modifier = modifier,
+        )
     }
 }

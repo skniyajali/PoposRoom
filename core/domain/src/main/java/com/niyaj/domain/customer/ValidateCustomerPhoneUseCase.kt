@@ -26,6 +26,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@Suppress("ReturnCount")
 class ValidateCustomerPhoneUseCase @Inject constructor(
     private val repository: CustomerRepository,
     @Dispatcher(PoposDispatchers.IO)

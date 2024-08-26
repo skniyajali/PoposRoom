@@ -31,7 +31,7 @@ data class AxisConfig(
 
 internal object AxisConfigDefaults {
 
-    fun axisConfigDefaults(isDarkMode: Boolean) = AxisConfig(
+    fun configDefaults(isDarkMode: Boolean) = AxisConfig(
         xAxisColor = Color.LightGray,
         showAxis = true,
         isAxisDashed = false,

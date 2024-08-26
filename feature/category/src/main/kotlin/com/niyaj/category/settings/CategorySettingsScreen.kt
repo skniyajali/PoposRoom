@@ -49,9 +49,9 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 @Composable
 fun CategorySettingsScreen(
     navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
 ) {
     CategorySettingsScreenContent(
-        modifier = Modifier,
         onBackClick = navigator::navigateUp,
         onImportClick = {
             navigator.navigate(ImportCategoryScreenDestination())
@@ -59,16 +59,17 @@ fun CategorySettingsScreen(
         onExportClick = {
             navigator.navigate(ExportCategoryScreenDestination())
         },
+        modifier = modifier,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun CategorySettingsScreenContent(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onImportClick: () -> Unit,
     onExportClick: () -> Unit,
+    modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     TrackScreenViewEvent(screenName = "Category Setting Screen")
@@ -115,10 +116,10 @@ private fun CategorySettingsScreenContentPreview(
 ) {
     PoposRoomTheme {
         CategorySettingsScreenContent(
-            modifier = modifier,
             onBackClick = {},
             onImportClick = {},
             onExportClick = {},
+            modifier = modifier,
         )
     }
 }

@@ -23,6 +23,7 @@ import com.niyaj.common.result.Resource
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.ExpenseRepository
 import com.niyaj.database.dao.ExpenseDao
+import com.niyaj.database.model.ExpenseEntity
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Expense
 import com.niyaj.model.searchExpense
@@ -43,20 +44,16 @@ class ExpenseRepositoryImpl @Inject constructor(
         givenDate: String,
     ): Flow<List<Expense>> {
         return withContext(ioDispatcher) {
-            expenseDao.getAllExpenseOnGivenDate(givenDate).mapLatest { it ->
-                it.map {
-                    it.asExternalModel()
-                }.searchExpense(searchText)
+            expenseDao.getAllExpenseOnGivenDate(givenDate).mapLatest {
+                it.map(ExpenseEntity::asExternalModel).searchExpense(searchText)
             }
         }
     }
 
     override suspend fun getAllExpenses(searchText: String): Flow<List<Expense>> {
         return withContext(ioDispatcher) {
-            expenseDao.getAllExpense().mapLatest { it ->
-                it.map {
-                    it.asExternalModel()
-                }.searchExpense(searchText)
+            expenseDao.getAllExpense().mapLatest {
+                it.map(ExpenseEntity::asExternalModel).searchExpense(searchText)
             }
         }
     }

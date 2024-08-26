@@ -62,6 +62,7 @@ import kotlinx.coroutines.launch
 fun EmployeeImportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: EmployeeSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -105,7 +106,7 @@ fun EmployeeImportScreen(
     }
 
     EmployeeImportScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         isLoading = isLoading,
         importedItems = importedItems.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),

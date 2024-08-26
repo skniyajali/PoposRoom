@@ -87,6 +87,7 @@ import kotlinx.coroutines.launch
 fun MarketListItemScreen(
     listTypeId: Int,
     navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
     viewModel: MarketListItemViewModel = hiltViewModel(),
     shareViewModel: ShareViewModel = hiltViewModel(),
 ) {
@@ -121,7 +122,6 @@ fun MarketListItemScreen(
     TrackScreenViewEvent(screenName = "$UPDATE_LIST/listId/$listTypeId")
 
     MarketListItemScreenContent(
-        modifier = Modifier,
         uiState = uiState,
         marketDetails = marketDetails,
         showSearchBar = showSearchBar,
@@ -140,6 +140,7 @@ fun MarketListItemScreen(
         onClickCreateNew = {
             navigator.navigate(AddEditMarketItemScreenDestination())
         },
+        modifier = modifier,
         snackbarState = snackbarState,
     )
 
@@ -152,7 +153,6 @@ fun MarketListItemScreen(
             ShareableMarketList(
                 captureController = captureController,
                 marketDate = marketDetails!!.marketDate,
-                marketDetail = marketDetails,
                 marketLists = items,
                 onDismiss = shareViewModel::onDismissDialog,
                 onClickShare = {
@@ -171,6 +171,7 @@ fun MarketListItemScreen(
                         Log.d("Capturable", "Error: ${it.message}\n${it.stackTrace.joinToString()}")
                     }
                 },
+                marketDetail = marketDetails,
             )
         }
     }
@@ -179,7 +180,6 @@ fun MarketListItemScreen(
 @VisibleForTesting
 @Composable
 internal fun MarketListItemScreenContent(
-    modifier: Modifier = Modifier,
     uiState: UiState<List<MarketItemAndQuantity>>,
     marketDetails: MarketListAndType?,
     showSearchBar: Boolean,
@@ -196,6 +196,7 @@ internal fun MarketListItemScreenContent(
     onIncreaseQuantity: (itemId: Int) -> Unit,
     onClickBack: () -> Unit,
     onClickCreateNew: () -> Unit,
+    modifier: Modifier = Modifier,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
@@ -210,20 +211,13 @@ internal fun MarketListItemScreenContent(
     val showFab = uiState is UiState.Success
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = UPDATE_LIST,
+        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
+        modifier = modifier,
         showBackButton = true,
         showFab = lazyListState.isScrollingUp() && showFab,
-        snackbarHostState = snackbarState,
         fabPosition = FabPosition.EndOverlay,
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = onClickShare,
-                containerColor = MaterialTheme.colorScheme.primary,
-            ) {
-                Icon(imageVector = PoposIcons.Share, contentDescription = "Share List")
-            }
-        },
+        snackbarHostState = snackbarState,
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
@@ -253,7 +247,14 @@ internal fun MarketListItemScreenContent(
                 }
             }
         },
-        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onClickShare,
+                containerColor = MaterialTheme.colorScheme.primary,
+            ) {
+                Icon(imageVector = PoposIcons.Share, contentDescription = "Share List")
+            }
+        },
     ) { paddingValues ->
         Column(
             modifier = Modifier

@@ -21,19 +21,26 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.trace
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.feature.account.register.RegisterScreenState
+import com.niyaj.feature.account.register.utils.RegisterScreenPage
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun RegistrationScaffold(
-    snackbarHostState: SnackbarHostState,
     screenData: RegisterScreenState,
     isNextEnabled: Boolean,
     onClosePressed: () -> Unit,
     onPreviousPressed: () -> Unit,
     onNextPressed: () -> Unit,
+    modifier: Modifier = Modifier,
     onDonePressed: () -> Unit = {},
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     content: @Composable (PaddingValues) -> Unit,
 ) = trace("RegistrationScaffold") {
     Scaffold(
@@ -55,6 +62,34 @@ fun RegistrationScaffold(
                 onDonePressed = onDonePressed,
             )
         },
+        modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     )
+}
+
+@DevicePreviews
+@Composable
+private fun RegistrationScaffoldPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        RegistrationScaffold(
+            screenData = RegisterScreenState(
+                pageIndex = 0,
+                pageCount = 3,
+                shouldShowPreviousButton = false,
+                shouldShowDoneButton = false,
+                screenPage = RegisterScreenPage.LOGIN_INFO,
+            ),
+            isNextEnabled = true,
+            onClosePressed = {},
+            onPreviousPressed = {},
+            onNextPressed = {},
+            modifier = modifier,
+            onDonePressed = {},
+            content = {
+                Text("Register Screen Scaffold")
+            },
+        )
+    }
 }

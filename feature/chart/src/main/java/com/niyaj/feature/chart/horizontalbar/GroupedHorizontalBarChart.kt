@@ -84,7 +84,10 @@ fun GroupedHorizontalBarChart(
         val xScalableFactor = size.width.div(maxXValue)
         val groupedHorizontalBarDataColor: List<Color> = groupedBarData.flatMap { it.colors }
         val groupedBarDataCount = groupedBarData.flatMap { it.horizontalBarData }.count()
-        if (groupedHorizontalBarDataColor.count() != groupedBarDataCount) throw Exception("Total colors cannot be more then $groupedBarDataCount")
+
+        if (groupedHorizontalBarDataColor.count() != groupedBarDataCount) {
+            throw Exception("Total colors cannot be more then $groupedBarDataCount")
+        }
 
         groupedBarData.flatMap { it.horizontalBarData }
             .forEachIndexed { index, data ->

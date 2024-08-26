@@ -51,9 +51,10 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 @Composable
 fun PaymentSettingsScreen(
     navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
 ) {
     PaymentSettingsScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         onBackClick = navigator::navigateUp,
         onImportClick = {
             navigator.navigate(PaymentImportScreenDestination)
@@ -67,10 +68,10 @@ fun PaymentSettingsScreen(
 @VisibleForTesting
 @Composable
 internal fun PaymentSettingsScreenContent(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onImportClick: () -> Unit,
     onExportClick: () -> Unit,
+    modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     TrackScreenViewEvent(screenName = "Payment Setting Screen")

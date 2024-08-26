@@ -29,6 +29,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@Suppress("ReturnCount")
 class ValidateMarketItemNameUseCase @Inject constructor(
     private val repository: MarketItemRepository,
     @Dispatcher(PoposDispatchers.IO)

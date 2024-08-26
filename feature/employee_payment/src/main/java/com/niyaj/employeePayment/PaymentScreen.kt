@@ -81,11 +81,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun PaymentScreen(
     navigator: DestinationsNavigator,
-    viewModel: PaymentViewModel = hiltViewModel(),
     onClickEmployee: (employeeId: Int) -> Unit,
     resultRecipient: ResultRecipient<AddEditPaymentScreenDestination, String>,
     exportRecipient: ResultRecipient<PaymentExportScreenDestination, String>,
     importRecipient: ResultRecipient<PaymentImportScreenDestination, String>,
+    modifier: Modifier = Modifier,
+    viewModel: PaymentViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -98,7 +99,6 @@ fun PaymentScreen(
     val searchText = viewModel.searchText.value
 
     PaymentScreenContent(
-        modifier = Modifier,
         uiState = state,
         selectedItems = selectedItems,
         showSearchBar = showSearchBar,
@@ -126,6 +126,7 @@ fun PaymentScreen(
             navigator.navigate(AddEditPaymentScreenDestination(employeeId = it))
         },
         onClickEmployee = onClickEmployee,
+        modifier = modifier,
         snackbarState = snackbarState,
     )
 
@@ -143,7 +144,6 @@ fun PaymentScreen(
 @VisibleForTesting
 @Composable
 internal fun PaymentScreenContent(
-    modifier: Modifier = Modifier,
     uiState: UiState<List<EmployeeWithPayments>>,
     selectedItems: List<Int>,
     showSearchBar: Boolean,
@@ -163,6 +163,7 @@ internal fun PaymentScreenContent(
     onClickSettings: () -> Unit,
     onClickAddPayment: (employeeId: Int) -> Unit,
     onClickEmployee: (employeeId: Int) -> Unit,
+    modifier: Modifier = Modifier,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
@@ -184,9 +185,9 @@ internal fun PaymentScreenContent(
     var viewType by remember { mutableStateOf(ViewType.CARD) }
 
     PoposPrimaryScaffold(
-        modifier = modifier,
         currentRoute = Screens.PAYMENT_SCREEN,
         title = if (selectedItems.isEmpty()) PAYMENT_SCREEN_TITLE else "${selectedItems.size} Selected",
+        selectionCount = selectedItems.size,
         floatingActionButton = {
             StandardFAB(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
@@ -202,10 +203,7 @@ internal fun PaymentScreenContent(
         },
         navActions = {
             ScaffoldNavActions(
-                placeholderText = PAYMENT_SEARCH_PLACEHOLDER,
-                showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchBar = showSearchBar,
                 showSearchIcon = showFab,
                 searchText = searchText,
                 onEditClick = {
@@ -214,11 +212,13 @@ internal fun PaymentScreenContent(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = onClickSettings,
                 onSelectAllClick = onClickSelectAll,
                 onClearClick = onClickClear,
                 onSearchIconClick = onClickSearchIcon,
                 onSearchTextChanged = onSearchTextChanged,
+                showSearchBar = showSearchBar,
+                showSettingsIcon = true,
+                onSettingsClick = onClickSettings,
                 content = {
                     if (showFab) {
                         IconButton(
@@ -240,15 +240,16 @@ internal fun PaymentScreenContent(
                         }
                     }
                 },
+                placeholderText = PAYMENT_SEARCH_PLACEHOLDER,
             )
         },
+        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
+        onNavigateToScreen = onNavigateToScreen,
+        modifier = modifier,
         fabPosition = if (lazyListState.isScrolled) FabPosition.End else FabPosition.Center,
-        selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
         onDeselect = onClickDeselect,
-        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
         snackbarHostState = snackbarState,
-        onNavigateToScreen = onNavigateToScreen,
     ) {
         Crossfade(
             targetState = uiState,
@@ -267,11 +268,11 @@ internal fun PaymentScreenContent(
 
                 is UiState.Success -> {
                     EmployeePaymentList(
-                        modifier = Modifier,
                         viewType = viewType,
                         items = state.data.toImmutableList(),
                         doesSelected = selectedItems::contains,
                         onSelectItem = onClickSelectItem,
+                        modifier = Modifier,
                         isInSelectionMode = selectedItems.isNotEmpty(),
                         showTrailingIcon = true,
                         showEmployeeDetails = true,
@@ -377,7 +378,6 @@ private fun PaymentScreenPreview(
 ) {
     PoposRoomTheme {
         PaymentScreenContent(
-            modifier = modifier,
             uiState = uiState,
             selectedItems = listOf(),
             showSearchBar = false,
@@ -397,6 +397,7 @@ private fun PaymentScreenPreview(
             onClickSettings = {},
             onClickAddPayment = {},
             onClickEmployee = {},
+            modifier = modifier,
         )
     }
 }

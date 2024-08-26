@@ -87,9 +87,10 @@ import kotlinx.coroutines.launch
 @Destination
 @Composable
 fun ProductDetailsScreen(
-    productId: Int = 0,
     navigator: DestinationsNavigator,
     onClickOrder: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    productId: Int = 0,
     viewModel: ProductDetailsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -163,6 +164,7 @@ fun ProductDetailsScreen(
         onClickShare = viewModel::onShowDialog,
         onClickPrint = printOrder,
         onBackClick = navigator::navigateUp,
+        modifier = modifier,
         onClickEditProduct = {
             navigator.navigate(AddEditProductScreenDestination(productId))
         },
@@ -205,7 +207,6 @@ fun ProductDetailsScreen(
 @VisibleForTesting
 @Composable
 internal fun ProductDetailsScreenContent(
-    modifier: Modifier = Modifier,
     productState: UiState<Product>,
     orderDetailsState: UiState<List<ProductWiseOrder>>,
     totalOrderDetails: ProductTotalOrderDetails,
@@ -215,6 +216,7 @@ internal fun ProductDetailsScreenContent(
     onClickPrint: () -> Unit,
     onBackClick: () -> Unit,
     onClickEditProduct: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
     pagerState: PagerState = rememberPagerState { 2 },
@@ -222,24 +224,12 @@ internal fun ProductDetailsScreenContent(
     var productDetailsExpanded by rememberSaveable { mutableStateOf(false) }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = "Product Details",
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = true,
         showFab = lazyListState.isScrollingUp(),
         fabPosition = FabPosition.End,
-        floatingActionButton = {
-            StandardFAB(
-                fabVisible = lazyListState.isScrollingUp(),
-                onFabClick = onClickShare,
-                onClickScroll = {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(index = 0)
-                    }
-                },
-                showScrollToTop = lazyListState.isScrolled,
-                fabIcon = PoposIcons.Share,
-            )
-        },
         navActions = {
             IconButton(
                 onClick = onClickPrint,
@@ -253,7 +243,19 @@ internal fun ProductDetailsScreenContent(
                 Icon(imageVector = PoposIcons.Share, contentDescription = "Share Details")
             }
         },
-        onBackClick = onBackClick,
+        floatingActionButton = {
+            StandardFAB(
+                fabVisible = lazyListState.isScrollingUp(),
+                onFabClick = onClickShare,
+                onClickScroll = {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(index = 0)
+                    }
+                },
+                showScrollToTop = lazyListState.isScrolled,
+                fabIcon = PoposIcons.Share,
+            )
+        },
     ) {
         TrackScrollJank(scrollableState = lazyListState, stateName = "Product Details::List")
 

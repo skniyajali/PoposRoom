@@ -74,13 +74,13 @@ import com.niyaj.ui.utils.DevicePreviews
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CartOrderDetails(
-    modifier: Modifier = Modifier,
     cartOrder: CartOrder,
     doesExpanded: Boolean,
     onExpandChanged: () -> Unit,
-    deliveryPartner: EmployeeNameAndId? = null,
     partners: List<EmployeeNameAndId>,
     onChangePartner: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    deliveryPartner: EmployeeNameAndId? = null,
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CartOrderDetails") {
     var expanded by remember { mutableStateOf(false) }
@@ -101,40 +101,9 @@ internal fun CartOrderDetails(
         ),
     ) {
         StandardExpandable(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
             expanded = doesExpanded,
             onExpandChanged = {
                 onExpandChanged()
-            },
-            title = {
-                IconWithText(
-                    text = "Order Details",
-                    icon = PoposIcons.Order,
-                    isTitle = true,
-                )
-            },
-            trailing = {
-                PoposSuggestionChip(
-                    text = cartOrder.orderStatus.name,
-                    icon = PoposIcons.StarHalf,
-                )
-            },
-            rowClickable = true,
-            expand = { modifier: Modifier ->
-                IconButton(
-                    modifier = modifier,
-                    onClick = {
-                        onExpandChanged()
-                    },
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.ArrowDown,
-                        contentDescription = "Expand More",
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
             },
             content = {
                 Column(
@@ -192,6 +161,12 @@ internal fun CartOrderDetails(
                             },
                         ) {
                             PoposOutlinedDropdownButton(
+                                text = "$text Delivery Partner",
+                                leadingIcon = icon,
+                                trailingIcon = if (expanded) PoposIcons.KeyboardArrowUp else PoposIcons.ArrowDown,
+                                onClick = {
+                                    expanded = true
+                                },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .onGloballyPositioned { coordinates ->
@@ -199,12 +174,6 @@ internal fun CartOrderDetails(
                                         textFieldSize = coordinates.size.toSize()
                                     }
                                     .menuAnchor(),
-                                text = "$text Delivery Partner",
-                                leadingIcon = icon,
-                                trailingIcon = if (expanded) PoposIcons.KeyboardArrowUp else PoposIcons.ArrowDown,
-                                onClick = {
-                                    expanded = true
-                                },
                             )
 
                             DropdownMenu(
@@ -242,6 +211,37 @@ internal fun CartOrderDetails(
                     }
                 }
             },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SpaceSmall),
+            rowClickable = true,
+            title = {
+                IconWithText(
+                    text = "Order Details",
+                    icon = PoposIcons.Order,
+                    isTitle = true,
+                )
+            },
+            trailing = {
+                PoposSuggestionChip(
+                    text = cartOrder.orderStatus.name,
+                    icon = PoposIcons.StarHalf,
+                )
+            },
+            expand = { modifier: Modifier ->
+                IconButton(
+                    modifier = modifier,
+                    onClick = {
+                        onExpandChanged()
+                    },
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.ArrowDown,
+                        contentDescription = "Expand More",
+                        tint = MaterialTheme.colorScheme.secondary,
+                    )
+                }
+            },
         )
     }
 }
@@ -253,7 +253,6 @@ private fun CartOrderDetailsPreview(
 ) {
     PoposRoomTheme {
         CartOrderDetails(
-            modifier = modifier,
             cartOrder = CartOrder(
                 orderId = 4866,
                 orderType = OrderType.DineOut,
@@ -265,10 +264,6 @@ private fun CartOrderDetailsPreview(
             ),
             doesExpanded = true,
             onExpandChanged = {},
-            deliveryPartner = EmployeeNameAndId(
-                employeeId = 4978,
-                employeeName = "Niyaj",
-            ),
             partners = listOf(
                 EmployeeNameAndId(
                     employeeId = 4978,
@@ -280,6 +275,11 @@ private fun CartOrderDetailsPreview(
                 ),
             ),
             onChangePartner = {},
+            modifier = modifier,
+            deliveryPartner = EmployeeNameAndId(
+                employeeId = 4978,
+                employeeName = "Niyaj",
+            ),
         )
     }
 }

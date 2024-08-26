@@ -55,7 +55,7 @@ class ProductDetailsViewModel @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher,
     private val analyticsHelper: AnalyticsHelper,
     private val bluetoothPrinter: BluetoothPrinter,
-) : ShareViewModel(ioDispatcher, analyticsHelper) {
+) : ShareViewModel(ioDispatcher) {
 
     private val productId = savedStateHandle.get<Int>("productId") ?: 0
 
@@ -108,7 +108,13 @@ class ProductDetailsViewModel @Inject constructor(
                 val mostOrderItemDate =
                     if (groupByDate.isNotEmpty()) groupByDate.maxBy { it.value.size }.key else ""
                 val mostOrderQtyDate =
-                    if (groupByDate.isNotEmpty()) groupByDate.maxBy { entry -> entry.value.sumOf { it.quantity } }.key else ""
+                    if (groupByDate.isNotEmpty()) {
+                        groupByDate.maxBy { entry ->
+                            entry.value.sumOf { it.quantity }
+                        }.key
+                    } else {
+                        ""
+                    }
 
                 _totalOrders.value = _totalOrders.value.copy(
                     totalAmount = totalAmount.toString(),
@@ -186,7 +192,8 @@ class ProductDetailsViewModel @Inject constructor(
         var boxReport = ""
         val report = totalOrders.value
         val datePeriod =
-            report.datePeriod.first.toBarDate + if (!report.datePeriod.isSameDay) " --> " + report.datePeriod.second.toBarDate else ""
+            report.datePeriod.first.toBarDate +
+                if (!report.datePeriod.isSameDay) " --> " + report.datePeriod.second.toBarDate else ""
 
         boxReport += "[L]-------------------------------\n"
         boxReport += "[L]TOTAL ORDERS & SALES [R] ${report.dineInQty.plus(report.dineOutQty)}\n"
@@ -234,7 +241,8 @@ class ProductDetailsViewModel @Inject constructor(
                         productWiseOrder.customerAddress?.getCapitalWord() ?: "N/A"
                     val customerPhone = productWiseOrder.customerPhone ?: "N/A"
 
-                    details += "[L]#${productWiseOrder.orderId}[L]${productWiseOrder.quantity}[L]$customerPhone[R]${customerAddress}\n\n"
+                    details += "[L]#${productWiseOrder.orderId}[L]" +
+                        "${productWiseOrder.quantity}[L]$customerPhone[R]${customerAddress}\n\n"
                 }
             }
         } else {

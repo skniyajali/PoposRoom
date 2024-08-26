@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
+@Suppress("LongMethod")
 class CartViewModel @Inject constructor(
     private val cartRepository: CartRepository,
     private val analyticsHelper: AnalyticsHelper,
@@ -89,6 +90,7 @@ class CartViewModel @Inject constructor(
         initialValue = emptyList(),
     )
 
+    @Suppress("CyclomaticComplexMethod")
     fun onEvent(event: CartEvent) {
         when (event) {
             is CartEvent.IncreaseQuantity -> {
@@ -304,7 +306,10 @@ internal fun AnalyticsHelper.logPlacedDineOutOrder(orderId: List<Int>) {
         event = AnalyticsEvent(
             type = "dine_out_order_placed",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("dine_out_order_placed", orderId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param(
+                    "dine_out_order_placed",
+                    orderId.toString(),
+                ),
             ),
         ),
     )
@@ -315,7 +320,10 @@ internal fun AnalyticsHelper.logPlacedDineInOrder(orderId: List<Int>) {
         event = AnalyticsEvent(
             type = "dineIn_order_placed",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("dine_in_order_placed", orderId.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param(
+                    "dine_in_order_placed",
+                    orderId.toString(),
+                ),
             ),
         ),
     )

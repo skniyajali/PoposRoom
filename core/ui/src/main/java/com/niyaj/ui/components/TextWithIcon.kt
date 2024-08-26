@@ -64,9 +64,8 @@ import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun IconWithText(
-    modifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier,
     text: String,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     textStyle: TextStyle = MaterialTheme.typography.labelMedium,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
@@ -83,7 +82,6 @@ fun IconWithText(
                 imageVector = it,
                 contentDescription = text,
                 tint = tintColor,
-                modifier = iconModifier,
             )
             Spacer(modifier = Modifier.width(SpaceMini))
         }
@@ -101,9 +99,8 @@ fun IconWithText(
 
 @Composable
 fun IconWithText(
-    modifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier,
     text: AnnotatedString,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     isTitle: Boolean = false,
     fontWeight: FontWeight = FontWeight.Normal,
@@ -118,13 +115,18 @@ fun IconWithText(
                     imageVector = icon,
                     contentDescription = text.text,
                     tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = iconModifier,
                 )
                 Spacer(modifier = Modifier.width(SpaceMini))
             }
             Text(
                 text = text,
-                fontFamily = if (text.startsWith("Email") || text.startsWith("Password")) FontFamily.Monospace else null,
+                fontFamily = if (text.startsWith("Email") ||
+                    text.startsWith("Password")
+                ) {
+                    FontFamily.Monospace
+                } else {
+                    null
+                },
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = if (isTitle) FontWeight.SemiBold else fontWeight,
                 maxLines = 1,
@@ -136,10 +138,9 @@ fun IconWithText(
 
 @Composable
 fun IconWithText(
-    modifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier,
     text: String,
     icon: ImageVector,
+    modifier: Modifier = Modifier,
     secondaryText: String? = null,
     style: TextStyle = MaterialTheme.typography.labelMedium,
     fontWeight: FontWeight = FontWeight.SemiBold,
@@ -155,7 +156,6 @@ fun IconWithText(
             imageVector = icon,
             contentDescription = text,
             tint = tintColor,
-            modifier = iconModifier,
         )
         Column(
             modifier = Modifier,
@@ -184,10 +184,9 @@ fun IconWithText(
 
 @Composable
 fun TextWithIcon(
-    modifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier,
     text: String,
     icon: ImageVector,
+    modifier: Modifier = Modifier,
     secondaryText: String? = null,
     style: TextStyle = MaterialTheme.typography.labelMedium,
     fontWeight: FontWeight = FontWeight.SemiBold,
@@ -226,16 +225,14 @@ fun TextWithIcon(
             imageVector = icon,
             contentDescription = text,
             tint = tintColor,
-            modifier = iconModifier,
         )
     }
 }
 
 @Composable
 fun NoteText(
-    modifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier.size(SpaceMedium),
     text: String,
+    modifier: Modifier = Modifier,
     icon: ImageVector = PoposIcons.ErrorOutline,
     style: TextStyle = MaterialTheme.typography.labelSmall,
     color: Color = MaterialTheme.colorScheme.secondary,
@@ -260,7 +257,7 @@ fun NoteText(
             imageVector = icon,
             contentDescription = text,
             tint = color,
-            modifier = iconModifier,
+            modifier = Modifier.size(SpaceMedium),
         )
 
         Spacer(modifier = Modifier.width(SpaceMini))
@@ -278,9 +275,8 @@ fun NoteText(
 
 @Composable
 fun InfoText(
-    modifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier.size(SpaceMedium),
     text: String,
+    modifier: Modifier = Modifier,
     icon: ImageVector = PoposIcons.ErrorOutline,
     backgroundColor: Color = MaterialTheme.colorScheme.errorContainer,
     textColor: Color = MaterialTheme.colorScheme.error,
@@ -315,7 +311,7 @@ fun InfoText(
                 imageVector = icon,
                 contentDescription = text,
                 tint = textColor,
-                modifier = iconModifier,
+                modifier = Modifier.size(SpaceMedium),
             )
 
             Text(
@@ -332,8 +328,8 @@ fun InfoText(
 
 @Composable
 fun NoteCard(
-    modifier: Modifier = Modifier,
     text: String,
+    modifier: Modifier = Modifier,
     icon: ImageVector = PoposIcons.Info,
     height: Dp = 48.dp,
     containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
@@ -371,8 +367,8 @@ fun NoteCard(
 
 @Composable
 fun InfoText(
-    modifier: Modifier = Modifier,
     text: String,
+    modifier: Modifier = Modifier,
     icon: ImageVector = PoposIcons.Info,
     style: TextStyle = LocalTextStyle.current,
     maxLines: Int = 3,
@@ -418,6 +414,86 @@ fun InfoText(
 
 @DevicePreviews
 @Composable
+private fun IconWithTextPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        IconWithText(
+            text = "Icon With Text",
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun IconWithTextAnnotatedPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        IconWithText(
+            text = AnnotatedString("Icon With Text"),
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun IconWithTextWithIconPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        IconWithText(
+            text = "Icon With Text",
+            icon = PoposIcons.Info,
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun TextWithIconPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        TextWithIcon(
+            text = "Text With Icon",
+            icon = PoposIcons.Info,
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun NoteTextPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        NoteText(
+            text = "Note Text",
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun NoteCardPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        NoteCard(
+            text = "Note Card",
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
 private fun InfoTextPreview(
     modifier: Modifier = Modifier,
 ) {
@@ -426,8 +502,8 @@ private fun InfoTextPreview(
             modifier = Modifier.fillMaxWidth(),
         ) {
             InfoText(
-                modifier = modifier,
                 text = "This is info text and test for max lines and overflow",
+                modifier = modifier,
             )
         }
     }

@@ -62,6 +62,7 @@ import kotlinx.coroutines.launch
 fun AbsentImportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: AbsentSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -106,7 +107,7 @@ fun AbsentImportScreen(
     }
 
     AbsentImportScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         importedItems = importedItems.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         isLoading = isLoading,
@@ -128,7 +129,6 @@ fun AbsentImportScreen(
 @VisibleForTesting
 @Composable
 internal fun AbsentImportScreenContent(
-    modifier: Modifier = Modifier,
     importedItems: ImmutableList<EmployeeWithAbsents>,
     selectedItems: ImmutableList<Int>,
     selectedEmployees: List<Int>,
@@ -140,6 +140,7 @@ internal fun AbsentImportScreenContent(
     onClickImport: () -> Unit,
     onClickOpenFile: () -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },

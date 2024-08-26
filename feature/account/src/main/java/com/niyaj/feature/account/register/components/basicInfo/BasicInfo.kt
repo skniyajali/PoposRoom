@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -52,12 +54,14 @@ import com.niyaj.feature.account.R
 import com.niyaj.ui.components.ImageCard
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.StandardOutlinedTextField
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun BasicInfo(
-    modifier: Modifier,
-    lazyListState: LazyListState,
     infoState: BasicInfoState,
+    onEvent: (BasicInfoEvent) -> Unit,
+    onChangeLogo: () -> Unit,
+    modifier: Modifier = Modifier,
     taglineError: String? = null,
     addressError: String? = null,
     descriptionError: String? = null,
@@ -65,12 +69,7 @@ fun BasicInfo(
     scannedBitmap: Bitmap? = null,
     @DrawableRes
     defaultLogo: Int = com.niyaj.core.ui.R.drawable.reslogo,
-    onChangeAddress: (BasicInfoEvent) -> Unit,
-    onChangeDescription: (BasicInfoEvent) -> Unit,
-    onChangePaymentQRCode: (BasicInfoEvent) -> Unit,
-    onClickScanCode: (BasicInfoEvent) -> Unit,
-    onChangeTagline: (BasicInfoEvent) -> Unit,
-    onChangeLogo: () -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
 ) = trace("BasicInfo") {
     LazyColumn(
         modifier = modifier
@@ -113,10 +112,10 @@ fun BasicInfo(
             ) {
                 ImageCard(
                     defaultImage = defaultLogo,
-                    imageName = infoState.printLogo,
                     onEditClick = onChangeLogo,
-                    size = DpSize(400.dp, 150.dp),
+                    imageName = infoState.printLogo,
                     contentScale = ContentScale.Inside,
+                    size = DpSize(400.dp, 150.dp),
                 )
 
                 NoteCard(text = stringResource(R.string.print_logo_note))
@@ -126,56 +125,63 @@ fun BasicInfo(
         item("tagline_field") {
             StandardOutlinedTextField(
                 label = "Restaurant Tagline",
-                value = infoState.tagline,
                 leadingIcon = PoposIcons.StarHalf,
+                value = infoState.tagline,
+                onValueChange = {
+                    onEvent(BasicInfoEvent.TaglineChanged(it))
+                },
                 isError = taglineError != null,
                 errorText = taglineError,
-                onValueChange = {
-                    onChangeTagline(BasicInfoEvent.TaglineChanged(it))
-                },
             )
         }
 
         item("description_field") {
             StandardOutlinedTextField(
                 label = "Restaurant Description",
-                value = infoState.description,
-                singleLine = false,
-                maxLines = 4,
                 leadingIcon = PoposIcons.Note,
+                value = infoState.description,
+                onValueChange = {
+                    onEvent(BasicInfoEvent.DescriptionChanged(it))
+                },
                 isError = descriptionError != null,
                 errorText = descriptionError,
-                onValueChange = {
-                    onChangeDescription(BasicInfoEvent.DescriptionChanged(it))
-                },
+                singleLine = false,
+                maxLines = 4,
             )
         }
 
         item("address_field") {
             StandardOutlinedTextField(
                 label = "Restaurant Address",
-                value = infoState.address,
-                singleLine = false,
-                maxLines = 2,
                 leadingIcon = PoposIcons.LocationOn,
+                value = infoState.address,
+                onValueChange = {
+                    onEvent(BasicInfoEvent.AddressChanged(it))
+                },
                 isError = addressError != null,
                 errorText = addressError,
-                onValueChange = {
-                    onChangeAddress(BasicInfoEvent.AddressChanged(it))
-                },
+                singleLine = false,
+                maxLines = 2,
             )
         }
 
         item("qrcode_field") {
             StandardOutlinedTextField(
-                modifier = Modifier,
-                value = infoState.paymentQrCode,
                 label = "Restaurant Payment QR Code",
                 leadingIcon = PoposIcons.QrCode,
+                value = infoState.paymentQrCode,
+                onValueChange = {
+                    onEvent(BasicInfoEvent.PaymentQRChanged(it))
+                },
+                modifier = Modifier,
+                isError = paymentQRCodeError != null,
+                errorText = paymentQRCodeError,
+                singleLine = false,
+                maxLines = 4,
                 trailingIcon = {
                     IconButton(
                         onClick = {
-                            onClickScanCode(BasicInfoEvent.StartScanning)
+                            onEvent(BasicInfoEvent.StartScanning)
                         },
                     ) {
                         Icon(
@@ -183,13 +189,6 @@ fun BasicInfo(
                             contentDescription = "Scan QR Code",
                         )
                     }
-                },
-                isError = paymentQRCodeError != null,
-                errorText = paymentQRCodeError,
-                singleLine = false,
-                maxLines = 4,
-                onValueChange = {
-                    onChangePaymentQRCode(BasicInfoEvent.PaymentQRChanged(it))
                 },
             )
         }
@@ -215,5 +214,20 @@ fun BasicInfo(
                 Spacer(modifier = Modifier.height(SpaceSmall))
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun BasicInfoPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        BasicInfo(
+            infoState = BasicInfoState(),
+            onEvent = {},
+            onChangeLogo = {},
+            modifier = modifier,
+        )
     }
 }

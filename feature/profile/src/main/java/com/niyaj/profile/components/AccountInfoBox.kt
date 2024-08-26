@@ -36,10 +36,10 @@ import com.niyaj.designsystem.theme.SpaceSmall
 
 @Composable
 fun AccountInfoBox(
-    modifier: Modifier = Modifier,
     title: String,
     icon: ImageVector,
     value: String,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
@@ -47,7 +47,7 @@ fun AccountInfoBox(
             .padding(SpaceSmall),
     ) {
         Row(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,

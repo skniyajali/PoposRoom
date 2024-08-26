@@ -23,6 +23,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -39,7 +40,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
+import com.niyaj.ui.utils.DevicePreviews
 import kotlinx.coroutines.launch
 
 @SuppressLint("DesignSystem")
@@ -48,6 +51,7 @@ import kotlinx.coroutines.launch
 fun OrderTabs(
     tabs: List<OrderTab>,
     pagerState: PagerState,
+    modifier: Modifier = Modifier,
     containerColor: Color = TabRowDefaults.primaryContainerColor,
     contentColor: Color = TabRowDefaults.primaryContentColor,
 ) {
@@ -59,6 +63,7 @@ fun OrderTabs(
         selectedTabIndex = pagerState.currentPage,
         containerColor = containerColor,
         contentColor = contentColor,
+        modifier = modifier,
         // Override the indicator, using the provided pagerTabIndicatorOffset modifier
         indicator = { tabPositions ->
             if (pagerState.currentPage < tabPositions.size) {
@@ -104,9 +109,9 @@ fun OrderTabs(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OrderTabsContent(
-    modifier: Modifier = Modifier,
     tabs: List<OrderTab>,
     pagerState: PagerState,
+    modifier: Modifier = Modifier,
 ) {
     HorizontalPager(
         modifier = modifier,
@@ -114,5 +119,29 @@ fun OrderTabsContent(
         verticalAlignment = Alignment.Top,
     ) { page ->
         tabs[page].screen()
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@DevicePreviews
+@Composable
+private fun OrderTabsPreview(
+    modifier: Modifier = Modifier,
+) {
+    val orderTabs = listOf(
+        OrderTab.DineInOrder {
+            Text("Dine In Order")
+        },
+        OrderTab.DineOutOrder {
+            Text("Dine Out Order")
+        },
+    )
+
+    PoposRoomTheme {
+        OrderTabs(
+            tabs = orderTabs,
+            pagerState = rememberPagerState { orderTabs.size },
+            modifier = modifier,
+        )
     }
 }

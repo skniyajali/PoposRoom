@@ -56,6 +56,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.compose.ui.window.DialogProperties
+import com.niyaj.common.tags.OrderTestTags.ORDER_NOT_FOUND
 import com.niyaj.common.utils.getStartTime
 import com.niyaj.common.utils.toPrettyDate
 import com.niyaj.common.utils.toRupee
@@ -76,7 +77,7 @@ import com.niyaj.order.deliveryPartner.DeliveryReportCard
 import com.niyaj.order.deliveryPartner.PartnerReportState
 import com.niyaj.order.deliveryPartner.PartnerState
 import com.niyaj.ui.components.CircularBox
-import com.niyaj.ui.components.ItemNotAvailable
+import com.niyaj.ui.components.ItemNotAvailableHalf
 import com.niyaj.ui.components.LoadingIndicator
 import com.niyaj.ui.parameterProvider.DeliveryPartnerPreviewData
 import com.niyaj.ui.utils.CaptureController
@@ -86,7 +87,6 @@ import com.niyaj.ui.utils.ScrollableCapturable
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShareableDeliveryPartner(
-    modifier: Modifier = Modifier,
     captureController: CaptureController,
     selectedDate: String,
     partnerState: PartnerState,
@@ -94,6 +94,7 @@ fun ShareableDeliveryPartner(
     onClickPrintOrder: () -> Unit,
     onClickShare: () -> Unit,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("ShareableDeliveryPartner") {
     BasicAlertDialog(
         onDismissRequest = onDismiss,
@@ -121,8 +122,8 @@ fun ShareableDeliveryPartner(
                     is PartnerState.Loading -> LoadingIndicator()
 
                     is PartnerState.Empty -> {
-                        ItemNotAvailable(
-                            text = "Seems like, you have not place any order yet, click below to create new.",
+                        ItemNotAvailableHalf(
+                            text = ORDER_NOT_FOUND,
                             showImage = false,
                         )
                     }
@@ -162,7 +163,6 @@ fun ShareableDeliveryPartner(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShareablePartnerDetails(
-    modifier: Modifier = Modifier,
     captureController: CaptureController,
     selectedDate: String,
     reportState: PartnerReportState,
@@ -170,6 +170,7 @@ fun ShareablePartnerDetails(
     onClickPrintOrder: () -> Unit,
     onClickShare: () -> Unit,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("ShareablePartnerDetails") {
     BasicAlertDialog(
         onDismissRequest = onDismiss,
@@ -197,8 +198,8 @@ fun ShareablePartnerDetails(
                     is PartnerReportState.Loading -> LoadingIndicator()
 
                     is PartnerReportState.Empty -> {
-                        ItemNotAvailable(
-                            text = "Seems like, you did not delivered any order yet, click below to create new.",
+                        ItemNotAvailableHalf(
+                            text = ORDER_NOT_FOUND,
                             showImage = false,
                         )
                     }
@@ -234,7 +235,6 @@ fun ShareablePartnerDetails(
 
 @Composable
 private fun CapturableDeliveryPartnerCard(
-    modifier: Modifier,
     captureController: CaptureController,
     selectedDate: String,
     state: PartnerState.Success,
@@ -242,6 +242,7 @@ private fun CapturableDeliveryPartnerCard(
     gradientColor: Brush,
     icon: ImageVector,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("CapturableCard") {
     ScrollableCapturable(
         controller = captureController,
@@ -262,11 +263,11 @@ private fun CapturableDeliveryPartnerCard(
 
 @Composable
 private fun CapturablePartnerDetailsCard(
-    modifier: Modifier,
     captureController: CaptureController,
     selectedDate: String,
     state: PartnerReportState.Success,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("CapturableCard") {
     ScrollableCapturable(
         controller = captureController,
@@ -284,11 +285,11 @@ private fun CapturablePartnerDetailsCard(
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 private fun ShareableDeliveryPartnerCard(
-    modifier: Modifier = Modifier,
     state: PartnerState.Success,
     selectedDate: String,
     containerColor: Color,
     gradientColor: Brush,
+    modifier: Modifier = Modifier,
     icon: ImageVector = PoposIcons.DeliveryDining,
 ) = trace("CartItemOrderDetailsCard") {
     val totalOrders = remember {
@@ -334,9 +335,9 @@ private fun ShareableDeliveryPartnerCard(
 
 @Composable
 private fun ShareablePartnerDetailsCard(
-    modifier: Modifier = Modifier,
     state: PartnerReportState.Success,
     selectedDate: String,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.background,
     gradientColor: Brush = gradient6,
     icon: ImageVector = PoposIcons.DeliveryDining,
@@ -385,10 +386,10 @@ private fun ShareablePartnerDetailsCard(
 
 @Composable
 private fun ShareableDeliveryPartnerHeader(
-    modifier: Modifier = Modifier,
     title: String,
     totalOrders: TotalOrders,
     selectedDate: String,
+    modifier: Modifier = Modifier,
     gradientColor: Brush = gradient6,
     icon: ImageVector = PoposIcons.DeliveryDining,
 ) = trace("ShareableDeliveryPartnerHeader") {
@@ -410,14 +411,14 @@ private fun ShareableDeliveryPartnerHeader(
             )
 
             CircularBox(
+                icon = icon,
+                selected = false,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .offset(y = 40.dp),
-                icon = icon,
                 showBorder = true,
-                doesSelected = false,
-                borderStroke = BorderStroke(3.dp, rainbowColorsBrush),
                 size = 80.dp,
+                borderStroke = BorderStroke(3.dp, rainbowColorsBrush),
             )
         }
 
@@ -466,8 +467,8 @@ private fun ShareableDeliveryPartnerHeader(
             )
 
             PoposSuggestionChip(
-                icon = PoposIcons.CalenderMonth,
                 text = selectedDate.toPrettyDate(),
+                icon = PoposIcons.CalenderMonth,
             )
         }
 
@@ -477,8 +478,8 @@ private fun ShareableDeliveryPartnerHeader(
 
 @Composable
 private fun ShareableDeliveryPartnerBody(
-    modifier: Modifier = Modifier,
     state: PartnerState.Success,
+    modifier: Modifier = Modifier,
 ) = trace("ShareableDeliveryPartnerBody") {
     Column(
         modifier = modifier
@@ -501,8 +502,8 @@ private fun ShareableDeliveryPartnerBody(
 
 @Composable
 private fun ShareablePartnerDetailsBody(
-    modifier: Modifier = Modifier,
     state: PartnerReportState.Success,
+    modifier: Modifier = Modifier,
 ) = trace("ShareablePartnerDetailsBody") {
     Column(
         modifier = modifier
@@ -542,18 +543,18 @@ private fun DialogButtons(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         PoposOutlinedIconButton(
-            modifier = Modifier
-                .size(ButtonSize),
             icon = PoposIcons.Close,
             onClick = onDismiss,
+            modifier = Modifier
+                .size(ButtonSize),
             borderColor = MaterialTheme.colorScheme.error,
         )
 
         PoposOutlinedIconButton(
-            modifier = Modifier
-                .size(ButtonSize),
             icon = PoposIcons.Print,
             onClick = onClickPrintOrder,
+            modifier = Modifier
+                .size(ButtonSize),
             borderColor = MaterialTheme.colorScheme.secondary,
         )
 

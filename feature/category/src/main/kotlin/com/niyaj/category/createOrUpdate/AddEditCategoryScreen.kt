@@ -59,9 +59,10 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 @Destination(route = Screens.ADD_EDIT_CATEGORY_SCREEN)
 @Composable
 fun AddEditCategoryScreen(
-    categoryId: Int = 0,
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    categoryId: Int = 0,
     viewModel: AddEditCategoryViewModel = hiltViewModel(),
 ) {
     val nameError by viewModel.nameError.collectAsStateWithLifecycle()
@@ -85,34 +86,36 @@ fun AddEditCategoryScreen(
     }
 
     AddEditCategoryScreenContent(
-        modifier = Modifier,
-        title = title,
-        icon = icon,
         state = viewModel.state,
-        nameError = nameError,
         onEvent = viewModel::onEvent,
         onBackClick = navigator::navigateUp,
+        modifier = modifier,
+        nameError = nameError,
+        title = title,
+        icon = icon,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun AddEditCategoryScreenContent(
-    modifier: Modifier = Modifier,
-    title: String = CREATE_NEW_CATEGORY,
-    icon: ImageVector = PoposIcons.Add,
     state: AddEditCategoryState,
-    nameError: String? = null,
     onEvent: (AddEditCategoryEvent) -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    nameError: String? = null,
+    title: String = CREATE_NEW_CATEGORY,
+    icon: ImageVector = PoposIcons.Add,
 ) {
     TrackScreenViewEvent(screenName = Screens.ADD_EDIT_CATEGORY_SCREEN)
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = true,
         showBottomBar = true,
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
         bottomBar = {
             PoposButton(
                 modifier = Modifier
@@ -126,8 +129,6 @@ internal fun AddEditCategoryScreenContent(
                 },
             )
         },
-        onBackClick = onBackClick,
-        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -138,34 +139,34 @@ internal fun AddEditCategoryScreenContent(
         ) {
             item(CATEGORY_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.categoryName,
                     label = CATEGORY_NAME_FIELD,
                     leadingIcon = PoposIcons.Category,
-                    isError = nameError != null,
-                    errorText = nameError,
-                    errorTextTag = CATEGORY_NAME_ERROR_TAG,
-                    showClearIcon = state.categoryName.isNotEmpty(),
-                    onClickClearIcon = {
-                        onEvent(AddEditCategoryEvent.CategoryNameChanged(""))
-                    },
+                    value = state.categoryName,
                     onValueChange = {
                         onEvent(AddEditCategoryEvent.CategoryNameChanged(it))
+                    },
+                    isError = nameError != null,
+                    errorText = nameError,
+                    showClearIcon = state.categoryName.isNotEmpty(),
+                    errorTextTag = CATEGORY_NAME_ERROR_TAG,
+                    onClickClearIcon = {
+                        onEvent(AddEditCategoryEvent.CategoryNameChanged(""))
                     },
                 )
             }
 
             item(CATEGORY_AVAILABLE_SWITCH) {
                 StandardCheckboxWithText(
-                    modifier = Modifier.testTag(CATEGORY_AVAILABLE_SWITCH),
-                    checked = state.isAvailable,
                     text = if (state.isAvailable) {
                         "Marked as available"
                     } else {
                         "Marked as not available"
                     },
+                    checked = state.isAvailable,
                     onCheckedChange = {
                         onEvent(AddEditCategoryEvent.CategoryAvailabilityChanged)
                     },
+                    modifier = Modifier.testTag(CATEGORY_AVAILABLE_SWITCH),
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
@@ -181,14 +182,14 @@ private fun AddEditCategoryScreenContentPreview(
 ) {
     PoposRoomTheme {
         AddEditCategoryScreenContent(
-            modifier = modifier,
             state = AddEditCategoryState(
                 categoryName = "New Category",
                 isAvailable = true,
             ),
-            nameError = null,
             onEvent = {},
             onBackClick = {},
+            modifier = modifier,
+            nameError = null,
         )
     }
 }

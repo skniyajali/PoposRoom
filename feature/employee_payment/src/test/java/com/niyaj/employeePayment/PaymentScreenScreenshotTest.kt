@@ -254,15 +254,15 @@ class PaymentScreenScreenshotTest {
                     state = AddEditPaymentState(),
                     employees = persistentListOf(),
                     selectedEmployee = Employee(),
+                    onEvent = {},
+                    onBackClick = {},
+                    onClickNewEmployee = {},
                     employeeError = "Employee name should not empty",
                     amountError = "Payment amount should not empty",
                     dateError = null,
                     typeError = null,
                     modeError = null,
                     noteError = null,
-                    onEvent = {},
-                    onBackClick = {},
-                    onClickNewEmployee = {},
                 )
             }
         }
@@ -279,17 +279,17 @@ class PaymentScreenScreenshotTest {
                         paymentType = PaymentType.Advanced,
                         paymentMode = PaymentMode.Cash,
                     ),
+                    employees = employeeList.toImmutableList(),
                     selectedEmployee = employeeList.first(),
                     onEvent = {},
-                    employees = employeeList.toImmutableList(),
+                    onBackClick = {},
+                    onClickNewEmployee = {},
                     employeeError = null,
                     amountError = null,
                     dateError = null,
                     typeError = null,
                     modeError = null,
                     noteError = null,
-                    onBackClick = {},
-                    onClickNewEmployee = {},
                 )
             }
         }

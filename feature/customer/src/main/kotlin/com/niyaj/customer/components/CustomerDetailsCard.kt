@@ -54,11 +54,11 @@ import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 internal fun CustomerDetailsCard(
-    modifier: Modifier = Modifier,
     customerState: UiState<Customer>,
     onExpanded: () -> Unit,
     doesExpanded: Boolean,
     onClickEdit: () -> Unit,
+    modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(4.dp),
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CustomerDetailsCard") {
@@ -76,42 +76,9 @@ internal fun CustomerDetailsCard(
         ),
     ) {
         StandardExpandable(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
             expanded = doesExpanded,
             onExpandChanged = {
                 onExpanded()
-            },
-            title = {
-                IconWithText(
-                    text = "Customer Details",
-                    icon = PoposIcons.Address,
-                )
-            },
-            trailing = {
-                IconButton(
-                    onClick = onClickEdit,
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.Edit,
-                        contentDescription = "Edit Employee",
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                }
-            },
-            rowClickable = true,
-            expand = { modifier: Modifier ->
-                IconButton(
-                    modifier = modifier,
-                    onClick = onExpanded,
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.ArrowDown,
-                        contentDescription = "Expand More",
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
             },
             content = {
                 Crossfade(
@@ -137,16 +104,16 @@ internal fun CustomerDetailsCard(
                                     .padding(SpaceSmall),
                             ) {
                                 IconWithText(
-                                    modifier = Modifier.testTag(state.data.customerPhone),
                                     text = "Phone - ${state.data.customerPhone}",
                                     icon = PoposIcons.PhoneAndroid,
+                                    modifier = Modifier.testTag(state.data.customerPhone),
                                 )
                                 state.data.customerName?.let { name ->
                                     Spacer(modifier = Modifier.height(SpaceSmall))
                                     IconWithText(
-                                        modifier = Modifier.testTag(name),
                                         text = "Name - $name",
                                         icon = PoposIcons.Person4,
+                                        modifier = Modifier.testTag(name),
                                     )
                                 }
 
@@ -154,18 +121,18 @@ internal fun CustomerDetailsCard(
                                     Spacer(modifier = Modifier.height(SpaceSmall))
 
                                     IconWithText(
-                                        modifier = Modifier.testTag(email),
                                         text = "Email : $email",
                                         icon = PoposIcons.Email,
+                                        modifier = Modifier.testTag(email),
                                     )
                                 }
 
                                 Spacer(modifier = Modifier.height(SpaceSmall))
 
                                 IconWithText(
-                                    modifier = Modifier.testTag(state.data.createdAt.toFormattedDateAndTime),
                                     text = "Created At : ${state.data.createdAt.toPrettyDate()}",
                                     icon = PoposIcons.CalenderToday,
+                                    modifier = Modifier.testTag(state.data.createdAt.toFormattedDateAndTime),
                                 )
 
                                 state.data.updatedAt?.let {
@@ -178,6 +145,39 @@ internal fun CustomerDetailsCard(
                             }
                         }
                     }
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SpaceSmall),
+            rowClickable = true,
+            title = {
+                IconWithText(
+                    text = "Customer Details",
+                    icon = PoposIcons.Address,
+                )
+            },
+            trailing = {
+                IconButton(
+                    onClick = onClickEdit,
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.Edit,
+                        contentDescription = "Edit Employee",
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            },
+            expand = { modifier: Modifier ->
+                IconButton(
+                    modifier = modifier,
+                    onClick = onExpanded,
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.ArrowDown,
+                        contentDescription = "Expand More",
+                        tint = MaterialTheme.colorScheme.secondary,
+                    )
                 }
             },
         )

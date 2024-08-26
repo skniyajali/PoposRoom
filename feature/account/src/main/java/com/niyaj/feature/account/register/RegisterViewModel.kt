@@ -189,7 +189,7 @@ class RegisterViewModel @Inject constructor(
 
     fun onPreviousPressed() {
         if (pageIndex == 0) {
-            throw IllegalStateException("onPreviousPressed when on page index is 0")
+            error("onPreviousPressed when on page index is 0")
         }
         changePage(pageIndex - 1)
     }

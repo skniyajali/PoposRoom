@@ -88,12 +88,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProductScreen(
     navigator: DestinationsNavigator,
-    viewModel: ProductViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditProductScreenDestination, String>,
     exportRecipient: ResultRecipient<ExportProductScreenDestination, String>,
     importRecipient: ResultRecipient<ImportProductScreenDestination, String>,
     increaseRecipient: ResultRecipient<IncreaseProductPriceScreenDestination, String>,
     decreaseRecipient: ResultRecipient<DecreaseProductPriceScreenDestination, String>,
+    modifier: Modifier = Modifier,
+    viewModel: ProductViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -137,7 +138,7 @@ fun ProductScreen(
         onNavigateToDetails = {
             navigator.navigate(ProductDetailsScreenDestination(it))
         },
-        modifier = Modifier,
+        modifier = modifier,
         snackbarState = snackbarState,
     )
 
@@ -208,9 +209,9 @@ internal fun ProductScreenContent(
     }
 
     PoposPrimaryScaffold(
-        modifier = modifier,
         currentRoute = Screens.PRODUCT_SCREEN,
         title = if (selectedItems.isEmpty()) PRODUCT_SCREEN_TITLE else "${selectedItems.size} Selected",
+        selectionCount = selectedItems.size,
         floatingActionButton = {
             StandardFAB(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
@@ -226,10 +227,7 @@ internal fun ProductScreenContent(
         },
         navActions = {
             ScaffoldNavActions(
-                placeholderText = PRODUCT_SEARCH_PLACEHOLDER,
-                showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchBar = showSearchBar,
                 showSearchIcon = showFab,
                 searchText = searchText,
                 onEditClick = {
@@ -238,33 +236,36 @@ internal fun ProductScreenContent(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = onClickSettings,
                 onSelectAllClick = onClickSelectAll,
                 onClearClick = onClickClear,
                 onSearchIconClick = onClickSearchIcon,
                 onSearchTextChanged = onSearchTextChanged,
+                showSearchBar = showSearchBar,
+                showSettingsIcon = true,
+                onSettingsClick = onClickSettings,
+                placeholderText = PRODUCT_SEARCH_PLACEHOLDER,
             )
         },
+        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
+        onNavigateToScreen = onNavigateToScreen,
+        modifier = modifier,
         fabPosition = if (lazyListState.isScrolled) FabPosition.End else FabPosition.Center,
-        selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
         onDeselect = onClickDeselect,
-        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
         snackbarHostState = snackbarState,
-        onNavigateToScreen = onNavigateToScreen,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize(),
         ) {
             CategoryList(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
-                contentPadding = PaddingValues(SpaceSmall),
-                lazyRowState = lazyRowState,
                 categories = categories,
-                doesSelected = { it == selectedCategory },
+                selected = { it == selectedCategory },
                 onSelect = onSelectCategory,
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(SpaceSmall),
+                horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
+                lazyRowState = lazyRowState,
             )
 
             Crossfade(

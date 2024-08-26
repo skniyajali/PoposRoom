@@ -91,6 +91,7 @@ import kotlinx.coroutines.launch
 fun PaymentExportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: PaymentSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -137,7 +138,7 @@ fun PaymentExportScreen(
         }
 
     PaymentExportScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         items = items.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         showSearchBar = showSearchBar,
@@ -169,7 +170,6 @@ fun PaymentExportScreen(
 @VisibleForTesting
 @Composable
 internal fun PaymentExportScreenContent(
-    modifier: Modifier = Modifier,
     items: ImmutableList<EmployeeWithPayments>,
     selectedItems: ImmutableList<Int>,
     showSearchBar: Boolean,
@@ -184,6 +184,7 @@ internal fun PaymentExportScreenContent(
     onClickExport: () -> Unit,
     onBackClick: () -> Unit,
     onClickToAddItem: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
     padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
@@ -192,7 +193,8 @@ internal fun PaymentExportScreenContent(
 
     var viewType by remember { mutableStateOf(ViewType.CARD) }
     val text = if (searchText.isEmpty()) PAYMENT_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND
-    val title = if (selectedItems.isEmpty()) EXPORT_PAYMENT_TITLE else "${selectedItems.size} Selected"
+    val title =
+        if (selectedItems.isEmpty()) EXPORT_PAYMENT_TITLE else "${selectedItems.size} Selected"
 
     BackHandler {
         if (selectedItems.isNotEmpty()) {
@@ -205,11 +207,23 @@ internal fun PaymentExportScreenContent(
     }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
+        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
+        modifier = modifier,
         showBackButton = selectedItems.isEmpty() || showSearchBar,
         showBottomBar = items.isNotEmpty(),
         showSecondaryBottomBar = true,
+        fabPosition = FabPosition.End,
+        navigationIcon = {
+            IconButton(
+                onClick = onClickDeselect,
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Deselect All",
+                )
+            }
+        },
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
@@ -259,6 +273,16 @@ internal fun PaymentExportScreenContent(
                 }
             }
         },
+        floatingActionButton = {
+            ScrollToTop(
+                visible = !lazyListState.isScrollingUp(),
+                onClick = {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(index = 0)
+                    }
+                },
+            )
+        },
         bottomBar = {
             Column(
                 modifier = Modifier
@@ -266,7 +290,11 @@ internal fun PaymentExportScreenContent(
                     .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} payments will be exported.")
+                InfoText(
+                    text = "${
+                        if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"
+                    } payments will be exported.",
+                )
 
                 PoposButton(
                     modifier = Modifier
@@ -279,28 +307,6 @@ internal fun PaymentExportScreenContent(
                         containerColor = MaterialTheme.colorScheme.secondary,
                     ),
                     onClick = onClickExport,
-                )
-            }
-        },
-        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyListState.isScrollingUp(),
-                onClick = {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(index = 0)
-                    }
-                },
-            )
-        },
-        navigationIcon = {
-            IconButton(
-                onClick = onClickDeselect,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Deselect All",
                 )
             }
         },
@@ -318,11 +324,11 @@ internal fun PaymentExportScreenContent(
                 )
             } else {
                 EmployeePaymentList(
-                    modifier = Modifier,
                     viewType = viewType,
                     items = items,
                     doesSelected = selectedItems::contains,
                     onSelectItem = onSelectItem,
+                    modifier = Modifier,
                     isInSelectionMode = true,
                     lazyListState = lazyListState,
                 )

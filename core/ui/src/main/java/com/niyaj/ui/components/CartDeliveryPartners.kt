@@ -40,10 +40,10 @@ import com.niyaj.ui.utils.DevicePreviews
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CartDeliveryPartners(
-    modifier: Modifier = Modifier,
     partners: List<EmployeeNameAndId>,
-    doesSelected: (Int) -> Boolean,
+    selected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     selectedColor: Color = MaterialTheme.colorScheme.tertiary,
 ) {
@@ -56,7 +56,7 @@ fun CartDeliveryPartners(
     ) {
         partners.forEach { partner ->
             key(partner.employeeId) {
-                val icon = if (doesSelected(partner.employeeId)) {
+                val icon = if (selected(partner.employeeId)) {
                     PoposIcons.Done
                 } else {
                     PoposIcons.Person4
@@ -64,14 +64,14 @@ fun CartDeliveryPartners(
 
                 StandardFilterChip(
                     text = partner.employeeName,
-                    onClick = {
-                        onClick(partner.employeeId)
-                    },
-                    selected = doesSelected(partner.employeeId),
                     icon = icon,
+                    selected = selected(partner.employeeId),
                     selectedColor = selectedColor,
                     textStyle = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
+                    onClick = {
+                        onClick(partner.employeeId)
+                    },
                 )
             }
         }
@@ -86,10 +86,10 @@ private fun CartDeliveryPartnersPreview(
 ) {
     PoposRoomTheme {
         CartDeliveryPartners(
-            modifier = modifier,
             partners = deliveryPartners,
-            doesSelected = { it % 2 == 0 },
+            selected = { it % 2 == 0 },
             onClick = {},
+            modifier = modifier,
         )
     }
 }

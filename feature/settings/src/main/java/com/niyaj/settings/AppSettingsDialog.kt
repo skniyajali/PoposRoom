@@ -74,6 +74,7 @@ import com.ramcosta.composedestinations.spec.DestinationStyle
 @Composable
 fun AppSettingsDialog(
     navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val settingsUiState by viewModel.settingsUiState.collectAsStateWithLifecycle()
@@ -85,19 +86,21 @@ fun AppSettingsDialog(
         onChangeDarkThemeConfig = viewModel::updateDarkThemeConfig,
         onChangeOrderSms = viewModel::updateSendOrderSms,
         onChangePartnerQrCode = viewModel::updateUseDeliveryPartnerQrCode,
+        modifier = modifier,
     )
 }
 
 @Composable
 private fun AppSettingsDialog(
     settingsUiState: SettingsUiState,
-    supportDynamicColor: Boolean = supportsDynamicTheming(),
     onDismiss: () -> Unit,
     onChangeThemeBrand: (themeBrand: ThemeBrand) -> Unit,
     onChangeDynamicColorPreference: (useDynamicColor: Boolean) -> Unit,
     onChangeDarkThemeConfig: (darkThemeConfig: DarkThemeConfig) -> Unit,
     onChangeOrderSms: (sendSms: Boolean) -> Unit,
     onChangePartnerQrCode: (useQrCode: Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    supportDynamicColor: Boolean = supportsDynamicTheming(),
 ) {
     val configuration = LocalConfiguration.current
 
@@ -110,7 +113,7 @@ private fun AppSettingsDialog(
      */
     AlertDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
-        modifier = Modifier.widthIn(max = configuration.screenWidthDp.dp - 80.dp),
+        modifier = modifier.widthIn(max = configuration.screenWidthDp.dp - 80.dp),
         onDismissRequest = { onDismiss() },
         title = {
             Text(
@@ -172,6 +175,7 @@ private fun ColumnScope.SettingsPanel(
     onChangePartnerQrCode: (useQrCode: Boolean) -> Unit,
 ) {
     SettingsDialogSectionTitle(text = stringResource(string.feature_settings_theme))
+
     Column(Modifier.selectableGroup()) {
         SettingsDialogThemeChooserRow(
             text = stringResource(string.feature_settings_brand_default),
@@ -265,9 +269,10 @@ fun SettingsDialogThemeChooserRow(
     text: String,
     selected: Boolean,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        Modifier
+        modifier = modifier
             .fillMaxWidth()
             .selectable(
                 selected = selected,
@@ -288,13 +293,15 @@ fun SettingsDialogThemeChooserRow(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun LinksPanel() {
+private fun LinksPanel(
+    modifier: Modifier = Modifier,
+) {
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(
             space = 16.dp,
             alignment = Alignment.CenterHorizontally,
         ),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
     ) {
         val uriHandler = LocalUriHandler.current
         PoposTextButton(

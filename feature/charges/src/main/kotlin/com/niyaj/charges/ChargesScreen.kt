@@ -77,10 +77,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChargesScreen(
     navigator: DestinationsNavigator,
-    viewModel: ChargesViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditChargesScreenDestination, String>,
     exportRecipient: ResultRecipient<ChargesExportScreenDestination, String>,
     importRecipient: ResultRecipient<ChargesImportScreenDestination, String>,
+    modifier: Modifier = Modifier,
+    viewModel: ChargesViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -93,7 +94,6 @@ fun ChargesScreen(
     val selectedItems = viewModel.selectedItems.toList()
 
     ChargesScreenContent(
-        modifier = Modifier,
         uiState = state,
         selectedItems = selectedItems,
         showSearchBar = showSearchBar,
@@ -117,6 +117,7 @@ fun ChargesScreen(
         onClickSettings = {
             navigator.navigate(ChargesSettingsScreenDestination())
         },
+        modifier = modifier,
         snackbarState = snackbarState,
     )
 
@@ -134,7 +135,6 @@ fun ChargesScreen(
 @VisibleForTesting
 @Composable
 internal fun ChargesScreenContent(
-    modifier: Modifier = Modifier,
     uiState: UiState<List<Charges>>,
     selectedItems: List<Int>,
     showSearchBar: Boolean,
@@ -152,6 +152,7 @@ internal fun ChargesScreenContent(
     onClickCreateNew: () -> Unit,
     onClickEdit: (Int) -> Unit,
     onClickSettings: () -> Unit,
+    modifier: Modifier = Modifier,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
@@ -172,9 +173,9 @@ internal fun ChargesScreenContent(
     val openDialog = remember { mutableStateOf(false) }
 
     PoposPrimaryScaffold(
-        modifier = modifier,
         currentRoute = Screens.CHARGES_SCREEN,
         title = if (selectedItems.isEmpty()) CHARGES_SCREEN_TITLE else "${selectedItems.size} Selected",
+        selectionCount = selectedItems.size,
         floatingActionButton = {
             StandardFAB(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
@@ -190,10 +191,7 @@ internal fun ChargesScreenContent(
         },
         navActions = {
             ScaffoldNavActions(
-                placeholderText = CHARGES_SEARCH_PLACEHOLDER,
-                showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchBar = showSearchBar,
                 showSearchIcon = showFab,
                 searchText = searchText,
                 onEditClick = {
@@ -202,20 +200,23 @@ internal fun ChargesScreenContent(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = onClickSettings,
                 onSelectAllClick = onClickSelectAll,
                 onClearClick = onClickClear,
                 onSearchIconClick = onClickSearchIcon,
                 onSearchTextChanged = onSearchTextChanged,
+                showSearchBar = showSearchBar,
+                showSettingsIcon = true,
+                onSettingsClick = onClickSettings,
+                placeholderText = CHARGES_SEARCH_PLACEHOLDER,
             )
         },
+        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
+        onNavigateToScreen = onNavigateToScreen,
+        modifier = modifier,
         fabPosition = if (lazyGridState.isScrolled) FabPosition.End else FabPosition.Center,
-        selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
         onDeselect = onClickDeselect,
-        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
         snackbarHostState = snackbarState,
-        onNavigateToScreen = onNavigateToScreen,
     ) {
         Crossfade(
             targetState = uiState,

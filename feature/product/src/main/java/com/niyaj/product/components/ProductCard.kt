@@ -174,7 +174,7 @@ private fun ProductCard(
                 leadingContent = {
                     CircularBox(
                         icon = PoposIcons.Person,
-                        doesSelected = doesSelected(item.productId),
+                        selected = doesSelected(item.productId),
                         text = item.productName,
                         showBorder = !item.productAvailability,
                     )
@@ -205,10 +205,10 @@ private fun ProductCard(
 
             if (item.productDescription.isNotEmpty()) {
                 NoteText(
+                    text = item.productDescription,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = SpaceSmall, end = SpaceSmall, bottom = SpaceSmall),
-                    text = item.productDescription,
                     icon = PoposIcons.TurnedInNot,
                     color = MaterialTheme.colorScheme.error,
                 )

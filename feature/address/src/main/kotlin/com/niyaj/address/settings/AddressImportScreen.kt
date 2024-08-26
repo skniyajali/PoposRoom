@@ -71,6 +71,7 @@ import kotlinx.coroutines.launch
 fun AddressImportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: AddressSettingsViewModel = hiltViewModel(),
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -117,7 +118,7 @@ fun AddressImportScreen(
     }
 
     AddressImportScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         importedItems = importedItems.toImmutableList(),
         selectedItems = selectedItems,
         isLoading = isLoading,
@@ -202,17 +203,17 @@ internal fun AddressImportScreenContent(
                 },
             ) { address ->
                 AddressData(
+                    item = address,
+                    selected = {
+                        selectedItems.contains(it)
+                    },
+                    onClick = onClickSelectItem,
+                    onLongClick = onClickSelectItem,
                     modifier = Modifier.testTag(
                         AddressTestTags.ADDRESS_ITEM_TAG.plus(
                             address.addressId,
                         ),
                     ),
-                    item = address,
-                    doesSelected = {
-                        selectedItems.contains(it)
-                    },
-                    onClick = onClickSelectItem,
-                    onLongClick = onClickSelectItem,
                 )
             }
         }

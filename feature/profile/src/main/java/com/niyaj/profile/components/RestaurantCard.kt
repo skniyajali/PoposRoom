@@ -68,12 +68,12 @@ import java.io.File
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 internal fun RestaurantCard(
-    modifier: Modifier = Modifier,
     info: Profile,
-    showPrintLogo: Boolean = false,
     onClickChangeResLogo: () -> Unit,
     onClickChangePrintLogo: () -> Unit,
     onClickViewPrintLogo: () -> Unit,
+    modifier: Modifier = Modifier,
+    showPrintLogo: Boolean = false,
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) {
     Card(
@@ -107,12 +107,12 @@ internal fun RestaurantCard(
                 )
 
                 ImageCard(
+                    defaultImage = com.niyaj.core.ui.R.drawable.popos,
+                    onEditClick = onClickChangeResLogo,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .offset(y = 30.dp),
-                    defaultImage = com.niyaj.core.ui.R.drawable.popos,
                     imageName = info.logo,
-                    onEditClick = onClickChangeResLogo,
                 )
             }
 
@@ -131,12 +131,12 @@ internal fun RestaurantCard(
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 internal fun UpdatedRestaurantCard(
-    modifier: Modifier = Modifier,
     info: Profile,
-    showPrintLogo: Boolean = false,
     onClickChangeResLogo: () -> Unit,
     onClickChangePrintLogo: () -> Unit,
     onClickViewPrintLogo: () -> Unit,
+    modifier: Modifier = Modifier,
+    showPrintLogo: Boolean = false,
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) {
     val context = LocalContext.current
@@ -198,12 +198,12 @@ internal fun UpdatedRestaurantCard(
                 )
 
                 ImageCard(
+                    defaultImage = com.niyaj.core.ui.R.drawable.popos,
+                    onEditClick = onClickChangeResLogo,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .offset(y = 30.dp),
-                    defaultImage = com.niyaj.core.ui.R.drawable.popos,
                     imageName = info.logo,
-                    onEditClick = onClickChangeResLogo,
                 )
             }
 
@@ -276,8 +276,8 @@ internal fun UpdatedRestaurantCard(
                         ) {
                             PoposOutlinedButton(
                                 text = "Change",
-                                icon = PoposIcons.AddToPhotos,
                                 onClick = onClickChangePrintLogo,
+                                icon = PoposIcons.AddToPhotos,
                             )
 
                             Spacer(modifier = Modifier.width(SpaceSmall))

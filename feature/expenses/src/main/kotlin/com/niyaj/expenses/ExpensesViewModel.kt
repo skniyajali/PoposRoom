@@ -52,8 +52,8 @@ class ExpensesViewModel @Inject constructor(
 
     val expenses = observableSearchText.combine(_selectedDate) { text, date ->
         expenseRepository.getAllExpensesOnSpecificDate(text, date)
-    }.flatMapLatest { it ->
-        it.map { items ->
+    }.flatMapLatest { result ->
+        result.map { items ->
             totalItems = items.map { it.expenseId }
 
             if (items.isEmpty()) {
@@ -80,11 +80,15 @@ class ExpensesViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = expenseRepository.deleteExpenses(selectedItems.toList())) {
                 is Resource.Error -> {
-                    mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable to delete expenses"))
+                    mEventFlow.emit(
+                        UiEvent.OnError(result.message ?: "Unable to delete expenses"),
+                    )
                 }
 
                 is Resource.Success -> {
-                    mEventFlow.emit(UiEvent.OnSuccess("${selectedItems.size} expenses has been deleted"))
+                    mEventFlow.emit(
+                        UiEvent.OnSuccess("${selectedItems.size} expenses has been deleted"),
+                    )
                     analyticsHelper.logDeletedExpenses(selectedItems.toList())
                 }
             }

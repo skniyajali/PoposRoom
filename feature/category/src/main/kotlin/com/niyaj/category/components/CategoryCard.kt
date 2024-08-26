@@ -66,11 +66,11 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun CategoryList(
-    modifier: Modifier = Modifier,
     items: ImmutableList<Category>,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
-    doesSelected: (Int) -> Boolean,
+    selected: (Int) -> Boolean,
+    modifier: Modifier = Modifier,
     padding: Dp = SpaceSmall,
     lazyGridState: LazyGridState = rememberLazyGridState(),
 ) {
@@ -92,7 +92,7 @@ internal fun CategoryList(
         ) { item: Category ->
             CategoryData(
                 item = item,
-                doesSelected = doesSelected,
+                selected = selected,
                 onClick = onClick,
                 onLongClick = onLongClick,
             )
@@ -104,21 +104,21 @@ internal fun CategoryList(
 @Composable
 private fun CategoryData(
     item: Category,
-    doesSelected: (Int) -> Boolean,
+    selected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CategoryData") {
-    val borderStroke = if (doesSelected(item.categoryId)) border else null
+    val borderStroke = if (selected(item.categoryId)) border else null
 
     ElevatedCard(
         modifier = modifier
             .height(IntrinsicSize.Max)
             .testTag(CategoryConstants.CATEGORY_ITEM_TAG.plus(item.categoryId))
             .semantics {
-                selected = doesSelected(item.categoryId)
+                this.selected = selected(item.categoryId)
             }
             .then(
                 borderStroke?.let {
@@ -147,9 +147,9 @@ private fun CategoryData(
         ) {
             CircularBox(
                 icon = PoposIcons.Category,
-                doesSelected = doesSelected(item.categoryId),
-                showBorder = !item.isAvailable,
+                selected = selected(item.categoryId),
                 text = item.categoryName,
+                showBorder = !item.isAvailable,
             )
 
             Text(
@@ -175,7 +175,7 @@ private fun CategoryDataPreview(
                 categoryName = "Long category data for testing does text overflow it work",
                 isAvailable = true,
             ),
-            doesSelected = { false },
+            selected = { false },
             onClick = {},
             onLongClick = {},
         )
@@ -191,7 +191,7 @@ private fun CategoryListEmptyDataPreview() {
                 items = persistentListOf(),
                 onClick = {},
                 onLongClick = {},
-                doesSelected = { false },
+                selected = { false },
             )
         }
     }
@@ -208,7 +208,7 @@ private fun CategoryListPreview(
                 items = items,
                 onClick = {},
                 onLongClick = {},
-                doesSelected = { false },
+                selected = { false },
             )
         }
     }

@@ -51,14 +51,14 @@ import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 internal fun CartItemOrderDetailsSection(
-    modifier: Modifier = Modifier,
-    orderId: String = "",
-    customerPhone: String? = "",
-    orderType: OrderType = OrderType.DineIn,
     selected: Boolean,
     onClick: () -> Unit,
     onEditClick: () -> Unit,
     onViewClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    orderType: OrderType = OrderType.DineIn,
+    orderId: String = "",
+    customerPhone: String? = "",
     containerColor: Color = if (orderType == OrderType.DineIn) {
         MaterialTheme.colorScheme.secondaryContainer
     } else {
@@ -80,7 +80,7 @@ internal fun CartItemOrderDetailsSection(
         shape = RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp),
     ) {
         Row(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(SpaceSmall),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -93,9 +93,9 @@ internal fun CartItemOrderDetailsSection(
                 IconWithText(
                     text = orderId,
                     icon = PoposIcons.Tag,
+                    fontWeight = FontWeight.Bold,
                     textColor = iconColor,
                     tintColor = iconColor,
-                    fontWeight = FontWeight.Bold,
                 )
 
                 customerPhone?.let {
@@ -103,9 +103,9 @@ internal fun CartItemOrderDetailsSection(
                     IconWithText(
                         text = it,
                         icon = PoposIcons.PhoneAndroid,
+                        fontWeight = FontWeight.Bold,
                         textColor = iconColor,
                         tintColor = iconColor,
-                        fontWeight = FontWeight.Bold,
                     )
                 }
             }
@@ -123,26 +123,26 @@ internal fun CartItemOrderDetailsSection(
 
 @Composable
 private fun CartOrderDetailsButtons(
-    modifier: Modifier = Modifier,
     selected: Boolean,
     iconColor: Color,
     onClick: () -> Unit,
     onEditClick: () -> Unit,
     onViewClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("CartOrderDetailsButtons") {
     Row(modifier) {
         PoposIconButton(
             icon = PoposIcons.Edit,
             onClick = onEditClick,
-            contentColor = iconColor,
             contentDescription = "Edit Cart",
+            contentColor = iconColor,
         )
 
         PoposIconButton(
             icon = PoposIcons.Visibility,
             onClick = onViewClick,
-            contentColor = iconColor,
             contentDescription = "Order Details",
+            contentColor = iconColor,
         )
 
         Crossfade(
@@ -152,8 +152,8 @@ private fun CartOrderDetailsButtons(
             PoposIconButton(
                 icon = if (it) PoposIcons.RadioButtonChecked else PoposIcons.RadioButtonUnchecked,
                 onClick = onClick,
-                contentColor = iconColor,
                 contentDescription = "Select Cart",
+                contentColor = iconColor,
             )
         }
     }
@@ -170,14 +170,14 @@ private fun CartItemOrderDetailsSectionPreview(
 ) {
     PoposRoomTheme {
         CartItemOrderDetailsSection(
-            modifier = modifier,
-            orderId = orderId,
-            customerPhone = customerPhone,
-            orderType = orderType,
             selected = false,
             onClick = {},
             onEditClick = {},
             onViewClick = {},
+            modifier = modifier,
+            orderType = orderType,
+            orderId = orderId,
+            customerPhone = customerPhone,
         )
     }
 }
@@ -189,12 +189,12 @@ private fun CartOrderDetailsButtonsPreview(
 ) {
     PoposRoomTheme {
         CartOrderDetailsButtons(
-            modifier = modifier,
             selected = false,
             iconColor = MaterialTheme.colorScheme.primary,
             onClick = {},
             onEditClick = {},
             onViewClick = {},
+            modifier = modifier,
         )
     }
 }

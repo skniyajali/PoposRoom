@@ -81,6 +81,7 @@ import java.time.LocalDate
 @Composable
 fun DeliveryPartnerScreen(
     navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
     viewModel: DeliveryPartnerViewModel = hiltViewModel(),
     printViewModel: OrderPrintViewModel = hiltViewModel(),
     shareViewModel: ShareViewModel = hiltViewModel(),
@@ -142,6 +143,7 @@ fun DeliveryPartnerScreen(
         onClickShare = shareViewModel::onShowDialog,
         onBackClick = navigator::navigateUp,
         snackbarHostState = snackbarHostState,
+        modifier = modifier,
         onClickPrintAll = {
             printDeliveryReport()
         },
@@ -187,7 +189,6 @@ fun DeliveryPartnerScreen(
 @VisibleForTesting
 @Composable
 internal fun DeliveryPartnerScreenContent(
-    modifier: Modifier = Modifier,
     selectedDate: String,
     partnerState: PartnerState,
     onBackClick: () -> Unit,
@@ -196,6 +197,7 @@ internal fun DeliveryPartnerScreenContent(
     onClickShare: () -> Unit,
     onClickPrint: (Int) -> Unit,
     onClickViewDetails: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) = trace("DeliveryReportScreenContent") {
     TrackScreenViewEvent(screenName = DELIVERY_REPORT_SCREEN)
@@ -214,11 +216,13 @@ internal fun DeliveryPartnerScreenContent(
     }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = "Delivery Reports",
-        showBottomBar = partnerState is PartnerState.Success,
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = true,
+        showBottomBar = partnerState is PartnerState.Success,
         showSecondaryBottomBar = true,
+        snackbarHostState = snackbarHostState,
         bottomBar = {
             TotalDeliveryReportCard(
                 modifier = Modifier
@@ -231,8 +235,6 @@ internal fun DeliveryPartnerScreenContent(
                 onChangeDate = dialogState::show,
             )
         },
-        onBackClick = onBackClick,
-        snackbarHostState = snackbarHostState,
     ) { paddingValues ->
         Crossfade(
             targetState = partnerState,
@@ -268,8 +270,8 @@ internal fun DeliveryPartnerScreenContent(
                     ) {
                         item {
                             NoteCard(
-                                icon = PoposIcons.Info,
                                 text = "Click an item to view details",
+                                icon = PoposIcons.Info,
                             )
                         }
 

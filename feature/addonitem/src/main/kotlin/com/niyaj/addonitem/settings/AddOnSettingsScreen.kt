@@ -47,11 +47,12 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 @Composable
 fun AddOnSettingsScreen(
     navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
 ) {
     TrackScreenViewEvent(screenName = "AddOnSettingsScreen")
 
     AddOnSettingsScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         onBackClick = navigator::navigateUp,
         onImportClick = {
             navigator.navigate(AddOnImportScreenDestination())

@@ -49,7 +49,9 @@ import androidx.compose.ui.util.trace
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.components.PoposOutlinedButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.feature.account.R
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 private fun TopAppBarTitle(
@@ -76,6 +78,7 @@ fun RegisterTopAppBar(
     questionIndex: Int,
     totalQuestionsCount: Int,
     onClosePressed: () -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("RegisterTopAppBar") {
     val animatedProgress by animateFloatAsState(
         targetValue = (questionIndex + 1) / totalQuestionsCount.toFloat(),
@@ -84,7 +87,7 @@ fun RegisterTopAppBar(
     )
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
     ) {
         TopAppBar(
@@ -123,6 +126,7 @@ fun RegisterBottomBar(
     onPreviousPressed: () -> Unit,
     onNextPressed: () -> Unit,
     onDonePressed: () -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("RegisterBottomBar") {
     AnimatedVisibility(
         visible = isNextButtonEnabled || shouldShowPreviousButton,
@@ -138,7 +142,7 @@ fun RegisterBottomBar(
         ),
     ) {
         Surface(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxWidth(),
             tonalElevation = 4.dp,
             shadowElevation = 4.dp,
             color = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -150,12 +154,12 @@ fun RegisterBottomBar(
             ) {
                 if (shouldShowPreviousButton) {
                     PoposOutlinedButton(
+                        text = stringResource(id = R.string.previous),
+                        onClick = onPreviousPressed,
                         modifier = Modifier
                             .weight(1f)
                             .height(48.dp),
-                        text = stringResource(id = R.string.previous),
                         icon = PoposIcons.NavigateBefore,
-                        onClick = onPreviousPressed,
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                 }
@@ -182,5 +186,52 @@ fun RegisterBottomBar(
                 }
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun TopAppBarTitlePreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        TopAppBarTitle(
+            questionIndex = 0,
+            totalQuestionsCount = 3,
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun RegisterTopAppBarPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        RegisterTopAppBar(
+            questionIndex = 0,
+            totalQuestionsCount = 3,
+            onClosePressed = {},
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun RegisterBottomBarPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        RegisterBottomBar(
+            shouldShowPreviousButton = true,
+            shouldShowDoneButton = false,
+            isNextButtonEnabled = true,
+            onPreviousPressed = {},
+            onNextPressed = {},
+            onDonePressed = {},
+            modifier = modifier,
+        )
     }
 }

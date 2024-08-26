@@ -73,6 +73,7 @@ internal fun MarketListItemCard(
     onClickPrint: (List<Int>) -> Unit,
     onClickViewDetails: (List<Int>) -> Unit,
     onClickManageList: (listTypeId: Int) -> Unit,
+    modifier: Modifier = Modifier,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
 ) {
     val listIds = items.marketTypes.map { it.listWithTypeId }
@@ -81,7 +82,7 @@ internal fun MarketListItemCard(
     val borderStroke = if (doesSelected(marketId)) border else null
 
     ElevatedCard(
-        modifier = Modifier
+        modifier = modifier
             .testTag(MarketListTestTags.MARKET_LIST_ITEM_TAG.plus(marketId))
             .fillMaxWidth()
             .then(
@@ -120,7 +121,7 @@ internal fun MarketListItemCard(
                 leadingContent = {
                     CircularBox(
                         icon = PoposIcons.ShoppingBag,
-                        doesSelected = false,
+                        selected = false,
                         backgroundColor = MaterialTheme.colorScheme.background,
                     )
                 },
@@ -190,8 +191,8 @@ internal fun MarketListItemCard(
                             ?: items.marketList.createdAt
                         ).toTimeSpan,
                     icon = PoposIcons.AccessTime,
-                    tintColor = Color.Gray,
                     textColor = Color.Gray,
+                    tintColor = Color.Gray,
                 )
             }
 
@@ -217,9 +218,9 @@ internal fun MarketListItemCard(
 
 @Composable
 private fun TypeList(
-    modifier: Modifier = Modifier,
     marketType: MarketListWithType,
     onClickManageList: (listTypeId: Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier
@@ -241,21 +242,21 @@ private fun TypeList(
             IconWithText(
                 text = marketType.typeName,
                 icon = PoposIcons.Category,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = SpaceSmall),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
             )
 
             IconWithText(
                 text = marketType.listType,
                 icon = PoposIcons.ListAlt,
+                modifier = Modifier.weight(1.5f),
                 style = TextStyle(
                     fontFamily = FontFamily.Default,
                     fontWeight = FontWeight.SemiBold,
                 ),
-                modifier = Modifier.weight(1.5f),
             )
 
             Icon(
@@ -278,6 +279,7 @@ private fun MarketListItemCardPreview(
             items = MarketListPreviewData.marketListWithTypes.last(),
             doesSelected = { true },
             doesExpanded = { true },
+            modifier = modifier,
             onClick = {},
             onLongClick = {},
             onClickShare = {},

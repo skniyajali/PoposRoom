@@ -85,8 +85,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun DecreaseProductPriceScreen(
     navigator: DestinationsNavigator,
-    viewModel: ProductSettingsViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    viewModel: ProductSettingsViewModel = hiltViewModel(),
 ) {
     val categories by viewModel.categories.collectAsStateWithLifecycle()
     val products by viewModel.products.collectAsStateWithLifecycle()
@@ -113,7 +114,7 @@ fun DecreaseProductPriceScreen(
     }
 
     DecreaseProductPriceScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         items = products.toImmutableList(),
         categories = categories,
         selectedItems = selectedItems.toImmutableList(),
@@ -147,7 +148,6 @@ fun DecreaseProductPriceScreen(
 @VisibleForTesting
 @Composable
 internal fun DecreaseProductPriceScreenContent(
-    modifier: Modifier = Modifier,
     items: ImmutableList<Product>,
     categories: ImmutableList<Category>,
     selectedItems: ImmutableList<Int>,
@@ -167,6 +167,7 @@ internal fun DecreaseProductPriceScreenContent(
     onDecreaseClick: () -> Unit,
     onBackClick: () -> Unit,
     onClickToAddItem: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
     lazyRowState: LazyListState = rememberLazyListState(),
@@ -175,7 +176,8 @@ internal fun DecreaseProductPriceScreenContent(
     TrackScreenViewEvent(screenName = "DecreaseProductPriceScreen")
 
     val text = if (searchText.isEmpty()) NO_ITEMS_IN_PRODUCT else Constants.SEARCH_ITEM_NOT_FOUND
-    val title = if (selectedItems.isEmpty()) DECREASE_PRODUCTS_TITLE else "${selectedItems.size} Selected"
+    val title =
+        if (selectedItems.isEmpty()) DECREASE_PRODUCTS_TITLE else "${selectedItems.size} Selected"
 
     BackHandler {
         if (selectedItems.isNotEmpty()) {
@@ -188,11 +190,23 @@ internal fun DecreaseProductPriceScreenContent(
     }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
+        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
+        modifier = modifier,
         showBackButton = selectedItems.isEmpty() || showSearchBar,
         showBottomBar = items.isNotEmpty(),
         showSecondaryBottomBar = true,
+        fabPosition = FabPosition.End,
+        navigationIcon = {
+            IconButton(
+                onClick = onClickDeselect,
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Deselect All",
+                )
+            }
+        },
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
@@ -224,6 +238,16 @@ internal fun DecreaseProductPriceScreenContent(
                 }
             }
         },
+        floatingActionButton = {
+            ScrollToTop(
+                visible = !lazyListState.isScrollingUp(),
+                onClick = {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(index = 0)
+                    }
+                },
+            )
+        },
         bottomBar = {
             Column(
                 modifier = Modifier
@@ -231,7 +255,15 @@ internal fun DecreaseProductPriceScreenContent(
                     .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} product price will be decrease.")
+                InfoText(
+                    text = "${
+                        if (selectedItems.isEmpty()) {
+                            "All"
+                        } else {
+                            "${selectedItems.size}"
+                        }
+                    } product price will be decrease.",
+                )
 
                 PoposButton(
                     modifier = Modifier
@@ -247,28 +279,6 @@ internal fun DecreaseProductPriceScreenContent(
                 )
             }
         },
-        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyListState.isScrollingUp(),
-                onClick = {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(index = 0)
-                    }
-                },
-            )
-        },
-        navigationIcon = {
-            IconButton(
-                onClick = onClickDeselect,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Deselect All",
-                )
-            }
-        },
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -276,22 +286,22 @@ internal fun DecreaseProductPriceScreenContent(
                 .padding(paddingValues),
         ) {
             StandardTextField(
-                modifier = Modifier,
-                value = productPrice,
                 label = ProductTestTags.PRODUCT_PRICE_TEXT_FIELD,
                 leadingIcon = PoposIcons.Rupee,
-                keyboardType = KeyboardType.Number,
+                value = productPrice,
                 onValueChange = onPriceChanged,
+                modifier = Modifier,
                 isError = productPrice.isEmpty(),
+                keyboardType = KeyboardType.Number,
             )
 
             CategoryList(
-                horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
-                contentPadding = PaddingValues(SpaceSmall),
-                lazyRowState = lazyRowState,
                 categories = categories,
-                doesSelected = selectedCategories::contains,
+                selected = selectedCategories::contains,
                 onSelect = onSelectCategory,
+                contentPadding = PaddingValues(SpaceSmall),
+                horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
+                lazyRowState = lazyRowState,
             )
 
             if (items.isEmpty()) {

@@ -91,10 +91,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddressScreen(
     navigator: DestinationsNavigator,
-    viewModel: AddressViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditAddressScreenDestination, String>,
     exportRecipient: ResultRecipient<AddressExportScreenDestination, String>,
     importRecipient: ResultRecipient<AddressImportScreenDestination, String>,
+    modifier: Modifier = Modifier,
+    viewModel: AddressViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -136,6 +137,7 @@ fun AddressScreen(
             navigator.navigate(AddressDetailsScreenDestination(it))
         },
         snackbarHostState = snackbarState,
+        modifier = modifier,
     )
 
     HandleResultRecipients(
@@ -152,7 +154,6 @@ fun AddressScreen(
 @VisibleForTesting
 @Composable
 internal fun AddressScreenContent(
-    modifier: Modifier = Modifier,
     uiState: UiState<List<Address>>,
     selectedItems: List<Int>,
     showSearchBar: Boolean,
@@ -171,6 +172,7 @@ internal fun AddressScreenContent(
     onEditClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onNavigateToDetails: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
@@ -190,9 +192,9 @@ internal fun AddressScreenContent(
     }
 
     PoposPrimaryScaffold(
-        modifier = modifier,
         currentRoute = Screens.ADDRESS_SCREEN,
         title = if (selectedItems.isEmpty()) ADDRESS_SCREEN_TITLE else "${selectedItems.size} Selected",
+        selectionCount = selectedItems.size,
         floatingActionButton = {
             StandardFAB(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
@@ -208,30 +210,30 @@ internal fun AddressScreenContent(
         },
         navActions = {
             ScaffoldNavActions(
-                placeholderText = ADDRESS_SEARCH_PLACEHOLDER,
-                showSettingsIcon = true,
                 selectionCount = selectedItems.size,
                 showSearchIcon = showFab,
-                showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = onEditClick,
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = onSettingsClick,
                 onSelectAllClick = onSelectAllClick,
                 onClearClick = onClearSearchClick,
                 onSearchIconClick = onSearchClick,
                 onSearchTextChanged = onSearchTextChanged,
+                showSearchBar = showSearchBar,
+                showSettingsIcon = true,
+                onSettingsClick = onSettingsClick,
+                placeholderText = ADDRESS_SEARCH_PLACEHOLDER,
             )
         },
+        onBackClick = if (showSearchBar) onCloseSearchBar else onBackClick,
+        onNavigateToScreen = onNavigateToScreen,
+        modifier = modifier,
         fabPosition = if (lazyGridState.isScrolled) FabPosition.End else FabPosition.Center,
-        selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
         onDeselect = onDeselect,
-        onBackClick = if (showSearchBar) onCloseSearchBar else onBackClick,
         snackbarHostState = snackbarHostState,
-        onNavigateToScreen = onNavigateToScreen,
     ) {
         Crossfade(
             targetState = uiState,
@@ -263,8 +265,8 @@ internal fun AddressScreenContent(
                             span = { GridItemSpan(2) },
                         ) {
                             NoteCard(
-                                modifier = Modifier.padding(SpaceSmall),
                                 text = ADDRESS_SCREEN_NOTE_TEXT,
+                                modifier = Modifier.padding(SpaceSmall),
                             )
                         }
 
@@ -275,10 +277,8 @@ internal fun AddressScreenContent(
                             },
                         ) { address ->
                             AddressData(
-                                modifier = Modifier
-                                    .testTag(ADDRESS_ITEM_TAG.plus(address.addressId)),
                                 item = address,
-                                doesSelected = {
+                                selected = {
                                     selectedItems.contains(it)
                                 },
                                 onClick = {
@@ -289,6 +289,8 @@ internal fun AddressScreenContent(
                                     }
                                 },
                                 onLongClick = onClickSelectItem,
+                                modifier = Modifier
+                                    .testTag(ADDRESS_ITEM_TAG.plus(address.addressId)),
                             )
                         }
                     }

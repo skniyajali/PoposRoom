@@ -82,5 +82,6 @@ object ProfileTestTags {
     const val QR_CODE_EMPTY_ERROR = "Payment QR code must not be empty"
 
     const val RES_LOGO_NOTE = "Please upload a logo within 512x512 px size."
-    const val PRINT_LOGO_NOTE = "Please upload a logo with white background and 350x215 px size, for better print quality."
+    const val PRINT_LOGO_NOTE = "Please upload a logo with white background " +
+        "and 350x215 px size, for better print quality."
 }

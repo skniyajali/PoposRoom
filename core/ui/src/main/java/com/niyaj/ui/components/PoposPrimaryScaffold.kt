@@ -85,6 +85,7 @@ import com.niyaj.designsystem.theme.BoneWhite
 import com.niyaj.designsystem.theme.LightColor13
 import com.niyaj.designsystem.theme.LightColor14
 import com.niyaj.designsystem.theme.Pewter
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.RoyalPurple
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.ui.utils.DevicePreviews
@@ -95,22 +96,22 @@ const val PRIMARY_APP_DRAWER = "primaryAppDrawer"
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PoposPrimaryScaffold(
-    modifier: Modifier = Modifier,
     currentRoute: String,
     title: String,
+    selectionCount: Int,
     floatingActionButton: @Composable () -> Unit,
     navActions: @Composable RowScope.() -> Unit,
+    onBackClick: () -> Unit,
+    onNavigateToScreen: (String) -> Unit,
+    modifier: Modifier = Modifier,
     bottomBar: @Composable () -> Unit = {},
     fabPosition: FabPosition = FabPosition.Center,
-    selectionCount: Int,
     showBottomBar: Boolean = false,
     showBackButton: Boolean = false,
     gesturesEnabled: Boolean = true,
     onDeselect: () -> Unit = {},
-    onBackClick: () -> Unit,
-    onNavigateToScreen: (String) -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    content: @Composable (Shape) -> Unit,
+    content: @Composable (Shape) -> Unit = {},
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -265,8 +266,9 @@ fun PoposPrimaryScaffold(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PoposScaffold(
-    modifier: Modifier = Modifier,
     title: String,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
     floatingActionButton: @Composable () -> Unit = {},
     navActions: @Composable RowScope.() -> Unit = {},
     navigationIcon: () -> Unit = {},
@@ -275,8 +277,7 @@ fun PoposScaffold(
     showBottomBar: Boolean = false,
     showBackButton: Boolean = false,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    onBackClick: () -> Unit,
-    content: @Composable (Shape) -> Unit,
+    content: @Composable (Shape) -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -375,8 +376,9 @@ fun PoposScaffold(
 
 @Composable
 fun PoposSecondaryScaffold(
-    modifier: Modifier = Modifier,
     title: String,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
     showBackButton: Boolean = true,
     showBottomBar: Boolean = false,
     showSecondaryBottomBar: Boolean = false,
@@ -384,7 +386,6 @@ fun PoposSecondaryScaffold(
     fabPosition: FabPosition = FabPosition.Center,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
-    onBackClick: () -> Unit,
     navigationIcon: @Composable () -> Unit = {},
     navActions: @Composable RowScope.() -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
@@ -515,18 +516,51 @@ fun PoposSecondaryScaffold(
     }
 }
 
+@DevicePreviews
+@Composable
+private fun PoposPrimaryScaffoldPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        PoposPrimaryScaffold(
+            currentRoute = "",
+            title = "Primary Scaffold",
+            selectionCount = 0,
+            floatingActionButton = {},
+            navActions = {},
+            onBackClick = {},
+            onNavigateToScreen = {},
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun PoposScaffoldPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        PoposScaffold(
+            title = "Scaffold",
+            onBackClick = {},
+            modifier = modifier,
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @DevicePreviews
 @Composable
 private fun PoposSecondaryScaffoldPreview() {
     PoposSecondaryScaffold(
-        modifier = Modifier,
         title = "Secondary Scaffold",
+        onBackClick = {},
+        modifier = Modifier,
         showBackButton = false,
         showBottomBar = false,
         showFab = false,
         fabPosition = FabPosition.End,
-        onBackClick = {},
         navigationIcon = {},
         navActions = {},
         floatingActionButton = {},

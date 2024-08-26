@@ -53,11 +53,11 @@ import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 internal fun ProductDetails(
-    modifier: Modifier = Modifier,
     productState: UiState<Product>,
     onExpanded: () -> Unit,
     doesExpanded: Boolean,
     onClickEdit: () -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("ProductDetails") {
     ElevatedCard(
         onClick = onExpanded,
@@ -70,13 +70,76 @@ internal fun ProductDetails(
         ),
     ) {
         StandardExpandable(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
             expanded = doesExpanded,
             onExpandChanged = {
                 onExpanded()
             },
+            content = {
+                Crossfade(
+                    targetState = productState,
+                    label = "Product State",
+                ) { state ->
+                    when (state) {
+                        is UiState.Loading -> LoadingIndicatorHalf()
+
+                        is UiState.Empty -> {
+                            ItemNotAvailableHalf(
+                                text = "Product Details Not Available",
+                                modifier = Modifier.height(IntrinsicSize.Min),
+                                showImage = false,
+                            )
+                        }
+
+                        is UiState.Success -> {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(SpaceSmall),
+                                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+                            ) {
+                                IconWithText(
+                                    text = "Name - ${state.data.productName}",
+                                    icon = PoposIcons.CollectionsBookmark,
+                                    modifier = Modifier.testTag(state.data.productName),
+                                )
+
+                                IconWithText(
+                                    text = "Price - ${state.data.productPrice.toString().toRupee}",
+                                    icon = PoposIcons.Rupee,
+                                    modifier = Modifier.testTag(state.data.productPrice.toString()),
+                                )
+
+                                IconWithText(
+                                    text = "Availability : ${state.data.productAvailability}",
+                                    icon = if (state.data.productAvailability) {
+                                        PoposIcons.RadioButtonChecked
+                                    } else {
+                                        PoposIcons.RadioButtonUnchecked
+                                    },
+                                    modifier = Modifier.testTag(state.data.productAvailability.toString()),
+                                )
+
+                                IconWithText(
+                                    text = "Created At : ${state.data.createdAt.toFormattedDateAndTime}",
+                                    icon = PoposIcons.CalenderMonth,
+                                    modifier = Modifier.testTag(state.data.createdAt.toDateString),
+                                )
+
+                                state.data.updatedAt?.let {
+                                    IconWithText(
+                                        text = "Updated At : ${it.toFormattedDateAndTime}",
+                                        icon = PoposIcons.Login,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SpaceSmall),
+            rowClickable = true,
             title = {
                 IconWithText(
                     text = "Product Details",
@@ -94,7 +157,6 @@ internal fun ProductDetails(
                     )
                 }
             },
-            rowClickable = true,
             expand = { modifier: Modifier ->
                 IconButton(
                     modifier = modifier,
@@ -105,68 +167,6 @@ internal fun ProductDetails(
                         contentDescription = "Expand More",
                         tint = MaterialTheme.colorScheme.secondary,
                     )
-                }
-            },
-            content = {
-                Crossfade(
-                    targetState = productState,
-                    label = "Product State",
-                ) { state ->
-                    when (state) {
-                        is UiState.Loading -> LoadingIndicatorHalf()
-
-                        is UiState.Empty -> {
-                            ItemNotAvailableHalf(
-                                modifier = Modifier.height(IntrinsicSize.Min),
-                                text = "Product Details Not Available",
-                                showImage = false,
-                            )
-                        }
-
-                        is UiState.Success -> {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(SpaceSmall),
-                                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-                            ) {
-                                IconWithText(
-                                    modifier = Modifier.testTag(state.data.productName),
-                                    text = "Name - ${state.data.productName}",
-                                    icon = PoposIcons.CollectionsBookmark,
-                                )
-
-                                IconWithText(
-                                    modifier = Modifier.testTag(state.data.productPrice.toString()),
-                                    text = "Price - ${state.data.productPrice.toString().toRupee}",
-                                    icon = PoposIcons.Rupee,
-                                )
-
-                                IconWithText(
-                                    modifier = Modifier.testTag(state.data.productAvailability.toString()),
-                                    text = "Availability : ${state.data.productAvailability}",
-                                    icon = if (state.data.productAvailability) {
-                                        PoposIcons.RadioButtonChecked
-                                    } else {
-                                        PoposIcons.RadioButtonUnchecked
-                                    },
-                                )
-
-                                IconWithText(
-                                    modifier = Modifier.testTag(state.data.createdAt.toDateString),
-                                    text = "Created At : ${state.data.createdAt.toFormattedDateAndTime}",
-                                    icon = PoposIcons.CalenderMonth,
-                                )
-
-                                state.data.updatedAt?.let {
-                                    IconWithText(
-                                        text = "Updated At : ${it.toFormattedDateAndTime}",
-                                        icon = PoposIcons.Login,
-                                    )
-                                }
-                            }
-                        }
-                    }
                 }
             },
         )
@@ -182,11 +182,11 @@ private fun ProductOrderDetailsPreview(
 ) {
     PoposRoomTheme {
         ProductDetails(
-            modifier = modifier,
             productState = productState,
             onExpanded = {},
             doesExpanded = true,
             onClickEdit = {},
+            modifier = modifier,
         )
     }
 }

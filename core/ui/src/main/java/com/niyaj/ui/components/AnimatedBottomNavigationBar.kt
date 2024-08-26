@@ -44,6 +44,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.exyte.animatednavbar.AnimatedNavigationBar
 import com.exyte.animatednavbar.animation.balltrajectory.Teleport
 import com.exyte.animatednavbar.animation.indendshape.Height
@@ -51,22 +52,15 @@ import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
 import com.exyte.animatednavbar.items.dropletbutton.DropletButton
 import com.niyaj.core.ui.R
 import com.niyaj.designsystem.theme.LightColor8
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.Purple
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
-
-@Stable
-internal data class NavigationItem(
-    val index: Int,
-    val name: String,
-    val selected: Boolean,
-    val selectedIcon: Int,
-    val unselectedIcon: Int,
-    val onClick: () -> Unit,
-)
 
 @Composable
 fun AnimatedBottomNavigationBar(
     navController: NavController,
+    modifier: Modifier = Modifier,
     windowInsets: WindowInsets = NavigationBarDefaults.windowInsets,
 ) {
     val currentRoute =
@@ -119,7 +113,7 @@ fun AnimatedBottomNavigationBar(
     val currentIndex = if (index < 0) 0 else index
 
     AnimatedNavigationBar(
-        modifier = Modifier
+        modifier = modifier
             .windowInsetsPadding(windowInsets)
             .height(80.dp),
         selectedIndex = currentIndex,
@@ -136,7 +130,7 @@ fun AnimatedBottomNavigationBar(
             ),
         ),
     ) {
-        navItems.forEachIndexed { index, it ->
+        navItems.forEachIndexed { index, item ->
             key(index) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -145,9 +139,9 @@ fun AnimatedBottomNavigationBar(
                 ) {
                     DropletButton(
                         modifier = Modifier.fillMaxWidth(),
-                        isSelected = it.selected,
-                        onClick = it.onClick,
-                        icon = if (it.selected) it.selectedIcon else it.unselectedIcon,
+                        isSelected = item.selected,
+                        onClick = item.onClick,
+                        icon = if (item.selected) item.selectedIcon else item.unselectedIcon,
                         dropletColor = Purple,
                         iconColor = MaterialTheme.colorScheme.tertiary,
                         size = 24.dp,
@@ -157,10 +151,10 @@ fun AnimatedBottomNavigationBar(
                     Spacer(modifier = Modifier.height(3.dp))
 
                     Text(
-                        text = it.name,
-                        color = if (it.selected) Purple else MaterialTheme.colorScheme.tertiary,
+                        text = item.name,
+                        color = if (item.selected) Purple else MaterialTheme.colorScheme.tertiary,
                         style = MaterialTheme.typography.labelSmall,
-                        fontWeight = if (it.selected) FontWeight.SemiBold else FontWeight.Normal,
+                        fontWeight = if (item.selected) FontWeight.SemiBold else FontWeight.Normal,
                     )
                 }
             }
@@ -170,9 +164,9 @@ fun AnimatedBottomNavigationBar(
 
 @Composable
 fun AnimatedBottomNavigationBar(
-    modifier: Modifier = Modifier,
     currentRoute: String,
     onNavigateToDestination: (String) -> Unit,
+    modifier: Modifier = Modifier,
     windowInsets: WindowInsets = NavigationBarDefaults.windowInsets,
 ) {
     val destinations: List<TopLevelDestination> = remember(currentRoute) {
@@ -202,12 +196,12 @@ fun AnimatedBottomNavigationBar(
             ),
         ),
     ) {
-        destinations.forEachIndexed { index, it ->
-            val selected = remember(currentRoute, it) {
-                currentRoute == it.route
+        destinations.forEachIndexed { index, destination ->
+            val selected = remember(currentRoute, destination) {
+                currentRoute == destination.route
             }
 
-            key(index, it) {
+            key(index, destination) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
@@ -216,8 +210,8 @@ fun AnimatedBottomNavigationBar(
                     DropletButton(
                         modifier = Modifier.fillMaxWidth(),
                         isSelected = selected,
-                        onClick = { onNavigateToDestination(it.route) },
-                        icon = if (selected) it.selectedIcon else it.unselectedIcon,
+                        onClick = { onNavigateToDestination(destination.route) },
+                        icon = if (selected) destination.selectedIcon else destination.unselectedIcon,
                         dropletColor = Purple,
                         iconColor = MaterialTheme.colorScheme.tertiary,
                         size = 24.dp,
@@ -227,7 +221,7 @@ fun AnimatedBottomNavigationBar(
                     Spacer(modifier = Modifier.height(3.dp))
 
                     Text(
-                        text = it.label,
+                        text = destination.label,
                         color = if (selected) Purple else MaterialTheme.colorScheme.tertiary,
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
@@ -238,7 +232,44 @@ fun AnimatedBottomNavigationBar(
     }
 }
 
+@Stable
+internal data class NavigationItem(
+    val index: Int,
+    val name: String,
+    val selected: Boolean,
+    val selectedIcon: Int,
+    val unselectedIcon: Int,
+    val onClick: () -> Unit,
+)
+
 internal fun NavDestination?.isTopLevelDestinationInHierarchy(destination: TopLevelDestination) =
     this?.hierarchy?.any {
         it.route?.contains(destination.route, true) ?: false
     } ?: false
+
+@DevicePreviews
+@Composable
+private fun AnimatedBottomNavigationBarPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        AnimatedBottomNavigationBar(
+            navController = rememberNavController(),
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AnimatedBottomNavigationBarRoutePreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        AnimatedBottomNavigationBar(
+            currentRoute = Screens.HOME_SCREEN,
+            onNavigateToDestination = {},
+            modifier = modifier,
+        )
+    }
+}

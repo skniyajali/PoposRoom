@@ -88,8 +88,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun ExportProductScreen(
     navigator: DestinationsNavigator,
-    viewModel: ProductSettingsViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    viewModel: ProductSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -136,7 +137,6 @@ fun ExportProductScreen(
         }
 
     ExportProductScreenContent(
-        modifier = Modifier,
         items = products.toImmutableList(),
         categories = categories,
         selectedItems = selectedItems.toImmutableList(),
@@ -151,6 +151,7 @@ fun ExportProductScreen(
         onClickDeselect = viewModel::deselectItems,
         onSelectItem = viewModel::selectItem,
         onBackClick = navigator::navigateUp,
+        modifier = modifier,
         onSelectCategory = {
             viewModel.onEvent(ProductSettingsEvent.OnSelectCategory(it))
         },
@@ -173,7 +174,6 @@ fun ExportProductScreen(
 @VisibleForTesting
 @Composable
 internal fun ExportProductScreenContent(
-    modifier: Modifier = Modifier,
     items: ImmutableList<Product>,
     categories: ImmutableList<Category>,
     selectedCategory: List<Int>,
@@ -191,6 +191,7 @@ internal fun ExportProductScreenContent(
     onClickExport: () -> Unit,
     onBackClick: () -> Unit,
     onClickToAddItem: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
     lazyRowState: LazyListState = rememberLazyListState(),
@@ -199,7 +200,8 @@ internal fun ExportProductScreenContent(
     TrackScreenViewEvent(screenName = "ExportProductScreen")
 
     val text = if (searchText.isEmpty()) NO_ITEMS_IN_PRODUCT else Constants.SEARCH_ITEM_NOT_FOUND
-    val title = if (selectedItems.isEmpty()) EXPORT_PRODUCTS_TITLE else "${selectedItems.size} Selected"
+    val title =
+        if (selectedItems.isEmpty()) EXPORT_PRODUCTS_TITLE else "${selectedItems.size} Selected"
 
     BackHandler {
         if (selectedItems.isNotEmpty()) {
@@ -212,11 +214,23 @@ internal fun ExportProductScreenContent(
     }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
+        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
+        modifier = modifier,
         showBackButton = selectedItems.isEmpty() || showSearchBar,
         showBottomBar = items.isNotEmpty(),
         showSecondaryBottomBar = true,
+        fabPosition = FabPosition.End,
+        navigationIcon = {
+            IconButton(
+                onClick = onClickDeselect,
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Deselect All",
+                )
+            }
+        },
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
@@ -248,6 +262,16 @@ internal fun ExportProductScreenContent(
                 }
             }
         },
+        floatingActionButton = {
+            ScrollToTop(
+                visible = !lazyListState.isScrollingUp(),
+                onClick = {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(index = 0)
+                    }
+                },
+            )
+        },
         bottomBar = {
             Column(
                 modifier = Modifier
@@ -255,7 +279,15 @@ internal fun ExportProductScreenContent(
                     .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} products will be exported.")
+                InfoText(
+                    text = "${
+                        if (selectedItems.isEmpty()) {
+                            "All"
+                        } else {
+                            "${selectedItems.size}"
+                        }
+                    } products will be exported.",
+                )
 
                 PoposButton(
                     modifier = Modifier
@@ -271,28 +303,6 @@ internal fun ExportProductScreenContent(
                 )
             }
         },
-        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyListState.isScrollingUp(),
-                onClick = {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(index = 0)
-                    }
-                },
-            )
-        },
-        navigationIcon = {
-            IconButton(
-                onClick = onClickDeselect,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Deselect All",
-                )
-            }
-        },
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -300,12 +310,12 @@ internal fun ExportProductScreenContent(
                 .padding(paddingValues),
         ) {
             CategoryList(
-                horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
-                contentPadding = PaddingValues(SpaceSmall),
-                lazyRowState = lazyRowState,
                 categories = categories,
-                doesSelected = selectedCategory::contains,
+                selected = selectedCategory::contains,
                 onSelect = onSelectCategory,
+                contentPadding = PaddingValues(SpaceSmall),
+                horizontalArrangement = Arrangement.spacedBy(SpaceSmall),
+                lazyRowState = lazyRowState,
             )
 
             if (items.isEmpty()) {

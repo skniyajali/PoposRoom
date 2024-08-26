@@ -60,10 +60,11 @@ internal fun ReportBarData(
     onBarClick: (String) -> Unit,
     onClickViewMore: () -> Unit,
     onClickPrint: () -> Unit,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("ReportBarData") {
     ElevatedCard(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(
             containerColor = containerColor,
@@ -74,7 +75,7 @@ internal fun ReportBarData(
             label = "ReportBarState",
         ) { state ->
             when (state) {
-                is UiState.Loading -> ItemNotAvailableHalf()
+                is UiState.Loading -> ItemNotAvailableHalf("")
 
                 is UiState.Empty -> {
                     ItemNotAvailable(
@@ -163,6 +164,7 @@ private fun ReportBarDataPreview(
     PoposRoomTheme {
         ReportBarData(
             reportBarState = reportBarState,
+            modifier = modifier,
             selectedBarData = "",
             onBarClick = {},
             onClickViewMore = {},

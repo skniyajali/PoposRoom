@@ -53,11 +53,11 @@ import java.io.File
 
 @Composable
 fun ImageCard(
-    modifier: Modifier = Modifier,
     @DrawableRes
     defaultImage: Int,
-    imageName: String = "",
     onEditClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    imageName: String = "",
     contentScale: ContentScale = ContentScale.Fit,
     size: DpSize = DpSize(100.dp, 100.dp),
 ) = trace("ImageCard") {

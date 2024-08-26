@@ -41,9 +41,9 @@ import com.ramcosta.composedestinations.spec.Route
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PoposApp(
-    modifier: Modifier = Modifier,
     appState: PoposAppState,
     startRoute: Route,
+    modifier: Modifier = Modifier,
 ) {
     PoposBackground(modifier) {
         Scaffold(

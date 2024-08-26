@@ -46,21 +46,20 @@ class CustomerViewModel @Inject constructor(
 
     override var totalItems: List<Int> = emptyList()
 
-    val customers = snapshotFlow { searchText.value }
-        .flatMapLatest { it ->
-            customerRepository.getAllCustomer(it)
-        }.map { items ->
-            totalItems = items.map { it.customerId }
-            if (items.isEmpty()) {
-                UiState.Empty
-            } else {
-                UiState.Success(items)
-            }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = UiState.Loading,
-        )
+    val customers = snapshotFlow { searchText.value }.flatMapLatest {
+        customerRepository.getAllCustomer(it)
+    }.map { items ->
+        totalItems = items.map { it.customerId }
+        if (items.isEmpty()) {
+            UiState.Empty
+        } else {
+            UiState.Success(items)
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = UiState.Loading,
+    )
 
     override fun deleteItems() {
         super.deleteItems()

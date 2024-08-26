@@ -83,8 +83,8 @@ class AbsentSettingsViewModel @Inject constructor(
                         val list = mutableListOf<EmployeeWithAbsents>()
 
                         mSelectedItems.forEach { absentId ->
-                            items.value.find { it ->
-                                it.absents.any { it.absentId == absentId }
+                            items.value.find { data ->
+                                data.absents.any { it.absentId == absentId }
                             }?.let {
                                 list.add(it)
                             }
@@ -128,7 +128,11 @@ class AbsentSettingsViewModel @Inject constructor(
                         }
 
                         is Resource.Success -> {
-                            mEventFlow.emit(UiEvent.OnSuccess("${data.sumOf { it.absents.size }} items has been imported successfully"))
+                            mEventFlow.emit(
+                                UiEvent.OnSuccess(
+                                    "${data.sumOf { it.absents.size }} items has been imported successfully",
+                                ),
+                            )
                             analyticsHelper.logImportedAbsentToDatabase(data.sumOf { it.absents.size })
                         }
                     }

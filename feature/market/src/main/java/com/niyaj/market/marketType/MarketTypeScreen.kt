@@ -75,10 +75,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun MarketTypeScreen(
     navigator: DestinationsNavigator,
-    viewModel: MarketTypeViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditMarketTypeScreenDestination, String>,
     exportRecipient: ResultRecipient<ExportMarketTypeScreenDestination, String>,
     importRecipient: ResultRecipient<ImportMarketTypeScreenDestination, String>,
+    modifier: Modifier = Modifier,
+    viewModel: MarketTypeViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -91,7 +92,6 @@ fun MarketTypeScreen(
     val searchText = viewModel.searchText.value
 
     MarketTypeScreenContent(
-        modifier = Modifier,
         uiState = state,
         selectedItems = selectedItems,
         showSearchBar = showSearchBar,
@@ -118,6 +118,7 @@ fun MarketTypeScreen(
         onClickCreateNewItem = {
             navigator.navigate(AddEditMarketItemScreenDestination())
         },
+        modifier = modifier,
         snackbarState = snackbarState,
     )
 
@@ -135,7 +136,6 @@ fun MarketTypeScreen(
 @androidx.annotation.VisibleForTesting
 @Composable
 internal fun MarketTypeScreenContent(
-    modifier: Modifier = Modifier,
     uiState: UiState<List<MarketType>>,
     selectedItems: List<Int>,
     showSearchBar: Boolean,
@@ -154,6 +154,7 @@ internal fun MarketTypeScreenContent(
     onClickEdit: (Int) -> Unit,
     onClickSettings: () -> Unit,
     onClickCreateNewItem: () -> Unit,
+    modifier: Modifier = Modifier,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
@@ -174,9 +175,9 @@ internal fun MarketTypeScreenContent(
     val openDialog = remember { mutableStateOf(false) }
 
     PoposPrimaryScaffold(
-        modifier = modifier,
         currentRoute = MARKET_TYPE_SCREEN,
         title = if (selectedItems.isEmpty()) MARKET_TYPE_SCREEN_TITLE else "${selectedItems.size} Selected",
+        selectionCount = selectedItems.size,
         floatingActionButton = {
             StandardFAB(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
@@ -192,10 +193,7 @@ internal fun MarketTypeScreenContent(
         },
         navActions = {
             ScaffoldNavActions(
-                placeholderText = MARKET_TYPE_SEARCH_PLACEHOLDER,
-                showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchBar = showSearchBar,
                 showSearchIcon = showFab,
                 searchText = searchText,
                 onEditClick = {
@@ -204,20 +202,23 @@ internal fun MarketTypeScreenContent(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = onClickSettings,
                 onSelectAllClick = onClickSelectAll,
                 onClearClick = onClickClear,
                 onSearchIconClick = onClickSearchIcon,
                 onSearchTextChanged = onSearchTextChanged,
+                showSearchBar = showSearchBar,
+                showSettingsIcon = true,
+                onSettingsClick = onClickSettings,
+                placeholderText = MARKET_TYPE_SEARCH_PLACEHOLDER,
             )
         },
+        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
+        onNavigateToScreen = onNavigateToScreen,
+        modifier = modifier,
         fabPosition = if (lazyGridState.isScrolled) FabPosition.End else FabPosition.Center,
-        selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
         onDeselect = onClickDeselect,
-        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
         snackbarHostState = snackbarState,
-        onNavigateToScreen = onNavigateToScreen,
     ) {
         Crossfade(
             targetState = uiState,
@@ -236,11 +237,11 @@ internal fun MarketTypeScreenContent(
 
                 is UiState.Success -> {
                     MarketTypeList(
-                        modifier = Modifier.fillMaxSize(),
                         items = state.data.toImmutableList(),
                         isInSelectionMode = selectedItems.isNotEmpty(),
                         doesSelected = selectedItems::contains,
                         onSelectItem = onClickSelectItem,
+                        modifier = Modifier.fillMaxSize(),
                         showCreateNewItem = true,
                         onCreateMarketItem = onClickCreateNewItem,
                         lazyGridState = lazyGridState,

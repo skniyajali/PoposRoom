@@ -110,8 +110,9 @@ import kotlinx.coroutines.launch
 fun UpdateProfileScreen(
     resId: Int,
     navigator: DestinationsNavigator,
-    viewModel: UpdateProfileViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    viewModel: UpdateProfileViewModel = hiltViewModel(),
 ) {
     val systemUiController = rememberSystemUiController()
     val statusBarColor = MaterialTheme.colorScheme.primary
@@ -166,7 +167,7 @@ fun UpdateProfileScreen(
     TrackScreenViewEvent(screenName = Screens.UPDATE_PROFILE_SCREEN + "resId?=$resId")
 
     UpdateProfileScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         profile = info,
         state = viewModel.updateState,
         scannedBitmap = scannedBitmap?.asImageBitmap(),
@@ -191,14 +192,14 @@ fun UpdateProfileScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun UpdateProfileScreenContent(
-    modifier: Modifier = Modifier,
     profile: Profile,
     state: UpdateProfileState,
-    scannedBitmap: ImageBitmap? = null,
     onEvent: (UpdateProfileEvent) -> Unit,
     onBackClick: () -> Unit,
     onClickChangeResLogo: () -> Unit,
     onClickChangePrintLogo: () -> Unit,
+    modifier: Modifier = Modifier,
+    scannedBitmap: ImageBitmap? = null,
     statusBarColor: Color = MaterialTheme.colorScheme.primary,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
@@ -210,7 +211,7 @@ internal fun UpdateProfileScreenContent(
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
         topBar = {
             TopAppBar(
@@ -237,7 +238,7 @@ internal fun UpdateProfileScreenContent(
         TrackScrollJank(scrollableState = lazyListState, stateName = "UpdateProfile::Fields")
 
         LazyColumn(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(paddingValues),
             state = lazyListState,
@@ -266,140 +267,147 @@ internal fun UpdateProfileScreenContent(
 
             item(NAME_FIELD) {
                 StandardOutlinedTextField(
-                    modifier = Modifier
-                        .padding(horizontal = SpaceSmall)
-                        .testTag(NAME_FIELD),
-                    value = state.name,
                     label = NAME_FIELD,
                     leadingIcon = PoposIcons.Restaurant,
-                    isError = state.nameError != null,
-                    errorText = state.nameError,
-                    errorTextTag = NAME_ERROR_FIELD,
+                    value = state.name,
                     onValueChange = {
                         onEvent(UpdateProfileEvent.NameChanged(it))
                     },
+                    modifier = Modifier
+                        .padding(horizontal = SpaceSmall)
+                        .testTag(NAME_FIELD),
+                    isError = state.nameError != null,
+                    errorText = state.nameError,
+                    errorTextTag = NAME_ERROR_FIELD,
                 )
             }
 
             item(EMAIL_FIELD) {
                 StandardOutlinedTextField(
-                    modifier = Modifier
-                        .padding(horizontal = SpaceSmall)
-                        .testTag(EMAIL_FIELD),
-                    value = state.email,
                     label = EMAIL_FIELD,
                     leadingIcon = PoposIcons.Email,
-                    errorTextTag = EMAIL_ERROR_FIELD,
-                    isError = state.emailError != null,
-                    errorText = state.emailError,
+                    value = state.email,
                     onValueChange = {
                         onEvent(UpdateProfileEvent.NameChanged(it))
                     },
+                    modifier = Modifier
+                        .padding(horizontal = SpaceSmall)
+                        .testTag(EMAIL_FIELD),
+                    isError = state.emailError != null,
+                    errorText = state.emailError,
+                    keyboardType = KeyboardType.Email,
+                    errorTextTag = EMAIL_ERROR_FIELD,
                     textStyle = LocalTextStyle.current.copy(
                         fontFamily = FontFamily.Cursive,
                     ),
-                    keyboardType = KeyboardType.Email,
                 )
             }
 
             item(P_PHONE_FIELD) {
                 StandardOutlinedTextField(
-                    modifier = Modifier
-                        .padding(horizontal = SpaceSmall)
-                        .testTag(P_PHONE_FIELD),
-                    value = state.primaryPhone,
                     label = P_PHONE_FIELD,
                     leadingIcon = PoposIcons.PhoneAndroid,
-                    errorTextTag = P_PHONE_ERROR_FIELD,
-                    isError = state.primaryPhoneError != null,
-                    errorText = state.primaryPhoneError,
+                    value = state.primaryPhone,
                     onValueChange = {
                         onEvent(UpdateProfileEvent.PrimaryPhoneChanged(it))
                     },
+                    modifier = Modifier
+                        .padding(horizontal = SpaceSmall)
+                        .testTag(P_PHONE_FIELD),
+                    isError = state.primaryPhoneError != null,
+                    errorText = state.primaryPhoneError,
                     keyboardType = KeyboardType.Number,
+                    errorTextTag = P_PHONE_ERROR_FIELD,
                 )
             }
 
             item(S_PHONE_FIELD) {
                 StandardOutlinedTextField(
-                    modifier = Modifier
-                        .padding(horizontal = SpaceSmall)
-                        .testTag(S_PHONE_FIELD),
-                    value = state.secondaryPhone,
                     label = S_PHONE_FIELD,
                     leadingIcon = PoposIcons.Phone,
-                    errorTextTag = S_PHONE_ERROR_FIELD,
-                    isError = state.secondaryPhoneError != null,
-                    errorText = state.secondaryPhoneError,
+                    value = state.secondaryPhone,
                     onValueChange = {
                         onEvent(UpdateProfileEvent.SecondaryPhoneChanged(it))
                     },
+                    modifier = Modifier
+                        .padding(horizontal = SpaceSmall)
+                        .testTag(S_PHONE_FIELD),
+                    isError = state.secondaryPhoneError != null,
+                    errorText = state.secondaryPhoneError,
                     keyboardType = KeyboardType.Number,
+                    errorTextTag = S_PHONE_ERROR_FIELD,
                 )
             }
 
             item(TAG_FIELD) {
                 StandardOutlinedTextField(
-                    modifier = Modifier
-                        .padding(horizontal = SpaceSmall)
-                        .testTag(TAG_FIELD),
-                    value = state.tagline,
                     label = TAG_FIELD,
-                    errorTextTag = TAG_ERROR_FIELD,
                     leadingIcon = PoposIcons.StarHalf,
-                    isError = state.taglineError != null,
-                    errorText = state.taglineError,
+                    value = state.tagline,
                     onValueChange = {
                         onEvent(UpdateProfileEvent.TaglineChanged(it))
                     },
+                    modifier = Modifier
+                        .padding(horizontal = SpaceSmall)
+                        .testTag(TAG_FIELD),
+                    isError = state.taglineError != null,
+                    errorText = state.taglineError,
+                    errorTextTag = TAG_ERROR_FIELD,
                 )
             }
 
             item(ADDRESS_FIELD) {
                 StandardOutlinedTextField(
-                    modifier = Modifier
-                        .padding(horizontal = SpaceSmall)
-                        .testTag(ADDRESS_FIELD),
-                    value = state.address,
                     label = ADDRESS_FIELD,
-                    maxLines = 2,
                     leadingIcon = PoposIcons.LocationOn,
-                    errorTextTag = ADDRESS_ERROR_FIELD,
-                    isError = state.addressError != null,
-                    errorText = state.addressError,
+                    value = state.address,
                     onValueChange = {
                         onEvent(UpdateProfileEvent.AddressChanged(it))
                     },
+                    modifier = Modifier
+                        .padding(horizontal = SpaceSmall)
+                        .testTag(ADDRESS_FIELD),
+                    isError = state.addressError != null,
+                    errorText = state.addressError,
+                    maxLines = 2,
+                    errorTextTag = ADDRESS_ERROR_FIELD,
                 )
             }
 
             item(DESC_FIELD) {
                 StandardOutlinedTextField(
-                    modifier = Modifier
-                        .padding(horizontal = SpaceSmall)
-                        .testTag(DESC_FIELD),
-                    value = state.description,
                     label = DESC_FIELD,
-                    singleLine = false,
-                    maxLines = 2,
                     leadingIcon = PoposIcons.Note,
-                    isError = state.descriptionError != null,
-                    errorText = state.descriptionError,
-                    errorTextTag = DESC_ERROR_FIELD,
+                    value = state.description,
                     onValueChange = {
                         onEvent(UpdateProfileEvent.DescriptionChanged(it))
                     },
+                    modifier = Modifier
+                        .padding(horizontal = SpaceSmall)
+                        .testTag(DESC_FIELD),
+                    isError = state.descriptionError != null,
+                    errorText = state.descriptionError,
+                    singleLine = false,
+                    maxLines = 2,
+                    errorTextTag = DESC_ERROR_FIELD,
                 )
             }
 
             item(QR_CODE_FIELD) {
                 StandardOutlinedTextField(
+                    label = QR_CODE_FIELD,
+                    leadingIcon = PoposIcons.QrCode,
+                    value = state.paymentQrCode,
+                    onValueChange = {
+                        onEvent(UpdateProfileEvent.PaymentQrCodeChanged(it))
+                    },
                     modifier = Modifier
                         .padding(horizontal = SpaceSmall)
                         .testTag(QR_CODE_FIELD),
-                    value = state.paymentQrCode,
-                    label = QR_CODE_FIELD,
-                    leadingIcon = PoposIcons.QrCode,
+                    isError = state.paymentQrCodeError != null,
+                    errorText = state.paymentQrCodeError,
+                    singleLine = false,
+                    maxLines = 4,
                     trailingIcon = {
                         IconButton(
                             onClick = {
@@ -412,14 +420,7 @@ internal fun UpdateProfileScreenContent(
                             )
                         }
                     },
-                    isError = state.paymentQrCodeError != null,
-                    errorText = state.paymentQrCodeError,
                     errorTextTag = QR_CODE_ERROR_TAG,
-                    singleLine = false,
-                    maxLines = 4,
-                    onValueChange = {
-                        onEvent(UpdateProfileEvent.PaymentQrCodeChanged(it))
-                    },
                 )
             }
 

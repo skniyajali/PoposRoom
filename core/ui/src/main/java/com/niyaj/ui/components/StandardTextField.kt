@@ -48,18 +48,21 @@ import com.niyaj.common.utils.Constants.PASSWORD_SHOWN_ICON
 import com.niyaj.common.utils.Constants.TEXT_FIELD_LEADING_ICON
 import com.niyaj.common.utils.Constants.TEXT_FIELD_TRAILING_ICON
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
+@Suppress("LongParameterList")
 fun StandardTextField(
-    modifier: Modifier = Modifier,
-    value: String,
     label: String,
+    leadingIcon: ImageVector,
+    value: String,
     onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
     isError: Boolean = false,
     errorText: String? = null,
     singleLine: Boolean = true,
     maxLines: Int = 1,
-    leadingIcon: ImageVector,
     trailingIcon: ImageVector? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     readOnly: Boolean = false,
@@ -148,15 +151,17 @@ fun StandardTextField(
 }
 
 @Composable
+@Suppress("LongParameterList")
 fun StandardOutlinedTextField(
-    modifier: Modifier = Modifier,
-    value: String,
     label: String,
+    leadingIcon: ImageVector,
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
     isError: Boolean = false,
     errorText: String? = null,
     singleLine: Boolean = true,
     maxLines: Int = 1,
-    leadingIcon: ImageVector,
     trailingIcon: @Composable (() -> Unit)? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     showClearIcon: Boolean = false,
@@ -173,7 +178,6 @@ fun StandardOutlinedTextField(
     suffix: @Composable (() -> Unit)? = null,
     onClickClearIcon: () -> Unit = {},
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    onValueChange: (String) -> Unit,
 ) {
     val isFocused by interactionSource.collectIsFocusedAsState()
 
@@ -248,9 +252,9 @@ fun StandardOutlinedTextField(
 
 @Composable
 private fun PasswordToggleIcon(
-    modifier: Modifier = Modifier,
     isPasswordVisible: Boolean,
     onPasswordToggleClick: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     IconButton(
         onClick = {
@@ -276,17 +280,18 @@ private fun PasswordToggleIcon(
 
 @Composable
 private fun ClearIconButton(
-    modifier: Modifier = Modifier,
     showClearIcon: Boolean,
     clearIcon: ImageVector,
     onClickClearIcon: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     AnimatedVisibility(
         visible = showClearIcon,
+        modifier = modifier,
     ) {
         IconButton(
             onClick = onClickClearIcon,
-            modifier = modifier.semantics {
+            modifier = Modifier.semantics {
                 contentDescription = CLEAR_ICON
             },
         ) {
@@ -295,5 +300,66 @@ private fun ClearIconButton(
                 contentDescription = "trailingIcon",
             )
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun StandardTextFieldPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardTextField(
+            label = "Standard TextField",
+            leadingIcon = PoposIcons.Add,
+            value = "Standard TextField",
+            onValueChange = {},
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun StandardOutlinedTextFieldPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardOutlinedTextField(
+            label = "Standard Outlined TextField",
+            leadingIcon = PoposIcons.Add,
+            value = "Standard Outlined TextField",
+            onValueChange = {},
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun PasswordToggleIconPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        PasswordToggleIcon(
+            isPasswordVisible = false,
+            onPasswordToggleClick = {},
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ClearIconButtonPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ClearIconButton(
+            showClearIcon = true,
+            clearIcon = PoposIcons.Close,
+            onClickClearIcon = {},
+            modifier = modifier,
+        )
     }
 }

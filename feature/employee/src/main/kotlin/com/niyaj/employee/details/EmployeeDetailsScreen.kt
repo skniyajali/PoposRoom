@@ -83,13 +83,14 @@ import kotlinx.coroutines.launch
 @Destination(route = Screens.EMPLOYEE_DETAILS_SCREEN)
 @Composable
 fun EmployeeDetailsScreen(
-    employeeId: Int = 0,
     navigator: DestinationsNavigator,
     onClickAddPayment: (Int) -> Unit,
     onClickAddAbsent: (Int) -> Unit,
-    viewModel: EmployeeDetailsViewModel = hiltViewModel(),
     paymentRecipient: OpenResultRecipient<String>,
     absentRecipient: OpenResultRecipient<String>,
+    modifier: Modifier = Modifier,
+    employeeId: Int = 0,
+    viewModel: EmployeeDetailsViewModel = hiltViewModel(),
 ) {
     val salaryEstimationState by viewModel.salaryEstimation.collectAsStateWithLifecycle()
     val salaryDates by viewModel.salaryDates.collectAsStateWithLifecycle()
@@ -129,15 +130,14 @@ fun EmployeeDetailsScreen(
     SwipeRefresh(
         state = refreshState,
         onRefresh = viewModel::updateLoading,
+        modifier = modifier,
     ) {
         EmployeeDetailsScreenContent(
-            modifier = Modifier,
             employeeState = employeeState,
             salaryEstimationState = salaryEstimationState,
             paymentsState = paymentsState,
             absentState = absentState,
             salaryDates = salaryDates.toImmutableList(),
-            selectedSalaryDate = selectedSalaryDate,
             onEvent = viewModel::onEvent,
             onBackClick = navigator::navigateUp,
             onClickAddPayment = {
@@ -150,6 +150,8 @@ fun EmployeeDetailsScreen(
             onClickEdit = {
                 navigator.navigate(AddEditEmployeeScreenDestination(employeeId))
             },
+            modifier = Modifier,
+            selectedSalaryDate = selectedSalaryDate,
         )
     }
 }
@@ -157,18 +159,18 @@ fun EmployeeDetailsScreen(
 @VisibleForTesting
 @Composable
 internal fun EmployeeDetailsScreenContent(
-    modifier: Modifier = Modifier,
     employeeState: UiState<Employee>,
     salaryEstimationState: UiState<EmployeeSalaryEstimation>,
     paymentsState: UiState<List<EmployeePayments>>,
     absentState: UiState<List<EmployeeAbsentDates>>,
     salaryDates: ImmutableList<EmployeeMonthlyDate>,
-    selectedSalaryDate: Pair<String, String>? = null,
     onEvent: (EmployeeDetailsEvent) -> Unit,
     onBackClick: () -> Unit,
     onClickAddPayment: () -> Unit,
     onClickAddAbsent: () -> Unit,
     onClickEdit: () -> Unit,
+    modifier: Modifier = Modifier,
+    selectedSalaryDate: Pair<String, String>? = null,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
@@ -179,10 +181,9 @@ internal fun EmployeeDetailsScreenContent(
     TrackScrollJank(scrollableState = lazyListState, stateName = "Employee Details::List")
 
     PoposScaffold(
-        modifier = modifier,
         title = EMPLOYEE_DETAILS,
-        showBackButton = true,
         onBackClick = onBackClick,
+        modifier = modifier,
         navActions = {
             IconButton(
                 onClick = onClickAddPayment,
@@ -202,6 +203,7 @@ internal fun EmployeeDetailsScreenContent(
                 )
             }
         },
+        showBackButton = true,
     ) {
         LazyColumn(
             modifier = Modifier
@@ -213,7 +215,6 @@ internal fun EmployeeDetailsScreenContent(
             item(key = "CalculateSalary") {
                 SalaryEstimationCard(
                     uiState = salaryEstimationState,
-                    selectedSalaryDate = selectedSalaryDate,
                     salaryDates = salaryDates,
                     onDateClick = {
                         onEvent(EmployeeDetailsEvent.OnChooseSalaryDate(it))
@@ -230,6 +231,7 @@ internal fun EmployeeDetailsScreenContent(
                     },
                     onClickAbsentEntry = onClickAddAbsent,
                     onClickSalaryEntry = onClickAddPayment,
+                    selectedSalaryDate = selectedSalaryDate,
                 )
             }
 
@@ -276,18 +278,18 @@ private fun EmployeeDetailsScreenContentLoadingPreview(
 ) {
     PoposRoomTheme {
         EmployeeDetailsScreenContent(
-            modifier = modifier,
             employeeState = UiState.Loading,
             salaryEstimationState = UiState.Loading,
             paymentsState = UiState.Loading,
             absentState = UiState.Loading,
             salaryDates = persistentListOf(),
-            selectedSalaryDate = null,
             onEvent = {},
             onBackClick = {},
             onClickAddPayment = {},
             onClickAddAbsent = {},
             onClickEdit = {},
+            modifier = modifier,
+            selectedSalaryDate = null,
         )
     }
 }
@@ -299,18 +301,18 @@ private fun EmployeeDetailsScreenContentEmptyPreview(
 ) {
     PoposRoomTheme {
         EmployeeDetailsScreenContent(
-            modifier = modifier,
             employeeState = UiState.Empty,
             salaryEstimationState = UiState.Empty,
             paymentsState = UiState.Empty,
             absentState = UiState.Empty,
             salaryDates = persistentListOf(),
-            selectedSalaryDate = null,
             onEvent = {},
             onBackClick = {},
             onClickAddPayment = {},
             onClickAddAbsent = {},
             onClickEdit = {},
+            modifier = modifier,
+            selectedSalaryDate = null,
         )
     }
 }
@@ -327,18 +329,18 @@ private fun EmployeeDetailsScreenContentPreview(
 ) {
     PoposRoomTheme {
         EmployeeDetailsScreenContent(
-            modifier = modifier,
             employeeState = UiState.Success(employee),
             salaryEstimationState = UiState.Success(salaryEstimation),
             paymentsState = UiState.Success(payments),
             absentState = UiState.Success(absent),
             salaryDates = salaryDates.toImmutableList(),
-            selectedSalaryDate = null,
             onEvent = {},
             onBackClick = {},
             onClickAddPayment = {},
             onClickAddAbsent = {},
             onClickEdit = {},
+            modifier = modifier,
+            selectedSalaryDate = null,
         )
     }
 }

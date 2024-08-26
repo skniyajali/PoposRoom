@@ -56,19 +56,19 @@ import com.niyaj.ui.utils.DevicePreviews
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun AddressData(
-    modifier: Modifier = Modifier,
     item: Address,
-    doesSelected: (Int) -> Boolean,
+    selected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("Address::Data") {
-    val borderStroke = if (doesSelected(item.addressId)) border else null
+    val borderStroke = if (selected(item.addressId)) border else null
 
     ElevatedCard(
         modifier = modifier
-            .semantics { selected = doesSelected(item.addressId) }
+            .semantics { this.selected = selected(item.addressId) }
             .fillMaxWidth()
             .height(IntrinsicSize.Max)
             .padding(SpaceSmall)
@@ -119,7 +119,7 @@ internal fun AddressData(
 
             CircularBox(
                 icon = PoposIcons.Address,
-                doesSelected = doesSelected(item.addressId),
+                selected = selected(item.addressId),
                 text = item.addressName,
             )
         }
@@ -133,11 +133,11 @@ private fun AddressDataPreview(
 ) {
     PoposRoomTheme {
         AddressData(
-            modifier = Modifier,
             item = item,
-            doesSelected = { false },
+            selected = { false },
             onClick = {},
             onLongClick = {},
+            modifier = Modifier,
         )
     }
 }
@@ -149,11 +149,11 @@ private fun AddressDataSelectedPreview(
 ) {
     PoposRoomTheme {
         AddressData(
-            modifier = Modifier,
             item = item,
-            doesSelected = { true },
+            selected = { true },
             onClick = {},
             onLongClick = {},
+            modifier = Modifier,
         )
     }
 }

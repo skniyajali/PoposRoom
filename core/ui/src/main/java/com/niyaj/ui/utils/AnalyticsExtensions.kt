@@ -21,6 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import com.niyaj.core.analytics.AnalyticsEvent
 import com.niyaj.core.analytics.AnalyticsEvent.Param
+import com.niyaj.core.analytics.AnalyticsEvent.ParamKeys
+import com.niyaj.core.analytics.AnalyticsEvent.Types
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.core.analytics.LocalAnalyticsHelper
 
@@ -30,9 +32,9 @@ import com.niyaj.core.analytics.LocalAnalyticsHelper
 fun AnalyticsHelper.logScreenView(screenName: String) {
     logEvent(
         AnalyticsEvent(
-            type = com.niyaj.core.analytics.AnalyticsEvent.Types.SCREEN_VIEW,
+            type = Types.SCREEN_VIEW,
             extras = listOf(
-                Param(com.niyaj.core.analytics.AnalyticsEvent.ParamKeys.SCREEN_NAME, screenName),
+                Param(ParamKeys.SCREEN_NAME, screenName),
             ),
         ),
     )

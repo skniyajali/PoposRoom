@@ -21,6 +21,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsEvent.Param
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CustomerRepository
 import com.niyaj.model.Customer
@@ -127,7 +128,7 @@ internal fun AnalyticsHelper.logImportedCustomersFromFile(totalCustomers: Int) {
         event = AnalyticsEvent(
             type = "customer_imported_from_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("customer_imported_from_file", totalCustomers.toString()),
+                Param("customer_imported_from_file", totalCustomers.toString()),
             ),
         ),
     )
@@ -138,7 +139,7 @@ internal fun AnalyticsHelper.logImportedCustomersToDatabase(totalCustomers: Int)
         event = AnalyticsEvent(
             type = "customer_imported_to_database",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("customer_imported_to_database", totalCustomers.toString()),
+                Param("customer_imported_to_database", totalCustomers.toString()),
             ),
         ),
     )
@@ -149,7 +150,7 @@ internal fun AnalyticsHelper.logExportedCustomersToFile(totalCustomers: Int) {
         event = AnalyticsEvent(
             type = "customer_exported_to_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("customer_exported_to_file", totalCustomers.toString()),
+                Param("customer_exported_to_file", totalCustomers.toString()),
             ),
         ),
     )

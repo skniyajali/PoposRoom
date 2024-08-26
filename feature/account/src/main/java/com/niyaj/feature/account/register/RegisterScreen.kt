@@ -59,8 +59,10 @@ private const val CONTENT_ANIMATION_DURATION = 300
 @OptIn(ExperimentalPermissionsApi::class)
 @Destination(route = Screens.REGISTER_SCREEN)
 @Composable
+@Suppress("LongMethod")
 fun RegisterScreen(
     navController: NavController,
+    modifier: Modifier = Modifier,
     viewModel: RegisterViewModel = hiltViewModel(),
 ) {
     val lazyListState = rememberLazyListState()
@@ -156,6 +158,7 @@ fun RegisterScreen(
     }
 
     RegistrationScaffold(
+        modifier = modifier,
         snackbarHostState = snackbarHostState,
         screenData = screenData,
         isNextEnabled = viewModel.isNextEnabled,
@@ -166,8 +169,6 @@ fun RegisterScreen(
         onNextPressed = viewModel::onNextPressed,
         onDonePressed = viewModel::onDonePressed,
     ) { paddingValues ->
-        val modifier = Modifier.padding(paddingValues)
-
         AnimatedContent(
             targetState = screenData,
             transitionSpec = {
@@ -190,19 +191,8 @@ fun RegisterScreen(
             when (targetState.screenPage) {
                 RegisterScreenPage.LOGIN_INFO -> {
                     LoginInfo(
-                        modifier = modifier,
-                        lazyListState = lazyListState,
                         infoState = viewModel.loginInfoState,
-                        nameError = nameError,
-                        secondaryPhoneError = secondaryPhoneError,
-                        emailError = emailError,
-                        phoneError = phoneError,
-                        passwordError = passwordError,
-                        onChangeName = viewModel::onLoginInfoEvent,
-                        onChangePhone = viewModel::onLoginInfoEvent,
-                        onChangeEmail = viewModel::onLoginInfoEvent,
-                        onChangeSecondaryPhone = viewModel::onLoginInfoEvent,
-                        onChangePassword = viewModel::onLoginInfoEvent,
+                        onEvent = viewModel::onLoginInfoEvent,
                         onChangeLogo = {
                             checkForMediaPermission()
 
@@ -212,12 +202,19 @@ fun RegisterScreen(
                                 ),
                             )
                         },
+                        modifier = Modifier.padding(paddingValues),
+                        nameError = nameError,
+                        emailError = emailError,
+                        phoneError = phoneError,
+                        passwordError = passwordError,
+                        secondaryPhoneError = secondaryPhoneError,
+                        lazyListState = lazyListState,
                     )
                 }
 
                 RegisterScreenPage.BASIC_INFO -> {
                     BasicInfo(
-                        modifier = modifier,
+                        modifier = Modifier.padding(paddingValues),
                         infoState = viewModel.basicInfoState,
                         lazyListState = lazyListState,
                         taglineError = taglineError,
@@ -225,11 +222,7 @@ fun RegisterScreen(
                         descriptionError = descError,
                         paymentQRCodeError = paymentQrCodeError,
                         scannedBitmap = scannedBitmap,
-                        onChangeAddress = viewModel::onBasicInfoEvent,
-                        onChangeDescription = viewModel::onBasicInfoEvent,
-                        onChangePaymentQRCode = viewModel::onBasicInfoEvent,
-                        onClickScanCode = viewModel::onBasicInfoEvent,
-                        onChangeTagline = viewModel::onBasicInfoEvent,
+                        onEvent = viewModel::onBasicInfoEvent,
                         onChangeLogo = {
                             checkForMediaPermission()
 
@@ -262,3 +255,5 @@ private fun getTransitionDirection(
         AnimatedContentTransitionScope.SlideDirection.Right
     }
 }
+
+// TODO:: Add the preview for the RegisterScreen

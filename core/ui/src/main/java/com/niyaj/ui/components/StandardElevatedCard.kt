@@ -24,6 +24,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +33,7 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.ui.utils.DevicePreviews
 
@@ -40,12 +42,12 @@ import com.niyaj.ui.utils.DevicePreviews
 @Composable
 fun StandardElevatedCard(
     modifier: Modifier = Modifier,
-    doesSelected: Boolean = false,
+    selected: Boolean = false,
     onClick: () -> Unit = {},
     onLongClick: () -> Unit = {},
     testTag: String = "testTag",
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-    borderStroke: BorderStroke? = if (doesSelected) border else null,
+    borderStroke: BorderStroke? = if (selected) border else null,
     containerColor: Color = MaterialTheme.colorScheme.background,
     elevation: Dp = SpaceMini,
     content: @Composable () -> Unit = {},
@@ -54,7 +56,7 @@ fun StandardElevatedCard(
         modifier = modifier
             .testTag(testTag)
             .semantics {
-                selected = doesSelected
+                this.selected = selected
             }
             .then(
                 borderStroke?.let {
@@ -73,5 +75,21 @@ fun StandardElevatedCard(
         ),
     ) {
         content()
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun StandardElevatedCardPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardElevatedCard(
+            modifier = modifier,
+            selected = true,
+            content = {
+                Text(text = "Standard Elevated Card")
+            },
+        )
     }
 }

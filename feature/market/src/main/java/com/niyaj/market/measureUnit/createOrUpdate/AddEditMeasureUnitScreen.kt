@@ -61,11 +61,12 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 @Destination
 @Composable
 fun AddEditMeasureUnitScreen(
+    navigator: DestinationsNavigator,
+    resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     unitId: Int = 0,
     unitName: String? = null,
-    navigator: DestinationsNavigator,
     viewModel: AddEditMeasureUnitViewModel = hiltViewModel(),
-    resultBackNavigator: ResultBackNavigator<String>,
 ) {
     val nameError by viewModel.nameError.collectAsStateWithLifecycle()
     val valueError by viewModel.valueError.collectAsStateWithLifecycle()
@@ -92,7 +93,6 @@ fun AddEditMeasureUnitScreen(
     TrackScreenViewEvent(screenName = "$title/unitId=$unitId/unitName=$unitName")
 
     AddEditMeasureUnitScreenContent(
-        modifier = Modifier,
         title = title,
         icon = icon,
         state = viewModel.state,
@@ -100,29 +100,32 @@ fun AddEditMeasureUnitScreen(
         valueError = valueError,
         onEvent = viewModel::onEvent,
         onBackClick = navigator::navigateUp,
+        modifier = modifier,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun AddEditMeasureUnitScreenContent(
-    modifier: Modifier = Modifier,
-    title: String = CREATE_NEW_UNIT,
-    icon: ImageVector = PoposIcons.Add,
     state: AddEditMeasureUnitState,
     nameError: String?,
     valueError: String?,
     onEvent: (AddEditMeasureUnitEvent) -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    title: String = CREATE_NEW_UNIT,
+    icon: ImageVector = PoposIcons.Add,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     val enableBtn = listOf(nameError, valueError).all { it == null }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
-        showBottomBar = true,
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = true,
+        showBottomBar = true,
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
         bottomBar = {
             PoposButton(
                 modifier = Modifier
@@ -136,8 +139,6 @@ internal fun AddEditMeasureUnitScreenContent(
                 },
             )
         },
-        onBackClick = onBackClick,
-        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     ) { paddingValues ->
         TrackScrollJank(
             scrollableState = lazyListState,
@@ -153,16 +154,16 @@ internal fun AddEditMeasureUnitScreenContent(
         ) {
             item(UNIT_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.unitName,
                     label = UNIT_NAME_FIELD,
                     leadingIcon = PoposIcons.LineWeight,
-                    errorText = nameError,
-                    isError = nameError != null,
-                    errorTextTag = UNIT_NAME_ERROR_TAG,
-                    showClearIcon = state.unitName.isNotEmpty(),
+                    value = state.unitName,
                     onValueChange = {
                         onEvent(AddEditMeasureUnitEvent.MeasureUnitNameChanged(it))
                     },
+                    isError = nameError != null,
+                    errorText = nameError,
+                    showClearIcon = state.unitName.isNotEmpty(),
+                    errorTextTag = UNIT_NAME_ERROR_TAG,
                     onClickClearIcon = {
                         onEvent(AddEditMeasureUnitEvent.MeasureUnitNameChanged(""))
                     },
@@ -171,20 +172,20 @@ internal fun AddEditMeasureUnitScreenContent(
 
             item(UNIT_VALUE_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.unitValue,
                     label = UNIT_VALUE_FIELD,
                     leadingIcon = PoposIcons.Api,
-                    errorText = valueError,
-                    isError = valueError != null,
-                    errorTextTag = UNIT_VALUE_ERROR_TAG,
-                    showClearIcon = state.unitValue.isNotEmpty(),
+                    value = state.unitValue,
                     onValueChange = {
                         onEvent(AddEditMeasureUnitEvent.MeasureUnitValueChanged(it))
                     },
+                    isError = valueError != null,
+                    errorText = valueError,
+                    keyboardType = KeyboardType.Number,
+                    showClearIcon = state.unitValue.isNotEmpty(),
+                    errorTextTag = UNIT_VALUE_ERROR_TAG,
                     onClickClearIcon = {
                         onEvent(AddEditMeasureUnitEvent.MeasureUnitValueChanged(""))
                     },
-                    keyboardType = KeyboardType.Number,
                 )
             }
         }

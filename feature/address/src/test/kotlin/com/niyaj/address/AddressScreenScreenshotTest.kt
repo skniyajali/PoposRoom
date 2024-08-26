@@ -232,8 +232,8 @@ class AddressScreenScreenshotTest {
             PoposRoomTheme {
                 AddressSettingsScreenContent(
                     onBackClick = {},
-                    onExportClick = {},
                     onImportClick = {},
+                    onExportClick = {},
                 )
             }
         }
@@ -414,9 +414,9 @@ class AddressScreenScreenshotTest {
                     addressState = UiState.Loading,
                     orderDetailsState = UiState.Loading,
                     totalOrdersState = TotalOrderDetails(),
+                    onBackClick = {},
                     onClickEdit = {},
                     onClickOrder = {},
-                    onBackClick = {},
                 )
             }
         }
@@ -430,9 +430,9 @@ class AddressScreenScreenshotTest {
                     addressState = UiState.Empty,
                     orderDetailsState = UiState.Empty,
                     totalOrdersState = TotalOrderDetails(),
+                    onBackClick = {},
                     onClickEdit = {},
                     onClickOrder = {},
-                    onBackClick = {},
                 )
             }
         }
@@ -446,9 +446,9 @@ class AddressScreenScreenshotTest {
                     addressState = UiState.Success(addressList.first()),
                     orderDetailsState = UiState.Success(AddressPreviewData.sampleAddressWiseOrders),
                     totalOrdersState = AddressPreviewData.sampleTotalOrder,
+                    onBackClick = {},
                     onClickEdit = {},
                     onClickOrder = {},
-                    onBackClick = {},
                 )
             }
         }

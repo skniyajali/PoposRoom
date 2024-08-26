@@ -89,6 +89,7 @@ import kotlinx.coroutines.launch
 fun ExportMeasureUnitScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: MeasureUnitSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -137,7 +138,6 @@ fun ExportMeasureUnitScreen(
         }
 
     ExportMeasureUnitScreenContent(
-        modifier = Modifier,
         items = items.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         isLoading = isLoading.value,
@@ -164,13 +164,13 @@ fun ExportMeasureUnitScreen(
         onClickToAddItem = {
             navigator.navigate(AddEditMeasureUnitScreenDestination())
         },
+        modifier = modifier,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun ExportMeasureUnitScreenContent(
-    modifier: Modifier = Modifier,
     items: ImmutableList<MeasureUnit>,
     selectedItems: ImmutableList<Int>,
     isLoading: Boolean,
@@ -186,6 +186,7 @@ internal fun ExportMeasureUnitScreenContent(
     onClickExport: () -> Unit,
     onBackClick: () -> Unit,
     onClickToAddItem: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
     padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
@@ -207,9 +208,21 @@ internal fun ExportMeasureUnitScreenContent(
 
     PoposSecondaryScaffold(
         title = title,
+        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
         showBackButton = selectedItems.isEmpty() || showSearchBar,
         showBottomBar = items.isNotEmpty(),
         showSecondaryBottomBar = true,
+        fabPosition = FabPosition.End,
+        navigationIcon = {
+            IconButton(
+                onClick = onClickDeselect,
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Deselect All",
+                )
+            }
+        },
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
@@ -241,6 +254,16 @@ internal fun ExportMeasureUnitScreenContent(
                 }
             }
         },
+        floatingActionButton = {
+            ScrollToTop(
+                visible = !lazyGridState.isScrollingUp(),
+                onClick = {
+                    scope.launch {
+                        lazyGridState.animateScrollToItem(index = 0)
+                    }
+                },
+            )
+        },
         bottomBar = {
             Column(
                 modifier = Modifier
@@ -248,7 +271,15 @@ internal fun ExportMeasureUnitScreenContent(
                     .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} units will be exported.")
+                InfoText(
+                    text = "${
+                        if (selectedItems.isEmpty()) {
+                            "All"
+                        } else {
+                            "${selectedItems.size}"
+                        }
+                    } units will be exported.",
+                )
 
                 PoposButton(
                     modifier = Modifier
@@ -264,31 +295,10 @@ internal fun ExportMeasureUnitScreenContent(
                 )
             }
         },
-        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyGridState.isScrollingUp(),
-                onClick = {
-                    scope.launch {
-                        lazyGridState.animateScrollToItem(index = 0)
-                    }
-                },
-            )
-        },
-        navigationIcon = {
-            IconButton(
-                onClick = onClickDeselect,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Deselect All",
-                )
-            }
-        },
+        modifier = modifier,
     ) {
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(it),
         ) {
@@ -302,11 +312,11 @@ internal fun ExportMeasureUnitScreenContent(
                 LoadingIndicator()
             } else {
                 MeasureUnitItems(
-                    modifier = Modifier,
                     items = items,
                     isInSelectionMode = true,
                     doesSelected = selectedItems::contains,
                     onSelectItem = onSelectItem,
+                    modifier = Modifier,
                     lazyGridState = lazyGridState,
                 )
             }

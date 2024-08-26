@@ -80,7 +80,7 @@ fun SettingsCard(
         leadingContent = {
             CircularBox(
                 icon = icon,
-                doesSelected = false,
+                selected = false,
                 showBorder = false,
                 backgroundColor = leadingColor,
                 unselectedTint = leadingTint,

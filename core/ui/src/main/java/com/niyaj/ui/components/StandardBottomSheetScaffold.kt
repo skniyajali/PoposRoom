@@ -57,8 +57,10 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.utils.Constants.CLEAR_ICON
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceMedium
+import com.niyaj.ui.utils.DevicePreviews
 
 @Suppress("DEPRECATION")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -199,5 +201,38 @@ fun StandardBottomSheet(
                 content()
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun StandardBottomSheetScaffoldPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardBottomSheetScaffold(
+            title = "Bottom Sheet Scaffold",
+            onBackClick = {},
+            modifier = modifier,
+            content = {
+                Text(text = "Bottom Sheet Scaffold Content")
+            },
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun StandardBottomSheetPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardBottomSheet(
+            title = "Bottom Sheet",
+            modifier = modifier,
+            content = {
+                Text(text = "Bottom Sheet Content")
+            },
+        )
     }
 }

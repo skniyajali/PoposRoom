@@ -86,6 +86,7 @@ class UpdateProfileViewModel @Inject constructor(
         setProfileInfo()
     }
 
+    @Suppress("CyclomaticComplexMethod")
     fun onEvent(event: UpdateProfileEvent) {
         when (event) {
             is UpdateProfileEvent.NameChanged -> {

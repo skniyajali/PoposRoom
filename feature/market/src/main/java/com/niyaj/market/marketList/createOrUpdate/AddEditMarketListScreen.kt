@@ -88,9 +88,10 @@ import java.time.LocalDate
 @Destination(style = DestinationStyleBottomSheet::class)
 @Composable
 fun AddEditMarketListScreen(
-    marketId: Int = 0,
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    marketId: Int = 0,
     viewModel: AddEditMarketListViewModel = hiltViewModel(),
 ) {
     val listTypes by viewModel.marketTypes.collectAsStateWithLifecycle()
@@ -117,12 +118,12 @@ fun AddEditMarketListScreen(
     TrackScreenViewEvent(screenName = "$title/marketId=$marketId")
 
     AddEditMarketListScreenContent(
-        modifier = Modifier,
         title = title,
         icon = icon,
         listTypes = listTypes.toImmutableList(),
         selectedDate = selectedDate,
         isError = isError,
+        modifier = modifier,
         onDateChange = viewModel::updateSelectedDate,
         isTypeChecked = viewModel::isTypeChecked,
         isListTypeChecked = viewModel::isListTypeChecked,
@@ -136,9 +137,6 @@ fun AddEditMarketListScreen(
 @VisibleForTesting
 @Composable
 internal fun AddEditMarketListScreenContent(
-    modifier: Modifier = Modifier,
-    title: String = CREATE_NEW_LIST,
-    icon: ImageVector = PoposIcons.Add,
     listTypes: ImmutableList<MarketTypeIdAndListTypes>,
     selectedDate: String,
     isError: Boolean,
@@ -148,6 +146,9 @@ internal fun AddEditMarketListScreenContent(
     onListTypeClick: (typeId: Int, listName: String) -> Unit,
     onCreateOrUpdateClick: () -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    title: String = CREATE_NEW_LIST,
+    icon: ImageVector = PoposIcons.Add,
 ) {
     val dialogState = rememberMaterialDialogState()
 
@@ -180,7 +181,7 @@ internal fun AddEditMarketListScreenContent(
                     ) {
                         CircularBox(
                             icon = PoposIcons.CalenderMonth,
-                            doesSelected = false,
+                            selected = false,
                         )
 
                         Column(
@@ -202,8 +203,8 @@ internal fun AddEditMarketListScreenContent(
                     PoposOutlinedAssistChip(
                         text = "Change Date",
                         icon = PoposIcons.CalenderMonth,
-                        onClick = dialogState::show,
                         trailingIcon = PoposIcons.ArrowDropDown,
+                        onClick = dialogState::show,
                     )
                 }
             }
@@ -273,11 +274,11 @@ internal fun AddEditMarketListScreenContent(
 
 @Composable
 private fun MarketTypeBox(
-    modifier: Modifier = Modifier,
     type: MarketTypeIdAndListTypes,
     isSelected: (typeId: Int) -> Boolean,
     isListTypeChecked: (typeId: Int, listName: String) -> Boolean,
     onListTypeClick: (typeId: Int, listName: String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val borderStroke =
         if (isSelected(type.typeId)) BorderStroke(1.dp, MaterialTheme.colorScheme.secondary) else null

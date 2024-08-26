@@ -42,14 +42,17 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.niyaj.common.utils.getStartTime
 import com.niyaj.common.utils.isSameDay
 import com.niyaj.common.utils.toBarDate
 import com.niyaj.common.utils.toRupee
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.model.TotalOrderDetails
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun TotalOrderDetailsCard(
@@ -192,6 +195,24 @@ fun TotalOrderDetailsCard(
 
             Spacer(modifier = Modifier.height(SpaceSmall))
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun TotalOrderDetailsCardPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        TotalOrderDetailsCard(
+            details = TotalOrderDetails(
+                totalAmount = 1000L,
+                totalOrder = 10,
+                repeatedOrder = 5,
+                datePeriod = Pair(getStartTime, getStartTime),
+            ),
+            modifier = modifier,
+        )
     }
 }
 

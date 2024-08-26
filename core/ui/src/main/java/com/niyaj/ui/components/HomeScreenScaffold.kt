@@ -37,22 +37,22 @@ import androidx.compose.ui.platform.testTag
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.designsystem.components.PoposCenterAlignedTopAppBar
 
-@Suppress("DEPRECATION")
 @Stable
 @Composable
+@Suppress("DEPRECATION")
 @OptIn(ExperimentalMaterial3Api::class)
 fun HomeScreenScaffold(
-    modifier: Modifier = Modifier,
     currentRoute: String,
     drawerState: DrawerState,
     onNavigateToScreen: (String) -> Unit,
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     title: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
     navigationIcon: @Composable () -> Unit = {},
     navActions: @Composable RowScope.() -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     fabPosition: FabPosition = FabPosition.End,
-    content: @Composable (padding: PaddingValues) -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    content: @Composable (padding: PaddingValues) -> Unit = {},
 ) {
     val systemUiController = rememberSystemUiController()
 

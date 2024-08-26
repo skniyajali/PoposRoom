@@ -85,8 +85,8 @@ import kotlinx.coroutines.withContext
 @Composable
 fun Capturable(
     controller: CaptureController,
-    modifier: Modifier = Modifier,
     onCaptured: (ImageBitmap?, Throwable?) -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
     val updatedOnCaptured by rememberUpdatedState(newValue = onCaptured)
@@ -119,9 +119,9 @@ fun Capturable(
  */
 @Composable
 fun ScrollableCapturable(
-    modifier: Modifier = Modifier,
     controller: CaptureController,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
     AndroidView(

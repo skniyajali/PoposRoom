@@ -51,11 +51,11 @@ import com.niyaj.ui.utils.DevicePreviews
  */
 @Composable
 internal fun CustomerDetails(
-    modifier: Modifier = Modifier,
     customer: Customer,
     doesExpanded: Boolean,
     onExpandChanged: () -> Unit,
     onClickViewDetails: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CustomerDetails") {
     ElevatedCard(
@@ -70,45 +70,9 @@ internal fun CustomerDetails(
         ),
     ) {
         StandardExpandable(
+            expanded = doesExpanded,
             onExpandChanged = {
                 onExpandChanged()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
-            expanded = doesExpanded,
-            title = {
-                IconWithText(
-                    text = "Customer Details",
-                    icon = PoposIcons.Person,
-                    isTitle = true,
-                )
-            },
-            rowClickable = true,
-            expand = { modifier: Modifier ->
-                IconButton(
-                    onClick = {
-                        onClickViewDetails(customer.customerId)
-                    },
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.OpenInNew,
-                        contentDescription = "View Address Details",
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
-                IconButton(
-                    modifier = modifier,
-                    onClick = {
-                        onExpandChanged()
-                    },
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.ArrowDown,
-                        contentDescription = "Expand More",
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
             },
             content = {
                 Column(
@@ -178,6 +142,42 @@ internal fun CustomerDetails(
                     )
                 }
             },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SpaceSmall),
+            rowClickable = true,
+            title = {
+                IconWithText(
+                    text = "Customer Details",
+                    icon = PoposIcons.Person,
+                    isTitle = true,
+                )
+            },
+            expand = { modifier: Modifier ->
+                IconButton(
+                    onClick = {
+                        onClickViewDetails(customer.customerId)
+                    },
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.OpenInNew,
+                        contentDescription = "View Address Details",
+                        tint = MaterialTheme.colorScheme.secondary,
+                    )
+                }
+                IconButton(
+                    modifier = modifier,
+                    onClick = {
+                        onExpandChanged()
+                    },
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.ArrowDown,
+                        contentDescription = "Expand More",
+                        tint = MaterialTheme.colorScheme.secondary,
+                    )
+                }
+            },
         )
     }
 }
@@ -189,7 +189,6 @@ private fun CustomerDetailsPreview(
 ) {
     PoposRoomTheme {
         CustomerDetails(
-            modifier = Modifier,
             customer = Customer(
                 customerId = 1,
                 customerPhone = "9876543211",
@@ -201,6 +200,7 @@ private fun CustomerDetailsPreview(
             doesExpanded = true,
             onExpandChanged = {},
             onClickViewDetails = {},
+            modifier = modifier,
         )
     }
 }

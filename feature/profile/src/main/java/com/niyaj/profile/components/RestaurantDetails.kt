@@ -56,11 +56,11 @@ import java.io.File
 
 @Composable
 fun RestaurantDetails(
-    modifier: Modifier = Modifier,
     info: Profile,
-    showPrintLogo: Boolean = false,
     onClickChangePrintLogo: () -> Unit,
     onClickViewPrintLogo: () -> Unit,
+    modifier: Modifier = Modifier,
+    showPrintLogo: Boolean = false,
 ) {
     val context = LocalContext.current
 
@@ -189,8 +189,8 @@ fun RestaurantDetails(
                 ) {
                     PoposOutlinedButton(
                         text = "Change",
-                        icon = PoposIcons.AddToPhotos,
                         onClick = onClickChangePrintLogo,
+                        icon = PoposIcons.AddToPhotos,
                     )
 
                     Spacer(modifier = Modifier.width(SpaceSmall))

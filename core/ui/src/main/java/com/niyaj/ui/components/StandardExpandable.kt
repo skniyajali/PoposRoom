@@ -38,6 +38,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
@@ -49,18 +50,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun StandardExpandable(
-    modifier: Modifier = Modifier,
-    dividerModifier: Modifier = Modifier,
     expanded: Boolean,
     onExpandChanged: (Boolean) -> Unit,
+    content: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    dividerModifier: Modifier = Modifier,
     rowClickable: Boolean = true,
     showExpandIcon: Boolean = true,
     iconTint: Color = MaterialTheme.colorScheme.onSurface,
-    content: @Composable () -> Unit,
     leading: @Composable (RowScope.() -> Unit)? = null,
     title: @Composable (RowScope.() -> Unit)? = null,
     trailing: @Composable (RowScope.() -> Unit)? = null,
@@ -143,5 +146,34 @@ fun StandardExpandable(
 
             content()
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun StandardExpandablePreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardExpandable(
+            expanded = true,
+            modifier = modifier,
+            title = {
+                Text(
+                    text = "Standard Expandable",
+                    style = MaterialTheme.typography.labelLarge,
+                )
+            },
+            leading = {
+                Icon(
+                    imageVector = PoposIcons.Add,
+                    contentDescription = "Close icon",
+                )
+            },
+            onExpandChanged = {},
+            content = {
+                Text(text = "Standard Expandable Content")
+            },
+        )
     }
 }

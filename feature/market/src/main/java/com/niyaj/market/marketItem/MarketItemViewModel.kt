@@ -42,8 +42,8 @@ class MarketItemViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     val marketItems = snapshotFlow { searchText.value }
-        .flatMapLatest { it ->
-            marketItemRepository.getAllMarketItems(it)
+        .flatMapLatest { result ->
+            marketItemRepository.getAllMarketItems(result)
                 .onStart { UiState.Loading }
                 .map { items ->
                     totalItems = items.map { it.itemId }
@@ -90,7 +90,10 @@ private fun AnalyticsHelper.logDeletedMarketItems(data: List<Int>) {
         event = AnalyticsEvent(
             type = "market_item_deleted",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("market_item_deleted", data.toString()),
+                com.niyaj.core.analytics.AnalyticsEvent.Param(
+                    "market_item_deleted",
+                    data.toString(),
+                ),
             ),
         ),
     )

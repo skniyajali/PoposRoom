@@ -58,17 +58,17 @@ import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 internal fun ExpenseWiseReport(
-    modifier: Modifier = Modifier,
     uiState: UiState<List<ExpensesReport>>,
     totalReports: TotalExpenses,
     doesExpanded: Boolean,
     onExpandChanged: () -> Unit,
     onPrintExpenseWiseReport: () -> Unit,
+    modifier: Modifier = Modifier,
     onExpenseClick: (Int) -> Unit = {},
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) {
     ElevatedCard(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.elevatedCardColors(
@@ -76,40 +76,10 @@ internal fun ExpenseWiseReport(
         ),
     ) {
         StandardExpandable(
-            modifier = modifier
-                .padding(SpaceSmall)
-                .fillMaxWidth(),
             expanded = doesExpanded,
             onExpandChanged = {
                 onExpandChanged()
             },
-            title = {
-                IconWithText(
-                    text = "Expenses Report",
-                    icon = PoposIcons.Receipt,
-                )
-            },
-            trailing = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(SpaceMini),
-                ) {
-                    CountBox(count = totalReports.totalExpenses.toRupee)
-
-                    CountBox(
-                        count = totalReports.totalQuantity.toString(),
-                        backgroundColor = MaterialTheme.colorScheme.secondary,
-                    )
-
-                    PoposIconButton(
-                        icon = PoposIcons.Print,
-                        onClick = onPrintExpenseWiseReport,
-                    )
-                }
-            },
-            rowClickable = true,
-            expand = null,
-            showExpandIcon = false,
             content = {
                 when (uiState) {
                     is UiState.Loading -> LoadingIndicatorHalf()
@@ -140,14 +110,44 @@ internal fun ExpenseWiseReport(
                     }
                 }
             },
+            modifier = Modifier
+                .padding(SpaceSmall)
+                .fillMaxWidth(),
+            rowClickable = true,
+            showExpandIcon = false,
+            title = {
+                IconWithText(
+                    text = "Expenses Report",
+                    icon = PoposIcons.Receipt,
+                )
+            },
+            trailing = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(SpaceMini),
+                ) {
+                    CountBox(count = totalReports.totalExpenses.toRupee)
+
+                    CountBox(
+                        count = totalReports.totalQuantity.toString(),
+                        backgroundColor = MaterialTheme.colorScheme.secondary,
+                    )
+
+                    PoposIconButton(
+                        icon = PoposIcons.Print,
+                        onClick = onPrintExpenseWiseReport,
+                    )
+                }
+            },
+            expand = null,
         )
     }
 }
 
 @Composable
 private fun ExpensesReportCard(
-    modifier: Modifier = Modifier,
     report: ExpensesReport,
+    modifier: Modifier = Modifier,
     onClickEnable: Boolean = false,
     onExpenseClick: (Int) -> Unit = {},
 ) = trace("ExpensesReportCard") {
