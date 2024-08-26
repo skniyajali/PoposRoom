@@ -71,7 +71,7 @@ fun ScaffoldNavActions(
     postActionContent: @Composable () -> Unit = {},
     placeholderText: String = SEARCH_ITEM_PLACEHOLDER,
 ) {
-    Column(modifier) {
+    Row(modifier) {
         if (selectionCount != 0) {
             preActionContent()
 
@@ -185,7 +185,7 @@ fun ScaffoldNavActions(
 ) {
     val selectedState = MutableTransitionState(selectionCount)
 
-    Column(modifier) {
+    Row(modifier) {
         if (showSearchBar) {
             StandardSearchBar(
                 searchText = searchText,
