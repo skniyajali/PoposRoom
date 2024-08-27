@@ -237,9 +237,9 @@ class CategoryScreenScreenshotTest {
             PoposRoomTheme {
                 AddEditCategoryScreenContent(
                     state = AddEditCategoryState(),
-                    nameError = "Category name should not empty",
                     onEvent = {},
                     onBackClick = {},
+                    nameError = "Category name should not empty",
                 )
             }
         }

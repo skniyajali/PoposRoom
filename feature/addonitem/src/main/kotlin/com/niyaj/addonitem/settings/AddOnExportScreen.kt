@@ -72,6 +72,7 @@ import kotlinx.coroutines.launch
 fun AddOnExportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: AddOnSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -143,7 +144,7 @@ fun AddOnExportScreen(
         onClickToAddItem = {
             navigator.navigate(AddEditAddOnItemScreenDestination())
         },
-        modifier = Modifier,
+        modifier = modifier,
     )
 }
 
@@ -247,7 +248,7 @@ private fun AddOnExportScreenData(
         ) { item: AddOnItem ->
             AddOnItemData(
                 item = item,
-                doesSelected = doesSelected,
+                selected = doesSelected,
                 onClick = onSelectItem,
                 onLongClick = onSelectItem,
             )

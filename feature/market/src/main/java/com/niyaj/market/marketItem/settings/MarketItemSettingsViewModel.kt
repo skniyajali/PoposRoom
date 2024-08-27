@@ -21,6 +21,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsEvent.Param
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.MarketItemRepository
 import com.niyaj.model.MarketItem
@@ -129,7 +130,7 @@ internal fun AnalyticsHelper.logImportedItemsFromFile(totalItems: Int) {
         event = AnalyticsEvent(
             type = "market_item_imported_from_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("market_item_imported_from_file", totalItems.toString()),
+                Param("market_item_imported_from_file", totalItems.toString()),
             ),
         ),
     )
@@ -140,7 +141,7 @@ internal fun AnalyticsHelper.logImportedItemsToDatabase(totalItems: Int) {
         event = AnalyticsEvent(
             type = "market_item_imported_to_database",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("market_item_imported_to_database", totalItems.toString()),
+                Param("market_item_imported_to_database", totalItems.toString()),
             ),
         ),
     )
@@ -151,7 +152,7 @@ internal fun AnalyticsHelper.logExportedItemsToFile(totalItems: Int) {
         event = AnalyticsEvent(
             type = "market_item_exported_to_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("market_item_exported_to_file", totalItems.toString()),
+                Param("market_item_exported_to_file", totalItems.toString()),
             ),
         ),
     )

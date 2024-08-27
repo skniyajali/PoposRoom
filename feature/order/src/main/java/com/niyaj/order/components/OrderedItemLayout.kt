@@ -41,9 +41,7 @@ import com.niyaj.ui.utils.TrackScrollJank
 
 @Composable
 fun OrderedItemLayout(
-    modifier: Modifier = Modifier,
     orderState: OrderState,
-    showSearchBar: Boolean = false,
     onClickPrintOrder: (Int) -> Unit,
     onClickDelete: (Int) -> Unit,
     onMarkedAsProcessing: (Int) -> Unit,
@@ -51,6 +49,8 @@ fun OrderedItemLayout(
     onClickOrderDetails: (Int) -> Unit,
     onClickEditOrder: (Int) -> Unit,
     onClickShareOrder: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    showSearchBar: Boolean = false,
 ) {
     val lazyListState = rememberLazyListState()
 

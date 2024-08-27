@@ -25,4 +25,5 @@ object OrderTestTags {
 
     const val DELETE_ORDER = "Delete Order?"
     const val DELETE_ORDER_MESSAGE = "Are you sure you want to delete this order?"
+    const val ORDER_NOT_FOUND = "Seems like, you did not delivered any order yet, click below to create new."
 }

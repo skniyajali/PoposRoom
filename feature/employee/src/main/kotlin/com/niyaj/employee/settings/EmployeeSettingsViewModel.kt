@@ -21,6 +21,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsEvent.Param
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.EmployeeRepository
 import com.niyaj.model.Employee
@@ -127,7 +128,7 @@ internal fun AnalyticsHelper.logImportedEmployeeFromFile(totalEmployee: Int) {
         event = AnalyticsEvent(
             type = "employee_imported_from_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("employee_imported_from_file", totalEmployee.toString()),
+                Param("employee_imported_from_file", totalEmployee.toString()),
             ),
         ),
     )
@@ -138,7 +139,7 @@ internal fun AnalyticsHelper.logImportedEmployeeToDatabase(totalEmployee: Int) {
         event = AnalyticsEvent(
             type = "employee_imported_to_database",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("employee_imported_to_database", totalEmployee.toString()),
+                Param("employee_imported_to_database", totalEmployee.toString()),
             ),
         ),
     )
@@ -149,7 +150,7 @@ internal fun AnalyticsHelper.logExportedEmployeeToFile(totalEmployee: Int) {
         event = AnalyticsEvent(
             type = "employee_exported_to_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("employee_exported_to_file", totalEmployee.toString()),
+                Param("employee_exported_to_file", totalEmployee.toString()),
             ),
         ),
     )

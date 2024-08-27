@@ -63,6 +63,7 @@ import kotlinx.coroutines.launch
 fun ExpensesExportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: ExpensesSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -133,7 +134,7 @@ fun ExpensesExportScreen(
         onClickToAddItem = {
             navigator.navigate(AddEditExpenseScreenDestination())
         },
-        modifier = Modifier,
+        modifier = modifier,
     )
 }
 

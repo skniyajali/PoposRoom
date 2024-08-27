@@ -34,10 +34,12 @@ import com.niyaj.database.dao.CartOrderDao
 import com.niyaj.database.dao.CartPriceDao
 import com.niyaj.database.dao.CustomerDao
 import com.niyaj.database.dao.SelectedDao
+import com.niyaj.database.model.AddressEntity
 import com.niyaj.database.model.CartAddOnItemsEntity
 import com.niyaj.database.model.CartChargesEntity
 import com.niyaj.database.model.CartOrderEntity
 import com.niyaj.database.model.CartPriceEntity
+import com.niyaj.database.model.CustomerEntity
 import com.niyaj.database.model.SelectedEntity
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.AddOnItem
@@ -48,6 +50,8 @@ import com.niyaj.model.Charges
 import com.niyaj.model.Customer
 import com.niyaj.model.EmployeeNameAndId
 import com.niyaj.model.OrderStatus
+import com.niyaj.model.OrderStatus.PLACED
+import com.niyaj.model.OrderStatus.PROCESSING
 import com.niyaj.model.OrderType
 import com.niyaj.model.SELECTED_ID
 import com.niyaj.model.Selected
@@ -56,7 +60,6 @@ import com.niyaj.model.searchAddress
 import com.niyaj.model.searchCustomer
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -76,7 +79,6 @@ class CartOrderRepositoryImpl @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher,
 ) : CartOrderRepository {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getAllProcessingCartOrders(): Flow<List<CartOrder>> {
         return withContext(ioDispatcher) {
             selectedDao.getAllProcessingCartOrders().mapLatest { list ->
@@ -155,29 +157,22 @@ class CartOrderRepositoryImpl @Inject constructor(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getAllAddresses(searchText: String): Flow<List<Address>> {
         return withContext(ioDispatcher) {
-            addressDao.getAllAddresses().mapLatest { it ->
-                it.map {
-                    it.asExternalModel()
-                }.searchAddress(searchText)
+            addressDao.getAllAddresses().mapLatest { list ->
+                list.map(AddressEntity::asExternalModel).searchAddress(searchText)
             }
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getAllCustomer(searchText: String): Flow<List<Customer>> {
         return withContext(ioDispatcher) {
-            customerDao.getAllCustomer().mapLatest { it ->
-                it.map {
-                    it.asExternalModel()
-                }.searchCustomer(searchText)
+            customerDao.getAllCustomer().mapLatest { list ->
+                list.map(CustomerEntity::asExternalModel).searchCustomer(searchText)
             }
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getAllCartOrders(
         searchText: String,
         viewAll: Boolean,
@@ -518,20 +513,25 @@ class CartOrderRepositoryImpl @Inject constructor(
             if (currentId != null) {
                 val status = cartOrderDao.getOrderStatus(currentId)
 
-                if (status == OrderStatus.PLACED) {
-                    selectedDao.deleteSelectedOrder(SELECTED_ID)
+                when (status) {
+                    PLACED -> {
+                        selectedDao.deleteSelectedOrder(SELECTED_ID)
 
-                    val lastId = cartOrderDao.getLastProcessingId()
+                        val lastId = cartOrderDao.getLastProcessingId()
 
-                    lastId?.let {
-                        selectedDao.insertOrUpdateSelectedOrder(
-                            SelectedEntity(
-                                SELECTED_ID,
-                                orderId = it,
-                            ),
-                        )
+                        lastId?.let {
+                            selectedDao.insertOrUpdateSelectedOrder(
+                                SelectedEntity(
+                                    SELECTED_ID,
+                                    orderId = it,
+                                ),
+                            )
+                        }
                     }
-                } else {
+
+                    PROCESSING -> {
+                        Timber.d("Order is already processing.")
+                    }
                 }
             } else {
                 val lastId = cartOrderDao.getLastProcessingId()

@@ -64,6 +64,7 @@ import kotlinx.coroutines.launch
 fun AbsentExportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: AbsentSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -138,7 +139,7 @@ fun AbsentExportScreen(
         onClickToAddItem = {
             navigator.navigate(AddEditAbsentScreenDestination())
         },
-        modifier = Modifier,
+        modifier = modifier,
     )
 }
 

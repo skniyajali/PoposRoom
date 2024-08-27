@@ -75,11 +75,12 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 @Destination
 @Composable
 fun AddEditMarketTypeScreen(
+    navigator: DestinationsNavigator,
+    resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     typeId: Int = 0,
     typeName: String? = null,
-    navigator: DestinationsNavigator,
     viewModel: AddEditMarketTypeViewModel = hiltViewModel(),
-    resultBackNavigator: ResultBackNavigator<String>,
 ) {
     val typeError by viewModel.typeNameError.collectAsStateWithLifecycle()
     val listNameError by viewModel.listNameError.collectAsStateWithLifecycle()
@@ -109,7 +110,6 @@ fun AddEditMarketTypeScreen(
     TrackScreenViewEvent(screenName = "$title/typeId=$typeId/typeName=$typeName")
 
     AddEditMarketTypeScreenContent(
-        modifier = Modifier,
         title = title,
         icon = icon,
         state = viewModel.state,
@@ -118,6 +118,7 @@ fun AddEditMarketTypeScreen(
         listTypesError = listTypesError,
         listTypes = listTypes,
         selectedList = selectedList,
+        modifier = modifier,
         onEvent = viewModel::onEvent,
         onBackClick = navigator::navigateUp,
     )
@@ -127,9 +128,6 @@ fun AddEditMarketTypeScreen(
 @VisibleForTesting
 @Composable
 internal fun AddEditMarketTypeScreenContent(
-    modifier: Modifier = Modifier,
-    title: String = CREATE_NEW_TYPE,
-    icon: ImageVector = PoposIcons.Add,
     state: AddEditMarketTypeState,
     typeError: String?,
     listNameError: String?,
@@ -138,15 +136,19 @@ internal fun AddEditMarketTypeScreenContent(
     selectedList: List<String>,
     onEvent: (AddEditMarketTypeEvent) -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    title: String = CREATE_NEW_TYPE,
+    icon: ImageVector = PoposIcons.Add,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     val hasError = listOf(typeError, listNameError, listTypesError).any { it != null }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
-        showBottomBar = true,
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = true,
+        showBottomBar = true,
         bottomBar = {
             PoposButton(
                 modifier = Modifier
@@ -160,7 +162,6 @@ internal fun AddEditMarketTypeScreenContent(
                 },
             )
         },
-        onBackClick = onBackClick,
     ) { paddingValues ->
         TrackScrollJank(
             scrollableState = lazyListState,
@@ -176,46 +177,46 @@ internal fun AddEditMarketTypeScreenContent(
         ) {
             item(MARKET_TYPE_FIELD) {
                 StandardOutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    value = state.typeName,
                     label = MARKET_TYPE_FIELD,
                     leadingIcon = PoposIcons.Radar,
-                    isError = typeError != null,
-                    errorText = typeError,
-                    errorTextTag = MARKET_TYPE_ERROR_TAG,
-                    readOnly = false,
+                    value = state.typeName,
                     onValueChange = {
                         onEvent(AddEditMarketTypeEvent.TypeNameChanged(it))
                     },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    isError = typeError != null,
+                    errorText = typeError,
+                    readOnly = false,
+                    errorTextTag = MARKET_TYPE_ERROR_TAG,
                 )
             }
 
             item(MARKET_TYPE_DESC_FIELD) {
                 StandardOutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    value = state.typeDesc ?: "",
                     label = MARKET_TYPE_DESC_FIELD,
                     leadingIcon = PoposIcons.Note,
+                    value = state.typeDesc ?: "",
                     onValueChange = {
                         onEvent(AddEditMarketTypeEvent.TypeDescChanged(it))
                     },
+                    modifier = Modifier
+                        .fillMaxWidth(),
                 )
             }
 
             item(MARKET_TYPE_SUPPLIER_FIELD) {
                 StandardOutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    value = state.supplierId.safeString,
                     label = MARKET_TYPE_SUPPLIER_FIELD,
                     leadingIcon = PoposIcons.Person,
-                    isError = false,
-                    readOnly = true,
+                    value = state.supplierId.safeString,
                     onValueChange = {
                         onEvent(AddEditMarketTypeEvent.SupplierIdChanged(it.toInt()))
                     },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    isError = false,
+                    readOnly = true,
                 )
             }
 
@@ -226,13 +227,25 @@ internal fun AddEditMarketTypeScreenContent(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     StandardOutlinedTextField(
-                        value = state.listType,
                         label = MARKET_TYPE_LIST_TYPES,
+                        leadingIcon = PoposIcons.ListAlt,
+                        value = state.listType,
+                        onValueChange = {
+                            onEvent(AddEditMarketTypeEvent.ListTypeChanged(it))
+                        },
                         isError = listNameError != null,
                         errorText = listNameError,
-                        message = MARKET_TYPE_LIST_MSG,
+                        trailingIcon = {
+                            PoposTonalIconButton(
+                                icon = PoposIcons.Add,
+                                onClick = {
+                                    onEvent(AddEditMarketTypeEvent.OnSelectListType(state.listType))
+                                },
+                                enabled = state.listType.isNotEmpty() && listNameError == null,
+                            )
+                        },
                         errorTextTag = MARKET_TYPE_LIST_ERROR_TAG,
-                        leadingIcon = PoposIcons.ListAlt,
+                        message = MARKET_TYPE_LIST_MSG,
                         suffix = {
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(SpaceMini),
@@ -244,18 +257,6 @@ internal fun AddEditMarketTypeScreenContent(
                                     contentDescription = "Create",
                                 )
                             }
-                        },
-                        trailingIcon = {
-                            PoposTonalIconButton(
-                                icon = PoposIcons.Add,
-                                enabled = state.listType.isNotEmpty() && listNameError == null,
-                                onClick = {
-                                    onEvent(AddEditMarketTypeEvent.OnSelectListType(state.listType))
-                                },
-                            )
-                        },
-                        onValueChange = {
-                            onEvent(AddEditMarketTypeEvent.ListTypeChanged(it))
                         },
                     )
 

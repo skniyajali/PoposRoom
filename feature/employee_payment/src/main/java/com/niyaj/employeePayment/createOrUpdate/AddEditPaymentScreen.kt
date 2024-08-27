@@ -107,11 +107,12 @@ import java.time.LocalDate
 @Destination(route = Screens.ADD_EDIT_PAYMENT_SCREEN)
 @Composable
 fun AddEditPaymentScreen(
+    navigator: DestinationsNavigator,
+    resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     paymentId: Int = 0,
     employeeId: Int = 0,
-    navigator: DestinationsNavigator,
     viewModel: AddEditPaymentViewModel = hiltViewModel(),
-    resultBackNavigator: ResultBackNavigator<String>,
 ) {
     TrackScreenViewEvent(screenName = "Add/Edit Payment Screen-$employeeId/$paymentId")
 
@@ -143,44 +144,45 @@ fun AddEditPaymentScreen(
     val icon = if (paymentId == 0) PoposIcons.Add else PoposIcons.Edit
 
     AddEditPaymentScreenContent(
-        modifier = Modifier,
-        title = title,
-        icon = icon,
         state = viewModel.state,
+        employees = employees.toImmutableList(),
         selectedEmployee = selectedEmployee,
         onEvent = viewModel::onEvent,
-        employees = employees.toImmutableList(),
+        onBackClick = navigator::navigateUp,
+        onClickNewEmployee = {
+            navigator.navigate(Screens.ADD_EDIT_EMPLOYEE_SCREEN)
+        },
         employeeError = employeeError,
         amountError = amountError,
         dateError = dateError,
         typeError = typeError,
         modeError = modeError,
         noteError = noteError,
-        onBackClick = navigator::navigateUp,
-        onClickNewEmployee = {
-            navigator.navigate(Screens.ADD_EDIT_EMPLOYEE_SCREEN)
-        },
+        modifier = modifier,
+        title = title,
+        icon = icon,
     )
 }
 
 @VisibleForTesting
 @Composable
+@Suppress("LongMethod")
 internal fun AddEditPaymentScreenContent(
-    modifier: Modifier = Modifier,
-    title: String = CREATE_NEW_PAYMENT,
-    icon: ImageVector = PoposIcons.Add,
     state: AddEditPaymentState,
+    employees: ImmutableList<Employee>,
     selectedEmployee: Employee,
     onEvent: (AddEditPaymentEvent) -> Unit,
-    employees: ImmutableList<Employee>,
+    onBackClick: () -> Unit,
+    onClickNewEmployee: () -> Unit,
     employeeError: String?,
     amountError: String?,
     dateError: String?,
     typeError: String?,
     modeError: String?,
     noteError: String?,
-    onBackClick: () -> Unit,
-    onClickNewEmployee: () -> Unit,
+    modifier: Modifier = Modifier,
+    title: String = CREATE_NEW_PAYMENT,
+    icon: ImageVector = PoposIcons.Add,
 ) {
     val dialogState = rememberMaterialDialogState()
     val lazyListState = rememberLazyListState()
@@ -198,9 +200,9 @@ internal fun AddEditPaymentScreenContent(
     ).all { it == null }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
         onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = true,
         showBottomBar = lazyListState.isScrollingUp(),
         bottomBar = {
@@ -235,6 +237,10 @@ internal fun AddEditPaymentScreenContent(
                     },
                 ) {
                     StandardOutlinedTextField(
+                        label = PAYMENT_EMPLOYEE_NAME_FIELD,
+                        leadingIcon = PoposIcons.Person4,
+                        value = selectedEmployee.employeeName,
+                        onValueChange = {},
                         modifier = Modifier
                             .fillMaxWidth()
                             .onGloballyPositioned { coordinates ->
@@ -242,19 +248,15 @@ internal fun AddEditPaymentScreenContent(
                                 textFieldSize = coordinates.size.toSize()
                             }
                             .menuAnchor(),
-                        value = selectedEmployee.employeeName,
-                        label = PAYMENT_EMPLOYEE_NAME_FIELD,
-                        leadingIcon = PoposIcons.Person4,
                         isError = employeeError != null,
                         errorText = employeeError,
-                        readOnly = true,
-                        errorTextTag = PAYMENT_EMPLOYEE_NAME_ERROR,
-                        onValueChange = {},
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(
                                 expanded = employeeToggled,
                             )
                         },
+                        readOnly = true,
+                        errorTextTag = PAYMENT_EMPLOYEE_NAME_ERROR,
                     )
 
                     DropdownMenu(
@@ -281,10 +283,10 @@ internal fun AddEditPaymentScreenContent(
                                 leadingIcon = {
                                     CircularBox(
                                         icon = PoposIcons.Person,
-                                        doesSelected = false,
-                                        size = 30.dp,
-                                        showBorder = false,
+                                        selected = false,
                                         text = employee.employeeName,
+                                        showBorder = false,
+                                        size = 30.dp,
                                     )
                                 },
                             )
@@ -351,9 +353,12 @@ internal fun AddEditPaymentScreenContent(
 
             item(GIVEN_DATE_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.paymentDate.toPrettyDate(),
                     label = GIVEN_DATE_FIELD,
                     leadingIcon = PoposIcons.CalenderToday,
+                    value = state.paymentDate.toPrettyDate(),
+                    onValueChange = {},
+                    isError = dateError != null,
+                    errorText = dateError,
                     trailingIcon = {
                         FilledTonalIconButton(
                             onClick = { dialogState.show() },
@@ -364,11 +369,8 @@ internal fun AddEditPaymentScreenContent(
                             )
                         }
                     },
-                    isError = dateError != null,
-                    errorText = dateError,
                     readOnly = true,
                     errorTextTag = GIVEN_DATE_ERROR,
-                    onValueChange = {},
                     suffix = {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -385,16 +387,16 @@ internal fun AddEditPaymentScreenContent(
 
             item(GIVEN_AMOUNT_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.paymentAmount,
                     label = GIVEN_AMOUNT_FIELD,
                     leadingIcon = PoposIcons.Money,
-                    keyboardType = KeyboardType.Number,
-                    isError = amountError != null,
-                    errorText = amountError,
-                    errorTextTag = GIVEN_AMOUNT_ERROR,
+                    value = state.paymentAmount,
                     onValueChange = {
                         onEvent(AddEditPaymentEvent.PaymentAmountChanged(it))
                     },
+                    isError = amountError != null,
+                    errorText = amountError,
+                    keyboardType = KeyboardType.Number,
+                    errorTextTag = GIVEN_AMOUNT_ERROR,
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
@@ -402,15 +404,15 @@ internal fun AddEditPaymentScreenContent(
 
             item(PAYMENT_NOTE_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.paymentNote,
                     label = PAYMENT_NOTE_FIELD,
                     leadingIcon = PoposIcons.Description,
-                    isError = noteError != null,
-                    errorText = noteError,
-                    errorTextTag = PAYMENT_NOTE_ERROR,
+                    value = state.paymentNote,
                     onValueChange = {
                         onEvent(AddEditPaymentEvent.PaymentNoteChanged(it))
                     },
+                    isError = noteError != null,
+                    errorText = noteError,
+                    errorTextTag = PAYMENT_NOTE_ERROR,
                 )
 
                 Spacer(modifier = Modifier.height(SpaceSmall))
@@ -432,8 +434,8 @@ internal fun AddEditPaymentScreenContent(
                     Row {
                         PaymentType.entries.forEach { type ->
                             StandardRoundedFilterChip(
-                                modifier = Modifier.testTag(PAYMENT_TYPE_FIELD.plus(type.name)),
                                 text = type.name,
+                                modifier = Modifier.testTag(PAYMENT_TYPE_FIELD.plus(type.name)),
                                 selected = state.paymentType == type,
                                 selectedColor = MaterialTheme.colorScheme.tertiary,
                                 onClick = {
@@ -465,8 +467,8 @@ internal fun AddEditPaymentScreenContent(
                     Row {
                         PaymentMode.entries.forEach { type ->
                             StandardRoundedFilterChip(
-                                modifier = Modifier.testTag(PAYMENT_MODE_FIELD.plus(type.name)),
                                 text = type.name,
+                                modifier = Modifier.testTag(PAYMENT_MODE_FIELD.plus(type.name)),
                                 selected = state.paymentMode == type,
                                 selectedColor = MaterialTheme.colorScheme.secondary,
                                 onClick = {
@@ -512,24 +514,24 @@ private fun AddEditPaymentScreenContentPreview(
 ) {
     PoposRoomTheme {
         AddEditPaymentScreenContent(
-            modifier = modifier,
             state = AddEditPaymentState(
                 paymentAmount = "200",
                 paymentNote = "Advance Payment",
                 paymentType = PaymentType.Advanced,
                 paymentMode = PaymentMode.Cash,
             ),
+            employees = employees,
             selectedEmployee = employees.first(),
             onEvent = {},
-            employees = employees,
+            onBackClick = {},
+            onClickNewEmployee = {},
             employeeError = null,
             amountError = null,
             dateError = null,
             typeError = null,
             modeError = null,
             noteError = null,
-            onBackClick = {},
-            onClickNewEmployee = {},
+            modifier = modifier,
         )
     }
 }

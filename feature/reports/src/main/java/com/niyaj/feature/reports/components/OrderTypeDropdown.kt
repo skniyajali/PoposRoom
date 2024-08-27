@@ -38,8 +38,8 @@ import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 internal fun OrderTypeDropdown(
-    modifier: Modifier = Modifier,
     text: String,
+    modifier: Modifier = Modifier,
     onItemClick: (String) -> Unit = {},
 ) {
     var menuExpanded by remember { mutableStateOf(false) }

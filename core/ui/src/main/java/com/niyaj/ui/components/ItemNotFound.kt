@@ -43,7 +43,7 @@ fun ItemNotFound(
     title: String = ITEM_TITLE,
     btnText: String = ITEM_BTN_TEXT,
     icon: ImageVector = PoposIcons.Add,
-    onBtnClick: () -> Unit,
+    onBtnClick: () -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -74,5 +74,5 @@ fun ItemNotFound(
 fun ItemNotFoundPreview(
     modifier: Modifier = Modifier,
 ) {
-    ItemNotFound { }
+    ItemNotFound(modifier) { }
 }

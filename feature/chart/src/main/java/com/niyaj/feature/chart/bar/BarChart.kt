@@ -54,7 +54,7 @@ fun BarChart(
     onBarClick: (BarData) -> Unit,
     modifier: Modifier = Modifier,
     chartDimens: ChartDimens = ChartDimensDefaults.chartDimesDefaults(),
-    axisConfig: AxisConfig = AxisConfigDefaults.axisConfigDefaults(isSystemInDarkTheme()),
+    axisConfig: AxisConfig = AxisConfigDefaults.configDefaults(isSystemInDarkTheme()),
     barConfig: BarConfig = BarConfigDefaults.barConfigDimesDefaults(),
 ) {
     BarChart(
@@ -69,13 +69,14 @@ fun BarChart(
 }
 
 @Composable
+@Suppress("UnusedParameter")
 fun BarChart(
     barData: List<BarData>,
     colors: List<Color>,
     onBarClick: (BarData) -> Unit,
     modifier: Modifier = Modifier,
     chartDimens: ChartDimens = ChartDimensDefaults.chartDimesDefaults(),
-    axisConfig: AxisConfig = AxisConfigDefaults.axisConfigDefaults(isSystemInDarkTheme()),
+    axisConfig: AxisConfig = AxisConfigDefaults.configDefaults(isSystemInDarkTheme()),
     barConfig: BarConfig = BarConfigDefaults.barConfigDimesDefaults(),
 ) {
     val maxYValueState = rememberSaveable { mutableFloatStateOf(barData.maxYValue()) }

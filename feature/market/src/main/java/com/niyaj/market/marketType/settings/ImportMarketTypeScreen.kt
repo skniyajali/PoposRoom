@@ -84,6 +84,7 @@ import kotlinx.coroutines.launch
 fun ImportMarketTypeScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: MarketTypeSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -127,7 +128,6 @@ fun ImportMarketTypeScreen(
     }
 
     ImportMarketTypeScreenContent(
-        modifier = Modifier,
         importedItems = importedItems.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         isLoading = isLoading,
@@ -141,13 +141,13 @@ fun ImportMarketTypeScreen(
             importLauncher.launch(ImportExport.openFile(context))
         },
         onBackClick = navigator::navigateUp,
+        modifier = modifier,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun ImportMarketTypeScreenContent(
-    modifier: Modifier = Modifier,
     importedItems: ImmutableList<MarketType>,
     selectedItems: ImmutableList<Int>,
     isLoading: Boolean,
@@ -157,6 +157,7 @@ internal fun ImportMarketTypeScreenContent(
     onClickImport: () -> Unit,
     onClickOpenFile: () -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
     padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
@@ -172,11 +173,23 @@ internal fun ImportMarketTypeScreenContent(
     }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = if (selectedItems.isEmpty()) IMPORT_MARKET_TITLE else "${selectedItems.size} Selected",
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = selectedItems.isEmpty(),
         showBottomBar = importedItems.isNotEmpty(),
         showSecondaryBottomBar = true,
+        fabPosition = FabPosition.End,
+        navigationIcon = {
+            IconButton(
+                onClick = onClickDeselect,
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Deselect All",
+                )
+            }
+        },
         navActions = {
             AnimatedVisibility(
                 visible = importedItems.isNotEmpty(),
@@ -191,6 +204,16 @@ internal fun ImportMarketTypeScreenContent(
                 }
             }
         },
+        floatingActionButton = {
+            ScrollToTop(
+                visible = !lazyGridState.isScrollingUp(),
+                onClick = {
+                    scope.launch {
+                        lazyGridState.animateScrollToItem(index = 0)
+                    }
+                },
+            )
+        },
         bottomBar = {
             Column(
                 modifier = Modifier
@@ -198,7 +221,15 @@ internal fun ImportMarketTypeScreenContent(
                     .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"}  market types will be imported.")
+                InfoText(
+                    text = "${
+                        if (selectedItems.isEmpty()) {
+                            "All"
+                        } else {
+                            "${selectedItems.size}"
+                        }
+                    }  market types will be imported.",
+                )
 
                 PoposButton(
                     modifier = Modifier
@@ -211,28 +242,6 @@ internal fun ImportMarketTypeScreenContent(
                         containerColor = MaterialTheme.colorScheme.primary,
                     ),
                     onClick = onClickImport,
-                )
-            }
-        },
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyGridState.isScrollingUp(),
-                onClick = {
-                    scope.launch {
-                        lazyGridState.animateScrollToItem(index = 0)
-                    }
-                },
-            )
-        },
-        onBackClick = onBackClick,
-        navigationIcon = {
-            IconButton(
-                onClick = onClickDeselect,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Deselect All",
                 )
             }
         },
@@ -251,11 +260,11 @@ internal fun ImportMarketTypeScreenContent(
                 LoadingIndicator()
             } else {
                 MarketTypeList(
-                    modifier = Modifier.fillMaxSize(),
                     items = importedItems,
                     isInSelectionMode = true,
                     doesSelected = selectedItems::contains,
                     onSelectItem = onClickSelectItem,
+                    modifier = Modifier.fillMaxSize(),
                     lazyGridState = lazyGridState,
                 )
             }

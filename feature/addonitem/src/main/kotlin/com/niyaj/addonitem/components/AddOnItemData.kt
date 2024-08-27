@@ -58,22 +58,22 @@ import com.niyaj.ui.utils.DevicePreviews
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun AddOnItemData(
-    modifier: Modifier = Modifier,
     item: AddOnItem,
-    doesSelected: (Int) -> Boolean,
+    selected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("AddOnItemData") {
-    val borderStroke = if (doesSelected(item.itemId)) border else null
+    val borderStroke = if (selected(item.itemId)) border else null
 
     ElevatedCard(
         modifier = modifier
             .height(IntrinsicSize.Max)
             .testTag(ADDON_ITEM_TAG.plus(item.itemId))
             .semantics {
-                selected = doesSelected(item.itemId)
+                this.selected = selected(item.itemId)
             }
             .padding(SpaceSmall)
             .then(
@@ -126,7 +126,7 @@ internal fun AddOnItemData(
 
             CircularBox(
                 icon = PoposIcons.Link,
-                doesSelected = doesSelected(item.itemId),
+                selected = selected(item.itemId),
                 showBorder = !item.isApplicable,
             )
         }
@@ -141,7 +141,7 @@ private fun AddOnItemDataSelected(
     PoposRoomTheme {
         AddOnItemData(
             item = addOnItem,
-            doesSelected = { true },
+            selected = { true },
             onClick = {},
             onLongClick = {},
         )
@@ -156,7 +156,7 @@ private fun AddOnItemDataNotSelected(
     PoposRoomTheme {
         AddOnItemData(
             item = addOnItem,
-            doesSelected = { false },
+            selected = { false },
             onClick = {},
             onLongClick = {},
         )

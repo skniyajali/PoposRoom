@@ -26,9 +26,12 @@ object PrinterInfoTestTags {
     const val UPDATE_PRINTER_INFO = "Update Printer Info"
 
     const val PRINTER_INFO_NOTES_ONE = "First paired bluetooth printer will be connected automatically."
-    const val PRINTER_INFO_NOTES_TWO = "Do not worry about connection status, click on test print button to print test data."
-    const val PRINTER_INFO_NOTES_THREE = "If you did not uploaded the print logo then default logo will be used for printing."
-    const val PRINTER_INFO_NOTES_FOUR = "Print some order bill and check how it's look, if it's look weird then change printer info accordingly."
+    const val PRINTER_INFO_NOTES_TWO = "Do not worry about connection status," +
+        " click on test print button to print test data."
+    const val PRINTER_INFO_NOTES_THREE = "If you did not uploaded the print logo then" +
+        " default logo will be used for printing."
+    const val PRINTER_INFO_NOTES_FOUR = "Print some order bill and check how it's look," +
+        " if it's look weird then change printer info accordingly."
 
     const val PRINTER_DPI_FIELD = "Printer DPI"
     const val PRINTER_DPI_MESSAGE = "Usually found in the back side of the printer"

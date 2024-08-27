@@ -106,7 +106,8 @@ class QRCodeScannerImpl(
             }
 
             Barcode.TYPE_DRIVER_LICENSE -> {
-                "${barcode.driverLicense?.firstName} ${barcode.driverLicense?.lastName }${barcode.driverLicense?.lastName}"
+                "${barcode.driverLicense?.firstName} ${barcode.driverLicense?.lastName}" +
+                    "${barcode.driverLicense?.lastName}"
             }
 
             Barcode.TYPE_SMS -> {

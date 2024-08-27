@@ -38,6 +38,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -81,6 +82,8 @@ import com.niyaj.designsystem.theme.ProfilePictureSizeSmall
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.utils.drawAnimatedBorder
+import com.niyaj.model.BluetoothDeviceState
+import com.niyaj.model.Printer
 import com.niyaj.printerInfo.destinations.UpdatePrinterInfoScreenDestination
 import com.niyaj.ui.components.BluetoothPermissionDialog
 import com.niyaj.ui.components.HandleBluetoothPermissionState
@@ -107,11 +110,13 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 @RootNavGraph(start = true)
+@Suppress("LongMethod")
 @Destination(route = Screens.PRINTER_INFO_SCREEN)
 fun PrinterInfoScreen(
     navigator: DestinationsNavigator,
-    viewModel: PrinterInfoViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<UpdatePrinterInfoScreenDestination, String>,
+    modifier: Modifier = Modifier,
+    viewModel: PrinterInfoViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -189,6 +194,7 @@ fun PrinterInfoScreen(
                         snackbarHostState.showSnackbar(event.errorMessage)
                     }
                 }
+
                 is UiEvent.OnSuccess -> {
                     scope.launch {
                         snackbarHostState.showSnackbar(event.successMessage)
@@ -203,299 +209,346 @@ fun PrinterInfoScreen(
     HandleBluetoothPermissionState(
         multiplePermissionsState = bluetoothPermissionsState,
         onSuccessful = {
-            PoposPrimaryScaffold(
-                currentRoute = Screens.PRINTER_INFO_SCREEN,
-                snackbarHostState = snackbarHostState,
-                title = PRINTER_SCREEN_TITLE,
-                showBottomBar = false,
-                navActions = {
-                    IconButton(
-                        onClick = {
-                            navigator.navigate(UpdatePrinterInfoScreenDestination())
-                        },
-                    ) {
-                        Icon(
-                            imageVector = PoposIcons.Edit,
-                            contentDescription = "Edit Printer Information",
-                        )
-                    }
+            PrinterInfoScreenContent(
+                uiState = uiState,
+                printers = printers,
+                printTestData = viewModel::printTestData,
+                connectBluetoothPrinter = viewModel::connectBluetoothPrinter,
+                onClickToUpdate = {
+                    navigator.navigate(UpdatePrinterInfoScreenDestination())
                 },
-                floatingActionButton = {},
-                selectionCount = 0,
-                onBackClick = navigator::navigateUp,
-                onNavigateToScreen = navigator::navigate,
-            ) {
-                Crossfade(
-                    targetState = uiState,
-                    label = "Printer Information State",
-                ) { state ->
-                    when (state) {
-                        is UiState.Loading -> LoadingIndicator()
-
-                        is UiState.Empty -> {
-                            ItemNotAvailable(
-                                text = PRINTER_NOT_AVAILABLE,
-                                buttonText = UPDATE_PRINTER_INFO,
-                                icon = PoposIcons.Edit,
-                                onClick = {},
-                            )
-                        }
-
-                        is UiState.Success -> {
-                            TrackScrollJank(
-                                scrollableState = lazyListState,
-                                stateName = "Printer Info::State",
-                            )
-
-                            LazyColumn(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(SpaceSmall),
-                                state = lazyListState,
-                                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-                            ) {
-                                item("Notes") {
-                                    Column(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-                                    ) {
-                                        Spacer(modifier = Modifier.height(SpaceSmall))
-
-                                        InfoText(text = PRINTER_INFO_NOTES_ONE)
-
-                                        InfoText(text = PRINTER_INFO_NOTES_TWO)
-
-                                        InfoText(text = PRINTER_INFO_NOTES_THREE)
-
-                                        InfoText(text = PRINTER_INFO_NOTES_FOUR)
-                                    }
-                                }
-
-                                item("Printers") {
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-                                    ) {
-                                        Text(
-                                            text = "Printers",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.SemiBold,
-                                        )
-
-                                        if (printers.isNotEmpty()) {
-                                            printers.forEach { data ->
-                                                Card(
-                                                    modifier = Modifier
-                                                        .fillMaxWidth(),
-                                                    shape = RoundedCornerShape(SpaceMini),
-//                                            backgroundColor = LightColor7
-                                                ) {
-                                                    Row(
-                                                        modifier = Modifier
-                                                            .fillMaxWidth()
-                                                            .padding(SpaceSmall),
-                                                        verticalAlignment = Alignment.CenterVertically,
-                                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                                    ) {
-                                                        Column(
-                                                            horizontalAlignment = Alignment.Start,
-                                                            verticalArrangement = Arrangement.spacedBy(
-                                                                SpaceMini,
-                                                            ),
-                                                        ) {
-                                                            IconWithText(
-                                                                text = data.name,
-                                                                icon = PoposIcons.StickyNote2,
-                                                            )
-
-                                                            IconWithText(
-                                                                text = data.address,
-                                                                icon = PoposIcons.Link,
-                                                            )
-                                                        }
-
-                                                        Row(
-                                                            verticalAlignment = Alignment.CenterVertically,
-                                                            horizontalArrangement = Arrangement.spacedBy(
-                                                                SpaceSmall,
-                                                            ),
-                                                        ) {
-                                                            StandardOutlinedChip(
-                                                                text = "Test Print",
-                                                                onClick = viewModel::printTestData,
-                                                            )
-
-                                                            StandardChip(
-                                                                text = if (data.connected) "Connected" else "Connect",
-                                                                icon = if (data.connected) PoposIcons.BluetoothConnected else PoposIcons.BluetoothDisabled,
-                                                                isPrimary = data.connected,
-                                                                isClickable = !data.connected,
-                                                                onClick = {
-                                                                    viewModel.connectBluetoothPrinter(
-                                                                        data.address,
-                                                                    )
-                                                                },
-                                                            )
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        } else {
-                                            Text(
-                                                text = "Bluetooth printer is not available on this device",
-                                                style = MaterialTheme.typography.labelSmall,
-                                                color = MaterialTheme.colorScheme.error,
-                                            )
-                                        }
-                                    }
-                                }
-
-                                item("Printer Information") {
-                                    ElevatedCard(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = SpaceSmall),
-                                        shape = RoundedCornerShape(SpaceSmall),
-                                    ) {
-                                        Column(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(SpaceSmall),
-                                            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                        ) {
-                                            Spacer(modifier = Modifier.height(SpaceSmall))
-
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(ProfilePictureSizeMedium)
-                                                    .background(LightColor9, CircleShape)
-                                                    .clip(CircleShape)
-                                                    .drawAnimatedBorder(
-                                                        1.dp,
-                                                        CircleShape,
-                                                        durationMillis = 2000,
-                                                    ),
-                                                contentAlignment = Alignment.Center,
-                                            ) {
-                                                Icon(
-                                                    imageVector = PoposIcons.Print,
-                                                    contentDescription = "Printer Info",
-                                                    tint = MaterialTheme.colorScheme.primary,
-                                                    modifier = Modifier
-                                                        .size(ProfilePictureSizeSmall)
-                                                        .align(Alignment.Center),
-                                                )
-                                            }
-
-                                            Text(
-                                                text = "Printer Information",
-                                                style = MaterialTheme.typography.titleMedium,
-                                                fontWeight = FontWeight.SemiBold,
-                                            )
-
-                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                                            TwoGridText(
-                                                textOne = "Printer DPI",
-                                                textTwo = state.data.printerDpi.toString(),
-                                            )
-
-                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                                            TwoGridText(
-                                                textOne = "Printer Width",
-                                                textTwo = "${state.data.printerWidth} mm",
-                                            )
-
-                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                                            TwoGridText(
-                                                textOne = "Printer NBR Lines",
-                                                textTwo = state.data.printerNbrLines.toString(),
-                                            )
-
-                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                                            TwoGridText(
-                                                textOne = "Product Name Length",
-                                                textTwo = state.data.productNameLength.toString(),
-                                            )
-
-                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                                            TwoGridText(
-                                                textOne = "Product Report Limit",
-                                                textTwo = state.data.productWiseReportLimit.toString(),
-                                            )
-
-                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                                            TwoGridText(
-                                                textOne = "Address Report Limit",
-                                                textTwo = state.data.addressWiseReportLimit.toString(),
-                                            )
-
-                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                                            TwoGridText(
-                                                textOne = "Customer Report Limit",
-                                                textTwo = state.data.customerWiseReportLimit.toString(),
-                                            )
-
-                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                                            TwoGridText(
-                                                textOne = "Print QR Code",
-                                                textTwo = state.data.printQRCode.toSafeString,
-                                            )
-
-                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                                            TwoGridText(
-                                                textOne = "Print Restaurant Logo",
-                                                textTwo = state.data.printResLogo.toSafeString,
-                                            )
-
-                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                                            TwoGridText(
-                                                textOne = "Print Welcome Text",
-                                                textTwo = state.data.printWelcomeText.toSafeString,
-                                            )
-
-                                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                                            TwoGridText(
-                                                textOne = "Last Updated",
-                                                textTwo = (
-                                                    state.data.updatedAt
-                                                        ?: state.data.createdAt
-                                                    ).toPrettyDate(),
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+                onBackClick = navigator::popBackStack,
+                onNavigateScreen = navigator::navigate,
+                modifier = modifier,
+                lazyListState = lazyListState,
+            )
         },
         onError = { shouldShowRationale ->
             BluetoothPermissionDialog(
+                shouldShowRationale = shouldShowRationale,
                 onClickRequestPermission = {
                     bluetoothPermissionsState.launchMultiplePermissionRequest()
+                },
+                onClickOpenSettings = {
+                    context.findActivity().openAppSettings()
                 },
                 onDismissRequest = {
                     navigator.navigateUp()
                 },
-                shouldShowRationale = shouldShowRationale,
-                onClickOpenSettings = {
-                    context.findActivity().openAppSettings()
-                },
             )
         },
     )
+}
+
+@Composable
+fun PrinterInfoScreenContent(
+    uiState: UiState<Printer>,
+    printers: List<BluetoothDeviceState>,
+    printTestData: () -> Unit,
+    connectBluetoothPrinter: (String) -> Unit,
+    onClickToUpdate: () -> Unit,
+    onBackClick: () -> Unit,
+    onNavigateScreen: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
+    PoposPrimaryScaffold(
+        modifier = modifier,
+        currentRoute = Screens.PRINTER_INFO_SCREEN,
+        title = PRINTER_SCREEN_TITLE,
+        selectionCount = 0,
+        floatingActionButton = {},
+        navActions = {
+            IconButton(
+                onClick = onClickToUpdate,
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Edit,
+                    contentDescription = "Edit Printer Information",
+                )
+            }
+        },
+        onBackClick = onBackClick,
+        onNavigateToScreen = onNavigateScreen,
+        showBottomBar = false,
+        snackbarHostState = snackbarHostState,
+    ) {
+        Crossfade(
+            targetState = uiState,
+            label = "Printer Information State",
+        ) { state ->
+            when (state) {
+                is UiState.Loading -> LoadingIndicator()
+
+                is UiState.Empty -> {
+                    ItemNotAvailable(
+                        text = PRINTER_NOT_AVAILABLE,
+                        buttonText = UPDATE_PRINTER_INFO,
+                        icon = PoposIcons.Edit,
+                        onClick = {},
+                    )
+                }
+
+                is UiState.Success -> {
+                    TrackScrollJank(
+                        scrollableState = lazyListState,
+                        stateName = "Printer Info::State",
+                    )
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(SpaceSmall),
+                        state = lazyListState,
+                        verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+                    ) {
+                        item("Notes") {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+                            ) {
+                                Spacer(modifier = Modifier.height(SpaceSmall))
+
+                                InfoText(text = PRINTER_INFO_NOTES_ONE)
+
+                                InfoText(text = PRINTER_INFO_NOTES_TWO)
+
+                                InfoText(text = PRINTER_INFO_NOTES_THREE)
+
+                                InfoText(text = PRINTER_INFO_NOTES_FOUR)
+                            }
+                        }
+
+                        item("Printers") {
+                            PrinterList(
+                                printers = printers,
+                                connectBluetoothPrinter = connectBluetoothPrinter,
+                                printTestData = printTestData,
+                            )
+                        }
+
+                        item("Printer Information") {
+                            PrinterInfoData(printer = state.data)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PrinterList(
+    printers: List<BluetoothDeviceState>,
+    printTestData: () -> Unit,
+    connectBluetoothPrinter: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+    ) {
+        Text(
+            text = "Printers",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+        )
+
+        if (printers.isNotEmpty()) {
+            printers.forEach { data ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(SpaceMini),
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(SpaceSmall),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.spacedBy(
+                                SpaceMini,
+                            ),
+                        ) {
+                            IconWithText(
+                                text = data.name,
+                                icon = PoposIcons.StickyNote2,
+                            )
+
+                            IconWithText(
+                                text = data.address,
+                                icon = PoposIcons.Link,
+                            )
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(
+                                SpaceSmall,
+                            ),
+                        ) {
+                            StandardOutlinedChip(
+                                text = "Test Print",
+                                onClick = printTestData,
+                            )
+
+                            StandardChip(
+                                text = if (data.connected) "Connected" else "Connect",
+                                icon = if (data.connected) {
+                                    PoposIcons.BluetoothConnected
+                                } else {
+                                    PoposIcons.BluetoothDisabled
+                                },
+                                isPrimary = data.connected,
+                                isClickable = !data.connected,
+                                onClick = {
+                                    connectBluetoothPrinter(data.address)
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+        } else {
+            Text(
+                text = "Bluetooth printer is not available on this device",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PrinterInfoData(
+    printer: Printer,
+    modifier: Modifier = Modifier,
+) {
+    ElevatedCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = SpaceSmall),
+        shape = RoundedCornerShape(SpaceSmall),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SpaceSmall),
+            verticalArrangement = Arrangement.spacedBy(SpaceSmall),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Spacer(modifier = Modifier.height(SpaceSmall))
+
+            Box(
+                modifier = Modifier
+                    .size(ProfilePictureSizeMedium)
+                    .background(LightColor9, CircleShape)
+                    .clip(CircleShape)
+                    .drawAnimatedBorder(
+                        1.dp,
+                        CircleShape,
+                        durationMillis = 2000,
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Print,
+                    contentDescription = "Printer Info",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .size(ProfilePictureSizeSmall)
+                        .align(Alignment.Center),
+                )
+            }
+
+            Text(
+                text = "Printer Information",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            TwoGridText(
+                textOne = "Printer DPI",
+                textTwo = printer.printerDpi.toString(),
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            TwoGridText(
+                textOne = "Printer Width",
+                textTwo = "${printer.printerWidth} mm",
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            TwoGridText(
+                textOne = "Printer NBR Lines",
+                textTwo = printer.printerNbrLines.toString(),
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            TwoGridText(
+                textOne = "Product Name Length",
+                textTwo = printer.productNameLength.toString(),
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            TwoGridText(
+                textOne = "Product Report Limit",
+                textTwo = printer.productWiseReportLimit.toString(),
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            TwoGridText(
+                textOne = "Address Report Limit",
+                textTwo = printer.addressWiseReportLimit.toString(),
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            TwoGridText(
+                textOne = "Customer Report Limit",
+                textTwo = printer.customerWiseReportLimit.toString(),
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            TwoGridText(
+                textOne = "Print QR Code",
+                textTwo = printer.printQRCode.toSafeString,
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            TwoGridText(
+                textOne = "Print Restaurant Logo",
+                textTwo = printer.printResLogo.toSafeString,
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            TwoGridText(
+                textOne = "Print Welcome Text",
+                textTwo = printer.printWelcomeText.toSafeString,
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            TwoGridText(
+                textOne = "Last Updated",
+                textTwo = (printer.updatedAt ?: printer.createdAt).toPrettyDate(),
+            )
+        }
+    }
 }

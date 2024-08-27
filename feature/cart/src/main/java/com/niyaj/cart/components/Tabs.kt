@@ -40,7 +40,11 @@ import kotlinx.coroutines.launch
 @SuppressLint("DesignSystem")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Tabs(tabs: List<CartTabItem>, pagerState: PagerState) {
+fun Tabs(
+    tabs: List<CartTabItem>,
+    pagerState: PagerState,
+    modifier: Modifier = Modifier,
+) {
     val scope = rememberCoroutineScope()
 
     // OR ScrollableTabRow()
@@ -58,6 +62,7 @@ fun Tabs(tabs: List<CartTabItem>, pagerState: PagerState) {
                 )
             }
         },
+        modifier = modifier,
     ) {
         // Add tabs for all of our pages
         tabs.forEachIndexed { index, tab ->
@@ -79,9 +84,14 @@ fun Tabs(tabs: List<CartTabItem>, pagerState: PagerState) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TabsContent(tabs: List<CartTabItem>, pagerState: PagerState) {
+fun TabsContent(
+    tabs: List<CartTabItem>,
+    pagerState: PagerState,
+    modifier: Modifier = Modifier,
+) {
     HorizontalPager(
         state = pagerState,
+        modifier = modifier,
     ) { page ->
         tabs[page].screen()
     }

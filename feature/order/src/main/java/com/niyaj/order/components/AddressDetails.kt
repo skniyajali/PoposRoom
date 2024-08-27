@@ -51,11 +51,11 @@ import com.niyaj.ui.utils.DevicePreviews
  */
 @Composable
 internal fun AddressDetails(
-    modifier: Modifier = Modifier,
     address: Address,
     doesExpanded: Boolean,
     onExpandChanged: () -> Unit,
     onClickViewDetails: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("AddressDetails") {
     ElevatedCard(
@@ -70,46 +70,9 @@ internal fun AddressDetails(
         ),
     ) {
         StandardExpandable(
+            expanded = doesExpanded,
             onExpandChanged = {
                 onExpandChanged()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
-            expanded = doesExpanded,
-            title = {
-                IconWithText(
-                    text = "Address Details",
-                    icon = PoposIcons.LocationOn,
-                    isTitle = true,
-                )
-            },
-            rowClickable = true,
-            expand = { modifier: Modifier ->
-                IconButton(
-                    onClick = {
-                        onClickViewDetails(address.addressId)
-                    },
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.OpenInNew,
-                        contentDescription = "View Address Details",
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
-
-                IconButton(
-                    modifier = modifier,
-                    onClick = {
-                        onExpandChanged()
-                    },
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.ArrowDown,
-                        contentDescription = "Expand More",
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
             },
             content = {
                 Column(
@@ -156,6 +119,43 @@ internal fun AddressDetails(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.outline,
                         ),
+                    )
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SpaceSmall),
+            rowClickable = true,
+            title = {
+                IconWithText(
+                    text = "Address Details",
+                    icon = PoposIcons.LocationOn,
+                    isTitle = true,
+                )
+            },
+            expand = { modifier: Modifier ->
+                IconButton(
+                    onClick = {
+                        onClickViewDetails(address.addressId)
+                    },
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.OpenInNew,
+                        contentDescription = "View Address Details",
+                        tint = MaterialTheme.colorScheme.secondary,
+                    )
+                }
+
+                IconButton(
+                    modifier = modifier,
+                    onClick = {
+                        onExpandChanged()
+                    },
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.ArrowDown,
+                        contentDescription = "Expand More",
+                        tint = MaterialTheme.colorScheme.secondary,
                     )
                 }
             },

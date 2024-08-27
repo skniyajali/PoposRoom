@@ -87,10 +87,11 @@ import java.time.LocalDate
 @Composable
 fun ExpensesScreen(
     navigator: DestinationsNavigator,
-    viewModel: ExpensesViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditExpenseScreenDestination, String>,
     exportRecipient: ResultRecipient<ExpensesExportScreenDestination, String>,
     importRecipient: ResultRecipient<ExpensesImportScreenDestination, String>,
+    modifier: Modifier = Modifier,
+    viewModel: ExpensesViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -129,7 +130,7 @@ fun ExpensesScreen(
         onClickSettings = {
             navigator.navigate(ExpensesSettingsScreenDestination())
         },
-        modifier = Modifier,
+        modifier = modifier,
         snackbarState = snackbarState,
     )
 
@@ -204,9 +205,9 @@ internal fun ExpensesScreenContent(
     }
 
     PoposPrimaryScaffold(
-        modifier = modifier,
         currentRoute = Screens.EXPENSES_SCREEN,
         title = if (selectedItems.isEmpty()) EXPENSE_SCREEN_TITLE else "${selectedItems.size} Selected",
+        selectionCount = selectedItems.size,
         floatingActionButton = {
             StandardFAB(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
@@ -222,10 +223,7 @@ internal fun ExpensesScreenContent(
         },
         navActions = {
             ScaffoldNavActions(
-                placeholderText = EXPENSE_SEARCH_PLACEHOLDER,
-                showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchBar = showSearchBar,
                 showSearchIcon = showFab,
                 searchText = searchText,
                 onEditClick = {
@@ -234,20 +232,23 @@ internal fun ExpensesScreenContent(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = onClickSettings,
                 onSelectAllClick = onClickSelectAll,
                 onClearClick = onClickClear,
                 onSearchIconClick = onClickSearchIcon,
                 onSearchTextChanged = onSearchTextChanged,
+                showSearchBar = showSearchBar,
+                showSettingsIcon = true,
+                onSettingsClick = onClickSettings,
+                placeholderText = EXPENSE_SEARCH_PLACEHOLDER,
             )
         },
+        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
+        onNavigateToScreen = onNavigateToScreen,
+        modifier = modifier,
         fabPosition = if (lazyListState.isScrolled) FabPosition.End else FabPosition.Center,
-        selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
         onDeselect = onClickDeselect,
-        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
         snackbarHostState = snackbarState,
-        onNavigateToScreen = onNavigateToScreen,
     ) {
         Column(
             modifier = Modifier
@@ -262,7 +263,7 @@ internal fun ExpensesScreenContent(
                 },
             )
 
-            Spacer(modifier.height(SpaceSmall))
+            Spacer(Modifier.height(SpaceSmall))
 
             Crossfade(
                 targetState = uiState,

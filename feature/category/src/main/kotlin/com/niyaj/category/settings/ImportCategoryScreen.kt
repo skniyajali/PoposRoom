@@ -63,6 +63,7 @@ import kotlinx.coroutines.launch
 fun ImportCategoryScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: CategorySettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -105,13 +106,13 @@ fun ImportCategoryScreen(
     }
 
     ImportCategoryScreenContent(
-        modifier = Modifier,
         isLoading = isLoading,
         importedItems = importedCategories.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         onClickSelectItem = viewModel::selectItem,
         onClickSelectAll = viewModel::selectAllItems,
         onClickDeselect = viewModel::deselectItems,
+        modifier = modifier,
         onClickImport = {
             viewModel.onEvent(CategorySettingsEvent.ImportCategoriesToDatabase)
         },
@@ -173,12 +174,12 @@ internal fun ImportCategoryScreenContent(
         },
     ) {
         CategoryList(
-            modifier = modifier
-                .fillMaxSize(),
             items = importedItems,
             onClick = onClickSelectItem,
             onLongClick = onClickSelectItem,
-            doesSelected = selectedItems::contains,
+            selected = selectedItems::contains,
+            modifier = Modifier
+                .fillMaxSize(),
             lazyGridState = lazyGridState,
         )
     }

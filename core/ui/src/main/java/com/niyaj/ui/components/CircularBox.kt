@@ -46,9 +46,9 @@ import com.niyaj.designsystem.theme.SpaceMini
 
 @Composable
 fun CircularBox(
-    modifier: Modifier = Modifier,
     icon: ImageVector,
-    doesSelected: Boolean,
+    selected: Boolean,
+    modifier: Modifier = Modifier,
     text: String? = null,
     showBorder: Boolean = false,
     size: Dp = 40.dp,
@@ -78,13 +78,13 @@ fun CircularBox(
     ) {
         if (text.isNullOrEmpty()) {
             Icon(
-                imageVector = if (doesSelected) selectedIcon else icon,
+                imageVector = if (selected) selectedIcon else icon,
                 contentDescription = "",
-                tint = if (doesSelected) selectedTint else unselectedTint,
+                tint = if (selected) selectedTint else unselectedTint,
                 modifier = Modifier.size(iconSize),
             )
         } else {
-            if (doesSelected) {
+            if (selected) {
                 Icon(
                     imageVector = selectedIcon,
                     contentDescription = "",
@@ -105,6 +105,7 @@ fun CircularBox(
 fun CircularBoxWithQty(
     text: String,
     qty: Int,
+    modifier: Modifier = Modifier,
     size: Dp = 40.dp,
     showBorder: Boolean = true,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
@@ -121,7 +122,7 @@ fun CircularBoxWithQty(
     val availBorder = if (showBorder && qty != 0) BorderStroke(1.dp, borderColor) else null
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(size)
             .clip(CircleShape)
             .background(backgroundColor)
@@ -160,7 +161,8 @@ fun CircularBoxWithQty(
 fun CircularBoxWithIcon(
     text: String,
     icon: ImageVector,
-    doesSelected: Boolean,
+    selected: Boolean,
+    modifier: Modifier = Modifier,
     showBorder: Boolean = false,
     size: Dp = 40.dp,
     selectedIcon: ImageVector = PoposIcons.Check,
@@ -175,7 +177,7 @@ fun CircularBoxWithIcon(
     val iconSize = if (size <= 40.dp) IconSizeSmall else IconSizeMedium
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(size)
             .clip(CircleShape)
             .background(backgroundColor)
@@ -191,7 +193,7 @@ fun CircularBoxWithIcon(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(SpaceMini, Alignment.CenterHorizontally),
         ) {
-            if (doesSelected) {
+            if (selected) {
                 Icon(
                     imageVector = selectedIcon,
                     contentDescription = "",

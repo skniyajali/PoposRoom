@@ -53,16 +53,16 @@ import com.niyaj.model.OrderType
  */
 @Composable
 fun CartItemDetails(
-    modifier: Modifier = Modifier,
     orderType: OrderType,
-    doesChargesIncluded: Boolean,
+    orderPrice: OrderPrice,
+    expanded: Boolean,
+    chargesIncluded: Boolean,
     cartProducts: List<CartProductItem>,
     addOnItems: List<AddOnItem>,
     charges: List<Charges>,
-    additionalCharges: List<Charges> = emptyList(),
-    orderPrice: OrderPrice,
-    doesExpanded: Boolean,
     onExpandChanged: () -> Unit,
+    modifier: Modifier = Modifier,
+    additionalCharges: List<Charges> = emptyList(),
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CartItemDetails") {
     ElevatedCard(
@@ -77,13 +77,25 @@ fun CartItemDetails(
         ),
     ) {
         StandardExpandable(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
-            expanded = doesExpanded,
+            expanded = expanded,
             onExpandChanged = {
                 onExpandChanged()
             },
+            content = {
+                CartItemOrderProductDetails(
+                    orderType = orderType,
+                    orderPrice = orderPrice,
+                    chargesIncluded = chargesIncluded,
+                    cartProducts = cartProducts,
+                    addOnItems = addOnItems,
+                    charges = charges,
+                    additionalCharges = additionalCharges,
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SpaceSmall),
+            rowClickable = true,
             title = {
                 IconWithText(
                     text = "Cart Items",
@@ -94,7 +106,6 @@ fun CartItemDetails(
             trailing = {
                 StandardChip(text = "${cartProducts.size} Items")
             },
-            rowClickable = true,
             expand = { modifier: Modifier ->
                 IconButton(
                     modifier = modifier,
@@ -109,31 +120,20 @@ fun CartItemDetails(
                     )
                 }
             },
-            content = {
-                CartItemOrderProductDetails(
-                    orderType = orderType,
-                    doesChargesIncluded = doesChargesIncluded,
-                    cartProducts = cartProducts,
-                    addOnItems = addOnItems,
-                    charges = charges,
-                    additionalCharges = additionalCharges,
-                    orderPrice = orderPrice,
-                )
-            },
         )
     }
 }
 
 @Composable
 internal fun CartItemOrderProductDetails(
-    modifier: Modifier = Modifier,
     orderType: OrderType,
-    doesChargesIncluded: Boolean,
+    orderPrice: OrderPrice,
+    chargesIncluded: Boolean,
     cartProducts: List<CartProductItem>,
     addOnItems: List<AddOnItem>,
     charges: List<Charges>,
+    modifier: Modifier = Modifier,
     additionalCharges: List<Charges> = emptyList(),
-    orderPrice: OrderPrice,
 ) = trace("CartItemOrderProductDetails") {
     Column(
         modifier = modifier
@@ -183,7 +183,7 @@ internal fun CartItemOrderProductDetails(
         }
 
         if (charges.isNotEmpty()) {
-            if (doesChargesIncluded && orderType == OrderType.DineOut) {
+            if (chargesIncluded && orderType == OrderType.DineOut) {
                 val showText = charges.any { it.isApplicable }
 
                 if (showText) {

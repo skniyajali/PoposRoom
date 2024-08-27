@@ -100,7 +100,6 @@ import com.niyaj.ui.utils.rememberCaptureController
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ShareableProductOrderDetails(
-    modifier: Modifier = Modifier,
     productState: UiState<Product>,
     totalOrderDetails: ProductTotalOrderDetails,
     ordersState: UiState<List<ProductWiseOrder>>,
@@ -108,6 +107,7 @@ internal fun ShareableProductOrderDetails(
     onClickShare: () -> Unit,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
     onClickPrintOrder: () -> Unit,
+    modifier: Modifier = Modifier,
     captureController: CaptureController = rememberCaptureController(),
 ) = trace("ShareableProductOrderDetails") {
     BasicAlertDialog(
@@ -173,12 +173,12 @@ internal fun ShareableProductOrderDetails(
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 private fun CapturableOrderDetailsCard(
-    modifier: Modifier = Modifier,
     product: Product,
     totalOrder: ProductTotalOrderDetails,
     orders: List<ProductWiseOrder>,
     captureController: CaptureController,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("CapturableOrderDetailsCard") {
     ScrollableCapturable(
         controller = captureController,
@@ -221,15 +221,15 @@ private fun CapturableOrderDetailsCard(
                         )
 
                         CircularBox(
+                            icon = PoposIcons.Feed,
+                            selected = false,
                             modifier = Modifier
                                 .align(Alignment.BottomCenter)
                                 .offset(y = 40.dp),
-                            icon = PoposIcons.Feed,
                             text = product.productName,
                             showBorder = true,
-                            doesSelected = false,
-                            borderStroke = BorderStroke(3.dp, rainbowColorsBrush),
                             size = 80.dp,
+                            borderStroke = BorderStroke(3.dp, rainbowColorsBrush),
                         )
                     }
 
@@ -249,9 +249,9 @@ private fun CapturableOrderDetailsCard(
 
 @Composable
 private fun ShareableOrderDetails(
-    modifier: Modifier = Modifier,
     orders: List<ProductWiseOrder>,
     productPrice: Int,
+    modifier: Modifier = Modifier,
 ) = trace("ShareableOrderDetails") {
     val groupedOrders = remember(orders) { orders.groupBy { it.orderedDate.toPrettyDate() } }
     // Track the currently loaded dates
@@ -291,10 +291,10 @@ private fun ShareableOrderDetails(
 
 @Composable
 private fun ShareableProductOrderDetailsCard(
-    modifier: Modifier = Modifier,
     date: String,
     orders: List<ProductWiseOrder>,
     productPrice: Int,
+    modifier: Modifier = Modifier,
 ) = trace("ShareableProductOrderDetailsCard") {
     val grpByOrderType = remember { orders.groupBy { it.orderType } }
     val totalSales = remember { orders.sumOf { it.quantity }.times(productPrice) }.toString()
@@ -303,11 +303,11 @@ private fun ShareableProductOrderDetailsCard(
         modifier = modifier.fillMaxWidth(),
     ) {
         TextWithCount(
+            text = date,
+            count = orders.size,
             modifier = Modifier
                 .background(Color.Transparent),
-            text = date,
             trailingText = totalSales.toRupee,
-            count = orders.size,
             leadingIcon = PoposIcons.CalenderMonth,
         )
 
@@ -344,9 +344,9 @@ private fun ShareableProductOrderDetailsCard(
                 ) {
                     IconWithText(
                         text = "${order.orderId}",
+                        modifier = Modifier.weight(0.5f),
                         icon = PoposIcons.Tag,
                         isTitle = true,
-                        modifier = Modifier.weight(0.5f),
                     )
 
                     Column(
@@ -388,11 +388,11 @@ private fun ShareableProductOrderDetailsCard(
 
 @Composable
 private fun PaginationButtons(
-    modifier: Modifier = Modifier,
     showViewMoreBtn: Boolean,
     showViewLessBtn: Boolean,
     onClickViewLess: () -> Unit,
     onClickViewMore: () -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("PaginationButtons") {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -429,8 +429,8 @@ private fun PaginationButtons(
 
 @Composable
 private fun ShareableProductDetails(
-    modifier: Modifier = Modifier,
     product: Product,
+    modifier: Modifier = Modifier,
 ) = trace("ShareableProductDetails") {
     Column(
         modifier = modifier
@@ -454,19 +454,19 @@ private fun ShareableProductDetails(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             PoposSuggestionChip(
-                icon = PoposIcons.CollectionsBookmark,
                 text = product.productName,
+                icon = PoposIcons.CollectionsBookmark,
             )
 
             PoposSuggestionChip(
-                icon = PoposIcons.Rupee,
                 text = product.productPrice.toString(),
+                icon = PoposIcons.Rupee,
             )
         }
 
         PoposSuggestionChip(
-            icon = PoposIcons.CalenderMonth,
             text = (product.updatedAt ?: product.createdAt).toFormattedDateAndTime,
+            icon = PoposIcons.CalenderMonth,
         )
 
         Spacer(modifier = Modifier.height(SpaceMini))
@@ -475,11 +475,11 @@ private fun ShareableProductDetails(
 
 @Composable
 private fun DialogButtons(
-    modifier: Modifier = Modifier,
-    shareButtonColor: Color = MaterialTheme.colorScheme.primary,
     onDismiss: () -> Unit,
     onClickShare: () -> Unit,
     onClickPrintOrder: () -> Unit,
+    modifier: Modifier = Modifier,
+    shareButtonColor: Color = MaterialTheme.colorScheme.primary,
 ) = trace("DialogButtons") {
     Surface(
         modifier = modifier
@@ -495,18 +495,18 @@ private fun DialogButtons(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             PoposOutlinedIconButton(
-                modifier = Modifier
-                    .size(ButtonSize),
                 icon = PoposIcons.Close,
                 onClick = onDismiss,
+                modifier = Modifier
+                    .size(ButtonSize),
                 borderColor = MaterialTheme.colorScheme.error,
             )
 
             PoposOutlinedIconButton(
-                modifier = Modifier
-                    .size(ButtonSize),
                 icon = PoposIcons.Print,
                 onClick = onClickPrintOrder,
+                modifier = Modifier
+                    .size(ButtonSize),
                 borderColor = MaterialTheme.colorScheme.secondary,
             )
 

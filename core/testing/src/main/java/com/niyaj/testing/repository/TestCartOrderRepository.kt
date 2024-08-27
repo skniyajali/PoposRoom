@@ -45,7 +45,6 @@ class TestCartOrderRepository : CartOrderRepository {
     private val items = MutableStateFlow(mutableListOf<CartOrder>())
     private val addOnItems = MutableStateFlow(mutableListOf<Int>())
     private val charges = MutableStateFlow(mutableListOf<Int>())
-    private val deliveryPartners = MutableStateFlow(mutableListOf<Int>())
     private val address = MutableStateFlow(Address())
     private val customer = MutableStateFlow(Customer())
 

@@ -23,6 +23,7 @@ import com.niyaj.common.result.Resource
 import com.niyaj.data.mapper.toEntity
 import com.niyaj.data.repository.CategoryRepository
 import com.niyaj.database.dao.CategoryDao
+import com.niyaj.database.model.CategoryEntity
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Category
 import com.niyaj.model.searchCategory
@@ -40,10 +41,8 @@ class CategoryRepositoryImpl @Inject constructor(
 
     override suspend fun getAllCategory(searchText: String): Flow<List<Category>> {
         return withContext(ioDispatcher) {
-            categoryDao.getAllCategories().mapLatest { it ->
-                it.map {
-                    it.asExternalModel()
-                }.searchCategory(searchText)
+            categoryDao.getAllCategories().mapLatest { list ->
+                list.map(CategoryEntity::asExternalModel).searchCategory(searchText)
             }
         }
     }

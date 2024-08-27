@@ -54,9 +54,8 @@ import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun ItemNotAvailable(
+    text: String,
     modifier: Modifier = Modifier,
-    btnModifier: Modifier = Modifier,
-    text: String = "",
     buttonText: String = "",
     showImage: Boolean = true,
     icon: ImageVector = if (buttonText.contains("CREATE", true) ||
@@ -108,16 +107,16 @@ fun ItemNotAvailable(
 
                 if (buttonText.isNotEmpty()) {
                     PoposElevatedButton(
-                        modifier = btnModifier
-                            .testTag(buttonText),
                         text = buttonText,
-                        icon = icon,
                         onClick = onClick,
+                        modifier = Modifier
+                            .testTag(buttonText),
+                        icon = icon,
+                        shape = CutCornerShape(4.dp),
                         colors = ButtonDefaults.elevatedButtonColors(
                             containerColor = MaterialTheme.colorScheme.secondary,
                             contentColor = MaterialTheme.colorScheme.onSecondary,
                         ),
-                        shape = CutCornerShape(4.dp),
                     )
                 }
             }
@@ -127,9 +126,8 @@ fun ItemNotAvailable(
 
 @Composable
 fun ItemNotAvailableHalf(
+    text: String,
     modifier: Modifier = Modifier,
-    btnModifier: Modifier = Modifier,
-    text: String = "",
     buttonText: String = "",
     showImage: Boolean = true,
     icon: ImageVector = if (buttonText.contains("CREATE", true) ||
@@ -179,15 +177,14 @@ fun ItemNotAvailableHalf(
                 if (buttonText.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(SpaceMedium))
                     PoposElevatedButton(
-                        modifier = btnModifier,
                         text = buttonText,
-                        icon = icon,
                         onClick = onClick,
+                        icon = icon,
+                        shape = CutCornerShape(4.dp),
                         colors = ButtonDefaults.elevatedButtonColors(
                             containerColor = MaterialTheme.colorScheme.secondary,
                             contentColor = MaterialTheme.colorScheme.onSecondary,
                         ),
-                        shape = CutCornerShape(4.dp),
                     )
                 }
             }
@@ -197,10 +194,9 @@ fun ItemNotAvailableHalf(
 
 @Composable
 fun EmptyImportScreen(
-    modifier: Modifier = Modifier,
-    btnModifier: Modifier = Modifier,
     text: String,
     buttonText: String,
+    modifier: Modifier = Modifier,
     note: String? = null,
     showImage: Boolean = true,
     icon: ImageVector = PoposIcons.FileOpen,
@@ -242,15 +238,14 @@ fun EmptyImportScreen(
 
             if (buttonText.isNotEmpty()) {
                 PoposElevatedButton(
-                    modifier = btnModifier,
                     text = buttonText,
-                    icon = icon,
                     onClick = onClick,
+                    icon = icon,
+                    shape = CutCornerShape(4.dp),
                     colors = ButtonDefaults.elevatedButtonColors(
                         containerColor = MaterialTheme.colorScheme.secondary,
                         contentColor = MaterialTheme.colorScheme.onSecondary,
                     ),
-                    shape = CutCornerShape(4.dp),
                 )
             }
         }
@@ -265,9 +260,9 @@ private fun ItemNotAvailableHalfPreview(
     PoposRoomTheme {
         Surface {
             ItemNotAvailableHalf(
-                modifier = modifier,
                 text = "Item not available Half",
                 buttonText = "Create New Item",
+                modifier = modifier,
             )
         }
     }
@@ -281,9 +276,9 @@ private fun ItemNotAvailablePreview(
     PoposRoomTheme {
         Surface {
             ItemNotAvailable(
-                modifier = modifier,
                 text = "Item not available",
                 buttonText = "Create New Item",
+                modifier = modifier,
             )
         }
     }
@@ -297,9 +292,9 @@ private fun EmptyImportScreenPreview(
     PoposRoomTheme {
         Surface {
             EmptyImportScreen(
-                modifier = modifier,
                 text = "Make sure to open item.json file",
                 buttonText = "Open File",
+                modifier = modifier,
                 note = "Make sure to import category before importing products",
             )
         }

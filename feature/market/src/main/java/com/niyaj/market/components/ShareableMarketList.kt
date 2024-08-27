@@ -47,7 +47,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.util.trace
@@ -81,11 +80,12 @@ import kotlinx.datetime.Clock
 internal fun ShareableMarketList(
     captureController: CaptureController,
     marketDate: Long,
-    marketDetail: MarketListAndType? = null,
     marketLists: List<MarketItemAndQuantity>,
     onDismiss: () -> Unit,
     onClickShare: () -> Unit,
     onCaptured: (Bitmap?, Throwable?) -> Unit,
+    modifier: Modifier = Modifier,
+    marketDetail: MarketListAndType? = null,
 ) = trace("ShareableMarketList") {
     val groupByType = remember(marketLists) {
         marketLists.groupBy { it.typeName }
@@ -93,7 +93,7 @@ internal fun ShareableMarketList(
 
     BasicAlertDialog(
         onDismissRequest = onDismiss,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
         properties = DialogProperties(
             dismissOnClickOutside = true,
@@ -145,10 +145,10 @@ internal fun ShareableMarketList(
 
 @Composable
 internal fun ListTypeHeader(
-    modifier: Modifier = Modifier,
     itemType: String,
     listType: String,
     listCount: Int,
+    modifier: Modifier = Modifier,
 ) = trace("ListTypeHeader") {
     Surface(
         modifier = modifier
@@ -165,8 +165,8 @@ internal fun ListTypeHeader(
             IconWithText(
                 text = itemType.uppercase(),
                 icon = PoposIcons.Category,
-                fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
             )
 
             Row {
@@ -189,7 +189,89 @@ internal fun ListTypeHeader(
     }
 }
 
-@Preview
+@Composable
+private fun ShareableListBottomBar(
+    onDismiss: () -> Unit,
+    onClickShare: () -> Unit,
+    modifier: Modifier = Modifier,
+) = trace("ShareableListBottomBar") {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(SpaceSmall),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        PoposOutlinedButton(
+            text = "Close",
+            onClick = onDismiss,
+            modifier = Modifier
+                .heightIn(ButtonSize)
+                .weight(1.4f),
+            icon = PoposIcons.Close,
+            shape = RoundedCornerShape(SpaceMini),
+            color = MaterialTheme.colorScheme.error,
+        )
+
+        Spacer(modifier = Modifier.width(SpaceMedium))
+
+        PoposButton(
+            text = "Share",
+            icon = PoposIcons.Share,
+            onClick = onClickShare,
+            modifier = Modifier
+                .heightIn(ButtonSize)
+                .weight(1.4f),
+            shape = RoundedCornerShape(SpaceMini),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+            ),
+        )
+    }
+}
+
+@Composable
+private fun ShareableItemBody(
+    groupByType: Map<String, List<MarketItemAndQuantity>>,
+    modifier: Modifier = Modifier,
+) = trace("ShareableItemBody") {
+    Column(
+        modifier = modifier
+            .fillMaxWidth(),
+    ) {
+        groupByType.forEach { (itemType, groupedByType) ->
+            val groupByListType = remember(groupedByType) {
+                groupedByType.groupBy { it.listType }
+            }
+
+            groupByListType.forEach { (listType, groupedByList) ->
+                ListTypeHeader(
+                    itemType = itemType,
+                    listType = listType,
+                    listCount = groupedByList.size,
+                )
+
+                groupedByList.fastForEachIndexed { i, item ->
+                    TwoGridText(
+                        textOne = item.itemName,
+                        textTwo = item.itemQuantity?.toSafeString() +
+                            " " + item.unitName,
+                        modifier = Modifier.padding(SpaceSmall),
+                        isTitle = true,
+                        textStyle = MaterialTheme.typography.bodyLarge,
+                    )
+                    if (i != groupedByList.size - 1) {
+                        Spacer(modifier = Modifier.height(SpaceMini))
+                        HorizontalDivider(color = Color.LightGray)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@DevicePreviews
 @Composable
 private fun ShareableItemHeader(
     modifier: Modifier = Modifier,
@@ -218,8 +300,8 @@ private fun ShareableItemHeader(
             ) {
                 PoposOutlinedAssistChip(
                     text = marketDetail.typeName.uppercase(),
-                    borderColor = MaterialTheme.colorScheme.primary,
                     icon = PoposIcons.Category,
+                    borderColor = MaterialTheme.colorScheme.primary,
                     textStyle = TextStyle(
                         fontFamily = FontFamily.Cursive,
                         fontWeight = FontWeight.SemiBold,
@@ -237,88 +319,6 @@ private fun ShareableItemHeader(
                         fontStyle = FontStyle.Italic,
                     ),
                 )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ShareableListBottomBar(
-    modifier: Modifier = Modifier,
-    onDismiss: () -> Unit,
-    onClickShare: () -> Unit,
-) = trace("ShareableListBottomBar") {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(SpaceSmall),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        PoposOutlinedButton(
-            modifier = Modifier
-                .heightIn(ButtonSize)
-                .weight(1.4f),
-            text = "Close",
-            icon = PoposIcons.Close,
-            shape = RoundedCornerShape(SpaceMini),
-            color = MaterialTheme.colorScheme.error,
-            onClick = onDismiss,
-        )
-
-        Spacer(modifier = Modifier.width(SpaceMedium))
-
-        PoposButton(
-            text = "Share",
-            icon = PoposIcons.Share,
-            onClick = onClickShare,
-            modifier = Modifier
-                .heightIn(ButtonSize)
-                .weight(1.4f),
-            shape = RoundedCornerShape(SpaceMini),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-            ),
-        )
-    }
-}
-
-@Composable
-private fun ShareableItemBody(
-    modifier: Modifier = Modifier,
-    groupByType: Map<String, List<MarketItemAndQuantity>>,
-) = trace("ShareableItemBody") {
-    Column(
-        modifier = modifier
-            .fillMaxWidth(),
-    ) {
-        groupByType.forEach { (itemType, groupedByType) ->
-            val groupByListType = remember(groupedByType) {
-                groupedByType.groupBy { it.listType }
-            }
-
-            groupByListType.forEach { (listType, groupedByList) ->
-                ListTypeHeader(
-                    itemType = itemType,
-                    listType = listType,
-                    listCount = groupedByList.size,
-                )
-
-                groupedByList.fastForEachIndexed { i, it ->
-                    TwoGridText(
-                        modifier = Modifier.padding(SpaceSmall),
-                        textOne = it.itemName,
-                        textTwo = it.itemQuantity?.toSafeString() +
-                            " " + it.unitName,
-                        textStyle = MaterialTheme.typography.bodyLarge,
-                        isTitle = true,
-                    )
-                    if (i != groupedByList.size - 1) {
-                        Spacer(modifier = Modifier.height(SpaceMini))
-                        HorizontalDivider(color = Color.LightGray)
-                    }
-                }
             }
         }
     }
@@ -348,11 +348,12 @@ private fun ShareableMarketListWithGroupedPreview(
         ShareableMarketList(
             captureController = rememberCaptureController(),
             marketDate = System.currentTimeMillis(),
-            marketDetail = null,
             marketLists = marketItemsAndQuantities,
+            modifier = modifier,
             onDismiss = {},
             onClickShare = {},
             onCaptured = { _, _ -> },
+            marketDetail = null,
         )
     }
 }
@@ -366,11 +367,12 @@ private fun ShareableMarketListWithPreview(
         ShareableMarketList(
             captureController = rememberCaptureController(),
             marketDate = System.currentTimeMillis(),
-            marketDetail = null,
             marketLists = marketItemsAndQuantity,
+            modifier = modifier,
             onDismiss = {},
             onClickShare = {},
             onCaptured = { _, _ -> },
+            marketDetail = null,
         )
     }
 }

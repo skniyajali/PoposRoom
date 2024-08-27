@@ -35,18 +35,13 @@ import com.niyaj.ui.utils.TrackScrollJank
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
-enum class ViewType {
-    LIST,
-    CARD,
-}
-
 @Composable
 internal fun EmployeePaymentList(
-    modifier: Modifier = Modifier,
     viewType: ViewType,
     items: ImmutableList<EmployeeWithPayments>,
     doesSelected: (Int) -> Boolean,
     onSelectItem: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     isInSelectionMode: Boolean = true,
     showTrailingIcon: Boolean = false,
     showEmployeeDetails: Boolean = false,
@@ -74,8 +69,6 @@ internal fun EmployeePaymentList(
                     viewType = viewType,
                     employee = empWithPayments.employee,
                     payments = empWithPayments.payments.toImmutableList(),
-                    showTrailingIcon = showTrailingIcon,
-                    showEmployeeDetails = showEmployeeDetails,
                     doesSelected = doesSelected,
                     onClick = {
                         if (isInSelectionMode) {
@@ -83,12 +76,19 @@ internal fun EmployeePaymentList(
                         }
                     },
                     onLongClick = onSelectItem,
+                    showTrailingIcon = showTrailingIcon,
+                    showEmployeeDetails = showEmployeeDetails,
                     onClickAddPayment = onClickAddPayment,
                     onClickEmployee = onClickEmployee,
                 )
             }
         }
     }
+}
+
+enum class ViewType {
+    LIST,
+    CARD,
 }
 
 @DevicePreviews
@@ -99,11 +99,11 @@ private fun EmployeePaymentListViewPreview(
 ) {
     PoposRoomTheme {
         EmployeePaymentList(
-            modifier = modifier,
             viewType = ViewType.LIST,
             items = items.toImmutableList(),
             doesSelected = { false },
             onSelectItem = {},
+            modifier = modifier,
             isInSelectionMode = false,
             showTrailingIcon = false,
             showEmployeeDetails = false,
@@ -121,11 +121,11 @@ private fun EmployeePaymentListCardViewPreview(
 ) {
     PoposRoomTheme {
         EmployeePaymentList(
-            modifier = modifier,
             viewType = ViewType.CARD,
             items = items.toImmutableList(),
             doesSelected = { false },
             onSelectItem = {},
+            modifier = modifier,
             isInSelectionMode = false,
             showTrailingIcon = false,
             showEmployeeDetails = false,

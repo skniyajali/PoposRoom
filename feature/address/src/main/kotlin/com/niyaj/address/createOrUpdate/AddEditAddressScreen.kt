@@ -57,10 +57,11 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 @Destination(route = ADD_EDIT_ADDRESS_SCREEN)
 @Composable
 fun AddEditAddressScreen(
-    addressId: Int = 0,
     navigator: DestinationsNavigator,
-    viewModel: AddEditAddressViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    addressId: Int = 0,
+    viewModel: AddEditAddressViewModel = hiltViewModel(),
 ) {
     val nameError by viewModel.nameError.collectAsStateWithLifecycle()
     val shortNameError by viewModel.shortNameError.collectAsStateWithLifecycle()
@@ -86,7 +87,7 @@ fun AddEditAddressScreen(
     TrackScreenViewEvent(screenName = "Add/Edit Address Screen")
 
     AddEditAddressScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         title = title,
         icon = icon,
         state = viewModel.state,
@@ -100,23 +101,24 @@ fun AddEditAddressScreen(
 @VisibleForTesting
 @Composable
 internal fun AddEditAddressScreenContent(
-    modifier: Modifier = Modifier,
-    title: String = CREATE_ADDRESS_SCREEN,
-    icon: ImageVector = PoposIcons.Add,
     state: AddEditAddressState,
     onEvent: (AddEditAddressEvent) -> Unit,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
     nameError: String? = null,
     shortNameError: String? = null,
-    onBackClick: () -> Unit,
+    title: String = CREATE_ADDRESS_SCREEN,
+    icon: ImageVector = PoposIcons.Add,
 ) {
     val enableBtn = nameError == null && shortNameError == null
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = true,
         showBottomBar = true,
-        onBackClick = onBackClick,
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
         bottomBar = {
             PoposButton(
                 modifier = Modifier
@@ -130,7 +132,6 @@ internal fun AddEditAddressScreenContent(
                 },
             )
         },
-        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -141,16 +142,16 @@ internal fun AddEditAddressScreenContent(
         ) {
             item(ADDRESS_FULL_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.addressName,
                     label = ADDRESS_FULL_NAME_FIELD,
                     leadingIcon = PoposIcons.Address,
-                    isError = nameError != null,
-                    errorText = nameError,
-                    errorTextTag = ADDRESS_FULL_NAME_ERROR,
-                    showClearIcon = state.addressName.isNotEmpty(),
+                    value = state.addressName,
                     onValueChange = {
                         onEvent(AddEditAddressEvent.AddressNameChanged(it))
                     },
+                    isError = nameError != null,
+                    errorText = nameError,
+                    showClearIcon = state.addressName.isNotEmpty(),
+                    errorTextTag = ADDRESS_FULL_NAME_ERROR,
                     onClickClearIcon = {
                         onEvent(AddEditAddressEvent.AddressNameChanged(""))
                     },
@@ -159,16 +160,16 @@ internal fun AddEditAddressScreenContent(
 
             item(ADDRESS_SHORT_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.shortName,
                     label = ADDRESS_SHORT_NAME_FIELD,
                     leadingIcon = PoposIcons.Rupee,
-                    isError = shortNameError != null,
-                    errorText = shortNameError,
-                    errorTextTag = ADDRESS_SHORT_NAME_ERROR,
-                    showClearIcon = state.shortName.isNotEmpty(),
+                    value = state.shortName,
                     onValueChange = {
                         onEvent(AddEditAddressEvent.ShortNameChanged(it))
                     },
+                    isError = shortNameError != null,
+                    errorText = shortNameError,
+                    showClearIcon = state.shortName.isNotEmpty(),
+                    errorTextTag = ADDRESS_SHORT_NAME_ERROR,
                     onClickClearIcon = {
                         onEvent(AddEditAddressEvent.ShortNameChanged(""))
                     },

@@ -61,6 +61,7 @@ import kotlinx.coroutines.launch
 fun ExpensesImportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: ExpensesSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -103,7 +104,7 @@ fun ExpensesImportScreen(
     }
 
     ExpensesImportScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         importedItems = importedItems.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         isLoading = isLoading,
@@ -123,7 +124,6 @@ fun ExpensesImportScreen(
 @VisibleForTesting
 @Composable
 internal fun ExpensesImportScreenContent(
-    modifier: Modifier = Modifier,
     importedItems: ImmutableList<Expense>,
     selectedItems: ImmutableList<Int>,
     isLoading: Boolean,
@@ -133,6 +133,7 @@ internal fun ExpensesImportScreenContent(
     onClickImport: () -> Unit,
     onClickOpenFile: () -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },

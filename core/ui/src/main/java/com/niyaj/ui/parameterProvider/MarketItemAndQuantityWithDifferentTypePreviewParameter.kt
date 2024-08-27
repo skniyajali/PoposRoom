@@ -24,7 +24,8 @@ import com.niyaj.ui.event.UiState
 import com.niyaj.ui.parameterProvider.MarketItemAndQuantityData.marketItemsAndQuantities
 import com.niyaj.ui.parameterProvider.MarketItemAndQuantityData.marketItemsAndQuantity
 
-class MarketItemAndQuantityWithDifferentTypePreviewParameter : PreviewParameterProvider<UiState<List<MarketItemAndQuantity>>> {
+class MarketItemAndQuantityWithDifferentTypePreviewParameter :
+    PreviewParameterProvider<UiState<List<MarketItemAndQuantity>>> {
     override val values: Sequence<UiState<List<MarketItemAndQuantity>>>
         get() = sequenceOf(
             UiState.Loading,
@@ -33,7 +34,8 @@ class MarketItemAndQuantityWithDifferentTypePreviewParameter : PreviewParameterP
         )
 }
 
-class MarketItemAndQuantityPreviewParameter : PreviewParameterProvider<UiState<List<MarketItemAndQuantity>>> {
+class MarketItemAndQuantityPreviewParameter :
+    PreviewParameterProvider<UiState<List<MarketItemAndQuantity>>> {
     override val values: Sequence<UiState<List<MarketItemAndQuantity>>>
         get() = sequenceOf(
             UiState.Loading,

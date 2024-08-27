@@ -45,14 +45,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.niyaj.core.ui.R.drawable
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.components.PoposOutlinedButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.feature.account.R
 import com.niyaj.ui.components.NoteCard
+import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Presets
 import com.niyaj.ui.utils.Screens
 import com.ramcosta.composedestinations.annotation.Destination
@@ -64,11 +67,12 @@ fun RegistrationResultScreen(
     navController: NavController,
     result: RegistrationResult,
     message: String,
+    modifier: Modifier = Modifier,
 ) = trace("RegistrationResultScreen") {
     Crossfade(
         targetState = result,
         label = "Submit Result State",
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
     ) {
         when (it) {
             RegistrationResult.Failure -> {
@@ -107,13 +111,13 @@ fun RegistrationResultScreen(
                                     NoteCard(text = message)
 
                                     PoposOutlinedButton(
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
                                         text = stringResource(id = R.string.go_back),
-                                        icon = PoposIcons.NavigateBefore,
                                         onClick = {
                                             navController.navigateUp()
                                         },
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        icon = PoposIcons.NavigateBefore,
                                     )
                                 }
                             }
@@ -170,12 +174,12 @@ fun RegistrationResultScreen(
 
 @Composable
 private fun RegistrationResult(
-    modifier: Modifier = Modifier,
     title: String,
     subtitle: String,
     description: String,
     @DrawableRes
     image: Int,
+    modifier: Modifier = Modifier,
 ) = trace("RegistrationResult") {
     LazyColumn(
         modifier = modifier
@@ -224,4 +228,35 @@ private fun RegistrationResult(
 enum class RegistrationResult {
     Success,
     Failure,
+}
+
+@DevicePreviews
+@Composable
+private fun RegistrationResultScreenPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        RegistrationResultScreen(
+            navController = rememberNavController(),
+            result = RegistrationResult.Success,
+            message = "This is a message",
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun RegistrationResultPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        RegistrationResult(
+            title = "Registration Successful",
+            subtitle = "You have successfully registered",
+            description = "You can now access all the features of the app",
+            image = drawable.emptystate,
+            modifier = modifier,
+        )
+    }
 }

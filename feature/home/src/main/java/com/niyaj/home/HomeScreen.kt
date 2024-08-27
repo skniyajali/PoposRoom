@@ -103,6 +103,7 @@ import kotlin.random.Random
 fun HomeScreen(
     navigator: DestinationsNavigator,
     resultRecipient: OpenResultRecipient<String>,
+    modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -184,9 +185,6 @@ fun HomeScreen(
     BackHandler(onBack = onBackClick)
 
     HomeScreenContent(
-        snackbarState = snackbarState,
-        lazyRowState = lazyRowState,
-        lazyListState = lazyListState,
         productState = productState,
         categoryState = categoriesState,
         selectedCategory = selectedCategory,
@@ -225,12 +223,15 @@ fun HomeScreen(
         },
         showKonfetti = showKonfetti.value,
         hideKonfetti = { showKonfetti.value = false },
+        modifier = modifier,
+        snackbarState = snackbarState,
+        lazyRowState = lazyRowState,
+        lazyListState = lazyListState,
     )
 }
 
 @Composable
 fun HomeScreenContent(
-    modifier: Modifier = Modifier,
     productState: UiState<ImmutableList<ProductWithQuantity>>,
     categoryState: UiState<ImmutableList<Category>>,
     selectedCategory: Int,
@@ -251,6 +252,7 @@ fun HomeScreenContent(
     onOrderClick: () -> Unit,
     showKonfetti: Boolean,
     hideKonfetti: () -> Unit,
+    modifier: Modifier = Modifier,
     currentRoute: String = Screens.HOME_SCREEN,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     lazyRowState: LazyStaggeredGridState = rememberLazyStaggeredGridState(),
@@ -272,24 +274,23 @@ fun HomeScreenContent(
         modifier = Modifier.fillMaxSize(),
     ) {
         HomeScreenScaffold(
-            modifier = modifier,
             currentRoute = currentRoute,
             drawerState = drawerState,
             onNavigateToScreen = onNavigateToScreen,
-            snackbarHostState = snackbarState,
             title = {
                 if (selectedId != "0" && !showSearchBar) {
                     SelectedOrderBox(
-                        modifier = Modifier
-                            .padding(horizontal = SpaceMedium),
                         text = selectedId,
-                        height = 40.dp,
                         onClick = {
                             onNavigateToScreen(Screens.SELECT_ORDER_SCREEN)
                         },
+                        modifier = Modifier
+                            .padding(horizontal = SpaceMedium),
+                        height = 40.dp,
                     )
                 }
             },
+            modifier = modifier,
             navigationIcon = {
                 if (showSearchBar) {
                     IconButton(
@@ -329,22 +330,22 @@ fun HomeScreenContent(
                     AnimatedVisibility(showSearchIcon) {
                         Row {
                             PoposTonalIconButton(
-                                onClick = onCartClick,
                                 icon = PoposIcons.OutlinedCart,
+                                onClick = onCartClick,
                                 containerColor = animatedColor,
                                 contentColor = MaterialTheme.colorScheme.tertiary,
                             )
 
                             PoposTonalIconButton(
-                                onClick = onOrderClick,
                                 icon = PoposIcons.OutlinedOrder,
+                                onClick = onOrderClick,
                                 containerColor = animatedColor,
                                 contentColor = MaterialTheme.colorScheme.tertiary,
                             )
 
                             PoposTonalIconButton(
-                                onClick = onOpenSearchBar,
                                 icon = PoposIcons.Search,
+                                onClick = onOpenSearchBar,
                                 containerColor = animatedColor,
                                 contentColor = MaterialTheme.colorScheme.tertiary,
                             )
@@ -362,6 +363,7 @@ fun HomeScreenContent(
                 )
             },
             fabPosition = FabPosition.Center,
+            snackbarHostState = snackbarState,
         ) { padding ->
             ElevatedCard(
                 modifier = Modifier
@@ -378,19 +380,19 @@ fun HomeScreenContent(
                     verticalArrangement = Arrangement.spacedBy(SpaceSmall),
                 ) {
                     TwoColumnLazyRowList(
-                        modifier = Modifier.wrapContentHeight(),
-                        lazyRowState = lazyRowState,
                         uiState = categoryState,
                         selectedCategory = selectedCategory,
                         onSelect = onSelectCategory,
+                        modifier = Modifier.wrapContentHeight(),
+                        lazyRowState = lazyRowState,
                     )
 
                     when (productState) {
                         is UiState.Empty -> {
                             ItemNotAvailable(
                                 text = HomeScreenTestTags.PRODUCT_NOT_AVAILABLE,
-                                image = painterResource(id = R.drawable.nothinghere),
                                 buttonText = HomeScreenTestTags.CREATE_NEW_PRODUCT,
+                                image = painterResource(id = R.drawable.nothinghere),
                                 onClick = onClickCreateProduct,
                             )
                         }
@@ -399,12 +401,12 @@ fun HomeScreenContent(
 
                         is UiState.Success -> {
                             HomeScreenProducts(
-                                modifier = Modifier.testTag("homeScreenProducts"),
-                                lazyListState = lazyListState,
                                 products = productState.data,
                                 onIncrease = onIncreaseQuantity,
                                 onDecrease = onDecreaseQuantity,
                                 onCreateProduct = onClickCreateProduct,
+                                modifier = Modifier.testTag("homeScreenProducts"),
+                                lazyListState = lazyListState,
                             )
                         }
                     }
@@ -413,11 +415,11 @@ fun HomeScreenContent(
         }
 
         ScrollToTop(
+            visible = lazyListState.isScrolled,
+            onClick = onClickScrollToTop,
             modifier = Modifier
                 .padding(bottom = 40.dp, end = 24.dp)
                 .align(Alignment.BottomEnd),
-            visible = lazyListState.isScrolled,
-            onClick = onClickScrollToTop,
         )
 
         if (showKonfetti) {
@@ -449,7 +451,6 @@ private fun HomeScreenContentPreview(
 ) {
     PoposRoomTheme {
         HomeScreenContent(
-            modifier = modifier,
             productState = productState,
             categoryState = UiState.Success(categoryList),
             selectedCategory = 0,
@@ -470,6 +471,7 @@ private fun HomeScreenContentPreview(
             onOrderClick = {},
             showKonfetti = false,
             hideKonfetti = {},
+            modifier = modifier,
         )
     }
 }

@@ -90,31 +90,9 @@ internal fun CustomerRecentOrders(
         ),
     ) {
         StandardExpandable(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
             expanded = doesExpanded,
             onExpandChanged = {
                 onExpanded()
-            },
-            title = {
-                IconWithText(
-                    text = "Recent Orders",
-                    icon = PoposIcons.AllInbox,
-                )
-            },
-            rowClickable = true,
-            expand = { modifier: Modifier ->
-                IconButton(
-                    modifier = modifier,
-                    onClick = onExpanded,
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.ArrowDown,
-                        contentDescription = "Expand More",
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
             },
             content = {
                 Crossfade(
@@ -136,10 +114,10 @@ internal fun CustomerRecentOrders(
 
                                 groupedByDate.forEach { (date, orders) ->
                                     TextWithCount(
-                                        modifier = Modifier
-                                            .background(Color.Transparent),
                                         text = date,
                                         count = orders.size,
+                                        modifier = Modifier
+                                            .background(Color.Transparent),
                                     )
 
                                     orders.forEachIndexed { index, order ->
@@ -154,10 +132,10 @@ internal fun CustomerRecentOrders(
                                             horizontalArrangement = Arrangement.spacedBy(SpaceMini),
                                         ) {
                                             IconWithText(
+                                                text = "${order.orderId}",
                                                 modifier = Modifier
                                                     .testTag("Order-${order.orderId}")
                                                     .weight(0.5f),
-                                                text = "${order.orderId}",
                                                 icon = PoposIcons.Tag,
                                                 isTitle = true,
                                             )
@@ -194,6 +172,28 @@ internal fun CustomerRecentOrders(
                             }
                         }
                     }
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SpaceSmall),
+            rowClickable = true,
+            title = {
+                IconWithText(
+                    text = "Recent Orders",
+                    icon = PoposIcons.AllInbox,
+                )
+            },
+            expand = { modifier: Modifier ->
+                IconButton(
+                    modifier = modifier,
+                    onClick = onExpanded,
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.ArrowDown,
+                        contentDescription = "Expand More",
+                        tint = MaterialTheme.colorScheme.secondary,
+                    )
                 }
             },
         )

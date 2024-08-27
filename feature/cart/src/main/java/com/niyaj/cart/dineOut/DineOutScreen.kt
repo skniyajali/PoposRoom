@@ -51,6 +51,7 @@ fun DineOutScreen(
     onClickEditOrder: (Int) -> Unit,
     onClickOrderDetails: (Int) -> Unit,
     onNavigateToOrderScreen: () -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: CartViewModel = hiltViewModel(),
     printViewModel: OrderPrintViewModel = hiltViewModel(),
 ) {
@@ -171,12 +172,9 @@ fun DineOutScreen(
     }
 
     CartScreenContent(
-        modifier = Modifier,
         uiState = uiState,
         selectedItems = selectedDineOutOrder,
         addOnItems = addOnItems,
-        showPrintBtn = true,
-        deliveryPartners = deliveryPartners,
         onClickCreateOrder = onClickCreateOrder,
         onClickEditOrder = onClickEditOrder,
         onClickOrderDetails = onClickOrderDetails,
@@ -187,6 +185,9 @@ fun DineOutScreen(
             viewModel.onEvent(DineOutEvent.PlaceAllDineOutCart)
         },
         onEvent = viewModel::onEvent,
+        modifier = modifier,
+        showPrintBtn = true,
+        deliveryPartners = deliveryPartners,
         printOrder = printOrder,
         onClickPrintAllOrder = {
             printAllOrder(selectedDineOutOrder)

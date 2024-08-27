@@ -36,8 +36,8 @@ import com.niyaj.model.EmployeeMonthlyDate
 
 @Composable
 fun SalaryDateDropdown(
-    modifier: Modifier = Modifier,
     text: String,
+    modifier: Modifier = Modifier,
     salaryDates: List<EmployeeMonthlyDate> = emptyList(),
     onDateClick: (Pair<String, String>) -> Unit = {},
 ) = trace("SalaryDateDropdown") {
@@ -47,10 +47,10 @@ fun SalaryDateDropdown(
         PoposOutlinedAssistChip(
             text = text,
             icon = PoposIcons.CalenderMonth,
+            trailingIcon = PoposIcons.ArrowDown,
             onClick = {
                 menuExpanded = !menuExpanded
             },
-            trailingIcon = PoposIcons.ArrowDown,
         )
 
         DropdownMenu(

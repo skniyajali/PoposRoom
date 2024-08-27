@@ -106,7 +106,7 @@ class MarketListRepositoryImpl @Inject constructor(
                             newMarketList.marketTypes.toExternalModel(result.toInt())
 
                         async {
-                            listTypes.forEach { it: MarketListWithTypeEntity ->
+                            listTypes.forEach {
                                 listTypeDao.insertMarketListWithType(it)
                             }
                         }.await()
@@ -127,7 +127,10 @@ class MarketListRepositoryImpl @Inject constructor(
 
                         val typesToDelete = async {
                             allTypes.filter { existingType ->
-                                !listTypes.any { it.typeId == existingType.typeId && it.listType == existingType.listType }
+                                !listTypes.any {
+                                    it.typeId == existingType.typeId &&
+                                        it.listType == existingType.listType
+                                }
                             }
                         }.await()
 

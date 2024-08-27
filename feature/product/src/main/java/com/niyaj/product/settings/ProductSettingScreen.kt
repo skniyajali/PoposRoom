@@ -64,9 +64,10 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 @Composable
 fun ProductSettingScreen(
     navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
 ) {
     ProductSettingScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         onBackClick = navigator::navigateUp,
         onImportClick = {
             navigator.navigate(ImportProductScreenDestination())
@@ -95,7 +96,6 @@ fun ProductSettingScreen(
 @VisibleForTesting
 @Composable
 internal fun ProductSettingScreenContent(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onClickViewCategory: () -> Unit,
     onCategoryImportClick: () -> Unit,
@@ -104,6 +104,7 @@ internal fun ProductSettingScreenContent(
     onExportClick: () -> Unit,
     onIncreaseClick: () -> Unit,
     onDecreaseClick: () -> Unit,
+    modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     TrackScreenViewEvent(screenName = PRODUCT_SETTINGS_TITLE)

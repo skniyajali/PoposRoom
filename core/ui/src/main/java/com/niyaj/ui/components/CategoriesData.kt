@@ -64,10 +64,10 @@ const val CATEGORY_ITEM_TAG = "Category-"
 
 @Composable
 fun TwoColumnLazyRowList(
-    modifier: Modifier = Modifier,
     uiState: UiState<List<Category>>,
     selectedCategory: Int,
     onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     lazyRowState: LazyStaggeredGridState = rememberLazyStaggeredGridState(),
 ) = trace("CategoriesData") {
     Crossfade(
@@ -91,12 +91,12 @@ fun TwoColumnLazyRowList(
                         key = { it.categoryId },
                     ) {
                         CategoryData(
-                            modifier = Modifier,
-                            item = it,
+                            category = it,
                             selected = selectedCategory == it.categoryId,
                             onClick = {
                                 onSelect(it.categoryId)
                             },
+                            modifier = Modifier,
                         )
                     }
                 }
@@ -109,10 +109,10 @@ fun TwoColumnLazyRowList(
 
 @Composable
 fun CategoryList(
-    modifier: Modifier = Modifier,
     categories: ImmutableList<Category>,
-    doesSelected: (Int) -> Boolean,
+    selected: (Int) -> Boolean,
     onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
     lazyRowState: LazyListState = rememberLazyListState(),
@@ -132,8 +132,8 @@ fun CategoryList(
             },
         ) { category ->
             CategoryData(
-                item = category,
-                selected = doesSelected(category.categoryId),
+                category = category,
+                selected = selected(category.categoryId),
                 onClick = { onSelect(category.categoryId) },
             )
         }
@@ -142,10 +142,10 @@ fun CategoryList(
 
 @Composable
 private fun CategoryData(
-    modifier: Modifier = Modifier,
-    item: Category,
+    category: Category,
     selected: Boolean,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     selectedColor: Color = MaterialTheme.colorScheme.secondaryContainer,
     unselectedColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CategoryData") {
@@ -153,7 +153,7 @@ private fun CategoryData(
 
     ElevatedCard(
         modifier = modifier
-            .testTag(CATEGORY_ITEM_TAG.plus(item.categoryId)),
+            .testTag(CATEGORY_ITEM_TAG.plus(category.categoryId)),
         onClick = onClick,
         colors = CardDefaults.elevatedCardColors().copy(
             containerColor = color,
@@ -168,15 +168,15 @@ private fun CategoryData(
         ) {
             CircularBox(
                 icon = PoposIcons.Category,
-                doesSelected = selected,
+                selected = selected,
+                text = category.categoryName,
                 size = 25.dp,
-                text = item.categoryName,
             )
 
             Spacer(modifier = Modifier.width(SpaceSmallMax))
 
             Text(
-                text = item.categoryName,
+                text = category.categoryName,
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold,
             )
@@ -191,10 +191,10 @@ private fun CategoryListPreview(
 ) {
     PoposRoomTheme {
         CategoryList(
-            modifier = modifier,
             categories = CategoryPreviewData.categories,
-            doesSelected = { false },
+            selected = { false },
             onSelect = {},
+            modifier = modifier,
         )
     }
 }
@@ -206,10 +206,10 @@ private fun CategoryDataPreview(
 ) {
     PoposRoomTheme {
         CategoryData(
-            modifier = modifier,
-            item = CategoryPreviewData.categoryList.first(),
+            category = CategoryPreviewData.categoryList.first(),
             selected = false,
             onClick = {},
+            modifier = modifier,
         )
     }
 }
@@ -219,11 +219,9 @@ private fun CategoryDataPreview(
 private fun TwoColumnLazyRowListPreview(
     @PreviewParameter(CategoryPreviewParameter::class)
     uiState: UiState<List<Category>>,
-    modifier: Modifier = Modifier,
 ) {
     PoposRoomTheme {
         TwoColumnLazyRowList(
-            modifier = modifier,
             uiState = uiState,
             selectedCategory = 0,
             onSelect = {},

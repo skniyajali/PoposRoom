@@ -26,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.trace
 import com.niyaj.cartorder.CartOrderScreen
 import com.niyaj.designsystem.icon.PoposIcons
@@ -53,19 +54,21 @@ internal fun CartOrderScaffoldNavActions(
     onSelectOrderClick: () -> Unit,
     onClickViewDetails: () -> Unit,
     onSelectAllClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("CartOrderScaffoldNavActions") {
     ScaffoldNavActions(
         selectionCount = selectionCount,
         showSearchIcon = showSearchIcon,
-        showBottomBarActions = false,
+        searchText = searchText,
         onEditClick = onEditClick,
         onDeleteClick = onDeleteClick,
         onSelectAllClick = onSelectAllClick,
-        showSearchBar = showSearchBar,
-        searchText = searchText,
-        onSearchTextChanged = onSearchTextChanged,
         onClearClick = onClearClick,
         onSearchClick = onSearchClick,
+        onSearchTextChanged = onSearchTextChanged,
+        modifier = modifier,
+        showBottomBarActions = false,
+        showSearchBar = showSearchBar,
         showSettings = true,
         onSettingsClick = onSettingsClick,
         content = {

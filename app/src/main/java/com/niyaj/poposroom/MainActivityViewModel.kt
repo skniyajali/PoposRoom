@@ -20,7 +20,6 @@ package com.niyaj.poposroom
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.niyaj.data.repository.UserDataRepository
-import com.niyaj.data.utils.WorkMonitor
 import com.niyaj.model.UserData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,7 +29,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    workMonitor: WorkMonitor,
     userDataRepository: UserDataRepository,
 ) : ViewModel() {
     val uiState = userDataRepository.userData.map {

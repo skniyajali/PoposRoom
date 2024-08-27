@@ -70,7 +70,6 @@ import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 internal fun CartItems(
-    modifier: Modifier = Modifier,
     cartState: CartState.Success,
     selectedCartItems: List<Int>,
     addOnItems: List<AddOnItem>,
@@ -80,6 +79,7 @@ internal fun CartItems(
     onClickViewOrder: (Int) -> Unit,
     onClickPrintOrder: (orderId: Int) -> Unit,
     onEvent: (CartEvent) -> Unit,
+    modifier: Modifier = Modifier,
     listState: LazyListState = rememberLazyListState(),
 ) = trace("CartItems") {
     LazyColumn(
@@ -120,7 +120,6 @@ internal fun CartItems(
 
 @Composable
 private fun CartItemData(
-    modifier: Modifier = Modifier,
     cartItem: CartItem,
     doesSelected: Boolean,
     addOnItems: List<AddOnItem>,
@@ -130,6 +129,7 @@ private fun CartItemData(
     onClickViewOrder: (Int) -> Unit,
     onClickPrintOrder: (orderId: Int) -> Unit,
     onEvent: (CartEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("CartItem") {
     val interactionSource = remember {
         MutableInteractionSource()
@@ -159,9 +159,6 @@ private fun CartItemData(
         shape = RoundedCornerShape(6.dp),
     ) {
         CartItemOrderDetailsSection(
-            orderId = newOrderId,
-            orderType = cartItem.orderType,
-            customerPhone = cartItem.customerPhone,
             selected = doesSelected,
             onClick = {
                 if (cartItem.orderType == OrderType.DineIn) {
@@ -176,6 +173,9 @@ private fun CartItemData(
             onViewClick = {
                 onClickViewOrder(cartItem.orderId)
             },
+            orderType = cartItem.orderType,
+            orderId = newOrderId,
+            customerPhone = cartItem.customerPhone,
         )
 
         CartItemProductDetailsSection(
@@ -204,7 +204,7 @@ private fun CartItemData(
 
                 CartDeliveryPartners(
                     partners = deliveryPartners,
-                    doesSelected = {
+                    selected = {
                         it == cartItem.deliveryPartnerId
                     },
                     onClick = {
@@ -251,9 +251,9 @@ private fun CartItemData(
 
         CartItemTotalPriceSection(
             itemCount = cartItem.cartProducts.size,
+            totalPrice = cartItem.orderPrice,
             orderType = cartItem.orderType,
             showPrintBtn = showPrintBtn,
-            totalPrice = cartItem.orderPrice,
             onClickPlaceOrder = {
                 onEvent(CartEvent.PlaceCartOrder(cartItem.orderId))
             },
@@ -276,7 +276,6 @@ private fun CartItemPreview(
 ) {
     PoposRoomTheme {
         CartItemData(
-            modifier = modifier,
             cartItem = cartItem,
             doesSelected = false,
             addOnItems = addOnItems,
@@ -286,6 +285,7 @@ private fun CartItemPreview(
             onClickViewOrder = {},
             onClickPrintOrder = {},
             onEvent = {},
+            modifier = modifier,
         )
     }
 }
@@ -301,7 +301,6 @@ private fun CartItemsPreview(
 ) {
     PoposRoomTheme {
         CartItems(
-            modifier = modifier,
             cartState = CartState.Success(items = cartItems),
             selectedCartItems = listOf(),
             addOnItems = addOnItems,
@@ -311,6 +310,7 @@ private fun CartItemsPreview(
             onClickViewOrder = {},
             onClickPrintOrder = {},
             onEvent = {},
+            modifier = modifier,
         )
     }
 }

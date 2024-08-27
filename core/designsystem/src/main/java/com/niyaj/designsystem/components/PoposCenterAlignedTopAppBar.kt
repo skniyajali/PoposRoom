@@ -21,18 +21,21 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.Preview
+import com.niyaj.designsystem.theme.PoposRoomTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PoposCenterAlignedTopAppBar(
-    modifier: Modifier = Modifier,
     title: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
     navigationIcon: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
@@ -50,4 +53,17 @@ fun PoposCenterAlignedTopAppBar(
         scrollBehavior = scrollBehavior,
         colors = colors,
     )
+}
+
+@Preview
+@Composable
+private fun PoposCenterAlignedTopAppBarPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        PoposCenterAlignedTopAppBar(
+            title = { Text("Center Aligned Top App Bar") },
+            modifier = modifier,
+        )
+    }
 }

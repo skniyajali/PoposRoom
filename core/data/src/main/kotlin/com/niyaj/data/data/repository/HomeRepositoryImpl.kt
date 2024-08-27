@@ -21,6 +21,7 @@ import com.niyaj.common.network.Dispatcher
 import com.niyaj.common.network.PoposDispatchers
 import com.niyaj.data.repository.HomeRepository
 import com.niyaj.database.dao.HomeDao
+import com.niyaj.database.model.CategoryEntity
 import com.niyaj.database.model.ProductWIthQuantityView
 import com.niyaj.database.model.asExternalModel
 import com.niyaj.model.Category
@@ -44,9 +45,7 @@ class HomeRepositoryImpl @Inject constructor(
 
     override fun getAllCategory(): Flow<ImmutableList<Category>> {
         return homeDao.getAllCategories().mapLatest { list ->
-            list.map {
-                it.asExternalModel()
-            }.toImmutableList()
+            list.map(CategoryEntity::asExternalModel).toImmutableList()
         }
     }
 
@@ -78,51 +77,9 @@ class HomeRepositoryImpl @Inject constructor(
 // TODO:: this should use dynamically
 private val priorityTags = listOf("Popular", "Best", "New")
 
-private fun List<ProductWithQuantity>.sortItemsByTagsAndCategory(priorityTags: List<String>): List<ProductWithQuantity> {
-    return this.sortedWith(
-        compareBy<ProductWithQuantity> { item ->
-            // First, sort by the presence and order of priority tags
-            priorityTags.indexOfFirst { tag -> item.tags.contains(tag) }.let {
-                if (it == -1) Int.MAX_VALUE else it
-            }
-        }.thenBy { item ->
-            // Then, sort by whether the item has any tags at all
-            if (item.tags.isEmpty()) 1 else 0
-        }.thenBy { item ->
-            // Finally, sort by category
-            item.categoryId
-        }.thenBy {
-            it.productPrice
-        },
-    )
-}
-
-private inline fun <T> List<T>.sortByTagsAndCategory(
+private fun List<ProductWithQuantity>.sortByTagsAndCategory(
     priorityTags: List<String>,
-    crossinline getTags: (T) -> List<String>,
-    crossinline getCategory: (T) -> Int,
-    crossinline getPrice: (T) -> Int,
-): List<T> {
-    val priorityTagSet = priorityTags.toSet()
-    val priorityTagIndices = priorityTags.withIndex().associate { it.value to it.index }
-
-    return sortedWith { a, b ->
-        compareValuesBy(
-            a,
-            b,
-            { item ->
-                getTags(item).firstOrNull { it in priorityTagSet }
-                    ?.let { priorityTagIndices[it] ?: Int.MAX_VALUE }
-                    ?: Int.MAX_VALUE
-            },
-            { item -> if (getTags(item).isEmpty()) 1 else 0 },
-            { item -> getCategory(item) },
-            { item -> getPrice(item) },
-        )
-    }
-}
-
-private fun List<ProductWithQuantity>.sortByTagsAndCategory(priorityTags: List<String>): List<ProductWithQuantity> {
+): List<ProductWithQuantity> {
     val priorityTagSet = priorityTags.toSet()
     val priorityTagIndices = priorityTags.withIndex().associate { it.value to it.index }
 

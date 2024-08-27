@@ -74,7 +74,6 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun PaymentsList(
-    modifier: Modifier = Modifier,
     viewType: ViewType,
     employee: Employee,
     payments: ImmutableList<Payment>,
@@ -85,6 +84,7 @@ internal fun PaymentsList(
     showEmployeeDetails: Boolean,
     onClickAddPayment: (employeeId: Int) -> Unit,
     onClickEmployee: (employeeId: Int) -> Unit,
+    modifier: Modifier = Modifier,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     containerColor: Color = MaterialTheme.colorScheme.background,
@@ -113,7 +113,7 @@ internal fun PaymentsList(
             leadingContent = {
                 CircularBox(
                     icon = PoposIcons.Money,
-                    doesSelected = false,
+                    selected = false,
                     text = employee.employeeName,
                 )
             },
@@ -156,22 +156,22 @@ internal fun PaymentsList(
                 when (it) {
                     ViewType.LIST -> {
                         PaymentListView(
-                            modifier = Modifier,
                             payment = salary,
                             doesSelected = doesSelected,
                             onClick = onClick,
                             onLongClick = onLongClick,
+                            modifier = Modifier,
                             border = border,
                         )
                     }
 
                     ViewType.CARD -> {
                         PaymentCardView(
-                            modifier = Modifier,
                             payment = salary,
                             doesSelected = doesSelected,
                             onClick = onClick,
                             onLongClick = onLongClick,
+                            modifier = Modifier,
                         )
                     }
                 }
@@ -187,11 +187,11 @@ internal fun PaymentsList(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PaymentListView(
-    modifier: Modifier = Modifier,
     payment: Payment,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
 ) = trace("EmployeePayment") {
     val borderStroke = if (doesSelected(payment.paymentId)) border else null
@@ -263,11 +263,11 @@ private fun PaymentListView(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PaymentCardView(
-    modifier: Modifier = Modifier,
     payment: Payment,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("EmployeePaymentCardView") {
     ListItem(
@@ -292,7 +292,7 @@ private fun PaymentCardView(
                     PaymentMode.Online -> PoposIcons.AccountBalance
                     else -> PoposIcons.Payments
                 },
-                doesSelected = doesSelected(payment.paymentId),
+                selected = doesSelected(payment.paymentId),
             )
         },
         headlineContent = {
@@ -338,7 +338,6 @@ private fun PaymentsListViewPreview(
 ) {
     PoposRoomTheme {
         PaymentsList(
-            modifier = modifier,
             viewType = ViewType.LIST,
             employee = item.employee,
             payments = item.payments.toImmutableList(),
@@ -349,6 +348,7 @@ private fun PaymentsListViewPreview(
             showEmployeeDetails = false,
             onClickAddPayment = {},
             onClickEmployee = {},
+            modifier = modifier,
         )
     }
 }
@@ -361,7 +361,6 @@ private fun PaymentsListCardViewPreview(
 ) {
     PoposRoomTheme {
         PaymentsList(
-            modifier = modifier,
             viewType = ViewType.CARD,
             employee = item.employee,
             payments = item.payments.toImmutableList(),
@@ -372,6 +371,7 @@ private fun PaymentsListCardViewPreview(
             showEmployeeDetails = false,
             onClickAddPayment = {},
             onClickEmployee = {},
+            modifier = modifier,
         )
     }
 }

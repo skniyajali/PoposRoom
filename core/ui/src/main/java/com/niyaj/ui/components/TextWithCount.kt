@@ -43,14 +43,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun TextWithCount(
-    modifier: Modifier = Modifier,
     text: String,
     count: Int,
+    modifier: Modifier = Modifier,
     leadingIcon: ImageVector? = null,
     onClick: () -> Unit = {},
 ) {
@@ -80,9 +83,9 @@ fun TextWithCount(
 
 @Composable
 fun TextWithCount(
-    modifier: Modifier = Modifier,
     text: String,
     count: Int,
+    modifier: Modifier = Modifier,
     trailingText: String? = null,
     leadingIcon: ImageVector? = null,
     onClick: () -> Unit = {},
@@ -123,8 +126,8 @@ fun TextWithCount(
 
 @Composable
 fun CountBox(
-    modifier: Modifier = Modifier,
     count: String,
+    modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.primary,
     textColor: Color = contentColorFor(backgroundColor = backgroundColor),
     style: TextStyle = MaterialTheme.typography.labelSmall,
@@ -147,10 +150,10 @@ fun CountBox(
 
 @Composable
 fun TextWithBorderCount(
-    modifier: Modifier = Modifier,
     text: String,
-    leadingIcon: ImageVector? = null,
     count: Int,
+    modifier: Modifier = Modifier,
+    leadingIcon: ImageVector? = null,
     shape: Shape = RectangleShape,
     backgroundColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
     tintColor: Color = MaterialTheme.colorScheme.onTertiaryContainer,
@@ -168,10 +171,10 @@ fun TextWithBorderCount(
         IconWithText(
             text = text,
             icon = leadingIcon,
-            fontWeight = FontWeight.SemiBold,
-            tintColor = tintColor,
-            textColor = contentColor,
             textStyle = textStyle,
+            textColor = contentColor,
+            tintColor = tintColor,
+            fontWeight = FontWeight.SemiBold,
         )
 
         Text(
@@ -179,6 +182,65 @@ fun TextWithBorderCount(
             style = textStyle,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun TextWithCountPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        TextWithCount(
+            text = "Text With Count",
+            count = 1,
+            leadingIcon = PoposIcons.Add,
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun TextWithCountWithIconPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        TextWithCount(
+            text = "Text With Count",
+            count = 1,
+            leadingIcon = PoposIcons.Add,
+            trailingText = "1",
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun CountBoxPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        CountBox(
+            count = "10",
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun TextWithBorderCountPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        TextWithBorderCount(
+            text = "Text With Border Count",
+            count = 1,
+            leadingIcon = PoposIcons.Add,
+            modifier = modifier,
         )
     }
 }

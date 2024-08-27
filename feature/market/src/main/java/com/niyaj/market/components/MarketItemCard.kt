@@ -69,11 +69,11 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun MarketItemCardList(
-    modifier: Modifier = Modifier,
     items: ImmutableList<MarketItem>,
     isInSelectionMode: Boolean,
     doesSelected: (Int) -> Boolean,
     onSelectItem: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     showSettingsCard: Boolean = false,
     onClickCard: () -> Unit = {},
     lazyGridState: LazyGridState = rememberLazyGridState(),
@@ -108,13 +108,13 @@ internal fun MarketItemCardList(
         groupedData.forEach { (type, items) ->
             stickyHeader {
                 TextWithCount(
+                    text = type.typeName,
+                    count = items.size,
                     modifier = Modifier
                         .background(
                             MaterialTheme.colorScheme.tertiaryContainer,
                             RoundedCornerShape(SpaceMini),
                         ),
-                    text = type.typeName,
-                    count = items.size,
                     leadingIcon = PoposIcons.Category,
                 )
             }
@@ -141,11 +141,11 @@ internal fun MarketItemCardList(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun MarketItemCard(
-    modifier: Modifier = Modifier,
     item: MarketItem,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("MarketItemCard") {
@@ -201,9 +201,9 @@ private fun MarketItemCard(
             }
 
             CircularBox(
-                text = item.itemName,
                 icon = PoposIcons.Dns,
-                doesSelected = doesSelected(item.itemId),
+                selected = doesSelected(item.itemId),
+                text = item.itemName,
             )
         }
     }
@@ -216,11 +216,11 @@ private fun MarketItemCardListPreview(
 ) {
     PoposRoomTheme {
         MarketItemCardList(
-            modifier = modifier,
             items = MarketItemPreviewData.marketItems.toImmutableList(),
             isInSelectionMode = false,
             doesSelected = { it % 2 == 0 },
             onSelectItem = {},
+            modifier = modifier,
             showSettingsCard = true,
             onClickCard = {},
         )

@@ -76,10 +76,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun AbsentScreen(
     navigator: DestinationsNavigator,
-    viewModel: AbsentViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditAbsentScreenDestination, String>,
     exportRecipient: ResultRecipient<AbsentExportScreenDestination, String>,
     importRecipient: ResultRecipient<AbsentImportScreenDestination, String>,
+    modifier: Modifier = Modifier,
+    viewModel: AbsentViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -117,7 +118,7 @@ fun AbsentScreen(
         onAbsentAddClick = {
             navigator.navigate(AddEditAbsentScreenDestination(employeeId = it))
         },
-        modifier = Modifier,
+        modifier = modifier,
         snackbarState = snackbarState,
     )
 
@@ -176,9 +177,9 @@ internal fun AbsentScreenContent(
     val openDialog = remember { mutableStateOf(false) }
 
     PoposPrimaryScaffold(
-        modifier = modifier,
         currentRoute = Screens.ABSENT_SCREEN,
         title = if (selectedItems.isEmpty()) ABSENT_SCREEN_TITLE else "${selectedItems.size} Selected",
+        selectionCount = selectedItems.size,
         floatingActionButton = {
             StandardFAB(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
@@ -194,10 +195,7 @@ internal fun AbsentScreenContent(
         },
         navActions = {
             ScaffoldNavActions(
-                placeholderText = ABSENT_SEARCH_PLACEHOLDER,
-                showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchBar = showSearchBar,
                 showSearchIcon = showFab,
                 searchText = searchText,
                 onEditClick = {
@@ -206,20 +204,23 @@ internal fun AbsentScreenContent(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = onClickSettings,
                 onSelectAllClick = onClickSelectAll,
                 onClearClick = onClickClear,
                 onSearchIconClick = onClickSearchIcon,
                 onSearchTextChanged = onSearchTextChanged,
+                showSearchBar = showSearchBar,
+                showSettingsIcon = true,
+                onSettingsClick = onClickSettings,
+                placeholderText = ABSENT_SEARCH_PLACEHOLDER,
             )
         },
+        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
+        onNavigateToScreen = onNavigateToScreen,
+        modifier = modifier,
         fabPosition = if (lazyListState.isScrolled) FabPosition.End else FabPosition.Center,
-        selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
         onDeselect = onClickDeselect,
-        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
         snackbarHostState = snackbarState,
-        onNavigateToScreen = onNavigateToScreen,
     ) {
         Crossfade(
             targetState = uiState,

@@ -79,10 +79,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun CategoryScreen(
     navigator: DestinationsNavigator,
-    viewModel: CategoryViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditCategoryScreenDestination, String>,
     exportRecipient: ResultRecipient<ExportCategoryScreenDestination, String>,
     importRecipient: ResultRecipient<ImportCategoryScreenDestination, String>,
+    modifier: Modifier = Modifier,
+    viewModel: CategoryViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -95,7 +96,6 @@ fun CategoryScreen(
     val searchText = viewModel.searchText.value
 
     CategoryScreenContent(
-        modifier = Modifier,
         uiState = state,
         selectedItems = selectedItems,
         showSearchBar = showSearchBar,
@@ -119,6 +119,7 @@ fun CategoryScreen(
         onClickSettings = {
             navigator.navigate(CategorySettingsScreenDestination)
         },
+        modifier = modifier,
         snackbarHostState = snackbarState,
     )
 
@@ -240,9 +241,9 @@ internal fun CategoryScreenContent(
     val openDialog = remember { mutableStateOf(false) }
 
     PoposPrimaryScaffold(
-        modifier = modifier,
         currentRoute = Screens.CATEGORY_SCREEN,
         title = if (selectedItems.isEmpty()) CATEGORY_SCREEN_TITLE else "${selectedItems.size} Selected",
+        selectionCount = selectedItems.size,
         floatingActionButton = {
             StandardFAB(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
@@ -258,10 +259,7 @@ internal fun CategoryScreenContent(
         },
         navActions = {
             ScaffoldNavActions(
-                placeholderText = CATEGORY_SEARCH_PLACEHOLDER,
-                showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchBar = showSearchBar,
                 showSearchIcon = showFab,
                 searchText = searchText,
                 onEditClick = {
@@ -270,20 +268,23 @@ internal fun CategoryScreenContent(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = onClickSettings,
                 onSelectAllClick = onClickSelectAll,
                 onClearClick = onClickClear,
                 onSearchIconClick = onClickSearchIcon,
                 onSearchTextChanged = onSearchTextChanged,
+                showSearchBar = showSearchBar,
+                showSettingsIcon = true,
+                onSettingsClick = onClickSettings,
+                placeholderText = CATEGORY_SEARCH_PLACEHOLDER,
             )
         },
+        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
+        onNavigateToScreen = onNavigateToScreen,
+        modifier = modifier,
         fabPosition = if (lazyGridState.isScrolled) FabPosition.End else FabPosition.Center,
-        selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
         onDeselect = onClickDeselect,
-        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
         snackbarHostState = snackbarHostState,
-        onNavigateToScreen = onNavigateToScreen,
     ) { _ ->
         Crossfade(
             targetState = uiState,
@@ -304,9 +305,6 @@ internal fun CategoryScreenContent(
                     TrackScrollJank(scrollableState = lazyGridState, stateName = "Category::List")
 
                     CategoryList(
-                        modifier = modifier
-                            .fillMaxSize(),
-                        padding = SpaceMedium,
                         items = state.data.toImmutableList(),
                         onClick = {
                             if (selectedItems.isNotEmpty()) {
@@ -314,7 +312,10 @@ internal fun CategoryScreenContent(
                             }
                         },
                         onLongClick = onClickSelectItem,
-                        doesSelected = selectedItems::contains,
+                        selected = selectedItems::contains,
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        padding = SpaceMedium,
                         lazyGridState = lazyGridState,
                     )
                 }

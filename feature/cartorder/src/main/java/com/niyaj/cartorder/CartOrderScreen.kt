@@ -105,6 +105,7 @@ fun CartOrderScreen(
     navigator: DestinationsNavigator,
     onClickOrderDetails: (Int) -> Unit,
     resultRecipient: ResultRecipient<AddEditCartOrderScreenDestination, String>,
+    modifier: Modifier = Modifier,
     viewModel: CartOrderViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -155,12 +156,12 @@ fun CartOrderScreen(
     }
 
     CartOrderScreenContent(
-        modifier = Modifier,
         uiState = state,
         selectedItems = selectedItems,
         selectedOrder = selectedOrder,
         showSearchBar = showSearchBar,
         searchText = searchText,
+        modifier = modifier,
         onClickSearchIcon = viewModel::openSearchBar,
         onSearchTextChanged = viewModel::searchTextChanged,
         onClickClear = viewModel::clearSearchText,
@@ -187,8 +188,8 @@ fun CartOrderScreen(
 
 @VisibleForTesting
 @Composable
+@Suppress("LongMethod")
 internal fun CartOrderScreenContent(
-    modifier: Modifier = Modifier,
     uiState: UiState<Map<String, List<CartOrder>>>,
     selectedItems: List<Int>,
     selectedOrder: Int,
@@ -210,6 +211,7 @@ internal fun CartOrderScreenContent(
     onClickEdit: (Int) -> Unit,
     onClickSettings: () -> Unit,
     onNavigateToDetails: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
@@ -233,9 +235,9 @@ internal fun CartOrderScreenContent(
     var showMenu by rememberSaveable { mutableStateOf(false) }
 
     PoposPrimaryScaffold(
-        modifier = modifier,
         currentRoute = Screens.CART_ORDER_SCREEN,
         title = title,
+        selectionCount = selectedItems.size,
         floatingActionButton = {
             StandardFAB(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
@@ -281,13 +283,13 @@ internal fun CartOrderScreenContent(
                 },
             )
         },
+        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
+        onNavigateToScreen = onNavigateToScreen,
+        modifier = modifier,
         fabPosition = if (lazyGridState.isScrolled) FabPosition.End else FabPosition.Center,
-        selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
         onDeselect = onClickDeselect,
-        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
         snackbarHostState = snackbarHostState,
-        onNavigateToScreen = onNavigateToScreen,
     ) {
         Crossfade(
             targetState = uiState,
@@ -348,6 +350,8 @@ internal fun CartOrderScreenContent(
                         state.data.forEach { (date, orders) ->
                             stickyHeader {
                                 TextWithCount(
+                                    text = date,
+                                    count = orders.count(),
                                     modifier = Modifier
                                         .background(
                                             if (lazyGridState.isScrollingUp()) {
@@ -359,8 +363,6 @@ internal fun CartOrderScreenContent(
                                         .clip(
                                             RoundedCornerShape(if (lazyGridState.isScrollingUp()) 4.dp else 0.dp),
                                         ),
-                                    text = date,
-                                    count = orders.count(),
                                     leadingIcon = PoposIcons.CalenderMonth,
                                     onClick = {},
                                 )
@@ -374,11 +376,11 @@ internal fun CartOrderScreenContent(
                             ) { cartOrder ->
                                 CartOrderData(
                                     item = cartOrder,
-                                    orderSelected = {
-                                        selectedOrder == it
-                                    },
                                     doesSelected = {
                                         selectedItems.contains(it)
+                                    },
+                                    orderSelected = {
+                                        selectedOrder == it
                                     },
                                     onClick = {
                                         if (selectedItems.isNotEmpty()) {
@@ -424,7 +426,7 @@ private fun CartOrderScreenContentPreview(
 ) {
     PoposRoomTheme {
         CartOrderScreenContent(
-            modifier = Modifier,
+            modifier = modifier,
             uiState = uiState,
             selectedItems = listOf(),
             selectedOrder = 0,

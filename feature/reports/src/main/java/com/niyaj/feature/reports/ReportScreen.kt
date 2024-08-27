@@ -115,6 +115,7 @@ fun ReportScreen(
     onClickAddress: (Int) -> Unit,
     onClickCustomer: (Int) -> Unit,
     onClickProduct: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: ReportsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -206,7 +207,7 @@ fun ReportScreen(
     }
 
     ReportScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         reportState = reportState,
         reportBarState = reportBarState,
         productState = productState,
@@ -243,8 +244,6 @@ fun ReportScreen(
 @VisibleForTesting
 @Composable
 internal fun ReportScreenContent(
-    modifier: Modifier = Modifier,
-    title: String = "Reports",
     reportState: UiState<Reports>,
     reportBarState: UiState<List<HorizontalBarData>>,
     productState: UiState<List<HorizontalBarData>>,
@@ -268,6 +267,8 @@ internal fun ReportScreenContent(
     onClickViewMore: () -> Unit,
     onReportEvent: (ReportsEvent) -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    title: String = "Reports",
     lazyListState: LazyListState = rememberLazyListState(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
@@ -299,8 +300,12 @@ internal fun ReportScreenContent(
     BackHandler { onBackClick() }
 
     PoposSecondaryScaffold(
-        showBackButton = true,
         title = title,
+        modifier = modifier,
+        onBackClick = onBackClick,
+        showBackButton = true,
+        fabPosition = FabPosition.End,
+        snackbarHostState = snackbarHostState,
         navActions = {
             if (!selectedDate.isToday) {
                 PoposOutlinedAssistChip(
@@ -323,7 +328,6 @@ internal fun ReportScreenContent(
                 Icon(imageVector = PoposIcons.Print, contentDescription = "Print Reports")
             }
         },
-        fabPosition = FabPosition.End,
         floatingActionButton = {
             ScrollToTop(
                 visible = !lazyListState.isScrollingUp(),
@@ -334,14 +338,12 @@ internal fun ReportScreenContent(
                 },
             )
         },
-        onBackClick = onBackClick,
-        snackbarHostState = snackbarHostState,
     ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "Reports::List")
 
         LazyColumn(
             state = lazyListState,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
             contentPadding = PaddingValues(SpaceSmall),

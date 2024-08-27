@@ -55,13 +55,13 @@ import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 internal fun CartFooterPlaceOrder(
-    modifier: Modifier = Modifier,
     countTotalItems: Int,
     countSelectedItem: Int,
     showPrintBtn: Boolean,
     onClickSelectAll: () -> Unit,
     onClickPlaceAllOrder: () -> Unit,
     onClickPrintAllOrder: () -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("CartFooterPlaceOrder") {
     Surface(
         modifier = modifier
@@ -154,11 +154,11 @@ internal fun CartFooterPlaceOrder(
                     Spacer(modifier = Modifier.width(SpaceSmall))
 
                     PoposIconTextButton(
-                        modifier = Modifier.wrapContentWidth(),
                         icon = PoposIcons.Print,
-                        enabled = countSelectedItem > 0,
                         onClick = onClickPrintAllOrder,
+                        modifier = Modifier.wrapContentWidth(),
                         contentDescription = "Print Order",
+                        enabled = countSelectedItem > 0,
                         btnHeight = ButtonDefaults.MinHeight,
                         shape = CutCornerShape(4.dp),
                         colors = ButtonDefaults.buttonColors(
@@ -181,13 +181,13 @@ private fun CartFooterPlaceOrderPreview(
 ) {
     PoposRoomTheme {
         CartFooterPlaceOrder(
-            modifier = modifier,
             countTotalItems = 4222,
             countSelectedItem = 322,
             showPrintBtn = true,
             onClickSelectAll = {},
             onClickPlaceAllOrder = {},
             onClickPrintAllOrder = {},
+            modifier = modifier,
         )
     }
 }

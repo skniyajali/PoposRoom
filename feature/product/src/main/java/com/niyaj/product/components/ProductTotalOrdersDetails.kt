@@ -62,8 +62,8 @@ import com.niyaj.ui.utils.DevicePreviews
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ProductTotalOrdersDetails(
-    modifier: Modifier = Modifier,
     details: ProductTotalOrderDetails,
+    modifier: Modifier = Modifier,
 ) = trace("ProductTotalOrdersDetails") {
     ElevatedCard(
         modifier = modifier
@@ -164,51 +164,51 @@ internal fun ProductTotalOrdersDetails(
                 maxItemsInEachRow = 2,
             ) {
                 ReportCardBox(
-                    modifier = Modifier,
                     title = "DineIn Sales",
                     subtitle = details.dineInAmount.toRupee,
                     icon = PoposIcons.DinnerDining,
-                    minusWidth = 30.dp,
-                    iconTint = MaterialTheme.colorScheme.error,
-                    containerColor = LightColor1,
                     onClick = {},
+                    modifier = Modifier,
+                    minusWidth = 30.dp,
+                    containerColor = LightColor1,
+                    iconTint = MaterialTheme.colorScheme.error,
                 )
 
                 ReportCardBox(
-                    modifier = Modifier,
                     title = "DineOut Sales",
                     subtitle = details.dineOutAmount.toRupee,
                     icon = PoposIcons.DeliveryDining,
-                    iconTint = MaterialTheme.colorScheme.tertiary,
-                    containerColor = LightColor2,
-                    minusWidth = 30.dp,
                     onClick = {},
+                    modifier = Modifier,
+                    minusWidth = 30.dp,
+                    containerColor = LightColor2,
+                    iconTint = MaterialTheme.colorScheme.tertiary,
                 )
 
                 if (details.mostOrderQtyDate.isNotEmpty()) {
                     ReportCardBox(
-                        modifier = Modifier,
                         title = "Most Sales",
                         subtitle = details.mostOrderQtyDate,
                         icon = PoposIcons.AutoGraph,
-                        minusWidth = 30.dp,
-                        iconTint = MaterialTheme.colorScheme.secondary,
-                        containerColor = LightColor3,
                         onClick = {},
+                        modifier = Modifier,
+                        minusWidth = 30.dp,
+                        containerColor = LightColor3,
+                        iconTint = MaterialTheme.colorScheme.secondary,
                     )
                 }
 
                 if (details.mostOrderItemDate.isNotEmpty()) {
                     ReportCardBox(
-                        modifier = Modifier,
                         title = "Most Orders",
                         subtitle = details.mostOrderQtyDate,
                         icon = PoposIcons.Order,
+                        onClick = {},
+                        modifier = Modifier,
                         minusWidth = 30.dp,
-                        iconTint = MaterialTheme.colorScheme.primary,
                         containerColor = LightColor4,
                         boxColor = Color.White,
-                        onClick = {},
+                        iconTint = MaterialTheme.colorScheme.primary,
                     )
                 }
             }

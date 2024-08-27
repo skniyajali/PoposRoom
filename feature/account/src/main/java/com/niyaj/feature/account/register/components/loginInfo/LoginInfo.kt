@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -43,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.util.trace
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -51,12 +53,14 @@ import com.niyaj.ui.components.ImageCard
 import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.components.PhoneNoCountBox
 import com.niyaj.ui.components.StandardOutlinedTextField
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun LoginInfo(
-    modifier: Modifier,
-    lazyListState: LazyListState,
     infoState: LoginInfoState,
+    onEvent: (LoginInfoEvent) -> Unit,
+    onChangeLogo: () -> Unit,
+    modifier: Modifier = Modifier,
     nameError: String? = null,
     emailError: String? = null,
     phoneError: String? = null,
@@ -64,12 +68,7 @@ fun LoginInfo(
     secondaryPhoneError: String? = null,
     @DrawableRes
     defaultLogo: Int = com.niyaj.core.ui.R.drawable.popos,
-    onChangeName: (LoginInfoEvent) -> Unit,
-    onChangePhone: (LoginInfoEvent) -> Unit,
-    onChangeEmail: (LoginInfoEvent) -> Unit,
-    onChangeSecondaryPhone: (LoginInfoEvent) -> Unit,
-    onChangePassword: (LoginInfoEvent) -> Unit,
-    onChangeLogo: () -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
 ) = trace("LoginInfo") {
     var showPassword by remember {
         mutableStateOf(false)
@@ -116,8 +115,8 @@ fun LoginInfo(
             ) {
                 ImageCard(
                     defaultImage = defaultLogo,
-                    imageName = infoState.logo,
                     onEditClick = onChangeLogo,
+                    imageName = infoState.logo,
                 )
 
                 NoteCard(
@@ -129,61 +128,61 @@ fun LoginInfo(
         item("Name_field") {
             StandardOutlinedTextField(
                 label = "Restaurant Name",
-                value = infoState.name,
                 leadingIcon = PoposIcons.Restaurant,
+                value = infoState.name,
+                onValueChange = {
+                    onEvent(LoginInfoEvent.NameChanged(it))
+                },
                 isError = nameError != null,
                 errorText = nameError,
-                onValueChange = {
-                    onChangeName(LoginInfoEvent.NameChanged(it))
-                },
             )
         }
 
         item("Phone Field") {
             StandardOutlinedTextField(
                 label = "Phone No",
-                value = infoState.phone,
                 leadingIcon = PoposIcons.PhoneAndroid,
+                value = infoState.phone,
+                onValueChange = {
+                    onEvent(LoginInfoEvent.PhoneChanged(it))
+                },
                 isError = phoneError != null,
                 errorText = phoneError,
-                keyboardType = KeyboardType.Number,
-                onValueChange = {
-                    onChangePhone(LoginInfoEvent.PhoneChanged(it))
-                },
                 trailingIcon = {
                     PhoneNoCountBox(count = infoState.phone.length)
                 },
+                keyboardType = KeyboardType.Number,
             )
         }
 
         item("Secondary Phone") {
             StandardOutlinedTextField(
                 label = "Secondary Phone",
-                value = infoState.secondaryPhone,
                 leadingIcon = PoposIcons.Phone,
+                value = infoState.secondaryPhone,
+                onValueChange = {
+                    onEvent(LoginInfoEvent.SecondaryPhoneChanged(it))
+                },
                 isError = secondaryPhoneError != null,
                 errorText = secondaryPhoneError,
-                keyboardType = KeyboardType.Number,
-                onValueChange = {
-                    onChangeSecondaryPhone(LoginInfoEvent.SecondaryPhoneChanged(it))
-                },
                 trailingIcon = {
                     PhoneNoCountBox(count = infoState.secondaryPhone.length)
                 },
+                keyboardType = KeyboardType.Number,
             )
         }
 
         item("Email_Field") {
             StandardOutlinedTextField(
-                value = infoState.email,
                 label = "Email Address",
                 leadingIcon = PoposIcons.Email,
+                value = infoState.email,
+                onValueChange = {
+                    onEvent(LoginInfoEvent.EmailChanged(it))
+                },
                 isError = emailError != null,
                 errorText = emailError,
                 keyboardType = KeyboardType.Email,
-                onValueChange = {
-                    onChangeEmail(LoginInfoEvent.EmailChanged(it))
-                },
                 textStyle = LocalTextStyle.current.copy(
                     fontFamily = FontFamily.Cursive,
                 ),
@@ -193,22 +192,37 @@ fun LoginInfo(
         item("Password_Field") {
             StandardOutlinedTextField(
                 label = stringResource(R.string.password),
-                value = infoState.password,
                 leadingIcon = PoposIcons.Password,
+                value = infoState.password,
+                onValueChange = {
+                    onEvent(LoginInfoEvent.PasswordChanged(it))
+                },
                 isError = passwordError != null,
                 errorText = passwordError,
+                textStyle = LocalTextStyle.current.copy(
+                    fontFamily = FontFamily.Cursive,
+                ),
                 isPasswordToggleDisplayed = true,
                 isPasswordVisible = showPassword,
                 onPasswordToggleClick = {
                     showPassword = !showPassword
                 },
-                onValueChange = {
-                    onChangePassword(LoginInfoEvent.PasswordChanged(it))
-                },
-                textStyle = LocalTextStyle.current.copy(
-                    fontFamily = FontFamily.Cursive,
-                ),
             )
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun LoginInfoPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        LoginInfo(
+            infoState = LoginInfoState(),
+            onEvent = {},
+            onChangeLogo = {},
+            modifier = modifier,
+        )
     }
 }

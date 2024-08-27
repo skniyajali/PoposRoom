@@ -54,9 +54,9 @@ import com.niyaj.designsystem.theme.PoposRoomTheme
 
 @Composable
 fun StandardAssistChip(
-    modifier: Modifier = Modifier,
     text: String,
     icon: ImageVector,
+    modifier: Modifier = Modifier,
     borderColor: Color = MaterialTheme.colorScheme.secondary,
     onClick: () -> Unit = {},
 ) {
@@ -85,8 +85,8 @@ fun StandardAssistChip(
 
 @Composable
 fun StandardFilterChip(
-    modifier: Modifier = Modifier,
     text: String,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     selected: Boolean = false,
     containerColor: Color = MaterialTheme.colorScheme.surface,
@@ -128,8 +128,8 @@ fun StandardFilterChip(
 
 @Composable
 fun StandardRoundedFilterChip(
-    modifier: Modifier = Modifier,
     text: String,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     selected: Boolean = false,
     containerColor: Color = MaterialTheme.colorScheme.surface,
@@ -175,8 +175,8 @@ fun StandardRoundedFilterChip(
 
 @Composable
 fun StandardRoundedInputChip(
-    modifier: Modifier = Modifier,
     text: String,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     selected: Boolean = false,
     borderColor: Color = MaterialTheme.colorScheme.error,
@@ -220,9 +220,9 @@ fun StandardRoundedInputChip(
 
 @Composable
 fun PoposOutlinedAssistChip(
-    modifier: Modifier = Modifier,
     text: String,
     icon: ImageVector,
+    modifier: Modifier = Modifier,
     trailingIcon: ImageVector? = null,
     borderColor: Color = MaterialTheme.colorScheme.tertiary,
     textStyle: TextStyle = MaterialTheme.typography.labelSmall,
@@ -261,9 +261,9 @@ fun PoposOutlinedAssistChip(
 
 @Composable
 fun PoposSuggestionChip(
-    modifier: Modifier = Modifier,
     text: String,
     icon: ImageVector,
+    modifier: Modifier = Modifier,
     borderColor: Color = MaterialTheme.colorScheme.tertiary,
     labelColor: Color = borderColor,
     chipBorder: BorderStroke = suggestionChipBorder(
@@ -295,6 +295,62 @@ fun PoposSuggestionChip(
 
 @Preview
 @Composable
+private fun StandardAssistChipPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardAssistChip(
+            text = "Assist Chip",
+            icon = PoposIcons.StarHalf,
+            modifier = modifier,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun StandardFilterChipPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardFilterChip(
+            text = "Filter Chip",
+            icon = PoposIcons.StarHalf,
+            modifier = modifier,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun StandardRoundedFilterChipPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardRoundedFilterChip(
+            text = "Filter Chip",
+            icon = PoposIcons.StarHalf,
+            modifier = modifier,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PoposOutlinedAssistChipPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        PoposOutlinedAssistChip(
+            text = "Popos Outlined Assist Chip",
+            icon = PoposIcons.StarHalf,
+            modifier = modifier,
+        )
+    }
+}
+
+@Preview
+@Composable
 private fun StandardRoundedInputChipPreview(
     modifier: Modifier = Modifier,
 ) {
@@ -302,6 +358,7 @@ private fun StandardRoundedInputChipPreview(
         StandardRoundedInputChip(
             text = "InputChip",
             icon = PoposIcons.StarHalf,
+            modifier = modifier,
         )
     }
 }
@@ -314,9 +371,9 @@ private fun PoposSuggestionChipPreview(
     PoposRoomTheme {
         Surface {
             PoposSuggestionChip(
-                modifier = modifier,
                 text = "Suggestion Chip",
                 icon = PoposIcons.StarHalf,
+                modifier = modifier,
             )
         }
     }

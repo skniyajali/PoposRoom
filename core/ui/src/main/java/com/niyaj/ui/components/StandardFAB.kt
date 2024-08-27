@@ -40,13 +40,16 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import com.niyaj.common.utils.Constants
 import com.niyaj.common.utils.Constants.STANDARD_FAB_BUTTON
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun StandardFAB(
     fabVisible: Boolean,
     onFabClick: () -> Unit,
     onClickScroll: () -> Unit,
+    modifier: Modifier = Modifier,
     showScrollToTop: Boolean = false,
     fabText: String = Constants.FAB_TEXT,
     fabIcon: ImageVector = PoposIcons.Add,
@@ -54,6 +57,7 @@ fun StandardFAB(
     fabContainerColor: Color = MaterialTheme.colorScheme.primary,
 ) {
     Column(
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AnimatedVisibility(
@@ -95,13 +99,15 @@ fun StandardFAB(
 @Composable
 fun StandardFAB(
     fabVisible: Boolean,
+    onFabClick: () -> Unit,
+    onClickScroll: () -> Unit,
+    modifier: Modifier = Modifier,
     showScrollToTop: Boolean = false,
     fabIcon: ImageVector = PoposIcons.Add,
     containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
-    onFabClick: () -> Unit,
-    onClickScroll: () -> Unit,
 ) {
     Column(
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AnimatedVisibility(
@@ -150,10 +156,12 @@ fun StandardFABIcon(
     fabVisible: Boolean,
     onFabClick: () -> Unit,
     fabText: String,
+    modifier: Modifier = Modifier,
     fabIcon: ImageVector = PoposIcons.Add,
     fabContainerColor: Color = MaterialTheme.colorScheme.secondary,
 ) {
     AnimatedVisibility(
+        modifier = modifier,
         visible = fabVisible,
         enter = fadeIn() + slideInVertically(
             initialOffsetY = { fullHeight ->
@@ -180,6 +188,54 @@ fun StandardFABIcon(
             },
             onClick = onFabClick,
             containerColor = fabContainerColor,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun StandardFABPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardFAB(
+            fabVisible = true,
+            fabText = "Add New Item",
+            onFabClick = {},
+            onClickScroll = {},
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun StandardFABOnlyIconPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardFAB(
+            fabVisible = true,
+            onFabClick = {},
+            onClickScroll = {},
+            modifier = modifier,
+            fabIcon = PoposIcons.Add,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun StandardFABAndIconPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardFABIcon(
+            fabVisible = true,
+            fabText = "Add New Item",
+            onFabClick = {},
+            modifier = modifier,
+            fabIcon = PoposIcons.Add,
         )
     }
 }

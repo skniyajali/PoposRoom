@@ -42,12 +42,12 @@ import com.niyaj.ui.components.IconWithText
 
 @Composable
 fun OrderedItemData(
-    modifier: Modifier = Modifier,
     shape: Shape,
     order: Order,
+    containerColor: Color,
     onClickPrintOrder: (Int) -> Unit,
     onClickShareOrder: (Int) -> Unit,
-    containerColor: Color,
+    modifier: Modifier = Modifier,
 ) = trace("OrderedItemData") {
     ElevatedCard(
         modifier = modifier
@@ -122,16 +122,16 @@ fun OrderedItemData(
                 ) {
                     PoposTonalIconButton(
                         icon = PoposIcons.OutlinedShare,
+                        onClick = { onClickShareOrder(order.orderId) },
                         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                         contentColor = MaterialTheme.colorScheme.tertiary,
-                        onClick = { onClickShareOrder(order.orderId) },
                     )
 
                     PoposTonalIconButton(
                         icon = PoposIcons.OutlinedPrint,
+                        onClick = { onClickPrintOrder(order.orderId) },
                         containerColor = MaterialTheme.colorScheme.errorContainer,
                         contentColor = MaterialTheme.colorScheme.secondary,
-                        onClick = { onClickPrintOrder(order.orderId) },
                     )
                 }
             }

@@ -28,16 +28,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.ui.utils.DevicePreviews
 
 const val LOADING_INDICATION = "loadingIndicator"
 
 @Stable
 @Composable
 fun LoadingIndicator(
+    modifier: Modifier = Modifier,
     contentDesc: String = "loadingIndicator",
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .semantics { contentDescription = contentDesc },
         contentAlignment = Alignment.Center,
@@ -57,7 +60,7 @@ fun LoadingIndicatorHalf(
     contentDesc: String = "halfLoadingIndicator",
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .semantics { contentDescription = contentDesc },
         contentAlignment = Alignment.Center,
@@ -67,5 +70,25 @@ fun LoadingIndicatorHalf(
                 .testTag(LOADING_INDICATION)
                 .align(Alignment.Center),
         )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun LoadingIndicatorPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        LoadingIndicator(modifier)
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun LoadingIndicatorHalfPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        LoadingIndicatorHalf(modifier)
     }
 }

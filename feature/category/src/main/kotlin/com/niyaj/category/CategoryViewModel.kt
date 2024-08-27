@@ -21,6 +21,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsEvent.Param
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CategoryRepository
 import com.niyaj.ui.event.BaseViewModel
@@ -43,23 +44,20 @@ class CategoryViewModel @Inject constructor(
 
     override var totalItems: List<Int> = emptyList()
 
-    val categories = snapshotFlow { searchText.value }
-        .flatMapLatest { it ->
-            categoryRepository.getAllCategory(it)
-                .onStart { UiState.Loading }
-                .map { items ->
-                    totalItems = items.map { it.categoryId }
-                    if (items.isEmpty()) {
-                        UiState.Empty
-                    } else {
-                        UiState.Success(items)
-                    }
-                }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = UiState.Loading,
-        )
+    val categories = snapshotFlow { searchText.value }.flatMapLatest {
+        categoryRepository.getAllCategory(it)
+    }.onStart { UiState.Loading }.map { items ->
+        totalItems = items.map { it.categoryId }
+        if (items.isEmpty()) {
+            UiState.Empty
+        } else {
+            UiState.Success(items)
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = UiState.Loading,
+    )
 
     override fun deleteItems() {
         super.deleteItems()
@@ -90,7 +88,10 @@ internal fun AnalyticsHelper.logDeletedCategories(categories: List<Int>) {
         event = AnalyticsEvent(
             type = "category_deleted",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("category_deleted", categories.toString()),
+                Param(
+                    "category_deleted",
+                    categories.toString(),
+                ),
             ),
         ),
     )

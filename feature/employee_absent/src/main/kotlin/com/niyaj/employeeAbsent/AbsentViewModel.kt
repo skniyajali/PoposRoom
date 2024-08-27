@@ -47,22 +47,21 @@ class AbsentViewModel @Inject constructor(
     private val _selectedEmployee = mutableStateListOf<Int>()
     val selectedEmployee = _selectedEmployee
 
-    val absents = snapshotFlow { searchText.value }
-        .flatMapLatest { it ->
-            absentRepository.getAllEmployeeAbsents(it)
-        }.map { items ->
-            totalItems = items.flatMap { item -> item.absents.map { it.absentId } }
+    val absents = snapshotFlow { searchText.value }.flatMapLatest {
+        absentRepository.getAllEmployeeAbsents(it)
+    }.map { items ->
+        totalItems = items.flatMap { item -> item.absents.map { it.absentId } }
 
-            if (items.all { it.absents.isEmpty() }) {
-                UiState.Empty
-            } else {
-                UiState.Success(items)
-            }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = UiState.Loading,
-        )
+        if (items.all { it.absents.isEmpty() }) {
+            UiState.Empty
+        } else {
+            UiState.Success(items)
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = UiState.Loading,
+    )
 
     fun selectEmployee(employeeId: Int) {
         viewModelScope.launch {

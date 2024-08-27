@@ -56,18 +56,18 @@ import com.niyaj.ui.utils.isScrollingUp
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 internal fun CartScreenContent(
-    modifier: Modifier = Modifier,
     uiState: CartState,
     selectedItems: List<Int>,
     addOnItems: List<AddOnItem>,
-    showPrintBtn: Boolean = false,
-    deliveryPartners: List<EmployeeNameAndId> = emptyList(),
     onClickCreateOrder: () -> Unit,
     onClickEditOrder: (Int) -> Unit,
     onClickOrderDetails: (Int) -> Unit,
     onClickSelectAll: () -> Unit,
     onClickPlaceAllOrder: () -> Unit,
     onEvent: (CartEvent) -> Unit,
+    modifier: Modifier = Modifier,
+    showPrintBtn: Boolean = false,
+    deliveryPartners: List<EmployeeNameAndId> = emptyList(),
     printOrder: (Int) -> Unit = {},
     onClickPrintAllOrder: () -> Unit = {},
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
@@ -122,7 +122,6 @@ internal fun CartScreenContent(
                 TrackScrollJank(scrollableState = listState, stateName = "DineOut Orders::Cart")
 
                 CartItems(
-                    modifier = Modifier,
                     cartState = uiState,
                     selectedCartItems = selectedItems,
                     addOnItems = addOnItems,
@@ -132,6 +131,7 @@ internal fun CartScreenContent(
                     onClickViewOrder = onClickOrderDetails,
                     onClickPrintOrder = printOrder,
                     onEvent = onEvent,
+                    modifier = Modifier,
                     listState = listState,
                 )
             }
@@ -146,18 +146,18 @@ private fun CartScreenContentLoadingPreview(
 ) {
     PoposRoomTheme {
         CartScreenContent(
-            modifier = modifier,
             uiState = CartState.Loading,
             selectedItems = listOf(),
             addOnItems = listOf(),
-            showPrintBtn = false,
-            deliveryPartners = listOf(),
             onClickCreateOrder = {},
             onClickEditOrder = {},
             onClickOrderDetails = {},
             onClickSelectAll = {},
             onClickPlaceAllOrder = {},
             onEvent = {},
+            modifier = modifier,
+            showPrintBtn = false,
+            deliveryPartners = listOf(),
             printOrder = {},
             onClickPrintAllOrder = {},
         )
@@ -171,18 +171,18 @@ private fun CartScreenContentEmptyPreview(
 ) {
     PoposRoomTheme {
         CartScreenContent(
-            modifier = modifier,
             uiState = CartState.Empty,
             selectedItems = listOf(),
             addOnItems = listOf(),
-            showPrintBtn = false,
-            deliveryPartners = listOf(),
             onClickCreateOrder = {},
             onClickEditOrder = {},
             onClickOrderDetails = {},
             onClickSelectAll = {},
             onClickPlaceAllOrder = {},
             onEvent = {},
+            modifier = modifier,
+            showPrintBtn = false,
+            deliveryPartners = listOf(),
             printOrder = {},
             onClickPrintAllOrder = {},
         )
@@ -200,18 +200,18 @@ private fun CartScreenContentPreview(
 ) {
     PoposRoomTheme {
         CartScreenContent(
-            modifier = modifier,
             uiState = CartState.Success(cartItems),
             selectedItems = listOf(),
             addOnItems = addOnItems,
-            showPrintBtn = cartItems.fastAll { it.orderType == OrderType.DineOut },
-            deliveryPartners = deliveryPartners,
             onClickCreateOrder = {},
             onClickEditOrder = {},
             onClickOrderDetails = {},
             onClickSelectAll = {},
             onClickPlaceAllOrder = {},
             onEvent = {},
+            modifier = modifier,
+            showPrintBtn = cartItems.fastAll { it.orderType == OrderType.DineOut },
+            deliveryPartners = deliveryPartners,
             printOrder = {},
             onClickPrintAllOrder = {},
         )

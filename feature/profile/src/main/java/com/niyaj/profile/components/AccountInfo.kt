@@ -43,8 +43,8 @@ import com.niyaj.model.Account
 
 @Composable
 fun AccountInfo(
-    modifier: Modifier = Modifier,
     account: Account,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) {
     ElevatedCard(

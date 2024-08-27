@@ -41,6 +41,7 @@ import kotlin.coroutines.resume
 const val FALLBACK_COPY_FOLDER = "upload_part"
 const val TAG = "FileUtils"
 
+@Suppress("ReturnCount")
 class FileUtils(var context: Context?) {
 
     fun getFile(uri: Uri): File? {
@@ -57,6 +58,7 @@ class FileUtils(var context: Context?) {
         }
     }
 
+    @Suppress("CyclomaticComplexMethod", "NestedBlockDepth")
     private fun getPath(uri: Uri): String? {
         val selection: String?
         val selectionArgs: Array<String>?
@@ -238,7 +240,18 @@ class FileUtils(var context: Context?) {
     }
 
     private fun getDriveFilePath(uri: Uri): String? {
-        val returnCursor = context!!.contentResolver.query(uri, null, null, null, null)
+        val returnCursor = context!!.contentResolver.query(
+            /* uri = */
+            uri,
+            /* projection = */
+            null,
+            /* selection = */
+            null,
+            /* selectionArgs = */
+            null,
+            /* sortOrder = */
+            null,
+        )
         /*
          * Get the column indexes of the data in the Cursor,
          *     * move to the first row in the Cursor, get the data,
@@ -302,11 +315,17 @@ class FileUtils(var context: Context?) {
         val output = if (newDirName != "") {
             val randomUUID = UUID.randomUUID().toString()
             val dir =
-                File(context!!.filesDir.toString() + File.separator + newDirName + File.separator + randomUUID)
+                File(
+                    context!!.filesDir.toString() +
+                        File.separator + newDirName + File.separator + randomUUID,
+                )
             if (!dir.exists()) {
                 dir.mkdirs()
             }
-            File(context!!.filesDir.toString() + File.separator + newDirName + File.separator + randomUUID + File.separator + name)
+            File(
+                context!!.filesDir.toString() +
+                    File.separator + newDirName + File.separator + randomUUID + File.separator + name,
+            )
         } else {
             File(context!!.filesDir.toString() + File.separator + name)
         }
@@ -382,7 +401,8 @@ class FileUtils(var context: Context?) {
     }
 
     private fun isGoogleDriveUri(uri: Uri): Boolean {
-        return "com.google.android.apps.docs.storage" == uri.authority || "com.google.android.apps.docs.storage.legacy" == uri.authority
+        return "com.google.android.apps.docs.storage" == uri.authority ||
+            "com.google.android.apps.docs.storage.legacy" == uri.authority
     }
 }
 
@@ -430,38 +450,12 @@ fun shareBitmap(context: Context, uri: Uri) {
         putExtra(Intent.EXTRA_STREAM, uri)
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
-    ContextCompat.startActivity(context, Intent.createChooser(intent, "Share your image"), null)
+    ContextCompat.startActivity(
+        /* context = */
+        context,
+        /* intent = */
+        Intent.createChooser(intent, "Share your image"),
+        /* options = */
+        null,
+    )
 }
-
-// val writeStorageAccessState = rememberMultiplePermissionsState(
-//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//        // No permissions are needed on Android 10+ to add files in the shared storage
-//        emptyList()
-//    } else {
-//        listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//    }
-// )
-// // This logic should live in your ViewModel - trigger a side effect to invoke URI sharing.
-// // checks permissions granted, and then saves the bitmap from a Picture that is already capturing content
-// // and shares it with the default share sheet.
-// fun shareBitmapFromComposable(bitmap: Bitmap) {
-//    if (writeStorageAccessState.allPermissionsGranted) {
-//        scope.launch {
-//            val uri = bitmap.saveToDisk(context)
-//            shareBitmap(context, uri)
-//        }
-//    } else if (writeStorageAccessState.shouldShowRationale) {
-//        scope.launch {
-//            val result = snackbarState.showSnackbar(
-//                message = "The storage permission is needed to save the image",
-//                actionLabel = "Grant Access"
-//            )
-//
-//            if (result == SnackbarResult.ActionPerformed) {
-//                writeStorageAccessState.launchMultiplePermissionRequest()
-//            }
-//        }
-//    } else {
-//        writeStorageAccessState.launchMultiplePermissionRequest()
-//    }
-// }

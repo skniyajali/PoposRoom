@@ -52,8 +52,8 @@ fun CartChargesItem(
     ) {
         for (charges in chargesList) {
             StandardRoundedFilterChip(
-                modifier = Modifier,
                 text = charges.chargesName,
+                modifier = Modifier,
                 selected = selectedItems.contains(charges.chargesId),
                 onClick = {
                     onClick(charges.chargesId)

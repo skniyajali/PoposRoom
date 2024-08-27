@@ -77,8 +77,8 @@ import com.niyaj.ui.utils.DevicePreviews
  */
 @Composable
 internal fun PaymentDetails(
-    modifier: Modifier = Modifier,
     employeePaymentsState: UiState<List<EmployeePayments>>,
+    modifier: Modifier = Modifier,
     paymentDetailsExpanded: Boolean = false,
     onExpanded: () -> Unit = {},
 ) = trace("PaymentDetails") {
@@ -98,33 +98,9 @@ internal fun PaymentDetails(
         ),
     ) {
         StandardExpandable(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
             expanded = paymentDetailsExpanded,
             onExpandChanged = {
                 onExpanded()
-            },
-            title = {
-                IconWithText(
-                    text = "Payment Details",
-                    icon = PoposIcons.Money,
-                )
-            },
-            rowClickable = false,
-            expand = { modifier: Modifier ->
-                IconButton(
-                    modifier = modifier.testTag("PaymentDetailsExpand"),
-                    onClick = {
-                        onExpanded()
-                    },
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.ArrowDown,
-                        contentDescription = "Expand More",
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
             },
             content = {
                 Crossfade(
@@ -145,11 +121,35 @@ internal fun PaymentDetails(
                             Spacer(modifier = Modifier.height(SpaceSmall))
 
                             EmployeePaymentsList(
-                                modifier = Modifier.fillMaxWidth(),
                                 paymentList = state.data,
+                                modifier = Modifier.fillMaxWidth(),
                             )
                         }
                     }
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SpaceSmall),
+            rowClickable = false,
+            title = {
+                IconWithText(
+                    text = "Payment Details",
+                    icon = PoposIcons.Money,
+                )
+            },
+            expand = { modifier: Modifier ->
+                IconButton(
+                    modifier = modifier.testTag("PaymentDetailsExpand"),
+                    onClick = {
+                        onExpanded()
+                    },
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.ArrowDown,
+                        contentDescription = "Expand More",
+                        tint = MaterialTheme.colorScheme.secondary,
+                    )
                 }
             },
         )
@@ -158,8 +158,8 @@ internal fun PaymentDetails(
 
 @Composable
 private fun EmployeePaymentsList(
-    modifier: Modifier = Modifier,
     paymentList: List<EmployeePayments>,
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier.fillMaxWidth(),
@@ -202,8 +202,8 @@ private fun EmployeePaymentsList(
 
                     salaries.payments.forEachIndexed { index, salary ->
                         EmployeePayment(
-                            modifier = Modifier.padding(horizontal = SpaceSmall),
                             payment = salary,
+                            modifier = Modifier.padding(horizontal = SpaceSmall),
                         )
 
                         if (index != salaries.payments.size - 1) {
@@ -235,8 +235,8 @@ private fun EmployeePaymentsList(
 
 @Composable
 private fun EmployeePayment(
-    modifier: Modifier = Modifier,
     payment: Payment,
+    modifier: Modifier = Modifier,
 ) = trace("EmployeePayment") {
     Box(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -293,8 +293,8 @@ private fun PaymentDetailsPreview(
 ) {
     PoposRoomTheme {
         PaymentDetails(
-            modifier = modifier,
             employeePaymentsState = employeePaymentsState,
+            modifier = modifier,
             paymentDetailsExpanded = true,
             onExpanded = {},
         )
@@ -309,8 +309,8 @@ private fun EmployeePaymentPreview(
     PoposRoomTheme {
         Surface {
             EmployeePayment(
-                modifier = modifier,
                 payment = EmployeePreviewData.samplePayment,
+                modifier = modifier,
             )
         }
     }

@@ -74,6 +74,7 @@ import kotlinx.coroutines.launch
 fun AddressExportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: AddressSettingsViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -120,7 +121,6 @@ fun AddressExportScreen(
         }
 
     AddressExportScreenContent(
-        modifier = Modifier,
         items = addresses.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         showSearchBar = showSearchBar,
@@ -146,13 +146,13 @@ fun AddressExportScreen(
         onClickToAddItem = {
             navigator.navigate(AddEditAddressScreenDestination())
         },
+        modifier = modifier,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun AddressExportScreenContent(
-    modifier: Modifier = Modifier,
     items: ImmutableList<Address>,
     selectedItems: ImmutableList<Int>,
     showSearchBar: Boolean,
@@ -167,6 +167,7 @@ internal fun AddressExportScreenContent(
     onClickExport: () -> Unit,
     onBackClick: () -> Unit,
     onClickToAddItem: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
 ) {
@@ -215,11 +216,11 @@ internal fun AddressExportScreenContent(
         modifier = modifier,
     ) {
         AddressExportScreenData(
-            modifier = modifier
-                .fillMaxSize(),
             items = items,
             onSelectItem = onSelectItem,
             doesSelected = selectedItems::contains,
+            modifier = Modifier
+                .fillMaxSize(),
             lazyGridState = lazyGridState,
         )
     }
@@ -227,10 +228,10 @@ internal fun AddressExportScreenContent(
 
 @Composable
 private fun AddressExportScreenData(
-    modifier: Modifier = Modifier,
     items: ImmutableList<Address>,
     onSelectItem: (Int) -> Unit,
     doesSelected: (Int) -> Boolean,
+    modifier: Modifier = Modifier,
     lazyGridState: LazyGridState = rememberLazyGridState(),
 ) {
     TrackScrollJank(scrollableState = lazyGridState, stateName = "Exported Address::List")
@@ -250,11 +251,11 @@ private fun AddressExportScreenData(
             },
         ) { address ->
             AddressData(
-                modifier = Modifier.testTag(ADDRESS_ITEM_TAG.plus(address.addressId)),
                 item = address,
-                doesSelected = doesSelected,
+                selected = doesSelected,
                 onClick = onSelectItem,
                 onLongClick = onSelectItem,
+                modifier = Modifier.testTag(ADDRESS_ITEM_TAG.plus(address.addressId)),
             )
         }
     }
@@ -267,7 +268,6 @@ private fun AddressExportScreenContentPreview(
 ) {
     PoposRoomTheme {
         AddressExportScreenContent(
-            modifier = Modifier,
             items = items,
             selectedItems = persistentListOf(),
             showSearchBar = false,
@@ -282,6 +282,7 @@ private fun AddressExportScreenContentPreview(
             onClickExport = {},
             onBackClick = {},
             onClickToAddItem = {},
+            modifier = Modifier,
         )
     }
 }

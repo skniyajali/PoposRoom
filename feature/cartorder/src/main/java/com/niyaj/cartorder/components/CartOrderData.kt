@@ -61,12 +61,12 @@ import com.niyaj.ui.utils.DevicePreviews
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun CartOrderData(
-    modifier: Modifier = Modifier,
     item: CartOrder,
     doesSelected: (Int) -> Boolean,
     orderSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("CartOrderData") {
@@ -103,9 +103,9 @@ internal fun CartOrderData(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CircularBox(
-                modifier = Modifier.padding(SpaceSmall),
                 icon = PoposIcons.Tag,
-                doesSelected = doesSelected(item.orderId),
+                selected = doesSelected(item.orderId),
+                modifier = Modifier.padding(SpaceSmall),
                 showBorder = orderSelected(item.orderId),
             )
 
@@ -167,12 +167,12 @@ private fun CartOrderDataPreview(
 ) {
     PoposRoomTheme {
         CartOrderData(
-            modifier = modifier,
             item = cartOrder,
             doesSelected = { true },
             orderSelected = { false },
             onClick = {},
             onLongClick = {},
+            modifier = modifier,
         )
     }
 }

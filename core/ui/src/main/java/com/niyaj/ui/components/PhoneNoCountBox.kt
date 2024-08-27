@@ -35,11 +35,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.theme.Olive
+import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun PhoneNoCountBox(
-    modifier: Modifier = Modifier,
     count: Int,
+    modifier: Modifier = Modifier,
     totalCount: Int = 10,
     backgroundColor: Color = Color.Transparent,
     color: Color = Color.Gray,
@@ -80,5 +82,19 @@ fun PhoneNoCountBox(
                 )
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun PhoneNoCountBoxPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        PhoneNoCountBox(
+            count = 4,
+            modifier = modifier,
+            backgroundColor = MaterialTheme.colorScheme.surfaceContainer,
+        )
     }
 }

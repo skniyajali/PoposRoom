@@ -57,11 +57,11 @@ fun StackedBarChart(
     modifier: Modifier = Modifier,
     onBarClick: (StackedBarData) -> Unit = {},
     chartDimens: ChartDimens = ChartDimensDefaults.chartDimesDefaults(),
-    axisConfig: AxisConfig = AxisConfigDefaults.axisConfigDefaults(isSystemInDarkTheme()),
+    axisConfig: AxisConfig = AxisConfigDefaults.configDefaults(isSystemInDarkTheme()),
     barConfig: BarConfig = BarConfigDefaults.barConfigDimesDefaults(),
 ) {
-    if (stackBarData.isValid(colors.count()).not()) {
-        throw IllegalArgumentException("Colors count should be total to number of values in StackedBarData's yValue")
+    require(stackBarData.isValid(colors.count())) {
+        "Colors count should be total to number of values in StackedBarData's yValue"
     }
 
     val maxYValueState = rememberSaveable { mutableFloatStateOf(stackBarData.maxYValue()) }

@@ -85,10 +85,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddOnItemScreen(
     navigator: DestinationsNavigator,
-    viewModel: AddOnViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditAddOnItemScreenDestination, String>,
     exportRecipient: ResultRecipient<AddOnExportScreenDestination, String>,
     importRecipient: ResultRecipient<AddOnImportScreenDestination, String>,
+    modifier: Modifier = Modifier,
+    viewModel: AddOnViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -136,6 +137,7 @@ fun AddOnItemScreen(
         onBackClick = navigator::popBackStack,
         onNavigateToScreen = navigator::navigate,
         snackbarHostState = snackbarState,
+        modifier = modifier,
     )
 
     HandleResultRecipients(
@@ -167,6 +169,7 @@ internal fun AddOnItemScreenContent(
     onBackClick: () -> Unit,
     onDeselect: () -> Unit,
     onNavigateToScreen: (String) -> Unit,
+    modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
@@ -189,6 +192,7 @@ internal fun AddOnItemScreenContent(
     PoposPrimaryScaffold(
         currentRoute = Screens.ADD_ON_ITEM_SCREEN,
         title = if (selectedItems.isEmpty()) ADDON_SCREEN_TITLE else "${selectedItems.size} Selected",
+        selectionCount = selectedItems.size,
         floatingActionButton = {
             StandardFAB(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
@@ -200,30 +204,30 @@ internal fun AddOnItemScreenContent(
         },
         navActions = {
             ScaffoldNavActions(
-                placeholderText = ADDON_SEARCH_PLACEHOLDER,
-                showSettingsIcon = true,
                 selectionCount = selectedItems.size,
                 showSearchIcon = showFab,
-                showSearchBar = showSearchBar,
                 searchText = searchText,
                 onEditClick = onEditClick,
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = onSettingsClick,
                 onSelectAllClick = onSelectAllClick,
                 onClearClick = onClearSearchClick,
                 onSearchIconClick = onSearchClick,
                 onSearchTextChanged = onSearchTextChanged,
+                showSearchBar = showSearchBar,
+                showSettingsIcon = true,
+                onSettingsClick = onSettingsClick,
+                placeholderText = ADDON_SEARCH_PLACEHOLDER,
             )
         },
+        onBackClick = if (showSearchBar) onCloseSearchBar else onBackClick,
+        onNavigateToScreen = onNavigateToScreen,
         fabPosition = if (lazyGridState.isScrolled) FabPosition.End else FabPosition.Center,
-        selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
         onDeselect = onDeselect,
-        onBackClick = if (showSearchBar) onCloseSearchBar else onBackClick,
         snackbarHostState = snackbarHostState,
-        onNavigateToScreen = onNavigateToScreen,
+        modifier = modifier,
     ) {
         Crossfade(
             targetState = uiState,
@@ -257,7 +261,7 @@ internal fun AddOnItemScreenContent(
                         ) { item: AddOnItem ->
                             AddOnItemData(
                                 item = item,
-                                doesSelected = selectedItems::contains,
+                                selected = selectedItems::contains,
                                 onClick = {
                                     if (selectedItems.isNotEmpty()) {
                                         onItemClick(it)

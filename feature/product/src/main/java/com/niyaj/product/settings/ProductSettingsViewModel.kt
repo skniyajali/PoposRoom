@@ -84,6 +84,7 @@ class ProductSettingsViewModel @Inject constructor(
     /**
      *
      */
+    @Suppress("CyclomaticComplexMethod")
     fun onEvent(event: ProductSettingsEvent) {
         when (event) {
             is ProductSettingsEvent.OnSelectCategory -> {

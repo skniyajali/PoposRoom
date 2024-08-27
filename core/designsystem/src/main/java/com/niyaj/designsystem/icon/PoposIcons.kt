@@ -81,7 +81,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 /**
  * Popos icons. Material icons are [ImageVector]s, custom icons are drawable resource IDs.
  */
-@Suppress("no-wildcard-imports")
 object PoposIcons {
 
     val SwapVert: ImageVector = Icons.Default.SwapVert

@@ -49,6 +49,8 @@ import com.niyaj.common.utils.Constants.SEARCH_BAR_CLEAR_BUTTON
 import com.niyaj.common.utils.Constants.SEARCH_PLACEHOLDER
 import com.niyaj.common.utils.Constants.STANDARD_SEARCH_BAR
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun StandardSearchBar(
@@ -119,4 +121,17 @@ fun StandardSearchBar(
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
     )
+}
+
+@DevicePreviews
+@Composable
+private fun StandardSearchBarPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardSearchBar(
+            searchText = "Search for items",
+            modifier = modifier,
+        )
+    }
 }

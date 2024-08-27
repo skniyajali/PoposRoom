@@ -77,10 +77,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun EmployeeScreen(
     navigator: DestinationsNavigator,
-    viewModel: EmployeeViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditEmployeeScreenDestination, String>,
     exportRecipient: ResultRecipient<EmployeeExportScreenDestination, String>,
     importRecipient: ResultRecipient<EmployeeImportScreenDestination, String>,
+    modifier: Modifier = Modifier,
+    viewModel: EmployeeViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -93,7 +94,6 @@ fun EmployeeScreen(
     val searchText = viewModel.searchText.value
 
     EmployeeScreenContent(
-        modifier = Modifier,
         uiState = state,
         selectedItems = selectedItems,
         showSearchBar = showSearchBar,
@@ -120,6 +120,7 @@ fun EmployeeScreen(
         onNavigateToDetails = {
             navigator.navigate(EmployeeDetailsScreenDestination(it))
         },
+        modifier = modifier,
         snackbarState = snackbarState,
     )
 
@@ -137,7 +138,6 @@ fun EmployeeScreen(
 @VisibleForTesting
 @Composable
 internal fun EmployeeScreenContent(
-    modifier: Modifier = Modifier,
     uiState: UiState<List<Employee>>,
     selectedItems: List<Int>,
     showSearchBar: Boolean,
@@ -156,6 +156,7 @@ internal fun EmployeeScreenContent(
     onClickEdit: (Int) -> Unit,
     onClickSettings: () -> Unit,
     onNavigateToDetails: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
@@ -176,9 +177,9 @@ internal fun EmployeeScreenContent(
     val openDialog = remember { mutableStateOf(false) }
 
     PoposPrimaryScaffold(
-        modifier = modifier,
         currentRoute = Screens.EMPLOYEE_SCREEN,
         title = if (selectedItems.isEmpty()) EMPLOYEE_SCREEN_TITLE else "${selectedItems.size} Selected",
+        selectionCount = selectedItems.size,
         floatingActionButton = {
             StandardFAB(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
@@ -194,10 +195,7 @@ internal fun EmployeeScreenContent(
         },
         navActions = {
             ScaffoldNavActions(
-                placeholderText = EMPLOYEE_SEARCH_PLACEHOLDER,
-                showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchBar = showSearchBar,
                 showSearchIcon = showFab,
                 searchText = searchText,
                 onEditClick = {
@@ -206,20 +204,23 @@ internal fun EmployeeScreenContent(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = onClickSettings,
                 onSelectAllClick = onClickSelectAll,
                 onClearClick = onClickClear,
                 onSearchIconClick = onClickSearchIcon,
                 onSearchTextChanged = onSearchTextChanged,
+                showSearchBar = showSearchBar,
+                showSettingsIcon = true,
+                onSettingsClick = onClickSettings,
+                placeholderText = EMPLOYEE_SEARCH_PLACEHOLDER,
             )
         },
+        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
+        onNavigateToScreen = onNavigateToScreen,
+        modifier = modifier,
         fabPosition = if (lazyListState.isScrolled) FabPosition.End else FabPosition.Center,
-        selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
         onDeselect = onClickDeselect,
-        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
         snackbarHostState = snackbarState,
-        onNavigateToScreen = onNavigateToScreen,
     ) {
         Crossfade(
             targetState = uiState,
@@ -343,7 +344,6 @@ private fun EmployeeScreenPreview(
 ) {
     PoposRoomTheme {
         EmployeeScreenContent(
-            modifier = modifier,
             uiState = uiState,
             selectedItems = listOf(),
             showSearchBar = false,
@@ -362,6 +362,7 @@ private fun EmployeeScreenPreview(
             onClickEdit = {},
             onClickSettings = {},
             onNavigateToDetails = {},
+            modifier = modifier,
         )
     }
 }

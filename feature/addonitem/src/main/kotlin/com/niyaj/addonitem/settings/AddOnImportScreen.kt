@@ -69,6 +69,7 @@ import kotlinx.coroutines.launch
 fun AddOnImportScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: AddOnSettingsViewModel = hiltViewModel(),
 ) {
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
@@ -131,7 +132,7 @@ fun AddOnImportScreen(
             }
         },
         onBackClick = navigator::navigateUp,
-        modifier = Modifier,
+        modifier = modifier,
     )
 }
 
@@ -202,7 +203,7 @@ internal fun AddOnImportScreenContent(
             ) { item: AddOnItem ->
                 AddOnItemData(
                     item = item,
-                    doesSelected = {
+                    selected = {
                         selectedItems.contains(it)
                     },
                     onClick = onClickSelectItem,

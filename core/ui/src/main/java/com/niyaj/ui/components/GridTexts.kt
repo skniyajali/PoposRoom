@@ -35,13 +35,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.utils.drawRainbowBorder
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun TwoGridTexts(
-    modifier: Modifier = Modifier,
     textOne: String,
     textTwo: String,
+    modifier: Modifier = Modifier,
     isTitle: Boolean = false,
     textStyle: TextStyle = MaterialTheme.typography.bodySmall,
 ) {
@@ -69,9 +71,9 @@ fun TwoGridTexts(
 
 @Composable
 fun TwoGridText(
-    modifier: Modifier = Modifier,
     textOne: String,
     textTwo: String,
+    modifier: Modifier = Modifier,
     isTitle: Boolean = false,
     textStyle: TextStyle = MaterialTheme.typography.bodySmall,
 ) {
@@ -98,45 +100,11 @@ fun TwoGridText(
 }
 
 @Composable
-fun TwoGridText(
-    modifier: Modifier = Modifier,
-    textOne: String,
-    textTwo: String,
-    textColor: Color = Color.Black,
-    textStyle: TextStyle = MaterialTheme.typography.labelMedium,
-    textOneWeight: FontWeight = FontWeight.SemiBold,
-    textTwoWeight: FontWeight = FontWeight.Normal,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(
-            modifier = Modifier,
-            text = textOne,
-            style = textStyle,
-            fontWeight = textOneWeight,
-            color = textColor,
-        )
-
-        Text(
-            modifier = Modifier,
-            text = textTwo,
-            style = textStyle,
-            textAlign = TextAlign.End,
-            fontWeight = textTwoWeight,
-            color = textColor,
-        )
-    }
-}
-
-@Composable
 fun ThreeGridTexts(
-    modifier: Modifier = Modifier,
     textOne: String,
     textTwo: String,
     textThree: String,
+    modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.bodySmall,
     fontWeight: FontWeight = FontWeight.Normal,
 ) {
@@ -172,8 +140,8 @@ fun ThreeGridTexts(
 
 @Composable
 fun TextDivider(
-    modifier: Modifier = Modifier,
     text: String,
+    modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.bodySmall,
     fontWeight: FontWeight = FontWeight.SemiBold,
 ) {
@@ -204,8 +172,8 @@ fun TextDivider(
 
 @Composable
 fun AnimatedTextDivider(
-    modifier: Modifier = Modifier,
     text: String,
+    modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.bodySmall,
     fontWeight: FontWeight = FontWeight.SemiBold,
 ) {
@@ -238,8 +206,8 @@ fun AnimatedTextDivider(
 
 @Composable
 fun AnimatedTextDividerDashed(
-    modifier: Modifier = Modifier,
     text: String,
+    modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.bodySmall,
     fontWeight: FontWeight = FontWeight.SemiBold,
 ) {
@@ -291,5 +259,97 @@ fun DashedDivider(
             pathEffect = pathEffect,
             strokeWidth = dashHeight.toPx(),
         )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun TwoGridTextsPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        TwoGridTexts(
+            textOne = "Name",
+            textTwo = "Value",
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun TwoGridTextPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        TwoGridText(
+            textOne = "Name",
+            textTwo = "Value",
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ThreeGridTextsPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ThreeGridTexts(
+            textOne = "Text1",
+            textTwo = "Text2",
+            textThree = "Text3",
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun TextDividerPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        TextDivider(
+            text = "Text Divider",
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AnimatedTextDividerPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        AnimatedTextDivider(
+            text = "Animated Text Divider",
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun AnimatedTextDividerDashedPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        AnimatedTextDividerDashed(
+            text = "Divider Dashed",
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun DashedDividerPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        DashedDivider(modifier)
     }
 }

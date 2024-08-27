@@ -75,8 +75,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun SettingsScreen(
     navigator: DestinationsNavigator,
-    viewModel: SettingsViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<DataDeletionSettingsScreenDestination, String>,
+    modifier: Modifier = Modifier,
+    viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -137,6 +138,7 @@ fun SettingsScreen(
     SettingsScreenContent(
         snackbarState = snackbarHostState,
         isLoading = isLoading,
+        modifier = modifier,
         onClickChangeAppearance = {
             navigator.navigate(Screens.APP_SETTINGS_DIALOG)
         },
@@ -161,7 +163,6 @@ fun SettingsScreen(
 @VisibleForTesting
 @Composable
 internal fun SettingsScreenContent(
-    modifier: Modifier = Modifier,
     isLoading: Boolean,
     onClickChangeAppearance: () -> Unit,
     onClickDeletionSettings: () -> Unit,
@@ -169,6 +170,7 @@ internal fun SettingsScreenContent(
     onClickRestoreDb: () -> Unit,
     onClickDeleteAll: () -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     lazyListState: LazyListState = rememberLazyListState(),
     scope: CoroutineScope = rememberCoroutineScope(),
@@ -179,12 +181,13 @@ internal fun SettingsScreenContent(
     TrackScreenViewEvent(screenName = Screens.SETTINGS_SCREEN)
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = "App Settings",
-        snackbarHostState = snackbarState,
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = true,
         showBottomBar = false,
         fabPosition = FabPosition.End,
+        snackbarHostState = snackbarState,
         floatingActionButton = {
             ScrollToTop(
                 visible = !lazyListState.isScrollingUp(),
@@ -195,7 +198,6 @@ internal fun SettingsScreenContent(
                 },
             )
         },
-        onBackClick = onBackClick,
     ) { paddingValues ->
         TrackScrollJank(
             scrollableState = lazyListState,

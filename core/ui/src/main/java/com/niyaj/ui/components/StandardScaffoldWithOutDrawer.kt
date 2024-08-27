@@ -45,13 +45,16 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.niyaj.common.utils.Constants
 import com.niyaj.designsystem.components.PoposCenterAlignedTopAppBar
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.ui.utils.DevicePreviews
 
 @Stable
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun StandardScaffoldWithOutDrawer(
-    modifier: Modifier = Modifier,
     title: String,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
     showSearchBar: Boolean = false,
     showSearchIcon: Boolean = false,
     searchText: String = "",
@@ -59,7 +62,6 @@ fun StandardScaffoldWithOutDrawer(
     openSearchBar: () -> Unit = {},
     onSearchTextChanged: (String) -> Unit = {},
     onClearClick: () -> Unit = {},
-    onBackClick: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     floatingActionButton: @Composable () -> Unit = {},
     navActions: @Composable RowScope.() -> Unit = {},
@@ -136,6 +138,22 @@ fun StandardScaffoldWithOutDrawer(
             ),
         ) {
             content()
+        }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun StandardScaffoldWithOutDrawerPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardScaffoldWithOutDrawer(
+            title = "Standard Scaffold",
+            modifier = modifier,
+            onBackClick = {},
+        ) {
+            Text(text = "Standard Scaffold Without Drawer Content")
         }
     }
 }

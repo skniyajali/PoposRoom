@@ -163,8 +163,8 @@ class MarketListViewModel @Inject constructor(
                 printableString += "[L]<b>$itemType</b> [R]$listType[${groupedByList.size}]\n"
                 printableString += "[L]-------------------------------\n"
 
-                groupedByList.fastForEachIndexed { i, it ->
-                    printableString += "[L]${it.itemName} [R]${it.itemQuantity?.toSafeString()} ${it.unitName}\n"
+                groupedByList.fastForEachIndexed { i, item ->
+                    printableString += "[L]${item.itemName} [R]${item.itemQuantity?.toSafeString()} ${item.unitName}\n"
 
                     if (i != groupedByList.size - 1) {
                         printableString += "[L]-------------------------------\n"

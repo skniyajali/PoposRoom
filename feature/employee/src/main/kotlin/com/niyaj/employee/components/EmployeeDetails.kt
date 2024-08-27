@@ -72,42 +72,9 @@ internal fun EmployeeDetails(
         ),
     ) {
         StandardExpandable(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
             expanded = employeeDetailsExpanded,
             onExpandChanged = {
                 onExpanded()
-            },
-            title = {
-                IconWithText(
-                    text = "Employee Details",
-                    icon = PoposIcons.Person,
-                )
-            },
-            trailing = {
-                IconButton(
-                    onClick = onClickEdit,
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.Edit,
-                        contentDescription = "Edit Employee",
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                }
-            },
-            rowClickable = true,
-            expand = { modifier: Modifier ->
-                IconButton(
-                    modifier = modifier,
-                    onClick = onExpanded,
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.ArrowDown,
-                        contentDescription = "Expand More",
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
             },
             content = {
                 Crossfade(
@@ -133,52 +100,52 @@ internal fun EmployeeDetails(
                                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
                             ) {
                                 IconWithText(
-                                    modifier = Modifier.testTag(state.data.employeeName),
                                     text = "Name - ${state.data.employeeName}",
                                     icon = PoposIcons.Person,
+                                    modifier = Modifier.testTag(state.data.employeeName),
                                 )
 
                                 IconWithText(
-                                    modifier = Modifier.testTag(state.data.employeePhone),
                                     text = "Phone - ${state.data.employeePhone}",
                                     icon = PoposIcons.PhoneAndroid,
+                                    modifier = Modifier.testTag(state.data.employeePhone),
                                 )
                                 state.data.employeeEmail?.let {
                                     IconWithText(
-                                        modifier = Modifier.testTag(it),
                                         text = "Email - ${state.data.employeeEmail}",
                                         icon = PoposIcons.Email,
+                                        modifier = Modifier.testTag(it),
                                     )
                                 }
 
                                 IconWithText(
-                                    modifier = Modifier.testTag(state.data.employeeSalary.toRupee),
                                     text = "Salary - ${state.data.employeeSalary.toRupee}",
                                     icon = PoposIcons.Rupee,
+                                    modifier = Modifier.testTag(state.data.employeeSalary.toRupee),
                                 )
 
                                 IconWithText(
-                                    modifier = Modifier.testTag(state.data.employeeSalaryType.name),
                                     text = "Salary Type - ${state.data.employeeSalaryType}",
                                     icon = PoposIcons.Merge,
+                                    modifier = Modifier.testTag(state.data.employeeSalaryType.name),
                                 )
 
                                 IconWithText(
-                                    modifier = Modifier.testTag(state.data.employeePosition),
                                     text = "Position - ${state.data.employeePosition}",
                                     icon = PoposIcons.Approval,
+                                    modifier = Modifier.testTag(state.data.employeePosition),
                                 )
 
                                 IconWithText(
-                                    modifier = Modifier.testTag(state.data.employeeType.name),
                                     text = "Type - ${state.data.employeeType}",
                                     icon = PoposIcons.MergeType,
+                                    modifier = Modifier.testTag(state.data.employeeType.name),
                                 )
 
                                 IconWithText(
-                                    modifier = Modifier.testTag(state.data.employeeJoinedDate.toDate),
                                     text = "Joined Date : ${state.data.employeeJoinedDate.toJoinedDate}",
                                     icon = PoposIcons.CalenderMonth,
+                                    modifier = Modifier.testTag(state.data.employeeJoinedDate.toDate),
                                 )
 
                                 IconWithText(
@@ -194,6 +161,39 @@ internal fun EmployeeDetails(
                             }
                         }
                     }
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SpaceSmall),
+            rowClickable = true,
+            title = {
+                IconWithText(
+                    text = "Employee Details",
+                    icon = PoposIcons.Person,
+                )
+            },
+            trailing = {
+                IconButton(
+                    onClick = onClickEdit,
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.Edit,
+                        contentDescription = "Edit Employee",
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            },
+            expand = { modifier: Modifier ->
+                IconButton(
+                    modifier = modifier,
+                    onClick = onExpanded,
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.ArrowDown,
+                        contentDescription = "Expand More",
+                        tint = MaterialTheme.colorScheme.secondary,
+                    )
                 }
             },
         )

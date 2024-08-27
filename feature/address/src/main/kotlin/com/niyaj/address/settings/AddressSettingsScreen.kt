@@ -48,11 +48,11 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 @Composable
 fun AddressSettingsScreen(
     navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
 ) {
     TrackScreenViewEvent(screenName = "AddressSettingsScreen")
 
     AddressSettingsScreenContent(
-        modifier = Modifier,
         onBackClick = navigator::navigateUp,
         onImportClick = {
             navigator.navigate(AddressImportScreenDestination())
@@ -60,16 +60,17 @@ fun AddressSettingsScreen(
         onExportClick = {
             navigator.navigate(AddressExportScreenDestination())
         },
+        modifier = modifier,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun AddressSettingsScreenContent(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onImportClick: () -> Unit,
     onExportClick: () -> Unit,
+    modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     StandardBottomSheet(
@@ -111,9 +112,9 @@ internal fun AddressSettingsScreenContent(
 @Composable
 private fun AddressSettingsScreenContentPreview() {
     AddressSettingsScreenContent(
-        modifier = Modifier,
         onBackClick = {},
         onImportClick = {},
         onExportClick = {},
+        modifier = Modifier,
     )
 }

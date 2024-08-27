@@ -67,12 +67,13 @@ fun MarketItemSettingsScreen(
     importRecipient: ResultRecipient<ImportMarketItemScreenDestination, String>,
     exportMeasureRecipient: ResultRecipient<ExportMeasureUnitScreenDestination, String>,
     importMeasureRecipient: ResultRecipient<ImportMeasureUnitScreenDestination, String>,
+    modifier: Modifier = Modifier,
 ) {
     val snackbarState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     MarketItemSettingsScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         onNavigateToMarketTypes = {
             navigator.navigate(MarketTypeScreenDestination)
         },
@@ -114,7 +115,6 @@ fun MarketItemSettingsScreen(
 @VisibleForTesting
 @Composable
 internal fun MarketItemSettingsScreenContent(
-    modifier: Modifier = Modifier,
     onNavigateToMarketTypes: () -> Unit,
     onNavigateToMeasureUnit: () -> Unit,
     onImportMarketType: () -> Unit,
@@ -124,6 +124,7 @@ internal fun MarketItemSettingsScreenContent(
     onExportMarketType: () -> Unit,
     onExportMeasureUnit: () -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     lazyListState: LazyListState = rememberLazyListState(),
     scope: CoroutineScope = rememberCoroutineScope(),
@@ -132,12 +133,13 @@ internal fun MarketItemSettingsScreenContent(
     TrackScreenViewEvent(screenName = MARKET_ITEM_SETTINGS_TITLE)
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = MARKET_ITEM_SETTINGS_TITLE,
-        snackbarHostState = snackbarState,
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = true,
         showBottomBar = false,
         fabPosition = FabPosition.End,
+        snackbarHostState = snackbarState,
         floatingActionButton = {
             ScrollToTop(
                 visible = !lazyListState.isScrollingUp(),
@@ -148,7 +150,6 @@ internal fun MarketItemSettingsScreenContent(
                 },
             )
         },
-        onBackClick = onBackClick,
     ) {
         TrackScrollJank(
             scrollableState = lazyListState,

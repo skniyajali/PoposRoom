@@ -102,10 +102,11 @@ import java.time.LocalDate
 @Destination
 @Composable
 fun AddEditExpenseScreen(
-    expenseId: Int = 0,
     navigator: DestinationsNavigator,
-    viewModel: AddEditExpenseViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    expenseId: Int = 0,
+    viewModel: AddEditExpenseViewModel = hiltViewModel(),
 ) {
     TrackScreenViewEvent(screenName = "Add/Edit Expenses Screen/$expenseId")
 
@@ -134,7 +135,7 @@ fun AddEditExpenseScreen(
     val icon = if (expenseId == 0) PoposIcons.Add else PoposIcons.Edit
 
     AddEditExpenseScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         title = title,
         icon = icon,
         state = viewModel.state,
@@ -150,18 +151,19 @@ fun AddEditExpenseScreen(
 
 @VisibleForTesting
 @Composable
+@Suppress("LongMethod")
 internal fun AddEditExpenseScreenContent(
-    modifier: Modifier = Modifier,
-    title: String = CREATE_NEW_EXPENSE,
-    icon: ImageVector = PoposIcons.Add,
     state: AddEditExpenseState,
     expensesNames: List<String>,
+    onEvent: (AddEditExpenseEvent) -> Unit,
+    onBackClick: () -> Unit,
     dateError: String?,
     nameError: String?,
     amountError: String?,
     existError: String?,
-    onEvent: (AddEditExpenseEvent) -> Unit,
-    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    title: String = CREATE_NEW_EXPENSE,
+    icon: ImageVector = PoposIcons.Add,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     val dialogState = rememberMaterialDialogState()
@@ -171,11 +173,12 @@ internal fun AddEditExpenseScreenContent(
     val enableBtn = listOf(dateError, nameError, amountError).all { it == null }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
         onBackClick = onBackClick,
-        showBottomBar = true,
+        modifier = modifier,
         showBackButton = true,
+        showBottomBar = true,
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
         bottomBar = {
             PoposButton(
                 modifier = Modifier
@@ -189,7 +192,6 @@ internal fun AddEditExpenseScreenContent(
                 },
             )
         },
-        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     ) { paddingValues ->
         TrackScrollJank(
             scrollableState = lazyListState,
@@ -209,32 +211,32 @@ internal fun AddEditExpenseScreenContent(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     StandardOutlinedTextField(
+                        label = EXPENSE_NAME_FIELD,
+                        leadingIcon = PoposIcons.Radar,
+                        value = state.expenseName,
+                        onValueChange = {
+                            expanded = true
+                            onEvent(AddEditExpenseEvent.ExpensesNameChanged(it))
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .onGloballyPositioned { coordinates ->
                                 // This is used to assign to the DropDown the same width
                                 textFieldSize = coordinates.size.toSize()
                             },
-                        value = state.expenseName,
-                        label = EXPENSE_NAME_FIELD,
-                        leadingIcon = PoposIcons.Radar,
                         isError = nameError != null,
                         errorText = nameError,
-                        errorTextTag = EXPENSE_NAME_ERROR,
-                        readOnly = false,
-                        showClearIcon = state.expenseName.isNotEmpty(),
-                        onValueChange = {
-                            expanded = true
-                            onEvent(AddEditExpenseEvent.ExpensesNameChanged(it))
-                        },
-                        onClickClearIcon = {
-                            expanded = true
-                            onEvent(AddEditExpenseEvent.ExpensesNameChanged(""))
-                        },
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(
                                 expanded = expanded,
                             )
+                        },
+                        showClearIcon = state.expenseName.isNotEmpty(),
+                        readOnly = false,
+                        errorTextTag = EXPENSE_NAME_ERROR,
+                        onClickClearIcon = {
+                            expanded = true
+                            onEvent(AddEditExpenseEvent.ExpensesNameChanged(""))
                         },
                     )
 
@@ -283,17 +285,17 @@ internal fun AddEditExpenseScreenContent(
 
             item(EXPENSE_AMOUNT_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.expenseAmount,
                     label = EXPENSE_AMOUNT_FIELD,
                     leadingIcon = PoposIcons.PhoneAndroid,
-                    isError = amountError != null,
-                    errorText = amountError,
-                    errorTextTag = EXPENSE_AMOUNT_ERROR,
-                    keyboardType = KeyboardType.Number,
-                    showClearIcon = state.expenseAmount.isNotEmpty(),
+                    value = state.expenseAmount,
                     onValueChange = {
                         onEvent(AddEditExpenseEvent.ExpensesAmountChanged(it))
                     },
+                    isError = amountError != null,
+                    errorText = amountError,
+                    keyboardType = KeyboardType.Number,
+                    showClearIcon = state.expenseAmount.isNotEmpty(),
+                    errorTextTag = EXPENSE_AMOUNT_ERROR,
                     onClickClearIcon = {
                         onEvent(AddEditExpenseEvent.ExpensesAmountChanged(""))
                     },
@@ -302,9 +304,12 @@ internal fun AddEditExpenseScreenContent(
 
             item(EXPENSE_DATE_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.expenseDate.toPrettyDate(),
                     label = EXPENSE_DATE_FIELD,
                     leadingIcon = PoposIcons.CalenderToday,
+                    value = state.expenseDate.toPrettyDate(),
+                    onValueChange = {},
+                    isError = dateError != null,
+                    errorText = dateError,
                     trailingIcon = {
                         IconButton(
                             onClick = dialogState::show,
@@ -317,10 +322,7 @@ internal fun AddEditExpenseScreenContent(
                         }
                     },
                     readOnly = true,
-                    isError = dateError != null,
-                    errorText = dateError,
                     errorTextTag = EXPENSE_DATE_ERROR,
-                    onValueChange = {},
                     suffix = {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -335,13 +337,13 @@ internal fun AddEditExpenseScreenContent(
 
             item(EXPENSE_NOTE_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.expenseNote,
                     label = EXPENSE_NOTE_FIELD,
                     leadingIcon = PoposIcons.NoteAdd,
-                    showClearIcon = state.expenseNote.isNotEmpty(),
+                    value = state.expenseNote,
                     onValueChange = {
                         onEvent(AddEditExpenseEvent.ExpensesNoteChanged(it))
                     },
+                    showClearIcon = state.expenseNote.isNotEmpty(),
                     onClickClearIcon = {
                         onEvent(AddEditExpenseEvent.ExpensesNoteChanged(""))
                     },

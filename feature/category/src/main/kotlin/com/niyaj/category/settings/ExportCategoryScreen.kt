@@ -65,6 +65,7 @@ import kotlinx.coroutines.launch
 fun ExportCategoryScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: CategorySettingsViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -111,7 +112,6 @@ fun ExportCategoryScreen(
         }
 
     ExportCategoryScreenContent(
-        modifier = Modifier,
         items = categories.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         showSearchBar = showSearchBar,
@@ -137,13 +137,13 @@ fun ExportCategoryScreen(
         onClickToAddItem = {
             navigator.navigate(AddEditCategoryScreenDestination())
         },
+        modifier = modifier,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun ExportCategoryScreenContent(
-    modifier: Modifier = Modifier,
     items: ImmutableList<Category>,
     selectedItems: ImmutableList<Int>,
     showSearchBar: Boolean,
@@ -158,6 +158,7 @@ internal fun ExportCategoryScreenContent(
     onClickExport: () -> Unit,
     onBackClick: () -> Unit,
     onClickToAddItem: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
 ) {
@@ -206,12 +207,12 @@ internal fun ExportCategoryScreenContent(
         modifier = modifier,
     ) {
         CategoryList(
-            modifier = modifier
-                .fillMaxSize(),
             items = items,
             onClick = onSelectItem,
             onLongClick = onSelectItem,
-            doesSelected = selectedItems::contains,
+            selected = selectedItems::contains,
+            modifier = Modifier
+                .fillMaxSize(),
             lazyGridState = lazyGridState,
         )
     }
@@ -224,7 +225,6 @@ private fun ExportCategoryScreenContentPreview(
 ) {
     PoposRoomTheme {
         ExportCategoryScreenContent(
-            modifier = Modifier,
             items = items,
             selectedItems = persistentListOf(),
             showSearchBar = false,
@@ -239,6 +239,7 @@ private fun ExportCategoryScreenContentPreview(
             onClickExport = {},
             onBackClick = {},
             onClickToAddItem = {},
+            modifier = Modifier,
         )
     }
 }

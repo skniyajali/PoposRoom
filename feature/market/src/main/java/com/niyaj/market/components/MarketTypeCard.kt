@@ -61,19 +61,16 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun MarketTypeList(
-    modifier: Modifier = Modifier,
     items: ImmutableList<MarketType>,
     isInSelectionMode: Boolean,
     doesSelected: (Int) -> Boolean,
     onSelectItem: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     showCreateNewItem: Boolean = false,
     onCreateMarketItem: () -> Unit = {},
     lazyGridState: LazyGridState = rememberLazyGridState(),
 ) {
-    TrackScrollJank(
-        scrollableState = lazyGridState,
-        stateName = "MarketTypes::List",
-    )
+    TrackScrollJank(scrollableState = lazyGridState, stateName = "MarketTypes::List")
 
     LazyVerticalGrid(
         modifier = modifier
@@ -119,11 +116,11 @@ internal fun MarketTypeList(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun MarketTypeCard(
-    modifier: Modifier = Modifier,
     item: MarketType,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("MarketTypeCard") {
@@ -167,7 +164,7 @@ private fun MarketTypeCard(
         ) {
             CircularBox(
                 icon = PoposIcons.Category,
-                doesSelected = doesSelected(item.typeId),
+                selected = doesSelected(item.typeId),
             )
 
             Text(
@@ -186,11 +183,11 @@ private fun MarketTypeListPreview(
 ) {
     PoposRoomTheme {
         MarketTypeList(
-            modifier = modifier,
             items = MarketTypePreviewData.marketTypes.toImmutableList(),
             isInSelectionMode = false,
             doesSelected = { it % 2 == 0 },
             onSelectItem = {},
+            modifier = modifier,
             showCreateNewItem = true,
             onCreateMarketItem = {},
         )

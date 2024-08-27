@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
@@ -42,15 +43,18 @@ import com.niyaj.common.utils.Constants.CLEAR_ICON
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.components.PoposIconButton
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceLarge
 import com.niyaj.designsystem.theme.SpaceSmall
 import com.niyaj.designsystem.theme.SpaceSmallMax
+import com.niyaj.ui.utils.DevicePreviews
 
 const val IMPORT_EXPORT_BTN = "import_export_btn"
 const val IMPORT_OPN_FILE = "Open File"
 const val IMPORT_LOADING = "ImportLoading"
 
 @Composable
+@Suppress("LongParameterList")
 fun ExportScaffold(
     title: String,
     exportNote: String,
@@ -78,11 +82,25 @@ fun ExportScaffold(
     content: @Composable () -> Unit,
 ) {
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
+        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
+        modifier = modifier,
         showBackButton = showBackButton || showSearchBar,
         showBottomBar = showBottomBar,
         showSecondaryBottomBar = true,
+        fabPosition = FabPosition.End,
+        navigationIcon = {
+            AnimatedVisibility(
+                visible = !showBackButton,
+            ) {
+                PoposIconButton(
+                    icon = PoposIcons.Close,
+                    onClick = onClickDeselect,
+                    modifier = Modifier.testTag(CLEAR_ICON),
+                    contentDescription = "Deselect All",
+                )
+            }
+        },
         navActions = {
             ExportNavActions(
                 placeholderText = searchPlaceholder,
@@ -95,6 +113,12 @@ fun ExportScaffold(
                 onSearchTextChanged = onSearchTextChanged,
             )
         },
+        floatingActionButton = {
+            ScrollToTop(
+                visible = showScrollToTop,
+                onClick = onClickScrollToTop,
+            )
+        },
         bottomBar = {
             ImportExportButton(
                 btnText = exportButtonText,
@@ -103,26 +127,6 @@ fun ExportScaffold(
                 onClickExport = onClickExport,
                 modifier = Modifier.padding(padding),
             )
-        },
-        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = showScrollToTop,
-                onClick = onClickScrollToTop,
-            )
-        },
-        navigationIcon = {
-            AnimatedVisibility(
-                visible = !showBackButton,
-            ) {
-                PoposIconButton(
-                    modifier = Modifier.testTag(CLEAR_ICON),
-                    onClick = onClickDeselect,
-                    icon = PoposIcons.Close,
-                    contentDescription = "Deselect All",
-                )
-            }
         },
     ) {
         Box(
@@ -163,11 +167,22 @@ fun ImportScaffold(
     content: @Composable () -> Unit,
 ) {
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = showBackButton,
         showBottomBar = showBottomBar,
         showSecondaryBottomBar = true,
+        fabPosition = FabPosition.End,
+        snackbarHostState = snackbarHostState,
+        navigationIcon = {
+            PoposIconButton(
+                icon = PoposIcons.Close,
+                onClick = onClickDeselect,
+                modifier = Modifier.testTag(CLEAR_ICON),
+                contentDescription = "Deselect All",
+            )
+        },
         navActions = {
             AnimatedVisibility(
                 visible = showBottomBar,
@@ -183,6 +198,12 @@ fun ImportScaffold(
                 }
             }
         },
+        floatingActionButton = {
+            ScrollToTop(
+                visible = showScrollToTop,
+                onClick = onClickScrollToTop,
+            )
+        },
         bottomBar = {
             ImportExportButton(
                 btnText = importButtonText,
@@ -191,23 +212,6 @@ fun ImportScaffold(
                 icon = PoposIcons.Download,
                 onClickExport = onClickImport,
                 modifier = Modifier.padding(padding),
-            )
-        },
-        onBackClick = onBackClick,
-        fabPosition = FabPosition.End,
-        snackbarHostState = snackbarHostState,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = showScrollToTop,
-                onClick = onClickScrollToTop,
-            )
-        },
-        navigationIcon = {
-            PoposIconButton(
-                modifier = Modifier.testTag(CLEAR_ICON),
-                onClick = onClickDeselect,
-                icon = PoposIcons.Close,
-                contentDescription = "Deselect All",
             )
         },
     ) {
@@ -240,34 +244,37 @@ fun ExportNavActions(
     onClickOpenSearch: () -> Unit,
     onClearClick: () -> Unit,
     onSearchTextChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    if (showSearchBar) {
-        StandardSearchBar(
-            searchText = searchText,
-            placeholderText = placeholderText,
-            onClearClick = onClearClick,
-            onSearchTextChanged = onSearchTextChanged,
-        )
-    } else {
-        if (showActions) {
-            IconButton(
-                onClick = onClickSelectAll,
-                modifier = Modifier.testTag(NAV_SELECT_ALL_BTN),
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Checklist,
-                    contentDescription = Constants.SELECT_ALL_ICON,
-                )
-            }
+    Row(modifier) {
+        if (showSearchBar) {
+            StandardSearchBar(
+                searchText = searchText,
+                placeholderText = placeholderText,
+                onClearClick = onClearClick,
+                onSearchTextChanged = onSearchTextChanged,
+            )
+        } else {
+            if (showActions) {
+                IconButton(
+                    onClick = onClickSelectAll,
+                    modifier = Modifier.testTag(NAV_SELECT_ALL_BTN),
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.Checklist,
+                        contentDescription = Constants.SELECT_ALL_ICON,
+                    )
+                }
 
-            IconButton(
-                onClick = onClickOpenSearch,
-                modifier = Modifier.testTag(NAV_SEARCH_BTN),
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Search,
-                    contentDescription = "Search Icon",
-                )
+                IconButton(
+                    onClick = onClickOpenSearch,
+                    modifier = Modifier.testTag(NAV_SEARCH_BTN),
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.Search,
+                        contentDescription = "Search Icon",
+                    )
+                }
             }
         }
     }
@@ -303,6 +310,22 @@ fun ImportExportButton(
             icon = PoposIcons.Upload,
             colors = ButtonDefaults.buttonColors(containerColor = containerColor),
             onClick = onClickExport,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ImportExportButtonPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ImportExportButton(
+            btnText = "Export",
+            noteText = "Export your data",
+            enabled = true,
+            onClickExport = {},
+            modifier = modifier,
         )
     }
 }

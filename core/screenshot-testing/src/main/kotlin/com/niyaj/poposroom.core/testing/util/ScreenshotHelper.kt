@@ -15,6 +15,8 @@
  *
  */
 
+@file:Suppress("InvalidPackageDeclaration")
+
 package com.niyaj.poposroom.core.testing.util
 
 import androidx.activity.ComponentActivity

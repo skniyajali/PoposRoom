@@ -55,89 +55,92 @@ fun ScaffoldNavActions(
     selectionCount: Int,
     showSearchIcon: Boolean,
     searchText: String,
-    placeholderText: String = SEARCH_ITEM_PLACEHOLDER,
-    showSearchBar: Boolean = false,
-    showSettingsIcon: Boolean = false,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onSelectAllClick: () -> Unit,
     onClearClick: () -> Unit,
     onSearchIconClick: () -> Unit,
-    onSettingsClick: () -> Unit = {},
     onSearchTextChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    showSearchBar: Boolean = false,
+    showSettingsIcon: Boolean = false,
+    onSettingsClick: () -> Unit = {},
     content: @Composable () -> Unit = {},
     preActionContent: @Composable () -> Unit = {},
     postActionContent: @Composable () -> Unit = {},
+    placeholderText: String = SEARCH_ITEM_PLACEHOLDER,
 ) {
-    if (selectionCount != 0) {
-        preActionContent()
+    Row(modifier) {
+        if (selectionCount != 0) {
+            preActionContent()
 
-        if (selectionCount == 1) {
+            if (selectionCount == 1) {
+                IconButton(
+                    onClick = onEditClick,
+                    modifier = Modifier.testTag(NAV_EDIT_BTN),
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.Edit,
+                        contentDescription = "Edit Item",
+                    )
+                }
+            }
+
             IconButton(
-                onClick = onEditClick,
-                modifier = Modifier.testTag(NAV_EDIT_BTN),
+                onClick = onDeleteClick,
+                modifier = Modifier.testTag(NAV_DELETE_BTN),
             ) {
                 Icon(
-                    imageVector = PoposIcons.Edit,
-                    contentDescription = "Edit Item",
+                    imageVector = PoposIcons.Delete,
+                    contentDescription = "Delete Item",
                 )
             }
-        }
 
-        IconButton(
-            onClick = onDeleteClick,
-            modifier = Modifier.testTag(NAV_DELETE_BTN),
-        ) {
-            Icon(
-                imageVector = PoposIcons.Delete,
-                contentDescription = "Delete Item",
+            IconButton(
+                onClick = onSelectAllClick,
+                modifier = Modifier.testTag(NAV_SELECT_ALL_BTN),
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Rule,
+                    contentDescription = "Select All Item",
+                )
+            }
+
+            postActionContent()
+        } else if (showSearchBar) {
+            StandardSearchBar(
+                searchText = searchText,
+                placeholderText = placeholderText,
+                onClearClick = onClearClick,
+                onSearchTextChanged = onSearchTextChanged,
             )
-        }
-
-        IconButton(
-            onClick = onSelectAllClick,
-            modifier = Modifier.testTag(NAV_SELECT_ALL_BTN),
-        ) {
-            Icon(
-                imageVector = PoposIcons.Rule,
-                contentDescription = "Select All Item",
-            )
-        }
-
-        postActionContent()
-    } else if (showSearchBar) {
-        StandardSearchBar(
-            searchText = searchText,
-            placeholderText = placeholderText,
-            onClearClick = onClearClick,
-            onSearchTextChanged = onSearchTextChanged,
-        )
-    } else {
-        if (showSearchIcon) {
-            IconButton(
-                onClick = onSearchIconClick,
-                modifier = Modifier.testTag(NAV_SEARCH_BTN),
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Search,
-                    contentDescription = "Search Icon",
-                )
+        } else {
+            if (showSearchIcon) {
+                IconButton(
+                    onClick = onSearchIconClick,
+                    modifier = Modifier.testTag(NAV_SEARCH_BTN),
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.Search,
+                        contentDescription = "Search Icon",
+                    )
+                }
             }
-        }
 
-        if (showSettingsIcon) {
-            IconButton(
-                onClick = onSettingsClick,
-                modifier = Modifier.testTag(NAV_SETTING_BTN),
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Settings,
-                    contentDescription = "Settings",
-                )
+            if (showSettingsIcon) {
+                IconButton(
+                    onClick = onSettingsClick,
+                    modifier = Modifier.testTag(NAV_SETTING_BTN),
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.Settings,
+                        contentDescription = "Settings",
+                    )
+                }
             }
-        }
 
-        content()
+            content()
+        }
     }
 }
 
@@ -163,96 +166,99 @@ fun ScaffoldNavActions(
     selectionCount: Int,
     showSearchIcon: Boolean,
     searchText: String,
-    showBottomBarActions: Boolean = false,
-    placeholderText: String = SEARCH_ITEM_PLACEHOLDER,
-    showSearchBar: Boolean = false,
-    showSettings: Boolean = false,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onSelectAllClick: () -> Unit,
     onClearClick: () -> Unit,
     onSearchClick: () -> Unit,
-    onSettingsClick: () -> Unit = {},
     onSearchTextChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    showBottomBarActions: Boolean = false,
+    showSearchBar: Boolean = false,
+    showSettings: Boolean = false,
+    onSettingsClick: () -> Unit = {},
     content: @Composable () -> Unit = {},
     preActionContent: @Composable () -> Unit = {},
     postActionContent: @Composable () -> Unit = {},
+    placeholderText: String = SEARCH_ITEM_PLACEHOLDER,
 ) {
     val selectedState = MutableTransitionState(selectionCount)
 
-    if (showSearchBar) {
-        StandardSearchBar(
-            searchText = searchText,
-            placeholderText = placeholderText,
-            onClearClick = onClearClick,
-            onSearchTextChanged = onSearchTextChanged,
-        )
-    } else {
-        AnimatedContent(
-            targetState = selectedState,
-            transitionSpec = {
-                (fadeIn()).togetherWith(
-                    fadeOut(animationSpec = tween(200)),
-                )
-            },
-            label = "navActions",
-        ) { state ->
-            Row {
-                if (state.currentState != 0) {
-                    if (!showBottomBarActions) {
-                        preActionContent()
+    Row(modifier) {
+        if (showSearchBar) {
+            StandardSearchBar(
+                searchText = searchText,
+                placeholderText = placeholderText,
+                onClearClick = onClearClick,
+                onSearchTextChanged = onSearchTextChanged,
+            )
+        } else {
+            AnimatedContent(
+                targetState = selectedState,
+                transitionSpec = {
+                    (fadeIn()).togetherWith(
+                        fadeOut(animationSpec = tween(200)),
+                    )
+                },
+                label = "navActions",
+            ) { state ->
+                Row {
+                    if (state.currentState != 0) {
+                        if (!showBottomBarActions) {
+                            preActionContent()
 
-                        if (state.currentState == 1) {
-                            IconButton(onClick = onEditClick) {
+                            if (state.currentState == 1) {
+                                IconButton(onClick = onEditClick) {
+                                    Icon(
+                                        imageVector = PoposIcons.Edit,
+                                        contentDescription = Constants.EDIT_ICON,
+                                    )
+                                }
+                            }
+
+                            IconButton(onClick = onDeleteClick) {
                                 Icon(
-                                    imageVector = PoposIcons.Edit,
-                                    contentDescription = Constants.EDIT_ICON,
+                                    imageVector = PoposIcons.Delete,
+                                    contentDescription = Constants.DELETE_ICON,
+                                )
+                            }
+
+                            IconButton(onClick = onSelectAllClick) {
+                                Icon(
+                                    imageVector = PoposIcons.Checklist,
+                                    contentDescription = Constants.SELECT_ALL_ICON,
+                                )
+                            }
+
+                            postActionContent()
+                        }
+                    } else {
+                        if (showSearchIcon) {
+                            IconButton(
+                                onClick = onSearchClick,
+                                modifier = Modifier.testTag(NAV_SEARCH_BTN),
+                            ) {
+                                Icon(
+                                    imageVector = PoposIcons.Search,
+                                    contentDescription = "Search Icon",
                                 )
                             }
                         }
 
-                        IconButton(onClick = onDeleteClick) {
-                            Icon(
-                                imageVector = PoposIcons.Delete,
-                                contentDescription = Constants.DELETE_ICON,
-                            )
+                        if (showSettings) {
+                            IconButton(
+                                onClick = onSettingsClick,
+                                modifier = Modifier.testTag(NAV_SETTING_BTN),
+                            ) {
+                                Icon(
+                                    imageVector = PoposIcons.Settings,
+                                    contentDescription = "Settings",
+                                )
+                            }
                         }
 
-                        IconButton(onClick = onSelectAllClick) {
-                            Icon(
-                                imageVector = PoposIcons.Checklist,
-                                contentDescription = Constants.SELECT_ALL_ICON,
-                            )
-                        }
-
-                        postActionContent()
+                        content()
                     }
-                } else {
-                    if (showSearchIcon) {
-                        IconButton(
-                            onClick = onSearchClick,
-                            modifier = Modifier.testTag(NAV_SEARCH_BTN),
-                        ) {
-                            Icon(
-                                imageVector = PoposIcons.Search,
-                                contentDescription = "Search Icon",
-                            )
-                        }
-                    }
-
-                    if (showSettings) {
-                        IconButton(
-                            onClick = onSettingsClick,
-                            modifier = Modifier.testTag(NAV_SETTING_BTN),
-                        ) {
-                            Icon(
-                                imageVector = PoposIcons.Settings,
-                                contentDescription = "Settings",
-                            )
-                        }
-                    }
-
-                    content()
                 }
             }
         }

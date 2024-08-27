@@ -72,9 +72,10 @@ import kotlinx.coroutines.launch
 @Destination(route = Screens.CUSTOMER_DETAILS_SCREEN)
 @Composable
 fun CustomerDetailsScreen(
-    customerId: Int = 0,
     navigator: DestinationsNavigator,
     onClickOrder: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    customerId: Int = 0,
     viewModel: CustomerDetailsViewModel = hiltViewModel(),
 ) {
     val customerState by viewModel.customerDetails.collectAsStateWithLifecycle()
@@ -84,7 +85,7 @@ fun CustomerDetailsScreen(
     TrackScreenViewEvent(screenName = Screens.CUSTOMER_DETAILS_SCREEN + "/$customerId")
 
     CustomerDetailsScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         customerState = customerState,
         customerWiseOrders = customerWiseOrders,
         totalOrders = totalOrders,
@@ -113,12 +114,13 @@ internal fun CustomerDetailsScreenContent(
     var orderExpanded by rememberSaveable { mutableStateOf(true) }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = CUSTOMER_DETAILS_TITLE,
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = true,
         showBottomBar = false,
-        navActions = {},
         fabPosition = FabPosition.End,
+        navActions = {},
         floatingActionButton = {
             ScrollToTop(
                 visible = !lazyListState.isScrollingUp(),
@@ -129,7 +131,6 @@ internal fun CustomerDetailsScreenContent(
                 },
             )
         },
-        onBackClick = onBackClick,
     ) {
         TrackScrollJank(scrollableState = lazyListState, stateName = "Customer Details::List")
 

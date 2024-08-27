@@ -56,10 +56,13 @@ internal fun MarketItemWithQuantityCard(
     onRemoveItem: (itemId: Int) -> Unit,
     onDecreaseQuantity: (itemId: Int) -> Unit,
     onIncreaseQuantity: (itemId: Int) -> Unit,
+    modifier: Modifier = Modifier,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) = trace("MarketItemWithQuantityCard") {
-    val itemState by derivedStateOf {
-        item.itemQuantity?.let { quantity -> quantity >= 0.0 } ?: false
+    val itemState by remember(item) {
+        derivedStateOf {
+            item.itemQuantity?.let { quantity -> quantity >= 0.0 } ?: false
+        }
     }
 
     val color = animateColorAsState(
@@ -77,6 +80,7 @@ internal fun MarketItemWithQuantityCard(
         } else {
             emptyList()
         },
+        modifier = modifier,
         backgroundUntilSwipeThreshold = MaterialTheme.colorScheme.background,
     ) {
         ListItem(
@@ -112,14 +116,14 @@ internal fun MarketItemWithQuantityCard(
                 IncDecBox(
                     quantity = item.itemQuantity?.toSafeString() ?: "0",
                     measureUnit = item.unitName,
-                    enableDecreasing = (item.itemQuantity != 0.0) && itemState,
-                    enableIncreasing = itemState,
                     onDecrease = {
                         onDecreaseQuantity(item.itemId)
                     },
                     onIncrease = {
                         onIncreaseQuantity(item.itemId)
                     },
+                    enableDecreasing = (item.itemQuantity != 0.0) && itemState,
+                    enableIncreasing = itemState,
                 )
             },
             colors = ListItemDefaults.colors(
@@ -147,10 +151,13 @@ internal fun MarketItemWithQuantityWithListTypeCard(
     onRemoveItem: (listTypeId: Int, itemId: Int) -> Unit,
     onDecreaseQuantity: (listTypeId: Int, itemId: Int) -> Unit,
     onIncreaseQuantity: (listTypeId: Int, itemId: Int) -> Unit,
+    modifier: Modifier = Modifier,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) = trace("MarketItemWithQuantityCard") {
-    val itemState by derivedStateOf {
-        item.itemQuantity?.let { quantity -> quantity >= 0.0 } ?: false
+    val itemState by remember(item) {
+        derivedStateOf {
+            item.itemQuantity?.let { quantity -> quantity >= 0.0 } ?: false
+        }
     }
 
     val color = animateColorAsState(
@@ -168,6 +175,7 @@ internal fun MarketItemWithQuantityWithListTypeCard(
         } else {
             emptyList()
         },
+        modifier = modifier,
         backgroundUntilSwipeThreshold = MaterialTheme.colorScheme.background,
     ) {
         ListItem(
@@ -203,14 +211,14 @@ internal fun MarketItemWithQuantityWithListTypeCard(
                 IncDecBox(
                     quantity = item.itemQuantity?.toSafeString() ?: "0",
                     measureUnit = item.unitName,
-                    enableDecreasing = (item.itemQuantity != 0.0) && itemState,
-                    enableIncreasing = itemState,
                     onDecrease = {
                         onDecreaseQuantity(item.listWithTypeId, item.itemId)
                     },
                     onIncrease = {
                         onIncreaseQuantity(item.listWithTypeId, item.itemId)
                     },
+                    enableDecreasing = (item.itemQuantity != 0.0) && itemState,
+                    enableIncreasing = itemState,
                 )
             },
             colors = ListItemDefaults.colors(
@@ -251,6 +259,7 @@ private fun MarketItemWithQuantityWithListTypeCardPreview(
     PoposRoomTheme {
         MarketItemWithQuantityWithListTypeCard(
             item = marketItemAndQuantity,
+            modifier = modifier,
             onAddItem = { _, _ -> },
             onRemoveItem = { _, _ -> },
             onDecreaseQuantity = { _, _ -> },
@@ -267,6 +276,7 @@ private fun MarketItemWithQuantityItemsCardPreview(
     PoposRoomTheme {
         MarketItemWithQuantityCard(
             item = marketItemAndQuantity,
+            modifier = modifier,
             onAddItem = {},
             onRemoveItem = {},
             onDecreaseQuantity = {},

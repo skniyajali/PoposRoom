@@ -60,10 +60,11 @@ internal fun ProductWiseReport(
     onClickOrderType: (String) -> Unit,
     onBarClick: (String) -> Unit,
     onPrintProductWiseReport: () -> Unit,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("ProductWiseReport") {
     ElevatedCard(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.elevatedCardColors(
@@ -71,36 +72,10 @@ internal fun ProductWiseReport(
         ),
     ) {
         StandardExpandable(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
             expanded = productRepExpanded,
             onExpandChanged = {
                 onExpandChanged()
             },
-            title = {
-                IconWithText(
-                    text = "Product Wise Report",
-                    secondaryText = selectedProduct.ifEmpty { null },
-                    icon = PoposIcons.Dns,
-                )
-            },
-            trailing = {
-                Row {
-                    OrderTypeDropdown(
-                        text = orderType.ifEmpty { "All" },
-                        onItemClick = onClickOrderType,
-                    )
-
-                    PoposIconButton(
-                        icon = PoposIcons.Print,
-                        onClick = onPrintProductWiseReport,
-                    )
-                }
-            },
-            expand = null,
-            showExpandIcon = false,
-            contentDesc = "Product wise report",
             content = {
                 Crossfade(
                     targetState = productState,
@@ -150,6 +125,32 @@ internal fun ProductWiseReport(
                     }
                 }
             },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SpaceSmall),
+            showExpandIcon = false,
+            title = {
+                IconWithText(
+                    text = "Product Wise Report",
+                    icon = PoposIcons.Dns,
+                    secondaryText = selectedProduct.ifEmpty { null },
+                )
+            },
+            trailing = {
+                Row {
+                    OrderTypeDropdown(
+                        text = orderType.ifEmpty { "All" },
+                        onItemClick = onClickOrderType,
+                    )
+
+                    PoposIconButton(
+                        icon = PoposIcons.Print,
+                        onClick = onPrintProductWiseReport,
+                    )
+                }
+            },
+            expand = null,
+            contentDesc = "Product wise report",
         )
     }
 }
@@ -166,6 +167,7 @@ private fun ProductWiseReportPreview(
             productState = productState,
             orderType = "All",
             productRepExpanded = true,
+            modifier = modifier,
             selectedProduct = "",
             onExpandChanged = {},
             onClickOrderType = {},

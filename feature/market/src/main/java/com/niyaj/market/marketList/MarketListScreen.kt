@@ -86,9 +86,10 @@ import kotlinx.coroutines.launch
 @Destination(route = MARKET_LIST_SCREEN)
 fun MarketListScreen(
     navigator: DestinationsNavigator,
+    resultRecipient: ResultRecipient<AddEditMarketListScreenDestination, String>,
+    modifier: Modifier = Modifier,
     viewModel: MarketListViewModel = hiltViewModel(),
     shareViewModel: ShareViewModel = hiltViewModel(),
-    resultRecipient: ResultRecipient<AddEditMarketListScreenDestination, String>,
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -109,7 +110,6 @@ fun MarketListScreen(
     }
 
     MarketListScreenContent(
-        modifier = Modifier,
         uiState = state,
         selectedItems = selectedItems,
         showSearchBar = showSearchBar,
@@ -128,6 +128,7 @@ fun MarketListScreen(
         onClickExpand = viewModel::onClickExpand,
         onClickPrint = viewModel::printMarketList,
         snackbarState = snackbarState,
+        modifier = modifier,
         onClickCreateNew = {
             navigator.navigate(AddEditMarketListScreenDestination())
         },
@@ -162,8 +163,8 @@ fun MarketListScreen(
             ShareableMarketList(
                 captureController = captureController,
                 marketDate = marketDate.longValue,
-                onDismiss = shareViewModel::onDismissDialog,
                 marketLists = items,
+                onDismiss = shareViewModel::onDismissDialog,
                 onClickShare = {
                     captureController.captureLongScreenshot()
                 },
@@ -196,7 +197,6 @@ fun MarketListScreen(
 @VisibleForTesting
 @Composable
 internal fun MarketListScreenContent(
-    modifier: Modifier = Modifier,
     uiState: UiState<List<MarketListWithTypes>>,
     selectedItems: List<Int>,
     doesExpanded: (Int) -> Boolean,
@@ -220,6 +220,7 @@ internal fun MarketListScreenContent(
     onClickPrint: (List<Int>, Long) -> Unit,
     onClickViewDetails: (List<Int>) -> Unit,
     onClickManageList: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
@@ -240,9 +241,9 @@ internal fun MarketListScreenContent(
     val openDialog = remember { mutableStateOf(false) }
 
     PoposPrimaryScaffold(
-        modifier = modifier,
         currentRoute = MARKET_LIST_SCREEN,
         title = if (selectedItems.isEmpty()) MARKET_LIST_SCREEN_TITLE else "${selectedItems.size} Selected",
+        selectionCount = selectedItems.size,
         floatingActionButton = {
             StandardFAB(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
@@ -258,10 +259,7 @@ internal fun MarketListScreenContent(
         },
         navActions = {
             ScaffoldNavActions(
-                placeholderText = MARKET_ITEM_SEARCH_PLACEHOLDER,
-                showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchBar = showSearchBar,
                 showSearchIcon = showFab,
                 searchText = searchText,
                 onEditClick = {
@@ -270,20 +268,23 @@ internal fun MarketListScreenContent(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = onClickSettings,
                 onSelectAllClick = onClickSelectAll,
                 onClearClick = onClickClear,
                 onSearchIconClick = onClickSearchIcon,
                 onSearchTextChanged = onSearchTextChanged,
+                showSearchBar = showSearchBar,
+                showSettingsIcon = true,
+                onSettingsClick = onClickSettings,
+                placeholderText = MARKET_ITEM_SEARCH_PLACEHOLDER,
             )
         },
+        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
+        onNavigateToScreen = onNavigateToScreen,
+        modifier = modifier,
         fabPosition = if (lazyGridState.isScrolled) FabPosition.End else FabPosition.Center,
-        selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
         onDeselect = onClickDeselect,
-        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
         snackbarHostState = snackbarState,
-        onNavigateToScreen = onNavigateToScreen,
     ) {
         Crossfade(
             targetState = uiState,

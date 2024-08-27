@@ -62,17 +62,14 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun MeasureUnitItems(
-    modifier: Modifier = Modifier,
     items: ImmutableList<MeasureUnit>,
     isInSelectionMode: Boolean,
     doesSelected: (Int) -> Boolean,
     onSelectItem: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     lazyGridState: LazyGridState = rememberLazyGridState(),
 ) {
-    TrackScrollJank(
-        scrollableState = lazyGridState,
-        stateName = "MeasureUnit::List",
-    )
+    TrackScrollJank(scrollableState = lazyGridState, stateName = "MeasureUnit::List")
 
     LazyVerticalGrid(
         modifier = modifier
@@ -104,11 +101,11 @@ internal fun MeasureUnitItems(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MeasureUnitItem(
-    modifier: Modifier = Modifier,
     item: MeasureUnit,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("MeasureUnitItem") {
@@ -165,7 +162,7 @@ fun MeasureUnitItem(
 
             CircularBox(
                 icon = PoposIcons.MonitorWeight,
-                doesSelected = doesSelected(item.unitId),
+                selected = doesSelected(item.unitId),
             )
         }
     }
@@ -178,11 +175,11 @@ private fun MeasureUnitItemsPreview(
 ) {
     PoposRoomTheme {
         MeasureUnitItems(
-            modifier = modifier,
             items = MeasureUnitPreviewData.measureUnits.toImmutableList(),
             isInSelectionMode = false,
             doesSelected = { it % 2 == 0 },
             onSelectItem = {},
+            modifier = modifier,
         )
     }
 }

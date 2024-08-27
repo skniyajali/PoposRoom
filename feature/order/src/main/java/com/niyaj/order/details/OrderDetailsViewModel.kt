@@ -49,15 +49,15 @@ class OrderDetailsViewModel @Inject constructor(
     @Dispatcher(PoposDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
     private val analyticsHelper: AnalyticsHelper,
-) : ShareViewModel(ioDispatcher, analyticsHelper) {
+) : ShareViewModel(ioDispatcher) {
 
     private val orderId = savedStateHandle.get<Int>("orderId") ?: 0
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    val orderDetails = snapshotFlow { orderId }.flatMapLatest { it ->
-        orderRepository.getOrderDetails(it).map {
+    val orderDetails = snapshotFlow { orderId }.flatMapLatest { data ->
+        orderRepository.getOrderDetails(data).map {
             if (it.cartOrder.orderId == 0) {
                 UiState.Empty
             } else {

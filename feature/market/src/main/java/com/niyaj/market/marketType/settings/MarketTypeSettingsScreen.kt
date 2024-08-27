@@ -45,9 +45,9 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 @Composable
 fun MarketTypeSettingsScreen(
     navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
 ) {
     MarketTypeSettingsScreenContent(
-        modifier = Modifier,
         onBackClick = navigator::navigateUp,
         onImportClick = {
             navigator.navigate(ImportMarketTypeScreenDestination())
@@ -55,16 +55,17 @@ fun MarketTypeSettingsScreen(
         onExportClick = {
             navigator.navigate(ExportMarketTypeScreenDestination())
         },
+        modifier = modifier,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun MarketTypeSettingsScreenContent(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onImportClick: () -> Unit,
     onExportClick: () -> Unit,
+    modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     TrackScreenViewEvent(screenName = MARKET_SETTINGS_TITLE)

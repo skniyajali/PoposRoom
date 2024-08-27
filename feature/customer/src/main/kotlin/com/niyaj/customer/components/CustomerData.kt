@@ -146,7 +146,7 @@ internal fun CustomerData(
         leadingContent = {
             CircularBox(
                 icon = PoposIcons.Person4,
-                doesSelected = doesSelected(item.customerId),
+                selected = doesSelected(item.customerId),
                 text = item.customerName,
             )
         },

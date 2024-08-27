@@ -49,6 +49,8 @@ object Constants {
     const val DIALOG_CONFIRM_TEXT = "Delete"
     const val DIALOG_DISMISS_TEXT = "Maybe Later"
 
-    const val BLUETOOTH_PER_RATIONAL_TEXT = "Permissions are important. Please grant all of them for the app to function properly."
-    const val BLUETOOTH_PER_DENY_TEXT = "Bluetooth permissions are denied. The app cannot function without them. click on open settings to grant permissions"
+    const val BLUETOOTH_PER_RATIONAL_TEXT = "Permissions are important. " +
+        "Please grant all of them for the app to function properly."
+    const val BLUETOOTH_PER_DENY_TEXT = "Bluetooth permissions are denied. " +
+        "The app cannot function without them. click on open settings to grant permissions"
 }

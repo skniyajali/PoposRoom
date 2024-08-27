@@ -58,8 +58,8 @@ import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun CartItemProductDetailsSection(
-    modifier: Modifier = Modifier,
     cartProducts: List<CartProductItem>,
+    modifier: Modifier = Modifier,
     decreaseQuantity: (Int) -> Unit = {},
     increaseQuantity: (Int) -> Unit = {},
 ) = trace("CartItemProductDetailsSection") {
@@ -87,10 +87,10 @@ fun CartItemProductDetailsSection(
 
 @Composable
 private fun CartProduct(
-    modifier: Modifier = Modifier,
     cartProduct: CartProductItem,
     decreaseQuantity: (Int) -> Unit,
     increaseQuantity: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     productBoxColor: Color = LightColor9,
     qtyBoxColor: Color = LightColor8,
 ) = trace("CartProduct") {
@@ -202,8 +202,8 @@ private fun CartItemProductDetailsSectionPreview(
 ) {
     PoposRoomTheme {
         CartItemProductDetailsSection(
-            modifier = modifier,
             cartProducts = cartProducts,
+            modifier = modifier,
             decreaseQuantity = {},
             increaseQuantity = {},
         )
@@ -217,7 +217,6 @@ private fun CartProductPreview(
 ) {
     PoposRoomTheme {
         CartProduct(
-            modifier = modifier,
             cartProduct = CartProductItem(
                 productId = 1,
                 productName = "Pasta",
@@ -226,6 +225,7 @@ private fun CartProductPreview(
             ),
             decreaseQuantity = {},
             increaseQuantity = {},
+            modifier = modifier,
         )
     }
 }

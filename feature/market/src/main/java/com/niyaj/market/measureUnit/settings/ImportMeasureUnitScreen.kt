@@ -83,6 +83,7 @@ import kotlinx.coroutines.launch
 fun ImportMeasureUnitScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: MeasureUnitSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -125,7 +126,6 @@ fun ImportMeasureUnitScreen(
     }
 
     ImportMeasureUnitScreenContent(
-        modifier = Modifier,
         importedItems = importedItems.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         isLoading = isLoading,
@@ -139,13 +139,13 @@ fun ImportMeasureUnitScreen(
             importLauncher.launch(ImportExport.openFile(context))
         },
         onBackClick = navigator::navigateUp,
+        modifier = modifier,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun ImportMeasureUnitScreenContent(
-    modifier: Modifier = Modifier,
     importedItems: ImmutableList<MeasureUnit>,
     selectedItems: ImmutableList<Int>,
     isLoading: Boolean,
@@ -155,6 +155,7 @@ internal fun ImportMeasureUnitScreenContent(
     onClickImport: () -> Unit,
     onClickOpenFile: () -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
     padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
@@ -170,11 +171,23 @@ internal fun ImportMeasureUnitScreenContent(
     }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = if (selectedItems.isEmpty()) IMPORT_UNIT_TITLE else "${selectedItems.size} Selected",
+        onBackClick = onBackClick,
         showBackButton = selectedItems.isEmpty(),
         showBottomBar = importedItems.isNotEmpty(),
         showSecondaryBottomBar = true,
+        fabPosition = FabPosition.End,
+        modifier = modifier,
+        navigationIcon = {
+            IconButton(
+                onClick = onClickDeselect,
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Deselect All",
+                )
+            }
+        },
         navActions = {
             AnimatedVisibility(
                 visible = importedItems.isNotEmpty(),
@@ -189,6 +202,16 @@ internal fun ImportMeasureUnitScreenContent(
                 }
             }
         },
+        floatingActionButton = {
+            ScrollToTop(
+                visible = !lazyGridState.isScrollingUp(),
+                onClick = {
+                    scope.launch {
+                        lazyGridState.animateScrollToItem(index = 0)
+                    }
+                },
+            )
+        },
         bottomBar = {
             Column(
                 modifier = Modifier
@@ -196,7 +219,15 @@ internal fun ImportMeasureUnitScreenContent(
                     .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} units will be imported.")
+                InfoText(
+                    text = "${
+                        if (selectedItems.isEmpty()) {
+                            "All"
+                        } else {
+                            "${selectedItems.size}"
+                        }
+                    } units will be imported.",
+                )
 
                 PoposButton(
                     modifier = Modifier
@@ -209,28 +240,6 @@ internal fun ImportMeasureUnitScreenContent(
                         containerColor = MaterialTheme.colorScheme.primary,
                     ),
                     onClick = onClickImport,
-                )
-            }
-        },
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyGridState.isScrollingUp(),
-                onClick = {
-                    scope.launch {
-                        lazyGridState.animateScrollToItem(index = 0)
-                    }
-                },
-            )
-        },
-        onBackClick = onBackClick,
-        navigationIcon = {
-            IconButton(
-                onClick = onClickDeselect,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Deselect All",
                 )
             }
         },
@@ -249,18 +258,18 @@ internal fun ImportMeasureUnitScreenContent(
                 )
             } else {
                 MeasureUnitItems(
-                    modifier = Modifier,
                     items = importedItems,
                     isInSelectionMode = true,
                     doesSelected = selectedItems::contains,
                     onSelectItem = onClickSelectItem,
+                    modifier = Modifier,
                     lazyGridState = lazyGridState,
                 )
             }
         }
 
         if (isLoading) {
-            LoadingIndicatorHalf(modifier = modifier.padding(paddingValues))
+            LoadingIndicatorHalf(modifier = Modifier.padding(paddingValues))
         }
     }
 }

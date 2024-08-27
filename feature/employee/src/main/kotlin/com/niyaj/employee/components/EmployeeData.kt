@@ -64,12 +64,12 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun EmployeeList(
-    modifier: Modifier = Modifier,
     employees: ImmutableList<Employee>,
     isInSelectionMode: Boolean,
     doesSelected: (Int) -> Boolean,
     onSelectItem: (Int) -> Unit,
     onNavigateToDetails: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     TrackScrollJank(scrollableState = lazyListState, stateName = "Employee::List")
@@ -105,11 +105,11 @@ fun EmployeeList(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun EmployeeData(
-    modifier: Modifier = Modifier,
     item: Employee,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("EmployeeData") {
@@ -154,7 +154,7 @@ private fun EmployeeData(
         leadingContent = {
             CircularBox(
                 icon = PoposIcons.Person,
-                doesSelected = doesSelected(item.employeeId),
+                selected = doesSelected(item.employeeId),
                 text = item.employeeName,
             )
         },

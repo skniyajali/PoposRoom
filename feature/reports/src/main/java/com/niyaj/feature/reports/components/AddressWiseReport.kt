@@ -65,10 +65,11 @@ internal fun AddressWiseReport(
     onExpandChanged: () -> Unit,
     onAddressClick: (addressId: Int) -> Unit,
     onPrintAddressWiseReport: () -> Unit,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("AddressWiseReport") {
     ElevatedCard(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.elevatedCardColors().copy(
@@ -76,41 +77,10 @@ internal fun AddressWiseReport(
         ),
     ) {
         StandardExpandable(
-            modifier = Modifier
-                .padding(SpaceSmall)
-                .fillMaxWidth(),
             expanded = addressWiseRepExpanded,
             onExpandChanged = {
                 onExpandChanged()
             },
-            title = {
-                IconWithText(
-                    text = "Address Wise Report",
-                    icon = PoposIcons.Address,
-                )
-            },
-            trailing = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(SpaceMini),
-                ) {
-                    CountBox(count = totalReports.totalAmount.toRupee)
-
-                    CountBox(
-                        count = totalReports.totalOrders.toString(),
-                        backgroundColor = MaterialTheme.colorScheme.secondary,
-                    )
-
-                    PoposIconButton(
-                        icon = PoposIcons.Print,
-                        onClick = onPrintAddressWiseReport,
-                    )
-                }
-            },
-            rowClickable = true,
-            expand = null,
-            showExpandIcon = false,
-            contentDesc = "Address wise report",
             content = {
                 Crossfade(targetState = addressState, label = "AddressState") { state ->
                     when (state) {
@@ -142,15 +112,46 @@ internal fun AddressWiseReport(
                     }
                 }
             },
+            modifier = Modifier
+                .padding(SpaceSmall)
+                .fillMaxWidth(),
+            rowClickable = true,
+            showExpandIcon = false,
+            title = {
+                IconWithText(
+                    text = "Address Wise Report",
+                    icon = PoposIcons.Address,
+                )
+            },
+            trailing = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(SpaceMini),
+                ) {
+                    CountBox(count = totalReports.totalAmount.toRupee)
+
+                    CountBox(
+                        count = totalReports.totalOrders.toString(),
+                        backgroundColor = MaterialTheme.colorScheme.secondary,
+                    )
+
+                    PoposIconButton(
+                        icon = PoposIcons.Print,
+                        onClick = onPrintAddressWiseReport,
+                    )
+                }
+            },
+            expand = null,
+            contentDesc = "Address wise report",
         )
     }
 }
 
 @Composable
 private fun AddressReportCard(
-    modifier: Modifier = Modifier,
     report: AddressWiseReport,
     onAddressClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("AddressReportCard") {
     Box(
         modifier = modifier
@@ -167,9 +168,9 @@ private fun AddressReportCard(
             IconWithText(
                 text = report.addressName,
                 icon = PoposIcons.LocationOn,
+                modifier = Modifier.weight(1F),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.weight(1F),
             )
 
             Text(
@@ -214,6 +215,7 @@ private fun AddressWiseReportPreview(
                 totalAmount = 3000L,
                 totalOrders = 5,
             ),
+            modifier = modifier,
             addressWiseRepExpanded = true,
             onExpandChanged = {},
             onAddressClick = {},

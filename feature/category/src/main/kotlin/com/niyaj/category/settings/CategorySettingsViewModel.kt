@@ -21,6 +21,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsEvent.Param
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.CategoryRepository
 import com.niyaj.model.Category
@@ -110,6 +111,7 @@ class CategorySettingsViewModel @Inject constructor(
                         is Resource.Error -> {
                             mEventFlow.emit(UiEvent.OnError(result.message ?: "Unable"))
                         }
+
                         is Resource.Success -> {
                             mEventFlow.emit(UiEvent.OnSuccess("${data.size} categories has been imported successfully"))
                             analyticsHelper.logImportedCategoryToDatabase(data.size)
@@ -126,7 +128,7 @@ internal fun AnalyticsHelper.logImportedCategoryFromFile(totalCategory: Int) {
         event = AnalyticsEvent(
             type = "category_imported_from_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("category_imported_from_file", totalCategory.toString()),
+                Param("category_imported_from_file", totalCategory.toString()),
             ),
         ),
     )
@@ -137,7 +139,7 @@ internal fun AnalyticsHelper.logImportedCategoryToDatabase(totalCategory: Int) {
         event = AnalyticsEvent(
             type = "category_imported_to_database",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("category_imported_to_database", totalCategory.toString()),
+                Param("category_imported_to_database", totalCategory.toString()),
             ),
         ),
     )
@@ -148,7 +150,7 @@ internal fun AnalyticsHelper.logExportedCategoryToFile(totalCategory: Int) {
         event = AnalyticsEvent(
             type = "category_exported_to_file",
             extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param("category_exported_to_file", totalCategory.toString()),
+                Param("category_exported_to_file", totalCategory.toString()),
             ),
         ),
     )

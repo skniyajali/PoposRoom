@@ -31,11 +31,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun ScrollToTop(
-    modifier: Modifier = Modifier,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
     contentDesc: String = "Scroll To Top",
 ) {
@@ -56,9 +58,9 @@ fun ScrollToTop(
 
 @Composable
 fun ScrollToTop(
-    modifier: Modifier = Modifier,
     visible: Boolean,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
     contentDesc: String = "Scroll To Top",
 ) {
@@ -81,6 +83,33 @@ fun ScrollToTop(
             onClick = onClick,
             containerColor = containerColor,
             contentDesc = contentDesc,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ScrollToTopPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ScrollToTop(
+            onClick = {},
+            modifier = modifier,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ScrollToTopVisiblePreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        ScrollToTop(
+            visible = true,
+            onClick = {},
+            modifier = modifier,
         )
     }
 }

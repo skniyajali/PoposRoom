@@ -54,7 +54,7 @@ import com.niyaj.ui.utils.DevicePreviews
 internal fun AddressDetailsCard(
     addressState: UiState<Address>,
     onExpanded: () -> Unit,
-    doesExpanded: Boolean,
+    expanded: Boolean,
     onClickEdit: () -> Unit,
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.background,
@@ -70,42 +70,9 @@ internal fun AddressDetailsCard(
         ),
     ) {
         StandardExpandable(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
-            expanded = doesExpanded,
+            expanded = expanded,
             onExpandChanged = {
                 onExpanded()
-            },
-            title = {
-                IconWithText(
-                    text = "Address Details",
-                    icon = PoposIcons.Address,
-                )
-            },
-            trailing = {
-                IconButton(
-                    onClick = onClickEdit,
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.Edit,
-                        contentDescription = "Edit Address",
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                }
-            },
-            rowClickable = true,
-            expand = { modifier: Modifier ->
-                IconButton(
-                    modifier = modifier,
-                    onClick = onExpanded,
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.ArrowDown,
-                        contentDescription = "Expand More",
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
             },
             content = {
                 Crossfade(
@@ -129,24 +96,24 @@ internal fun AddressDetailsCard(
                                     .padding(SpaceSmall),
                             ) {
                                 IconWithText(
-                                    modifier = Modifier.testTag(state.data.addressName),
                                     text = "Name - ${state.data.addressName}",
                                     icon = PoposIcons.Address,
+                                    modifier = Modifier.testTag(state.data.addressName),
                                     tintColor = MaterialTheme.colorScheme.outline,
                                 )
                                 Spacer(modifier = Modifier.height(SpaceSmall))
                                 IconWithText(
-                                    modifier = Modifier.testTag(state.data.shortName),
                                     text = "Short Name - ${state.data.shortName}",
                                     icon = PoposIcons.Home,
+                                    modifier = Modifier.testTag(state.data.shortName),
                                     tintColor = MaterialTheme.colorScheme.outline,
                                 )
                                 Spacer(modifier = Modifier.height(SpaceSmall))
 
                                 IconWithText(
-                                    modifier = Modifier.testTag(state.data.createdAt.toFormattedDateAndTime),
                                     text = "Created At : ${state.data.createdAt.toPrettyDate()}",
                                     icon = PoposIcons.CalenderMonth,
+                                    modifier = Modifier.testTag(state.data.createdAt.toFormattedDateAndTime),
                                     tintColor = MaterialTheme.colorScheme.outline,
                                 )
 
@@ -161,6 +128,39 @@ internal fun AddressDetailsCard(
                             }
                         }
                     }
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SpaceSmall),
+            rowClickable = true,
+            title = {
+                IconWithText(
+                    text = "Address Details",
+                    icon = PoposIcons.Address,
+                )
+            },
+            trailing = {
+                IconButton(
+                    onClick = onClickEdit,
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.Edit,
+                        contentDescription = "Edit Address",
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            },
+            expand = { modifier: Modifier ->
+                IconButton(
+                    modifier = modifier,
+                    onClick = onExpanded,
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.ArrowDown,
+                        contentDescription = "Expand More",
+                        tint = MaterialTheme.colorScheme.secondary,
+                    )
                 }
             },
         )
@@ -179,7 +179,7 @@ private fun AddressDetailsCardPreview(
             modifier = modifier,
             addressState = addressState,
             onExpanded = {},
-            doesExpanded = true,
+            expanded = true,
             onClickEdit = {},
         )
     }

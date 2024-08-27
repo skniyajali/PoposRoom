@@ -56,10 +56,11 @@ internal fun RecentOrders(
     onExpanded: () -> Unit,
     doesExpanded: Boolean,
     onClickOrder: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("Address::RecentOrders") {
     ElevatedCard(
         onClick = onExpanded,
-        modifier = Modifier
+        modifier = modifier
             .testTag("EmployeeDetails")
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
@@ -68,31 +69,9 @@ internal fun RecentOrders(
         ),
     ) {
         StandardExpandable(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceSmall),
             expanded = doesExpanded,
             onExpandChanged = {
                 onExpanded()
-            },
-            title = {
-                IconWithText(
-                    text = "Recent Orders",
-                    icon = PoposIcons.Order,
-                )
-            },
-            rowClickable = false,
-            expand = { modifier: Modifier ->
-                IconButton(
-                    modifier = modifier,
-                    onClick = onExpanded,
-                ) {
-                    Icon(
-                        imageVector = PoposIcons.ArrowDown,
-                        contentDescription = "Expand More",
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
             },
             content = {
                 Crossfade(
@@ -114,9 +93,9 @@ internal fun RecentOrders(
                             Column {
                                 groupedByDate.forEach { (date, orders) ->
                                     TextWithCount(
-                                        modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLow),
                                         text = date,
                                         count = orders.size,
+                                        modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLow),
                                         leadingIcon = PoposIcons.CalenderMonth,
                                     )
 
@@ -147,6 +126,28 @@ internal fun RecentOrders(
                     }
                 }
             },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SpaceSmall),
+            rowClickable = false,
+            title = {
+                IconWithText(
+                    text = "Recent Orders",
+                    icon = PoposIcons.Order,
+                )
+            },
+            expand = { modifier: Modifier ->
+                IconButton(
+                    modifier = modifier,
+                    onClick = onExpanded,
+                ) {
+                    Icon(
+                        imageVector = PoposIcons.ArrowDown,
+                        contentDescription = "Expand More",
+                        tint = MaterialTheme.colorScheme.secondary,
+                    )
+                }
+            },
         )
     }
 }
@@ -164,6 +165,7 @@ private fun RecentOrdersPreview(
             onExpanded = {},
             doesExpanded = true,
             onClickOrder = {},
+            modifier = modifier,
         )
     }
 }

@@ -97,8 +97,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProfileScreen(
     navigator: DestinationsNavigator,
-    viewModel: ProfileViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<UpdateProfileScreenDestination, String>,
+    modifier: Modifier = Modifier,
+    viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -164,7 +165,7 @@ fun ProfileScreen(
     TrackScreenViewEvent(screenName = Screens.PROFILE_SCREEN)
 
     ProfileScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         profile = info,
         accountInfo = accountInfo,
         onBackClick = navigator::popBackStack,
@@ -193,14 +194,14 @@ fun ProfileScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProfileScreenContent(
-    modifier: Modifier = Modifier,
     profile: Profile,
-    accountInfo: Account? = null,
     onBackClick: () -> Unit,
     onClickEditProfile: (Int) -> Unit,
     onClickChangePassword: (Int) -> Unit,
     onClickChangeResLogo: () -> Unit,
     onClickChangePrintLogo: () -> Unit,
+    modifier: Modifier = Modifier,
+    accountInfo: Account? = null,
     statusBarColor: Color = MaterialTheme.colorScheme.primary,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {

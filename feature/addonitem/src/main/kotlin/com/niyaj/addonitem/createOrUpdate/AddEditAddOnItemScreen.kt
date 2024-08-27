@@ -72,10 +72,11 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 @Destination(route = Screens.ADD_EDIT_ADD_ON_ITEM_SCREEN)
 @Composable
 fun AddEditAddOnItemScreen(
-    itemId: Int = 0,
     navigator: DestinationsNavigator,
-    viewModel: AddEditAddOnItemViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    itemId: Int = 0,
+    viewModel: AddEditAddOnItemViewModel = hiltViewModel(),
 ) {
     val nameError = viewModel.nameError.collectAsStateWithLifecycle().value
     val priceError = viewModel.priceError.collectAsStateWithLifecycle().value
@@ -102,7 +103,7 @@ fun AddEditAddOnItemScreen(
     TrackScreenViewEvent(screenName = Screens.ADD_EDIT_ADD_ON_ITEM_SCREEN)
 
     AddEditAddOnItemScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         title = title,
         icon = icon,
         state = viewModel.addEditState,
@@ -116,24 +117,25 @@ fun AddEditAddOnItemScreen(
 @VisibleForTesting
 @Composable
 internal fun AddEditAddOnItemScreenContent(
-    modifier: Modifier = Modifier,
-    title: String = CREATE_NEW_ADD_ON,
-    icon: ImageVector = PoposIcons.Add,
     state: AddEditAddOnItemState,
-    nameError: String? = null,
-    priceError: String? = null,
     onEvent: (AddEditAddOnItemEvent) -> Unit,
     onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    nameError: String? = null,
+    priceError: String? = null,
+    title: String = CREATE_NEW_ADD_ON,
+    icon: ImageVector = PoposIcons.Add,
 ) {
     val lazyListState = rememberLazyListState()
     val enableBtn = nameError == null && priceError == null
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
-        showBackButton = true,
         onBackClick = onBackClick,
+        modifier = modifier,
+        showBackButton = true,
         showBottomBar = true,
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
         bottomBar = {
             PoposButton(
                 modifier = Modifier
@@ -147,7 +149,6 @@ internal fun AddEditAddOnItemScreenContent(
                 },
             )
         },
-        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     ) { paddingValues ->
         TrackScrollJank(scrollableState = lazyListState, stateName = "Create New Addon::Fields")
 
@@ -162,16 +163,16 @@ internal fun AddEditAddOnItemScreenContent(
         ) {
             item(ADDON_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.itemName,
                     label = ADDON_NAME_FIELD,
                     leadingIcon = PoposIcons.Category,
-                    isError = nameError != null,
-                    errorText = nameError,
-                    errorTextTag = ADDON_NAME_ERROR_TAG,
-                    showClearIcon = state.itemName.isNotEmpty(),
+                    value = state.itemName,
                     onValueChange = {
                         onEvent(AddEditAddOnItemEvent.ItemNameChanged(it))
                     },
+                    isError = nameError != null,
+                    errorText = nameError,
+                    showClearIcon = state.itemName.isNotEmpty(),
+                    errorTextTag = ADDON_NAME_ERROR_TAG,
                     onClickClearIcon = {
                         onEvent(AddEditAddOnItemEvent.ItemNameChanged(""))
                     },
@@ -180,17 +181,17 @@ internal fun AddEditAddOnItemScreenContent(
 
             item(ADDON_PRICE_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.itemPrice.safeString,
                     label = ADDON_PRICE_FIELD,
                     leadingIcon = PoposIcons.Rupee,
-                    isError = priceError != null,
-                    errorText = priceError,
-                    keyboardType = KeyboardType.Number,
-                    errorTextTag = ADDON_PRICE_ERROR_TAG,
-                    showClearIcon = state.itemPrice.safeString.isNotEmpty(),
+                    value = state.itemPrice.safeString,
                     onValueChange = {
                         onEvent(AddEditAddOnItemEvent.ItemPriceChanged(it))
                     },
+                    isError = priceError != null,
+                    errorText = priceError,
+                    keyboardType = KeyboardType.Number,
+                    showClearIcon = state.itemPrice.safeString.isNotEmpty(),
+                    errorTextTag = ADDON_PRICE_ERROR_TAG,
                     onClickClearIcon = {
                         onEvent(AddEditAddOnItemEvent.ItemPriceChanged(""))
                     },

@@ -52,8 +52,8 @@ import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun StandardOutlinedChip(
+    text: String,
     modifier: Modifier = Modifier,
-    text: String = "",
     secondaryText: String? = null,
     isToggleable: Boolean = true,
     isSelected: Boolean = false,
@@ -155,8 +155,8 @@ fun PaymentStatusChip(
 
 @Composable
 fun StandardChip(
-    modifier: Modifier = Modifier,
     text: String,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     isPrimary: Boolean = false,
     isClickable: Boolean = false,
@@ -200,8 +200,8 @@ fun StandardChip(
 
 @Composable
 fun PoposOutlinedChip(
-    modifier: Modifier = Modifier,
     text: String,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     borderColor: Color = MaterialTheme.colorScheme.tertiary,
     contentColor: Color = MaterialTheme.colorScheme.tertiary,
@@ -241,8 +241,8 @@ fun PoposOutlinedChip(
 
 @Composable
 fun PoposChip(
-    modifier: Modifier = Modifier,
     text: String,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
     contentColor: Color = contentColorFor(containerColor),
@@ -280,14 +280,39 @@ fun PoposChip(
 
 @DevicePreviews
 @Composable
-private fun PoposChipPreview(
+private fun StandardOutlinedChipPreview(
     modifier: Modifier = Modifier,
 ) {
     PoposRoomTheme {
-        PoposChip(
+        StandardOutlinedChip(
+            text = "Standard Outlined Chip",
             modifier = modifier,
-            text = "Popos Chip",
-            icon = PoposIcons.StarHalf,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun PaymentStatusChipPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        PaymentStatusChip(
+            modifier = modifier,
+            isPaid = true,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun StandardChipPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        StandardChip(
+            text = "Standard Chip",
+            modifier = modifier,
         )
     }
 }
@@ -299,9 +324,23 @@ private fun PoposOutlinedChipPreview(
 ) {
     PoposRoomTheme {
         PoposOutlinedChip(
-            modifier = modifier,
             text = "Popos Outlined Chip",
+            modifier = modifier,
             icon = PoposIcons.MergeType,
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun PoposChipPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        PoposChip(
+            text = "Popos Chip",
+            modifier = modifier,
+            icon = PoposIcons.StarHalf,
         )
     }
 }

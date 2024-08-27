@@ -47,9 +47,9 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 @Composable
 fun AbsentSettingsScreen(
     navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
 ) {
     AbsentSettingsScreenContent(
-        modifier = Modifier,
         onBackClick = navigator::navigateUp,
         onImportClick = {
             navigator.navigate(AbsentImportScreenDestination())
@@ -57,16 +57,17 @@ fun AbsentSettingsScreen(
         onExportClick = {
             navigator.navigate(AbsentExportScreenDestination())
         },
+        modifier = modifier,
     )
 }
 
 @VisibleForTesting
 @Composable
 internal fun AbsentSettingsScreenContent(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onImportClick: () -> Unit,
     onExportClick: () -> Unit,
+    modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     TrackScreenViewEvent(screenName = "Absent Settings Screen")
@@ -117,10 +118,10 @@ private fun AbsentSettingsScreenContentPreview(
 ) {
     PoposRoomTheme {
         AbsentSettingsScreenContent(
-            modifier = modifier,
             onBackClick = {},
             onImportClick = {},
             onExportClick = {},
+            modifier = modifier,
         )
     }
 }

@@ -78,27 +78,27 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun HomeScreenProducts(
-    modifier: Modifier = Modifier,
     products: ImmutableList<ProductWithQuantity>,
     onIncrease: (Int) -> Unit,
     onDecrease: (Int) -> Unit,
     onCreateProduct: () -> Unit,
+    modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) = trace("MainFeedProducts") {
     TrackScrollJank(scrollableState = lazyListState, stateName = "products:list")
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
     ) {
         TitleWithSelectedCategory(
+            onClickCategory = {},
             modifier = Modifier.padding(bottom = SpaceSmall, start = SpaceMedium),
             text = "Products",
             selectedCategory = null,
-            onClickCategory = {},
         )
 
         LazyColumn(
-            modifier = modifier,
+            modifier = Modifier,
             state = lazyListState,
         ) {
             items(
@@ -130,10 +130,10 @@ internal fun HomeScreenProducts(
 
 @Composable
 private fun HomeScreenProductCard(
-    modifier: Modifier = Modifier,
     product: ProductWithQuantity,
     onIncrease: (Int) -> Unit,
     onDecrease: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("MainFeedProductData") {
     val productName = createDottedString(product.productName, 20)
 
@@ -178,11 +178,11 @@ private fun HomeScreenProductCard(
 
 @Composable
 private fun TitleWithSelectedCategory(
+    onClickCategory: () -> Unit,
     modifier: Modifier = Modifier,
     text: String = "Products",
-    icon: ImageVector = PoposIcons.Dns,
     selectedCategory: String? = null,
-    onClickCategory: () -> Unit,
+    icon: ImageVector = PoposIcons.Dns,
     containerColor: Color = Color.Transparent,
     contentColor: Color = MaterialTheme.colorScheme.tertiary,
 ) {
@@ -233,12 +233,12 @@ private fun TitleWithSelectedCategory(
 
 @Composable
 private fun IncreaseAndDecreaseButton(
-    modifier: Modifier = Modifier,
     height: Dp,
     iconSize: Dp,
     enableDecrease: Boolean,
     onClickIncrease: () -> Unit,
     onClickDecrease: () -> Unit,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = MaterialTheme.colorScheme.tertiary,
 ) {
@@ -309,7 +309,6 @@ private fun HomeScreenProductCardPreview(
 ) {
     PoposRoomTheme {
         HomeScreenProductCard(
-            modifier = modifier,
             product = ProductWithQuantity(
                 categoryId = 1,
                 productId = 1,
@@ -319,6 +318,7 @@ private fun HomeScreenProductCardPreview(
             ),
             onIncrease = {},
             onDecrease = {},
+            modifier = modifier,
         )
     }
 }
@@ -330,12 +330,12 @@ private fun IncreaseAndDecreaseButtonPreview(
 ) {
     PoposRoomTheme {
         IncreaseAndDecreaseButton(
-            modifier = modifier,
             height = 50.dp,
             iconSize = 24.dp,
             enableDecrease = false,
             onClickIncrease = {},
             onClickDecrease = {},
+            modifier = modifier,
         )
     }
 }
@@ -348,11 +348,11 @@ private fun HomeScreenProductsPreview(
 ) {
     PoposRoomTheme {
         HomeScreenProducts(
-            modifier = modifier,
             products = products.toImmutableList(),
             onIncrease = {},
             onDecrease = {},
             onCreateProduct = {},
+            modifier = modifier,
         )
     }
 }
@@ -364,9 +364,9 @@ private fun TitleWithEmptySelectedCategoryPreview(
 ) {
     PoposRoomTheme {
         TitleWithSelectedCategory(
+            onClickCategory = {},
             modifier = modifier,
             selectedCategory = null,
-            onClickCategory = {},
         )
     }
 }
@@ -379,9 +379,9 @@ private fun TitleWithSelectedCategoryPreview(
     PoposRoomTheme {
         Surface {
             TitleWithSelectedCategory(
+                onClickCategory = {},
                 modifier = modifier,
                 selectedCategory = "Biryani",
-                onClickCategory = {},
             )
         }
     }

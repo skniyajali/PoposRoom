@@ -110,6 +110,7 @@ import java.util.Date
 fun DeliveryPartnerDetailsScreen(
     partnerId: Int,
     navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
     viewModel: DeliveryPartnerViewModel = hiltViewModel(),
     printViewModel: OrderPrintViewModel = hiltViewModel(),
     shareViewModel: ShareViewModel = hiltViewModel(),
@@ -172,7 +173,6 @@ fun DeliveryPartnerDetailsScreen(
     }
 
     DeliveryPartnerDetailsScreenContent(
-        modifier = Modifier,
         selectedDate = selectedDate,
         reportState = reportState,
         selectedItems = selectedItems.toImmutableList(),
@@ -193,6 +193,7 @@ fun DeliveryPartnerDetailsScreen(
         onSwapSelection = viewModel::onSwapSelections,
         onBackClick = navigator::navigateUp,
         snackbarHostState = snackbarHostState,
+        modifier = modifier,
         onClickOrder = {
             navigator.navigate(OrderDetailsScreenDestination(it))
         },
@@ -236,7 +237,6 @@ fun DeliveryPartnerDetailsScreen(
 @VisibleForTesting
 @Composable
 internal fun DeliveryPartnerDetailsScreenContent(
-    modifier: Modifier = Modifier,
     selectedDate: String,
     reportState: PartnerReportState,
     selectedItems: ImmutableList<Int>,
@@ -257,6 +257,7 @@ internal fun DeliveryPartnerDetailsScreenContent(
     onDeselectItems: () -> Unit,
     onChangePartner: (Int) -> Unit,
     onSwapSelection: () -> Unit,
+    modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) = trace("DeliveryPartnerDetailsScreenContent") {
     val lazyListState = rememberLazyListState()
@@ -295,31 +296,23 @@ internal fun DeliveryPartnerDetailsScreenContent(
     BackHandler { onClickBack() }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = if (selectedItems.isEmpty()) title else "${selectedItems.size} Selected",
+        onBackClick = onClickBack,
+        modifier = modifier,
+        showBackButton = selectedItems.isEmpty(),
         showBottomBar = reportState is PartnerReportState.Success,
         showSecondaryBottomBar = true,
-        showBackButton = selectedItems.isEmpty(),
-        bottomBar = {
-            TotalDeliveryReportCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("totalOrderDetails")
-                    .background(MaterialTheme.colorScheme.secondary),
-                totalOrders = totalOrders,
-                selectedDate = selectedDate.ifEmpty { System.currentTimeMillis().toString() },
-                selectedCount = selectedItems.size,
-                isInSelectionMode = selectedItems.isNotEmpty(),
-                onChangePartner = onChangePartner,
-                partners = partners,
-                onClickPrint = onClickPrint,
-                onClickShare = onClickShare,
-                onSwapSelection = onSwapSelection,
-                onChangeDate = dialogState::show,
-                primaryBtnColor = MaterialTheme.colorScheme.secondary,
-                secBtnColor = MaterialTheme.colorScheme.outline,
-                color = MaterialTheme.colorScheme.secondary,
-            )
+        snackbarHostState = snackbarHostState,
+        navigationIcon = {
+            IconButton(
+                onClick = onDeselectItems,
+                modifier = Modifier.testTag(CLEAR_ICON),
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Close Icon",
+                )
+            }
         },
         navActions = {
             if (showSearchBar) {
@@ -343,19 +336,27 @@ internal fun DeliveryPartnerDetailsScreenContent(
                 }
             }
         },
-        navigationIcon = {
-            IconButton(
-                onClick = onDeselectItems,
-                modifier = Modifier.testTag(CLEAR_ICON),
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Close Icon",
-                )
-            }
+        bottomBar = {
+            TotalDeliveryReportCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("totalOrderDetails")
+                    .background(MaterialTheme.colorScheme.secondary),
+                totalOrders = totalOrders,
+                selectedDate = selectedDate.ifEmpty { System.currentTimeMillis().toString() },
+                selectedCount = selectedItems.size,
+                isInSelectionMode = selectedItems.isNotEmpty(),
+                onChangePartner = onChangePartner,
+                partners = partners,
+                onClickPrint = onClickPrint,
+                onClickShare = onClickShare,
+                onSwapSelection = onSwapSelection,
+                onChangeDate = dialogState::show,
+                primaryBtnColor = MaterialTheme.colorScheme.secondary,
+                secBtnColor = MaterialTheme.colorScheme.outline,
+                color = MaterialTheme.colorScheme.secondary,
+            )
         },
-        onBackClick = onClickBack,
-        snackbarHostState = snackbarHostState,
     ) { paddingValues ->
         Crossfade(
             targetState = reportState,
@@ -429,11 +430,11 @@ internal fun DeliveryPartnerDetailsScreenContent(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun DeliveryReportCard(
-    modifier: Modifier = Modifier,
     order: DeliveryReport,
     isSelected: (Int) -> Boolean,
     onClickOrder: (Int) -> Unit,
     onSelectItem: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("DeliveryReportCard") {
     ElevatedCard(
@@ -468,7 +469,7 @@ internal fun DeliveryReportCard(
             ) {
                 CircularBox(
                     icon = PoposIcons.Tag,
-                    doesSelected = isSelected(order.orderId),
+                    selected = isSelected(order.orderId),
                     modifier = Modifier,
                 )
 

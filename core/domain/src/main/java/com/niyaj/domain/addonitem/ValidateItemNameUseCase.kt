@@ -26,6 +26,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@Suppress("ReturnCount")
 class ValidateItemNameUseCase @Inject constructor(
     private val addOnItemRepository: AddOnItemRepository,
     @Dispatcher(PoposDispatchers.IO)

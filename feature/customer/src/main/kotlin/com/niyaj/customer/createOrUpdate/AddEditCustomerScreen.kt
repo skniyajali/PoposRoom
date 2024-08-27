@@ -64,9 +64,10 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 @Destination(route = ADD_EDIT_CUSTOMER_SCREEN)
 @Composable
 fun AddEditCustomerScreen(
-    customerId: Int = 0,
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    customerId: Int = 0,
     viewModel: AddEditCustomerViewModel = hiltViewModel(),
 ) {
     val phoneError by viewModel.phoneError.collectAsStateWithLifecycle()
@@ -95,7 +96,7 @@ fun AddEditCustomerScreen(
         state = viewModel.state,
         onEvent = viewModel::onEvent,
         onBackClick = navigator::navigateUp,
-        modifier = Modifier,
+        modifier = modifier,
         title = title,
         icon = icon,
         phoneError = phoneError,
@@ -111,22 +112,23 @@ internal fun AddEditCustomerScreenContent(
     onEvent: (AddEditCustomerEvent) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    title: String = CREATE_NEW_CUSTOMER,
-    icon: ImageVector = PoposIcons.Add,
     phoneError: String? = null,
     nameError: String? = null,
     emailError: String? = null,
+    title: String = CREATE_NEW_CUSTOMER,
+    icon: ImageVector = PoposIcons.Add,
 ) {
     val enableBtn = phoneError == null && nameError == null && emailError == null
 
     TrackScreenViewEvent(screenName = "Add/Edit Customer Screen")
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
-        showBottomBar = true,
-        showBackButton = true,
         onBackClick = onBackClick,
+        modifier = modifier,
+        showBackButton = true,
+        showBottomBar = true,
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
         bottomBar = {
             PoposButton(
                 modifier = Modifier
@@ -140,7 +142,6 @@ internal fun AddEditCustomerScreenContent(
                 },
             )
         },
-        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -151,38 +152,38 @@ internal fun AddEditCustomerScreenContent(
         ) {
             item(CUSTOMER_PHONE_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.customerPhone,
                     label = CUSTOMER_PHONE_FIELD,
                     leadingIcon = PoposIcons.PhoneAndroid,
-                    isError = phoneError != null,
-                    errorText = phoneError,
-                    errorTextTag = CUSTOMER_PHONE_ERROR,
-                    keyboardType = KeyboardType.Number,
-                    showClearIcon = state.customerPhone.isNotEmpty(),
+                    value = state.customerPhone,
                     onValueChange = {
                         onEvent(AddEditCustomerEvent.CustomerPhoneChanged(it))
                     },
-                    onClickClearIcon = {
-                        onEvent(AddEditCustomerEvent.CustomerPhoneChanged(""))
-                    },
+                    isError = phoneError != null,
+                    errorText = phoneError,
+                    keyboardType = KeyboardType.Number,
+                    showClearIcon = state.customerPhone.isNotEmpty(),
+                    errorTextTag = CUSTOMER_PHONE_ERROR,
                     suffix = {
                         PhoneNoCountBox(count = state.customerPhone.length)
+                    },
+                    onClickClearIcon = {
+                        onEvent(AddEditCustomerEvent.CustomerPhoneChanged(""))
                     },
                 )
             }
 
             item(CUSTOMER_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.customerName ?: "",
                     label = CUSTOMER_NAME_FIELD,
                     leadingIcon = PoposIcons.Person,
-                    isError = nameError != null,
-                    errorText = nameError,
-                    errorTextTag = CUSTOMER_NAME_ERROR,
-                    showClearIcon = !state.customerName.isNullOrEmpty(),
+                    value = state.customerName ?: "",
                     onValueChange = {
                         onEvent(AddEditCustomerEvent.CustomerNameChanged(it))
                     },
+                    isError = nameError != null,
+                    errorText = nameError,
+                    showClearIcon = !state.customerName.isNullOrEmpty(),
+                    errorTextTag = CUSTOMER_NAME_ERROR,
                     onClickClearIcon = {
                         onEvent(AddEditCustomerEvent.CustomerNameChanged(""))
                     },
@@ -191,16 +192,16 @@ internal fun AddEditCustomerScreenContent(
 
             item(CUSTOMER_EMAIL_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.customerEmail ?: "",
                     label = CUSTOMER_EMAIL_FIELD,
                     leadingIcon = PoposIcons.Email,
-                    isError = emailError != null,
-                    errorText = emailError,
-                    errorTextTag = CUSTOMER_EMAIL_ERROR,
-                    showClearIcon = !state.customerEmail.isNullOrEmpty(),
+                    value = state.customerEmail ?: "",
                     onValueChange = {
                         onEvent(AddEditCustomerEvent.CustomerEmailChanged(it))
                     },
+                    isError = emailError != null,
+                    errorText = emailError,
+                    showClearIcon = !state.customerEmail.isNullOrEmpty(),
+                    errorTextTag = CUSTOMER_EMAIL_ERROR,
                     onClickClearIcon = {
                         onEvent(AddEditCustomerEvent.CustomerEmailChanged(""))
                     },

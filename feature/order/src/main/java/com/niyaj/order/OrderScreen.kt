@@ -99,6 +99,7 @@ import java.time.LocalDate
 fun OrderScreen(
     navigator: DestinationsNavigator,
     onClickEditOrder: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: OrderViewModel = hiltViewModel(),
     shareViewModel: ShareViewModel = hiltViewModel(),
     printViewModel: OrderPrintViewModel = hiltViewModel(),
@@ -215,7 +216,7 @@ fun OrderScreen(
         multiplePermissionsState = bluetoothPermissionsState,
         onSuccessful = {
             OrderScreenContent(
-                modifier = Modifier,
+                modifier = modifier,
                 dineInOrders = dineInOrders,
                 dineOutOrders = dineOutOrders,
                 selectedDate = selectedDate,
@@ -252,14 +253,14 @@ fun OrderScreen(
         },
         onError = { shouldShowRationale ->
             BluetoothPermissionDialog(
+                shouldShowRationale = shouldShowRationale,
                 onClickRequestPermission = {
                     bluetoothPermissionsState.launchMultiplePermissionRequest()
                 },
-                onDismissRequest = navigator::navigateUp,
-                shouldShowRationale = shouldShowRationale,
                 onClickOpenSettings = {
                     context.findActivity().openAppSettings()
                 },
+                onDismissRequest = navigator::navigateUp,
             )
         },
     )
@@ -302,7 +303,6 @@ fun OrderScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun OrderScreenContent(
-    modifier: Modifier = Modifier,
     dineInOrders: OrderState,
     dineOutOrders: OrderState,
     selectedDate: String,
@@ -319,6 +319,7 @@ internal fun OrderScreenContent(
     onClickOrderDetails: (Int) -> Unit,
     onClickEditOrder: (Int) -> Unit,
     onClickShareOrder: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     val dialogState = rememberMaterialDialogState()
@@ -339,8 +340,8 @@ internal fun OrderScreenContent(
     }
 
     StandardScaffoldWithOutDrawer(
-        modifier = modifier,
         title = if (selectedDate.isNotEmpty() && !selectedDate.isToday) "" else "Orders",
+        modifier = modifier,
         showSearchBar = showSearchBar,
         showSearchIcon = showSearchIcon,
         searchText = searchText,
@@ -355,10 +356,10 @@ internal fun OrderScreenContent(
                 PoposOutlinedAssistChip(
                     text = selectedDate.toPrettyDate(),
                     icon = PoposIcons.CalenderMonth,
+                    trailingIcon = PoposIcons.ArrowDown,
                     onClick = {
                         dialogState.show()
                     },
-                    trailingIcon = PoposIcons.ArrowDown,
                 )
             } else {
                 IconButton(

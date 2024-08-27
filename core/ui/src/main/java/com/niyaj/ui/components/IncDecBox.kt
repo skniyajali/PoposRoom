@@ -38,21 +38,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.icon.PoposIcons
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun IncDecBox(
     quantity: String,
     measureUnit: String,
-    enableDecreasing: Boolean = false,
-    enableIncreasing: Boolean = false,
     onDecrease: () -> Unit,
     onIncrease: () -> Unit,
+    modifier: Modifier = Modifier,
+    enableDecreasing: Boolean = false,
+    enableIncreasing: Boolean = false,
 ) {
     ElevatedCard(
         onClick = {},
-        modifier = Modifier
+        modifier = modifier
             .height(40.dp),
         shape = RoundedCornerShape(SpaceMini),
         enabled = enableDecreasing && enableIncreasing,
@@ -137,5 +140,23 @@ fun IncDecBox(
                 }
             }
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun IncDecBoxPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        IncDecBox(
+            quantity = "1",
+            measureUnit = "kg",
+            onDecrease = {},
+            onIncrease = {},
+            modifier = modifier,
+            enableDecreasing = true,
+            enableIncreasing = true,
+        )
     }
 }

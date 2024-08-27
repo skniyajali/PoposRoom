@@ -28,6 +28,7 @@ import com.niyaj.data.repository.OrderRepository
 import com.niyaj.database.dao.CartOrderDao
 import com.niyaj.database.dao.OrderDao
 import com.niyaj.database.dao.SelectedDao
+import com.niyaj.database.model.ChargesEntity
 import com.niyaj.database.model.OrderDetailsDto
 import com.niyaj.database.model.SelectedEntity
 import com.niyaj.database.model.asExternalModel
@@ -163,8 +164,8 @@ class OrderRepositoryImpl @Inject constructor(
 
     override suspend fun getAllCharges(): Flow<List<Charges>> {
         return withContext(ioDispatcher) {
-            orderDao.getAllCharges().mapLatest { it ->
-                it.map { it.asExternalModel() }
+            orderDao.getAllCharges().mapLatest {
+                it.map(ChargesEntity::asExternalModel)
             }
         }
     }

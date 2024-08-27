@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,15 +36,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.IconSizeSmall
 import com.niyaj.designsystem.theme.LightColor8
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.ui.utils.DevicePreviews
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IconBox(
     text: String,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     selected: Boolean = false,
     borderColor: Color = MaterialTheme.colorScheme.primary,
@@ -55,6 +57,7 @@ fun IconBox(
         if (selected) BorderStroke(1.dp, borderColor) else BorderStroke(0.dp, Color.Transparent)
 
     Card(
+        modifier = modifier,
         onClick = onClick,
         shape = RoundedCornerShape(2.dp),
         border = borderStroke,
@@ -85,5 +88,20 @@ fun IconBox(
                 color = MaterialTheme.colorScheme.primary,
             )
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun IconBoxPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        IconBox(
+            text = "Living Room",
+            modifier = modifier,
+            icon = PoposIcons.Check,
+            selected = true,
+        )
     }
 }

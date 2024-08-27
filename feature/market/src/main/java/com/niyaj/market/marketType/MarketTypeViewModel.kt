@@ -41,23 +41,20 @@ class MarketTypeViewModel @Inject constructor(
     private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel() {
 
-    val marketTypes = snapshotFlow { searchText.value }
-        .flatMapLatest { it ->
-            repository.getAllMarketTypes(it)
-                .onStart { UiState.Loading }
-                .map { items ->
-                    totalItems = items.map { it.typeId }
-                    if (items.isEmpty()) {
-                        UiState.Empty
-                    } else {
-                        UiState.Success(items)
-                    }
-                }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = UiState.Loading,
-        )
+    val marketTypes = snapshotFlow { searchText.value }.flatMapLatest { data ->
+        repository.getAllMarketTypes(data)
+    }.onStart { UiState.Loading }.map { items ->
+        totalItems = items.map { it.typeId }
+        if (items.isEmpty()) {
+            UiState.Empty
+        } else {
+            UiState.Success(items)
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = UiState.Loading,
+    )
 
     override fun deleteItems() {
         super.deleteItems()

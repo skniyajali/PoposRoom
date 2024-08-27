@@ -92,6 +92,7 @@ fun OrderDetailsScreen(
     navigator: DestinationsNavigator,
     onClickCustomer: (customerId: Int) -> Unit,
     onClickAddress: (addressId: Int) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: OrderDetailsViewModel = hiltViewModel(),
     printViewModel: OrderPrintViewModel = hiltViewModel(),
 ) {
@@ -199,7 +200,7 @@ fun OrderDetailsScreen(
         multiplePermissionsState = bluetoothPermissions,
         onSuccessful = {
             OrderDetailsContent(
-                modifier = Modifier,
+                modifier = modifier,
                 state = state,
                 charges = charges,
                 partners = deliveryPartners,
@@ -214,14 +215,14 @@ fun OrderDetailsScreen(
         },
         onError = { shouldShowRationale ->
             BluetoothPermissionDialog(
+                shouldShowRationale = shouldShowRationale,
                 onClickRequestPermission = {
                     bluetoothPermissions.launchMultiplePermissionRequest()
                 },
-                onDismissRequest = navigator::navigateUp,
-                shouldShowRationale = shouldShowRationale,
                 onClickOpenSettings = {
                     context.findActivity().openAppSettings()
                 },
+                onDismissRequest = navigator::navigateUp,
             )
         },
     )
@@ -270,7 +271,6 @@ fun OrderDetailsScreen(
 @VisibleForTesting
 @Composable
 internal fun OrderDetailsContent(
-    modifier: Modifier = Modifier,
     state: UiState<OrderDetails>,
     charges: List<Charges>,
     partners: List<EmployeeNameAndId>,
@@ -280,6 +280,7 @@ internal fun OrderDetailsContent(
     onChangePartner: (Int) -> Unit,
     onClickCustomer: (customerId: Int) -> Unit,
     onClickAddress: (addressId: Int) -> Unit,
+    modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     val lazyListState = rememberLazyListState()
@@ -290,10 +291,14 @@ internal fun OrderDetailsContent(
     var cartExpended by remember { mutableStateOf(true) }
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = "Order Details",
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = true,
         showBottomBar = false,
+        showFab = lazyListState.isScrollingUp(),
+        fabPosition = FabPosition.EndOverlay,
+        snackbarHostState = snackbarHostState,
         navActions = {
             IconButton(
                 onClick = onClickShare,
@@ -315,8 +320,6 @@ internal fun OrderDetailsContent(
                 )
             }
         },
-        showFab = lazyListState.isScrollingUp(),
-        fabPosition = FabPosition.EndOverlay,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onClickShare,
@@ -325,8 +328,6 @@ internal fun OrderDetailsContent(
                 Icon(imageVector = PoposIcons.Share, contentDescription = "Share List")
             }
         },
-        onBackClick = onBackClick,
-        snackbarHostState = snackbarHostState,
     ) {
         Crossfade(
             targetState = state,
@@ -358,13 +359,13 @@ internal fun OrderDetailsContent(
                         item("Order Details") {
                             CartOrderDetails(
                                 cartOrder = orderDetails.cartOrder,
-                                deliveryPartner = orderDetails.deliveryPartner,
-                                partners = partners,
                                 doesExpanded = cartOrderExpended,
                                 onExpandChanged = {
                                     cartOrderExpended = !cartOrderExpended
                                 },
+                                partners = partners,
                                 onChangePartner = onChangePartner,
+                                deliveryPartner = orderDetails.deliveryPartner,
                             )
                         }
 
@@ -398,16 +399,16 @@ internal fun OrderDetailsContent(
                             if (orderDetails.cartProducts.isNotEmpty()) {
                                 CartItemDetails(
                                     orderType = orderDetails.cartOrder.orderType,
-                                    doesChargesIncluded = orderDetails.cartOrder.doesChargesIncluded,
-                                    addOnItems = orderDetails.addOnItems,
-                                    cartProducts = orderDetails.cartProducts,
-                                    charges = charges,
-                                    additionalCharges = orderDetails.charges,
                                     orderPrice = orderDetails.orderPrice,
-                                    doesExpanded = cartExpended,
+                                    expanded = cartExpended,
+                                    chargesIncluded = orderDetails.cartOrder.doesChargesIncluded,
+                                    cartProducts = orderDetails.cartProducts,
+                                    addOnItems = orderDetails.addOnItems,
+                                    charges = charges,
                                     onExpandChanged = {
                                         cartExpended = !cartExpended
                                     },
+                                    additionalCharges = orderDetails.charges,
                                 )
                             }
                         }

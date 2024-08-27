@@ -78,10 +78,10 @@ import com.niyaj.ui.utils.DevicePreviews
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun ProductOrderDetails(
-    modifier: Modifier = Modifier,
     orderState: UiState<List<ProductWiseOrder>>,
     productPrice: Int,
     onClickOrder: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     pagerState: PagerState = rememberPagerState { 2 },
 ) = trace("ProductOrderDetails") {
     Surface(
@@ -101,8 +101,8 @@ internal fun ProductOrderDetails(
 
                 is UiState.Empty -> {
                     ItemNotAvailableHalf(
-                        modifier = Modifier.height(IntrinsicSize.Min),
                         text = "Have not placed any order on this product.",
+                        modifier = Modifier.height(IntrinsicSize.Min),
                     )
                 }
 
@@ -167,10 +167,10 @@ internal fun ProductOrderDetails(
 
 @Composable
 private fun GroupedProductOrders(
-    modifier: Modifier = Modifier,
     groupedByDate: Map<String, List<ProductWiseOrder>>,
     productPrice: Int,
     onClickOrder: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier,
@@ -186,11 +186,11 @@ private fun GroupedProductOrders(
                     .times(productPrice).toString()
 
                 TextWithCount(
+                    text = date,
+                    count = groupedOrders.size,
                     modifier = Modifier
                         .background(Color.Transparent),
-                    text = date,
                     trailingText = totalSales.toRupee,
-                    count = groupedOrders.size,
                     leadingIcon = PoposIcons.CalenderMonth,
                 )
 
@@ -215,9 +215,9 @@ private fun GroupedProductOrders(
 
 @Composable
 private fun OrderDetailsCard(
-    modifier: Modifier = Modifier,
     order: ProductWiseOrder,
     onClickOrder: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("OrderDetailsCard") {
     Surface(
         modifier = modifier

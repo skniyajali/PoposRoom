@@ -105,10 +105,11 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 @Destination(route = Screens.ADD_EDIT_PRODUCT_SCREEN)
 @Composable
 fun AddEditProductScreen(
-    productId: Int = 0,
     navigator: DestinationsNavigator,
-    viewModel: AddEditProductViewModel = hiltViewModel(),
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
+    productId: Int = 0,
+    viewModel: AddEditProductViewModel = hiltViewModel(),
 ) {
     TrackScreenViewEvent(screenName = Screens.ADD_EDIT_PRODUCT_SCREEN)
 
@@ -141,7 +142,7 @@ fun AddEditProductScreen(
     val icon = if (productId == 0) PoposIcons.Add else PoposIcons.Edit
 
     AddEditProductScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         title = title,
         icon = icon,
         state = viewModel.state,
@@ -164,10 +165,8 @@ fun AddEditProductScreen(
 @OptIn(ExperimentalLayoutApi::class)
 @VisibleForTesting
 @Composable
+@Suppress("LongMethod")
 internal fun AddEditProductScreenContent(
-    modifier: Modifier = Modifier,
-    title: String = CREATE_NEW_PRODUCT,
-    icon: ImageVector = PoposIcons.Add,
     state: AddEditProductState,
     selectedCategory: Category,
     categories: List<Category>,
@@ -180,6 +179,9 @@ internal fun AddEditProductScreenContent(
     tagError: String?,
     onBackClick: () -> Unit,
     onClickAddCategory: () -> Unit,
+    modifier: Modifier = Modifier,
+    title: String = CREATE_NEW_PRODUCT,
+    icon: ImageVector = PoposIcons.Add,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     TrackScrollJank(scrollableState = lazyListState, stateName = "Add/Edit Product::Fields")
@@ -190,8 +192,9 @@ internal fun AddEditProductScreenContent(
     val height = (LocalConfiguration.current.screenHeightDp / 2).dp
 
     PoposSecondaryScaffold(
-        modifier = modifier,
         title = title,
+        onBackClick = onBackClick,
+        modifier = modifier,
         showBackButton = true,
         showBottomBar = true,
         bottomBar = {
@@ -207,7 +210,6 @@ internal fun AddEditProductScreenContent(
                 },
             )
         },
-        onBackClick = onBackClick,
     ) { paddingValues ->
         LazyColumn(
             state = lazyListState,
@@ -226,6 +228,10 @@ internal fun AddEditProductScreenContent(
                     },
                 ) {
                     StandardOutlinedTextField(
+                        label = PRODUCT_CATEGORY_FIELD,
+                        leadingIcon = PoposIcons.Category,
+                        value = selectedCategory.categoryName,
+                        onValueChange = {},
                         modifier = Modifier
                             .fillMaxWidth()
                             .onGloballyPositioned { coordinates ->
@@ -233,19 +239,15 @@ internal fun AddEditProductScreenContent(
                                 textFieldSize = coordinates.size.toSize()
                             }
                             .menuAnchor(),
-                        value = selectedCategory.categoryName,
-                        label = PRODUCT_CATEGORY_FIELD,
-                        leadingIcon = PoposIcons.Category,
                         isError = categoryError != null,
                         errorText = categoryError,
-                        readOnly = true,
-                        errorTextTag = PRODUCT_CATEGORY_ERROR,
-                        onValueChange = {},
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(
                                 expanded = categoryToggled,
                             )
                         },
+                        readOnly = true,
+                        errorTextTag = PRODUCT_CATEGORY_ERROR,
                     )
 
                     DropdownMenu(
@@ -281,10 +283,10 @@ internal fun AddEditProductScreenContent(
                                 leadingIcon = {
                                     CircularBox(
                                         icon = PoposIcons.Category,
-                                        doesSelected = false,
-                                        size = 30.dp,
-                                        showBorder = !category.isAvailable,
+                                        selected = false,
                                         text = category.categoryName,
+                                        showBorder = !category.isAvailable,
+                                        size = 30.dp,
                                     )
                                 },
                             )
@@ -349,16 +351,16 @@ internal fun AddEditProductScreenContent(
 
             item(PRODUCT_NAME_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.productName,
                     label = PRODUCT_NAME_FIELD,
                     leadingIcon = PoposIcons.Feed,
-                    isError = nameError != null,
-                    errorText = nameError,
-                    errorTextTag = PRODUCT_NAME_ERROR,
-                    showClearIcon = state.productName.isNotEmpty(),
+                    value = state.productName,
                     onValueChange = {
                         onEvent(AddEditProductEvent.ProductNameChanged(it))
                     },
+                    isError = nameError != null,
+                    errorText = nameError,
+                    showClearIcon = state.productName.isNotEmpty(),
+                    errorTextTag = PRODUCT_NAME_ERROR,
                     onClickClearIcon = {
                         onEvent(AddEditProductEvent.ProductNameChanged(""))
                     },
@@ -367,17 +369,17 @@ internal fun AddEditProductScreenContent(
 
             item(PRODUCT_PRICE_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.productPrice,
                     label = PRODUCT_PRICE_FIELD,
                     leadingIcon = PoposIcons.Money,
-                    keyboardType = KeyboardType.Number,
-                    isError = priceError != null,
-                    errorText = priceError,
-                    errorTextTag = PRODUCT_PRICE_ERROR,
-                    showClearIcon = state.productPrice.isNotEmpty(),
+                    value = state.productPrice,
                     onValueChange = {
                         onEvent(AddEditProductEvent.ProductPriceChanged(it))
                     },
+                    isError = priceError != null,
+                    errorText = priceError,
+                    keyboardType = KeyboardType.Number,
+                    showClearIcon = state.productPrice.isNotEmpty(),
+                    errorTextTag = PRODUCT_PRICE_ERROR,
                     onClickClearIcon = {
                         onEvent(AddEditProductEvent.ProductPriceChanged(""))
                     },
@@ -386,13 +388,13 @@ internal fun AddEditProductScreenContent(
 
             item(PRODUCT_DESCRIPTION_FIELD) {
                 StandardOutlinedTextField(
-                    value = state.productDesc,
                     label = PRODUCT_DESCRIPTION_FIELD,
                     leadingIcon = PoposIcons.Description,
-                    showClearIcon = state.productDesc.isNotEmpty(),
+                    value = state.productDesc,
                     onValueChange = {
                         onEvent(AddEditProductEvent.ProductDescChanged(it))
                     },
+                    showClearIcon = state.productDesc.isNotEmpty(),
                     onClickClearIcon = {
                         onEvent(AddEditProductEvent.ProductDescChanged(""))
                     },
@@ -406,13 +408,25 @@ internal fun AddEditProductScreenContent(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     StandardOutlinedTextField(
-                        value = state.tagName,
                         label = PRODUCT_TAG_NAME,
+                        leadingIcon = PoposIcons.ListAlt,
+                        value = state.tagName,
+                        onValueChange = {
+                            onEvent(AddEditProductEvent.TagNameChanged(it))
+                        },
                         isError = tagError != null,
                         errorText = tagError,
-                        message = PRODUCT_TAGS_MSG,
+                        trailingIcon = {
+                            PoposTonalIconButton(
+                                icon = PoposIcons.Add,
+                                onClick = {
+                                    onEvent(AddEditProductEvent.OnSelectTag(state.tagName))
+                                },
+                                enabled = state.tagName.isNotEmpty() && tagError == null,
+                            )
+                        },
                         errorTextTag = PRODUCT_TAGS_ERROR,
-                        leadingIcon = PoposIcons.ListAlt,
+                        message = PRODUCT_TAGS_MSG,
                         suffix = {
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(SpaceMini),
@@ -424,18 +438,6 @@ internal fun AddEditProductScreenContent(
                                     contentDescription = "Create",
                                 )
                             }
-                        },
-                        trailingIcon = {
-                            PoposTonalIconButton(
-                                icon = PoposIcons.Add,
-                                enabled = state.tagName.isNotEmpty() && tagError == null,
-                                onClick = {
-                                    onEvent(AddEditProductEvent.OnSelectTag(state.tagName))
-                                },
-                            )
-                        },
-                        onValueChange = {
-                            onEvent(AddEditProductEvent.TagNameChanged(it))
                         },
                     )
 

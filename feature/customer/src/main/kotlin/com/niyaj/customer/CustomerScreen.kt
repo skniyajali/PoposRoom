@@ -76,10 +76,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun CustomerScreen(
     navigator: DestinationsNavigator,
-    viewModel: CustomerViewModel = hiltViewModel(),
     resultRecipient: ResultRecipient<AddEditCustomerScreenDestination, String>,
     exportRecipient: ResultRecipient<CustomerExportScreenDestination, String>,
     importRecipient: ResultRecipient<CustomerImportScreenDestination, String>,
+    modifier: Modifier = Modifier,
+    viewModel: CustomerViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
@@ -92,7 +93,7 @@ fun CustomerScreen(
     val searchText = viewModel.searchText.value
 
     CustomerScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         uiState = uiState,
         selectedItems = selectedItems,
         showSearchBar = showSearchBar,
@@ -136,7 +137,6 @@ fun CustomerScreen(
 @VisibleForTesting
 @Composable
 internal fun CustomerScreenContent(
-    modifier: Modifier = Modifier,
     uiState: UiState<List<Customer>>,
     selectedItems: List<Int>,
     showSearchBar: Boolean,
@@ -155,6 +155,7 @@ internal fun CustomerScreenContent(
     onClickEdit: (Int) -> Unit,
     onClickSettings: () -> Unit,
     onNavigateToDetails: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyListState: LazyListState = rememberLazyListState(),
@@ -175,9 +176,9 @@ internal fun CustomerScreenContent(
     val openDialog = remember { mutableStateOf(false) }
 
     PoposPrimaryScaffold(
-        modifier = modifier,
         currentRoute = Screens.CUSTOMER_SCREEN,
         title = if (selectedItems.isEmpty()) CUSTOMER_SCREEN_TITLE else "${selectedItems.size} Selected",
+        selectionCount = selectedItems.size,
         floatingActionButton = {
             StandardFAB(
                 fabVisible = (showFab && selectedItems.isEmpty() && !showSearchBar),
@@ -193,10 +194,7 @@ internal fun CustomerScreenContent(
         },
         navActions = {
             ScaffoldNavActions(
-                placeholderText = CUSTOMER_SEARCH_PLACEHOLDER,
-                showSettingsIcon = true,
                 selectionCount = selectedItems.size,
-                showSearchBar = showSearchBar,
                 showSearchIcon = showFab,
                 searchText = searchText,
                 onEditClick = {
@@ -205,20 +203,23 @@ internal fun CustomerScreenContent(
                 onDeleteClick = {
                     openDialog.value = true
                 },
-                onSettingsClick = onClickSettings,
                 onSelectAllClick = onClickSelectAll,
                 onClearClick = onClickClear,
                 onSearchIconClick = onClickSearchIcon,
                 onSearchTextChanged = onSearchTextChanged,
+                showSearchBar = showSearchBar,
+                showSettingsIcon = true,
+                onSettingsClick = onClickSettings,
+                placeholderText = CUSTOMER_SEARCH_PLACEHOLDER,
             )
         },
+        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
+        onNavigateToScreen = onNavigateToScreen,
+        modifier = modifier,
         fabPosition = if (lazyListState.isScrolled) FabPosition.End else FabPosition.Center,
-        selectionCount = selectedItems.size,
         showBackButton = showSearchBar,
         onDeselect = onClickDeselect,
-        onBackClick = if (showSearchBar) onCloseSearchBar else onClickBack,
         snackbarHostState = snackbarState,
-        onNavigateToScreen = onNavigateToScreen,
     ) {
         Crossfade(
             targetState = uiState,

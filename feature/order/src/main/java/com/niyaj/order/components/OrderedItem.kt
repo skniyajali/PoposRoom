@@ -40,7 +40,6 @@ import de.charlex.compose.RevealSwipe
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun OrderedItem(
-    modifier: Modifier = Modifier,
     order: Order,
     onClickPrintOrder: (Int) -> Unit,
     onMarkedAsProcessing: (Int) -> Unit,
@@ -48,6 +47,7 @@ fun OrderedItem(
     onClickViewDetails: (Int) -> Unit,
     onClickEdit: (Int) -> Unit,
     onClickShareOrder: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) = trace("OrderedItem") {
     RevealSwipe(
         modifier = modifier

@@ -89,6 +89,7 @@ import kotlinx.coroutines.launch
 fun ExportMarketItemScreen(
     navigator: DestinationsNavigator,
     resultBackNavigator: ResultBackNavigator<String>,
+    modifier: Modifier = Modifier,
     viewModel: MarketItemSettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -136,7 +137,7 @@ fun ExportMarketItemScreen(
         }
 
     ExportMarketItemScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         items = items.toImmutableList(),
         selectedItems = selectedItems.toImmutableList(),
         isLoading = isLoading.value,
@@ -169,7 +170,6 @@ fun ExportMarketItemScreen(
 @VisibleForTesting
 @Composable
 internal fun ExportMarketItemScreenContent(
-    modifier: Modifier = Modifier,
     items: ImmutableList<MarketItem>,
     selectedItems: ImmutableList<Int>,
     isLoading: Boolean,
@@ -185,14 +185,17 @@ internal fun ExportMarketItemScreenContent(
     onClickExport: () -> Unit,
     onBackClick: () -> Unit,
     onClickToAddItem: () -> Unit,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     lazyGridState: LazyGridState = rememberLazyGridState(),
     padding: PaddingValues = PaddingValues(SpaceSmallMax, 0.dp, SpaceSmallMax, SpaceLarge),
 ) {
     TrackScreenViewEvent(screenName = "ExportMarketItemScreen")
 
-    val text = if (searchText.isEmpty()) MARKET_ITEM_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND
-    val title = if (selectedItems.isEmpty()) EXPORT_MARKET_ITEM_TITLE else "${selectedItems.size} Selected"
+    val text =
+        if (searchText.isEmpty()) MARKET_ITEM_NOT_AVAILABLE else Constants.SEARCH_ITEM_NOT_FOUND
+    val title =
+        if (selectedItems.isEmpty()) EXPORT_MARKET_ITEM_TITLE else "${selectedItems.size} Selected"
 
     BackHandler {
         if (selectedItems.isNotEmpty()) {
@@ -206,9 +209,21 @@ internal fun ExportMarketItemScreenContent(
 
     PoposSecondaryScaffold(
         title = title,
+        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
         showBackButton = selectedItems.isEmpty() || showSearchBar,
         showBottomBar = items.isNotEmpty(),
         showSecondaryBottomBar = true,
+        fabPosition = FabPosition.End,
+        navigationIcon = {
+            IconButton(
+                onClick = onClickDeselect,
+            ) {
+                Icon(
+                    imageVector = PoposIcons.Close,
+                    contentDescription = "Deselect All",
+                )
+            }
+        },
         navActions = {
             if (showSearchBar) {
                 StandardSearchBar(
@@ -240,6 +255,16 @@ internal fun ExportMarketItemScreenContent(
                 }
             }
         },
+        floatingActionButton = {
+            ScrollToTop(
+                visible = !lazyGridState.isScrollingUp(),
+                onClick = {
+                    scope.launch {
+                        lazyGridState.animateScrollToItem(index = 0)
+                    }
+                },
+            )
+        },
         bottomBar = {
             Column(
                 modifier = Modifier
@@ -247,7 +272,15 @@ internal fun ExportMarketItemScreenContent(
                     .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(SpaceSmall),
             ) {
-                InfoText(text = "${if (selectedItems.isEmpty()) "All" else "${selectedItems.size}"} market item will be exported.")
+                InfoText(
+                    text = "${
+                        if (selectedItems.isEmpty()) {
+                            "All"
+                        } else {
+                            "${selectedItems.size}"
+                        }
+                    } market item will be exported.",
+                )
 
                 PoposButton(
                     modifier = Modifier
@@ -260,28 +293,6 @@ internal fun ExportMarketItemScreenContent(
                         containerColor = MaterialTheme.colorScheme.secondary,
                     ),
                     onClick = onClickExport,
-                )
-            }
-        },
-        onBackClick = if (showSearchBar) onClickCloseSearch else onBackClick,
-        fabPosition = FabPosition.End,
-        floatingActionButton = {
-            ScrollToTop(
-                visible = !lazyGridState.isScrollingUp(),
-                onClick = {
-                    scope.launch {
-                        lazyGridState.animateScrollToItem(index = 0)
-                    }
-                },
-            )
-        },
-        navigationIcon = {
-            IconButton(
-                onClick = onClickDeselect,
-            ) {
-                Icon(
-                    imageVector = PoposIcons.Close,
-                    contentDescription = "Deselect All",
                 )
             }
         },
@@ -301,11 +312,11 @@ internal fun ExportMarketItemScreenContent(
                 LoadingIndicator()
             } else {
                 MarketItemCardList(
-                    modifier = Modifier,
                     items = items,
                     isInSelectionMode = true,
                     doesSelected = selectedItems::contains,
                     onSelectItem = onSelectItem,
+                    modifier = Modifier,
                     lazyGridState = lazyGridState,
                 )
             }

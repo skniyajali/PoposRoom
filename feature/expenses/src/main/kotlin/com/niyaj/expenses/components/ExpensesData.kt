@@ -163,11 +163,11 @@ internal fun ExpensesList(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ExpensesData(
-    modifier: Modifier = Modifier,
     item: Expense,
     doesSelected: (Int) -> Boolean,
     onClick: (Int) -> Unit,
     onLongClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
 ) = trace("ExpensesData") {
     val borderStroke = if (doesSelected(item.expenseId)) border else null
@@ -211,7 +211,7 @@ private fun ExpensesData(
             leadingContent = {
                 CircularBox(
                     icon = PoposIcons.Person,
-                    doesSelected = doesSelected(item.expenseId),
+                    selected = doesSelected(item.expenseId),
                     text = item.expenseName,
                 )
             },
@@ -228,10 +228,10 @@ private fun ExpensesData(
 
         if (item.expenseNote.isNotEmpty()) {
             NoteText(
+                text = item.expenseNote,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = SpaceSmall, horizontal = SpaceMedium),
-                text = item.expenseNote,
                 icon = PoposIcons.TurnedInNot,
                 color = MaterialTheme.colorScheme.onSecondary,
             )
@@ -280,7 +280,7 @@ private fun GroupedExpensesData(
                 leadingContent = {
                     CircularBox(
                         icon = PoposIcons.Person,
-                        doesSelected = false,
+                        selected = false,
                         text = item.expenseName,
                     )
                 },

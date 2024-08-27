@@ -47,6 +47,7 @@ fun CartScreen(
     navigator: DestinationsNavigator,
     onClickEditOrder: (Int) -> Unit,
     onClickOrderDetails: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     TrackScreenViewEvent(screenName = Screens.CART_SCREEN)
 
@@ -59,6 +60,7 @@ fun CartScreen(
     StandardScaffoldWithOutDrawer(
         title = "My Cart",
         onBackClick = navigator::popBackStack,
+        modifier = modifier,
         navActions = {
             IconButton(
                 onClick = { navigator.navigate(Screens.ORDER_SCREEN) },

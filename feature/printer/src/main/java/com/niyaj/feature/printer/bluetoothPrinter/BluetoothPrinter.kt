@@ -398,7 +398,8 @@ class BluetoothPrinter @Inject constructor(
                 printableText += "[L]-------------------------------\n"
 
                 orders.forEach { cart ->
-                    printableText += "[L]${cart.orderId}[C]${cart.customerAddress}[R]${cart.orderDate.toTime}[R]${cart.orderPrice}\n"
+                    printableText += "[L]${cart.orderId}[C]${cart.customerAddress}" +
+                        "[R]${cart.orderDate.toTime}[R]${cart.orderPrice}\n"
                     printableText += "[L]-------------------------------\n"
                 }
 
@@ -452,7 +453,9 @@ class BluetoothPrinter @Inject constructor(
                                     printItems += printAddOnItems(orderDetails.addOnItems.toList())
                                 }
 
-                                if (orderDetails.cartOrder.doesChargesIncluded && orderDetails.cartOrder.orderType != OrderType.DineIn) {
+                                if (orderDetails.cartOrder.doesChargesIncluded &&
+                                    orderDetails.cartOrder.orderType != OrderType.DineIn
+                                ) {
                                     val chargesList = printRepository.getCharges()
 
                                     printItems += printCharges(chargesList)
@@ -511,7 +514,9 @@ class BluetoothPrinter @Inject constructor(
                         printItems += printAddOnItems(orderDetails.addOnItems.toList())
                     }
 
-                    if (orderDetails.cartOrder.doesChargesIncluded && orderDetails.cartOrder.orderType != OrderType.DineIn) {
+                    if (orderDetails.cartOrder.doesChargesIncluded &&
+                        orderDetails.cartOrder.orderType != OrderType.DineIn
+                    ) {
                         val chargesList = printRepository.getCharges()
 
                         printItems += printCharges(chargesList)

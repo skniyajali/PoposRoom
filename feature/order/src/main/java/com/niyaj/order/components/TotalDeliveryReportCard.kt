@@ -75,12 +75,12 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun TotalDeliveryReportCard(
-    modifier: Modifier = Modifier,
     selectedDate: String,
     totalOrders: TotalOrders,
     onClickPrint: () -> Unit,
     onClickShare: () -> Unit,
     onChangeDate: () -> Unit,
+    modifier: Modifier = Modifier,
     primaryBtnColor: Color = MaterialTheme.colorScheme.primary,
     secBtnColor: Color = MaterialTheme.colorScheme.secondary,
     color: Color = MaterialTheme.colorScheme.primaryContainer,
@@ -109,9 +109,9 @@ internal fun TotalDeliveryReportCard(
             ) {
                 CircularBox(
                     icon = PoposIcons.DeliveryDining,
-                    doesSelected = false,
-                    size = 60.dp,
+                    selected = false,
                     showBorder = true,
+                    size = 60.dp,
                 )
 
                 Column(
@@ -152,8 +152,8 @@ internal fun TotalDeliveryReportCard(
                         )
 
                         PoposSuggestionChip(
-                            icon = PoposIcons.CalenderMonth,
                             text = selectedDate.toPrettyDate(),
+                            icon = PoposIcons.CalenderMonth,
                             onClick = onChangeDate,
                         )
                     }
@@ -172,21 +172,21 @@ internal fun TotalDeliveryReportCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 PoposOutlinedButton(
-                    modifier = Modifier.weight(1.4f),
                     text = "Share",
+                    onClick = onClickShare,
+                    modifier = Modifier.weight(1.4f),
                     icon = PoposIcons.Share,
                     enabled = totalOrders.totalOrders != 0L,
-                    onClick = onClickShare,
                     color = secBtnColor,
                 )
 
                 PoposButton(
+                    text = "Print",
+                    color = primaryBtnColor,
+                    onClick = onClickPrint,
                     modifier = Modifier.weight(1.4f),
                     icon = PoposIcons.Print,
-                    text = "Print",
                     enabled = totalOrders.totalOrders != 0L,
-                    onClick = onClickPrint,
-                    color = primaryBtnColor,
                 )
             }
 
@@ -197,7 +197,6 @@ internal fun TotalDeliveryReportCard(
 
 @Composable
 internal fun TotalDeliveryReportCard(
-    modifier: Modifier = Modifier,
     selectedDate: String,
     totalOrders: TotalOrders,
     isInSelectionMode: Boolean,
@@ -208,6 +207,7 @@ internal fun TotalDeliveryReportCard(
     onChangePartner: (Int) -> Unit,
     onSwapSelection: () -> Unit,
     partners: List<EmployeeNameAndId>,
+    modifier: Modifier = Modifier,
     primaryBtnColor: Color = MaterialTheme.colorScheme.primary,
     secBtnColor: Color = MaterialTheme.colorScheme.secondary,
     color: Color = MaterialTheme.colorScheme.primaryContainer,
@@ -283,6 +283,12 @@ internal fun TotalDeliveryReportCard(
                             },
                         ) {
                             PoposOutlinedDropdownButton(
+                                text = "Change Delivery Partner",
+                                leadingIcon = PoposIcons.Edit,
+                                trailingIcon = if (expanded) PoposIcons.KeyboardArrowUp else PoposIcons.ArrowDown,
+                                onClick = {
+                                    expanded = true
+                                },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .onGloballyPositioned { coordinates ->
@@ -290,12 +296,6 @@ internal fun TotalDeliveryReportCard(
                                         textFieldSize = coordinates.size.toSize()
                                     }
                                     .menuAnchor(),
-                                text = "Change Delivery Partner",
-                                leadingIcon = PoposIcons.Edit,
-                                trailingIcon = if (expanded) PoposIcons.KeyboardArrowUp else PoposIcons.ArrowDown,
-                                onClick = {
-                                    expanded = true
-                                },
                             )
 
                             DropdownMenu(
@@ -348,9 +348,9 @@ internal fun TotalDeliveryReportCard(
                         ) {
                             CircularBox(
                                 icon = PoposIcons.DeliveryDining,
-                                doesSelected = false,
-                                size = 60.dp,
+                                selected = false,
                                 showBorder = true,
+                                size = 60.dp,
                             )
 
                             Column(
@@ -391,8 +391,8 @@ internal fun TotalDeliveryReportCard(
                                     )
 
                                     PoposSuggestionChip(
-                                        icon = PoposIcons.CalenderMonth,
                                         text = selectedDate.toPrettyDate(),
+                                        icon = PoposIcons.CalenderMonth,
                                         onClick = onChangeDate,
                                     )
                                 }
@@ -410,21 +410,21 @@ internal fun TotalDeliveryReportCard(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             PoposOutlinedButton(
-                                modifier = Modifier.weight(1.4f),
                                 text = "Share",
+                                onClick = onClickShare,
+                                modifier = Modifier.weight(1.4f),
                                 icon = PoposIcons.Share,
                                 enabled = totalOrders.totalOrders != 0L,
-                                onClick = onClickShare,
                                 color = secBtnColor,
                             )
 
                             PoposButton(
+                                text = "Print",
+                                color = primaryBtnColor,
+                                onClick = onClickPrint,
                                 modifier = Modifier.weight(1.4f),
                                 icon = PoposIcons.Print,
-                                text = "Print",
                                 enabled = totalOrders.totalOrders != 0L,
-                                onClick = onClickPrint,
-                                color = primaryBtnColor,
                             )
                         }
                     }
@@ -471,6 +471,7 @@ private fun TotalDeliveryReportCardWithSelectedPreview(
             selectedDate = System.currentTimeMillis().toString(),
             selectedCount = 2,
             isInSelectionMode = true,
+            modifier = modifier,
             partners = CardOrderPreviewData.sampleEmployeeNameAndIds.toImmutableList(),
             onClickPrint = {},
             onClickShare = {},

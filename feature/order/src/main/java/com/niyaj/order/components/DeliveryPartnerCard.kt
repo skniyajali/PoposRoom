@@ -53,10 +53,10 @@ internal fun DeliveryPartnerCard(
     order: TotalDeliveryPartnerOrder,
     modifier: Modifier = Modifier,
     showPrintBtn: Boolean = true,
-    containerColor: Color = MaterialTheme.colorScheme.background,
     height: Dp = 70.dp,
     onClickPrint: (Int) -> Unit = {},
     onClickViewDetails: (Int) -> Unit = {},
+    containerColor: Color = MaterialTheme.colorScheme.background,
 ) = trace("DeliveryPartnerCard") {
     ListItem(
         headlineContent = {
@@ -83,7 +83,7 @@ internal fun DeliveryPartnerCard(
         leadingContent = {
             CircularBox(
                 icon = PoposIcons.DeliveryDining,
-                doesSelected = false,
+                selected = false,
                 text = order.partnerName ?: "Unmanaged",
             )
         },

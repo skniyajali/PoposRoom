@@ -84,8 +84,8 @@ import com.ramcosta.composedestinations.spec.Route
 @Composable
 fun PoposNavHost(
     appState: PoposAppState,
-    modifier: Modifier = Modifier,
     startRoute: Route,
+    modifier: Modifier = Modifier,
 ) {
     val bottomSheetNavigator = appState.bottomSheetNavigator
     appState.navController.navigatorProvider += bottomSheetNavigator

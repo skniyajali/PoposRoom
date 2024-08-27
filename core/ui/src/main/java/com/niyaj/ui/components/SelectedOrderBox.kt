@@ -43,14 +43,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.IconSizeLarge
+import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMini
 import com.niyaj.designsystem.theme.SpaceSmall
+import com.niyaj.ui.utils.DevicePreviews
 
 @Composable
 fun SelectedOrderBox(
-    modifier: Modifier = Modifier,
     text: String,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     height: Dp = 35.dp,
     borderColor: Color = MaterialTheme.colorScheme.tertiary,
     shape: Shape = RoundedCornerShape(SpaceMini),
@@ -92,5 +94,19 @@ fun SelectedOrderBox(
         }
 
         Spacer(modifier = Modifier.width(SpaceSmall))
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun SelectedOrderBoxPreview(
+    modifier: Modifier = Modifier,
+) {
+    PoposRoomTheme {
+        SelectedOrderBox(
+            text = "Order #123456",
+            onClick = {},
+            modifier = modifier,
+        )
     }
 }
