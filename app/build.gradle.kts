@@ -16,23 +16,22 @@
  *
  */
 import com.niyaj.samples.apps.popos.PoposBuildType
-import io.sentry.android.gradle.extensions.InstrumentationFeature
-import io.sentry.android.gradle.instrumentation.logcat.LogcatLevel
 
 plugins {
     alias(libs.plugins.popos.android.application)
     alias(libs.plugins.popos.android.application.compose)
     alias(libs.plugins.popos.android.application.flavors)
     alias(libs.plugins.popos.android.application.jacoco)
-    alias(libs.plugins.popos.android.hilt)
+    alias(libs.plugins.popos.hilt)
     alias(libs.plugins.popos.android.application.firebase)
     alias(libs.plugins.androidx.baselineprofile)
     alias(libs.plugins.roborazzi)
     alias(libs.plugins.sentry)
     alias(libs.plugins.sentry.kotlin)
     alias(libs.plugins.compiler.report)
+    alias(libs.plugins.gms)
+    alias(libs.plugins.firebase.appdistribution)
     id("com.google.android.gms.oss-licenses-plugin")
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -40,11 +39,24 @@ android {
 
     defaultConfig {
         applicationId = libs.versions.namespace.get()
-        versionCode = libs.versions.versionCode.get().toInt()
-        versionName = libs.versions.versionName.get()
-
+        versionName = project.version.toString()
+        versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
         testInstrumentationRunner = "com.niyaj.testing.PoposTestRunner"
+
+        manifestPlaceholders["sentryRelease"] = "$applicationId@$versionName"
+        manifestPlaceholders["sentryDsn"] = System.getenv("SENTRY_DSN") ?: ""
         manifestPlaceholders.putAll(mapOf("sentryEnvironment" to "production"))
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file(System.getenv("KEYSTORE_PATH") ?: "debug_keystore.jks")
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "popos1234"
+            keyAlias = System.getenv("KEYSTORE_ALIAS") ?: "popos-room"
+            keyPassword = System.getenv("KEYSTORE_ALIAS_PASSWORD") ?: "popos1234"
+            enableV1Signing = true
+            enableV2Signing = true
+        }
     }
 
     buildTypes {
@@ -64,7 +76,7 @@ android {
             // To publish on the Play store a private signing key is required, but to allow anyone
             // who clones the code to sign and run the release variant, use the debug signing key.
             // TODO: Abstract the signing configuration to a separate file to avoid hardcoding this.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
             // Ensure Baseline Profile is fresh for release builds.
             baselineProfile.automaticGenerationDuringBuild = true
         }
@@ -88,6 +100,12 @@ android {
         }
     }
 
+    firebaseAppDistribution {
+        serviceCredentialsFile = "app/firebaseAppDistributionServiceCredentialsFile.json"
+        releaseNotesFile = "./app/build/outputs/changelogBeta"
+        groups = "continuous-deployment"
+    }
+
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
@@ -95,165 +113,38 @@ android {
     }
 }
 
-sentry {
-    // Disables or enables debug log output, e.g. for for sentry-cli.
-    // Default is disabled.
-    debug.set(false)
-
-    // The slug of the Sentry organization to use for uploading proguard mappings/source contexts.
-    org.set("skniyajali")
-
-    // The slug of the Sentry project to use for uploading proguard mappings/source contexts.
-//        project.set("android")
-
-    // The authentication token to use for uploading proguard mappings/source contexts.
-    // WARNING: Do not expose this token in your build.gradle files, but rather set an environment
-    // variable and read it into this property.
-    authToken.set(System.getenv("SENTRY_AUTH_TOKEN"))
-
-    // The url of your Sentry instance. If you're using SAAS (not self hosting) you do not have to
-    // set this. If you are self hosting you can set your URL here
-    url = null
-
-    // Disables or enables the handling of Proguard mapping for Sentry.
-    // If enabled the plugin will generate a UUID and will take care of
-    // uploading the mapping to Sentry. If disabled, all the logic
-    // related to proguard mapping will be excluded.
-    // Default is enabled.
-    includeProguardMapping.set(true)
-
-    // Whether the plugin should attempt to auto-upload the mapping file to Sentry or not.
-    // If disabled the plugin will run a dry-run and just generate a UUID.
-    // The mapping file has to be uploaded manually via sentry-cli in this case.
-    // Default is enabled.
-    autoUploadProguardMapping.set(true)
-
-    // Experimental flag to turn on support for GuardSquare's tools integration (Dexguard and External Proguard).
-    // If enabled, the plugin will try to consume and upload the mapping file produced by Dexguard and External Proguard.
-    // Default is disabled.
-    dexguardEnabled = false
-
-    // Disables or enables the automatic configuration of Native Symbols
-    // for Sentry. This executes sentry-cli automatically so
-    // you don't need to do it manually.
-    // Default is disabled.
-    uploadNativeSymbols.set(false)
-
-    // Whether the plugin should attempt to auto-upload the native debug symbols to Sentry or not.
-    // If disabled the plugin will run a dry-run.
-    // Default is enabled.
-    autoUploadNativeSymbols.set(true)
-
-    // Does or doesn't include the source code of native code for Sentry.
-    // This executes sentry-cli with the --include-sources param. automatically so
-    // you don't need to do it manually.
-    // Default is disabled.
-    includeNativeSources.set(false)
-
-    // Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
-    // This enables source context, allowing you to see your source
-    // code as part of your stack traces in Sentry.
-    includeSourceContext.set(true)
-
-    // Configure additional directories to be included in the source bundle which is used for
-    // source context. The directories should be specified relative to the Gradle module/project's
-    // root. For example, if you have a custom source set alongside 'main', the parameter would be
-    // 'src/custom/java'.
-    additionalSourceDirsForSourceContext.set(emptySet())
-
-    // Enable or disable the tracing instrumentation.
-    // Does auto instrumentation for specified features through bytecode manipulation.
-    // Default is enabled.
-    tracingInstrumentation {
-        enabled.set(true)
-
-        // Specifies a set of instrumentation features that are eligible for bytecode manipulation.
-        // Defaults to all available values of InstrumentationFeature enum class.
-        features.set(
-            setOf(
-                InstrumentationFeature.DATABASE,
-                InstrumentationFeature.FILE_IO,
-                InstrumentationFeature.OKHTTP,
-                InstrumentationFeature.COMPOSE,
-            ),
-        )
-
-        logcat {
-            enabled = true
-            minLevel = LogcatLevel.WARNING
-        }
-    }
-
-    // Enable auto-installation of Sentry components (sentry-android SDK and okhttp, timber, fragment and compose integrations).
-    // Default is enabled.
-    // Only available v3.1.0 and above.
-    autoInstallation {
-        enabled.set(true)
-
-        // Specifies a version of the sentry-android SDK and fragment, timber and okhttp integrations.
-        //
-        // This is also useful, when you have the sentry-android SDK already included into a transitive dependency/module and want to
-        // align integration versions with it (if it's a direct dependency, the version will be inferred).
-        //
-        // NOTE: if you have a higher version of the sentry-android SDK or integrations on the classpath, this setting will have no effect
-        // as Gradle will resolve it to the latest version.
-        //
-        // Defaults to the latest published Sentry version.
-        sentryVersion.set("7.9.0")
-    }
-
-    // Disables or enables dependencies metadata reporting for Sentry.
-    // If enabled, the plugin will collect external dependencies and
-    // upload them to Sentry as part of events. If disabled, all the logic
-    // related to the dependencies metadata report will be excluded.
-    //
-    // Default is enabled.
-    //
-    includeDependenciesReport.set(true)
-
-    // List the build types that should be ignored (e.g. "release").
-//        ignoredBuildTypes.set(setOf("debug"))
-
-    // List the build flavors that should be ignored (e.g. "production").
-    ignoredFlavors.set(setOf("demo"))
-}
-
-secrets {
-    defaultPropertiesFileName = "secrets.defaults.properties"
-}
-
 dependencies {
-    implementation(project(":feature:account"))
-    implementation(project(":feature:addonitem"))
-    implementation(project(":feature:address"))
-    implementation(project(":feature:cart"))
-    implementation(project(":feature:cart_selected"))
-    implementation(project(":feature:cartorder"))
-    implementation(project(":feature:category"))
-    implementation(project(":feature:charges"))
-    implementation(project(":feature:customer"))
-    implementation(project(":feature:employee"))
-    implementation(project(":feature:employee_payment"))
-    implementation(project(":feature:employee_absent"))
-    implementation(project(":feature:expenses"))
-    implementation(project(":feature:home"))
-    implementation(project(":feature:order"))
-    implementation(project(":feature:print_order"))
-    implementation(project(":feature:product"))
-    implementation(project(":feature:profile"))
-    implementation(project(":feature:settings"))
-    implementation(project(":feature:printer_info"))
-    implementation(project(":feature:reports"))
-    implementation(project(":feature:market"))
+    implementation(projects.feature.account)
+    implementation(projects.feature.addonitem)
+    implementation(projects.feature.address)
+    implementation(projects.feature.cart)
+    implementation(projects.feature.cartSelected)
+    implementation(projects.feature.cartorder)
+    implementation(projects.feature.category)
+    implementation(projects.feature.charges)
+    implementation(projects.feature.customer)
+    implementation(projects.feature.employee)
+    implementation(projects.feature.employeePayment)
+    implementation(projects.feature.employeeAbsent)
+    implementation(projects.feature.expenses)
+    implementation(projects.feature.expenses)
+    implementation(projects.feature.home)
+    implementation(projects.feature.market)
+    implementation(projects.feature.order)
+    implementation(projects.feature.printOrder)
+    implementation(projects.feature.product)
+    implementation(projects.feature.profile)
+    implementation(projects.feature.settings)
+    implementation(projects.feature.printerInfo)
+    implementation(projects.feature.reports)
 
-
-    implementation(project(":core:common"))
-    implementation(project(":core:ui"))
-    implementation(project(":core:designsystem"))
-    implementation(project(":core:data"))
-    implementation(project(":core:model"))
-    implementation(project(":core:worker"))
-    implementation(project(":core:analytics"))
+    implementation(projects.core.analytics)
+    implementation(projects.core.common)
+    implementation(projects.core.designsystem)
+    implementation(projects.core.data)
+    implementation(projects.core.model)
+    implementation(projects.core.ui)
+    implementation(projects.core.worker)
 
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.accompanist.permissions)
@@ -319,5 +210,17 @@ baselineProfile {
 }
 
 dependencyGuard {
-    configuration("prodReleaseRuntimeClasspath")
+    configuration("prodReleaseRuntimeClasspath") {
+        modules = true
+        tree = true
+    }
+}
+
+sentry {
+    debug = false
+    org = "skniyajali"
+    projectName = "popos-room"
+    authToken = System.getenv("SENTRY_AUTH_TOKEN")
+    includeSourceContext = true
+    telemetry = false
 }

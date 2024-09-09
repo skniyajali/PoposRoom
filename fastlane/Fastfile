@@ -16,8 +16,26 @@
 default_platform(:android)
 
 platform :android do
-  desc "Runs all the tests"
-  lane :test do
-    gradle(task: "test")
-  end
+     desc "Prep Amazon Appstore submission"
+     lane :prep_amazon do
+        amazon_app_submission(
+            client_id: ENV["AMAZON_APPSTORE_CLIENT_ID"],
+            client_secret: ENV["AMAZON_APPSTORE_CLIENT_SECRET"],
+            app_id: ENV["AMAZON_APPSTORE_APP_ID"],
+            apk_path: "app/build/outputs/apk/prod/release/app-prod-release.apk",
+            upload_apk: true,
+            upload_changelogs: false,
+            submit_for_review: false
+          )
+     end
+
+     desc "Submit to Amazon Appstore"
+     lane :submit_amazon do
+        amazon_app_submission(
+            client_id: ENV["AMAZON_APPSTORE_CLIENT_ID"],
+            client_secret: ENV["AMAZON_APPSTORE_CLIENT_SECRET"],
+            app_id: ENV["AMAZON_APPSTORE_APP_ID"],
+            submit_for_review: true
+          )
+     end
 end

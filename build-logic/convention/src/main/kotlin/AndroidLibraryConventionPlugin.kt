@@ -34,6 +34,9 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 apply("com.android.library")
                 apply("org.jetbrains.kotlin.android")
                 apply("popos.android.lint")
+                apply("popos.detekt.plugin")
+                apply("popos.spotless.plugin")
+                apply("popos.ktlint.plugin")
             }
 
             extensions.configure<LibraryExtension> {

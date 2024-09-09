@@ -38,6 +38,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.dependencyGuard) apply false
     alias(libs.plugins.firebase.crashlytics) apply false
+    alias(libs.plugins.firebase.appdistribution) apply false
     alias(libs.plugins.firebase.perf) apply false
     alias(libs.plugins.gms) apply false
     alias(libs.plugins.hilt) apply false
@@ -45,10 +46,11 @@ plugins {
     alias(libs.plugins.secrets) apply false
     alias(libs.plugins.roborazzi) apply false
     alias(libs.plugins.room) apply false
-    alias(libs.plugins.module.graph) apply true
     alias(libs.plugins.compiler.report) apply false
-    alias(libs.plugins.detekt)
-    alias(libs.plugins.detekt.compiler)
+    alias(libs.plugins.detekt) apply false
+    alias(libs.plugins.spotless) apply false
+    alias(libs.plugins.ktlint) apply false
+    alias(libs.plugins.module.graph) apply true
 }
 
 // Task to print all the module paths in the project e.g. :core:data
@@ -61,27 +63,15 @@ tasks.register("printModulePaths") {
     }
 }
 
-val detektFormatting = libs.detekt.formatting
-val twitterComposeRules = libs.twitter.detekt.compose
-
-subprojects {
-    apply {
-        plugin("io.gitlab.arturbosch.detekt")
+object DynamicVersion {
+    fun setDynamicVersion(file: File, version: String) {
+        file.writeText(version)
     }
+}
 
-    tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
-        config.from(rootProject.file("config/detekt.yml"))
+tasks.register("versionFile") {
+    val file = File(projectDir, "version.txt")
 
-        reports {
-            html.required.set(true)
-            sarif.required.set(true)
-            md.required.set(true)
-        }
-    }
-
-    dependencies {
-        detektPlugins(detektFormatting)
-        detektPlugins(twitterComposeRules)
-    }
+    DynamicVersion.setDynamicVersion(file, project.version.toString())
 }
 
