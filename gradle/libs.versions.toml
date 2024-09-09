@@ -1,25 +1,25 @@
 [versions]
 accompanist = "0.34.0"
 accompanistSwipeRefresh = '0.27.0'
-androidDesugarJdkLibs = "2.0.4"
-androidGradlePlugin = "8.5.2"
-androidTools = "31.5.2"
-androidxActivity = "1.9.1"
+androidDesugarJdkLibs = "2.1.2"
+androidGradlePlugin = "8.6.0"
+androidTools = "31.6.0"
+androidxActivity = "1.9.2"
 androidxAppCompat = "1.7.0"
-androidxComposeBom = "2024.08.00"
-androidxComposeUi = "1.6.8"
-androidxComposeUiTest = "1.7.0-beta01"
-androidxComposeRuntime = "1.6.8"
+androidxComposeBom = "2024.09.00"
+androidxComposeUi = "1.7.0"
+androidxComposeUiTest = "1.7.0"
+androidxComposeRuntime = "1.7.0"
 androidxComposeRuntimeTracing = "1.0.0-beta01"
-androidxComposeMaterial3 = "1.2.1"
+androidxComposeMaterial3 = "1.3.0"
 androidxCore = "1.13.1"
 androidxCoreSplashscreen = "1.0.1"
 androidxEspresso = "3.6.1"
 androidxHiltNavigationCompose = "1.2.0"
-androidxLifecycle = "2.8.4"
+androidxLifecycle = "2.8.5"
 androidxMacroBenchmark = "1.3.0"
 androidxMetrics = "1.0.0-beta01"
-androidxNavigation = "2.7.7"
+androidxNavigation = "2.8.0"
 androidxProfileinstaller = "1.3.1"
 androidxTestCore = "1.6.1"
 androidxTestExt = "1.2.1"
@@ -30,11 +30,12 @@ androidxUiAutomator = "2.3.0"
 androidxWindowManager = "1.3.0"
 androidxDataStore = "1.1.1"
 androidxWork = "2.9.1"
+appsweepVersion = "1.5.8"
 coil = "2.6.0"
 dependencyGuard = "0.5.0"
 detekt = "1.23.5"
 exyte-navigation = '1.0.0'
-firebaseBom = "33.1.2"
+firebaseBom = "33.2.0"
 firebaseCrashlyticsPlugin = "3.0.2"
 firebasePerfPlugin = "1.4.2"
 gmsPlugin = "4.4.2"
@@ -44,17 +45,18 @@ hilt = "2.52"
 hiltExt = "1.2.0"
 jacoco = "0.8.7"
 junit = "1.1.5"
-kotlin = "2.0.10"
+kotlin = "2.0.20"
 kotlinxCoroutines = "1.8.1"
 kotlinxDatetime = "0.6.0"
 kotlinxSerializationJson = "1.7.1"
 kotlinxImmutable = "0.3.7"
-ksp = "2.0.10-1.0.24"
+ksp = "2.0.20-1.0.24"
+ktlint = "12.1.1"
 lottieVersion = "6.5.0"
 moduleGraph = "2.5.0"
 moshiVersion = '1.15.1'
 posPrinterVersion = '3.4.0'
-protobuf = "4.26.0"
+protobuf = "4.26.1"
 protobufPlugin = "0.9.4"
 playScanner = "16.1.0"
 playService = "18.5.0"
@@ -65,15 +67,18 @@ robolectric = "4.13"
 roborazzi = "1.26.0"
 secrets = "2.0.1"
 sentryVersion = '4.11.0'
-sentryAndroidVersion = '7.13.0'
+sentryAndroidVersion = '7.14.0'
+spotlessVersion = "6.23.3"
 turbine = "1.1.0"
 timberVersion = '5.0.1'
+truth = "1.4.2"
 twitter-detekt-compose = "0.0.26"
 vanpraComposeVersion = '0.9.0'
-zxing = "3.5.2"
+zxing = "3.5.3"
 saketSwipe = "1.2.0"
 konfetti-compose = "2.0.4"
 compiler-report = "1.3.1"
+firebaseAppdistributionGradle = "5.0.0"
 
 # App Version
 namespace = "com.niyaj.poposroom"
@@ -177,6 +182,7 @@ google-oss-licenses = { group = "com.google.android.gms", name = "play-services-
 google-oss-licenses-plugin = { group = "com.google.android.gms", name = "oss-licenses-plugin", version.ref = "googleOssPlugin" }
 
 # Hilt.
+hilt-core = { group = "com.google.dagger", name = "hilt-core", version.ref = "hilt" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
@@ -257,6 +263,8 @@ saket-swipe = { group = "me.saket.swipe", name = "swipe", version.ref = "saketSw
 detekt-gradlePlugin = { group = "io.gitlab.arturbosch.detekt", name = "detekt-gradle-plugin", version.ref = "detekt" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 twitter-detekt-compose = { group = "com.twitter.compose.rules", name = "detekt", version.ref = "twitter-detekt-compose" }
+spotless-gradlePlugin = { group = "com.diffplug.spotless", name = "spotless-plugin-gradle", version.ref = "spotlessVersion" }
+ktlint-gradlePlugin = { group = "org.jlleitschuh.gradle", name = "ktlint-gradle", version.ref = "ktlint" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -269,12 +277,14 @@ ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devto
 hilt-gradlePlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt" }
 room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
 androidx-work-testing = { group = "androidx.work", name = "work-testing", version.ref = "androidxWork" }
+truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 android-test = { id = "com.android.test", version.ref = "androidGradlePlugin" }
 androidx-baselineprofile = { id = "androidx.baselineprofile", version.ref = "androidxMacroBenchmark" }
+appsweep = {id="com.guardsquare.appsweep", version.ref="appsweepVersion"}
 compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsPlugin" }
 firebase-perf = { id = "com.google.firebase.firebase-perf", version.ref = "firebasePerfPlugin" }
@@ -284,6 +294,7 @@ detekt-compiler = { id = "io.github.detekt.gradle.compiler-plugin", version.ref 
 gms = { id = "com.google.gms.google-services", version.ref = "gmsPlugin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 module-graph = { id = "com.jraska.module.graph.assertion", version.ref = "moduleGraph" }
@@ -293,7 +304,9 @@ room = { id = "androidx.room", version.ref = "room" }
 sentry = { id = "io.sentry.android.gradle", version.ref = "sentryVersion" }
 sentry-kotlin = { id = "io.sentry.kotlin.compiler.gradle", version.ref = "sentryVersion" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotlessVersion" }
 compiler-report = { id = "dev.shreyaspatil.compose-compiler-report-generator", version.ref = "compiler-report"}
+firebase-appdistribution = { id = "com.google.firebase.appdistribution", version.ref = "firebaseAppdistributionGradle" }
 
 
 # Plugins defined by this project
@@ -303,7 +316,7 @@ popos-android-application-firebase = { id = "popos.android.application.firebase"
 popos-android-application-flavors = { id = "popos.android.application.flavors", version = "unspecified" }
 popos-android-application-jacoco = { id = "popos.android.application.jacoco", version = "unspecified" }
 popos-android-feature = { id = "popos.android.feature", version = "unspecified" }
-popos-android-hilt = { id = "popos.android.hilt", version = "unspecified" }
+popos-hilt = { id = "popos.hilt", version = "unspecified" }
 popos-android-library = { id = "popos.android.library", version = "unspecified" }
 popos-android-library-compose = { id = "popos.android.library.compose", version = "unspecified" }
 popos-android-library-jacoco = { id = "popos.android.library.jacoco", version = "unspecified" }

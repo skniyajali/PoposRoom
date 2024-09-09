@@ -46,6 +46,10 @@ dependencies {
     compileOnly(libs.ksp.gradlePlugin)
     compileOnly(libs.room.gradlePlugin)
     compileOnly(libs.hilt.gradlePlugin)
+    compileOnly(libs.detekt.gradlePlugin)
+    compileOnly(libs.ktlint.gradlePlugin)
+    compileOnly(libs.spotless.gradlePlugin)
+    implementation(libs.truth)
 }
 
 tasks {
@@ -85,9 +89,9 @@ gradlePlugin {
             id = "popos.android.test"
             implementationClass = "AndroidTestConventionPlugin"
         }
-        register("androidHilt") {
-            id = "popos.android.hilt"
-            implementationClass = "AndroidHiltConventionPlugin"
+        register("hilt") {
+            id = "popos.hilt"
+            implementationClass = "HiltConventionPlugin"
         }
         register("androidLibraryJacoco") {
             id = "popos.android.library.jacoco"
@@ -112,6 +116,26 @@ gradlePlugin {
         register("jvmLibrary") {
             id = "popos.jvm.library"
             implementationClass = "JvmLibraryConventionPlugin"
+        }
+        register("detekt") {
+            id = "popos.detekt.plugin"
+            implementationClass = "PoposDetektConventionPlugin"
+            description = "Configures detekt for the project"
+        }
+        register("spotless") {
+            id = "popos.spotless.plugin"
+            implementationClass = "PoposSpotlessConventionPlugin"
+            description = "Configures spotless for the project"
+        }
+        register("ktlint") {
+            id = "popos.ktlint.plugin"
+            implementationClass = "PoposKtlintConventionPlugin"
+            description = "Configures kotlinter for the project"
+        }
+        register("gitHooks") {
+            id = "popos.git.hooks"
+            implementationClass = "PoposGitHooksConventionPlugin"
+            description = "Installs git hooks for the project"
         }
     }
 }

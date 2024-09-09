@@ -16,6 +16,8 @@ build/
 
 # Local configuration file (sdk path, etc)
 local.properties
+sentry.properties
+secrets.defaults.properties
 
 # Eclipse project files
 .classpath
@@ -46,3 +48,15 @@ captures/
 
 # Kotlin
 .kotlin
+
+app/release_keystore.keystore
+
+version.txt
+
+app/google-services.json
+app/firebaseAppDistributionServiceCredentialsFile.json
+app/playStorePublishServiceCredentialsFile.json
+
+# Ruby stuff we don't care about
+.bundle/
+vendor/

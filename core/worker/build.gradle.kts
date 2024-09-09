@@ -18,7 +18,7 @@
 plugins {
     alias(libs.plugins.popos.android.library)
     alias(libs.plugins.popos.android.library.jacoco)
-    alias(libs.plugins.popos.android.hilt)
+    alias(libs.plugins.popos.hilt)
 }
 
 android {

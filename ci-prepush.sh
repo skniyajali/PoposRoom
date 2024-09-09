@@ -41,7 +41,7 @@ run_gradle_task() {
 
 tasks=(
     "check -p build-logic"
-    "spotlessApply --init-script gradle/init.gradle.kts --no-configuration-cache"
+    "spotlessApply --no-configuration-cache"
     "dependencyGuardBaseline"
     "detekt"
     "testDemoDebug -P roborazzi.test.verify=false :lint:test"

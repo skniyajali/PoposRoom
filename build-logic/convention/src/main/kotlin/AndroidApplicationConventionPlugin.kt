@@ -16,8 +16,12 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             with(pluginManager) {
                 apply("com.android.application")
                 apply("org.jetbrains.kotlin.android")
-                apply("popos.android.lint")
                 apply("com.dropbox.dependency-guard")
+                apply("popos.android.lint")
+                apply("popos.detekt.plugin")
+                apply("popos.spotless.plugin")
+                apply("popos.ktlint.plugin")
+                apply("popos.git.hooks")
             }
 
             extensions.configure<ApplicationExtension> {

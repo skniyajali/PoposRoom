@@ -47,7 +47,7 @@ jobs:
           if [ "${{ matrix.check }}" = "build_logic" ]; then
             ./gradlew check -p build-logic
           elif [ "${{ matrix.check }}" = "spotless" ]; then
-            ./gradlew spotlessCheck --init-script gradle/init.gradle.kts --no-configuration-cache
+            ./gradlew spotlessCheck --no-configuration-cache
           elif [ "${{ matrix.check }}" = "detekt" ]; then
             ./gradlew detekt
           fi
@@ -63,7 +63,7 @@ jobs:
       - name: Fix formatting if verification failed
         id: fix_formatting
         if: ${{ matrix.check == 'spotless' && steps.run_check.outcome == 'success' && github.event_name == 'pull_request' }}
-        run: ./gradlew spotlessApply --init-script gradle/init.gradle.kts --no-configuration-cache
+        run: ./gradlew spotlessApply --no-configuration-cache
       - name: Push new changes if available
         uses: stefanzweifel/git-auto-commit-action@v5
         if: steps.fix_formatting.outcome == 'success'
@@ -156,6 +156,7 @@ jobs:
 
 
 
+
   build:
     needs: [ checks, dependency_guard, tests_and_lint, screenshot_tests ]
     runs-on: ubuntu-latest
@@ -174,7 +175,33 @@ jobs:
           -x collectProdNonMinifiedReleaseBaselineProfile
 
       - name: Check badging
+        id: badging_verify
+        continue-on-error: true
         run: ./gradlew :app:checkProdReleaseBadging
+
+      - name: Prevent updating release badging if this is a fork
+        id: checkfork_badging
+        if: steps.badging_verify.outcome == 'failure' && github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "::error::Release Badging failed, please update badging with: ./gradlew updateReleaseBadging" && exit 1
+
+
+        # Runs if previous job failed
+      - name: Generate new release badging if verification failed and it's a PR
+        id: generate_badging
+        if: steps.checkfork_badging.outcome == 'failure' && github.event_name == 'pull_request'
+        run: |
+          ./gradlew updateProdReleaseBadging
+
+
+      - name: Push new release badging if available
+        uses: stefanzweifel/git-auto-commit-action@v5
+        if: steps.generate_badging.outcome == 'success'
+        with:
+          file_pattern: 'app/prodRelease-badging.txt'
+          disable_globbing: true
+          commit_message: "🤖 Updates release badging"
+
       - name: Upload APKs
         uses: actions/upload-artifact@v4
         with:

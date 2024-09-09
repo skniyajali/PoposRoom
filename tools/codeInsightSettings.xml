@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~      Copyright 2024 Sk Niyaj Ali
+  ~
+  ~      Licensed under the Apache License, Version 2.0 (the "License");
+  ~      you may not use this file except in compliance with the License.
+  ~      You may obtain a copy of the License at
+  ~
+  ~              http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~      Unless required by applicable law or agreed to in writing, software
+  ~      distributed under the License is distributed on an "AS IS" BASIS,
+  ~      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~      See the License for the specific language governing permissions and
+  ~      limitations under the License.
+  -->
+
+<project version="4">
+    <component name="JavaProjectCodeInsightSettings">
+        <excluded-names>
+            <name>android.graphics.Canvas</name>
+            <name>android.graphics.Color</name>
+            <name>android.graphics.Paint</name>
+            <name>android.graphics.drawable.Icon</name>
+            <name>android.inputmethodservice.Keyboard.Row</name>
+            <name>android.text.Layout.Alignment</name>
+            <name>android.view.Surface</name>
+            <name>android.widget.Button</name>
+            <name>android.widget.GridLayout.Alignment</name>
+            <name>androidx.core.content.pm.ShortcutInfoCompat.Surface</name>
+            <name>java.lang.reflect.Modifier</name>
+            <name>java.nio.file.WatchEvent.Modifier</name>
+            <name>java.time.format.TextStyle</name>
+            <name>javax.annotation.concurrent.Immutable</name>
+            <name>org.threeten.bp.format.TextStyle</name>
+            <name>org.w3c.dom.Text</name>
+            <name>java.util.concurrent.Flow</name>
+            <name>org.intellij.lang.annotations.Flow</name>
+            <name>jakarta.inject.Inject</name>
+        </excluded-names>
+    </component>
+</project>

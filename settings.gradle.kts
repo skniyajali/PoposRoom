@@ -1,3 +1,6 @@
+import org.ajoberstar.reckon.core.Scope
+import org.ajoberstar.reckon.gradle.ReckonExtension
+
 /*
  *      Copyright 2024 Sk Niyaj Ali
  *
@@ -29,6 +32,20 @@ dependencyResolutionManagement {
         mavenCentral()
         maven { url = uri("https://jitpack.io") }
     }
+}
+
+plugins {
+    id("org.ajoberstar.reckon.settings") version ("0.18.3")
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+}
+
+extensions.configure<ReckonExtension> {
+    setDefaultInferredScope("patch")
+    stages("alpha","beta","final")
+    setScopeCalc { java.util.Optional.of(Scope.PATCH) }
+    setScopeCalc(calcScopeFromProp().or(calcScopeFromCommitMessages()))
+    setStageCalc(calcStageFromProp())
+    setTagWriter { it.toString() }
 }
 
 rootProject.name = "PoposRoom"

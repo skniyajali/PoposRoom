@@ -12,7 +12,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
         with(target) {
             pluginManager.apply {
                 apply("popos.android.library")
-                apply("popos.android.hilt")
+                apply("popos.hilt")
                 apply("popos.android.library.jacoco")
                 apply("io.github.takahirom.roborazzi")
             }
