@@ -65,23 +65,30 @@ jobs:
         run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - uses: ./.github/actions/create-release-number
-        name: Create Release Number
+        name: 🔧 Create Release Number
         id: rel_number
 
       - uses: ./.github/actions/inflate-secrets
-        name: Inflate Secrets
+        name: 🔑 Inflate Secrets
         with:
           keystore: ${{ secrets.KEYSTORE_FILE }}
           google-services: ${{ secrets.GOOGLESERVICES }}
           firebase-creds: ${{ secrets.FIREBASECREDS }}
 
       - uses: ./.github/actions/create-release-notes
-        name: Create Release Notes
+        name: 🍀 Create Release Notes
         with:
           tag-name: ${{ steps.rel_number.outputs.version }}
           gh-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Release
+      - name: Build Changelog
+        id: build_changelog
+        uses: mikepenz/release-changelog-builder-action@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔧 Build Release
+        id: build_release
         env:
           KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_FILE_PASSWORD }}
@@ -97,13 +104,14 @@ jobs:
           -Pandroid.experimental.androidTest.numManagedDeviceShards=1
           -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
 
-      - name: Upload APKs
+      - name: ☁️ Upload APKs
+        if: steps.build_release.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: APKs
           path: '**/build/outputs/apk/**/*.apk'
 
-      - name: Create Version File
+      - name: 🍀 Create Version File
         if: github.event.inputs.release_type == 'beta'
         shell: bash
         env:
@@ -111,41 +119,51 @@ jobs:
         run: |
           echo $VERSION_CODE > ./app/build/outputs/version_code.txt
 
-      - name: Create Github Pre-Release
+      - name: 🤖 Create Github Pre-Release
+        id: create_release
         if: github.event.inputs.release_type == 'beta'
         uses: softprops/action-gh-release@v2.0.8
         with:
           tag_name: ${{ steps.rel_number.outputs.version }}
-          body_path: ./app/build/outputs/changelogGithub
           draft: false
           prerelease: true
+          append_body: true
+          generate_release_notes: true
+          body: ${{ steps.build_changelog.outputs.changelog }}
           files: |
             ./app/build/outputs/apk/demo/release/app-demo-release.apk
             ./app/build/outputs/apk/prod/release/app-prod-release.apk
-            ./app/build/outputs/changelogGithub
             ./app/build/outputs/version_code.txt
 
-      - name: Upload Demo APK on Slack
+      - name: Update Changelog
+        id: update_changelog
+        if: steps.create_release.outcome == 'success'
+        uses: stefanzweifel/changelog-updater-action@v1
+        with:
+          latest-version: ${{ steps.rel_number.outputs.version }}
+          release-notes: ${{ steps.build_changelog.outputs.changelog }}
+
+      - name: Commit CHANGELOG.md
+        if: steps.update_changelog.outcome == 'success'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          branch: main
+          commit_message: 'docs: update CHANGELOG.md'
+          file_pattern: CHANGELOG.md
+
+      - name: ☁️ Upload APKs on Slack
         uses: MeilCli/slack-upload-file@v4
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
           channel_id: ${{ secrets.SLACK_CHANNEL }}
-          file_path: './app/build/outputs/apk/demo/release/app-demo-release.apk'
-          file_name: 'app-demo-release.apk'
+          file_path: './app/build/outputs/apk/**/*.apk'
           file_type: 'apk'
-          initial_comment: 'Demo Release Application'
+          initial_comment: |
+            You have released a new version of the app.
+              🍏 version: ${{ steps.rel_number.outputs.version }}
+              🤖 build: ${{ steps.rel_number.outputs.version-code }}
 
-      - name: Upload Prod APK on Slack
-        uses: MeilCli/slack-upload-file@v4
-        with:
-          slack_token: ${{ secrets.SLACK_TOKEN }}
-          channel_id: ${{ secrets.SLACK_CHANNEL }}
-          file_path: './app/build/outputs/apk/demo/release/app-prod-release.apk'
-          file_name: 'app-prod-release.apk'
-          file_type: 'apk'
-          initial_comment: 'Production Release Application'
-
-      - name: Deploy to Firebase
+      - name: ☁️ Deploy to Firebase
         env:
           KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_FILE_PASSWORD }}
@@ -156,7 +174,7 @@ jobs:
           VERSION_CODE: ${{ steps.rel_number.outputs.version-code }}
         run: ./gradlew appDistributionUploadFullRelease
 
-      - name: Prepare Amazon Listing
+      - name: 🤖 Prepare Amazon Listing
         if: github.event.inputs.release_type == 'beta' && github.event.inputs.amazon == 'true'
         run: bundle exec fastlane prep_amazon
         env:

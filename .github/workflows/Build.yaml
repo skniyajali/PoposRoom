@@ -219,7 +219,7 @@ jobs:
         uses: MeilCli/slack-upload-file@v4
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
-          channel_id: ${{ secrets.SLACK_CHANNEL }}
+          channel_id: ${{ secrets.SLACK_DEBUG_CHANNEL }}
           file_path: './app/build/outputs/apk/**/*.apk'
           file_name: 'app-demo-debug.apk'
           file_type: 'apk'
