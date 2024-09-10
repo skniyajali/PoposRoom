@@ -14,7 +14,7 @@ runs:
       id: version-generator
       shell: bash
       run: |
-        ./gradlew versionFile
+        ./gradlew versionFile --no-configuration-cache
         COMMITS=`git rev-list --count HEAD`
         TAGS=`git tag | grep -v beta | wc -l`
         VC=$((((COMMITS+TAGS) * 3) << 1))
