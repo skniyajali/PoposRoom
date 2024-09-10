@@ -3,14 +3,19 @@ name: Internal or Beta Release
 on:
   workflow_dispatch:
     inputs:
-      beta:
-        description: 'true if this is a beta release'
+      release_type:
         required: false
-        default: 'false'
+        default: 'internal'
+        description: Please select the release type
+        type: choice
+        options:
+          - internal
+          - beta
       amazon:
-        description: 'true if this is a amazon release'
+        type: boolean
+        description: 'This is a amazon release'
         required: false
-        default: 'false'
+        default: false
   push:
     tags:
       - '[0-9][0-9][0-9][0-9].[0-9][0-9].0'
@@ -98,7 +103,7 @@ jobs:
           path: ./**/*.apk
 
       - name: Create Version File
-        if: github.event.inputs.beta == 'true'
+        if: github.event.inputs.release_type == 'beta'
         shell: bash
         env:
           VERSION_CODE: ${{ steps.rel_number.outputs.version-code }}
@@ -106,7 +111,7 @@ jobs:
           echo $VERSION_CODE > ./app/build/outputs/version_code.txt
 
       - name: Create Github Pre-Release
-        if: github.event.inputs.beta == 'true'
+        if: github.event.inputs.release_type == 'beta'
         uses: softprops/action-gh-release@v2.0.8
         with:
           tag_name: ${{ steps.rel_number.outputs.version }}
@@ -151,7 +156,7 @@ jobs:
         run: ./gradlew appDistributionUploadFullRelease
 
       - name: Prepare Amazon Listing
-        if: github.event.inputs.beta == 'true' && github.event.inputs.amazon == 'true'
+        if: github.event.inputs.release_type == 'beta' && github.event.inputs.amazon == 'true'
         run: bundle exec fastlane prep_amazon
         env:
           AMAZON_APPSTORE_CLIENT_ID: ${{ secrets.AMAZON_APPSTORE_CLIENT_ID }}

@@ -29,9 +29,6 @@ runs:
           exit 1
         fi
         
-        echo "version.txt contents:"
-        cat version.txt
-        
         if ! command -v git &> /dev/null; then
           echo "Error: git is not installed or not in PATH"
           exit 1

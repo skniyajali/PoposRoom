@@ -34,7 +34,7 @@ jobs:
               workflow_id: 'internal_or_beta_release.yml',
               ref: 'main',
               inputs: {
-                "beta": "true",
+                "release_type": "beta",
                 "amazon": "false",
               },
             })
