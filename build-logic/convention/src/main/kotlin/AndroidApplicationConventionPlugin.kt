@@ -21,7 +21,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 apply("popos.detekt.plugin")
                 apply("popos.spotless.plugin")
                 apply("popos.ktlint.plugin")
-                apply("popos.git.hooks")
+//                apply("popos.git.hooks")
             }
 
             extensions.configure<ApplicationExtension> {
