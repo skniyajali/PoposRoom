@@ -32,13 +32,37 @@ runs:
         echo "version.txt contents:"
         cat version.txt
         
-        echo "Calculating version code"
-        COMMITS=$(git rev-list --count HEAD)
-        TAGS=$(git tag | grep -v beta | wc -l)
-        VC=$((((COMMITS+TAGS) * 3) << 1))
+        if ! command -v git &> /dev/null; then
+          echo "Error: git is not installed or not in PATH"
+          exit 1
+        fi
+        
+        echo "Counting commits..."
+        if ! COMMITS=$(git rev-list --count HEAD 2>&1); then
+          echo "Error counting commits: $COMMITS"
+          exit 1
+        fi
         echo "Number of commits: $COMMITS"
+        
+        # Get tag count
+        echo "Counting tags..."
+          if ! TAGS=$(git tag | grep -v beta | wc -l 2>&1); then
+          echo "Error counting tags: $TAGS"
+          exit 1
+        fi
         echo "Number of tags: $TAGS"
+        
+        echo "Performing version code calculation..."
+        if ! VC=$(( ((COMMITS+TAGS) * 3) << 1 )); then
+          echo "Error in version code calculation"
+          exit 1
+        fi
         echo "Calculated Version Code: $VC"
+
+        echo "Debug information:"
+        echo "COMMITS=$COMMITS"
+        echo "TAGS=$TAGS"
+        echo "VC=$VC"
         
         echo "version-code=$VC" >> $GITHUB_OUTPUT
         
