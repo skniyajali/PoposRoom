@@ -57,6 +57,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           validate-wrappers: true
+          gradle-home-cache-cleanup: true
 
       - name: Install GMD image for baseline profile generation
         run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager "system-images;android-33;aosp_atd;x86_64"
@@ -97,10 +98,11 @@ jobs:
           -Pandroid.experimental.androidTest.numManagedDeviceShards=1
           -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
 
-      - name: Archive Build
+      - name: Upload APKs
         uses: actions/upload-artifact@v4
         with:
-          path: ./**/*.apk
+          name: APKs
+          path: '**/build/outputs/apk/**/*.apk'
 
       - name: Create Version File
         if: github.event.inputs.release_type == 'beta'
