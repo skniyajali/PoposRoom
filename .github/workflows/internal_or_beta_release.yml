@@ -81,7 +81,7 @@ jobs:
           tag-name: ${{ steps.rel_number.outputs.version }}
           gh-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Changelog
+      - name: 🍀 Build Changelog
         id: build_changelog
         uses: mikepenz/release-changelog-builder-action@v5
         env:
@@ -127,15 +127,13 @@ jobs:
           tag_name: ${{ steps.rel_number.outputs.version }}
           draft: false
           prerelease: true
-          append_body: true
-          generate_release_notes: true
           body: ${{ steps.build_changelog.outputs.changelog }}
           files: |
             ./app/build/outputs/apk/demo/release/app-demo-release.apk
             ./app/build/outputs/apk/prod/release/app-prod-release.apk
             ./app/build/outputs/version_code.txt
 
-      - name: Update Changelog
+      - name: 🍏 Update Changelog
         id: update_changelog
         if: steps.create_release.outcome == 'success'
         uses: stefanzweifel/changelog-updater-action@v1
@@ -143,7 +141,7 @@ jobs:
           latest-version: ${{ steps.rel_number.outputs.version }}
           release-notes: ${{ steps.build_changelog.outputs.changelog }}
 
-      - name: Commit CHANGELOG.md
+      - name: 🤖 Commit CHANGELOG.md
         if: steps.update_changelog.outcome == 'success'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
@@ -162,6 +160,18 @@ jobs:
             You have released a new version of the app.
               🍏 version: ${{ steps.rel_number.outputs.version }}
               🤖 build: ${{ steps.rel_number.outputs.version-code }}
+
+      - name: 🤖 Create Sentry release
+        if: github.event.inputs.release_type == 'beta'
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_RELEASE_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        with:
+          environment: production
+          version: ${{ steps.rel_number.outputs.version }}
+          version_prefix: 'v'
 
       - name: ☁️ Deploy to Firebase
         env:
