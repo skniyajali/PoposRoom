@@ -1,4 +1,4 @@
-name: Bump our Calendar Version
+name: Monthly Release
 
 on:
   workflow_dispatch:

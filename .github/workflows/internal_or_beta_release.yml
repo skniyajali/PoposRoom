@@ -17,8 +17,8 @@ on:
         required: false
         default: false
   push:
-    tags:
-      - '[0-9][0-9][0-9][0-9].[0-9][0-9].0'
+    branches:
+      - main
 
 jobs:
   app_build:
@@ -127,7 +127,7 @@ jobs:
           tag_name: ${{ steps.rel_number.outputs.version }}
           draft: false
           prerelease: true
-          body: ${{ steps.build_changelog.outputs.changelog }}
+          body_path: ./app/build/outputs/changelogGithub.md
           files: |
             ./app/build/outputs/apk/demo/release/app-demo-release.apk
             ./app/build/outputs/apk/prod/release/app-prod-release.apk
@@ -166,7 +166,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           VERSION_CODE: ${{ steps.rel_number.outputs.version-code }}
-        run: ./gradlew appDistributionUploadFullRelease
+        run: ./gradlew appDistributionUploadFullRelease --no-configuration-cache
 
       - name: 🤖 Prepare Amazon Listing
         if: github.event.inputs.release_type == 'beta' && github.event.inputs.amazon == 'true'
@@ -182,7 +182,7 @@ jobs:
         uses: stefanzweifel/changelog-updater-action@v1
         with:
           latest-version: ${{ steps.rel_number.outputs.version }}
-          release-notes: ${{ steps.build_changelog.outputs.changelog }}
+          release-notes: ./app/build/outputs/changelogGithub.md
 
       - name: 🤖 Commit CHANGELOG.md
         if: steps.update_changelog.outcome == 'success'
