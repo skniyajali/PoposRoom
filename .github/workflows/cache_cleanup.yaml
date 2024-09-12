@@ -1,4 +1,4 @@
-name: cleanup caches by a branch
+name: Cache Cleanup
 on:
   pull_request:
     types:
@@ -6,14 +6,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  cleanup:
+  cleanup_pr:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - name: Cleanup
+      - name: Cleanup PR Cache
         run: |
           gh extension install actions/gh-actions-cache
 
-          echo "Fetching list of cache key"
+          echo "Fetching list of cache keys"
           cacheKeysForPR=$(gh actions-cache list -R $REPO -B $BRANCH -L 100 | cut -f 1 )
 
           ## Setting this to not fail the workflow while deleting cache keys.
@@ -28,3 +29,26 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           BRANCH: refs/pull/${{ github.event.pull_request.number }}/merge
+
+  cleanup_all:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cleanup All Caches
+        run: |
+          gh extension install actions/gh-actions-cache
+
+          echo "Fetching list of all cache keys"
+          allCacheKeys=$(gh actions-cache list -R $REPO | cut -f 1)
+
+          ## Setting this to not fail the workflow while deleting cache keys.
+          set +e
+          echo "Deleting all caches..."
+          for cacheKey in $allCacheKeys
+          do
+              gh actions-cache delete $cacheKey -R $REPO --confirm
+          done
+          echo "Done"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}

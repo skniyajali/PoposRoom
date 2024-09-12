@@ -1,6 +1,3 @@
-import org.ajoberstar.reckon.core.Scope
-import org.ajoberstar.reckon.gradle.ReckonExtension
-
 /*
  *      Copyright 2024 Sk Niyaj Ali
  *
@@ -16,6 +13,8 @@ import org.ajoberstar.reckon.gradle.ReckonExtension
  *      See the License for the specific language governing permissions and
  *      limitations under the License.
  */
+
+import org.ajoberstar.reckon.gradle.ReckonExtension
 
 pluginManagement {
     includeBuild("build-logic")
@@ -41,8 +40,7 @@ plugins {
 
 extensions.configure<ReckonExtension> {
     setDefaultInferredScope("patch")
-    stages("alpha","beta","final")
-    setScopeCalc { java.util.Optional.of(Scope.PATCH) }
+    stages("beta", "final")
     setScopeCalc(calcScopeFromProp().or(calcScopeFromCommitMessages()))
     setStageCalc(calcStageFromProp())
     setTagWriter { it.toString() }

@@ -192,14 +192,12 @@ jobs:
         run: |
           echo "::error::Release Badging failed, please update badging with: ./gradlew updateReleaseBadging" && exit 1
 
-
         # Runs if previous job failed
       - name: Generate new release badging if verification failed and it's a PR
         id: generate_badging
-        if: steps.checkfork_badging.outcome == 'failure' && github.event_name == 'pull_request'
+        if: steps.badging_verify.outcome == 'failure' && github.event_name == 'pull_request'
         run: |
           ./gradlew updateProdReleaseBadging
-
 
       - name: Push new release badging if available
         uses: stefanzweifel/git-auto-commit-action@v5
@@ -316,3 +314,11 @@ jobs:
           compression-level: 1
           overwrite: false
           path: '**/build/reports/jacoco/'
+
+      - name: Upload Test Report
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: true
+          verbose: true
+          files: ${{ github.workspace }}/**/build/reports/jacoco/**/*Report.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
