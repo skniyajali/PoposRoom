@@ -20,3 +20,6 @@ inline fun Project.spotlessGradle(crossinline configure: SpotlessExtension.() ->
     extensions.configure<SpotlessExtension> {
         configure()
     }
+
+val Project.cleanedVersion: String
+    get() = this.version.toString().split('+')[0]

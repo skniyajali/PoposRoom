@@ -16,6 +16,7 @@
  *
  */
 import com.niyaj.samples.apps.popos.PoposBuildType
+import com.niyaj.samples.apps.popos.cleanedVersion
 
 plugins {
     alias(libs.plugins.popos.android.application)
@@ -39,7 +40,7 @@ android {
 
     defaultConfig {
         applicationId = libs.versions.namespace.get()
-        versionName = project.version.toString()
+        versionName = project.cleanedVersion
         versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
         testInstrumentationRunner = "com.niyaj.testing.PoposTestRunner"
 

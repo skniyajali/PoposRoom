@@ -65,7 +65,8 @@ tasks.register("printModulePaths") {
 
 object DynamicVersion {
     fun setDynamicVersion(file: File, version: String) {
-        file.writeText(version)
+        val cleanedVersion = version.split('+')[0]
+        file.writeText(cleanedVersion)
     }
 }
 

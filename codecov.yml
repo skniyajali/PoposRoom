@@ -1,0 +1,8 @@
+{
+  "fixes": [
+    "/home/runner/work/PoposRoom/PoposRoom>/::"
+  ],
+  "codecov": {
+    "disable_default_path_fixes": true
+  }
+}
