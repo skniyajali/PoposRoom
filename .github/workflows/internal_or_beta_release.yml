@@ -133,22 +133,6 @@ jobs:
             ./app/build/outputs/apk/prod/release/app-prod-release.apk
             ./app/build/outputs/version_code.txt
 
-      - name: 🍏 Update Changelog
-        id: update_changelog
-        if: steps.create_release.outcome == 'success'
-        uses: stefanzweifel/changelog-updater-action@v1
-        with:
-          latest-version: ${{ steps.rel_number.outputs.version }}
-          release-notes: ${{ steps.build_changelog.outputs.changelog }}
-
-      - name: 🤖 Commit CHANGELOG.md
-        if: steps.update_changelog.outcome == 'success'
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          branch: main
-          commit_message: 'docs: update CHANGELOG.md'
-          file_pattern: CHANGELOG.md
-
       - name: ☁️ Upload APKs on Slack
         uses: MeilCli/slack-upload-file@v4
         with:
@@ -191,6 +175,22 @@ jobs:
           AMAZON_APPSTORE_CLIENT_ID: ${{ secrets.AMAZON_APPSTORE_CLIENT_ID }}
           AMAZON_APPSTORE_CLIENT_SECRET: ${{ secrets.AMAZON_APPSTORE_CLIENT_SECRET }}
           AMAZON_APPSTORE_APP_ID: ${{ secrets.AMAZON_APPSTORE_APP_ID }}
+
+      - name: 🍏 Update Changelog
+        id: update_changelog
+        if: steps.create_release.outcome == 'success'
+        uses: stefanzweifel/changelog-updater-action@v1
+        with:
+          latest-version: ${{ steps.rel_number.outputs.version }}
+          release-notes: ${{ steps.build_changelog.outputs.changelog }}
+
+      - name: 🤖 Commit CHANGELOG.md
+        if: steps.update_changelog.outcome == 'success'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          branch: main
+          commit_message: 'docs: update CHANGELOG.md'
+          file_pattern: CHANGELOG.md
 
       - name: Print `git status`
         run: git status
