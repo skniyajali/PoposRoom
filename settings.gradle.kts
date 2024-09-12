@@ -41,7 +41,7 @@ plugins {
 extensions.configure<ReckonExtension> {
     setDefaultInferredScope("patch")
     stages("beta", "final")
-    setScopeCalc(calcScopeFromProp().or(calcScopeFromCommitMessages()))
+    setScopeCalc { java.util.Optional.of(org.ajoberstar.reckon.core.Scope.PATCH) }
     setStageCalc(calcStageFromProp())
     setTagWriter { it.toString() }
 }

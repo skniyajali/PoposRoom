@@ -1,8 +1,6 @@
 name: Build and Test
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
 
 concurrency:
@@ -159,6 +157,7 @@ jobs:
           path: |
             **/build/reports/lint-results-*.html
             **/build/test-results/test*UnitTest/**.xml
+
 
 
 
