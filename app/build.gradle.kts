@@ -15,6 +15,7 @@
  *
  *
  */
+import com.google.gms.googleservices.GoogleServicesPlugin.GoogleServicesPluginConfig
 import com.niyaj.samples.apps.popos.PoposBuildType
 import com.niyaj.samples.apps.popos.cleanedVersion
 
@@ -224,4 +225,9 @@ sentry {
     authToken = System.getenv("SENTRY_AUTH_TOKEN")
     includeSourceContext = true
     telemetry = false
+}
+
+// Disable to fix memory leak and be compatible with the configuration cache.
+configure<GoogleServicesPluginConfig> {
+    disableVersionCheck = true
 }

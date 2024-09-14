@@ -15,7 +15,7 @@
  *
  */
 
-package com.niyaj.home
+package com.niyaj.feature.home
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
@@ -59,23 +59,21 @@ class HomeViewModel @Inject constructor(
 
     private val observableSearchText = snapshotFlow { mSearchText.value }
 
-    val selectedId = repository.getSelectedOrder()
-        .mapLatest {
-            if (it?.orderId != null) {
-                val address = repository.getSelectedOrderAddress(it.orderId)
-                SelectedOrderState(
-                    orderId = it.orderId,
-                    addressName = address ?: "",
-                )
-            } else {
-                SelectedOrderState()
-            }
+    val selectedId = repository.getSelectedOrder().mapLatest {
+        if (it?.orderId != null) {
+            val address = repository.getSelectedOrderAddress(it.orderId)
+            SelectedOrderState(
+                orderId = it.orderId,
+                addressName = address ?: "",
+            )
+        } else {
+            SelectedOrderState()
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = SelectedOrderState(),
-        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = SelectedOrderState(),
+    )
 
     val productsWithQuantity = observableSearchText.combine(_selectedCategory) { text, category ->
         repository.getProductsWithQuantities(text, category)

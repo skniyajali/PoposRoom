@@ -19,6 +19,7 @@ package com.niyaj.ui.parameterProvider
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.niyaj.common.utils.getStartDateLong
+import com.niyaj.model.CartProductItem
 import com.niyaj.model.OrderType
 import com.niyaj.model.Product
 import com.niyaj.model.ProductWiseOrder
@@ -211,6 +212,26 @@ object ProductPreviewData {
             updatedAt = null,
         ),
     )
+
+    val emptyProductQtyList = productList.map {
+        ProductWithQuantity(
+            categoryId = it.categoryId,
+            productId = it.productId,
+            productName = it.productName,
+            productPrice = it.productPrice,
+            tags = it.tags,
+            quantity = 0,
+        )
+    }
+
+    val cartProducts = emptyProductQtyList.map {
+        CartProductItem(
+            productId = it.productId,
+            productName = it.productName,
+            productPrice = it.productPrice,
+            productQuantity = it.quantity,
+        )
+    }
 
     val productWithQuantityList = listOf(
         ProductWithQuantity(

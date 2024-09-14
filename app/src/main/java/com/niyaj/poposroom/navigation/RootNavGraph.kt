@@ -30,8 +30,8 @@ import com.niyaj.employee.EmployeeNavGraph
 import com.niyaj.employeeAbsent.EmployeeabsentNavGraph
 import com.niyaj.employeePayment.EmployeepaymentNavGraph
 import com.niyaj.expenses.ExpensesNavGraph
+import com.niyaj.feature.HomeNavGraph
 import com.niyaj.feature.reports.ReportsNavGraph
-import com.niyaj.home.HomeNavGraph
 import com.niyaj.market.DailymarketNavGraph
 import com.niyaj.order.OrderNavGraph
 import com.niyaj.printerInfo.PrinterinfoNavGraph

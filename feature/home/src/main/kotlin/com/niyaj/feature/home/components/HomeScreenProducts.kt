@@ -15,7 +15,7 @@
  *
  */
 
-package com.niyaj.home.components
+package com.niyaj.feature.home.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
