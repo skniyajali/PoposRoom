@@ -15,7 +15,7 @@
  *
  */
 
-package com.niyaj.home
+package com.niyaj.feature.home
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -64,7 +64,7 @@ import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceMedium
 import com.niyaj.designsystem.theme.SpaceSmall
-import com.niyaj.home.components.HomeScreenProducts
+import com.niyaj.feature.home.components.HomeScreenProducts
 import com.niyaj.model.Category
 import com.niyaj.model.ProductWithQuantity
 import com.niyaj.ui.components.HomeScreenScaffold
@@ -76,6 +76,7 @@ import com.niyaj.ui.components.StandardFABIcon
 import com.niyaj.ui.components.StandardSearchBar
 import com.niyaj.ui.components.TwoColumnLazyRowList
 import com.niyaj.ui.event.UiState
+import com.niyaj.ui.event.UiState.Success
 import com.niyaj.ui.parameterProvider.CategoryPreviewData
 import com.niyaj.ui.parameterProvider.ProductWithQuantityStatePreviewParameter
 import com.niyaj.ui.utils.DevicePreviews
@@ -260,7 +261,7 @@ fun HomeScreenContent(
 ) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val showSearchIcon = productState is UiState.Success
+    val showSearchIcon = productState is Success
     val animatedColor by animateColorAsState(
         targetValue = if (selectedId != "0") {
             MaterialTheme.colorScheme.tertiaryContainer
@@ -399,7 +400,7 @@ fun HomeScreenContent(
 
                         is UiState.Loading -> LoadingIndicator()
 
-                        is UiState.Success -> {
+                        is Success -> {
                             HomeScreenProducts(
                                 products = productState.data,
                                 onIncrease = onIncreaseQuantity,
@@ -452,7 +453,7 @@ private fun HomeScreenContentPreview(
     PoposRoomTheme {
         HomeScreenContent(
             productState = productState,
-            categoryState = UiState.Success(categoryList),
+            categoryState = Success(categoryList),
             selectedCategory = 0,
             selectedId = "0",
             showSearchBar = false,

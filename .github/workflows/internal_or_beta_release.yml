@@ -134,6 +134,7 @@ jobs:
             ./app/build/outputs/version_code.txt
 
       - name: ☁️ Upload APKs on Slack
+        if: github.event.inputs.release_type == 'beta'
         uses: MeilCli/slack-upload-file@v4
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
@@ -166,7 +167,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           VERSION_CODE: ${{ steps.rel_number.outputs.version-code }}
-        run: ./gradlew appDistributionUploadFullRelease --no-configuration-cache
+        run: ./gradlew appDistributionUploadProdRelease --no-configuration-cache
 
       - name: 🤖 Prepare Amazon Listing
         if: github.event.inputs.release_type == 'beta' && github.event.inputs.amazon == 'true'

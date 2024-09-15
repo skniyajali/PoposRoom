@@ -93,7 +93,9 @@ class TestCartOrderRepository : CartOrderRepository {
         }
     }
 
-    override suspend fun getCartOrderById(orderId: Int): Resource<CartOrderWithAddOnAndCharges?> {
+    override suspend fun getCartOrderById(
+        orderId: Int,
+    ): Resource<CartOrderWithAddOnAndCharges?> {
         return items.value.find { it.orderId == orderId }?.let {
             Resource.Success(
                 CartOrderWithAddOnAndCharges(
@@ -117,7 +119,9 @@ class TestCartOrderRepository : CartOrderRepository {
         return customer.updateAndGet { newCustomer }.customerId
     }
 
-    override suspend fun createOrUpdateCartOrder(newCartOrder: CartOrderWithAddOnAndCharges): Resource<Boolean> {
+    override suspend fun createOrUpdateCartOrder(
+        newCartOrder: CartOrderWithAddOnAndCharges,
+    ): Resource<Boolean> {
         val cartOrder = newCartOrder.cartOrder
         val newAddOns = newCartOrder.addOnItems
         val newCharges = newCartOrder.charges

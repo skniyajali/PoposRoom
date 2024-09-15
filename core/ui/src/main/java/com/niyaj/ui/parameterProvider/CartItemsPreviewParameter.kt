@@ -23,6 +23,7 @@ import com.niyaj.model.CartProductItem
 import com.niyaj.model.OrderType
 import com.niyaj.ui.parameterProvider.CartPreviewParameterData.dineInCartItems
 import com.niyaj.ui.parameterProvider.CartPreviewParameterData.dineOutCartItems
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.Clock
 
@@ -112,6 +113,26 @@ object CartPreviewParameterData {
 
     // Current timestamp in milliseconds
     val currentTimeMillis = Clock.System.now().toEpochMilliseconds()
+
+    val sampleDineInCart = CartItem(
+        orderId = 1,
+        orderType = OrderType.DineIn,
+        cartProducts = persistentListOf(),
+        addOnItems = persistentListOf(),
+        charges = persistentListOf(),
+        updatedAt = currentTimeMillis.toString(),
+        orderPrice = 0,
+    )
+
+    val sampleDineOutCart = CartItem(
+        orderId = 2,
+        orderType = OrderType.DineOut,
+        cartProducts = persistentListOf(),
+        addOnItems = persistentListOf(),
+        charges = persistentListOf(),
+        updatedAt = currentTimeMillis.toString(),
+        orderPrice = 0,
+    )
 
     // Sample list for DineIn orders
     val dineInCartItems = listOf(

@@ -46,10 +46,10 @@ import com.niyaj.employeeAbsent.destinations.AddEditAbsentScreenDestination
 import com.niyaj.employeePayment.PaymentScreen
 import com.niyaj.employeePayment.destinations.AddEditPaymentScreenDestination
 import com.niyaj.employeePayment.destinations.PaymentScreenDestination
+import com.niyaj.feature.home.HomeScreen
+import com.niyaj.feature.home.destinations.HomeScreenDestination
 import com.niyaj.feature.reports.ReportScreen
 import com.niyaj.feature.reports.destinations.ReportScreenDestination
-import com.niyaj.home.HomeScreen
-import com.niyaj.home.destinations.HomeScreenDestination
 import com.niyaj.order.OrderScreen
 import com.niyaj.order.destinations.OrderDetailsScreenDestination
 import com.niyaj.order.destinations.OrderScreenDestination
@@ -64,7 +64,6 @@ import com.ramcosta.composedestinations.animations.manualcomposablecalls.bottomS
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
 import com.ramcosta.composedestinations.navigation.dependency
-import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.scope.resultBackNavigator
 import com.ramcosta.composedestinations.scope.resultRecipient
 import com.ramcosta.composedestinations.spec.Route
