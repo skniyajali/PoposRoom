@@ -46,8 +46,8 @@ import com.niyaj.employeeAbsent.destinations.AddEditAbsentScreenDestination
 import com.niyaj.employeePayment.PaymentScreen
 import com.niyaj.employeePayment.destinations.AddEditPaymentScreenDestination
 import com.niyaj.employeePayment.destinations.PaymentScreenDestination
-import com.niyaj.feature.destinations.HomeScreenDestination
 import com.niyaj.feature.home.HomeScreen
+import com.niyaj.feature.home.destinations.HomeScreenDestination
 import com.niyaj.feature.reports.ReportScreen
 import com.niyaj.feature.reports.destinations.ReportScreenDestination
 import com.niyaj.order.OrderScreen

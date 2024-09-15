@@ -54,7 +54,7 @@ import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.core.analytics.LocalAnalyticsHelper
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
-import com.niyaj.feature.HomeNavGraph
+import com.niyaj.feature.home.HomeNavGraph
 import com.niyaj.model.DarkThemeConfig
 import com.niyaj.model.ThemeBrand
 import com.niyaj.poposroom.ui.PoposApp
