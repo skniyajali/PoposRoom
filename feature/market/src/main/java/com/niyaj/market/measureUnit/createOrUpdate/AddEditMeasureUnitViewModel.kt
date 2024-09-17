@@ -39,8 +39,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.VisibleForTesting
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,19 +51,23 @@ class AddEditMeasureUnitViewModel @Inject constructor(
     private val validateUnitName: ValidateUnitNameUseCase,
     private val validateUnitValue: ValidateUnitValueUseCase,
     private val analyticsHelper: AnalyticsHelper,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val unitId = savedStateHandle.get<Int>("unitId") ?: 0
+    private val unitId = savedStateHandle.getStateFlow("unitId", 0)
 
     var state by mutableStateOf(AddEditMeasureUnitState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
-    val eventFlow = _eventFlow.asSharedFlow()
+    val eventFlow = _eventFlow.shareIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        replay = 1,
+    )
 
     init {
         savedStateHandle.get<Int>("unitId")?.let {
-            getMeasureUnitById(it)
+            if (it != 0) getMeasureUnitById(it)
         }
 
         savedStateHandle.get<String>("unitName")?.let {
@@ -70,7 +76,7 @@ class AddEditMeasureUnitViewModel @Inject constructor(
     }
 
     val nameError = snapshotFlow { state.unitName }.mapLatest {
-        validateUnitName(it, unitId).errorMessage
+        validateUnitName(it, unitId.value).errorMessage
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     val valueError = snapshotFlow { state.unitValue }.mapLatest {
@@ -92,12 +98,12 @@ class AddEditMeasureUnitViewModel @Inject constructor(
             }
 
             is AddEditMeasureUnitEvent.SaveOrUpdateMeasureUnit -> {
-                saveOrUpdateMeasureUnit(unitId)
+                saveOrUpdateMeasureUnit(unitId.value)
             }
         }
     }
 
-    private fun saveOrUpdateMeasureUnit(unitId: Int) {
+    private fun saveOrUpdateMeasureUnit(unitId: Int)    {
         viewModelScope.launch {
             if (listOf(nameError, valueError).all { it.value == null }) {
                 val newUnit = MeasureUnit(
@@ -130,6 +136,11 @@ class AddEditMeasureUnitViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    @VisibleForTesting
+    internal fun setUnitId(unitId: Int) {
+        savedStateHandle["unitId"] = unitId
     }
 }
 
