@@ -40,8 +40,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.VisibleForTesting
 import javax.inject.Inject
 
 @HiltViewModel
@@ -51,15 +53,19 @@ class AddEditMarketTypeViewModel @Inject constructor(
     private val validateListType: ValidateListTypeUseCase,
     private val validateListTypes: ValidateListTypesUseCase,
     private val analyticsHelper: AnalyticsHelper,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val typeId = savedStateHandle.get<Int>("typeId") ?: 0
+    private val typeId = savedStateHandle.getStateFlow("typeId", 0)
 
     var state by mutableStateOf(AddEditMarketTypeState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
-    val eventFlow = _eventFlow.asSharedFlow()
+    val eventFlow = _eventFlow.shareIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        replay = 1,
+    )
 
     private val _listTypes = mutableStateListOf<String>()
     val listTypes: MutableList<String> = _listTypes
@@ -80,7 +86,7 @@ class AddEditMarketTypeViewModel @Inject constructor(
     }
 
     val typeNameError = snapshotFlow { state.typeName }.mapLatest {
-        validateTypeName(it, typeId).errorMessage
+        validateTypeName(it, typeId.value).errorMessage
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -140,7 +146,7 @@ class AddEditMarketTypeViewModel @Inject constructor(
             }
 
             is AddEditMarketTypeEvent.SaveMarketType -> {
-                createOrUpdateMarketType(typeId)
+                createOrUpdateMarketType(typeId.value)
             }
         }
     }
@@ -188,7 +194,7 @@ class AddEditMarketTypeViewModel @Inject constructor(
         viewModelScope.launch {
             repository.getMarketTypeById(typeId)?.let { result ->
                 state = state.copy(
-                    typeName = result.typeName.uppercase(),
+                    typeName = result.typeName,
                     typeDesc = result.typeDesc,
                     supplierId = result.supplierId,
                 )
@@ -206,6 +212,11 @@ class AddEditMarketTypeViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    @VisibleForTesting
+    internal fun setTypeId(id: Int) {
+        savedStateHandle["typeId"] = id
     }
 }
 
