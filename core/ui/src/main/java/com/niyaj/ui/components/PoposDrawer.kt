@@ -30,6 +30,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue.Closed
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,10 +40,11 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -72,16 +75,18 @@ fun PoposDrawer(
     currentRoute: String,
     onNavigateToScreen: (String) -> Unit,
     modifier: Modifier = Modifier,
+    drawerState: DrawerState = rememberDrawerState(initialValue = Closed),
 ) {
-    val expanded = remember { mutableStateOf(false) }
-    val settingsExpanded = remember { mutableStateOf(false) }
-    val employeeExpanded = remember { mutableStateOf(false) }
-    val customersExpanded = remember { mutableStateOf(false) }
-    val ordersExpanded = remember { mutableStateOf(false) }
-    val marketItemExpanded = remember { mutableStateOf(false) }
+    val expanded = rememberSaveable { mutableStateOf(false) }
+    val settingsExpanded = rememberSaveable { mutableStateOf(false) }
+    val employeeExpanded = rememberSaveable { mutableStateOf(false) }
+    val customersExpanded = rememberSaveable { mutableStateOf(false) }
+    val ordersExpanded = rememberSaveable { mutableStateOf(false) }
+    val marketItemExpanded = rememberSaveable { mutableStateOf(false) }
 
     ModalDrawerSheet(
         modifier = modifier,
+        drawerState = drawerState,
     ) {
         Column(
             modifier = Modifier.weight(0.3f),

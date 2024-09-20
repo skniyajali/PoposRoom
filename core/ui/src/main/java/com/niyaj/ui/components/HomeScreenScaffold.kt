@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue.Closed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +29,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
@@ -43,7 +45,6 @@ import com.niyaj.designsystem.components.PoposCenterAlignedTopAppBar
 @OptIn(ExperimentalMaterial3Api::class)
 fun HomeScreenScaffold(
     currentRoute: String,
-    drawerState: DrawerState,
     onNavigateToScreen: (String) -> Unit,
     title: @Composable () -> Unit,
     modifier: Modifier = Modifier,
@@ -51,6 +52,7 @@ fun HomeScreenScaffold(
     navActions: @Composable RowScope.() -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     fabPosition: FabPosition = FabPosition.End,
+    drawerState: DrawerState = rememberDrawerState(initialValue = Closed),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     content: @Composable (padding: PaddingValues) -> Unit = {},
 ) {
@@ -69,6 +71,7 @@ fun HomeScreenScaffold(
         drawerContent = {
             PoposDrawer(
                 modifier = Modifier.testTag("homeAppDrawer"),
+                drawerState = drawerState,
                 currentRoute = currentRoute,
                 onNavigateToScreen = onNavigateToScreen,
             )
