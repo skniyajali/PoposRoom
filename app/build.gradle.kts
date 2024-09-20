@@ -104,7 +104,7 @@ android {
 
     firebaseAppDistribution {
         serviceCredentialsFile = "app/firebaseAppDistributionServiceCredentialsFile.json"
-        releaseNotesFile = "./app/build/outputs/changelogBeta"
+        releaseNotesFile = "./app/build/outputs/changelogBeta.md"
         groups = "continuous-deployment"
     }
 
