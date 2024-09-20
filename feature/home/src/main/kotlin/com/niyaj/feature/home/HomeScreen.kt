@@ -32,7 +32,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue.Closed
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -112,6 +113,7 @@ fun HomeScreen(
     val lazyListState = rememberLazyListState()
     val lazyRowState = rememberLazyStaggeredGridState()
     val snackbarState = remember { SnackbarHostState() }
+    val drawerState = rememberDrawerState(initialValue = Closed)
 
     val productState by viewModel.productsWithQuantity.collectAsStateWithLifecycle()
     val categoriesState by viewModel.categories.collectAsStateWithLifecycle()
@@ -226,6 +228,7 @@ fun HomeScreen(
         showKonfetti = showKonfetti.value,
         hideKonfetti = { showKonfetti.value = false },
         modifier = modifier,
+        drawerState = drawerState,
         snackbarState = snackbarState,
         lazyRowState = lazyRowState,
         lazyListState = lazyListState,
@@ -256,12 +259,12 @@ fun HomeScreenContent(
     hideKonfetti: () -> Unit,
     modifier: Modifier = Modifier,
     currentRoute: String = Screens.HOME_SCREEN,
+    drawerState: DrawerState = rememberDrawerState(initialValue = Closed),
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     lazyRowState: LazyStaggeredGridState = rememberLazyStaggeredGridState(),
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     val scope = rememberCoroutineScope()
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val showSearchIcon = productState is Success
     val animatedColor by animateColorAsState(
         targetValue = if (selectedId != "0") {
