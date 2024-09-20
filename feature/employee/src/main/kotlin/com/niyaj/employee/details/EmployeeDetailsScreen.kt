@@ -141,7 +141,7 @@ fun EmployeeDetailsScreen(
             onEvent = viewModel::onEvent,
             onBackClick = navigator::navigateUp,
             onClickAddPayment = {
-                navigator.clearBackStack(Screens.EMPLOYEE_DETAILS_SCREEN)
+//                navigator.clearBackStack(Destination(Screens.EMPLOYEE_DETAILS_SCREEN))
                 onClickAddPayment(employeeId)
             },
             onClickAddAbsent = {

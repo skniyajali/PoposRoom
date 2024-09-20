@@ -63,6 +63,7 @@ import com.niyaj.ui.utils.Screens.MARKET_TYPE_SCREEN
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
 import com.niyaj.ui.utils.isScrolled
+import com.niyaj.ui.utils.navigate
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult

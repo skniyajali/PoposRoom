@@ -52,7 +52,6 @@ import com.niyaj.feature.account.register.utils.RegisterScreenPage
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.navigate
 
 private const val CONTENT_ANIMATION_DURATION = 300
 

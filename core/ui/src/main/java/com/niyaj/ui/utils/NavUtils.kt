@@ -23,6 +23,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navOptions
 import androidx.tracing.trace
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.spec.Direction
 
 @Composable
 fun NavController.currentRoute(defaultScreen: String = Screens.HOME_SCREEN) =
@@ -53,5 +55,11 @@ fun NavController.navigateToTopLevelDestination(topLevelRoute: String) {
         }
 
         this.navigate(topLevelRoute, topLevelNavOptions)
+    }
+}
+
+fun DestinationsNavigator.navigate(route: String) {
+    trace("Navigation: $route") {
+        this.navigate(Direction(route))
     }
 }
