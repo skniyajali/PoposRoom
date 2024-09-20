@@ -19,14 +19,13 @@ package com.niyaj.poposroom.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.navigation.ModalBottomSheetLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.plusAssign
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.niyaj.address.destinations.AddressDetailsScreenDestination
 import com.niyaj.address.details.AddressDetailsScreen
 import com.niyaj.cart.CartScreen
@@ -77,7 +76,6 @@ import com.ramcosta.composedestinations.spec.Route
  */
 @OptIn(
     ExperimentalComposeUiApi::class,
-    ExperimentalMaterialNavigationApi::class,
     ExperimentalAnimationApi::class,
 )
 @Composable

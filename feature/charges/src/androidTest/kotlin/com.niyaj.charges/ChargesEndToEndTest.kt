@@ -41,7 +41,6 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.test.espresso.Espresso
 import androidx.test.filters.SmallTest
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.niyaj.common.tags.ChargesTestTags.ADD_EDIT_CHARGES_BTN
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_AMOUNT_ERROR_TAG
 import com.niyaj.common.tags.ChargesTestTags.CHARGES_AMOUNT_FIELD
@@ -140,7 +139,6 @@ class ChargesEndToEndTest {
         isApplicable = true,
     )
 
-    @OptIn(ExperimentalMaterialNavigationApi::class)
     @Before
     fun setup() {
         hiltRule.inject()

@@ -43,7 +43,6 @@ import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.swipeUp
 import androidx.test.espresso.Espresso
 import androidx.test.filters.SmallTest
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.niyaj.common.tags.ExpenseTestTags.ADD_EDIT_EXPENSE_BUTTON
 import com.niyaj.common.tags.ExpenseTestTags.CREATE_NEW_EXPENSE
 import com.niyaj.common.tags.ExpenseTestTags.DELETE_EXPENSE_MESSAGE
@@ -150,7 +149,6 @@ class ExpensesEndToEndTest {
         expenseNote = "Updated Note",
     )
 
-    @OptIn(ExperimentalMaterialNavigationApi::class)
     @Before
     fun setup() {
         hiltRule.inject()

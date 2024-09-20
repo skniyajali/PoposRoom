@@ -40,7 +40,6 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.test.espresso.Espresso
 import androidx.test.filters.SmallTest
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.niyaj.common.tags.AddressTestTags.ADDRESS_FULL_NAME_ERROR
 import com.niyaj.common.tags.AddressTestTags.ADDRESS_FULL_NAME_FIELD
 import com.niyaj.common.tags.AddressTestTags.ADDRESS_ITEM_TAG
@@ -135,7 +134,6 @@ class AddressEndToEndTest {
         shortName = "UA",
     )
 
-    @OptIn(ExperimentalMaterialNavigationApi::class)
     @Before
     fun setup() {
         hiltRule.inject()

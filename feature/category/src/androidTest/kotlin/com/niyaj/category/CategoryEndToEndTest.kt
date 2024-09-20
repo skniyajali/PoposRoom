@@ -42,7 +42,6 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.test.espresso.Espresso
 import androidx.test.filters.SmallTest
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.niyaj.common.tags.CategoryConstants.ADD_EDIT_CATEGORY_BTN
 import com.niyaj.common.tags.CategoryConstants.CATEGORY_AVAILABLE_SWITCH
 import com.niyaj.common.tags.CategoryConstants.CATEGORY_ITEM_TAG
@@ -133,7 +132,6 @@ class CategoryEndToEndTest {
         isAvailable = true,
     )
 
-    @OptIn(ExperimentalMaterialNavigationApi::class)
     @Before
     fun setup() {
         hiltRule.inject()

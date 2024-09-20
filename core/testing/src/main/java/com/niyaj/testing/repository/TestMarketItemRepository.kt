@@ -23,8 +23,8 @@ import com.niyaj.model.MarketItem
 import com.niyaj.model.MarketType
 import com.niyaj.model.MarketTypeIdAndName
 import com.niyaj.model.MeasureUnit
+import com.niyaj.model.searchItems
 import com.niyaj.model.searchMarketItems
-import com.niyaj.model.searchMarketType
 import com.niyaj.model.searchMeasureUnit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,6 +40,7 @@ class TestMarketItemRepository : MarketItemRepository {
     private val items = MutableStateFlow(mutableListOf<MarketItem>())
     private val measureUnits = MutableStateFlow(mutableListOf<MeasureUnit>())
     private val marketTypes = MutableStateFlow(mutableListOf<MarketType>())
+    private val marketTypesAndId = MutableStateFlow(mutableListOf<MarketTypeIdAndName>())
 
     override suspend fun getAllMarketItems(searchText: String): Flow<List<MarketItem>> {
         return items.mapLatest { it.searchMarketItems(searchText) }
@@ -69,9 +70,8 @@ class TestMarketItemRepository : MarketItemRepository {
     }
 
     override suspend fun getAllItemType(searchText: String): Flow<List<MarketTypeIdAndName>> {
-        return marketTypes.mapLatest { list ->
-            list.searchMarketType(searchText)
-                .map { MarketTypeIdAndName(it.typeId, it.typeName) }
+        return marketTypesAndId.mapLatest {
+            it.searchItems(searchText)
         }
     }
 
@@ -122,6 +122,11 @@ class TestMarketItemRepository : MarketItemRepository {
     @TestOnly
     fun updateMarketTypeData(items: List<MarketType>) {
         marketTypes.update { items.toMutableList() }
+    }
+
+    @TestOnly
+    fun updateMarketTypeAndIdData(items: List<MarketTypeIdAndName>) {
+        marketTypesAndId.update { items.toMutableList() }
     }
 
     @TestOnly

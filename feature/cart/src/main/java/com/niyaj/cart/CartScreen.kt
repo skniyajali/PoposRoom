@@ -35,6 +35,7 @@ import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.ui.components.StandardScaffoldWithOutDrawer
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
+import com.niyaj.ui.utils.navigate
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
