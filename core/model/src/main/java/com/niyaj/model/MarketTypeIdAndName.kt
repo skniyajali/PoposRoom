@@ -25,3 +25,11 @@ data class MarketTypeIdAndName(
 
     val typeName: String = "",
 )
+
+fun List<MarketTypeIdAndName>.searchItems(searchText: String): List<MarketTypeIdAndName> {
+    return if (searchText.isNotEmpty()) {
+        this.filter {
+            it.typeName.contains(searchText, true)
+        }
+    }else this
+}

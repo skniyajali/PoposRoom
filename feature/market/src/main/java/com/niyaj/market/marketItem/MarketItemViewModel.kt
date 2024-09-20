@@ -21,6 +21,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import com.niyaj.common.result.Resource
 import com.niyaj.core.analytics.AnalyticsEvent
+import com.niyaj.core.analytics.AnalyticsEvent.Param
 import com.niyaj.core.analytics.AnalyticsHelper
 import com.niyaj.data.repository.MarketItemRepository
 import com.niyaj.ui.event.BaseViewModel
@@ -89,12 +90,7 @@ private fun AnalyticsHelper.logDeletedMarketItems(data: List<Int>) {
     logEvent(
         event = AnalyticsEvent(
             type = "market_item_deleted",
-            extras = listOf(
-                com.niyaj.core.analytics.AnalyticsEvent.Param(
-                    "market_item_deleted",
-                    data.toString(),
-                ),
-            ),
+            extras = listOf(Param("market_item_deleted", data.toString())),
         ),
     )
 }

@@ -40,11 +40,12 @@ import com.niyaj.ui.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.VisibleForTesting
 import javax.inject.Inject
 
 @HiltViewModel
@@ -55,15 +56,19 @@ class AddEditMarketItemViewModel @Inject constructor(
     private val validateItemType: ValidateItemTypeUseCase,
     private val validateMeasureUnit: ValidateMeasureUnitUseCase,
     private val analyticsHelper: AnalyticsHelper,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val itemId = savedStateHandle.get<Int>("itemId") ?: 0
+    private val itemId = savedStateHandle.getStateFlow("itemId", 0)
 
     var state by mutableStateOf(AddEditMarketItemState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
-    val eventFlow = _eventFlow.asSharedFlow()
+    val eventFlow = _eventFlow.shareIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        replay = 1
+    )
 
     init {
         savedStateHandle.get<Int>("itemId")?.let {
@@ -96,7 +101,7 @@ class AddEditMarketItemViewModel @Inject constructor(
     )
 
     val nameError = snapshotFlow { state.itemName }.mapLatest {
-        validateItemName(it, itemId).errorMessage
+        validateItemName(it, itemId.value).errorMessage
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
@@ -148,7 +153,7 @@ class AddEditMarketItemViewModel @Inject constructor(
             }
 
             is AddEditMarketItemEvent.AddOrUpdateItem -> {
-                createOrUpdateItem(itemId)
+                createOrUpdateItem(itemId.value)
             }
         }
     }
@@ -201,6 +206,11 @@ class AddEditMarketItemViewModel @Inject constructor(
                 state = AddEditMarketItemState()
             }
         }
+    }
+
+    @VisibleForTesting
+    internal fun setItemId(id: Int) {
+        savedStateHandle["itemId"] = id
     }
 }
 
