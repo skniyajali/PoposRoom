@@ -42,7 +42,6 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
 import androidx.test.espresso.Espresso
 import androidx.test.filters.SmallTest
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.niyaj.common.tags.EmployeeTestTags.ADD_EDIT_EMPLOYEE_BTN
 import com.niyaj.common.tags.EmployeeTestTags.CREATE_NEW_EMPLOYEE
 import com.niyaj.common.tags.EmployeeTestTags.DELETE_EMPLOYEE_MESSAGE
@@ -170,7 +169,6 @@ class EmployeeEndToEndTest {
         isDeliveryPartner = true,
     )
 
-    @OptIn(ExperimentalMaterialNavigationApi::class)
     @Before
     fun setup() {
         hiltRule.inject()

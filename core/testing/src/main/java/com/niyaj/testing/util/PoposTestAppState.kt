@@ -17,18 +17,16 @@
 
 package com.niyaj.testing.util
 
+import androidx.compose.material.navigation.BottomSheetNavigator
+import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.navigation.material.BottomSheetNavigator
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import kotlinx.coroutines.CoroutineScope
 
-@OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
 fun rememberPoposTestAppState(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
@@ -49,7 +47,6 @@ fun rememberPoposTestAppState(
 }
 
 @Stable
-@OptIn(ExperimentalMaterialNavigationApi::class)
 class PoposTestAppState(
     val navController: NavHostController,
     val bottomSheetNavigator: BottomSheetNavigator,

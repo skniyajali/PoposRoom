@@ -40,7 +40,6 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
 import androidx.test.espresso.Espresso
 import androidx.test.filters.SmallTest
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.niyaj.common.tags.CustomerTestTags.ADD_EDIT_CUSTOMER_BTN
 import com.niyaj.common.tags.CustomerTestTags.CREATE_NEW_CUSTOMER
 import com.niyaj.common.tags.CustomerTestTags.CUSTOMER_DETAILS_CARD
@@ -147,7 +146,6 @@ class CustomerEndToEndTest {
         customerEmail = "updated@gmail.com",
     )
 
-    @OptIn(ExperimentalMaterialNavigationApi::class)
     @Before
     fun setup() {
         hiltRule.inject()

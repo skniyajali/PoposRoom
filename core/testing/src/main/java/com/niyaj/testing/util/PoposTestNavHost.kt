@@ -19,12 +19,11 @@ package com.niyaj.testing.util
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.navigation.ModalBottomSheetLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.plusAssign
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultAnimations
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
@@ -41,7 +40,6 @@ import com.ramcosta.composedestinations.spec.NavGraphSpec
  *  @param navGraphSpec
  */
 @OptIn(
-    ExperimentalMaterialNavigationApi::class,
     ExperimentalAnimationApi::class,
 )
 @Composable
