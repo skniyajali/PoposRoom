@@ -35,6 +35,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -295,7 +296,7 @@ internal fun TotalDeliveryReportCard(
                                         // This is used to assign to the DropDown the same width
                                         textFieldSize = coordinates.size.toSize()
                                     }
-                                    .menuAnchor(),
+                                    .menuAnchor(MenuAnchorType.PrimaryEditable),
                             )
 
                             DropdownMenu(

@@ -118,7 +118,7 @@ fun PoposNavHost(
                     CartOrderScreen(
                         navigator = destinationsNavigator,
                         onClickOrderDetails = {
-                            navController.navigate(OrderDetailsScreenDestination(it))
+                            destinationsNavigator.navigate(OrderDetailsScreenDestination(it))
                         },
                         resultRecipient = resultRecipient(),
                     )
@@ -128,10 +128,10 @@ fun PoposNavHost(
                     CartScreen(
                         navigator = destinationsNavigator,
                         onClickEditOrder = {
-                            navController.navigate(AddEditCartOrderScreenDestination(it))
+                            destinationsNavigator.navigate(AddEditCartOrderScreenDestination(it))
                         },
                         onClickOrderDetails = {
-                            navController.navigate(OrderDetailsScreenDestination(it))
+                            destinationsNavigator.navigate(OrderDetailsScreenDestination(it))
                         },
                     )
                 }
@@ -140,7 +140,7 @@ fun PoposNavHost(
                     OrderScreen(
                         navigator = destinationsNavigator,
                         onClickEditOrder = {
-                            navController.navigate(AddEditCartOrderScreenDestination(it))
+                            destinationsNavigator.navigate(AddEditCartOrderScreenDestination(it))
                         },
                     )
                 }
@@ -149,7 +149,7 @@ fun PoposNavHost(
                     SelectOrderScreen(
                         navigator = destinationsNavigator,
                         onEditClick = {
-                            navController.navigate(AddEditCartOrderScreenDestination(it))
+                            destinationsNavigator.navigate(AddEditCartOrderScreenDestination(it))
                         },
                         resultBackNavigator = resultBackNavigator(),
                     )
@@ -160,10 +160,10 @@ fun PoposNavHost(
                         employeeId = navBackStackEntry.arguments?.getInt("employeeId") ?: 0,
                         navigator = destinationsNavigator,
                         onClickAddPayment = {
-                            navController.navigate(AddEditPaymentScreenDestination(employeeId = it))
+                            destinationsNavigator.navigate(AddEditPaymentScreenDestination(employeeId = it))
                         },
                         onClickAddAbsent = {
-                            navController.navigate(AddEditAbsentScreenDestination(employeeId = it))
+                            destinationsNavigator.navigate(AddEditAbsentScreenDestination(employeeId = it))
                         },
                         paymentRecipient = resultRecipient<AddEditPaymentScreenDestination, String>(),
                         absentRecipient = resultRecipient<AddEditAbsentScreenDestination, String>(),
@@ -176,7 +176,7 @@ fun PoposNavHost(
                         employeeId = navBackStackEntry.arguments?.getInt("employeeId") ?: 0,
                         navigator = this.destinationsNavigator,
                         onClickAddEmployee = {
-                            navController.navigate(AddEditEmployeeScreenDestination())
+                            destinationsNavigator.navigate(AddEditEmployeeScreenDestination())
                         },
                         resultBackNavigator = resultBackNavigator(),
                     )
@@ -187,7 +187,7 @@ fun PoposNavHost(
                         addressId = navBackStackEntry.arguments?.getInt("addressId") ?: 0,
                         navigator = destinationsNavigator,
                         onClickOrder = {
-                            navController.navigate(OrderDetailsScreenDestination(it))
+                            destinationsNavigator.navigate(OrderDetailsScreenDestination(it))
                         },
                     )
                 }
@@ -197,7 +197,7 @@ fun PoposNavHost(
                         customerId = navBackStackEntry.arguments?.getInt("customerId") ?: 0,
                         navigator = destinationsNavigator,
                         onClickOrder = {
-                            navController.navigate(OrderDetailsScreenDestination(it))
+                            destinationsNavigator.navigate(OrderDetailsScreenDestination(it))
                         },
                     )
                 }
@@ -207,7 +207,7 @@ fun PoposNavHost(
                         productId = navBackStackEntry.arguments?.getInt("productId") ?: 0,
                         navigator = destinationsNavigator,
                         onClickOrder = {
-                            navController.navigate(OrderDetailsScreenDestination(it))
+                            destinationsNavigator.navigate(OrderDetailsScreenDestination(it))
                         },
                     )
                 }
@@ -216,13 +216,13 @@ fun PoposNavHost(
                     ReportScreen(
                         navigator = destinationsNavigator,
                         onClickAddress = {
-                            navController.navigate(AddressDetailsScreenDestination(it))
+                            destinationsNavigator.navigate(AddressDetailsScreenDestination(it))
                         },
                         onClickCustomer = {
-                            navController.navigate(CustomerDetailsScreenDestination(it))
+                            destinationsNavigator.navigate(CustomerDetailsScreenDestination(it))
                         },
                         onClickProduct = {
-                            navController.navigate(ProductDetailsScreenDestination(it))
+                            destinationsNavigator.navigate(ProductDetailsScreenDestination(it))
                         },
                     )
                 }
@@ -231,7 +231,7 @@ fun PoposNavHost(
                     PaymentScreen(
                         navigator = destinationsNavigator,
                         onClickEmployee = {
-                            navController.navigate(EmployeeDetailsScreenDestination(it))
+                            destinationsNavigator.navigate(EmployeeDetailsScreenDestination(it))
                         },
                         resultRecipient = resultRecipient(),
                         exportRecipient = resultRecipient(),
@@ -244,10 +244,10 @@ fun PoposNavHost(
                         orderId = navBackStackEntry.arguments?.getInt("orderId") ?: 0,
                         navigator = destinationsNavigator,
                         onClickCustomer = {
-                            navController.navigate(CustomerDetailsScreenDestination(it))
+                            destinationsNavigator.navigate(CustomerDetailsScreenDestination(it))
                         },
                         onClickAddress = {
-                            navController.navigate(AddressDetailsScreenDestination(it))
+                            destinationsNavigator.navigate(AddressDetailsScreenDestination(it))
                         },
                     )
                 }

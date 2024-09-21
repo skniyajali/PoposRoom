@@ -44,8 +44,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.niyaj.core.ui.R.drawable
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.components.PoposOutlinedButton
@@ -58,13 +56,15 @@ import com.niyaj.ui.components.NoteCard
 import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Presets
 import com.niyaj.ui.utils.Screens
+import com.niyaj.ui.utils.navigate
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.dionsegijn.konfetti.compose.KonfettiView
 
 @Composable
 @Destination
 fun RegistrationResultScreen(
-    navController: NavController,
+    navController: DestinationsNavigator,
     result: RegistrationResult,
     message: String,
     modifier: Modifier = Modifier,
@@ -153,11 +153,7 @@ fun RegistrationResultScreen(
                             PoposButton(
                                 text = stringResource(id = R.string.done),
                                 onClick = {
-                                    navController.navigate(Screens.HOME_SCREEN) {
-                                        popUpTo(navController.graph.id) {
-                                            inclusive = true
-                                        }
-                                    }
+                                    navController.navigate(Screens.HOME_SCREEN)
                                 },
                                 icon = PoposIcons.Done,
                                 modifier = Modifier
@@ -230,20 +226,20 @@ enum class RegistrationResult {
     Failure,
 }
 
-@DevicePreviews
-@Composable
-private fun RegistrationResultScreenPreview(
-    modifier: Modifier = Modifier,
-) {
-    PoposRoomTheme {
-        RegistrationResultScreen(
-            navController = rememberNavController(),
-            result = RegistrationResult.Success,
-            message = "This is a message",
-            modifier = modifier,
-        )
-    }
-}
+// @DevicePreviews
+// @Composable
+// private fun RegistrationResultScreenPreview(
+//    modifier: Modifier = Modifier,
+// ) {
+//    PoposRoomTheme {
+//        RegistrationResultScreen(
+//            navController = rememberNavController(),
+//            result = RegistrationResult.Success,
+//            message = "This is a message",
+//            modifier = modifier,
+//        )
+//    }
+// }
 
 @DevicePreviews
 @Composable

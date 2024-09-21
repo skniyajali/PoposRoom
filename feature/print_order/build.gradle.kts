@@ -18,7 +18,6 @@
 plugins {
     alias(libs.plugins.popos.android.feature)
     alias(libs.plugins.popos.android.library.compose)
-    alias(libs.plugins.popos.android.library.jacoco)
 }
 
 android {
@@ -35,8 +34,4 @@ dependencies {
     api(projects.feature.printer)
 
     implementation(libs.pos.printer)
-
-    //RaamCosta Library
-    implementation(libs.raamcosta.animation.core)
-    ksp(libs.raamcosta.ksp)
 }

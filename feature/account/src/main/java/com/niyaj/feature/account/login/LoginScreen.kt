@@ -53,7 +53,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.niyaj.designsystem.components.PoposButton
 import com.niyaj.designsystem.components.PoposTextButton
 import com.niyaj.designsystem.icon.PoposIcons
@@ -71,20 +70,22 @@ import com.niyaj.ui.utils.DevicePreviews
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.TrackScreenViewEvent
 import com.niyaj.ui.utils.UiEvent
+import com.niyaj.ui.utils.navigate
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 /**
  * A Composable function representing the login screen.
  * @author Sk Niyaj Ali
- * @param navController The NavController used for navigation within the app.
+ * @param navigator The NavController used for navigation within the app.
  * @param viewModel The LoginViewModel used for managing the login screen's state and logic.
  */
 @RootNavGraph(start = true)
 @Destination(route = Screens.LOGIN_SCREEN)
 @Composable
 fun LoginScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
@@ -104,14 +105,7 @@ fun LoginScreen(
 
     LaunchedEffect(key1 = checkLoggedIn, key2 = Unit) {
         if (checkLoggedIn) {
-            navController.navigate(Screens.HOME_SCREEN) {
-                popUpTo(navController.graph.id) {
-                    inclusive = true
-                }
-                launchSingleTop = true
-                // Restore state when reselecting a previously selected item
-                restoreState = true
-            }
+            navigator.navigate(Screens.HOME_SCREEN)
         }
     }
 
@@ -119,14 +113,7 @@ fun LoginScreen(
         event?.let { result ->
             when (result) {
                 is UiEvent.OnSuccess -> {
-                    navController.navigate(Screens.HOME_SCREEN) {
-                        popUpTo(navController.graph.id) {
-                            inclusive = true
-                        }
-                        launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
-                        restoreState = true
-                    }
+                    navigator.navigate(Screens.HOME_SCREEN)
                 }
 
                 is UiEvent.OnError -> {
@@ -186,7 +173,7 @@ fun LoginScreen(
                     viewModel.onEvent(LoginEvent.OnClickLogin)
                 },
                 onClickRegister = {
-                    navController.navigate(RegisterScreenDestination())
+                    navigator.navigate(RegisterScreenDestination())
                 },
                 modifier = Modifier
                     .fillMaxSize()

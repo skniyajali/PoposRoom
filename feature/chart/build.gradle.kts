@@ -18,7 +18,6 @@
 plugins {
     alias(libs.plugins.popos.android.feature)
     alias(libs.plugins.popos.android.library.compose)
-    alias(libs.plugins.popos.android.library.jacoco)
 }
 
 android {
@@ -26,10 +25,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-
-    testImplementation(projects.core.testing)
-    androidTestImplementation(projects.core.testing)
 }
