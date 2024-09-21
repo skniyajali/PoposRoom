@@ -226,11 +226,11 @@ enum class RegistrationResult {
     Failure,
 }
 
-//@DevicePreviews
-//@Composable
-//private fun RegistrationResultScreenPreview(
+// @DevicePreviews
+// @Composable
+// private fun RegistrationResultScreenPreview(
 //    modifier: Modifier = Modifier,
-//) {
+// ) {
 //    PoposRoomTheme {
 //        RegistrationResultScreen(
 //            navController = rememberNavController(),
@@ -239,7 +239,7 @@ enum class RegistrationResult {
 //            modifier = modifier,
 //        )
 //    }
-//}
+// }
 
 @DevicePreviews
 @Composable
