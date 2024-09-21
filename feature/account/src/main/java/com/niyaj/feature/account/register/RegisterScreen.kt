@@ -38,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.niyaj.feature.account.destinations.RegistrationResultScreenDestination
@@ -52,6 +51,7 @@ import com.niyaj.feature.account.register.utils.RegisterScreenPage
 import com.niyaj.ui.utils.Screens
 import com.niyaj.ui.utils.UiEvent
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 private const val CONTENT_ANIMATION_DURATION = 300
 
@@ -60,7 +60,7 @@ private const val CONTENT_ANIMATION_DURATION = 300
 @Composable
 @Suppress("LongMethod")
 fun RegisterScreen(
-    navController: NavController,
+    navController: DestinationsNavigator,
     modifier: Modifier = Modifier,
     viewModel: RegisterViewModel = hiltViewModel(),
 ) {

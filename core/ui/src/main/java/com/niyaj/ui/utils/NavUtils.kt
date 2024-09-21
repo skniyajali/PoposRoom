@@ -20,6 +20,7 @@ package com.niyaj.ui.utils
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navOptions
 import androidx.tracing.trace
@@ -58,8 +59,8 @@ fun NavController.navigateToTopLevelDestination(topLevelRoute: String) {
     }
 }
 
-fun DestinationsNavigator.navigate(route: String) {
+fun DestinationsNavigator.navigate(route: String, navOptions: NavOptions? = null) {
     trace("Navigation: $route") {
-        this.navigate(Direction(route))
+        this.navigate(Direction(route), navOptions)
     }
 }

@@ -18,8 +18,6 @@
 plugins {
     alias(libs.plugins.popos.android.feature)
     alias(libs.plugins.popos.android.library.compose)
-    alias(libs.plugins.popos.android.library.jacoco)
-    alias(libs.plugins.roborazzi)
 }
 
 android {

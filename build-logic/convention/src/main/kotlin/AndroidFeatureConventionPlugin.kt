@@ -15,6 +15,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 apply("popos.hilt")
                 apply("popos.android.library.jacoco")
                 apply("io.github.takahirom.roborazzi")
+                apply("org.jetbrains.kotlin.plugin.serialization")
             }
 
             extensions.configure<LibraryExtension> {
@@ -42,6 +43,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 add("implementation", libs.findLibrary("androidx.lifecycle.viewModelCompose").get())
                 add("implementation", libs.findLibrary("androidx.tracing.ktx").get())
                 add("implementation", libs.findLibrary("kotlinx.coroutines.android").get())
+                add("implementation", libs.findLibrary("kotlinx.serialization.json").get())
 
                 add("testImplementation", kotlin("test"))
                 add("testImplementation", libs.findLibrary("hilt.android.testing").get())

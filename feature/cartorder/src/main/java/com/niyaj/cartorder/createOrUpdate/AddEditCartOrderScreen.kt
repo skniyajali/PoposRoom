@@ -43,6 +43,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -302,7 +303,7 @@ internal fun AddEditCartOrderScreenContent(
                                     // This is used to assign to the DropDown the same width
                                     textFieldSize = coordinates.size.toSize()
                                 }
-                                .menuAnchor(),
+                                .menuAnchor(MenuAnchorType.PrimaryEditable),
                             isError = addressError != null,
                             errorText = addressError,
                             trailingIcon = {
@@ -403,7 +404,7 @@ internal fun AddEditCartOrderScreenContent(
                                     // This is used to assign to the DropDown the same width
                                     textFieldSize = coordinates.size.toSize()
                                 }
-                                .menuAnchor(),
+                                .menuAnchor(MenuAnchorType.PrimaryEditable),
                             isError = customerError != null,
                             errorText = customerError,
                             trailingIcon = {

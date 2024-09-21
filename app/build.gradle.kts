@@ -33,6 +33,7 @@ plugins {
     alias(libs.plugins.compiler.report)
     alias(libs.plugins.gms)
     alias(libs.plugins.firebase.appdistribution)
+    alias(libs.plugins.kotlin.serialization)
     id("com.google.android.gms.oss-licenses-plugin")
 }
 

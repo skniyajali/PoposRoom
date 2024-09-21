@@ -18,8 +18,6 @@
 plugins {
     alias(libs.plugins.popos.android.feature)
     alias(libs.plugins.popos.android.library.compose)
-    alias(libs.plugins.popos.android.library.jacoco)
-    alias(libs.plugins.roborazzi)
 }
 
 android {
@@ -37,16 +35,4 @@ dependencies {
 
     implementation(libs.accompanist.permissions)
     implementation(libs.pos.printer)
-
-    //RaamCosta Library
-    implementation(libs.raamcosta.animation.core)
-    ksp(libs.raamcosta.ksp)
-
-    testImplementation(libs.hilt.android.testing)
-    testImplementation(libs.robolectric)
-    testImplementation(projects.core.testing)
-    testImplementation(projects.core.screenshotTesting)
-    testDemoImplementation(libs.roborazzi)
-
-    androidTestImplementation(projects.core.testing)
 }

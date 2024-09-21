@@ -42,6 +42,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -303,7 +304,7 @@ internal fun AddEditEmployeeScreenContent(
                                 // This is used to assign to the DropDown the same width
                                 textFieldSize = coordinates.size.toSize()
                             }
-                            .menuAnchor(),
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable),
                         isError = positionError != null,
                         errorText = positionError,
                         trailingIcon = {
