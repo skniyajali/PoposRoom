@@ -63,6 +63,8 @@ object ProductTestTags {
 
     const val PRODUCT_TAG = "Product-"
     const val PRODUCT_LIST = "ProductList"
+    const val CATEGORY_LIST = "CategoryList"
+    const val CATEGORY_TAG = "Category-"
 
     const val PRODUCT_SETTINGS_TITLE = "Product Settings"
 

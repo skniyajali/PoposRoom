@@ -255,7 +255,7 @@ fun NoteText(
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = text,
+            contentDescription = icon.name,
             tint = color,
             modifier = Modifier.size(SpaceMedium),
         )

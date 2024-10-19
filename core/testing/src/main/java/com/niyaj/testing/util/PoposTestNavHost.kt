@@ -31,6 +31,8 @@ import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCa
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.OpenResultRecipient
+import com.ramcosta.composedestinations.result.ResultRecipient
+import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 
 /**
@@ -80,4 +82,12 @@ class EmptyOpenResultRecipient<R> : OpenResultRecipient<R> {
     @SuppressLint("ComposableNaming")
     @Composable
     override fun onNavResult(listener: (NavResult<R>) -> Unit) = Unit
+}
+
+class OpenResultRecipient<R : DestinationSpec<*>, D> : ResultRecipient<R, D> {
+    @Composable
+    override fun onNavResult(listener: (NavResult<D>) -> Unit) = Unit
+
+    @Composable
+    override fun onResult(listener: (D) -> Unit) = Unit
 }

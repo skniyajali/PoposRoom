@@ -568,47 +568,35 @@ val Long.toTimeSpan
     get() = DateUtils.getRelativeTimeSpanString(this).toString()
 
 fun createDottedString(name: String, limit: Int): String {
-    if (name.length > limit) {
-        var wordLength = 0
-        var firstWordLength = 0
-        val splitName = name.split(' ')
-
-        splitName.forEachIndexed { index, word ->
-            if (index != 0) {
-                wordLength += word.length.plus(1)
-            } else {
-                firstWordLength = word.length
-            }
-        }
-
-        val remainingLength = limit.minus(firstWordLength)
-
-        val whiteSpace = splitName.size - 1
-
-        val remLength =
-            wordLength.plus(whiteSpace).minus(remainingLength).div(splitName.size.minus(1))
-
-        var newName = ""
-
-        splitName.forEachIndexed { index, name1 ->
-            if (index != 0) {
-                val wordLen = name1.length.minus(remLength.plus(1))
-                val dottedName =
-                    if (wordLen <= 0) {
-                        name1.substring(0, 1)
-                    } else {
-                        name1.substring(0, wordLen)
-                            .plus(".")
-                    }
-                newName += " $dottedName"
-            } else {
-                newName = name1
-            }
-        }
-
-        return newName
-    } else {
+    if (name.length <= limit) {
         return name
+    }
+
+    val splitName = name.split(' ')
+    val firstName = splitName.firstOrNull() ?: return ""
+    if (splitName.size == 1) {
+        return firstName.take(limit)
+    }
+
+    val remainingWords = splitName.drop(1)
+    val remainingLength = limit - firstName.length - remainingWords.size
+    if (remainingLength <= 0) {
+        return firstName
+    }
+
+    val avgRemainingWordLength = remainingLength / remainingWords.size
+
+    return buildString {
+        append(firstName)
+        remainingWords.forEach { word ->
+            append(' ')
+            if (word.isNotEmpty()) {
+                append(word.take(maxOf(1, minOf(word.length, avgRemainingWordLength))))
+                if (word.length > avgRemainingWordLength) {
+                    append('.')
+                }
+            }
+        }
     }
 }
 

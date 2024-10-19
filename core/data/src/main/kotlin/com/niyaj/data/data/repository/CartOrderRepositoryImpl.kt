@@ -308,7 +308,9 @@ class CartOrderRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun createOrUpdateCartOrder(newCartOrder: CartOrderWithAddOnAndCharges): Resource<Boolean> {
+    override suspend fun createOrUpdateCartOrder(
+        newCartOrder: CartOrderWithAddOnAndCharges,
+    ): Resource<Boolean> {
         return try {
             withContext(ioDispatcher) {
                 val cartOrder = newCartOrder.cartOrder
