@@ -338,10 +338,7 @@ private fun AnalyticsHelper.logOnCreateOrUpdateOrder(cartOrderId: Int, message: 
         event = AnalyticsEvent(
             type = "cart_order_$message",
             extras = listOf(
-                AnalyticsEvent.Param(
-                    "cart_order_$message",
-                    cartOrderId.toString(),
-                ),
+                AnalyticsEvent.Param("cart_order_$message", cartOrderId.toString()),
             ),
         ),
     )

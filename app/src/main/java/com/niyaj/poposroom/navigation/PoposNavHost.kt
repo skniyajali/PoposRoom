@@ -47,6 +47,8 @@ import com.niyaj.employeePayment.destinations.AddEditPaymentScreenDestination
 import com.niyaj.employeePayment.destinations.PaymentScreenDestination
 import com.niyaj.feature.home.HomeScreen
 import com.niyaj.feature.home.destinations.HomeScreenDestination
+import com.niyaj.feature.product.destinations.ProductDetailsScreenDestination
+import com.niyaj.feature.product.details.ProductDetailsScreen
 import com.niyaj.feature.reports.ReportScreen
 import com.niyaj.feature.reports.destinations.ReportScreenDestination
 import com.niyaj.order.OrderScreen
@@ -54,8 +56,6 @@ import com.niyaj.order.destinations.OrderDetailsScreenDestination
 import com.niyaj.order.destinations.OrderScreenDestination
 import com.niyaj.order.details.OrderDetailsScreen
 import com.niyaj.poposroom.ui.PoposAppState
-import com.niyaj.product.destinations.ProductDetailsScreenDestination
-import com.niyaj.product.details.ProductDetailsScreen
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.defaults.NestedNavGraphDefaultAnimations
 import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultAnimations

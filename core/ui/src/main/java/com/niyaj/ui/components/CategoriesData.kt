@@ -44,10 +44,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.trace
+import com.niyaj.common.tags.ProductTestTags.CATEGORY_LIST
+import com.niyaj.common.tags.ProductTestTags.CATEGORY_TAG
 import com.niyaj.designsystem.icon.PoposIcons
 import com.niyaj.designsystem.theme.PoposRoomTheme
 import com.niyaj.designsystem.theme.SpaceSmall
@@ -120,7 +124,9 @@ fun CategoryList(
     TrackScrollJank(scrollableState = lazyRowState, stateName = "category:list")
 
     LazyRow(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .testTag(CATEGORY_LIST),
         state = lazyRowState,
         contentPadding = contentPadding,
         horizontalArrangement = horizontalArrangement,
@@ -153,7 +159,8 @@ private fun CategoryData(
 
     ElevatedCard(
         modifier = modifier
-            .testTag(CATEGORY_ITEM_TAG.plus(category.categoryId)),
+            .testTag(CATEGORY_TAG.plus(category.categoryId))
+            .semantics { this.selected = selected },
         onClick = onClick,
         colors = CardDefaults.elevatedCardColors().copy(
             containerColor = color,

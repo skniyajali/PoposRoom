@@ -197,10 +197,7 @@ internal fun AddEditCartOrderScreenContent(
 ) {
     val lazyListState = rememberLazyListState()
     val height = (LocalConfiguration.current.screenHeightDp / 2).dp
-    val enableBtn = listOf(
-        addressError,
-        customerError,
-    ).all { it == null }
+    val enableBtn = listOf(addressError, customerError).all { it == null }
 
     var addressToggled by remember { mutableStateOf(false) }
     var customerToggled by remember { mutableStateOf(false) }

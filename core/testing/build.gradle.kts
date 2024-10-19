@@ -34,6 +34,9 @@ dependencies {
     api(projects.core.model)
     api(projects.core.notifications)
     api(libs.turbine)
+    api(libs.mockk.mockk)
+    api(libs.junit.junit5)
+    api(libs.junit.vintage)
 
     implementation(kotlin("test"))
     implementation(libs.raamcosta.animation.core)

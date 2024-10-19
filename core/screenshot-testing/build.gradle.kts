@@ -33,4 +33,5 @@ dependencies {
     implementation(libs.robolectric)
     implementation(projects.core.common)
     implementation(projects.core.designsystem)
+    implementation(libs.hilt.android.testing)
 }
