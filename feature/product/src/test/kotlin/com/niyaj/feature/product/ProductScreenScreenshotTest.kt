@@ -18,7 +18,6 @@
 package com.niyaj.feature.product
 
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.niyaj.common.utils.toBarDate
@@ -53,7 +52,6 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import org.robolectric.annotation.LooperMode
 
-@OptIn(ExperimentalFoundationApi::class)
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(application = HiltTestApplication::class)
